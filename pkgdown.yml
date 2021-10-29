@@ -1,0 +1,10 @@
+pandoc: 2.7.3
+pkgdown: 1.9000.9000.9000
+pkgdown_sha: 9d071f5e71370873ce1568610d6e362340bf9c22
+articles:
+  model-definitions: model-definitions.html
+last_built: 2021-10-29T14:57Z
+urls:
+  reference: samabbott.co.uk/epinowcast/reference
+  article: samabbott.co.uk/epinowcast/articles
+
