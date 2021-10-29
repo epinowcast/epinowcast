@@ -18,3 +18,45 @@ development:
 authors:
   Sam Abbott:
     href: "https://www.samabbott.co.uk/"
+    
+reference:
+  - title: Nowcast
+    desc: Functions for nowcasting.
+    contents:
+      - has_concept("nowcast")
+  - title: Model
+    desc: Functions for fitting the nowcasting model.
+    contents:
+      - has_concept("model")
+  - title: Preprocess
+    desc: Functions for preprocessing observations.
+    contents:
+      - has_concept("preprocess")
+  - title: Postprocess
+    desc: Functions for postprocessing model output.
+    contents:
+      - has_concept("postprocess")
+  - title: Plot
+    desc: Functions for plotting postprocessed nowcast model output.
+    contents:
+      - has_concept("plot")
+  - title: Model validation
+    desc: Functions for validating model fits.
+    contents:
+      - has_concept("modelvalidation")
+  - title: Generate data
+    desc: Functions for generating simulated data.
+    contents:
+      - has_concept("generatedata")
+  - title: Define and generate scenarios
+    desc: Functions for defining and generating data scenarios.
+    contents:
+      - has_concept("scenarios")
+  - title: Datasets
+    desc: Package datasets used in examples and by users to explore the package functionality.
+    contents:
+      - has_concept("data")
+  - title: Check inputs
+    desc: Functions to check the structure of user inputs.
+    contents:
+      - has_concept("check")
