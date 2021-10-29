@@ -1,7 +1,18 @@
 #' Format data for use with stan
 #'
-#' @param pobs
+#' @param pobs Output from [enw_preprocess_data()].
 #'
+#' @param reference_effects A list of fixed and random design matrices
+#' defining the date of reference model. Defaults to [enw_intercept_model()]
+#' which is an intercept only model.
+#'
+#' @param report_effects A list of fixed and random design matrices
+#' defining the date of reports model. Defaults to [enw_intercept_model()]
+#' which is an intercept only model.
+#'
+#' @param dist Character string indicating the type of distribution to use for
+#' reference date effects. The default is to use a lognormal but other options
+#' available include: gamma distributed ("gamma").
 #' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
 #' included in the model
 #'
@@ -17,16 +28,16 @@
 #' @family model
 #' @export
 enw_as_data_list <- function(pobs,
-                            reference_effects = enw_intercept_model(
-                              pobs$metareference[[1]]
-                            ),
-                            report_effects = enw_intercept_model(
-                              pobs$metareport[[1]]
-                            ),
-                            dist = "lognormal",
-                            nowcast = TRUE, pp = FALSE,
-                            likelihood = TRUE, debug = FALSE,
-                            output_loglik = FALSE) {
+                             reference_effects = enw_intercept_model(
+                               pobs$metareference[[1]]
+                             ),
+                             report_effects = enw_intercept_model(
+                               pobs$metareport[[1]]
+                             ),
+                             dist = "lognormal",
+                             nowcast = TRUE, pp = FALSE,
+                             likelihood = TRUE, debug = FALSE,
+                             output_loglik = FALSE) {
   if (pp) {
     nowcast <- TRUE
   }
@@ -199,7 +210,7 @@ enw_model <- function(compile = TRUE, ...) {
 #' @importFrom cmdstanr cmdstan_model
 #' @importFrom posterior rhat
 enw_sample <- function(data, model = epinowcast::enw_model(),
-                      diagnostics = TRUE, ...) {
+                       diagnostics = TRUE, ...) {
   model <- suppressMessages(cmdstanr::cmdstan_model(model))
   fit <- model$sample(data = data, ...)
 

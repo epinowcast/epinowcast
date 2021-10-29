@@ -26,8 +26,16 @@ DETAILS
 }
 \seealso{
 Functions used to formulate models
+\code{\link{enw_add_day_of_week}()},
+\code{\link{enw_add_pooling_effect}()},
+\code{\link{enw_add_week}()},
+\code{\link{enw_cumulative_day_membership}()},
+\code{\link{enw_cumulative_week_membership}()},
+\code{\link{enw_dates_to_factors}()},
 \code{\link{enw_day_model}()},
 \code{\link{enw_day_of_week_model}()},
+\code{\link{enw_design}()},
+\code{\link{enw_effects_metadata}()},
 \code{\link{enw_intercept_model}()}
 }
 \concept{modeldesign}

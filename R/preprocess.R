@@ -23,7 +23,7 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' @param max_delay PARAM_DESCRIPTION, Default: 20
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
-#' @export 
+#' @export
 #' @importFrom data.table copy data.table rbindlist setorderv
 #' @importFrom purrr map
 enw_extend_date <- function(metaobs, max_delay = 20) {
@@ -55,7 +55,7 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
 #' @param by PARAM_DESCRIPTION, Default: c()
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
-#' @export 
+#' @export
 #' @importFrom data.table as.data.table copy
 enw_assign_group <- function(obs, by = c()) {
   obs <- data.table::as.data.table(obs)
@@ -75,7 +75,7 @@ enw_assign_group <- function(obs, by = c()) {
 #' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
-#' @export 
+#' @export
 #' @importFrom data.table copy
 enw_latest_data <- function(obs) {
   latest_data <- data.table::copy(obs)[,
@@ -91,7 +91,7 @@ enw_latest_data <- function(obs) {
 #' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
-#' @export 
+#' @export
 #' @importFrom data.table copy shift
 enw_new_reports <- function(obs) {
   reports <- data.table::copy(obs)
@@ -111,7 +111,7 @@ enw_new_reports <- function(obs) {
 #' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
-#' @export 
+#' @export
 #' @importFrom data.table as.data.table dcast setorderv
 enw_reporting_triangle <- function(obs) {
   obs <- data.table::as.data.table(obs)
@@ -131,7 +131,7 @@ enw_reporting_triangle <- function(obs) {
 #' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
-#' @export 
+#' @export
 #' @importFrom data.table melt setorderv
 enw_reporting_triangle_to_long <- function(obs) {
   reports_long <- data.table::melt(

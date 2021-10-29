@@ -17,7 +17,19 @@ enw_as_data_list(
 )
 }
 \arguments{
-\item{pobs}{}
+\item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+
+\item{reference_effects}{A list of fixed and random design matrices
+defining the date of reference model. Defaults to \code{\link[=enw_intercept_model]{enw_intercept_model()}}
+which is an intercept only model.}
+
+\item{report_effects}{A list of fixed and random design matrices
+defining the date of reports model. Defaults to \code{\link[=enw_intercept_model]{enw_intercept_model()}}
+which is an intercept only model.}
+
+\item{dist}{Character string indicating the type of distribution to use for
+reference date effects. The default is to use a lognormal but other options
+available include: gamma distributed ("gamma").}
 
 \item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
 included in the model}

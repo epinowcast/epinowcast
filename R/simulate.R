@@ -26,13 +26,13 @@ enw_apply_truncation_to_cases <- function(report_date, cmf, cases) {
 #' @param max PARAM_DESCRIPTION, Default: 20
 #' @return OUTPUT_DESCRIPTION
 #' @family generatedata
-#' @export 
+#' @importFrom stats plnorm
+#' @export
 enw_dist_cmf <- function(logmean, logsd, max = 20) {
   cmf <- plnorm(1:max, logmean, logsd)
   cmf <- cmf / max(cmf)
   return(cmf)
 }
-
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param scenarios PARAM_DESCRIPTION

@@ -1,35 +1,17 @@
-#' @title FUNCTION_TITLE
+#' @title Nowcast right censored data
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description Provides a user friendly interface around package functionality
+#' to produce a nowcast from observed preprocessed data, a reference model, and
+#' a report model.
 #'
-#' @param pobs PARAM_DESCRIPTION
+#' @param ... Additional arguments passed to [enw_sample()].
 #'
-#' @param reference_effects PARAM_DESCRIPTION,
-#' Default: enw_intercept_model(pobs$metareference[[1]])
-#'
-#' @param report_effects PARAM_DESCRIPTION, 
-#' Default: enw_intercept_model(pobs$metareport[[1]])
-#'
-#' @param dist PARAM_DESCRIPTION, Default: 'lognormal'
-#'
-#' @param probs PARAM_DESCRIPTION, Default: c(0.05, 0.35, 0.5, 0.65, 0.95)
-#'
-#' @param model PARAM_DESCRIPTION, Default: NULL
-#'
-#' @param nowcast PARAM_DESCRIPTION, Default: TRUE
-#'
-#' @param likelihood PARAM_DESCRIPTION, Default: TRUE
-#'
-#' @param debug PARAM_DESCRIPTION, Default: FALSE
-#'
-#' @param pp PARAM_DESCRIPTION, Default: FALSE
-#'
-#' @param ... PARAM_DESCRIPTION
-#'
-#' @family nowcast
 #' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
-#' @rdname epinowcast
+#'
+#' @inheritParams enw_as_data_list
+#' @inheritParams enw_sample
+#' @inheritParams enw_nowcast_summary
+#' @family nowcast
 #' @export
 epinowcast <- function(pobs,
                        reference_effects = enw_intercept_model(
@@ -42,7 +24,7 @@ epinowcast <- function(pobs,
                        probs = c(0.05, 0.35, 0.5, 0.65, 0.95),
                        model = NULL, nowcast = TRUE, pp = FALSE,
                        likelihood = TRUE, debug = FALSE,
-                       output_loglik = FALSE,  ...) {
+                       output_loglik = FALSE, ...) {
   stan_data <- enw_as_data_list(pobs,
     reference_effects = reference_effects,
     report_effects = report_effects,

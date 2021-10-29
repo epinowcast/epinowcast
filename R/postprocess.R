@@ -5,7 +5,7 @@
 #' @param probs PARAM_DESCRIPTION, Default: c(0.05, 0.35, 0.5, 0.65, 0.95)
 #' @return OUTPUT_DESCRIPTION
 #' @family postprocess
-#' @export 
+#' @export
 #' @importFrom rstan summary
 #' @importFrom data.table as.data.table copy setorderv
 enw_nowcast_summary <- function(fit, obs,
@@ -36,7 +36,7 @@ enw_nowcast_summary <- function(fit, obs,
 #' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family postprocess
-#' @export 
+#' @export
 #' @importFrom data.table as.data.table setcolorder
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
   obs <- data.table::as.data.table(obs)

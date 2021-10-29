@@ -54,7 +54,7 @@ enw_day_model <- function(metaobs, rw = FALSE) {
 #' @family modeldesign
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
-#' @export 
+#' @export
 #' @importFrom data.table copy
 enw_day_of_week_model <- function(metaobs, holidays = c()) {
   # add days of week
@@ -93,7 +93,7 @@ enw_day_of_week_model <- function(metaobs, holidays = c()) {
 #' @family modeldesign
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
-#' @export 
+#' @export
 enw_weekly_model <- function(metaobs, rw = FALSE, day_of_week = FALSE,
                              holidays = c()) {
 

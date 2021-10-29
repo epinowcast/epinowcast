@@ -2,7 +2,7 @@
 % Please edit documentation in R/epinowcast.R
 \name{epinowcast}
 \alias{epinowcast}
-\title{FUNCTION_TITLE}
+\title{Nowcast right censored data}
 \usage{
 epinowcast(
   pobs,
@@ -20,37 +20,42 @@ epinowcast(
 )
 }
 \arguments{
-\item{pobs}{PARAM_DESCRIPTION}
+\item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{reference_effects}{PARAM_DESCRIPTION,
-Default: enw_intercept_model(pobs$metareference[\link{1}])}
+\item{reference_effects}{A list of fixed and random design matrices
+defining the date of reference model. Defaults to \code{\link[=enw_intercept_model]{enw_intercept_model()}}
+which is an intercept only model.}
 
-\item{report_effects}{PARAM_DESCRIPTION,
-Default: enw_intercept_model(pobs$metareport[\link{1}])}
+\item{report_effects}{A list of fixed and random design matrices
+defining the date of reports model. Defaults to \code{\link[=enw_intercept_model]{enw_intercept_model()}}
+which is an intercept only model.}
 
-\item{dist}{PARAM_DESCRIPTION, Default: 'lognormal'}
+\item{dist}{Character string indicating the type of distribution to use for
+reference date effects. The default is to use a lognormal but other options
+available include: gamma distributed ("gamma").}
 
 \item{probs}{PARAM_DESCRIPTION, Default: c(0.05, 0.35, 0.5, 0.65, 0.95)}
 
-\item{model}{PARAM_DESCRIPTION, Default: NULL}
+\item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
 
-\item{nowcast}{PARAM_DESCRIPTION, Default: TRUE}
+\item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
+included in the model}
 
-\item{pp}{PARAM_DESCRIPTION, Default: FALSE}
+\item{debug}{Logical, defaults to \code{FALSE}. Should within model debug
+information be returned.}
 
-\item{likelihood}{PARAM_DESCRIPTION, Default: TRUE}
+\item{output_loglik}{Logical, defaults to \code{FALSE}. Should the
+log-likelihood be output. Disabling this will speed up fitting
+if evaluating the model fit is not required.}
 
-\item{debug}{PARAM_DESCRIPTION, Default: FALSE}
-
-\item{...}{PARAM_DESCRIPTION}
+\item{...}{Additional arguments passed to \code{\link[=enw_sample]{enw_sample()}}.}
 }
 \value{
 OUTPUT_DESCRIPTION
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
+Provides a user friendly interface around package functionality
+to produce a nowcast from observed preprocessed data, a reference model, and
+a report model.
 }
 \concept{nowcast}

@@ -54,3 +54,16 @@ logit <- function(p) {
   l <- log(p / (1 - p))
   return(l)
 }
+
+
+utils::globalVariables(
+  c(
+    ".", ".draw", "max_treedepth", "no_at_max_treedepth",
+    "per_at_max_treedepth", "q20", "q5", "q80", "q95", "quantile",
+    "sd", "..by", "cmf", "day_of_week", "delay", "new_confirm",
+    "obseverd", "old_group", "reference_date", "report_date",
+    "reported_cases", "s", "time", "extend_date", "effects",
+    "confirm", "effects", "fixed", "group", "logmean", "logsd",
+    "new_group", "observed"
+  )
+)

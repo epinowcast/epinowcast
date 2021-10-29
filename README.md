@@ -10,8 +10,10 @@ coverage](https://codecov.io/gh/seabbs/epinowcast/branch/main/graph/badge.svg)](
 [![GitHub
 contributors](https://img.shields.io/github/contributors/seabbs/epinowcast)](https://github.com/seabbs/epinowcast/graphs/contributors)
 
-Contains a a flexible approach for nowcasting right truncated
-epidemological count data efficiently.
+This package contains tools to enable flexible and efficient nowcasting
+of right censored epidemiological counts using a semi-mechanistic method
+with adjustment available for both day of reference and day of report
+effects.
 
 ## Installation
 

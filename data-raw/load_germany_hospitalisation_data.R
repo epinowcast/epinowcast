@@ -22,5 +22,5 @@ germany_hosp[, confirm := cumsum(confirm),
 ]
 
 # save all observations
-germany_covid19_hospitalisations <- germany_hosp
-usethis::use_data(germany_covid19_hospitalisations, overwrite = TRUE)
+germany_covid19_hosp <- germany_hosp
+usethis::use_data(germany_covid19_hosp, overwrite = TRUE)
