@@ -1,3 +1,61 @@
+#' Summarise the posterior
+#'
+#' @description A generic wrapper around [posterior::summarise_draws()] with
+#' opinionated defaults.
+#'
+#' @param fit A `cmdstanr` fit object.
+#'
+#' @param variables A character vector of variables to return
+#' posterior summaries for. By default summaries for all parameters
+#' are returned.
+#'
+#' @param probs A vector of numeric probabilities to produce
+#' quantile summaries for. By default these are the 5%, 20%, 80%,
+#' and 95% quantiles which are also the minimum set required for
+#' plotting functions to work.
+#'
+#' @param ... Additional arguments that may be passed but will not be used.
+#'
+#' @return A dataframe summarising the model posterior.
+#'
+#' @family postprocess
+#' @export
+#' @importFrom purrr reduce
+#' @importFrom posterior quantile2 default_convergence_measures
+#' @importFrom data.table .SD .N :=
+enw_posterior <- function(fit, variables = NULL,
+                          probs = c(0.05, 0.2, 0.8, 0.95), ...) {
+  # order probs
+  probs <- probs[order(probs)]
+  # NULL out variables
+  variable <- type <- NULL
+
+  # extract summary parameters of interest and join
+  sfit <- list(
+    fit$summary(
+      variables = variables, mean, median, sd, mad,
+      .args = list(na.rm = TRUE), ...
+    ),
+    fit$summary(
+      variables = variables, quantile2,
+      .args = list(probs = probs, na.rm = TRUE),
+      ...
+    ),
+    fit$summary(
+      variables = variables, posterior::default_convergence_measures(),
+      .args = list(na.rm = TRUE), ...
+    )
+  )
+  cbind_custom <- function(x, y) {
+    x <- setDT(x)
+    y <- setDT(y)[, variable := NULL]
+    cbind(x, y)
+  }
+  sfit <- purrr::reduce(sfit, cbind_custom)
+  return(sfit[])
+}
+
+
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param fit PARAM_DESCRIPTION
@@ -10,12 +68,11 @@
 #' @importFrom data.table as.data.table copy setorderv
 enw_nowcast_summary <- function(fit, obs,
                                 probs = c(0.05, 0.35, 0.5, 0.65, 0.95)) {
-  nowcast <- rstan::summary(
+  nowcast <- enw_posterior(
     fit,
-    par = "pp_inf_obs", digits = 1,
+    variables = "pp_inf_obs",
     probs = probs
-  )$summary
-  nowcast <- data.table::as.data.table(nowcast)
+  )
 
   max_delay <- nrow(nowcast) / max(obs$group)
 
@@ -27,6 +84,7 @@ enw_nowcast_summary <- function(fit, obs,
     nowcast
   )
   data.table::setorderv(nowcast, c("group", "reference_date"))
+  nowcast[, variable := NULL]
   return(nowcast[])
 }
 

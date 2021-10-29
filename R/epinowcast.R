@@ -11,7 +11,7 @@
 #' @inheritParams enw_as_data_list
 #' @inheritParams enw_sample
 #' @inheritParams enw_nowcast_summary
-#' @family nowcast
+#' @family epinowcast
 #' @export
 epinowcast <- function(pobs,
                        reference_effects = enw_intercept_model(
@@ -22,7 +22,8 @@ epinowcast <- function(pobs,
                        ),
                        dist = "lognormal",
                        probs = c(0.05, 0.35, 0.5, 0.65, 0.95),
-                       model = NULL, nowcast = TRUE, pp = FALSE,
+                       model = epinowcast::enw_model(),
+                       nowcast = TRUE, pp = FALSE,
                        likelihood = TRUE, debug = FALSE,
                        output_loglik = FALSE, ...) {
   stan_data <- enw_as_data_list(pobs,
@@ -35,12 +36,9 @@ epinowcast <- function(pobs,
 
   inits <- enw_inits(stan_data)
 
-  fit <- enw_sample(data = stan_data, model = model, inits = inits, ...)
-
-  nowcast <- enw_nowcast_summary(fit, pobs$latest[[1]], probs = probs)
+  fit <- enw_sample(data = stan_data, model = model, init = inits, ...)
 
   out <- cbind(pobs, fit)
-  out[, nowcast := list(nowcast)]
 
   class(out) <- c("epinowcast", class(out))
   return(out[])

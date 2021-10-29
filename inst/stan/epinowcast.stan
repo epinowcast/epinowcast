@@ -21,7 +21,7 @@ data {
   int neffs; // number of effects to apply
   matrix[npmfs, neffs + 1] d_fixed; // design matrix for pmfs
   int neff_sds; // number of standard deviations to use for pooling
-  matrix[neffs, neff_sds + 1] d_random; // Pooling pmf design matrix
+  matrix[neffs, neff_sds + 1] d_random; // Pooling pmf design matrix 
   int dist; // distribution used for pmfs (0 = lognormal, 1 = gamma)
   int rd; // how many reporting days are there (t + dmax - 1)
   int urds; // how many unique reporting days are there
@@ -29,11 +29,12 @@ data {
   int nrd_effs; // number of report day effects to apply
   matrix[urds, nrd_effs + 1] rd_fixed; // design matrix for report dates
   int nrd_eff_sds; // number of standard deviations to use for pooling for rds
-  matrix[nrd_effs, nrd_eff_sds + 1] rd_random; // Pooling pmf design matrix
+  matrix[nrd_effs, nrd_eff_sds + 1] rd_random; // Pooling pmf design matrix 
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
   int pp; // should posterior predictions be produced
   int cast; // should a nowcast be produced
+  int ologlik; // Should the pointwise log likelihood be calculated
 }
 
 transformed data{
@@ -159,6 +160,7 @@ model {
 
 generated quantities {
   int pp_obs[pp ? s : 0, pp ? dmax : 0];
+  vector[ologlik ? s : 0] log_lik;
   int pp_inf_obs[cast ? dmax : 0,cast ? g : 0];
   if (cast) {
     real tar_obs;
@@ -171,8 +173,13 @@ generated quantities {
       rdlh = srdlh[rdlurd[st[i]:(st[i] + dmax - 1), sg[i]]];
       exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs, phi);
+      if (ologlik) {
+        log_lik[i] = 0;
+        for (j in 1:sl[i]) {
+          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j], phi);
+        }
+      }
     }
-
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
     for (k in 1:g) {
       int start_t = t - dmax;

@@ -92,7 +92,6 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' @param design PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family modeldesign
-#' @examples
 #' @export
 #' @importFrom data.table data.table
 enw_effects_metadata <- function(design) {

@@ -4,11 +4,14 @@
 \alias{enw_model}
 \title{Load and compile the nowcasting model}
 \usage{
-enw_model(compile = TRUE, ...)
+enw_model(compile = TRUE, verbose = TRUE, ...)
 }
 \arguments{
 \item{compile}{Logical, defaults to \code{TRUE}. Should the model
 be loaded and compiled using \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
+
+\item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
+messages be shown.}
 
 \item{...}{Additional arguments passed to \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 }

@@ -124,7 +124,8 @@ enw_as_data_list <- function(pobs,
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
     pp = as.numeric(pp),
-    cast = as.numeric(nowcast)
+    cast = as.numeric(nowcast),
+    ologlik = as.numeric(output_loglik)
   ))
   return(data)
 }
@@ -172,6 +173,8 @@ enw_inits <- function(data) {
 #' @param compile Logical, defaults to `TRUE`. Should the model
 #' be loaded and compiled using [cmdstanr::cmdstan_model()].
 #'
+#' @param verbose Logical, defaults to `TRUE`. Should verbose
+#' messages be shown.
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
 #' @return A `cmdstanr` model.
@@ -181,12 +184,19 @@ enw_inits <- function(data) {
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(compile = TRUE, ...) {
+enw_model <- function(compile = TRUE, verbose = TRUE, ...) {
   model <- "stan/epinowcast.stan"
 
   model <- system.file(model, package = "epinowcast")
+  include <- system.file("stan", package = "epinowcast")
   if (compile) {
-    suppressMessages(cmdstanr::cmdstan_model(model, ...))
+    if (verbose) {
+      model <- cmdstanr::cmdstan_model(model, include_path = include, ...)
+    } else {
+      suppressMessages(
+        model <- cmdstanr::cmdstan_model(model, include_path = include, ...)
+      )
+    }
   }
   return(model)
 }
@@ -211,7 +221,6 @@ enw_model <- function(compile = TRUE, ...) {
 #' @importFrom posterior rhat
 enw_sample <- function(data, model = epinowcast::enw_model(),
                        diagnostics = TRUE, ...) {
-  model <- suppressMessages(cmdstanr::cmdstan_model(model))
   fit <- model$sample(data = data, ...)
 
   out <- data.table(

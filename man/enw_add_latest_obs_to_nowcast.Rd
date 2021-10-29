@@ -19,6 +19,7 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Functions used for postprocessing of model fits
-\code{\link{enw_nowcast_summary}()}
+\code{\link{enw_nowcast_summary}()},
+\code{\link{enw_posterior}()}
 }
 \concept{postprocess}

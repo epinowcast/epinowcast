@@ -19,6 +19,7 @@ repos:
     hooks: 
     -   id: check-added-large-files
         args: ['--maxkb=200']
+        exclude: 'data/germany_covid19_hosp.rda'
     -   id: end-of-file-fixer
         exclude: '\.Rd'
 -   repo: local

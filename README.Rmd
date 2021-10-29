@@ -44,6 +44,72 @@ cmdstanr::install_cmdstan()
 
 ## Quick start
 
+### Example data
+
+```{r}
+library(epinowcast)
+
+national_germany_hosp <- germany_covid19_hosp
+national_germany_hosp <- national_germany_hosp[location == "DE"]
+national_germany_hosp <- national_germany_hosp[age_group %in% "00+"]
+national_germany_hosp <-
+  national_germany_hosp[reference_date >= (max(reference_date) - 30)]
+national_germany_hosp[]
+```
+
+### Data preprocessing and model specification
+
+Process reported data into format required for `{epinowcast}` and return in a `{data.table}`. At this stage specify grouping (i.e age, location) if any.
+
+```{r}
+pobs <- enw_preprocess_data(national_germany_hosp)
+pobs
+```
+
+Construct an intercept only model for the date of reference.
+
+```{r}
+reference_effects <- enw_intercept_model(pobs$metareference[[1]])
+reference_effects
+```
+
+Construct a model with a random effect for the day of report.
+```{r}
+report_effects <- enw_day_of_week_model(pobs$metareport[[1]])
+report_effects
+```
+
+### Model fitting
+
+```{r}
+options(mc.cores = 4)
+nowcast <- epinowcast(pobs,
+  report_effects = report_effects,
+  reference_effects = reference_effects,
+  save_warmup = FALSE
+)
+```
+
+### Results
+
+Print the output from `{epinowcast}` which includes disagnostic information, the data used for fitting, and the `{cmdstanr`} object.
+
+```{r}
+nowcast
+```
+
+Summarise the nowcast for the latest snapshot of data.
+
+```{r}
+summary(nowcast)
+```
+
+Plot the nowcast against currently observed data (or optionally more recent data for comparison purposes).
+
+```{r, eval = FALSE}
+plot(nowcast)
+```
+
 ## Citation
 
 If using `epinowccast` in your work please consider citing it using the following,

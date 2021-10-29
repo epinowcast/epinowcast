@@ -10,7 +10,7 @@ epinowcast(
   report_effects = enw_intercept_model(pobs$metareport[[1]]),
   dist = "lognormal",
   probs = c(0.05, 0.35, 0.5, 0.65, 0.95),
-  model = NULL,
+  model = epinowcast::enw_model(),
   nowcast = TRUE,
   pp = FALSE,
   likelihood = TRUE,
@@ -58,4 +58,9 @@ Provides a user friendly interface around package functionality
 to produce a nowcast from observed preprocessed data, a reference model, and
 a report model.
 }
-\concept{nowcast}
+\seealso{
+Other epinowcast: 
+\code{\link{plot.epinowcast}()},
+\code{\link{summary.epinowcast}()}
+}
+\concept{epinowcast}

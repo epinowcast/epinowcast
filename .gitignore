@@ -1,6 +1,5 @@
 *.xlsx
-inst/stan/bp
-inst/stan/twostrainbp
+inst/stan/epinowcast
 results/stan-fit.rds
 output
 *.rds
