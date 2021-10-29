@@ -60,14 +60,18 @@ enw_posterior <- function(fit, variables = NULL,
 #' @description FUNCTION_DESCRIPTION
 #' @param fit PARAM_DESCRIPTION
 #' @param obs PARAM_DESCRIPTION
-#' @param probs PARAM_DESCRIPTION, Default: c(0.05, 0.35, 0.5, 0.65, 0.95)
+#' @param probs PARAM_DESCRIPTION, Default: c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8,
+#' 0.95)
 #' @return OUTPUT_DESCRIPTION
 #' @family postprocess
 #' @export
 #' @importFrom rstan summary
 #' @importFrom data.table as.data.table copy setorderv
 enw_nowcast_summary <- function(fit, obs,
-                                probs = c(0.05, 0.35, 0.5, 0.65, 0.95)) {
+                                probs = c(
+                                  0.05, 0.2, 0.35, 0.5, 0.65, 0.8,
+                                  0.95
+                                )) {
   nowcast <- enw_posterior(
     fit,
     variables = "pp_inf_obs",

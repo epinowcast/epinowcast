@@ -9,7 +9,6 @@ epinowcast(
   reference_effects = enw_intercept_model(pobs$metareference[[1]]),
   report_effects = enw_intercept_model(pobs$metareport[[1]]),
   dist = "lognormal",
-  probs = c(0.05, 0.35, 0.5, 0.65, 0.95),
   model = epinowcast::enw_model(),
   nowcast = TRUE,
   pp = FALSE,
@@ -33,8 +32,6 @@ which is an intercept only model.}
 \item{dist}{Character string indicating the type of distribution to use for
 reference date effects. The default is to use a lognormal but other options
 available include: gamma distributed ("gamma").}
-
-\item{probs}{PARAM_DESCRIPTION, Default: c(0.05, 0.35, 0.5, 0.65, 0.95)}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
 

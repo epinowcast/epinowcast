@@ -21,7 +21,6 @@ epinowcast <- function(pobs,
                          pobs$metareport[[1]]
                        ),
                        dist = "lognormal",
-                       probs = c(0.05, 0.35, 0.5, 0.65, 0.95),
                        model = epinowcast::enw_model(),
                        nowcast = TRUE, pp = FALSE,
                        likelihood = TRUE, debug = FALSE,
@@ -39,7 +38,6 @@ epinowcast <- function(pobs,
   fit <- enw_sample(data = stan_data, model = model, init = inits, ...)
 
   out <- cbind(pobs, fit)
-
   class(out) <- c("epinowcast", class(out))
   return(out[])
 }

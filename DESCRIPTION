@@ -9,8 +9,8 @@ Description: Tools to enable flexible and efficient nowcasting of  right
     adjustment available for both day of reference and day of report effects. 
 License: MIT + file LICENSE
 URL: https://samabbott.co.uk/epinowcast/,
-    https://github.com/samabbott.co.uk/epinowcast/
-BugReports: https://github.com/samabbott.co.uk/epinowcast/issues/
+    https://github.com/seabbs/epinowcast/
+BugReports: https://github.com/seabbs/epinowcast/issues/
 Depends:
     R (>= 2.10)
 Imports:

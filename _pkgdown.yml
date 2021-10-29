@@ -36,6 +36,9 @@ reference:
     desc: Functions for postprocessing model output.
     contents:
       - has_concept("postprocess")
+  - title: Model design
+    desc: Functions used to formulate models.
+      - has_concept("modeldesign")
   - title: Plot
     desc: Functions for plotting postprocessed nowcast model output.
     contents:
