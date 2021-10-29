@@ -1,3 +1,10 @@
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param plot PARAM_DESCRIPTION
+#' @family plot
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @export
 plot_theme <- function(plot) {
   plot <- plot +
     theme_bw() +

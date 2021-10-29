@@ -1,0 +1,15 @@
+list( # nolint
+  rd_family_title = list( # nolint
+    preprocess = "Preprocessing functions",
+    model = "Functions used for modelling",
+    modeldesign = "Functions used to formulate models",
+    postprocess = "Functions used for postprocessing of model fits", # nolint
+    plot = "Plotting functions",
+    nowcast = "Functions used for nowcasting", # nolint
+    generatedata = "Functions to generate simulated data",
+    scenarios = "Functions to define and create scenarios",
+    data = "Package data sets",
+    check = "Functions used for checking inputs",
+    utils = "Utility functions"
+  )
+)

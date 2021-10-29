@@ -1,3 +1,13 @@
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param fit PARAM_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @param probs PARAM_DESCRIPTION, Default: c(0.05, 0.35, 0.5, 0.65, 0.95)
+#' @return OUTPUT_DESCRIPTION
+#' @family postprocess
+#' @export 
+#' @importFrom rstan summary
+#' @importFrom data.table as.data.table copy setorderv
 enw_nowcast_summary <- function(fit, obs,
                                 probs = c(0.05, 0.35, 0.5, 0.65, 0.95)) {
   nowcast <- rstan::summary(
@@ -20,6 +30,14 @@ enw_nowcast_summary <- function(fit, obs,
   return(nowcast[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param nowcast PARAM_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @family postprocess
+#' @export 
+#' @importFrom data.table as.data.table setcolorder
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
   obs <- data.table::as.data.table(obs)
   obs <- obs[, .(reference_date, group, latest_confirm = confirm)]

@@ -1,3 +1,11 @@
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @param target_date PARAM_DESCRIPTION, Default: 'reference_date'
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export
+#' @importFrom data.table as.data.table
 enw_metadata <- function(obs, target_date = "reference_date") {
   choices <- c("reference_date", "report_date")
   target_date <- match.arg(target_date, choices)
@@ -9,6 +17,15 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   return(metaobs[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param metaobs PARAM_DESCRIPTION
+#' @param max_delay PARAM_DESCRIPTION, Default: 20
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export 
+#' @importFrom data.table copy data.table rbindlist setorderv
+#' @importFrom purrr map
 enw_extend_date <- function(metaobs, max_delay = 20) {
   exts <- data.table::copy(metaobs)
   exts <- exts[, .SD[date == max(date)], by = group]
@@ -32,6 +49,14 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
   return(exts[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @param by PARAM_DESCRIPTION, Default: c()
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export 
+#' @importFrom data.table as.data.table copy
 enw_assign_group <- function(obs, by = c()) {
   obs <- data.table::as.data.table(obs)
   if (length(by) == 0) {
@@ -45,6 +70,13 @@ enw_assign_group <- function(obs, by = c()) {
   return(obs = obs[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export 
+#' @importFrom data.table copy
 enw_latest_data <- function(obs) {
   latest_data <- data.table::copy(obs)[,
     .SD[report_date == max(report_date)],
@@ -54,6 +86,13 @@ enw_latest_data <- function(obs) {
   return(latest_data[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @export 
+#' @importFrom data.table copy shift
 enw_new_reports <- function(obs) {
   reports <- data.table::copy(obs)
   reports <- reports[order(reference_date)]
@@ -67,6 +106,13 @@ enw_new_reports <- function(obs) {
   return(reports[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export 
+#' @importFrom data.table as.data.table dcast setorderv
 enw_reporting_triangle <- function(obs) {
   obs <- data.table::as.data.table(obs)
   if (any(obs$new_confirm < 0)) {
@@ -80,6 +126,13 @@ enw_reporting_triangle <- function(obs) {
   return(reports[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export 
+#' @importFrom data.table melt setorderv
 enw_reporting_triangle_to_long <- function(obs) {
   reports_long <- data.table::melt(
     obs,
@@ -90,6 +143,17 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @param by PARAM_DESCRIPTION, Default: c()
+#' @param max_delay PARAM_DESCRIPTION, Default: 20
+#' @param min_report_date PARAM_DESCRIPTION
+#' @param set_negatives_to_zero PARAM_DESCRIPTION, Default: TRUE
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export
+#' @importFrom data.table as.data.table data.table
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
                                 min_report_date, set_negatives_to_zero = TRUE) {
   obs <- data.table::as.data.table(obs)

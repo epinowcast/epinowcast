@@ -1,3 +1,10 @@
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param metaobs PARAM_DESCRIPTION
+#' @family modeldesign
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @export
 enw_intercept_model <- function(metaobs) {
 
   # build effects design matrix (with  no contrasts)
@@ -12,6 +19,14 @@ enw_intercept_model <- function(metaobs) {
   return(list(fixed = fixed, random = random))
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param metaobs PARAM_DESCRIPTION
+#' @param rw PARAM_DESCRIPTION, Default: FALSE
+#' @family modeldesign
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @export
 enw_day_model <- function(metaobs, rw = FALSE) {
 
   # turn dates into factors
@@ -32,6 +47,15 @@ enw_day_model <- function(metaobs, rw = FALSE) {
   return(list(fixed = fixed, random = random))
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param metaobs PARAM_DESCRIPTION
+#' @param holidays PARAM_DESCRIPTION, Default: c()
+#' @family modeldesign
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @export 
+#' @importFrom data.table copy
 enw_day_of_week_model <- function(metaobs, holidays = c()) {
   # add days of week
   metaobs <- data.table::copy(metaobs)
@@ -60,6 +84,16 @@ enw_day_of_week_model <- function(metaobs, holidays = c()) {
   return(list(fixed = fixed, random = random))
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param metaobs PARAM_DESCRIPTION
+#' @param rw PARAM_DESCRIPTION, Default: FALSE
+#' @param day_of_week PARAM_DESCRIPTION, Default: FALSE
+#' @param holidays PARAM_DESCRIPTION, Default: c()
+#' @family modeldesign
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @export 
 enw_weekly_model <- function(metaobs, rw = FALSE, day_of_week = FALSE,
                              holidays = c()) {
 

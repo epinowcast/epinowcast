@@ -1,3 +1,15 @@
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @param snapshots PARAM_DESCRIPTION, Default: c(30:0)
+#' @param logmean PARAM_DESCRIPTION, Default: 1.6
+#' @param logmean_sd PARAM_DESCRIPTION, Default: 0.1
+#' @param logsd PARAM_DESCRIPTION, Default: 1
+#' @param logsd_sd PARAM_DESCRIPTION, Default: 0.1
+#' @return OUTPUT_DESCRIPTION
+#' @family scenarios
+#' @export
+#' @importFrom data.table data.table
 enw_random_intercept_scenario <- function(obs,
                                           snapshots = c(30:0),
                                           logmean = 1.6, logmean_sd = 0.1,
