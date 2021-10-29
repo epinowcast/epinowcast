@@ -23,7 +23,7 @@ reference:
   - title: Nowcast
     desc: Functions for nowcasting.
     contents:
-      - has_concept("nowcast")
+      - has_concept("epinowcast")
   - title: Model
     desc: Functions for fitting the nowcasting model.
     contents:
@@ -36,8 +36,9 @@ reference:
     desc: Functions for postprocessing model output.
     contents:
       - has_concept("postprocess")
-  - title: Model design
-    desc: Functions used to formulate models.
+  - title: Model design tools
+    desc: Functions that assist with designing models.
+    contents:
       - has_concept("modeldesign")
   - title: Plot
     desc: Functions for plotting postprocessed nowcast model output.
@@ -63,3 +64,7 @@ reference:
     desc: Functions to check the structure of user inputs.
     contents:
       - has_concept("check")
+  - title: Utilities
+    desc: Utility functions
+    contents:
+      - has_concept("utils")

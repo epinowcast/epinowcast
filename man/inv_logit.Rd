@@ -21,6 +21,7 @@ inv_logit(c(-10, 1, 0, 100))
 \seealso{
 Utility functions
 \code{\link{expose_stan_fns}()},
+\code{\link{is.Date}()},
 \code{\link{logit}()}
 }
 \concept{utils}

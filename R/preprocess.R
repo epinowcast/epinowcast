@@ -91,6 +91,7 @@ enw_latest_data <- function(obs) {
 #' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @details DETAILS
+#' @family preprocess
 #' @export
 #' @importFrom data.table copy shift
 enw_new_reports <- function(obs) {

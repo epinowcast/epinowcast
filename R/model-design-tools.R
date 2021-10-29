@@ -2,6 +2,7 @@
 #' @description FUNCTION_DESCRIPTION
 #' @param x PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
+#' @family utils
 is.Date <- function(x) { # nolint
   inherits(x, "Date")
 }
