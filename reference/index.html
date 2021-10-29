@@ -57,7 +57,7 @@
         </li>
         
         <li>
-  <a href="https://github.com/samabbott.co.uk/epinowcast/">
+  <a href="https://github.com/seabbs/epinowcast/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -79,13 +79,233 @@
     </div>
 
     <table class="ref-index"><colgroup><col class="alias"><col class="title"></colgroup><tbody><tr><th colspan="2">
-          <h2 id="all-functions">All functions <a href="#all-functions" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p>
+          <h2 id="nowcast">Nowcast <a href="#nowcast" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for nowcasting.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="epinowcast.html">epinowcast()</a></code> </p>
+        </td>
+        <td><p>Nowcast right censored data</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot.epinowcast.html">plot(<i>&lt;epinowcast&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot method for epinowcast</p></td>
+      </tr><tr><td>
+          <p><code><a href="summary.epinowcast.html">summary(<i>&lt;epinowcast&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Summary method for epinowcast</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="model">Model <a href="#model" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for fitting the nowcasting model.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_as_data_list.html">enw_as_data_list()</a></code> </p>
+        </td>
+        <td><p>Format data for use with stan</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_inits.html">enw_inits()</a></code> </p>
+        </td>
+        <td><p>Set up initial conditions for model</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_model.html">enw_model()</a></code> </p>
+        </td>
+        <td><p>Load and compile the nowcasting model</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_sample.html">enw_sample()</a></code> </p>
+        </td>
+        <td><p>Fit a CmdStan model using NUTS</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="preprocess">Preprocess <a href="#preprocess" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for preprocessing observations.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_assign_group.html">enw_assign_group()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_extend_date.html">enw_extend_date()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_latest_data.html">enw_latest_data()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_metadata.html">enw_metadata()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_new_reports.html">enw_new_reports()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_reporting_triangle.html">enw_reporting_triangle()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_reporting_triangle_to_long.html">enw_reporting_triangle_to_long()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="postprocess">Postprocess <a href="#postprocess" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for postprocessing model output.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_add_latest_obs_to_nowcast.html">enw_add_latest_obs_to_nowcast()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_posterior.html">enw_posterior()</a></code> </p>
+        </td>
+        <td><p>Summarise the posterior</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_pp_summary.html">enw_pp_summary()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="model-design-tools">Model design tools <a href="#model-design-tools" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions that assist with designing models.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_add_day_of_week.html">enw_add_day_of_week()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_add_pooling_effect.html">enw_add_pooling_effect()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_add_week.html">enw_add_week()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_cumulative_day_membership.html">enw_cumulative_day_membership()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_cumulative_week_membership.html">enw_cumulative_week_membership()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_dates_to_factors.html">enw_dates_to_factors()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_day_model.html">enw_day_model()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_day_of_week_model.html">enw_day_of_week_model()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_design.html">enw_design()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_effects_metadata.html">enw_effects_metadata()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_intercept_model.html">enw_intercept_model()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_weekly_model.html">enw_weekly_model()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="plot">Plot <a href="#plot" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for plotting postprocessed nowcast model output.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles()</a></code> </p>
+        </td>
+        <td><p>Plot nowcast quantiles</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code> </p>
+        </td>
+        <td><p>Plot posterior prediction quantiles</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_plot_quantiles.html">enw_plot_quantiles()</a></code> </p>
+        </td>
+        <td><p>Generic quantile plot</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_plot_theme.html">enw_plot_theme()</a></code> </p>
+        </td>
+        <td><p>Package plot theme</p></td>
+      </tr><tr><td>
+          <p><code><a href="plot.epinowcast.html">plot(<i>&lt;epinowcast&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot method for epinowcast</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="model-validation">Model validation <a href="#model-validation" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for validating model fits.</p>
+        </th>
+      </tr></tbody><tbody></tbody><tbody><tr><th colspan="2">
+          <h2 id="generate-data">Generate data <a href="#generate-data" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for generating simulated data.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_apply_truncation_to_cases.html">enw_apply_truncation_to_cases()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_dist_cmf.html">enw_dist_cmf()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="enw_simulate_lnorm_trunc_obs.html">enw_simulate_lnorm_trunc_obs()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="define-and-generate-scenarios">Define and generate scenarios <a href="#define-and-generate-scenarios" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions for defining and generating data scenarios.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="enw_random_intercept_scenario.html">enw_random_intercept_scenario()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="datasets">Datasets <a href="#datasets" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Package datasets used in examples and by users to explore the package functionality.</p>
+        </th>
+      </tr></tbody><tbody></tbody><tbody><tr><th colspan="2">
+          <h2 id="check-inputs">Check inputs <a href="#check-inputs" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Functions to check the structure of user inputs.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="check_quantiles.html">check_quantiles()</a></code> </p>
+        </td>
+        <td><p>Check Quantiles Required are Present</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="utilities">Utilities <a href="#utilities" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>Utility functions</p>
         </th>
       </tr></tbody><tbody><tr><td>
           <p><code><a href="expose_stan_fns.html">expose_stan_fns()</a></code> </p>
         </td>
-        <td><p>Expose stan functions</p></td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="inv_logit.html">inv_logit()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="is.Date.html">is.Date()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
+      </tr><tr><td>
+          <p><code><a href="logit.html">logit()</a></code> </p>
+        </td>
+        <td><p>FUNCTION_TITLE</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
