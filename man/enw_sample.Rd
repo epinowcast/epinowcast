@@ -2,7 +2,7 @@
 % Please edit documentation in R/model.R
 \name{enw_sample}
 \alias{enw_sample}
-\title{Fit a brancing process strain model}
+\title{Fit a CmdStan model using NUTS}
 \usage{
 enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 }
@@ -21,7 +21,7 @@ A \code{data.frame} containing the \code{cmdstanr} fit, the input data, the
 fitting arguments, and optionally summary diagnostics.
 }
 \description{
-Fit a brancing process strain model
+Fit a CmdStan model using NUTS
 }
 \seealso{
 Functions used for modelling

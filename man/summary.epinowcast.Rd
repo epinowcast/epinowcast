@@ -11,8 +11,10 @@
 
 \item{type}{A character string indicating the type of summary to return.
 Currently supported options are "nowcast" which summaries the nowcast
-posterior using \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}}, and "fit" which returns the
-summarised \code{cmdstanr} fit.}
+posterior using \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}},  "fit" which returns the
+summarised \code{cmdstanr} fit, and "posterior_prediction" which returns
+summarised posterior predictions for observations used in fitting (
+using \code{\link[=enw_pp_summary]{enw_pp_summary()}}).}
 
 \item{...}{Pass additional arguments to summary functions.}
 }

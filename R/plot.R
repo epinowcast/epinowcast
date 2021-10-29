@@ -1,9 +1,8 @@
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param plot PARAM_DESCRIPTION
+#' @title Package plot theme
+#'
+#' @param plot `ggplot2` plot object.
 #' @family plot
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @return `ggplot2` plot object.
 #' @export
 enw_plot_theme <- function(plot) {
   plot <- plot +
@@ -15,18 +14,26 @@ enw_plot_theme <- function(plot) {
   return(plot)
 }
 
-#' Default generic posterior plot
+#' Generic quantile plot
 #'
-#' @param obs A data frame of observed data as produced by [latest_obs()].
+#' @param posterior A `data.frame` of summarised posterior estimates
+#' containing at least a `confirm` count column and a date variable
 #'
-#' @param ... Additional arguments passed to [ggplot2::aes()]
+#' @param obs A data frame of observed data containing at least a `confirm`
+#' count variable and the same date variable as in `posterior`.
+#'
+#' @param log Logical, defaults to `FALSE`. Should counts be plot on the log
+#' scale.
+#'
+#' @param ... Additional arguments passed to [ggplot2::aes()] must at least
+#' specify the x date variable.
 #'
 #' @return A `ggplot2` plot.
 #'
 #' @family plot
 #' @importFrom scales comma
 #' @export
-enw_plot <- function(posterior, obs = NULL, log = TRUE, ...) {
+enw_plot_quantiles <- function(posterior, obs = NULL, log = TRUE, ...) {
   check_quantiles(posterior, req_probs = c(0.05, 0.2, 0.8, 0.95))
 
   plot <- ggplot(posterior) +
@@ -57,8 +64,53 @@ enw_plot <- function(posterior, obs = NULL, log = TRUE, ...) {
   return(plot)
 }
 
-plot_nowcast <- function(nowcast, obs = NULL, log = FALSE, ...) {
-  plot <- enw_plot(nowcast, obs = obs, x = reference_date, log = log, ...) +
+#' Plot nowcast quantiles
+#'
+#' @param nowcast A `data.frame` of summarised posterior nowcast
+#' estimates containing at least a `confirm` count column and a
+#' `reference_date` date variable.
+#'
+#' @param obs A `data.frame` of observed data containing at least a `confirm`
+#' count variable and the same date variable in `nowcast`.
+#'
+#' @param ... Additional arguments passed to [enw_plot_pp_quantiles()].
+#'
+#' @return A `ggplot2` plot.
+#'
+#' @inheritParams enw_plot_nowcast_quantiles
+#' @family plot
+#' @importFrom scales comma
+#' @export
+enw_plot_nowcast_quantiles <- function(nowcast, obs = NULL, log = FALSE, ...) {
+  plot <- enw_plot_quantiles(
+    nowcast,
+    obs = obs, x = reference_date, log = log, ...
+  ) +
     labs(y = "Notifications", x = "Reference date")
+  return(plot)
+}
+
+#' Plot posterior prediction quantiles
+#'
+#' @param pp A `data.frame` of summarised posterior predictions
+#' estimates containing at least a `confirm` count column and a
+#' `report_date` date variable.
+#'
+#' @param ... Additional arguments passed to [enw_plot_pp_quantiles()].
+#'
+#' @return A `ggplot2` plot.
+#'
+#' @inheritParams enw_plot_quantiles
+#' @family plot
+#' @importFrom scales comma
+#' @export
+enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
+  pp <- data.table::copy(pp)
+  pp[, confirm := new_confirm]
+  plot <- enw_plot_quantiles(
+    pp,
+    x = report_date, log = log, ...
+  ) +
+    labs(y = "Notifications", x = "Report date")
   return(plot)
 }

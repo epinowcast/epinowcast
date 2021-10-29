@@ -38,7 +38,7 @@ data {
 }
 
 transformed data{
-  real logdmax = log(dmax); // scaled maxmimum delay to log for crude bounds
+  real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
@@ -51,7 +51,7 @@ parameters {
   real<lower=0> eobs_lsd[g]; // standard deviation of rw for primary obs 
   vector[t - 1] leobs_resids[g]; // unscaled rw for primary obs
   real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
-  real<lower=1e-3, upper=dmax> logsd_int; // logsd intercept
+  real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
   vector[neffs] logmean_eff; // unscaled modifiers to log mean
   vector[neffs] logsd_eff; // unscaled modifiers to log sd
   vector[nrd_effs] rd_eff; // unscaled modifiers to report date hazard
@@ -63,7 +63,7 @@ parameters {
 
 transformed parameters{
   vector<lower=-10, upper=logdmax>[npmfs] logmean;
-  vector<lower=1e-3, upper=dmax>[npmfs] logsd;
+  vector<lower=1e-3, upper=2*dmax>[npmfs] logsd;
   matrix[dmax, npmfs] pmfs; // sparse report distributions
   matrix[dmax, npmfs] ref_lh; // sparse report logit hazards
   vector[urds] srdlh; // sparse report day logit hazards
@@ -159,7 +159,7 @@ model {
 }
 
 generated quantities {
-  int pp_obs[pp ? s : 0, pp ? dmax : 0];
+  int pp_obs[pp ? sum(sl) : 0];
   vector[ologlik ? s : 0] log_lik;
   int pp_inf_obs[cast ? dmax : 0,cast ? g : 0];
   if (cast) {
@@ -193,8 +193,13 @@ generated quantities {
     }
     // If posterior predictions for all observations are needed copy
     // from a temporary object to a permanent one
+    // store in a flat vector to make observation linking easier
     if (pp) {
-    pp_obs = pp_obs_tmp;
+      int start_t = 0;
+      for (i in 1:s) {
+        pp_obs[(start_t + 1):(start_t + sl[i])] = pp_obs_tmp[i, 1:sl[i]];
+        start_t += sl[i];
+      }
     }
   }
 }

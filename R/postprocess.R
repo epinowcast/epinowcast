@@ -65,7 +65,6 @@ enw_posterior <- function(fit, variables = NULL,
 #' @return OUTPUT_DESCRIPTION
 #' @family postprocess
 #' @export
-#' @importFrom rstan summary
 #' @importFrom data.table as.data.table copy setorderv
 enw_nowcast_summary <- function(fit, obs,
                                 probs = c(
@@ -112,4 +111,35 @@ enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
     neworder = c("reference_date", "group", "latest_confirm", "confirm")
   )
   return(out[])
+}
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param fit PARAM_DESCRIPTION
+#' @param diff_obs PARAM_DESCRIPTION
+#' @param probs PARAM_DESCRIPTION, Default: c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8,
+#' 0.95)
+#' @return OUTPUT_DESCRIPTION
+#' @family postprocess
+#' @export
+#' @importFrom data.table as.data.table copy setorderv
+enw_pp_summary <- function(fit, diff_obs,
+                           probs = c(
+                             0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
+                           )) {
+  nowcast <- enw_posterior(
+    fit,
+    variables = "pp_obs",
+    probs = probs
+  )
+
+  ord_obs <- data.table::copy(diff_obs)
+  data.table::setorderv(ord_obs, c("reference_date", "group"))
+  nowcast <- cbind(
+    ord_obs,
+    nowcast
+  )
+  data.table::setorderv(nowcast, c("group", "reference_date"))
+  nowcast[, variable := NULL]
+  return(nowcast[])
 }

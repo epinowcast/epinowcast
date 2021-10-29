@@ -52,9 +52,22 @@ library(epinowcast)
 national_germany_hosp <- germany_covid19_hosp
 national_germany_hosp <- national_germany_hosp[location == "DE"]
 national_germany_hosp <- national_germany_hosp[age_group %in% "00+"]
-national_germany_hosp <-
-  national_germany_hosp[reference_date >= (max(reference_date) - 30)]
-national_germany_hosp[]
+
+nat_germany_30_days_ago <-
+  national_germany_hosp[report_date <= max(report_date) - 30]
+nat_germany_30_days_ago <-
+  nat_germany_30_days_ago[reference_date >= (max(reference_date) - 30)]
+nat_germany_30_days_ago[]
+```
+
+```{r}
+latest_germany_hosp <- national_germany_hosp[report_date == max(report_date)]
+
+latest_germany_hosp <-
+  latest_germany_hosp[reference_date >= (max(reference_date) - 60)]
+latest_germany_hosp <-
+  latest_germany_hosp[reference_date <= (max(reference_date) - 30)]
+latest_germany_hosp[]
 ```
 
 ### Data preprocessing and model specification
@@ -62,7 +75,7 @@ national_germany_hosp[]
 Process reported data into format required for `{epinowcast}` and return in a `{data.table}`. At this stage specify grouping (i.e age, location) if any.
 
 ```{r}
-pobs <- enw_preprocess_data(national_germany_hosp)
+pobs <- enw_preprocess_data(nat_germany_30_days_ago, max_delay = 30)
 pobs
 ```
 
@@ -86,13 +99,13 @@ options(mc.cores = 4)
 nowcast <- epinowcast(pobs,
   report_effects = report_effects,
   reference_effects = reference_effects,
-  save_warmup = FALSE
+  save_warmup = FALSE, pp = TRUE
 )
 ```
 
 ### Results
 
-Print the output from `{epinowcast}` which includes disagnostic information, the data used for fitting, and the `{cmdstanr`} object.
+Print the output from `{epinowcast}` which includes diagnostic information, the data used for fitting, and the `{cmdstanr`} object.
 
 ```{r}
 nowcast
@@ -104,10 +117,20 @@ Summarise the nowcast for the latest snapshot of data.
 summary(nowcast)
 ```
 
-Plot the nowcast against currently observed data (or optionally more recent data for comparison purposes).
+Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
 
-```{r, eval = FALSE}
-plot(nowcast)
+```{r}
+plot(nowcast, obs = latest_germany_hosp)
+```
+
+Plot posterior predictions for observed notifications by date of
+report as a check of how well the model reproduces the observed data.
+
+```{r, fig.width = 16, fig.height = 16}
+library(ggplot2)
+
+plot(nowcast, type = "posterior") +
+  facet_wrap(vars(reference_date), scales = "free")
 ```
 
 ## Citation

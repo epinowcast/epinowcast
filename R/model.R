@@ -13,6 +13,13 @@
 #' @param dist Character string indicating the type of distribution to use for
 #' reference date effects. The default is to use a lognormal but other options
 #' available include: gamma distributed ("gamma").
+#'
+#' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
+#' posterior predictions of the unobserved future reported notifications.
+#'
+#' @param pp Logical, defaults to `FALSE`. Should posterior predictions be made
+#' for observed data. Useful for evaluating the performance of the model.
+#'
 #' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
 #' included in the model
 #'
@@ -201,7 +208,7 @@ enw_model <- function(compile = TRUE, verbose = TRUE, ...) {
   return(model)
 }
 
-#' Fit a brancing process strain model
+#' Fit a CmdStan model using NUTS
 #'
 #' @param data A list of data as produced by [enw_as_data_list()].
 #'

@@ -7,13 +7,17 @@
 \method{plot}{epinowcast}(x, obs = NULL, type = "nowcast", log = FALSE, ...)
 }
 \arguments{
-\item{x}{A list of output as produced by \code{\link[=epinowcast]{epinowcast()}}.}
+\item{x}{A \code{data.table} of output as produced by \code{\link[=epinowcast]{epinowcast()}}.}
+
+\item{obs}{A \code{data.frame} of observed data which may be passed to lower level
+methods.}
 
 \item{type}{A character string indicating the type of plot required.
 Currently supported options are "nowcast" which plots the nowcast
-for each dataset along with the latest available observed data, and
-"posterior" which plots observations reported at the time against
-simulated observations from  the model.}
+for each dataset along with the latest available observed data (using
+\code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}}), and "posterior_prediction" which plots
+observations reported at the time against simulated observations from  the
+model (using \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}).}
 
 \item{...}{Pass additional arguments to plot functions.}
 }
@@ -24,10 +28,15 @@ simulated observations from  the model.}
 \code{plot} method for class "epinowcast".
 }
 \seealso{
-plot epinowcast
-
 Other epinowcast: 
 \code{\link{epinowcast}()},
 \code{\link{summary.epinowcast}()}
+
+Plotting functions
+\code{\link{enw_plot_nowcast_quantiles}()},
+\code{\link{enw_plot_pp_quantiles}()},
+\code{\link{enw_plot_quantiles}()},
+\code{\link{enw_plot_theme}()}
 }
 \concept{epinowcast}
+\concept{plot}

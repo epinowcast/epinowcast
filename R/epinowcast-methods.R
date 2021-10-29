@@ -6,8 +6,10 @@
 #'
 #' @param type A character string indicating the type of summary to return.
 #' Currently supported options are "nowcast" which summaries the nowcast
-#' posterior using [enw_nowcast_summary()], and "fit" which returns the
-#' summarised `cmdstanr` fit.
+#' posterior using [enw_nowcast_summary()],  "fit" which returns the
+#' summarised `cmdstanr` fit, and "posterior_prediction" which returns
+#' summarised posterior predictions for observations used in fitting (
+#' using [enw_pp_summary()]).
 #'
 #' @param ... Pass additional arguments to summary functions.
 #'
@@ -17,12 +19,14 @@
 #' @return `ggplot2` object
 #' @export
 summary.epinowcast <- function(object, type = "nowcast", ...) {
-  type <- match.arg(type, choices = c("nowcast", "fit"))
+  type <- match.arg(type, choices = c("nowcast", "fit", "posterior_prediction"))
 
   if (type %in% "nowcast") {
     s <- enw_nowcast_summary(object$fit[[1]], object$latest[[1]], ...)
   } else if (type %in% "fit") {
-    s <- fit$fit[[1]]$summary(...)
+    s <- fit$fit[[1]]$cmdstan_summary(...)
+  } else if (type %in% "posterior_prediction") {
+    s <- enw_pp_summary(object$fit[[1]], object$diff[[1]], ...)
   }
   return(s)
 }
@@ -31,30 +35,37 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
 #'
 #' @description `plot` method for class "epinowcast".
 #'
-#' @param x A list of output as produced by [epinowcast()].
+#' @param x A `data.table` of output as produced by [epinowcast()].
+#'
+#' @param obs A `data.frame` of observed data which may be passed to lower level
+#' methods.
 #'
 #' @param type A character string indicating the type of plot required.
 #' Currently supported options are "nowcast" which plots the nowcast
-#' for each dataset along with the latest available observed data, and
-#' "posterior" which plots observations reported at the time against
-#' simulated observations from  the model.
+#' for each dataset along with the latest available observed data (using
+#' [enw_plot_nowcast_quantiles()]), and "posterior_prediction" which plots
+#' observations reported at the time against simulated observations from  the
+#'  model (using [enw_plot_pp_quantiles()]).
 #'
 #' @param ... Pass additional arguments to plot functions.
 #'
 #' @family epinowcast
-#' @seealso plot epinowcast
+#' @family plot
 #' @method plot epinowcast
 #' @return `ggplot2` object
 #' @export
 plot.epinowcast <- function(x, obs = NULL, type = "nowcast", log = FALSE, ...) {
-  type <- match.arg(type, choices = c("nowcast"))
+  type <- match.arg(type, choices = c("nowcast", "posterior_prediction"))
 
   if (type %in% "nowcast") {
     n <- summary(x, type = "nowcast")
     if (is.null(obs)) {
       obs <- x$latest[[1]]
     }
-    plot <- plot_nowcast(n, obs, log = log, ...)
+    plot <- enw_plot_nowcast_quantiles(n, obs, log = log, ...)
+  } else if (type %in% "posterior_prediction") {
+    n <- summary(x, type = type)
+    plot <- enw_plot_pp_quantiles(n, log = log, ...)
   }
   return(plot)
 }

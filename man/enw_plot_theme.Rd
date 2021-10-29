@@ -2,24 +2,24 @@
 % Please edit documentation in R/plot.R
 \name{enw_plot_theme}
 \alias{enw_plot_theme}
-\title{FUNCTION_TITLE}
+\title{Package plot theme}
 \usage{
 enw_plot_theme(plot)
 }
 \arguments{
-\item{plot}{PARAM_DESCRIPTION}
+\item{plot}{\code{ggplot2} plot object.}
 }
 \value{
-OUTPUT_DESCRIPTION
+\code{ggplot2} plot object.
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
+Package plot theme
 }
 \seealso{
 Plotting functions
-\code{\link{enw_plot}()}
+\code{\link{enw_plot_nowcast_quantiles}()},
+\code{\link{enw_plot_pp_quantiles}()},
+\code{\link{enw_plot_quantiles}()},
+\code{\link{plot.epinowcast}()}
 }
 \concept{plot}

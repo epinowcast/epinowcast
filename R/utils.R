@@ -64,6 +64,7 @@ utils::globalVariables(
     "obseverd", "old_group", "reference_date", "report_date",
     "reported_cases", "s", "time", "extend_date", "effects",
     "confirm", "effects", "fixed", "group", "logmean", "logsd",
-    "new_group", "observed"
+    "new_group", "observed", "latest_confirm", "mad", "variable",
+    "fit"
   )
 )

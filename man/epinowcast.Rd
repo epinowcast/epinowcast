@@ -35,6 +35,12 @@ available include: gamma distributed ("gamma").}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
 
+\item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
+posterior predictions of the unobserved future reported notifications.}
+
+\item{pp}{Logical, defaults to \code{FALSE}. Should posterior predictions be made
+for observed data. Useful for evaluating the performance of the model.}
+
 \item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
 included in the model}
 

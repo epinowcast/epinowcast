@@ -31,6 +31,12 @@ which is an intercept only model.}
 reference date effects. The default is to use a lognormal but other options
 available include: gamma distributed ("gamma").}
 
+\item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
+posterior predictions of the unobserved future reported notifications.}
+
+\item{pp}{Logical, defaults to \code{FALSE}. Should posterior predictions be made
+for observed data. Useful for evaluating the performance of the model.}
+
 \item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
 included in the model}
 
