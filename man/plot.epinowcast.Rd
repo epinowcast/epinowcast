@@ -4,7 +4,7 @@
 \alias{plot.epinowcast}
 \title{Plot method for epinowcast}
 \usage{
-\method{plot}{epinowcast}(x, type = "nowcast", ...)
+\method{plot}{epinowcast}(x, obs = NULL, type = "nowcast", log = FALSE, ...)
 }
 \arguments{
 \item{x}{A list of output as produced by \code{\link[=epinowcast]{epinowcast()}}.}

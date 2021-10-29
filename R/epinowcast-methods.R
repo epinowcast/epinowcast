@@ -46,7 +46,15 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
 #' @method plot epinowcast
 #' @return `ggplot2` object
 #' @export
-plot.epinowcast <- function(x, type = "nowcast", ...) {
+plot.epinowcast <- function(x, obs = NULL, type = "nowcast", log = FALSE, ...) {
   type <- match.arg(type, choices = c("nowcast"))
-  return(invisible(NULL))
+
+  if (type %in% "nowcast") {
+    n <- summary(x, type = "nowcast")
+    if (is.null(obs)) {
+      obs <- x$latest[[1]]
+    }
+    plot <- plot_nowcast(n, obs, log = log, ...)
+  }
+  return(plot)
 }
