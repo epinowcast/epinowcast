@@ -1,0 +1,13 @@
+^LICENSE\.md$
+^\.devcontainer$
+^inst/stan/nowcast$
+^data-raw$
+^README\.Rmd$
+^\.github$
+^\.pre-commit-config\.yaml$
+^\.lintr$
+^\.Rprofile
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^CODE_OF_CONDUCT\.md$

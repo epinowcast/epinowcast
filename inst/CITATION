@@ -1,0 +1,17 @@
+citHeader("To cite epinowcast in publications use:")
+
+citEntry(entry = "Article",
+  title        = "epinowcast: Nowcast right censored epidemiological count data", # nolint
+  author       = personList(as.person("Sam Abbott")),
+  journal      = "Zenodo",
+  year         = "2021",
+  volume       = "",
+  number       = "",
+  pages        = "",
+  doi          = "",
+
+  textVersion  =
+  paste("Sam Abbott (2021).",
+        "epinowcast: Nowcast right censored epidemiological count data, ", # nolint
+        "")
+)

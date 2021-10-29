@@ -1,0 +1,20 @@
+url: samabbott.co.uk/epinowcast/
+template:
+  package: preferably
+  params:
+    toggle: manual
+  twitter:
+    creator: "@seabbs"
+    card: summary_large_image
+  opengraph:
+    image:
+      src: man/figures/README-unnamed-chunk-8-1.png
+      alt: An R package for nowcasting right censored epidemiolgical counts
+
+
+development:
+  mode: release
+
+authors:
+  Sam Abbott:
+    href: "https://www.samabbott.co.uk/"

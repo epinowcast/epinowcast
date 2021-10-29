@@ -1,0 +1,17 @@
+---
+title: Model definition
+author: Sam Abbott
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Model definitions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```

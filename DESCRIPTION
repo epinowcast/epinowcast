@@ -1,0 +1,40 @@
+Package: epinowcast
+Title: Nowcast Right Censored Epidemiological Counts
+Version: 0.0.1.1000
+Authors@R:
+    person("Sam Abbott", , , "sam.abbott@lshtm.ac.uk", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-8057-8037"))
+Description: Nowcast right censored epidemiological counts
+License: MIT + file LICENSE
+URL: https://samabbott.co.uk/epinowcast/,
+    https://github.com/samabbott.co.uk/epinowcast/
+BugReports: https://github.com/samabbott.co.uk/epinowcast/issues/
+Depends:
+    R (>= 2.10)
+Imports:
+    cmdstanr,
+    data.table,
+    ggplot2,
+    posterior,
+    purrr,
+    rstan,
+    scales
+Suggests:
+    knitr,
+    rmarkdown,
+    spelling,
+    testthat (>= 3.0.0),
+    usethis,
+    vdiffr
+VignetteBuilder:
+    knitr
+Remotes:
+    stan-dev/cmdstanr
+Config/Needs/website: r-lib/pkgdown
+    amirmasoudabdol/preferably
+Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-GB
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
