@@ -84,7 +84,7 @@
     <p>Load and compile the nowcasting model</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_model</span><span class="op">(</span>compile <span class="op">=</span> <span class="cn">TRUE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_model</span><span class="op">(</span>compile <span class="op">=</span> <span class="cn">TRUE</span>, threads <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
 
     <div id="ref-sections">
     <div id="arguments">
@@ -92,6 +92,11 @@
     <dl><dt>compile</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should the model
 be loaded and compiled using <code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code>.</p></dd>
+<dt>threads</dt>
+<dd><p>Logical, defaults to <code>FALSE</code>. Should the model compile with
+support for multi-thread support in chain. Note that this requires the use of
+the <code>threads_per_chain</code> argument when model fitting using <code><a href="enw_sample.html">enw_sample()</a></code>,
+and <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
 <dt>verbose</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should verbose
 messages be shown.</p></dd>
