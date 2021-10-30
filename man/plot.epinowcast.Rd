@@ -19,6 +19,9 @@ for each dataset along with the latest available observed data (using
 observations reported at the time against simulated observations from  the
 model (using \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}).}
 
+\item{log}{Logical, defaults to \code{FALSE}. Should counts be plot on the log
+scale.}
+
 \item{...}{Pass additional arguments to plot functions.}
 }
 \value{

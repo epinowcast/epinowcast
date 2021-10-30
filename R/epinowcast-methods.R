@@ -52,6 +52,7 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
 #' @family epinowcast
 #' @family plot
 #' @method plot epinowcast
+#' @inheritParams enw_plot_nowcast_quantiles
 #' @return `ggplot2` object
 #' @export
 plot.epinowcast <- function(x, obs = NULL, type = "nowcast", log = FALSE, ...) {

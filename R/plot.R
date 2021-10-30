@@ -77,7 +77,7 @@ enw_plot_quantiles <- function(posterior, obs = NULL, log = TRUE, ...) {
 #'
 #' @return A `ggplot2` plot.
 #'
-#' @inheritParams enw_plot_nowcast_quantiles
+#' @inheritParams enw_plot_quantiles
 #' @family plot
 #' @importFrom scales comma
 #' @export

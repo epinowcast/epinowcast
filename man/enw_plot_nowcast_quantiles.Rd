@@ -14,6 +14,9 @@ estimates containing at least a \code{confirm} count column and a
 \item{obs}{A \code{data.frame} of observed data containing at least a \code{confirm}
 count variable and the same date variable in \code{nowcast}.}
 
+\item{log}{Logical, defaults to \code{FALSE}. Should counts be plot on the log
+scale.}
+
 \item{...}{Additional arguments passed to \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}.}
 }
 \value{

@@ -73,7 +73,7 @@ nat_germany_30_days_ago[]
 
 ``` r
 latest_germany_hosp <- national_germany_hosp[report_date == max(report_date)]
-                  
+
 latest_germany_hosp <-
   latest_germany_hosp[reference_date >= (max(reference_date) - 60)]
 latest_germany_hosp <-
@@ -203,237 +203,43 @@ report_effects
 
 ### Model fitting
 
+First compile the model. This step can be left to `epinowcast` but here
+we want to use multiple cores per chain to speed up model fitting and so
+need to compile the model with this feature turned on.
+
 ``` r
-options(mc.cores = 4)
+model <- enw_model(threads = TRUE)
+```
+
+We now fit the model and produce a nowcast using this fit. Note that
+here we use two chains each using two threads as a demonstration but in
+general using 4 chains is recommended. Also note that here we have
+silenced fitting progress and potential warning messages for the
+purposes of keeping this quick start short but in general this should
+not be done.
+
+``` r
+options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
+  model = model,
   report_effects = report_effects,
   reference_effects = reference_effects,
-  save_warmup = FALSE, pp = TRUE
+  save_warmup = FALSE, pp = TRUE,
+  chains = 2, threads_per_chain = 2,
+  refresh = 0, show_messages = FALSE
 )
 #> Init values were only set for a subset of parameters. 
 #> Missing init values for the following parameters:
-#>  - chain 1: leobs_init, leobs_resids, logmean_eff, logsd_eff, logmean_sd, logsd_sd, rd_eff_sd
-#>  - chain 2: leobs_init, leobs_resids, logmean_eff, logsd_eff, logmean_sd, logsd_sd, rd_eff_sd
-#>  - chain 3: leobs_init, leobs_resids, logmean_eff, logsd_eff, logmean_sd, logsd_sd, rd_eff_sd
-#>  - chain 4: leobs_init, leobs_resids, logmean_eff, logsd_eff, logmean_sd, logsd_sd, rd_eff_sd
-#> Running MCMC with 4 parallel chains...
+#>  - chain 1: logmean_eff, logsd_eff, logmean_sd, logsd_sd
+#>  - chain 2: logmean_eff, logsd_eff, logmean_sd, logsd_sd
+#> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 Iteration:    1 / 2000 [  0%]  (Warmup)
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: neg_binomial_2_lpmf: Location parameter[1] is nan, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1
-#> Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 1 Exception: neg_binomial_2_lpmf: Location parameter[1] is -nan, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 1
-#> Chain 2 Iteration:    1 / 2000 [  0%]  (Warmup)
-#> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 2
-#> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 2
-#> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 2
-#> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 2
-#> Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 2 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 2
-#> Chain 3 Iteration:    1 / 2000 [  0%]  (Warmup)
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[21] is nan, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[24] is nan, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 3 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 3 Exception: neg_binomial_2_lpmf: Location parameter[29] is nan, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 3 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 3 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 3
-#> Chain 4 Iteration:    1 / 2000 [  0%]  (Warmup)
-#> Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 4 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 4
-#> Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 4 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 4
-#> Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 4 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 4
-#> Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 4 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 4
-#> Chain 4 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:
-#> Chain 4 Exception: neg_binomial_2_lpmf: Location parameter[1] is inf, but must be positive finite! (in '/tmp/RtmpBBHbGH/model-17f64226d848a.stan', line 156, column 6 to column 53)
-#> Chain 4 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,
-#> Chain 4 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.
-#> Chain 4
-#> Chain 3 Iteration:  100 / 2000 [  5%]  (Warmup) 
-#> Chain 1 Iteration:  100 / 2000 [  5%]  (Warmup) 
-#> Chain 4 Iteration:  100 / 2000 [  5%]  (Warmup) 
-#> Chain 2 Iteration:  100 / 2000 [  5%]  (Warmup) 
-#> Chain 1 Iteration:  200 / 2000 [ 10%]  (Warmup) 
-#> Chain 3 Iteration:  200 / 2000 [ 10%]  (Warmup) 
-#> Chain 4 Iteration:  200 / 2000 [ 10%]  (Warmup) 
-#> Chain 2 Iteration:  200 / 2000 [ 10%]  (Warmup) 
-#> Chain 1 Iteration:  300 / 2000 [ 15%]  (Warmup) 
-#> Chain 3 Iteration:  300 / 2000 [ 15%]  (Warmup) 
-#> Chain 4 Iteration:  300 / 2000 [ 15%]  (Warmup) 
-#> Chain 2 Iteration:  300 / 2000 [ 15%]  (Warmup) 
-#> Chain 1 Iteration:  400 / 2000 [ 20%]  (Warmup) 
-#> Chain 3 Iteration:  400 / 2000 [ 20%]  (Warmup) 
-#> Chain 4 Iteration:  400 / 2000 [ 20%]  (Warmup) 
-#> Chain 2 Iteration:  400 / 2000 [ 20%]  (Warmup) 
-#> Chain 1 Iteration:  500 / 2000 [ 25%]  (Warmup) 
-#> Chain 3 Iteration:  500 / 2000 [ 25%]  (Warmup) 
-#> Chain 4 Iteration:  500 / 2000 [ 25%]  (Warmup) 
-#> Chain 2 Iteration:  500 / 2000 [ 25%]  (Warmup) 
-#> Chain 1 Iteration:  600 / 2000 [ 30%]  (Warmup) 
-#> Chain 3 Iteration:  600 / 2000 [ 30%]  (Warmup) 
-#> Chain 4 Iteration:  600 / 2000 [ 30%]  (Warmup) 
-#> Chain 2 Iteration:  600 / 2000 [ 30%]  (Warmup) 
-#> Chain 1 Iteration:  700 / 2000 [ 35%]  (Warmup) 
-#> Chain 3 Iteration:  700 / 2000 [ 35%]  (Warmup) 
-#> Chain 4 Iteration:  700 / 2000 [ 35%]  (Warmup) 
-#> Chain 2 Iteration:  700 / 2000 [ 35%]  (Warmup) 
-#> Chain 1 Iteration:  800 / 2000 [ 40%]  (Warmup) 
-#> Chain 3 Iteration:  800 / 2000 [ 40%]  (Warmup) 
-#> Chain 4 Iteration:  800 / 2000 [ 40%]  (Warmup) 
-#> Chain 2 Iteration:  800 / 2000 [ 40%]  (Warmup) 
-#> Chain 1 Iteration:  900 / 2000 [ 45%]  (Warmup) 
-#> Chain 3 Iteration:  900 / 2000 [ 45%]  (Warmup) 
-#> Chain 4 Iteration:  900 / 2000 [ 45%]  (Warmup) 
-#> Chain 2 Iteration:  900 / 2000 [ 45%]  (Warmup) 
-#> Chain 1 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
-#> Chain 1 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
-#> Chain 3 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
-#> Chain 3 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
-#> Chain 4 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
-#> Chain 4 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
-#> Chain 2 Iteration: 1000 / 2000 [ 50%]  (Warmup) 
-#> Chain 2 Iteration: 1001 / 2000 [ 50%]  (Sampling) 
-#> Chain 1 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
-#> Chain 3 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
-#> Chain 4 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
-#> Chain 2 Iteration: 1100 / 2000 [ 55%]  (Sampling) 
-#> Chain 1 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
-#> Chain 3 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
-#> Chain 4 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
-#> Chain 2 Iteration: 1200 / 2000 [ 60%]  (Sampling) 
-#> Chain 1 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
-#> Chain 4 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
-#> Chain 3 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
-#> Chain 2 Iteration: 1300 / 2000 [ 65%]  (Sampling) 
-#> Chain 4 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
-#> Chain 1 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
-#> Chain 3 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
-#> Chain 2 Iteration: 1400 / 2000 [ 70%]  (Sampling) 
-#> Chain 4 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
-#> Chain 1 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
-#> Chain 3 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
-#> Chain 2 Iteration: 1500 / 2000 [ 75%]  (Sampling) 
-#> Chain 4 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
-#> Chain 1 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
-#> Chain 3 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
-#> Chain 2 Iteration: 1600 / 2000 [ 80%]  (Sampling) 
-#> Chain 4 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
-#> Chain 1 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
-#> Chain 3 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
-#> Chain 2 Iteration: 1700 / 2000 [ 85%]  (Sampling) 
-#> Chain 4 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
-#> Chain 1 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
-#> Chain 3 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
-#> Chain 2 Iteration: 1800 / 2000 [ 90%]  (Sampling) 
-#> Chain 4 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
-#> Chain 1 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
-#> Chain 3 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
-#> Chain 2 Iteration: 1900 / 2000 [ 95%]  (Sampling) 
-#> Chain 4 Iteration: 2000 / 2000 [100%]  (Sampling) 
-#> Chain 4 finished in 56.7 seconds.
-#> Chain 1 Iteration: 2000 / 2000 [100%]  (Sampling) 
-#> Chain 1 finished in 57.6 seconds.
-#> Chain 3 Iteration: 2000 / 2000 [100%]  (Sampling) 
-#> Chain 3 finished in 58.2 seconds.
-#> Chain 2 Iteration: 2000 / 2000 [100%]  (Sampling) 
-#> Chain 2 finished in 59.3 seconds.
+#> Chain 1 finished in 54.3 seconds.
+#> Chain 2 finished in 55.3 seconds.
 #> 
-#> All 4 chains finished successfully.
-#> Mean chain execution time: 57.9 seconds.
-#> Total execution time: 59.4 seconds.
+#> Both chains finished successfully.
+#> Mean chain execution time: 54.8 seconds.
+#> Total execution time: 55.4 seconds.
 ```
 
 ### Results
@@ -450,81 +256,81 @@ nowcast
 #>            metareport time snapshots groups max_delay   max_date
 #> 1: <data.table[60x5]>   31        31      1        30 2021-09-20
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[31]> <list[29]> <list[2]>    4000        1
+#> 1: <CmdStanMCMC[31]> <list[29]> <list[6]>    2000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             7
 #>    no_at_max_treedepth per_at_max_treedepth time
-#> 1:                3201              0.80025 59.4
+#> 1:                1594                0.797 55.4
 ```
 
 Summarise the nowcast for the latest snapshot of data.
 
 ``` r
-summary(nowcast)
+summary(nowcast, probs = c(0.05, 0.95))
 #>     reference_date group location age_group confirm     mean median         sd
 #>  1:     2021-08-22     1       DE       00+     239 239.0000    239  0.0000000
-#>  2:     2021-08-23     1       DE       00+     186 186.6085    186  0.8039834
-#>  3:     2021-08-24     1       DE       00+     437 439.1180    439  1.5754988
-#>  4:     2021-08-25     1       DE       00+     539 543.8100    544  2.5243798
-#>  5:     2021-08-26     1       DE       00+     509 515.9407    516  3.0417187
-#>  6:     2021-08-27     1       DE       00+     442 450.4220    450  3.3925349
-#>  7:     2021-08-28     1       DE       00+     412 422.8603    423  3.8081945
-#>  8:     2021-08-29     1       DE       00+     322 333.9688    334  3.9962815
-#>  9:     2021-08-30     1       DE       00+     204 212.1047    212  3.1768381
-#> 10:     2021-08-31     1       DE       00+     409 423.2842    423  4.3780411
-#> 11:     2021-09-01     1       DE       00+     535 563.6680    563  6.7576766
-#> 12:     2021-09-02     1       DE       00+     475 507.0697    507  7.2276168
-#> 13:     2021-09-03     1       DE       00+     444 479.2435    479  7.8597488
-#> 14:     2021-09-04     1       DE       00+     437 482.1678    482  9.0468819
-#> 15:     2021-09-05     1       DE       00+     310 348.9733    349  8.1113490
-#> 16:     2021-09-06     1       DE       00+     190 215.7240    215  6.3542835
-#> 17:     2021-09-07     1       DE       00+     395 440.6355    440  8.8994629
-#> 18:     2021-09-08     1       DE       00+     518 600.9025    600 13.4988166
-#> 19:     2021-09-09     1       DE       00+     433 519.2392    518 13.9083381
-#> 20:     2021-09-10     1       DE       00+     395 490.1393    489 15.3756939
-#> 21:     2021-09-11     1       DE       00+     365 483.7532    483 18.5615731
-#> 22:     2021-09-12     1       DE       00+     239 332.5013    332 15.2740408
-#> 23:     2021-09-13     1       DE       00+     147 211.6585    211 12.0662246
-#> 24:     2021-09-14     1       DE       00+     324 429.6467    428 17.7670026
-#> 25:     2021-09-15     1       DE       00+     313 459.0930    458 23.5432245
-#> 26:     2021-09-16     1       DE       00+     289 488.9340    487 32.1973805
-#> 27:     2021-09-17     1       DE       00+     203 422.4830    419 37.9803546
-#> 28:     2021-09-18     1       DE       00+     144 433.8562    429 52.8565137
-#> 29:     2021-09-19     1       DE       00+      73 402.4815    395 68.2205773
-#> 30:     2021-09-20     1       DE       00+      23 319.9647    309 83.9976869
+#>  2:     2021-08-23     1       DE       00+     186 186.5945    186  0.8132653
+#>  3:     2021-08-24     1       DE       00+     437 439.1110    439  1.6208000
+#>  4:     2021-08-25     1       DE       00+     539 543.8165    544  2.4955844
+#>  5:     2021-08-26     1       DE       00+     509 515.9255    516  3.0314262
+#>  6:     2021-08-27     1       DE       00+     442 450.4530    450  3.3520754
+#>  7:     2021-08-28     1       DE       00+     412 422.7570    422  3.8971201
+#>  8:     2021-08-29     1       DE       00+     322 334.0335    334  4.0547007
+#>  9:     2021-08-30     1       DE       00+     204 212.0575    212  3.1180210
+#> 10:     2021-08-31     1       DE       00+     409 423.3435    423  4.4768883
+#> 11:     2021-09-01     1       DE       00+     535 563.4710    563  6.8376557
+#> 12:     2021-09-02     1       DE       00+     475 507.0325    507  7.1272605
+#> 13:     2021-09-03     1       DE       00+     444 479.2375    479  7.8459463
+#> 14:     2021-09-04     1       DE       00+     437 481.9785    481  9.2393572
+#> 15:     2021-09-05     1       DE       00+     310 348.5690    348  8.0037034
+#> 16:     2021-09-06     1       DE       00+     190 215.5190    215  6.1416202
+#> 17:     2021-09-07     1       DE       00+     395 440.2630    440  9.0525027
+#> 18:     2021-09-08     1       DE       00+     518 600.5440    600 13.5078235
+#> 19:     2021-09-09     1       DE       00+     433 518.4255    517 14.2038841
+#> 20:     2021-09-10     1       DE       00+     395 489.5780    489 15.5306638
+#> 21:     2021-09-11     1       DE       00+     365 483.3180    482 18.2377406
+#> 22:     2021-09-12     1       DE       00+     239 333.3285    333 15.3855759
+#> 23:     2021-09-13     1       DE       00+     147 212.1635    211 12.4643671
+#> 24:     2021-09-14     1       DE       00+     324 429.9395    429 17.7580831
+#> 25:     2021-09-15     1       DE       00+     313 458.8445    458 23.3267312
+#> 26:     2021-09-16     1       DE       00+     289 487.4470    485 31.4180798
+#> 27:     2021-09-17     1       DE       00+     203 423.1965    420 37.7128628
+#> 28:     2021-09-18     1       DE       00+     144 435.1970    430 52.6164559
+#> 29:     2021-09-19     1       DE       00+      73 402.5545    396 67.6122603
+#> 30:     2021-09-20     1       DE       00+      23 319.5885    307 86.6744160
 #>     reference_date group location age_group confirm     mean median         sd
-#>         mad     q5 q20 q35 q50 q65 q80 q95      rhat ess_bulk ess_tail
-#>  1:  0.0000 239.00 239 239 239 239 239 239        NA       NA       NA
-#>  2:  0.0000 186.00 186 186 186 187 187 188 1.0003058 3963.298 3984.764
-#>  3:  1.4826 437.00 438 438 439 440 440 442 1.0000644 3933.361 3534.597
-#>  4:  2.9652 540.00 542 543 544 544 546 548 1.0000157 4024.752 4021.705
-#>  5:  2.9652 512.00 513 515 516 517 518 521 1.0005820 3706.374 3784.917
-#>  6:  2.9652 445.00 448 449 450 451 453 456 1.0010980 3923.257 4052.261
-#>  7:  4.4478 417.00 420 421 423 424 426 429 1.0006836 3743.629 3466.127
-#>  8:  4.4478 328.00 331 332 334 335 337 341 1.0009852 4094.906 4024.037
-#>  9:  2.9652 207.00 209 211 212 213 215 218 1.0002365 4068.902 3875.059
-#> 10:  4.4478 417.00 420 421 423 425 427 431 1.0005741 3766.858 3729.935
-#> 11:  5.9304 554.00 558 561 563 566 569 576 0.9998609 4248.068 3961.904
-#> 12:  7.4130 496.00 501 504 507 509 513 520 0.9996200 4236.251 3800.834
-#> 13:  7.4130 467.00 472 476 479 482 486 493 0.9994629 3979.093 3507.419
-#> 14:  8.8956 468.00 474 478 482 485 489 498 0.9999167 3959.568 3813.239
-#> 15:  7.4130 336.00 342 346 349 352 356 363 1.0001986 4436.109 4077.990
-#> 16:  5.9304 206.00 210 213 215 218 221 227 1.0007632 4161.274 3680.512
-#> 17:  8.8956 427.00 433 437 440 444 448 456 0.9998055 4461.945 4074.851
-#> 18: 13.3434 580.00 590 595 600 605 612 624 0.9999442 4218.373 3927.524
-#> 19: 13.3434 497.95 508 514 518 524 531 544 0.9996752 4338.009 4079.307
-#> 20: 14.8260 466.00 477 484 489 495 503 516 1.0005098 4192.483 4017.986
-#> 21: 17.7912 455.00 468 476 483 489 498 516 1.0004409 4921.773 3818.284
-#> 22: 14.8260 308.00 320 326 332 338 345 359 0.9996950 4543.923 4052.493
-#> 23: 11.8608 193.00 201 207 211 216 221 233 1.0002635 4091.445 3322.759
-#> 24: 17.7912 402.00 415 422 428 435 444 460 1.0014179 4267.902 3672.737
-#> 25: 23.7216 422.95 439 449 458 467 478 500 1.0001595 4488.251 3825.997
-#> 26: 31.1346 441.00 462 474 487 499 515 545 0.9998119 4478.372 3669.178
-#> 27: 37.0650 364.00 391 405 419 435 453 489 1.0008798 4455.344 3903.182
-#> 28: 50.4084 355.00 388 411 429 449 477 529 0.9997609 4770.492 3698.406
-#> 29: 65.2344 305.95 345 370 395 423 456 526 1.0001344 4729.093 3739.025
-#> 30: 81.5430 201.00 248 281 309 343 386 469 0.9996385 5569.028 3925.206
-#>         mad     q5 q20 q35 q50 q65 q80 q95      rhat ess_bulk ess_tail
+#>         mad     q5    q95      rhat ess_bulk ess_tail
+#>  1:  0.0000 239.00 239.00        NA       NA       NA
+#>  2:  0.0000 186.00 188.00 0.9993352 1907.339 1848.293
+#>  3:  1.4826 437.00 442.00 1.0004761 1934.512 1780.309
+#>  4:  2.9652 540.00 548.00 0.9999210 2054.888 2021.513
+#>  5:  2.9652 512.00 521.00 0.9999460 1913.582 1781.123
+#>  6:  2.9652 445.00 457.00 1.0006570 2008.863 1960.766
+#>  7:  4.4478 417.00 430.00 0.9995221 2087.169 2048.988
+#>  8:  4.4478 328.00 341.00 1.0005721 2043.544 1895.895
+#>  9:  2.9652 207.00 218.00 1.0007575 1922.449 1741.675
+#> 10:  4.4478 417.00 431.00 0.9997743 1952.123 1909.372
+#> 11:  7.4130 553.00 575.00 0.9999110 1807.538 1832.177
+#> 12:  7.4130 496.00 520.00 1.0006397 2001.027 1661.260
+#> 13:  7.4130 467.00 492.00 1.0032509 2001.059 1476.787
+#> 14:  8.8956 468.00 498.00 1.0002402 2097.893 1608.648
+#> 15:  7.4130 336.00 362.00 0.9998575 2115.660 1759.218
+#> 16:  5.9304 206.00 226.00 1.0002556 2048.575 2016.486
+#> 17:  8.8956 426.00 456.00 1.0006617 2205.876 1985.698
+#> 18: 13.3434 580.00 624.05 1.0002983 2100.999 1996.207
+#> 19: 14.8260 496.95 543.00 0.9999375 2253.352 1954.974
+#> 20: 15.5673 466.00 517.00 0.9996898 2239.101 2015.250
+#> 21: 17.7912 455.00 515.00 1.0010747 2358.748 1884.208
+#> 22: 14.8260 309.00 360.05 1.0007746 2252.954 1818.850
+#> 23: 11.8608 194.00 235.00 0.9994657 2254.843 1938.465
+#> 24: 17.7912 403.00 460.05 0.9996863 2229.229 1808.741
+#> 25: 23.7216 422.00 499.00 1.0001601 2325.593 1958.476
+#> 26: 31.1346 441.00 542.00 0.9998120 2348.327 1730.851
+#> 27: 37.0650 367.00 491.00 1.0000192 2677.325 1890.643
+#> 28: 48.9258 360.00 527.05 1.0007903 2186.342 1939.236
+#> 29: 66.7170 305.95 520.05 1.0006316 2304.264 1871.054
+#> 30: 81.5430 199.00 489.05 1.0004510 2709.136 1480.763
+#>         mad     q5    q95      rhat ess_bulk ess_tail
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -534,7 +340,7 @@ optionally more recent data for comparison purposes).
 plot(nowcast, obs = latest_germany_hosp)
 ```
 
-<img src="man/figures/README-unnamed-chunk-12-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
 
 Plot posterior predictions for observed notifications by date of report
 as a check of how well the model reproduces the observed data.
@@ -544,13 +350,9 @@ library(ggplot2)
 
 plot(nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scales = "free")
-#> geom_path: Each group consists of only one observation. Do you need to adjust
-#> the group aesthetic?
-#> geom_path: Each group consists of only one observation. Do you need to adjust
-#> the group aesthetic?
 ```
 
-<img src="man/figures/README-unnamed-chunk-13-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-14-1.png" width="100%" />
 
 ## Citation
 

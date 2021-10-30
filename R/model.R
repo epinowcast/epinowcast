@@ -145,13 +145,22 @@ enw_as_data_list <- function(pobs,
 #' for the package stan models.
 #'
 #' @family model
+#' @importFrom purrr map_dbl
 #' @export
 enw_inits <- function(data) {
   init_fn <- function() {
     init <- list(
       logmean_int = rnorm(1, 1, 0.1),
       logsd_int = abs(rnorm(1, 0.5, 0.1)),
+      leobs_init = array(purrr::map_dbl(
+        data$latest_obs[1, ] + 1,
+        ~ rnorm(1, log(.), 1)
+      )),
       eobs_lsd = array(abs(rnorm(data$g, 0, 0.1))),
+      leobs_resids = array(
+        rnorm((data$t - 1) * data$g, 0, 0.01),
+        dim = c(data$t - 1, data$g)
+      ),
       sqrt_phi = abs(rnorm(1, 0, 0.1))
     )
     init$logmean <- rep(init$logmean_int, data$npmfs)
@@ -162,13 +171,16 @@ enw_inits <- function(data) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
       init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
     }
-    if (data$neffs > 0) {
-      init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
-      init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+    if (data$neff_sds > 0) {
+      init$logmean_sd <- abs(rnorm(data$neff_sds, 0, 0.01))
+      init$logsd_sd <- abs(rnorm(data$neff_sds, 0, 0.01))
     }
     # initialise report date effects
     if (data$nrd_effs > 0) {
       init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
+    }
+    if (data$nrd_eff_sds > 0) {
+      init$rd_eff_sd <- abs(rnorm(data$nrd_eff_sds, 0, 0.01))
     }
     return(init)
   }
@@ -179,6 +191,11 @@ enw_inits <- function(data) {
 #'
 #' @param compile Logical, defaults to `TRUE`. Should the model
 #' be loaded and compiled using [cmdstanr::cmdstan_model()].
+#'
+#' @param threads Logical, defaults to `FALSE`. Should the model compile with
+#' support for multi-thread support in chain. Note that this requires the use of
+#' the `threads_per_chain` argument when model fitting using [enw_sample()],
+#' and [epinowcast()].
 #'
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
@@ -191,17 +208,28 @@ enw_inits <- function(data) {
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(compile = TRUE, verbose = TRUE, ...) {
+enw_model <- function(compile = TRUE, threads = FALSE, verbose = TRUE, ...) {
   model <- "stan/epinowcast.stan"
 
   model <- system.file(model, package = "epinowcast")
   include <- system.file("stan", package = "epinowcast")
   if (compile) {
     if (verbose) {
-      model <- cmdstanr::cmdstan_model(model, include_path = include, ...)
+      model <- cmdstanr::cmdstan_model(model,
+        include_path = include,
+        cpp_options = list(
+          stan_threads = threads
+        ),
+        ...
+      )
     } else {
       suppressMessages(
-        model <- cmdstanr::cmdstan_model(model, include_path = include, ...)
+        model <- cmdstanr::cmdstan_model(model,
+          include_path = include,
+          cpp_options = list(
+            stan_threads = threads
+          ), ...
+        )
       )
     }
   }

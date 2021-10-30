@@ -4,11 +4,16 @@
 \alias{enw_model}
 \title{Load and compile the nowcasting model}
 \usage{
-enw_model(compile = TRUE, verbose = TRUE, ...)
+enw_model(compile = TRUE, threads = FALSE, verbose = TRUE, ...)
 }
 \arguments{
 \item{compile}{Logical, defaults to \code{TRUE}. Should the model
 be loaded and compiled using \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
+
+\item{threads}{Logical, defaults to \code{FALSE}. Should the model compile with
+support for multi-thread support in chain. Note that this requires the use of
+the \code{threads_per_chain} argument when model fitting using \code{\link[=enw_sample]{enw_sample()}},
+and \code{\link[=epinowcast]{epinowcast()}}.}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}

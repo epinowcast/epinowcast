@@ -3,6 +3,7 @@ functions {
 #include functions/pmfs.stan
 #include functions/hazard.stan
 #include functions/expected-observations.stan
+#include functions/obs_lpmf.stan
 }
 
 data {
@@ -73,7 +74,7 @@ transformed parameters{
   logmean = combine_effects(logmean_int, logmean_eff, d_fixed, logmean_sd,
                             d_random);
   logsd = combine_effects(log(logsd_int), logsd_eff, d_fixed, logsd_sd,
-                          d_random);
+                          d_random); 
   logsd = exp(logsd);
   // calculate pmfs
   for (i in 1:npmfs) {
@@ -142,19 +143,8 @@ model {
   sqrt_phi ~ normal(0, 1) T[0,];
   // log density: observed vs model
   if (likelihood) {
-    real tar_obs;
-    for (i in 1:s) {
-      vector[sl[i]] exp_obs;
-      vector[sl[i]] rdlh;
-      // Find final observed/imputed expected observation
-      tar_obs = imp_obs[sg[i]][st[i]];
-      // allocate report day effects
-      rdlh = srdlh[rdlurd[st[i]:(st[i] + sl[i] - 1), sg[i]]];
-      // combine expected final obs and date effects to get expected obs
-      exp_obs = expected_obs(tar_obs, ref_lh[1:sl[i], dpmfs[i]], rdlh, ref_p);
-      // observation error model
-      obs[i, 1:sl[i]] ~ neg_binomial_2(exp_obs, phi);
-    }
+    target += reduce_sum(obs_lupmf, st, 1, obs, sl, imp_obs, sg, st, rdlurd,
+                         srdlh, ref_lh, dpmfs, ref_p, phi);
   }
 }
 

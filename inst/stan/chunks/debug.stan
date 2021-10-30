@@ -21,3 +21,11 @@
         print(sqrt_phi);
       }
     }
+    int j = 0;
+    for (k in 1:urds) {
+      j += is_nan(srdlh[k]) ? 1 : 0;
+    }
+    if (j) {
+      print("Hazard effects on report date");
+      print(srdlh);
+    }
