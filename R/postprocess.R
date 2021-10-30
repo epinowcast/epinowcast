@@ -81,7 +81,7 @@ enw_nowcast_summary <- function(fit, obs,
 
   ord_obs <- data.table::copy(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
-  data.table::setorderv(ord_obs, c("reference_date", "group"))
+  data.table::setorderv(ord_obs, c("group", "reference_date"))
   nowcast <- cbind(
     ord_obs,
     nowcast
@@ -127,7 +127,7 @@ enw_pp_summary <- function(fit, diff_obs,
                            probs = c(
                              0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
                            )) {
-  nowcast <- enw_posterior(
+  pp <- enw_posterior(
     fit,
     variables = "pp_obs",
     probs = probs
@@ -135,11 +135,11 @@ enw_pp_summary <- function(fit, diff_obs,
 
   ord_obs <- data.table::copy(diff_obs)
   data.table::setorderv(ord_obs, c("reference_date", "group"))
-  nowcast <- cbind(
+  pp <- cbind(
     ord_obs,
-    nowcast
+    pp
   )
-  data.table::setorderv(nowcast, c("group", "reference_date"))
-  nowcast[, variable := NULL]
-  return(nowcast[])
+  data.table::setorderv(pp, c("group", "reference_date"))
+  pp[, variable := NULL]
+  return(pp[])
 }
