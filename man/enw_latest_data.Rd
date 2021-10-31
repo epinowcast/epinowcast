@@ -4,10 +4,12 @@
 \alias{enw_latest_data}
 \title{FUNCTION_TITLE}
 \usage{
-enw_latest_data(obs)
+enw_latest_data(obs, ref_window)
 }
 \arguments{
 \item{obs}{PARAM_DESCRIPTION}
+
+\item{ref_window}{PARAM_DESCRIPTION}
 }
 \value{
 OUTPUT_DESCRIPTION
@@ -23,6 +25,7 @@ Preprocessing functions
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_reporting_triangle}()}
+\code{\link{enw_reporting_triangle}()},
+\code{\link{enw_retrospective_data}()}
 }
 \concept{preprocess}

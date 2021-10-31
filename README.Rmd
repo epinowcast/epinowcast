@@ -50,25 +50,18 @@ cmdstanr::install_cmdstan()
 library(epinowcast)
 library(ggplot2)
 
-national_germany_hosp <- germany_covid19_hosp
-national_germany_hosp <- national_germany_hosp[location == "DE"]
-national_germany_hosp <- national_germany_hosp[age_group %in% "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 
-nat_germany_30_days_ago <-
-  national_germany_hosp[report_date <= max(report_date) - 30]
-nat_germany_30_days_ago <-
-  nat_germany_30_days_ago[reference_date >= (max(reference_date) - 30)]
-nat_germany_30_days_ago[]
+retro_nat_germany <- enw_retrospective_data(
+  nat_germany_hosp,
+  rep_days = 30, ref_days = 30
+)
+retro_nat_germany
 ```
 
 ```{r}
-latest_germany_hosp <- national_germany_hosp[report_date == max(report_date)]
-
-latest_germany_hosp <-
-  latest_germany_hosp[reference_date >= (max(reference_date) - 60)]
-latest_germany_hosp <-
-  latest_germany_hosp[reference_date <= (max(reference_date) - 30)]
-latest_germany_hosp[]
+latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(60, 30))
+latest_germany_hosp
 ```
 
 ### Data preprocessing and model specification
@@ -76,7 +69,7 @@ latest_germany_hosp[]
 Process reported data into format required for `{epinowcast}` and return in a `{data.table}`. At this stage specify grouping (i.e age, location) if any.
 
 ```{r}
-pobs <- enw_preprocess_data(nat_germany_30_days_ago, max_delay = 30)
+pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
 pobs
 ```
 
@@ -110,7 +103,7 @@ nowcast <- epinowcast(pobs,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
   chains = 2, threads_per_chain = 2,
-  show_messages = FALSE
+  refresh = 0, show_messages = FALSE
 )
 ```
 
@@ -138,7 +131,8 @@ Plot posterior predictions for observed notifications by date of
 report as a check of how well the model reproduces the observed data.
 
 ```{r, fig.width = 16, fig.height = 16, message = FALSE}
-plot(nowcast, type = "posterior")
+plot(nowcast, type = "posterior") +
+  facet_wrap(vars(reference_date), scale = "free")
 ```
 
 ## Citation

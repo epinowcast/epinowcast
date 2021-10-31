@@ -17,6 +17,20 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   return(metaobs[])
 }
 
+enw_add_features <- function(obs, holidays) {
+  # add days of week
+  obs <- data.table::copy(obs)
+  obs[, day_of_week := weekdays(date)]
+
+  # make holidays be sundays
+  if (length(holidays) != 0) {
+    obs[date %in% as.Date(holidays), obs := "Sunday"]
+  }
+
+  # make day of week a factor
+  obs[, day_of_week := factor(day_of_week)]
+}
+
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param metaobs PARAM_DESCRIPTION
@@ -71,18 +85,67 @@ enw_assign_group <- function(obs, by = c()) {
 }
 
 #' @title FUNCTION_TITLE
+#'
 #' @description FUNCTION_DESCRIPTION
+#'
 #' @param obs PARAM_DESCRIPTION
+#'
+#' @param rep_date PARAM_DESCRIPTION
+#'
+#' @param rep_days PARAM_DESCRIPTION
+#'
+#' @param ref_date PARAM_DESCRIPTION
+#'
+#' @param ref_days PARAM_DESCRIPTION
+#'
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy
-enw_latest_data <- function(obs) {
-  latest_data <- data.table::copy(obs)[,
-    .SD[report_date == max(report_date)],
-    by = c("reference_date", "group")
+enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
+                                   ref_days) {
+  retro_data <- data.table::copy(obs)
+  if (!missing(rep_days)) {
+    rep_date <- max(retro_data$report_date) - rep_days
+  }
+  retro_data <- retro_data[report_date <= rep_date]
+
+  if (!missing(ref_days)) {
+    ref_date <- max(retro_data$reference_date) - ref_days
+  }
+  retro_data <- retro_data[reference_date >= ref_date]
+  return(retro_data[])
+}
+
+#' @title FUNCTION_TITLE
+#'
+#' @description FUNCTION_DESCRIPTION
+#'
+#' @param obs PARAM_DESCRIPTION
+#'
+#' @param ref_window PARAM_DESCRIPTION
+#'
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export
+#' @importFrom data.table copy
+enw_latest_data <- function(obs, ref_window) {
+  latest_data <- data.table::copy(obs)
+
+  latest_data <- latest_data[,
+    .SD[report_date == (max(report_date))],
+    by = c("reference_date")
   ]
+
   latest_data[, report_date := NULL]
+  if (!missing(ref_window)) {
+    latest_data <-
+      latest_data[reference_date >= (max(reference_date) - ref_window[1])]
+    if (length(ref_window) == 2) {
+      latest_data <-
+        latest_data[reference_date <= (max(reference_date) - ref_window[2])]
+    }
+  }
   return(latest_data[])
 }
 

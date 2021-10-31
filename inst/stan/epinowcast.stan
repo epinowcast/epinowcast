@@ -125,8 +125,8 @@ model {
     logsd_eff ~ std_normal();
     if (neff_sds) {
       for (i in 1:neff_sds) {
-        logmean_sd[i] ~ normal(0, 0.1) T[0,];
-        logsd_sd[i] ~ normal(0, 0.1) T[0,];
+        logmean_sd[i] ~ normal(0, 1) T[0,];
+        logsd_sd[i] ~ normal(0, 1) T[0,];
       }
     }
   }
@@ -150,7 +150,7 @@ model {
 
 generated quantities {
   int pp_obs[pp ? sum(sl) : 0];
-  vector[ologlik ? s : 0] log_lik;
+  vector[ologlik ? sum(sl) : 0] log_lik;
   int pp_inf_obs[cast ? dmax : 0,cast ? g : 0];
   if (cast) {
     real tar_obs;
@@ -164,10 +164,12 @@ generated quantities {
       exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs, phi);
       if (ologlik) {
-        log_lik[i] = 0;
+        int start_t = 0;
         for (j in 1:sl[i]) {
-          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j], phi);
+          log_lik[start_t + j] = 
+            neg_binomial_2_lpmf(obs[i, 1:sl[i]] | exp_obs[1:sl[i]], phi);
         }
+        start_t += sl[i];
       }
     }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)

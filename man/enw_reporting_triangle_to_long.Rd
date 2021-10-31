@@ -23,6 +23,7 @@ Preprocessing functions
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle}()}
+\code{\link{enw_reporting_triangle}()},
+\code{\link{enw_retrospective_data}()}
 }
 \concept{preprocess}
