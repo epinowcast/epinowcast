@@ -24,10 +24,6 @@ reference:
     desc: Functions for nowcasting.
     contents:
       - has_concept("epinowcast")
-  - title: Model
-    desc: Functions for fitting the nowcasting model.
-    contents:
-      - has_concept("model")
   - title: Preprocess
     desc: Functions for preprocessing observations.
     contents:

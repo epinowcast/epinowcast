@@ -6,8 +6,8 @@
 \usage{
 enw_as_data_list(
   pobs,
-  reference_effects = enw_intercept_model(pobs$metareference[[1]]),
-  report_effects = enw_intercept_model(pobs$metareport[[1]]),
+  reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
+  report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
   dist = "lognormal",
   nowcast = TRUE,
   pp = FALSE,

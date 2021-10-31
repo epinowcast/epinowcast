@@ -8,6 +8,7 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
+  holidays = c(),
   min_report_date,
   set_negatives_to_zero = TRUE
 )
@@ -18,6 +19,8 @@ enw_preprocess_data(
 \item{by}{PARAM_DESCRIPTION, Default: c()}
 
 \item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+
+\item{holidays}{PARAM_DESCRIPTION, Default: c()}
 
 \item{min_report_date}{PARAM_DESCRIPTION}
 
@@ -31,6 +34,7 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Preprocessing functions
+\code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_latest_data}()},

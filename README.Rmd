@@ -76,13 +76,13 @@ pobs
 Construct an intercept only model for the date of reference.
 
 ```{r}
-reference_effects <- enw_intercept_model(pobs$metareference[[1]])
+reference_effects <- enw_formula(pobs$metareference[[1]])
 reference_effects
 ```
 
 Construct a model with a random effect for the day of report.
 ```{r}
-report_effects <- enw_day_of_week_model(pobs$metareport[[1]])
+report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
 report_effects
 ```
 

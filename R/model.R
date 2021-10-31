@@ -35,10 +35,10 @@
 #' @family model
 #' @export
 enw_as_data_list <- function(pobs,
-                             reference_effects = enw_intercept_model(
+                             reference_effects = epinowcast::enw_formula(
                                pobs$metareference[[1]]
                              ),
-                             report_effects = enw_intercept_model(
+                             report_effects = epinowcast::enw_formula(
                                pobs$metareport[[1]]
                              ),
                              dist = "lognormal",

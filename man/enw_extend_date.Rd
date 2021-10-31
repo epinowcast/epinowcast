@@ -19,6 +19,7 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Preprocessing functions
+\code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
