@@ -86,8 +86,8 @@
 
     <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_as_data_list</span><span class="op">(</span>
   <span class="va">pobs</span>,
-  reference_effects <span class="op">=</span> <span class="fu"><a href="enw_intercept_model.html">enw_intercept_model</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
-  report_effects <span class="op">=</span> <span class="fu"><a href="enw_intercept_model.html">enw_intercept_model</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
+  reference_effects <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
+  report_effects <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
   dist <span class="op">=</span> <span class="st">"lognormal"</span>,
   nowcast <span class="op">=</span> <span class="cn">TRUE</span>,
   pp <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -103,11 +103,11 @@
 <dd><p>Output from <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p></dd>
 <dt>reference_effects</dt>
 <dd><p>A list of fixed and random design matrices
-defining the date of reference model. Defaults to <code><a href="enw_intercept_model.html">enw_intercept_model()</a></code>
+defining the date of reference model. Defaults to <code>enw_intercept_model()</code>
 which is an intercept only model.</p></dd>
 <dt>report_effects</dt>
 <dd><p>A list of fixed and random design matrices
-defining the date of reports model. Defaults to <code><a href="enw_intercept_model.html">enw_intercept_model()</a></code>
+defining the date of reports model. Defaults to <code>enw_intercept_model()</code>
 which is an intercept only model.</p></dd>
 <dt>dist</dt>
 <dd><p>Character string indicating the type of distribution to use for

@@ -145,7 +145,8 @@
 <span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span>
 
 <span class="va">retro_nat_germany</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_retrospective_data.html">enw_retrospective_data</a></span><span class="op">(</span>
-  <span class="va">nat_germany_hosp</span>, rep_days <span class="op">=</span>  <span class="fl">30</span>, ref_days <span class="op">=</span> <span class="fl">30</span>
+  <span class="va">nat_germany_hosp</span>,
+  rep_days <span class="op">=</span> <span class="fl">30</span>, ref_days <span class="op">=</span> <span class="fl">30</span>
 <span class="op">)</span>
 <span class="va">retro_nat_germany</span>
 <span class="co">#&gt;      reference_date location age_group confirm report_date</span>
@@ -207,14 +208,18 @@
 <span class="co">#&gt;                    obs         new_confirm             latest</span>
 <span class="co">#&gt; 1: &lt;data.table[495x6]&gt; &lt;data.table[495x8]&gt; &lt;data.table[31x5]&gt;</span>
 <span class="co">#&gt;                   diff  reporting_triangle      metareference</span>
-<span class="co">#&gt; 1: &lt;data.table[495x8]&gt; &lt;data.table[31x32]&gt; &lt;data.table[31x4]&gt;</span>
+<span class="co">#&gt; 1: &lt;data.table[495x8]&gt; &lt;data.table[31x32]&gt; &lt;data.table[31x7]&gt;</span>
 <span class="co">#&gt;            metareport time snapshots groups max_delay   max_date</span>
-<span class="co">#&gt; 1: &lt;data.table[60x5]&gt;   31        31      1        30 2021-09-20</span></code></pre></div>
+<span class="co">#&gt; 1: &lt;data.table[60x8]&gt;   31        31      1        30 2021-09-20</span></code></pre></div>
 <p>Construct an intercept only model for the date of reference.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_intercept_model.html">enw_intercept_model</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 <span class="va">reference_effects</span>
 <span class="co">#&gt; $fixed</span>
+<span class="co">#&gt; $fixed$formula</span>
+<span class="co">#&gt; ~1</span>
+<span class="co">#&gt; &lt;environment: 0x561047ec4840&gt;</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt; $fixed$design</span>
 <span class="co">#&gt;   (Intercept)</span>
 <span class="co">#&gt; 1           1</span>
@@ -224,6 +229,10 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $random</span>
+<span class="co">#&gt; $random$formula</span>
+<span class="co">#&gt; ~1</span>
+<span class="co">#&gt; &lt;environment: 0x561047ec4840&gt;</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt; $random$design</span>
 <span class="co">#&gt;      (Intercept)</span>
 <span class="co">#&gt; attr(,"assign")</span>
@@ -233,9 +242,13 @@
 <span class="co">#&gt; integer(0)</span></code></pre></div>
 <p>Construct a model with a random effect for the day of report.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">report_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_day_of_week_model.html">enw_day_of_week_model</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">report_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, random <span class="op">=</span> <span class="st">"day_of_week"</span><span class="op">)</span>
 <span class="va">report_effects</span>
 <span class="co">#&gt; $fixed</span>
+<span class="co">#&gt; $fixed$formula</span>
+<span class="co">#&gt; ~1 + day_of_week</span>
+<span class="co">#&gt; &lt;environment: 0x561048388e08&gt;</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt; $fixed$design</span>
 <span class="co">#&gt;   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday</span>
 <span class="co">#&gt; 1           1                 0                 0                   1</span>
@@ -260,15 +273,19 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $random</span>
+<span class="co">#&gt; $random$formula</span>
+<span class="co">#&gt; ~0 + fixed + day_of_week</span>
+<span class="co">#&gt; &lt;environment: 0x561048388e08&gt;</span>
+<span class="co">#&gt; </span>
 <span class="co">#&gt; $random$design</span>
-<span class="co">#&gt;   fixed sd</span>
-<span class="co">#&gt; 1     0  1</span>
-<span class="co">#&gt; 2     0  1</span>
-<span class="co">#&gt; 3     0  1</span>
-<span class="co">#&gt; 4     0  1</span>
-<span class="co">#&gt; 5     0  1</span>
-<span class="co">#&gt; 6     0  1</span>
-<span class="co">#&gt; 7     0  1</span>
+<span class="co">#&gt;   fixed day_of_week</span>
+<span class="co">#&gt; 1     0           1</span>
+<span class="co">#&gt; 2     0           1</span>
+<span class="co">#&gt; 3     0           1</span>
+<span class="co">#&gt; 4     0           1</span>
+<span class="co">#&gt; 5     0           1</span>
+<span class="co">#&gt; 6     0           1</span>
+<span class="co">#&gt; 7     0           1</span>
 <span class="co">#&gt; attr(,"assign")</span>
 <span class="co">#&gt; [1] 1 2</span>
 <span class="co">#&gt; </span>
@@ -298,12 +315,19 @@
 <span class="co">#&gt;  - chain 2: logmean_eff, logsd_eff, logmean_sd, logsd_sd</span>
 <span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Chain 2 finished in 82.0 seconds.</span>
-<span class="co">#&gt; Chain 1 finished in 84.7 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 38.8 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 43.2 seconds.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Both chains finished successfully.</span>
-<span class="co">#&gt; Mean chain execution time: 83.3 seconds.</span>
-<span class="co">#&gt; Total execution time: 84.8 seconds.</span></code></pre></div>
+<span class="co">#&gt; Mean chain execution time: 41.0 seconds.</span>
+<span class="co">#&gt; Total execution time: 43.3 seconds.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Warning: 3 of 2000 (0.0%) transitions ended with a divergence.</span>
+<span class="co">#&gt; This may indicate insufficient exploration of the posterior distribution.</span>
+<span class="co">#&gt; Possible remedies include: </span>
+<span class="co">#&gt;   * Increasing adapt_delta closer to 1 (default is 0.8) </span>
+<span class="co">#&gt;   * Reparameterizing the model (e.g. using a non-centered parameterization)</span>
+<span class="co">#&gt;   * Using informative or weakly informative prior distributions</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -314,91 +338,91 @@
 <span class="co">#&gt;                    obs         new_confirm             latest</span>
 <span class="co">#&gt; 1: &lt;data.table[495x6]&gt; &lt;data.table[495x8]&gt; &lt;data.table[31x5]&gt;</span>
 <span class="co">#&gt;                   diff  reporting_triangle      metareference</span>
-<span class="co">#&gt; 1: &lt;data.table[495x8]&gt; &lt;data.table[31x32]&gt; &lt;data.table[31x4]&gt;</span>
+<span class="co">#&gt; 1: &lt;data.table[495x8]&gt; &lt;data.table[31x32]&gt; &lt;data.table[31x7]&gt;</span>
 <span class="co">#&gt;            metareport time snapshots groups max_delay   max_date</span>
-<span class="co">#&gt; 1: &lt;data.table[60x5]&gt;   31        31      1        30 2021-09-20</span>
+<span class="co">#&gt; 1: &lt;data.table[60x8]&gt;   31        31      1        30 2021-09-20</span>
 <span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span>
-<span class="co">#&gt; 1: &lt;CmdStanMCMC[31]&gt; &lt;list[29]&gt; &lt;list[6]&gt;    2000     1.01</span>
+<span class="co">#&gt; 1: &lt;CmdStanMCMC[31]&gt; &lt;list[29]&gt; &lt;list[6]&gt;    2000        1</span>
 <span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span>
-<span class="co">#&gt; 1:                     0                         0             7</span>
+<span class="co">#&gt; 1:                     3                    0.0015             7</span>
 <span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth time</span>
-<span class="co">#&gt; 1:                1515               0.7575 84.8</span></code></pre></div>
+<span class="co">#&gt; 1:                1362                0.681 43.3</span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt;     reference_date location age_group confirm group     mean median         sd</span>
 <span class="co">#&gt;  1:     2021-08-22       DE       00+     239     1 239.0000    239  0.0000000</span>
-<span class="co">#&gt;  2:     2021-08-23       DE       00+     186     1 186.6365    186  0.8460057</span>
-<span class="co">#&gt;  3:     2021-08-24       DE       00+     437     1 439.0780    439  1.5865606</span>
-<span class="co">#&gt;  4:     2021-08-25       DE       00+     539     1 543.8040    544  2.4834790</span>
-<span class="co">#&gt;  5:     2021-08-26       DE       00+     509     1 515.8065    516  3.0515101</span>
-<span class="co">#&gt;  6:     2021-08-27       DE       00+     442     1 450.4380    450  3.2809356</span>
-<span class="co">#&gt;  7:     2021-08-28       DE       00+     412     1 422.7545    423  3.7980841</span>
-<span class="co">#&gt;  8:     2021-08-29       DE       00+     322     1 333.8730    334  3.9467277</span>
-<span class="co">#&gt;  9:     2021-08-30       DE       00+     204     1 212.0910    212  3.1148949</span>
-<span class="co">#&gt; 10:     2021-08-31       DE       00+     409     1 423.3965    423  4.4284414</span>
-<span class="co">#&gt; 11:     2021-09-01       DE       00+     535     1 563.3640    563  6.8705972</span>
-<span class="co">#&gt; 12:     2021-09-02       DE       00+     475     1 507.1340    507  7.4110395</span>
-<span class="co">#&gt; 13:     2021-09-03       DE       00+     444     1 479.3040    479  7.8302772</span>
-<span class="co">#&gt; 14:     2021-09-04       DE       00+     437     1 482.3390    482  8.8997574</span>
-<span class="co">#&gt; 15:     2021-09-05       DE       00+     310     1 348.8320    349  8.0853239</span>
-<span class="co">#&gt; 16:     2021-09-06       DE       00+     190     1 215.4730    215  6.2680073</span>
-<span class="co">#&gt; 17:     2021-09-07       DE       00+     395     1 440.4685    440  8.9875690</span>
-<span class="co">#&gt; 18:     2021-09-08       DE       00+     518     1 600.7075    600 14.0942282</span>
-<span class="co">#&gt; 19:     2021-09-09       DE       00+     433     1 519.4390    519 14.0587020</span>
-<span class="co">#&gt; 20:     2021-09-10       DE       00+     395     1 489.3385    489 14.7757599</span>
-<span class="co">#&gt; 21:     2021-09-11       DE       00+     365     1 482.7800    482 18.6924130</span>
-<span class="co">#&gt; 22:     2021-09-12       DE       00+     239     1 332.6310    332 15.0899202</span>
-<span class="co">#&gt; 23:     2021-09-13       DE       00+     147     1 211.0235    210 12.2191899</span>
-<span class="co">#&gt; 24:     2021-09-14       DE       00+     324     1 429.4355    428 17.2896011</span>
-<span class="co">#&gt; 25:     2021-09-15       DE       00+     313     1 458.7630    457 23.0672903</span>
-<span class="co">#&gt; 26:     2021-09-16       DE       00+     289     1 488.3065    485 32.7666352</span>
-<span class="co">#&gt; 27:     2021-09-17       DE       00+     203     1 421.8185    420 36.7234648</span>
-<span class="co">#&gt; 28:     2021-09-18       DE       00+     144     1 435.0210    430 53.8122332</span>
-<span class="co">#&gt; 29:     2021-09-19       DE       00+      73     1 401.9055    395 68.4447727</span>
-<span class="co">#&gt; 30:     2021-09-20       DE       00+      23     1 319.3735    307 89.0795632</span>
+<span class="co">#&gt;  2:     2021-08-23       DE       00+     186     1 186.6260    186  0.8726424</span>
+<span class="co">#&gt;  3:     2021-08-24       DE       00+     437     1 439.1065    439  1.6091776</span>
+<span class="co">#&gt;  4:     2021-08-25       DE       00+     539     1 543.8780    544  2.5227561</span>
+<span class="co">#&gt;  5:     2021-08-26       DE       00+     509     1 515.9360    516  3.0140415</span>
+<span class="co">#&gt;  6:     2021-08-27       DE       00+     442     1 450.3980    450  3.3322887</span>
+<span class="co">#&gt;  7:     2021-08-28       DE       00+     412     1 422.9075    423  3.8654126</span>
+<span class="co">#&gt;  8:     2021-08-29       DE       00+     322     1 334.1275    334  4.0494991</span>
+<span class="co">#&gt;  9:     2021-08-30       DE       00+     204     1 212.1230    212  3.1920159</span>
+<span class="co">#&gt; 10:     2021-08-31       DE       00+     409     1 423.3685    423  4.3758750</span>
+<span class="co">#&gt; 11:     2021-09-01       DE       00+     535     1 563.4605    563  6.7061111</span>
+<span class="co">#&gt; 12:     2021-09-02       DE       00+     475     1 507.3540    507  7.0896273</span>
+<span class="co">#&gt; 13:     2021-09-03       DE       00+     444     1 479.2550    479  7.7375649</span>
+<span class="co">#&gt; 14:     2021-09-04       DE       00+     437     1 482.3705    482  9.0368724</span>
+<span class="co">#&gt; 15:     2021-09-05       DE       00+     310     1 349.0140    349  8.0547032</span>
+<span class="co">#&gt; 16:     2021-09-06       DE       00+     190     1 215.8265    215  6.1638782</span>
+<span class="co">#&gt; 17:     2021-09-07       DE       00+     395     1 441.1640    441  9.0128086</span>
+<span class="co">#&gt; 18:     2021-09-08       DE       00+     518     1 600.7120    600 13.3192626</span>
+<span class="co">#&gt; 19:     2021-09-09       DE       00+     433     1 518.8645    518 13.8561227</span>
+<span class="co">#&gt; 20:     2021-09-10       DE       00+     395     1 489.9740    489 14.9070599</span>
+<span class="co">#&gt; 21:     2021-09-11       DE       00+     365     1 483.6065    482 18.3943696</span>
+<span class="co">#&gt; 22:     2021-09-12       DE       00+     239     1 332.9545    332 15.9132663</span>
+<span class="co">#&gt; 23:     2021-09-13       DE       00+     147     1 211.4055    211 12.0760086</span>
+<span class="co">#&gt; 24:     2021-09-14       DE       00+     324     1 429.0310    428 17.0280362</span>
+<span class="co">#&gt; 25:     2021-09-15       DE       00+     313     1 459.1100    457 23.3456293</span>
+<span class="co">#&gt; 26:     2021-09-16       DE       00+     289     1 487.5015    487 31.6275853</span>
+<span class="co">#&gt; 27:     2021-09-17       DE       00+     203     1 422.8385    420 37.4457008</span>
+<span class="co">#&gt; 28:     2021-09-18       DE       00+     144     1 433.6530    429 51.3574375</span>
+<span class="co">#&gt; 29:     2021-09-19       DE       00+      73     1 400.3710    392 68.5680986</span>
+<span class="co">#&gt; 30:     2021-09-20       DE       00+      23     1 320.1685    307 91.9644488</span>
 <span class="co">#&gt;     reference_date location age_group confirm group     mean median         sd</span>
 <span class="co">#&gt;         mad     q5    q95      rhat ess_bulk ess_tail</span>
 <span class="co">#&gt;  1:  0.0000 239.00 239.00        NA       NA       NA</span>
-<span class="co">#&gt;  2:  0.0000 186.00 188.00 0.9994739 1953.630 1992.552</span>
-<span class="co">#&gt;  3:  1.4826 437.00 442.00 0.9995540 1943.014 1984.116</span>
-<span class="co">#&gt;  4:  2.9652 540.00 548.05 1.0027322 2045.463 1976.516</span>
-<span class="co">#&gt;  5:  2.9652 511.00 521.00 1.0002531 1930.689 1941.193</span>
-<span class="co">#&gt;  6:  2.9652 446.00 456.00 1.0005232 1824.885 1915.907</span>
-<span class="co">#&gt;  7:  4.4478 417.00 429.00 1.0015534 1914.670 1730.440</span>
-<span class="co">#&gt;  8:  4.4478 328.00 341.00 1.0003851 1824.339 1902.753</span>
-<span class="co">#&gt;  9:  2.9652 207.00 217.00 1.0014209 2105.205 1893.988</span>
-<span class="co">#&gt; 10:  4.4478 417.00 431.00 1.0009077 2050.713 1847.547</span>
-<span class="co">#&gt; 11:  7.4130 553.00 576.00 1.0013102 1742.085 1892.192</span>
-<span class="co">#&gt; 12:  7.4130 496.00 520.00 1.0002486 1753.861 1875.811</span>
-<span class="co">#&gt; 13:  7.4130 467.00 492.00 0.9996270 2072.838 1813.302</span>
-<span class="co">#&gt; 14:  8.8956 469.00 497.00 1.0001562 2086.323 1968.485</span>
-<span class="co">#&gt; 15:  8.8956 336.00 362.00 0.9998721 1969.801 2025.558</span>
-<span class="co">#&gt; 16:  5.9304 206.00 227.00 1.0006008 2057.989 1966.465</span>
-<span class="co">#&gt; 17:  8.8956 426.00 456.00 0.9990911 2242.328 2004.006</span>
-<span class="co">#&gt; 18: 13.3434 579.00 625.00 0.9995067 2406.901 1842.878</span>
-<span class="co">#&gt; 19: 14.8260 498.00 544.00 1.0005682 2048.625 1677.032</span>
-<span class="co">#&gt; 20: 14.8260 466.00 515.00 1.0009362 2336.735 2025.170</span>
-<span class="co">#&gt; 21: 19.2738 454.00 515.00 1.0006068 2396.571 2008.264</span>
-<span class="co">#&gt; 22: 14.8260 309.00 357.00 1.0000166 2307.431 1998.644</span>
-<span class="co">#&gt; 23: 11.8608 192.00 233.00 1.0011354 1987.303 1676.124</span>
-<span class="co">#&gt; 24: 17.7912 403.00 459.00 1.0000771 2365.686 1970.855</span>
-<span class="co">#&gt; 25: 22.2390 424.00 500.00 1.0014952 2261.604 2032.798</span>
-<span class="co">#&gt; 26: 31.1346 439.00 546.00 1.0003172 2106.757 1912.489</span>
-<span class="co">#&gt; 27: 35.5824 365.00 486.00 0.9999009 2496.935 1676.701</span>
-<span class="co">#&gt; 28: 53.3736 356.00 531.05 0.9993539 2128.773 1666.396</span>
-<span class="co">#&gt; 29: 66.7170 299.95 527.00 1.0003235 2748.170 1826.230</span>
-<span class="co">#&gt; 30: 83.0256 199.00 480.05 1.0000735 2959.971 1895.663</span>
+<span class="co">#&gt;  2:  0.0000 186.00 188.00 1.0009272 1872.144 1698.258</span>
+<span class="co">#&gt;  3:  1.4826 437.00 442.00 1.0004321 1822.384 1881.145</span>
+<span class="co">#&gt;  4:  2.9652 540.00 549.00 1.0011137 1513.479 1810.019</span>
+<span class="co">#&gt;  5:  2.9652 511.00 521.00 1.0000054 1904.185 1746.571</span>
+<span class="co">#&gt;  6:  2.9652 445.00 456.00 1.0018301 1841.210 1673.566</span>
+<span class="co">#&gt;  7:  4.4478 417.00 430.00 0.9995478 1813.758 1740.185</span>
+<span class="co">#&gt;  8:  4.4478 328.00 341.00 1.0005024 1985.402 2018.825</span>
+<span class="co">#&gt;  9:  2.9652 207.00 218.00 1.0017948 1859.660 1838.306</span>
+<span class="co">#&gt; 10:  4.4478 417.00 431.00 1.0006785 1834.301 1581.024</span>
+<span class="co">#&gt; 11:  5.9304 553.00 575.00 1.0005054 1884.381 1879.135</span>
+<span class="co">#&gt; 12:  7.4130 496.00 520.00 1.0035828 1920.924 1538.182</span>
+<span class="co">#&gt; 13:  7.4130 467.00 493.00 0.9995285 2024.989 1939.877</span>
+<span class="co">#&gt; 14:  8.8956 469.00 498.00 0.9997716 1962.896 1917.798</span>
+<span class="co">#&gt; 15:  8.8956 336.00 363.00 1.0016939 2039.301 1880.041</span>
+<span class="co">#&gt; 16:  5.9304 206.00 226.00 1.0008894 1998.962 1934.997</span>
+<span class="co">#&gt; 17:  8.8956 427.00 457.00 0.9995223 2195.263 2078.331</span>
+<span class="co">#&gt; 18: 13.3434 580.00 623.00 0.9991765 1860.700 1746.090</span>
+<span class="co">#&gt; 19: 13.3434 498.00 542.00 0.9997655 2019.555 1999.918</span>
+<span class="co">#&gt; 20: 14.8260 468.00 516.00 0.9995966 2178.169 1849.784</span>
+<span class="co">#&gt; 21: 17.7912 456.00 515.00 1.0003125 1609.026 1958.458</span>
+<span class="co">#&gt; 22: 16.3086 309.00 361.00 1.0008879 2257.794 2025.172</span>
+<span class="co">#&gt; 23: 11.8608 192.00 232.00 1.0000377 2104.208 1761.094</span>
+<span class="co">#&gt; 24: 16.3086 402.00 458.00 1.0002424 2367.646 2007.068</span>
+<span class="co">#&gt; 25: 22.2390 424.00 499.00 1.0000921 2148.723 1757.746</span>
+<span class="co">#&gt; 26: 31.1346 438.00 542.00 0.9998799 2721.001 1918.690</span>
+<span class="co">#&gt; 27: 37.0650 367.00 488.00 0.9995128 2250.550 1999.755</span>
+<span class="co">#&gt; 28: 50.4084 356.95 524.05 1.0009023 1886.011 1899.144</span>
+<span class="co">#&gt; 29: 64.4931 302.00 523.00 1.0012538 2250.051 1697.980</span>
+<span class="co">#&gt; 30: 84.5082 197.00 483.00 1.0013461 2265.951 1361.083</span>
 <span class="co">#&gt;         mad     q5    q95      rhat ess_bulk ess_tail</span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-13-1.png" width="100%"></p>
+<p><img src="reference/figures/README-nowcast-1.png" width="100%"></p>
 <p>Plot posterior predictions for observed notifications by date of report as a check of how well the model reproduces the observed data.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-14-1.png" width="100%"></p>
+<p><img src="reference/figures/README-pp-1.png" width="100%"></p>
 </div>
 </div>
 <div class="section level2">

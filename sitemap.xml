@@ -31,16 +31,13 @@
     <loc>samabbott.co.uk/epinowcast/reference/check_quantiles.html</loc>
   </url>
   <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_add_day_of_week.html</loc>
-  </url>
-  <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_add_latest_obs_to_nowcast.html</loc>
   </url>
   <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_add_pooling_effect.html</loc>
+    <loc>samabbott.co.uk/epinowcast/reference/enw_add_metaobs_features.html</loc>
   </url>
   <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_add_week.html</loc>
+    <loc>samabbott.co.uk/epinowcast/reference/enw_add_pooling_effect.html</loc>
   </url>
   <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_apply_truncation_to_cases.html</loc>
@@ -61,12 +58,6 @@
     <loc>samabbott.co.uk/epinowcast/reference/enw_dates_to_factors.html</loc>
   </url>
   <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_day_model.html</loc>
-  </url>
-  <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_day_of_week_model.html</loc>
-  </url>
-  <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_design.html</loc>
   </url>
   <url>
@@ -79,10 +70,10 @@
     <loc>samabbott.co.uk/epinowcast/reference/enw_extend_date.html</loc>
   </url>
   <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_inits.html</loc>
+    <loc>samabbott.co.uk/epinowcast/reference/enw_formula.html</loc>
   </url>
   <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_intercept_model.html</loc>
+    <loc>samabbott.co.uk/epinowcast/reference/enw_inits.html</loc>
   </url>
   <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_latest_data.html</loc>
@@ -137,9 +128,6 @@
   </url>
   <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_simulate_lnorm_trunc_obs.html</loc>
-  </url>
-  <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_weekly_model.html</loc>
   </url>
   <url>
     <loc>samabbott.co.uk/epinowcast/reference/epinowcast.html</loc>
