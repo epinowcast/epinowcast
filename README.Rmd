@@ -123,14 +123,14 @@ summary(nowcast, probs = c(0.05, 0.95))
 
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
 
-```{r}
+```{r nowcast}
 plot(nowcast, obs = latest_germany_hosp)
 ```
 
 Plot posterior predictions for observed notifications by date of
 report as a check of how well the model reproduces the observed data.
 
-```{r, fig.width = 16, fig.height = 16, message = FALSE}
+```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
 plot(nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
