@@ -3,11 +3,11 @@
 #' @param pobs Output from [enw_preprocess_data()].
 #'
 #' @param reference_effects A list of fixed and random design matrices
-#' defining the date of reference model. Defaults to [enw_intercept_model()]
+#' defining the date of reference model. Defaults to [enw_formula()]
 #' which is an intercept only model.
 #'
 #' @param report_effects A list of fixed and random design matrices
-#' defining the date of reports model. Defaults to [enw_intercept_model()]
+#' defining the date of reports model. Defaults to [enw_formula()]
 #' which is an intercept only model.
 #'
 #' @param dist Character string indicating the type of distribution to use for

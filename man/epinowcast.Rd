@@ -22,11 +22,11 @@ epinowcast(
 \item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_intercept_model]{enw_intercept_model()}}
+defining the date of reference model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
 which is an intercept only model.}
 
 \item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_intercept_model]{enw_intercept_model()}}
+defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
 which is an intercept only model.}
 
 \item{dist}{Character string indicating the type of distribution to use for

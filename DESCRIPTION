@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Nowcast Right Censored Epidemiological Counts
-Version: 0.0.1.1000
+Version: 0.0.2
 Authors@R:
     person(given = "Sam Abbott",
              role = c("aut", "cre"),
@@ -25,8 +25,10 @@ Imports:
     rstan,
     scales
 Suggests:
+    loo (>= 2.4.1),
     knitr,
     rmarkdown,
+    scoringutils,
     spelling,
     testthat (>= 3.0.0),
     usethis,
@@ -34,7 +36,8 @@ Suggests:
 VignetteBuilder:
     knitr
 Remotes:
-    stan-dev/cmdstanr
+    stan-dev/cmdstanr,
+    stan-dev/loo
 Config/Needs/website: r-lib/pkgdown
     amirmasoudabdol/preferably
 Config/testthat/edition: 3

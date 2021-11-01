@@ -12,6 +12,8 @@ enw_formula(metaobs, fixed = c(), random = c(), custom_random = c())
 \item{fixed}{PARAM_DESCRIPTION. Default: c()}
 
 \item{random}{PARAM_DESCRIPTION. Default: c()}
+
+\item{custom_random}{PARAM_DESCRIPTION. Default: c()}
 }
 \value{
 OUTPUT_DESCRIPTION

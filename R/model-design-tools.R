@@ -24,10 +24,15 @@ enw_dates_to_factors <- function(data) {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param formula PARAM_DESCRIPTION
+#'
 #' @param data PARAM_DESCRIPTION
+#'
 #' @param no_contrasts PARAM_DESCRIPTION, Default: FALSE
+#'
 #' @param sparse PARAM_DESCRIPTION, Default: TRUE
+#'
 #' @param ... PARAM_DESCRIPTION
+#'
 #' @return OUTPUT_DESCRIPTION
 #' @family modeldesign
 #' @export
@@ -41,7 +46,9 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 
   # make all character variables factors
   chars <- colnames(data)[sapply(data, function(x) is.character(x))]
-  data <- data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
+  data <- suppressWarnings(
+    data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
+  )
 
   # make model.matrix helper
   mod_matrix <- function(formula, data, ...) {
@@ -90,9 +97,13 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 }
 
 #' @title FUNCTION_TITLE
+#'
 #' @description FUNCTION_DESCRIPTION
+#'
 #' @param design PARAM_DESCRIPTION
+#'
 #' @return OUTPUT_DESCRIPTION
+#'
 #' @family modeldesign
 #' @export
 #' @importFrom data.table data.table
@@ -103,11 +114,17 @@ enw_effects_metadata <- function(design) {
 }
 
 #' @title FUNCTION_TITLE
+#'
 #' @description FUNCTION_DESCRIPTION
+#'
 #' @param effects PARAM_DESCRIPTION
+#'
 #' @param string PARAM_DESCRIPTION
+#'
 #' @param var_name PARAM_DESCRIPTION, Default: 'sd'
+#'
 #' @return OUTPUT_DESCRIPTION
+#'
 #' @family modeldesign
 #' @export
 enw_add_pooling_effect <- function(effects, string, var_name = "sd") {
@@ -122,7 +139,7 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd") {
 #'
 #' @param metaobs PARAM_DESCRIPTION
 #'
-#' @param feature
+#' @param feature PARAM_DESCRIPTION
 #'
 #' @return OUTPUT_DESCRIPTION
 #' @family modeldesign
@@ -152,10 +169,13 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
 #'
 #' @param random PARAM_DESCRIPTION. Default: c()
 #'
+#' @param custom_random PARAM_DESCRIPTION. Default: c()
+#'
 #' @return OUTPUT_DESCRIPTION
 #'
 #' @family modeldesign
 #' @importFrom data.table copy
+#' @importFrom stats as.formula
 #' @export
 enw_formula <- function(metaobs, fixed = c(), random = c(),
                         custom_random = c()) {

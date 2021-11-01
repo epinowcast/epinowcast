@@ -9,7 +9,7 @@ enw_add_cumulative_membership(metaobs, feature)
 \arguments{
 \item{metaobs}{PARAM_DESCRIPTION}
 
-\item{feature}{}
+\item{feature}{PARAM_DESCRIPTION}
 }
 \value{
 OUTPUT_DESCRIPTION

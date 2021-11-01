@@ -20,7 +20,8 @@ germany_hosp[is.na(confirm), confirm := 0]
 germany_hosp[, confirm := cumsum(confirm),
   by = c("reference_date", "location", "age_group")
 ]
-
+cols <- c("age_group", "location")
+germany_hosp <- germany_hosp[, (cols) := lapply(.SD, factor), .SDcols = cols]
 # save all observations
 germany_covid19_hosp <- germany_hosp
 usethis::use_data(germany_covid19_hosp, overwrite = TRUE)
