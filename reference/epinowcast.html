@@ -31,7 +31,7 @@ a report model."><meta property="og:image" content="samabbott.co.uk/epinowcast/r
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.1.1000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
       </span>
     </div>
 
@@ -46,6 +46,9 @@ a report model."><meta property="og:image" content="samabbott.co.uk/epinowcast/r
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/germany-age-stratified-nowcasting.html">Nowcasting COVID-19 hospitalisations in Germany stratified by age</a>
+    </li>
+    <li>
       <a href="../articles/model-definitions.html">Model definition</a>
     </li>
   </ul></li>
@@ -109,11 +112,11 @@ a report model.</p>
 <dd><p>Output from <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p></dd>
 <dt>reference_effects</dt>
 <dd><p>A list of fixed and random design matrices
-defining the date of reference model. Defaults to <code>enw_intercept_model()</code>
+defining the date of reference model. Defaults to <code><a href="enw_formula.html">enw_formula()</a></code>
 which is an intercept only model.</p></dd>
 <dt>report_effects</dt>
 <dd><p>A list of fixed and random design matrices
-defining the date of reports model. Defaults to <code>enw_intercept_model()</code>
+defining the date of reports model. Defaults to <code><a href="enw_formula.html">enw_formula()</a></code>
 which is an intercept only model.</p></dd>
 <dt>dist</dt>
 <dd><p>Character string indicating the type of distribution to use for

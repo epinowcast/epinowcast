@@ -13,6 +13,9 @@
     <loc>samabbott.co.uk/epinowcast/LICENSE.html</loc>
   </url>
   <url>
+    <loc>samabbott.co.uk/epinowcast/articles/germany-age-stratified-nowcasting.html</loc>
+  </url>
+  <url>
     <loc>samabbott.co.uk/epinowcast/articles/index.html</loc>
   </url>
   <url>
@@ -31,6 +34,9 @@
     <loc>samabbott.co.uk/epinowcast/reference/check_quantiles.html</loc>
   </url>
   <url>
+    <loc>samabbott.co.uk/epinowcast/reference/enw_add_cumulative_membership.html</loc>
+  </url>
+  <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_add_latest_obs_to_nowcast.html</loc>
   </url>
   <url>
@@ -47,12 +53,6 @@
   </url>
   <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_assign_group.html</loc>
-  </url>
-  <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_cumulative_day_membership.html</loc>
-  </url>
-  <url>
-    <loc>samabbott.co.uk/epinowcast/reference/enw_cumulative_week_membership.html</loc>
   </url>
   <url>
     <loc>samabbott.co.uk/epinowcast/reference/enw_dates_to_factors.html</loc>
