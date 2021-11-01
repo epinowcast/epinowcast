@@ -15,7 +15,7 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 [![GitHub
 contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast)](https://github.com/epiforecasts/epinowcast/graphs/contributors)
 
-[![DOI](https://zenodo.org/badge/383161374.svg)](https://zenodo.org/badge/latestdoi/383161374)
+[![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
 This package contains tools to enable flexible and efficient
 hierarchical nowcasting of right censored epidemiological counts using a

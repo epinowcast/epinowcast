@@ -8,10 +8,10 @@ citEntry(entry = "Article",
   volume       = "",
   number       = "",
   pages        = "",
-  doi          = "",
+  doi          = "10.5281/zenodo.5637165",
 
   textVersion  =
   paste("Sam Abbott (2021).",
         "epinowcast: Nowcast right censored epidemiological count data, ", # nolint
-        "")
+        "DOI: 10.5281/zenodo.5637165")
 )
