@@ -9,27 +9,40 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  message = FALSE, warning = FALSE
 )
 ```
 
 # Nowcast right censored epidemological counts
 
-[![R-CMD-check](https://github.com/seabbs/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/seabbs/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/seabbs/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/seabbs/epinowcast)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![R-CMD-check](https://github.com/epiforecasts/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epiforecasts/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epiforecasts/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiforecasts/epinowcast)
 
-[![GitHub contributors](https://img.shields.io/github/contributors/seabbs/epinowcast)](https://github.com/seabbs/epinowcast/graphs/contributors) 
+[![Universe](https://epiforecasts.r-universe.dev/badges/epinowcast)](https://epiforecasts.r-universe.dev/)
+[![MIT
+license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epiforecasts/epinowcast/blob/master/LICENSE.md/)
+[![GitHub contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast)](https://github.com/epiforecasts/epinowcast/graphs/contributors) 
 
-This package contains tools to enable flexible and efficient nowcasting of  right censored epidemiological counts using a semi-mechanistic method with adjustment available for both day of reference and day of report effects. 
+[![DOI](https://zenodo.org/badge/383161374.svg)](https://zenodo.org/badge/latestdoi/383161374)
+
+This package contains tools to enable flexible and efficient hierarchical nowcasting of right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. 
 
 ## Installation
 
-
 ### Installing the package
+
+Install the stable development version of the package with:
+
+```{r, eval = FALSE}
+install.packages("epinowcast", repos = "https://epiforecasts.r-universe.dev")
+```
 
 Install the unstable development from GitHub using the following, 
 
 ```{r, eval = FALSE}
-remotes::install_github("seabbs/epinowcast", dependencies = TRUE)
+remotes::install_github("epiforecasts/epinowcast", dependencies = TRUE)
 ```
 
 ### Installing CmdStan
@@ -44,13 +57,25 @@ cmdstanr::install_cmdstan()
 
 ## Quick start
 
-### Example data
+In this quick start we use COVID-19 hospitalisations by date of positive test in Germany available up to the 1st of October 2021 to demonstrate the specification and fitting of a simple nowcasting model using `{epinowcast}`.Examples using more complex models are available in the package vignettes and in the papers linked to in the literature vignette.
+
+### Package
+
+As well as `epinowcast` this quick start makes use of `data.table` and `ggplot2` which are both installed when `epinowcast` is installed.
 
 ```{r}
 library(epinowcast)
+library(data.table)
 library(ggplot2)
+```
 
+### Data
+
+These data are sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence) where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitialisations by date of positive test.
+
+```{r}
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+nat_germany_hosp[report_date <= as.Date("2021-10-01")]
 
 retro_nat_germany <- enw_retrospective_data(
   nat_germany_hosp,
@@ -66,21 +91,21 @@ latest_germany_hosp
 
 ### Data preprocessing and model specification
 
-Process reported data into format required for `{epinowcast}` and return in a `{data.table}`. At this stage specify grouping (i.e age, location) if any.
+Process reported data into format required for `epinowcast` and return in a `{data.table}`. At this stage specify grouping (i.e age, location) if any. It can be useful to check this output before beginning to model to make sure everything is as expected.
 
 ```{r}
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
 pobs
 ```
 
-Construct an intercept only model for the date of reference.
+Construct an intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `{epinowcast}` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
 reference_effects <- enw_formula(pobs$metareference[[1]])
 reference_effects
 ```
 
-Construct a model with a random effect for the day of report.
+Construct a model with a random effect for the day of report using the metadata produced by `enw_preprocess_data()`.
 ```{r}
 report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
 report_effects
@@ -145,12 +170,14 @@ citation("epinowcast")
 
 ## How to make a bug report or feature request
 
-Please briefly describe your problem and what output you expect in an [issue](https://github.com/seabbs/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/seabbs/epinowcast/discussions/categories/q-a).
+Please briefly describe your problem and what output you expect in an [issue](https://github.com/epiforecasts/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
 
 ## Contributing
 
-We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/seabbs/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/seabbs/epinowcast/pulls).
+We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls).
+
+If interested in expanding the functionality of the underlying model note that `{epinowcast}` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested using the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome.
 
 ## Code of Conduct
   
-Please note that the `forecast.vocs` project is released with a [Contributor Code of Conduct](samabbott.co.uk/epinowcast/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the `forecast.vocs` project is released with a [Contributor Code of Conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

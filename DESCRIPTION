@@ -6,13 +6,12 @@ Authors@R:
              role = c("aut", "cre"),
              email = "sam.abbott@lshtm.ac.uk",
              comment = c(ORCID = "0000-0001-8057-8037"))
-Description: Tools to enable flexible and efficient nowcasting of  right
-    censored epidemiological counts using a semi-mechanistic method with
-    adjustment available for both day of reference and day of report effects. 
+Description: Tools to enable flexible and efficient hierarchical nowcasting of
+    right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. 
 License: MIT + file LICENSE
-URL: https://samabbott.co.uk/epinowcast/,
-    https://github.com/seabbs/epinowcast/
-BugReports: https://github.com/seabbs/epinowcast/issues/
+URL: https://epiforecasts.io/epinowcast/,
+    https://github.com/epiforecasts/epinowcast/
+BugReports: https://github.com/epiforecasts/epinowcast/issues/
 Depends:
     R (>= 2.10)
 Imports:

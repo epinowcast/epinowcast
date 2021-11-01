@@ -93,7 +93,7 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 
 ```{r}
 options(mc.cores = 2)
-simple_nowcast <- epinowcast(pobs,
+nowcast <- epinowcast(pobs,
   model = model,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
@@ -104,8 +104,8 @@ simple_nowcast <- epinowcast(pobs,
 
 We first visual the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.
 
-```{r simple_nowcast, height = 9, width = 9}
-plot(simple_nowcast, obs = latest_nat_germany) +
+```{r nowcast, height = 9, width = 9}
+plot(nowcast, obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
@@ -119,7 +119,7 @@ plot(simple_nowcast, type = "posterior", col = age_group, fill = age_group) +
 
 ## Reporting day of the week effect
 
-As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function.
+As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `{epinowcast}` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
 dow_report_effects <- enw_formula(pobs$metareport, random = "day_of_week")
@@ -134,9 +134,8 @@ dow_nowcast <- epinowcast(pobs,
   model = model,
   report_effects = dow_report_effects,
   save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  show_messages = FALSE, refresh = 0
+  output_loglik = TRUE, pp = TRUE, debug = TRUE,
+  chains = 2, threads_per_chain = threads, adapt_delta = 0.6
 )
 ```
 
@@ -230,6 +229,8 @@ In all the models defined above we have assumed that the delay distribution, asi
 
 There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models were there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a seperate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing indepdently of reference date (this would be similar to the time varying model we defined above but with this effect occuring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
 
+If interested in expanding the functionality of the underlying model note that `{epinowcast}` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested using the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome.
+
 # Evaluation
 
 As we have only nowcast a single date this evaluation is anything but complete however we can quantatively assess the models for this report date. 
@@ -238,7 +239,7 @@ We first list all models,
 
 ```{r}
 nowcasts <- list(
-  simple = simple_nowcast, dow = dow_nowcast, age = age_nowcast,
+  baseline = nowcast, dow = dow_nowcast, age = age_nowcast,
   week = week_nowcast, gamma = gamma_nowcat
 )
 ```

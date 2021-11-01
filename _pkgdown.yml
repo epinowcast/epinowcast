@@ -1,4 +1,4 @@
-url: samabbott.co.uk/epinowcast/
+url: epiforecasts.io/epinowcast/
 template:
   package: preferably
   params:
@@ -8,7 +8,7 @@ template:
     card: summary_large_image
   opengraph:
     image:
-      src: man/figures/README-unnamed-chunk-8-1.png
+      src: man/figures/README-nowcast-1.png
       alt: An R package for nowcasting right censored epidemiolgical counts
 
 

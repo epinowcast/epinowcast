@@ -24,7 +24,7 @@
 // # compile function for use in R
 // source(here::here("R", "utils.R"))
 // expose_stan_fns(c("hazard.stan", "expected-observations.stan"),
-//                 "stan/functions")
+//                 "inst/stan/functions")
 //
 // tar_obs <- 1
 // date_p <- (plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
