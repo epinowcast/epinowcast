@@ -25,9 +25,8 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Functions used to formulate models
+\code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_cumulative_day_membership}()},
-\code{\link{enw_cumulative_week_membership}()},
 \code{\link{enw_dates_to_factors}()},
 \code{\link{enw_effects_metadata}()},
 \code{\link{enw_formula}()}

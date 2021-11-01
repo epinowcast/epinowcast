@@ -117,23 +117,31 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd") {
 }
 
 #' @title FUNCTION_TITLE
+#'
 #' @description FUNCTION_DESCRIPTION
+#'
 #' @param metaobs PARAM_DESCRIPTION
+#'
+#' @param feature
+#'
 #' @return OUTPUT_DESCRIPTION
 #' @family modeldesign
 #' @export
-enw_cumulative_week_membership <- function(metaobs) {
-
-}
-
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param metaobs PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @family modeldesign
-#' @export
-enw_cumulative_day_membership <- function(metaobs) {
-
+enw_add_cumulative_membership <- function(metaobs, feature) {
+  metaobs <- data.table::as.data.table(metaobs)
+  cfeature <- paste0("c", feature)
+  metaobs[, (cfeature) := as.factor(get(feature))]
+  metaobs <- cbind(
+    metaobs, model.matrix(as.formula(paste0("~ 0 + ", cfeature)), metaobs)
+  )
+  metaobs[, (cfeature) := NULL]
+  metaobs[, (paste0(cfeature, "0")) := NULL]
+  cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
+  metaobs[,
+    (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),
+    .SDcols = cfeatures, by = "group"
+  ]
+  return(metaobs[])
 }
 
 #' @title FUNCTION_TITLE
@@ -149,12 +157,18 @@ enw_cumulative_day_membership <- function(metaobs) {
 #' @family modeldesign
 #' @importFrom data.table copy
 #' @export
-enw_formula <- function(metaobs, fixed = c(), random = c()) {
+enw_formula <- function(metaobs, fixed = c(), random = c(),
+                        custom_random = c()) {
   metaobs <- data.table::copy(metaobs)
   form <- c("1")
   no_contrasts <- FALSE
 
-  form <- c(form, fixed, random)
+  cr_in_dt <- purrr::map(
+    custom_random, ~ colnames(metaobs)[startsWith(colnames(metaobs), .)]
+  )
+  cr_in_dt <- unlist(cr_in_dt)
+
+  form <- c(form, fixed, random, cr_in_dt)
   if (length(random) > 0) {
     no_contrasts <- c(random)
   }
@@ -168,6 +182,8 @@ enw_formula <- function(metaobs, fixed = c(), random = c()) {
 
   # get effects
   effects <- enw_effects_metadata(fixed$design)
+
+  random <- c(random, custom_random)
 
   if (length(random) == 0) {
     random <- enw_design(~1, effects, sparse = FALSE)

@@ -4,7 +4,7 @@
 \alias{enw_formula}
 \title{FUNCTION_TITLE}
 \usage{
-enw_formula(metaobs, fixed = c(), random = c())
+enw_formula(metaobs, fixed = c(), random = c(), custom_random = c())
 }
 \arguments{
 \item{metaobs}{PARAM_DESCRIPTION}
@@ -21,9 +21,8 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Functions used to formulate models
+\code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_cumulative_day_membership}()},
-\code{\link{enw_cumulative_week_membership}()},
 \code{\link{enw_dates_to_factors}()},
 \code{\link{enw_design}()},
 \code{\link{enw_effects_metadata}()}
