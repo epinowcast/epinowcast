@@ -10,6 +10,9 @@ epinowcast(
   report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
   dist = "lognormal",
   model = epinowcast::enw_model(),
+  as_data_list = epinowcast::enw_as_data_list,
+  inits = epinowcast::enw_inits,
+  fit = epinowcast::enw_sample,
   nowcast = TRUE,
   pp = FALSE,
   likelihood = TRUE,
@@ -34,6 +37,12 @@ reference date effects. The default is to use a lognormal but other options
 available include: gamma distributed ("gamma").}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
+
+\item{as_data_list}{PARAM_DESCRIPTION}
+
+\item{inits}{PARAM DESCRIPTION}
+
+\item{fit}{PARAM DESCRIPTION}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}

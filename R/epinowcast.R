@@ -4,6 +4,12 @@
 #' to produce a nowcast from observed preprocessed data, a reference model, and
 #' a report model.
 #'
+#' @param as_data_list PARAM_DESCRIPTION
+#'
+#' @param inits PARAM DESCRIPTION
+#'
+#' @param fit PARAM DESCRIPTION
+#'
 #' @param ... Additional arguments passed to [enw_sample()].
 #'
 #' @return OUTPUT_DESCRIPTION
@@ -22,10 +28,13 @@ epinowcast <- function(pobs,
                        ),
                        dist = "lognormal",
                        model = epinowcast::enw_model(),
+                       as_data_list = epinowcast::enw_as_data_list,
+                       inits = epinowcast::enw_inits,
+                       fit = epinowcast::enw_sample,
                        nowcast = TRUE, pp = FALSE,
                        likelihood = TRUE, debug = FALSE,
                        output_loglik = FALSE, ...) {
-  stan_data <- enw_as_data_list(pobs,
+  stan_data <- as_data_list(pobs,
     reference_effects = reference_effects,
     report_effects = report_effects,
     dist = dist, nowcast = nowcast,
@@ -33,9 +42,9 @@ epinowcast <- function(pobs,
     output_loglik = output_loglik
   )
 
-  inits <- enw_inits(stan_data)
+  inits <- inits(stan_data)
 
-  fit <- enw_sample(data = stan_data, model = model, init = inits, ...)
+  fit <- fit(data = stan_data, model = model, init = inits, ...)
 
   out <- cbind(pobs, fit)
   class(out) <- c("epinowcast", class(out))
