@@ -41,7 +41,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 
   # make all character variables factors
   chars <- colnames(data)[sapply(data, function(x) is.character(x))]
-  data[, lapply(.SD, as.factor), .SDcols = chars]
+  data <- data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
 
   # make model.matrix helper
   mod_matrix <- function(formula, data, ...) {
