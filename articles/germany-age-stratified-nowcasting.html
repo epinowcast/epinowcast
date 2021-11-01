@@ -30,7 +30,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Nowcasting COVID-19 hospitalisations in Germany stratified by age">
 <meta property="og:description" content="epinowcast">
-<meta property="og:image" content="samabbott.co.uk/epinowcast/reference/figures/README-unnamed-chunk-8-1.png">
+<meta property="og:image" content="epiforecasts.io/epinowcast/reference/figures/README-nowcast-1.png">
 <meta property="og:image:alt" content="An R package for nowcasting right censored epidemiolgical counts">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -88,7 +88,7 @@
         </li>
         
         <li>
-  <a href="https://github.com/seabbs/epinowcast/" class="external-link">
+  <a href="https://github.com/epiforecasts/epinowcast/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -113,7 +113,7 @@
       <h1 data-toc-skip>Nowcasting COVID-19 hospitalisations in Germany stratified by age</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/seabbs/epinowcast/blob/HEAD/vignettes/germany-age-stratified-nowcasting.Rmd" class="external-link"><code>vignettes/germany-age-stratified-nowcasting.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epiforecasts/epinowcast/blob/HEAD/vignettes/germany-age-stratified-nowcasting.Rmd" class="external-link"><code>vignettes/germany-age-stratified-nowcasting.Rmd</code></a></small>
       <div class="hidden name"><code>germany-age-stratified-nowcasting.Rmd</code></div>
 
     </div>
@@ -172,7 +172,7 @@
 <p>Note that here we use two chains each using 2 threads as a demonstration but in general using 4 chains is recommended. Also note that here we have silenced fitting progress and potential warning messages but in general this should not be done.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
-<span class="va">simple_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,
+<span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,
   model <span class="op">=</span> <span class="va">model</span>,
   save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,
   output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -181,7 +181,7 @@
 <span class="op">)</span></code></pre></div>
 <p>We first visual the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">simple_nowcast</span>, obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
 <p>In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. Here we see fairly clearly oscillations in reported cases every 7 days indicating some kind of week day adjustment may be needed.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -191,7 +191,7 @@
 <div class="section level2">
 <h2 id="reporting-day-of-the-week-effect">Reporting day of the week effect<a class="anchor" aria-label="anchor" href="#reporting-day-of-the-week-effect"></a>
 </h2>
-<p>As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function.</p>
+<p>As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <a href="https://epiforecasts.io/epinowcast/">epinowcast</a> uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">dow_report_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span>, random <span class="op">=</span> <span class="st">"day_of_week"</span><span class="op">)</span>
 <span class="va">dow_report_effects</span></code></pre></div>
@@ -202,9 +202,8 @@
   model <span class="op">=</span> <span class="va">model</span>,
   report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,
   save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,
-  output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,
-  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>,
-  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>
+  output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>, debug <span class="op">=</span> <span class="cn">TRUE</span>,
+  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>, adapt_delta <span class="op">=</span> <span class="fl">0.6</span>
 <span class="op">)</span></code></pre></div>
 <p>Nowcast performance looks visually improved but we there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance).</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -217,7 +216,8 @@
 <p>It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">age_reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span>
-  <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span>, random <span class="op">=</span> <span class="st">"age_group"</span>
+  <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span>,
+  random <span class="op">=</span> <span class="st">"age_group"</span>
 <span class="op">)</span>
 <span class="va">age_reference_effects</span></code></pre></div>
 <p>We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.</p>
@@ -244,13 +244,15 @@
 <p>To define this reference date models formula we first need to create new features in the metadata.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">metareference</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_add_cumulative_membership.html">enw_add_cumulative_membership</a></span><span class="op">(</span>
-  <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, feature <span class="op">=</span> <span class="st">"week"</span>
+  <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,
+  feature <span class="op">=</span> <span class="st">"week"</span>
 <span class="op">)</span>
 <span class="va">metareference</span></code></pre></div>
 <p>We can now define the model formula as previously but this time making use of the <code>custom_random</code> argument which also creates a random effect but this time using partial matching.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">week_age_reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span>
-  <span class="va">metareference</span>, random <span class="op">=</span> <span class="st">"age_group"</span>, custom_random <span class="op">=</span> <span class="st">"cweek"</span>
+  <span class="va">metareference</span>,
+  random <span class="op">=</span> <span class="st">"age_group"</span>, custom_random <span class="op">=</span> <span class="st">"cweek"</span>
 <span class="op">)</span>
 <span class="va">week_age_reference_effects</span></code></pre></div>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
@@ -273,6 +275,7 @@
 </h2>
 <p>In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by <code>epinowcast</code>) or assuming that the report delay is fully non-parameteric which is not yet supported but will be in future package versions.</p>
 <p>There are any number of additional models we could explore within the framework supported by <code>epinowcast</code> as well as a large number of alternative parameterisations that are not supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models were there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in <code>epinowcast</code> either as a seperate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing indepdently of reference date (this would be similar to the time varying model we defined above but with this effect occuring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.</p>
+<p>If interested in expanding the functionality of the underlying model note that <a href="https://epiforecasts.io/epinowcast/">epinowcast</a> allows users to pass in their own models meaning that alternative parameterisations, for example alterting the forecast model used for inferring expected observations, may be easily tested using the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome.</p>
 </div>
 </div>
 <div class="section level1">
@@ -281,8 +284,10 @@
 <p>As we have only nowcast a single date this evaluation is anything but complete however we can quantatively assess the models for this report date.</p>
 <p>We first list all models,</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>simple <span class="op">=</span> <span class="va">simple_nowcast</span>, dow <span class="op">=</span> <span class="va">dow_nowcast</span>, age <span class="op">=</span> <span class="va">age_nowcast</span>,
-                 week <span class="op">=</span> <span class="va">week_nowcast</span>, gamma <span class="op">=</span> <span class="va">gamma_nowcat</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  baseline <span class="op">=</span> <span class="va">nowcast</span>, dow <span class="op">=</span> <span class="va">dow_nowcast</span>, age <span class="op">=</span> <span class="va">age_nowcast</span>,
+  week <span class="op">=</span> <span class="va">week_nowcast</span>, gamma <span class="op">=</span> <span class="va">gamma_nowcat</span>
+<span class="op">)</span></code></pre></div>
 <p>As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the <code>loo</code> package though note this is not typically appropriate for time series data and the approximation used here to avoid refitting is likely to be poor.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">loos</span> <span class="op">&lt;-</span> <span class="fu">map</span><span class="op">(</span><span class="va">nowcasts</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">loo</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
@@ -290,9 +295,10 @@
 <p>More rigourously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score, and relative pairwise performance.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">summmarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu">map</span><span class="op">(</span>
-  <span class="va">nowcasts</span>, <span class="va">summary</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">0.95</span>, <span class="fl">0.975</span><span class="op">)</span>
+  <span class="va">nowcasts</span>, <span class="va">summary</span>,
+  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">0.95</span>, <span class="fl">0.975</span><span class="op">)</span>
 <span class="op">)</span>
-<span class="va">summmarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu">rbindlist</span><span class="op">(</span><span class="va">summmarised</span>, idcol <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span></code></pre></div>
+<span class="va">summmarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summmarised</span>, idcol <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span></code></pre></div>
 </div>
   </div>
 
