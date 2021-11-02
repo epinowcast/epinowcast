@@ -8,6 +8,7 @@ epinowcast(
   pobs,
   reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
   report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
+  priors = epinowcast::enw_priors(),
   dist = "lognormal",
   model = epinowcast::enw_model(),
   as_data_list = epinowcast::enw_as_data_list,
@@ -31,6 +32,8 @@ which is an intercept only model.}
 \item{report_effects}{A list of fixed and random design matrices
 defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
 which is an intercept only model.}
+
+\item{priors}{DESCRIPTION.}
 
 \item{dist}{Character string indicating the type of distribution to use for
 reference date effects. The default is to use a lognormal but other options

@@ -26,6 +26,7 @@ epinowcast <- function(pobs,
                        report_effects = epinowcast::enw_formula(
                          pobs$metareport[[1]]
                        ),
+                       priors = epinowcast::enw_priors(),
                        dist = "lognormal",
                        model = epinowcast::enw_model(),
                        as_data_list = epinowcast::enw_as_data_list,
@@ -37,6 +38,7 @@ epinowcast <- function(pobs,
   stan_data <- as_data_list(pobs,
     reference_effects = reference_effects,
     report_effects = report_effects,
+    priors = priors,
     dist = dist, nowcast = nowcast,
     likelihood = likelihood, debug = debug, pp = pp,
     output_loglik = output_loglik
