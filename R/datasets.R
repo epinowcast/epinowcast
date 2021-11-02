@@ -1,4 +1,4 @@
-#' Hospitalisations in Germany by date of report and refernece
+#' Hospitalisations in Germany by date of report and reference
 #'
 #' @return A `data.table`
 #'

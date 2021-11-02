@@ -3,7 +3,7 @@
 \docType{data}
 \name{germany_covid19_hosp}
 \alias{germany_covid19_hosp}
-\title{Hospitalisations in Germany by date of report and refernece}
+\title{Hospitalisations in Germany by date of report and reference}
 \format{
 An object of class \code{data.table} (inherits from \code{data.frame}) with 1536885 rows and 5 columns.
 }
@@ -14,7 +14,7 @@ germany_covid19_hosp
 A \code{data.table}
 }
 \description{
-Hospitalisations in Germany by date of report and refernece
+Hospitalisations in Germany by date of report and reference
 }
 \concept{data}
 \keyword{datasets}

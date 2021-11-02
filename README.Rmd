@@ -71,7 +71,7 @@ library(ggplot2)
 
 ### Data
 
-These data are sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence) where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitialisations by date of positive test.
+These data are sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence) where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.
 
 ```{r}
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
@@ -128,7 +128,7 @@ nowcast <- epinowcast(pobs,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
   chains = 2, threads_per_chain = 2,
-  refresh = 0, show_messages = FALSE
+  show_messages = FALSE, refresh = 0
 )
 ```
 

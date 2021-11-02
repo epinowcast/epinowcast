@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this vignette we explore using `epinowcast` to estimate COVID-19 hospitalisations by date of positive test in Germany stratified by age using several model specifications with different degrees of flexibilty and then evaluate the resulting nowcasts using visual checks, approximate leave-one-out (LOO) cross-validation using Pareto smoothed importance sampling, and out of sample scoring using CRPS and pairwise relative performance for the single report date considered here. Before working through this vignette reading the model definition is advised (`vignette("model-definition")`)
+In this vignette we explore using `epinowcast` to estimate COVID-19 hospitalisations by date of positive test in Germany stratified by age using several model specifications with different degrees of flexibility and then evaluate the resulting nowcasts using visual checks, approximate leave-one-out (LOO) cross-validation using Pareto smoothed importance sampling, and out of sample scoring using CRPS and pairwise relative performance for the single report date considered here. Before working through this vignette reading the model definition is advised (`vignette("model-definition")`)
 
 We use the `epinowcast` package, `data.table` and `purrr` for data manipulation, `ggplot2` for plotting, `loo` to approximately evaluate out of sample performance and `scoringutils` to evaluate out of sample forecast performance for the single report date considered.
 
@@ -29,7 +29,7 @@ library(loo)
 library(scoringutils)
 ```
 
-This vignette includes several models that take upwards of 10 minutes to fit to data on a moderately equiped laptop. To speed up model fitting if more CPUs are available here we set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue alter this setting.
+This vignette includes several models that take upwards of 10 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available here we set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue alter this setting.
 
 ```{r, eval  = TRUE}
 threads <- 2
@@ -66,7 +66,7 @@ latest_nat_germany <- enw_latest_data(latest_nat_germany)
 
 # Data preprocessing
 
-`epinowcast` works by assuming data has been preprocessed into the format it expects. It is at this stage that arbitary groupings of observations can occur which will then be proprogated throughout all subsequent modelling steps. Here we have data stratified by age and so group by age group but in principle this could be any grouping or combintation of groups indepedent of the reference and report date models. Here we also assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data but note that in most cases the majority of right censoring occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e a 20 day delay will be much faster to fit a model for than a 40 day delay). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.
+`epinowcast` works by assuming data has been preprocessed into the format it expects. It is at this stage that arbitrary groupings of observations can occur which will then be propagatedthroughout all subsequent modelling steps. Here we have data stratified by age and so group by age group but in principle this could be any grouping or combination of groups independent of the reference and report date models. Here we also assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data but note that in most cases the majority of right censoring occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e a 20 day delay will be much faster to fit a model for than a 40 day delay). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.
 
 Another key modelling choice we make at this stage is to model age groups jointly with aggregated hospitalisations. This implicitly assumes that aggregated and non-aggregated data are not comparable (which may or may not be the case) but that the reporting process shares some of the same mechanisms. Another way to approach this would be to only model age stratified hospitalisations and then to aggregate the nowcast estimates into total counts after fitting the model which assumes that this aggregation is possible.
 
@@ -112,10 +112,9 @@ plot(nowcast, obs = latest_nat_germany) +
 In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. Here we see fairly clearly oscillations in reported cases every 7 days indicating some kind of week day adjustment may be needed.
 
 ```{r simple_pp, fig.width = 24, fig.height = 24, warning = FALSE, message = FALSE}
-plot(simple_nowcast, type = "posterior", col = age_group, fill = age_group) +
+plot(nowcast, type = "posterior", col = age_group, fill = age_group) +
   facet_wrap(vars(reference_date), scale = "free")
 ```
-
 
 ## Reporting day of the week effect
 
@@ -126,6 +125,19 @@ dow_report_effects <- enw_formula(pobs$metareport, random = "day_of_week")
 dow_report_effects
 ```
 
+To speed up model fitting we make use of posterior information from the previous model (with slight inflation) for some parameters. Note that this is not a truely Bayesian approach and in some situtations may cause issues. 
+
+```{r}
+params <- c("logmean_int", "logsd_int", "sqrt_phi")
+posteriors <- nowcast$fit[[1]]$summary(params)
+posteriors <- setDT(posteriors)[, sd := sd * 2]
+
+priors <- enw_priors()
+priors[!(variable %in% params)]
+priors <- rbind(priors, posteriors, fill = TRUE)
+priors
+```
+
 We now repeat the nowcasting step with the day of the week reporting model included.
 
 ```{r}
@@ -133,13 +145,15 @@ options(mc.cores = 2)
 dow_nowcast <- epinowcast(pobs,
   model = model,
   report_effects = dow_report_effects,
+  priors = priors,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE, debug = TRUE,
-  chains = 2, threads_per_chain = threads, adapt_delta = 0.6
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
 )
 ```
 
-Nowcast performance looks visually improved but we there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance).
+Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance).
 
 ```{r dow_nowcast, height = 9, width = 9}
 plot(dow_nowcast, obs = latest_nat_germany) +
@@ -166,6 +180,7 @@ age_nowcast <- epinowcast(pobs,
   model = model,
   reference_effects = age_reference_effects,
   report_effects = dow_report_effects,
+  priors = priors,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
@@ -211,6 +226,7 @@ week_nowcast <- epinowcast(pobs,
   model = model,
   reference_effects = week_age_reference_effects,
   report_effects = dow_report_effects,
+  priors = priors,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
@@ -225,22 +241,21 @@ plot(week_nowcast, obs = latest_nat_germany) +
 
 ## Alternative models
 
-In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by `epinowcast`) or assuming that the report delay is fully non-parameteric which is not yet supported but will be in future package versions.
+In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by `epinowcast`) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.
 
-There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models were there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a seperate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing indepdently of reference date (this would be similar to the time varying model we defined above but with this effect occuring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
+There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models were there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
 
 If interested in expanding the functionality of the underlying model note that `{epinowcast}` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested using the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome.
 
 # Evaluation
 
-As we have only nowcast a single date this evaluation is anything but complete however we can quantatively assess the models for this report date. 
+As we have only nowcast a single date this evaluation is anything but complete however we can qualitatively assess the models for this report date. 
 
 We first list all models,
 
 ```{r}
 nowcasts <- list(
-  baseline = nowcast, dow = dow_nowcast, age = age_nowcast,
-  week = week_nowcast, gamma = gamma_nowcat
+  baseline = nowcast, dow = dow_nowcast, age = age_nowcast, week = week_nowcast
 )
 ```
 
@@ -251,7 +266,7 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 ```
 
-More rigourously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score, and relative pairwise performance.
+More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score, and relative pairwise performance.
 
 ```{r}
 summmarised_nowcasts <- map(

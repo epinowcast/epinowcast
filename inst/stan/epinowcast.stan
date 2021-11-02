@@ -7,6 +7,7 @@ functions {
 }
 
 data {
+  // Indexes and lookups
   int t; // time range over which data is available 
   int s; // number of snapshots there are
   int g; // number of data groups
@@ -15,8 +16,10 @@ data {
   int sl[s]; // how many days of reported data does each snapshot have
   int sg[s]; // how snapshots are related
   int dmax; // maximum possible report date
+  // Observations
   int obs[s, dmax]; // obs for each primary date (row) and report date (column)
   int latest_obs[t, g]; // latest obs for each snapshot group
+  // Reference day model
   int npmfs; // how many unique pmfs there are
   int dpmfs[s]; // how each date links to a pmf
   int neffs; // number of effects to apply
@@ -24,6 +27,7 @@ data {
   int neff_sds; // number of standard deviations to use for pooling
   matrix[neffs, neff_sds + 1] d_random; // Pooling pmf design matrix 
   int dist; // distribution used for pmfs (0 = lognormal, 1 = gamma)
+  // Reporting day model
   int rd; // how many reporting days are there (t + dmax - 1)
   int urds; // how many unique reporting days are there
   int rdlurd[rd, g]; // how each report date links to a sparse report effect
@@ -31,11 +35,20 @@ data {
   matrix[urds, nrd_effs + 1] rd_fixed; // design matrix for report dates
   int nrd_eff_sds; // number of standard deviations to use for pooling for rds
   matrix[nrd_effs, nrd_eff_sds + 1] rd_random; // Pooling pmf design matrix 
+  // Control parameters
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
   int pp; // should posterior predictions be produced
   int cast; // should a nowcast be produced
   int ologlik; // Should the pointwise log likelihood be calculated
+  // Priors (1st index = mean, 2nd index = standard deviation)
+  real eobs_lsd_p[2]; // Standard deviation for expected final observations
+  real logmean_int_p[2]; // log mean intercept for reference date delay
+  real logsd_int_p[2]; // log standard deviation for the reference date delay
+  real logmean_sd_p[2]; // standard deviation of scaled pooled logmean effects
+  real logsd_sd_p[2]; // standard deviation of scaled pooled logsd effects
+  real rd_eff_sd_p[2]; //standard deviation of scaled pooled report date effects
+  real sqrt_phi_p[2]; // 1/sqrt(overdispersion)
 }
 
 transformed data{
@@ -113,20 +126,20 @@ model {
   // priors for unobserved expected reported cases
   leobs_init ~ normal(eobs_init, 1);
   for (i in 1:g) {
-    eobs_lsd[i] ~ normal(0, 1) T[0,];
+    eobs_lsd[i] ~ normal(eobs_lsd_p[1], eobs_lsd_p[2]) T[0,];
     leobs_resids[i] ~ std_normal();
   }
   // priors for the intercept of the log normal truncation distribution
-  logmean_int ~ normal(0, 1);
-  logsd_int ~ normal(0, 1);
+  logmean_int ~ normal(logmean_int_p[1], logmean_int_p[2]);
+  logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
   // priors and scaling for date of reference effects
   if (neffs) {
     logmean_eff ~ std_normal();
     logsd_eff ~ std_normal();
     if (neff_sds) {
       for (i in 1:neff_sds) {
-        logmean_sd[i] ~ normal(0, 1) T[0,];
-        logsd_sd[i] ~ normal(0, 1) T[0,];
+        logmean_sd[i] ~ normal(logmean_sd_p[1], logmean_sd_p[2]) T[0,];
+        logsd_sd[i] ~ normal(logsd_sd_p[1], logsd_sd_p[2]) T[0,];
       }
     }
   }
@@ -135,12 +148,12 @@ model {
     rd_eff ~ std_normal();
     if (nrd_eff_sds) {
       for (i in 1:nrd_eff_sds) {
-        rd_eff_sd[i] ~ normal(0, 1) T[0,];
+        rd_eff_sd[i] ~ normal(rd_eff_sd_p[1], rd_eff_sd_p[2]) T[0,];
       }
     }
   }
   // reporting overdispersion (1/sqrt)
-  sqrt_phi ~ normal(0, 1) T[0,];
+  sqrt_phi ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
   // log density: observed vs model
   if (likelihood) {
     target += reduce_sum(obs_lupmf, st, 1, obs, sl, imp_obs, sg, st, rdlurd,
@@ -150,7 +163,7 @@ model {
 
 generated quantities {
   int pp_obs[pp ? sum(sl) : 0];
-  vector[ologlik ? sum(sl) : 0] log_lik;
+  vector[ologlik ? s : 0] log_lik;
   int pp_inf_obs[cast ? dmax : 0,cast ? g : 0];
   if (cast) {
     real tar_obs;
@@ -164,12 +177,10 @@ generated quantities {
       exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs, phi);
       if (ologlik) {
-        int start_t = 0;
+        log_lik[i] = 0;
         for (j in 1:sl[i]) {
-          log_lik[start_t + j] = 
-            neg_binomial_2_lpmf(obs[i, 1:sl[i]] | exp_obs[1:sl[i]], phi);
+          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j], phi);
         }
-        start_t += sl[i];
       }
     }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
