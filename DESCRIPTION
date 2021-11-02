@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Nowcast Right Censored Epidemiological Counts
-Version: 0.0.2
+Version: 0.0.2.1000
 Authors@R:
     person(given = "Sam Abbott",
              role = c("aut", "cre"),

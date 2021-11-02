@@ -112,7 +112,7 @@ plot(nowcast, obs = latest_nat_germany) +
 In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. Here we see fairly clearly oscillations in reported cases every 7 days indicating some kind of week day adjustment may be needed.
 
 ```{r simple_pp, fig.width = 24, fig.height = 24, warning = FALSE, message = FALSE}
-plot(simple_nowcast, type = "posterior", col = age_group, fill = age_group) +
+plot(nowcast, type = "posterior", col = age_group, fill = age_group) +
   facet_wrap(vars(reference_date), scale = "free")
 ```
 
@@ -135,11 +135,12 @@ dow_nowcast <- epinowcast(pobs,
   report_effects = dow_report_effects,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE, debug = TRUE,
-  chains = 2, threads_per_chain = threads, adapt_delta = 0.6
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
 )
 ```
 
-Nowcast performance looks visually improved but we there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance).
+Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance).
 
 ```{r dow_nowcast, height = 9, width = 9}
 plot(dow_nowcast, obs = latest_nat_germany) +
@@ -239,8 +240,7 @@ We first list all models,
 
 ```{r}
 nowcasts <- list(
-  baseline = nowcast, dow = dow_nowcast, age = age_nowcast,
-  week = week_nowcast, gamma = gamma_nowcat
+  baseline = nowcast, dow = dow_nowcast, age = age_nowcast, week = week_nowcast
 )
 ```
 
