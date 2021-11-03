@@ -7,9 +7,9 @@
 #' @param type A character string indicating the type of summary to return.
 #' Currently supported options are "nowcast" which summaries the nowcast
 #' posterior using [enw_nowcast_summary()],  "fit" which returns the
-#' summarised `cmdstanr` fit, and "posterior_prediction" which returns
-#' summarised posterior predictions for observations used in fitting (
-#' using [enw_pp_summary()]).
+#' summarised `cmdstanr` fit using [enw_posterior()], and
+#' "posterior_prediction" which returns summarised posterior predictions for
+#' observations used in fitting (using [enw_pp_summary()]).
 #'
 #' @param ... Pass additional arguments to summary functions.
 #'
@@ -24,7 +24,7 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
   if (type %in% "nowcast") {
     s <- enw_nowcast_summary(object$fit[[1]], object$latest[[1]], ...)
   } else if (type %in% "fit") {
-    s <- fit$fit[[1]]$cmdstan_summary(...)
+    s <- enw_posterior(object$fit[[1]], ...)
   } else if (type %in% "posterior_prediction") {
     s <- enw_pp_summary(object$fit[[1]], object$diff[[1]], ...)
   }
@@ -37,8 +37,8 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
 #'
 #' @param x A `data.table` of output as produced by [epinowcast()].
 #'
-#' @param obs A `data.frame` of observed data which may be passed to lower level
-#' methods.
+#' @param latest_obs A `data.frame` of observed data which may be passed to
+#' lower level methods.
 #'
 #' @param type A character string indicating the type of plot required.
 #' Currently supported options are "nowcast" which plots the nowcast
@@ -55,18 +55,32 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
 #' @inheritParams enw_plot_nowcast_quantiles
 #' @return `ggplot2` object
 #' @export
-plot.epinowcast <- function(x, obs = NULL, type = "nowcast", log = FALSE, ...) {
+plot.epinowcast <- function(x, latest_obs = NULL, type = "nowcast",
+                            log = FALSE, ...) {
   type <- match.arg(type, choices = c("nowcast", "posterior_prediction"))
 
   if (type %in% "nowcast") {
     n <- summary(x, type = "nowcast")
-    if (is.null(obs)) {
-      obs <- x$latest[[1]]
+    if (is.null(latest_obs)) {
+      atest_obs <- x$latest[[1]]
     }
-    plot <- enw_plot_nowcast_quantiles(n, obs, log = log, ...)
+    plot <- enw_plot_nowcast_quantiles(n, latest_obs, log = log, ...)
   } else if (type %in% "posterior_prediction") {
     n <- summary(x, type = type)
     plot <- enw_plot_pp_quantiles(n, log = log, ...)
   }
   return(plot)
+}
+
+
+summary.enw_preprocess_data <- function() {
+
+}
+
+plot.enw_preprocess_data <- function(x, latest_obs = NULL, type = "reference",
+                                     ...) {
+  type <- match.arg(type, c("report", "reference"))
+  if (type %in% "reference") {
+
+  }
 }

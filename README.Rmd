@@ -149,7 +149,7 @@ summary(nowcast, probs = c(0.05, 0.95))
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
 
 ```{r nowcast}
-plot(nowcast, obs = latest_germany_hosp)
+plot(nowcast, latest_obs = latest_germany_hosp)
 ```
 
 Plot posterior predictions for observed notifications by date of

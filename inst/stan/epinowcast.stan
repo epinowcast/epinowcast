@@ -76,8 +76,8 @@ parameters {
 }
 
 transformed parameters{
-  vector<lower=-10, upper=logdmax>[npmfs] logmean;
-  vector<lower=1e-3, upper=2*dmax>[npmfs] logsd;
+  vector[npmfs] logmean;
+  vector[npmfs] logsd;
   matrix[dmax, npmfs] pmfs; // sparse report distributions
   matrix[dmax, npmfs] ref_lh; // sparse report logit hazards
   vector[urds] srdlh; // sparse report day logit hazards

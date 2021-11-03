@@ -4,15 +4,16 @@
 \alias{enw_plot_nowcast_quantiles}
 \title{Plot nowcast quantiles}
 \usage{
-enw_plot_nowcast_quantiles(nowcast, obs = NULL, log = FALSE, ...)
+enw_plot_nowcast_quantiles(nowcast, latest_obs = NULL, log = FALSE, ...)
 }
 \arguments{
 \item{nowcast}{A \code{data.frame} of summarised posterior nowcast
 estimates containing at least a \code{confirm} count column and a
 \code{reference_date} date variable.}
 
-\item{obs}{A \code{data.frame} of observed data containing at least a \code{confirm}
-count variable and the same date variable in \code{nowcast}.}
+\item{latest_obs}{A data frame of observed data containing at least a
+\code{confirm} count variable and the same date variable as in the main data.frame
+used for plotting.}
 
 \item{log}{Logical, defaults to \code{FALSE}. Should counts be plot on the log
 scale.}
@@ -27,6 +28,7 @@ Plot nowcast quantiles
 }
 \seealso{
 Plotting functions
+\code{\link{enw_plot_obs}()},
 \code{\link{enw_plot_pp_quantiles}()},
 \code{\link{enw_plot_quantiles}()},
 \code{\link{enw_plot_theme}()},

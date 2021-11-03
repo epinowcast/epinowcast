@@ -18,6 +18,7 @@ Package plot theme
 \seealso{
 Plotting functions
 \code{\link{enw_plot_nowcast_quantiles}()},
+\code{\link{enw_plot_obs}()},
 \code{\link{enw_plot_pp_quantiles}()},
 \code{\link{enw_plot_quantiles}()},
 \code{\link{plot.epinowcast}()}

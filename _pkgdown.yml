@@ -24,22 +24,26 @@ reference:
     desc: Functions for nowcasting.
     contents:
       - has_concept("epinowcast")
-  - title: Model
-    desc: Functions for fitting the nowcasting model.
-    contents:
-      - has_concept("model")
   - title: Preprocess
     desc: Functions for preprocessing observations.
     contents:
       - has_concept("preprocess")
-  - title: Postprocess
-    desc: Functions for postprocessing model output.
-    contents:
-      - has_concept("postprocess")
   - title: Model design tools
     desc: Functions that assist with designing models.
     contents:
       - has_concept("modeldesign")
+  - title: Model tools
+    desc: Functions that assist with interpreting models for stan.
+    contents:
+      - has_concept("modeltools")
+  - title: Model
+    desc: Functions for fitting the nowcasting model.
+    contents:
+      - has_concept("model")
+  - title: Postprocess
+    desc: Functions for postprocessing model output.
+    contents:
+      - has_concept("postprocess")
   - title: Plot
     desc: Functions for plotting postprocessed nowcast model output.
     contents:
