@@ -31,6 +31,7 @@ opinionated defaults.
 Functions used for postprocessing of model fits
 \code{\link{enw_add_latest_obs_to_nowcast}()},
 \code{\link{enw_nowcast_summary}()},
-\code{\link{enw_pp_summary}()}
+\code{\link{enw_pp_summary}()},
+\code{\link{enw_quantiles_to_long}()}
 }
 \concept{postprocess}

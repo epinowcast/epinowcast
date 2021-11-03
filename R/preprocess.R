@@ -314,5 +314,6 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
     max_delay = max_delay,
     max_date = max(obs$report_date)
   )
+  class(out) <- c("enw_preprocess_data", class(out))
   return(out[])
 }

@@ -34,10 +34,8 @@ mod <- enw_model()
 \seealso{
 Functions used for modelling
 \code{\link{enw_as_data_list}()},
-\code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_inits}()},
 \code{\link{enw_obs_as_data_list}()},
-\code{\link{enw_opts_as_data_list}()},
 \code{\link{enw_priors}()},
 \code{\link{enw_sample}()}
 }

@@ -57,7 +57,7 @@ cmdstanr::install_cmdstan()
 
 ## Quick start
 
-In this quick start we use COVID-19 hospitalisations by date of positive test in Germany available up to the 1st of October 2021 to demonstrate the specification and fitting of a simple nowcasting model using `{epinowcast}`.Examples using more complex models are available in the package vignettes and in the papers linked to in the literature vignette.
+In this quick start we use COVID-19 hospitalisations by date of positive test in Germany available up to the 1st of October 2021 to demonstrate the specification and fitting of a simple nowcasting model using `epinowcast`.Examples using more complex models are available in the package vignettes and in the papers linked to in the literature vignette.
 
 ### Package
 
@@ -91,14 +91,14 @@ latest_germany_hosp
 
 ### Data preprocessing and model specification
 
-Process reported data into format required for `epinowcast` and return in a `{data.table}`. At this stage specify grouping (i.e age, location) if any. It can be useful to check this output before beginning to model to make sure everything is as expected.
+Process reported data into format required for `epinowcast` and return in a `data.table`. At this stage specify grouping (i.e age, location) if any. It can be useful to check this output before beginning to model to make sure everything is as expected.
 
 ```{r}
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
 pobs
 ```
 
-Construct an intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `{epinowcast}` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
+Construct an intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
 reference_effects <- enw_formula(pobs$metareference[[1]])
@@ -134,7 +134,7 @@ nowcast <- epinowcast(pobs,
 
 ### Results
 
-Print the output from `{epinowcast}` which includes diagnostic information, the data used for fitting, and the `{cmdstanr`} object.
+Print the output from `epinowcast` which includes diagnostic information, the data used for fitting, and the `cmdstanr` object.
 
 ```{r}
 nowcast
@@ -149,7 +149,7 @@ summary(nowcast, probs = c(0.05, 0.95))
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
 
 ```{r nowcast}
-plot(nowcast, obs = latest_germany_hosp)
+plot(nowcast, latest_obs = latest_germany_hosp)
 ```
 
 Plot posterior predictions for observed notifications by date of
@@ -176,8 +176,8 @@ Please briefly describe your problem and what output you expect in an [issue](ht
 
 We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls).
 
-If interested in expanding the functionality of the underlying model note that `{epinowcast}` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested using the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome.
+If interested in expanding the functionality of the underlying model note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors.
 
 ## Code of Conduct
   
-Please note that the `forecast.vocs` project is released with a [Contributor Code of Conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+Please note that the `epinowcast` project is released with a [Contributor Code of Conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
