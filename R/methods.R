@@ -19,7 +19,10 @@
 #' @return `ggplot2` object
 #' @export
 summary.epinowcast <- function(object, type = "nowcast", ...) {
-  type <- match.arg(type, choices = c("nowcast", "fit", "posterior_prediction"))
+  type <- match.arg(
+    type,
+    choices = c("nowcast", "fit", "posterior_prediction")
+  )
 
   if (type %in% "nowcast") {
     s <- enw_nowcast_summary(object$fit[[1]], object$latest[[1]], ...)
@@ -70,17 +73,4 @@ plot.epinowcast <- function(x, latest_obs = NULL, type = "nowcast",
     plot <- enw_plot_pp_quantiles(n, log = log, ...)
   }
   return(plot)
-}
-
-
-summary.enw_preprocess_data <- function() {
-
-}
-
-plot.enw_preprocess_data <- function(x, latest_obs = NULL, type = "reference",
-                                     ...) {
-  type <- match.arg(type, c("report", "reference"))
-  if (type %in% "reference") {
-
-  }
 }

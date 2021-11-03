@@ -143,3 +143,21 @@ enw_pp_summary <- function(fit, diff_obs,
   pp[, variable := NULL]
   return(pp[])
 }
+
+#' Convert summarised quantiles from wide to long format
+#'
+#' @param posterior A dataframe as output by [enw_posterior()].
+#'
+#' @return A data frame of quantiles in long format.
+#'
+#' @family postprocess
+#' @export
+enw_quantiles_to_long <- function(posterior) {
+  long <- melt(posterior,
+    measure.vars = patterns("^q[0-9]"),
+    value.name = "prediction", variable.name = "quantile"
+  )
+  long[, quantile := gsub("q", "", quantile)]
+  long[, quantile := as.numeric(quantile) / 100]
+  return(long[])
+}

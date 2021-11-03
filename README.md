@@ -59,7 +59,7 @@ cmdstanr::install_cmdstan()
 In this quick start we use COVID-19 hospitalisations by date of positive
 test in Germany available up to the 1st of October 2021 to demonstrate
 the specification and fitting of a simple nowcasting model using
-`{epinowcast}`.Examples using more complex models are available in the
+`epinowcast`.Examples using more complex models are available in the
 package vignettes and in the papers linked to in the literature
 vignette.
 
@@ -162,9 +162,9 @@ latest_germany_hosp
 ### Data preprocessing and model specification
 
 Process reported data into format required for `epinowcast` and return
-in a `{data.table}`. At this stage specify grouping (i.e age, location)
-if any. It can be useful to check this output before beginning to model
-to make sure everything is as expected.
+in a `data.table`. At this stage specify grouping (i.e age, location) if
+any. It can be useful to check this output before beginning to model to
+make sure everything is as expected.
 
 ``` r
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
@@ -178,7 +178,7 @@ pobs
 ```
 
 Construct an intercept only model for the date of reference using the
-metadata produced by `enw_preprocess_data()`. Note that `{epinowcast}`
+metadata produced by `enw_preprocess_data()`. Note that `epinowcast`
 uses a sparse design matrix to reduce runtimes so the design matrix
 shows only unique rows with `index` containing the mapping to the full
 design matrix.
@@ -189,7 +189,7 @@ reference_effects
 #> $fixed
 #> $fixed$formula
 #> ~1
-#> <environment: 0x55bc235aa378>
+#> <environment: 0x55f3056088c8>
 #> 
 #> $fixed$design
 #>   (Intercept)
@@ -202,7 +202,7 @@ reference_effects
 #> $random
 #> $random$formula
 #> ~1
-#> <environment: 0x55bc235aa378>
+#> <environment: 0x55f3056088c8>
 #> 
 #> $random$design
 #>      (Intercept)
@@ -222,7 +222,7 @@ report_effects
 #> $fixed
 #> $fixed$formula
 #> ~1 + day_of_week
-#> <environment: 0x55bc239fb470>
+#> <environment: 0x55f305a59ec8>
 #> 
 #> $fixed$design
 #>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
@@ -250,7 +250,7 @@ report_effects
 #> $random
 #> $random$formula
 #> ~0 + fixed + day_of_week
-#> <environment: 0x55bc239fb470>
+#> <environment: 0x55f305a59ec8>
 #> 
 #> $random$design
 #>   fixed day_of_week
@@ -297,18 +297,18 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 44.3 seconds.
-#> Chain 1 finished in 44.8 seconds.
+#> Chain 1 finished in 44.4 seconds.
+#> Chain 2 finished in 45.7 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 44.6 seconds.
-#> Total execution time: 45.0 seconds.
+#> Mean chain execution time: 45.0 seconds.
+#> Total execution time: 45.8 seconds.
 ```
 
 ### Results
 
-Print the output from `{epinowcast}` which includes diagnostic
-information, the data used for fitting, and the `{cmdstanr`} object.
+Print the output from `epinowcast` which includes diagnostic
+information, the data used for fitting, and the `cmdstanr` object.
 
 ``` r
 nowcast
@@ -319,81 +319,81 @@ nowcast
 #>            metareport time snapshots groups max_delay   max_date
 #> 1: <data.table[60x8]>   31        31      1        30 2021-09-20
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[31]> <list[36]> <list[6]>    2000     1.02
+#> 1: <CmdStanMCMC[31]> <list[36]> <list[6]>    2000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             7
 #>    no_at_max_treedepth per_at_max_treedepth time
-#> 1:                1736                0.868   45
+#> 1:                1702                0.851 45.8
 ```
 
 Summarise the nowcast for the latest snapshot of data.
 
 ``` r
 summary(nowcast, probs = c(0.05, 0.95))
-#>     reference_date location age_group confirm group     mean median         sd
-#>  1:     2021-08-22       DE       00+     239     1 239.0000    239  0.0000000
-#>  2:     2021-08-23       DE       00+     186     1 186.5680    186  0.7620147
-#>  3:     2021-08-24       DE       00+     437     1 438.9810    439  1.5381229
-#>  4:     2021-08-25       DE       00+     539     1 543.6050    543  2.3844953
-#>  5:     2021-08-26       DE       00+     509     1 515.5665    515  2.9571862
-#>  6:     2021-08-27       DE       00+     442     1 450.1070    450  3.3046954
-#>  7:     2021-08-28       DE       00+     412     1 422.5290    422  3.8215784
-#>  8:     2021-08-29       DE       00+     322     1 333.5850    333  4.0155744
-#>  9:     2021-08-30       DE       00+     204     1 211.9235    212  3.1251450
-#> 10:     2021-08-31       DE       00+     409     1 423.1235    423  4.3473782
-#> 11:     2021-09-01       DE       00+     535     1 562.9030    563  6.6119929
-#> 12:     2021-09-02       DE       00+     475     1 506.6690    506  7.2818234
-#> 13:     2021-09-03       DE       00+     444     1 478.4150    478  7.6291465
-#> 14:     2021-09-04       DE       00+     437     1 481.4635    481  8.9341803
-#> 15:     2021-09-05       DE       00+     310     1 348.2775    348  7.9077658
-#> 16:     2021-09-06       DE       00+     190     1 215.4995    215  6.1768986
-#> 17:     2021-09-07       DE       00+     395     1 440.5165    440  8.8626182
-#> 18:     2021-09-08       DE       00+     518     1 600.1080    600 13.5934075
-#> 19:     2021-09-09       DE       00+     433     1 518.8390    518 14.5549305
-#> 20:     2021-09-10       DE       00+     395     1 489.9285    489 15.1662914
-#> 21:     2021-09-11       DE       00+     365     1 483.1880    482 18.4556756
-#> 22:     2021-09-12       DE       00+     239     1 332.9130    332 15.2453482
-#> 23:     2021-09-13       DE       00+     147     1 211.3545    210 12.3995042
-#> 24:     2021-09-14       DE       00+     324     1 429.5845    428 17.6541977
-#> 25:     2021-09-15       DE       00+     313     1 459.5080    458 22.8148679
-#> 26:     2021-09-16       DE       00+     289     1 489.3850    487 32.5349664
-#> 27:     2021-09-17       DE       00+     203     1 424.2400    422 38.1884613
-#> 28:     2021-09-18       DE       00+     144     1 436.3970    432 53.0689038
-#> 29:     2021-09-19       DE       00+      73     1 399.6355    392 67.8545559
-#> 30:     2021-09-20       DE       00+      23     1 318.3000    306 89.1811395
-#>     reference_date location age_group confirm group     mean median         sd
-#>         mad     q5   q95      rhat ess_bulk ess_tail
-#>  1:  0.0000 239.00 239.0        NA       NA       NA
-#>  2:  0.0000 186.00 188.0 1.0011207 1800.499 1733.492
-#>  3:  1.4826 437.00 442.0 1.0010306 1967.765 1880.601
-#>  4:  2.9652 540.00 548.0 1.0015605 1767.172 2019.300
-#>  5:  2.9652 511.00 521.0 1.0016743 1695.776 1925.205
-#>  6:  2.9652 445.00 456.0 0.9995217 2187.734 1671.994
-#>  7:  4.4478 417.00 429.0 1.0001236 1956.498 1771.360
-#>  8:  4.4478 328.00 341.0 1.0000123 1969.746 1934.815
-#>  9:  2.9652 207.00 218.0 1.0005329 1790.019 2109.512
-#> 10:  4.4478 416.00 430.0 1.0000946 1853.717 1689.110
-#> 11:  5.9304 553.00 575.0 1.0001478 2080.416 2013.164
-#> 12:  7.4130 496.00 519.0 1.0004247 2015.267 1852.064
-#> 13:  7.4130 467.00 492.0 0.9997559 2030.550 1986.149
-#> 14:  8.8956 468.00 497.0 1.0008150 2100.664 2081.680
-#> 15:  7.4130 336.00 362.0 1.0002767 2012.033 2037.848
-#> 16:  5.9304 206.00 226.0 1.0013360 2045.026 1778.834
-#> 17:  8.8956 427.00 455.0 1.0005449 1856.908 1844.022
-#> 18: 13.3434 579.00 624.0 0.9994753 2101.005 1869.861
-#> 19: 14.8260 497.00 544.0 0.9993339 2263.205 1909.519
-#> 20: 14.8260 467.00 516.0 1.0009340 2188.996 1960.731
-#> 21: 17.7912 455.00 515.0 1.0029277 2006.953 1857.544
-#> 22: 14.8260 308.00 359.0 0.9999941 1992.097 2038.307
-#> 23: 11.8608 192.00 233.0 0.9996545 2143.674 1450.201
-#> 24: 17.7912 402.00 459.0 1.0003157 2676.807 1949.857
-#> 25: 22.2390 424.00 499.0 1.0004187 2274.969 1868.275
-#> 26: 32.6172 441.00 546.0 1.0007914 2459.463 1960.452
-#> 27: 38.5476 367.00 493.0 1.0011792 2290.248 1825.325
-#> 28: 50.4084 355.95 530.0 1.0002273 2168.678 1927.394
-#> 29: 65.2344 302.00 520.0 1.0006843 2500.419 1740.712
-#> 30: 80.0604 197.00 478.2 1.0005342 2338.897 1452.727
-#>         mad     q5   q95      rhat ess_bulk ess_tail
+#>     reference_date location age_group confirm group     mean median        sd
+#>  1:     2021-08-22       DE       00+     239     1 239.0000    239  0.000000
+#>  2:     2021-08-23       DE       00+     186     1 186.5530    186  0.783261
+#>  3:     2021-08-24       DE       00+     437     1 439.0415    439  1.518859
+#>  4:     2021-08-25       DE       00+     539     1 543.5600    543  2.416675
+#>  5:     2021-08-26       DE       00+     509     1 515.4930    515  2.929888
+#>  6:     2021-08-27       DE       00+     442     1 450.0540    450  3.305230
+#>  7:     2021-08-28       DE       00+     412     1 422.5300    422  3.894186
+#>  8:     2021-08-29       DE       00+     322     1 333.5820    333  3.945004
+#>  9:     2021-08-30       DE       00+     204     1 211.9955    212  3.168043
+#> 10:     2021-08-31       DE       00+     409     1 423.0055    423  4.424167
+#> 11:     2021-09-01       DE       00+     535     1 562.9745    563  6.795362
+#> 12:     2021-09-02       DE       00+     475     1 506.8375    506  7.303134
+#> 13:     2021-09-03       DE       00+     444     1 478.7440    478  7.679320
+#> 14:     2021-09-04       DE       00+     437     1 481.6125    481  9.179895
+#> 15:     2021-09-05       DE       00+     310     1 348.3345    348  8.270297
+#> 16:     2021-09-06       DE       00+     190     1 215.4710    215  6.136937
+#> 17:     2021-09-07       DE       00+     395     1 440.5250    440  8.831839
+#> 18:     2021-09-08       DE       00+     518     1 600.5690    600 13.474718
+#> 19:     2021-09-09       DE       00+     433     1 519.0615    518 14.105573
+#> 20:     2021-09-10       DE       00+     395     1 489.5885    489 15.148726
+#> 21:     2021-09-11       DE       00+     365     1 483.4045    482 18.518514
+#> 22:     2021-09-12       DE       00+     239     1 332.9950    332 15.224285
+#> 23:     2021-09-13       DE       00+     147     1 211.7365    211 12.087768
+#> 24:     2021-09-14       DE       00+     324     1 429.2535    428 17.308091
+#> 25:     2021-09-15       DE       00+     313     1 459.1785    458 23.483342
+#> 26:     2021-09-16       DE       00+     289     1 488.0755    486 31.492454
+#> 27:     2021-09-17       DE       00+     203     1 423.9575    422 37.787996
+#> 28:     2021-09-18       DE       00+     144     1 436.7725    432 52.441909
+#> 29:     2021-09-19       DE       00+      73     1 404.4645    396 68.991620
+#> 30:     2021-09-20       DE       00+      23     1 317.6785    305 87.012331
+#>     reference_date location age_group confirm group     mean median        sd
+#>         mad     q5    q95      rhat ess_bulk ess_tail
+#>  1:  0.0000 239.00 239.00        NA       NA       NA
+#>  2:  0.0000 186.00 188.00 1.0011355 1748.013 1683.923
+#>  3:  1.4826 437.00 442.00 1.0016667 2051.155 1855.236
+#>  4:  2.9652 540.00 548.00 0.9995236 1976.784 1882.572
+#>  5:  2.9652 511.00 521.00 1.0019635 2200.587 2082.110
+#>  6:  2.9652 445.00 456.00 1.0008425 1810.801 2050.181
+#>  7:  4.4478 417.00 430.00 1.0016124 2011.310 2067.515
+#>  8:  4.4478 328.00 340.00 1.0000859 1813.239 2030.680
+#>  9:  2.9652 207.00 218.00 1.0005271 2137.998 1833.634
+#> 10:  4.4478 416.00 431.00 1.0004651 1852.400 1747.592
+#> 11:  7.4130 553.00 575.00 1.0001108 1939.186 1931.899
+#> 12:  7.4130 496.00 519.00 1.0007521 2109.944 1763.695
+#> 13:  7.4130 467.00 492.00 1.0004613 1944.067 1910.117
+#> 14:  8.8956 467.95 498.00 1.0006668 2038.571 1858.508
+#> 15:  8.8956 336.00 363.00 1.0006592 1892.507 1756.191
+#> 16:  5.9304 206.00 226.00 1.0002649 2058.708 1860.034
+#> 17:  8.8956 427.00 456.00 1.0002989 2117.516 1769.627
+#> 18: 13.3434 579.00 624.00 1.0003806 2286.819 2011.733
+#> 19: 13.3434 497.00 543.00 1.0005675 2186.568 2039.634
+#> 20: 14.8260 467.00 515.00 1.0008054 2064.401 1877.129
+#> 21: 17.7912 453.00 516.00 1.0007999 2351.109 2011.789
+#> 22: 14.8260 309.00 360.00 0.9996425 2187.500 1760.445
+#> 23: 11.8608 193.00 232.00 1.0015021 2215.999 2002.483
+#> 24: 16.3086 403.00 460.00 0.9996287 2274.178 1770.189
+#> 25: 23.7216 424.95 501.00 0.9993421 2324.935 1923.692
+#> 26: 31.1346 440.95 543.05 1.0002299 2090.750 1617.826
+#> 27: 35.5824 366.00 490.05 1.0002439 2272.594 1681.046
+#> 28: 53.3736 357.00 528.00 0.9995004 2609.756 1902.914
+#> 29: 65.2344 305.00 528.05 1.0026114 2139.333 1878.615
+#> 30: 80.0604 199.00 475.15 1.0018779 2436.114 1602.356
+#>         mad     q5    q95      rhat ess_bulk ess_tail
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -452,16 +452,17 @@ check and add to the issues, and/or add a [pull
 request](https://github.com/epiforecasts/epinowcast/pulls).
 
 If interested in expanding the functionality of the underlying model
-note that `{epinowcast}` allows users to pass in their own models
-meaning that alternative parameterisations, for example altering the
-forecast model used for inferring expected observations, may be easily
-tested using the package infrastructure. Once this testing has been done
+note that `epinowcast` allows users to pass in their own models meaning
+that alternative parameterisations, for example altering the forecast
+model used for inferring expected observations, may be easily tested
+within the package infrastructure. Once this testing has been done
 alterations that increase the flexibility of the package model and
-improves its defaults are very welcome.
+improves its defaults are very welcome via pull request or other
+communication with the package authors.
 
 ## Code of Conduct
 
-Please note that the `forecast.vocs` project is released with a
+Please note that the `epinowcast` project is released with a
 [Contributor Code of
 Conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html). By
 contributing to this project, you agree to abide by its terms.
