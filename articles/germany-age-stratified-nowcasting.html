@@ -210,14 +210,1269 @@
 <span class="op">)</span>
 <span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Chain 1 finished in 453.8 seconds.</span>
-<span class="co">#&gt; Chain 2 finished in 456.1 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 299.4 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 301.8 seconds.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Both chains finished successfully.</span>
-<span class="co">#&gt; Mean chain execution time: 455.0 seconds.</span>
-<span class="co">#&gt; Total execution time: 456.1 seconds.</span></code></pre></div>
+<span class="co">#&gt; Mean chain execution time: 300.6 seconds.</span>
+<span class="co">#&gt; Total execution time: 301.8 seconds.</span></code></pre></div>
 <p>We first visualise the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/nowcast-1.png" title="plot of chunk nowcast" alt="plot of chunk nowcast" width="100%"></p>
+<p>In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. Here we see fairly clearly oscillations in reported cases every 7 days indicating some kind of week day adjustment may be needed.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span>, <span class="va">reference_date</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/simple_pp-1.png" title="plot of chunk simple_pp" alt="plot of chunk simple_pp" width="100%"></p>
 </div>
+<div class="section level2">
+<h2 id="reporting-day-of-the-week-effect">Reporting day of the week effect<a class="anchor" aria-label="anchor" href="#reporting-day-of-the-week-effect"></a>
+</h2>
+<p>As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dow_report_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span>, random <span class="op">=</span> <span class="st">"day_of_week"</span><span class="op">)</span>
+<span class="va">dow_report_effects</span>
+<span class="co">#&gt; $fixed</span>
+<span class="co">#&gt; $fixed$formula</span>
+<span class="co">#&gt; ~1 + day_of_week</span>
+<span class="co">#&gt; &lt;environment: 0x2f7c13b8&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $fixed$design</span>
+<span class="co">#&gt;   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday day_of_weekSunday</span>
+<span class="co">#&gt; 1           1                 1                 0                   0                 0</span>
+<span class="co">#&gt; 2           1                 0                 0                   1                 0</span>
+<span class="co">#&gt; 3           1                 0                 0                   0                 1</span>
+<span class="co">#&gt; 4           1                 0                 1                   0                 0</span>
+<span class="co">#&gt; 5           1                 0                 0                   0                 0</span>
+<span class="co">#&gt; 6           1                 0                 0                   0                 0</span>
+<span class="co">#&gt; 7           1                 0                 0                   0                 0</span>
+<span class="co">#&gt;   day_of_weekThursday day_of_weekTuesday day_of_weekWednesday</span>
+<span class="co">#&gt; 1                   0                  0                    0</span>
+<span class="co">#&gt; 2                   0                  0                    0</span>
+<span class="co">#&gt; 3                   0                  0                    0</span>
+<span class="co">#&gt; 4                   0                  0                    0</span>
+<span class="co">#&gt; 5                   0                  1                    0</span>
+<span class="co">#&gt; 6                   0                  0                    1</span>
+<span class="co">#&gt; 7                   1                  0                    0</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $fixed$index</span>
+<span class="co">#&gt;   [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6</span>
+<span class="co">#&gt;  [42] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2</span>
+<span class="co">#&gt;  [83] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1</span>
+<span class="co">#&gt; [124] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4</span>
+<span class="co">#&gt; [165] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3</span>
+<span class="co">#&gt; [206] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6</span>
+<span class="co">#&gt; [247] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5</span>
+<span class="co">#&gt; [288] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1</span>
+<span class="co">#&gt; [329] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7</span>
+<span class="co">#&gt; [370] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3</span>
+<span class="co">#&gt; [411] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2</span>
+<span class="co">#&gt; [452] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5</span>
+<span class="co">#&gt; [493] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4</span>
+<span class="co">#&gt; [534] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random</span>
+<span class="co">#&gt; $random$formula</span>
+<span class="co">#&gt; ~0 + fixed + day_of_week</span>
+<span class="co">#&gt; &lt;environment: 0x2f7c13b8&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random$design</span>
+<span class="co">#&gt;   fixed day_of_week</span>
+<span class="co">#&gt; 1     0           1</span>
+<span class="co">#&gt; 2     0           1</span>
+<span class="co">#&gt; 3     0           1</span>
+<span class="co">#&gt; 4     0           1</span>
+<span class="co">#&gt; 5     0           1</span>
+<span class="co">#&gt; 6     0           1</span>
+<span class="co">#&gt; 7     0           1</span>
+<span class="co">#&gt; attr(,"assign")</span>
+<span class="co">#&gt; [1] 1 2</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random$index</span>
+<span class="co">#&gt; [1] 1 2 3 4 5 6 7</span></code></pre></div>
+<p>To speed up model fitting we make use of posterior information from the previous model (with inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_posterior_as_prior.html">enw_posterior_as_prior</a></span><span class="op">(</span>
+  <span class="va">nowcast</span>, variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"logmean_int"</span>, <span class="st">"logsd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span>, scale <span class="op">=</span> <span class="fl">5</span>
+<span class="op">)</span>
+<span class="va">priors</span>
+<span class="co">#&gt;       variable                                             description</span>
+<span class="co">#&gt; 1:    eobs_lsd      Standard deviation for expected final observations</span>
+<span class="co">#&gt; 2:  logmean_sd     Standard deviation of scaled pooled logmean effects</span>
+<span class="co">#&gt; 3:    logsd_sd       Standard deviation of scaled pooled logsd effects</span>
+<span class="co">#&gt; 4:   rd_eff_sd Standard deviation of scaled pooled report date effects</span>
+<span class="co">#&gt; 5: logmean_int                                                    &lt;NA&gt;</span>
+<span class="co">#&gt; 6:   logsd_int                                                    &lt;NA&gt;</span>
+<span class="co">#&gt; 7:    sqrt_phi                                                    &lt;NA&gt;</span>
+<span class="co">#&gt;             distribution      mean         sd</span>
+<span class="co">#&gt; 1: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="co">#&gt; 2: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="co">#&gt; 3: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="co">#&gt; 4: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="co">#&gt; 5:                  &lt;NA&gt; 1.1199440 0.22111416</span>
+<span class="co">#&gt; 6:                  &lt;NA&gt; 1.7294223 0.24361933</span>
+<span class="co">#&gt; 7:                  &lt;NA&gt; 0.1271288 0.07725554</span></code></pre></div>
+<p>We now repeat the nowcasting step with the day of the week reporting model included.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">dow_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,
+  model <span class="op">=</span> <span class="va">model</span>,
+  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,
+  priors <span class="op">=</span> <span class="va">priors</span>,
+  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,
+  output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>, debug <span class="op">=</span> <span class="cn">TRUE</span>,
+  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>,
+  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>
+<span class="op">)</span>
+<span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Chain 2 finished in 654.5 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 663.4 seconds.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Both chains finished successfully.</span>
+<span class="co">#&gt; Mean chain execution time: 659.0 seconds.</span>
+<span class="co">#&gt; Total execution time: 663.2 seconds.</span></code></pre></div>
+<p>Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance). We could also plot the posterior predictions for this model in the same way as for the previous model.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dow_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/dow_nowcast-1.png" title="plot of chunk dow_nowcast" alt="plot of chunk dow_nowcast" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="age-group-variation">Age group variation<a class="anchor" aria-label="anchor" href="#age-group-variation"></a>
+</h2>
+<p>It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">age_reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span>
+  <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span>,
+  random <span class="op">=</span> <span class="st">"age_group"</span>
+<span class="op">)</span>
+<span class="va">age_reference_effects</span>
+<span class="co">#&gt; $fixed</span>
+<span class="co">#&gt; $fixed$formula</span>
+<span class="co">#&gt; ~1 + age_group</span>
+<span class="co">#&gt; &lt;environment: 0x37ca3030&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $fixed$design</span>
+<span class="co">#&gt;     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34</span>
+<span class="co">#&gt; 1             1              1            0              0              0</span>
+<span class="co">#&gt; 42            1              0            1              0              0</span>
+<span class="co">#&gt; 83            1              0            0              1              0</span>
+<span class="co">#&gt; 124           1              0            0              0              1</span>
+<span class="co">#&gt; 165           1              0            0              0              0</span>
+<span class="co">#&gt; 206           1              0            0              0              0</span>
+<span class="co">#&gt; 247           1              0            0              0              0</span>
+<span class="co">#&gt;     age_group35-59 age_group60-79 age_group80+</span>
+<span class="co">#&gt; 1                0              0            0</span>
+<span class="co">#&gt; 42               0              0            0</span>
+<span class="co">#&gt; 83               0              0            0</span>
+<span class="co">#&gt; 124              0              0            0</span>
+<span class="co">#&gt; 165              1              0            0</span>
+<span class="co">#&gt; 206              0              1            0</span>
+<span class="co">#&gt; 247              0              0            1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $fixed$index</span>
+<span class="co">#&gt;   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="co">#&gt;  [42] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span>
+<span class="co">#&gt;  [83] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span>
+<span class="co">#&gt; [124] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4</span>
+<span class="co">#&gt; [165] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5</span>
+<span class="co">#&gt; [206] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6</span>
+<span class="co">#&gt; [247] 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random</span>
+<span class="co">#&gt; $random$formula</span>
+<span class="co">#&gt; ~0 + fixed + age_group</span>
+<span class="co">#&gt; &lt;environment: 0x37ca3030&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random$design</span>
+<span class="co">#&gt;   fixed age_group</span>
+<span class="co">#&gt; 1     0         1</span>
+<span class="co">#&gt; 2     0         1</span>
+<span class="co">#&gt; 3     0         1</span>
+<span class="co">#&gt; 4     0         1</span>
+<span class="co">#&gt; 5     0         1</span>
+<span class="co">#&gt; 6     0         1</span>
+<span class="co">#&gt; 7     0         1</span>
+<span class="co">#&gt; attr(,"assign")</span>
+<span class="co">#&gt; [1] 1 2</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random$index</span>
+<span class="co">#&gt; [1] 1 2 3 4 5 6 7</span></code></pre></div>
+<p>We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">age_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,
+  model <span class="op">=</span> <span class="va">model</span>,
+  reference_effects <span class="op">=</span> <span class="va">age_reference_effects</span>,
+  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,
+  priors <span class="op">=</span> <span class="va">priors</span>,
+  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,
+  output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,
+  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>,
+  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>
+<span class="op">)</span>
+<span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Chain 2 finished in 783.7 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 784.2 seconds.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Both chains finished successfully.</span>
+<span class="co">#&gt; Mean chain execution time: 783.9 seconds.</span>
+<span class="co">#&gt; Total execution time: 783.9 seconds.</span></code></pre></div>
+<p>Fit looks slightly better with this adjustment though uncertainty has also increased for all age groups and performance for the final day of data may have reduced compared to the first model.</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/age_nowcast-1.png" title="plot of chunk age_nowcast" alt="plot of chunk age_nowcast" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="variation-based-on-reference-date">Variation based on reference date<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date"></a>
+</h2>
+<p>It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.</p>
+<p>To define this reference date model we first need to create new features in the metadata that capture the order weeks occur in.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">metareference</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_add_cumulative_membership.html">enw_add_cumulative_membership</a></span><span class="op">(</span>
+  <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,
+  feature <span class="op">=</span> <span class="st">"week"</span>
+<span class="op">)</span>
+<span class="va">metareference</span>
+<span class="co">#&gt;      age_group       date location group day_of_week week month cweek1 cweek2 cweek3</span>
+<span class="co">#&gt;   1:     00-04 2021-07-23       DE     2      Friday    0     0      0      0      0</span>
+<span class="co">#&gt;   2:     00-04 2021-07-24       DE     2    Saturday    0     0      0      0      0</span>
+<span class="co">#&gt;   3:     00-04 2021-07-25       DE     2      Sunday    0     0      0      0      0</span>
+<span class="co">#&gt;   4:     00-04 2021-07-26       DE     2      Monday    0     0      0      0      0</span>
+<span class="co">#&gt;   5:     00-04 2021-07-27       DE     2     Tuesday    0     0      0      0      0</span>
+<span class="co">#&gt;  ---                                                                                </span>
+<span class="co">#&gt; 283:       80+ 2021-08-28       DE     7    Saturday    5     1      1      1      1</span>
+<span class="co">#&gt; 284:       80+ 2021-08-29       DE     7      Sunday    5     1      1      1      1</span>
+<span class="co">#&gt; 285:       80+ 2021-08-30       DE     7      Monday    5     1      1      1      1</span>
+<span class="co">#&gt; 286:       80+ 2021-08-31       DE     7     Tuesday    5     1      1      1      1</span>
+<span class="co">#&gt; 287:       80+ 2021-09-01       DE     7   Wednesday    5     2      1      1      1</span>
+<span class="co">#&gt;      cweek4 cweek5</span>
+<span class="co">#&gt;   1:      0      0</span>
+<span class="co">#&gt;   2:      0      0</span>
+<span class="co">#&gt;   3:      0      0</span>
+<span class="co">#&gt;   4:      0      0</span>
+<span class="co">#&gt;   5:      0      0</span>
+<span class="co">#&gt;  ---              </span>
+<span class="co">#&gt; 283:      1      1</span>
+<span class="co">#&gt; 284:      1      1</span>
+<span class="co">#&gt; 285:      1      1</span>
+<span class="co">#&gt; 286:      1      1</span>
+<span class="co">#&gt; 287:      1      1</span></code></pre></div>
+<p>We can now define the model formula as previously but this time making use of the <code>custom_random</code> argument which also creates a random effect but this time using partial matching and without creating new features automatically.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">week_age_reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span>
+  <span class="va">metareference</span>,
+  random <span class="op">=</span> <span class="st">"age_group"</span>, custom_random <span class="op">=</span> <span class="st">"cweek"</span>
+<span class="op">)</span>
+<span class="va">week_age_reference_effects</span>
+<span class="co">#&gt; $fixed</span>
+<span class="co">#&gt; $fixed$formula</span>
+<span class="co">#&gt; ~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5</span>
+<span class="co">#&gt; &lt;environment: 0x3553d4b0&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $fixed$design</span>
+<span class="co">#&gt;     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34</span>
+<span class="co">#&gt; 1             1              1            0              0              0</span>
+<span class="co">#&gt; 8             1              1            0              0              0</span>
+<span class="co">#&gt; 15            1              1            0              0              0</span>
+<span class="co">#&gt; 22            1              1            0              0              0</span>
+<span class="co">#&gt; 29            1              1            0              0              0</span>
+<span class="co">#&gt; 36            1              1            0              0              0</span>
+<span class="co">#&gt; 42            1              0            1              0              0</span>
+<span class="co">#&gt; 49            1              0            1              0              0</span>
+<span class="co">#&gt; 56            1              0            1              0              0</span>
+<span class="co">#&gt; 63            1              0            1              0              0</span>
+<span class="co">#&gt; 70            1              0            1              0              0</span>
+<span class="co">#&gt; 77            1              0            1              0              0</span>
+<span class="co">#&gt; 83            1              0            0              1              0</span>
+<span class="co">#&gt; 90            1              0            0              1              0</span>
+<span class="co">#&gt; 97            1              0            0              1              0</span>
+<span class="co">#&gt; 104           1              0            0              1              0</span>
+<span class="co">#&gt; 111           1              0            0              1              0</span>
+<span class="co">#&gt; 118           1              0            0              1              0</span>
+<span class="co">#&gt; 124           1              0            0              0              1</span>
+<span class="co">#&gt; 131           1              0            0              0              1</span>
+<span class="co">#&gt; 138           1              0            0              0              1</span>
+<span class="co">#&gt; 145           1              0            0              0              1</span>
+<span class="co">#&gt; 152           1              0            0              0              1</span>
+<span class="co">#&gt; 159           1              0            0              0              1</span>
+<span class="co">#&gt; 165           1              0            0              0              0</span>
+<span class="co">#&gt; 172           1              0            0              0              0</span>
+<span class="co">#&gt; 179           1              0            0              0              0</span>
+<span class="co">#&gt; 186           1              0            0              0              0</span>
+<span class="co">#&gt; 193           1              0            0              0              0</span>
+<span class="co">#&gt; 200           1              0            0              0              0</span>
+<span class="co">#&gt; 206           1              0            0              0              0</span>
+<span class="co">#&gt; 213           1              0            0              0              0</span>
+<span class="co">#&gt; 220           1              0            0              0              0</span>
+<span class="co">#&gt; 227           1              0            0              0              0</span>
+<span class="co">#&gt; 234           1              0            0              0              0</span>
+<span class="co">#&gt; 241           1              0            0              0              0</span>
+<span class="co">#&gt; 247           1              0            0              0              0</span>
+<span class="co">#&gt; 254           1              0            0              0              0</span>
+<span class="co">#&gt; 261           1              0            0              0              0</span>
+<span class="co">#&gt; 268           1              0            0              0              0</span>
+<span class="co">#&gt; 275           1              0            0              0              0</span>
+<span class="co">#&gt; 282           1              0            0              0              0</span>
+<span class="co">#&gt;     age_group35-59 age_group60-79 age_group80+ cweek1 cweek2 cweek3 cweek4 cweek5</span>
+<span class="co">#&gt; 1                0              0            0      0      0      0      0      0</span>
+<span class="co">#&gt; 8                0              0            0      1      0      0      0      0</span>
+<span class="co">#&gt; 15               0              0            0      1      1      0      0      0</span>
+<span class="co">#&gt; 22               0              0            0      1      1      1      0      0</span>
+<span class="co">#&gt; 29               0              0            0      1      1      1      1      0</span>
+<span class="co">#&gt; 36               0              0            0      1      1      1      1      1</span>
+<span class="co">#&gt; 42               0              0            0      0      0      0      0      0</span>
+<span class="co">#&gt; 49               0              0            0      1      0      0      0      0</span>
+<span class="co">#&gt; 56               0              0            0      1      1      0      0      0</span>
+<span class="co">#&gt; 63               0              0            0      1      1      1      0      0</span>
+<span class="co">#&gt; 70               0              0            0      1      1      1      1      0</span>
+<span class="co">#&gt; 77               0              0            0      1      1      1      1      1</span>
+<span class="co">#&gt; 83               0              0            0      0      0      0      0      0</span>
+<span class="co">#&gt; 90               0              0            0      1      0      0      0      0</span>
+<span class="co">#&gt; 97               0              0            0      1      1      0      0      0</span>
+<span class="co">#&gt; 104              0              0            0      1      1      1      0      0</span>
+<span class="co">#&gt; 111              0              0            0      1      1      1      1      0</span>
+<span class="co">#&gt; 118              0              0            0      1      1      1      1      1</span>
+<span class="co">#&gt; 124              0              0            0      0      0      0      0      0</span>
+<span class="co">#&gt; 131              0              0            0      1      0      0      0      0</span>
+<span class="co">#&gt; 138              0              0            0      1      1      0      0      0</span>
+<span class="co">#&gt; 145              0              0            0      1      1      1      0      0</span>
+<span class="co">#&gt; 152              0              0            0      1      1      1      1      0</span>
+<span class="co">#&gt; 159              0              0            0      1      1      1      1      1</span>
+<span class="co">#&gt; 165              1              0            0      0      0      0      0      0</span>
+<span class="co">#&gt; 172              1              0            0      1      0      0      0      0</span>
+<span class="co">#&gt; 179              1              0            0      1      1      0      0      0</span>
+<span class="co">#&gt; 186              1              0            0      1      1      1      0      0</span>
+<span class="co">#&gt; 193              1              0            0      1      1      1      1      0</span>
+<span class="co">#&gt; 200              1              0            0      1      1      1      1      1</span>
+<span class="co">#&gt; 206              0              1            0      0      0      0      0      0</span>
+<span class="co">#&gt; 213              0              1            0      1      0      0      0      0</span>
+<span class="co">#&gt; 220              0              1            0      1      1      0      0      0</span>
+<span class="co">#&gt; 227              0              1            0      1      1      1      0      0</span>
+<span class="co">#&gt; 234              0              1            0      1      1      1      1      0</span>
+<span class="co">#&gt; 241              0              1            0      1      1      1      1      1</span>
+<span class="co">#&gt; 247              0              0            1      0      0      0      0      0</span>
+<span class="co">#&gt; 254              0              0            1      1      0      0      0      0</span>
+<span class="co">#&gt; 261              0              0            1      1      1      0      0      0</span>
+<span class="co">#&gt; 268              0              0            1      1      1      1      0      0</span>
+<span class="co">#&gt; 275              0              0            1      1      1      1      1      0</span>
+<span class="co">#&gt; 282              0              0            1      1      1      1      1      1</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $fixed$index</span>
+<span class="co">#&gt;   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4  4  4</span>
+<span class="co">#&gt;  [28]  4  5  5  5  5  5  5  5  6  6  6  6  6  6  7  7  7  7  7  7  7  8  8  8  8  8  8</span>
+<span class="co">#&gt;  [55]  8  9  9  9  9  9  9  9 10 10 10 10 10 10 10 11 11 11 11 11 11 11 12 12 12 12 12</span>
+<span class="co">#&gt;  [82] 12 13 13 13 13 13 13 13 14 14 14 14 14 14 14 15 15 15 15 15 15 15 16 16 16 16 16</span>
+<span class="co">#&gt; [109] 16 16 17 17 17 17 17 17 17 18 18 18 18 18 18 19 19 19 19 19 19 19 20 20 20 20 20</span>
+<span class="co">#&gt; [136] 20 20 21 21 21 21 21 21 21 22 22 22 22 22 22 22 23 23 23 23 23 23 23 24 24 24 24</span>
+<span class="co">#&gt; [163] 24 24 25 25 25 25 25 25 25 26 26 26 26 26 26 26 27 27 27 27 27 27 27 28 28 28 28</span>
+<span class="co">#&gt; [190] 28 28 28 29 29 29 29 29 29 29 30 30 30 30 30 30 31 31 31 31 31 31 31 32 32 32 32</span>
+<span class="co">#&gt; [217] 32 32 32 33 33 33 33 33 33 33 34 34 34 34 34 34 34 35 35 35 35 35 35 35 36 36 36</span>
+<span class="co">#&gt; [244] 36 36 36 37 37 37 37 37 37 37 38 38 38 38 38 38 38 39 39 39 39 39 39 39 40 40 40</span>
+<span class="co">#&gt; [271] 40 40 40 40 41 41 41 41 41 41 41 42 42 42 42 42 42</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random</span>
+<span class="co">#&gt; $random$formula</span>
+<span class="co">#&gt; ~0 + fixed + age_group + cweek</span>
+<span class="co">#&gt; &lt;environment: 0x3553d4b0&gt;</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random$design</span>
+<span class="co">#&gt;    fixed age_group cweek</span>
+<span class="co">#&gt; 1      0         1     0</span>
+<span class="co">#&gt; 2      0         1     0</span>
+<span class="co">#&gt; 3      0         1     0</span>
+<span class="co">#&gt; 4      0         1     0</span>
+<span class="co">#&gt; 5      0         1     0</span>
+<span class="co">#&gt; 6      0         1     0</span>
+<span class="co">#&gt; 7      0         1     0</span>
+<span class="co">#&gt; 8      0         0     1</span>
+<span class="co">#&gt; 9      0         0     1</span>
+<span class="co">#&gt; 10     0         0     1</span>
+<span class="co">#&gt; 11     0         0     1</span>
+<span class="co">#&gt; 12     0         0     1</span>
+<span class="co">#&gt; attr(,"assign")</span>
+<span class="co">#&gt; [1] 1 2 3</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; $random$index</span>
+<span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10 11 12</span></code></pre></div>
+<p>As before we fit the nowcasting model,</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
+<span class="va">week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,
+  model <span class="op">=</span> <span class="va">model</span>,
+  reference_effects <span class="op">=</span> <span class="va">week_age_reference_effects</span>,
+  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,
+  priors <span class="op">=</span> <span class="va">priors</span>,
+  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,
+  output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,
+  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>,
+  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>
+<span class="op">)</span>
+<span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Chain 1 finished in 1331.7 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 1343.4 seconds.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Both chains finished successfully.</span>
+<span class="co">#&gt; Mean chain execution time: 1337.6 seconds.</span>
+<span class="co">#&gt; Total execution time: 1342.8 seconds.</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/week_nowcast-1.png" title="plot of chunk week_nowcast" alt="plot of chunk week_nowcast" width="100%"></p>
+</div>
+<div class="section level2">
+<h2 id="alternative-models">Alternative models<a class="anchor" aria-label="anchor" href="#alternative-models"></a>
+</h2>
+<p>In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by <code>epinowcast</code>) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.</p>
+<p>There are any number of additional models we could explore within the framework supported by <code>epinowcast</code> as well as a large number of alternative parameterisations that are not yet supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models where there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in <code>epinowcast</code> either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.</p>
+<p>If interested in expanding the functionality of the underlying model to address some of these issues note that <code>epinowcast</code> allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.</p>
+</div>
+</div>
+<div class="section level1">
+<h1 id="evaluation">Evaluation<a class="anchor" aria-label="anchor" href="#evaluation"></a>
+</h1>
+<p>As we have only nowcast a single date this evaluation is anything but complete however we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions.</p>
+<p>We first list all models and give them informative names,</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  <span class="st">"Reference: Fixed, Report: Fixed"</span> <span class="op">=</span> <span class="va">nowcast</span>,
+  <span class="st">"Reference: Fixed, Report: Day of week"</span> <span class="op">=</span> <span class="va">dow_nowcast</span>,
+  <span class="st">"Reference: Age group, Report: Day of week"</span> <span class="op">=</span> <span class="va">age_nowcast</span>,
+  <span class="st">"Reference: Age group and week, Report: Day of week"</span> <span class="op">=</span> <span class="va">week_nowcast</span>
+<span class="op">)</span></code></pre></div>
+<p>and then summarise the nowcast posterior for each model and join into a tidy data frame to make further analysis easier.</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span>
+  <span class="va">nowcasts</span>, <span class="va">summary</span>,
+  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.05</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">0.95</span>, <span class="fl">0.975</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span>
+<span class="va">summarised_nowcasts</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span>
+  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span>
+    <span class="va">model</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Reference: Fixed, Report: Fixed"</span>,
+                      <span class="st">"Reference: Fixed, Report: Day of week"</span>,
+                      <span class="st">"Reference: Age group, Report: Day of week"</span>,
+                      <span class="st">"Reference: Age group and week, Report: Day of week"</span><span class="op">)</span><span class="op">)</span>,
+  age_group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span>
+    <span class="va">age_group</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"00+"</span>, <span class="st">"00-04"</span>, <span class="st">"05-14"</span>, <span class="st">"15-34"</span>, <span class="st">"35-59"</span>, <span class="st">"60-79"</span>,
+                          <span class="st">"80+"</span><span class="op">)</span><span class="op">)</span>
+<span class="op">)</span><span class="op">]</span></code></pre></div>
+<p>This allows us to plot nowcasts for each model and age group compared to the latest data. Looking at the plot shows some small differences across models with uncertainty generally decreasing as model complexity increases. Some age groups are clearly better nowcast than others with the 35-59 year old age group in particular having poor nowcast coverage.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span>
+  <span class="va">summarised_nowcasts</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></code></pre></div>
+<p><img src="figures/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="100%"></p>
+<p>As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the <code>loo</code> package though note this is not typically appropriate for time series data, the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required (see the warnings below).</p>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">loos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">nowcasts</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">loo</span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span>
+<span class="co">#&gt;                                                    elpd_diff se_diff</span>
+<span class="co">#&gt; Reference: Age group, Report: Day of week             0.0       0.0 </span>
+<span class="co">#&gt; Reference: Age group and week, Report: Day of week   -1.8       3.3 </span>
+<span class="co">#&gt; Reference: Fixed, Report: Day of week               -15.8       7.0 </span>
+<span class="co">#&gt; Reference: Fixed, Report: Fixed                    -589.4      45.7</span></code></pre></div>
+<p>We see that the model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but only marginally.</p>
+<p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code><a href="https://rdrr.io/pkg/scoringutils/man/eval_forecasts.html" class="external-link">scoringutils::eval_forecasts()</a></code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more infomed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
+<p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only the model that includes day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">overall_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
+ <span class="va">summarised_nowcasts</span>,
+ <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>,
+ summarise_by <span class="op">=</span> <span class="st">"model"</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">overall_score</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="36%">
+<col width="10%">
+<col width="7%">
+<col width="11%">
+<col width="10%">
+<col width="13%">
+<col width="5%">
+<col width="3%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">model</th>
+<th align="right">interval_score</th>
+<th align="right">sharpness</th>
+<th align="right">underprediction</th>
+<th align="right">overprediction</th>
+<th align="right">coverage_deviation</th>
+<th align="right">bias</th>
+<th align="right">aem</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="right">13.6</td>
+<td align="right">3.75</td>
+<td align="right">8.62</td>
+<td align="right">1.220</td>
+<td align="right">-0.1030</td>
+<td align="right">-0.218</td>
+<td align="right">23.7</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="right">17.1</td>
+<td align="right">2.46</td>
+<td align="right">13.90</td>
+<td align="right">0.733</td>
+<td align="right">-0.1570</td>
+<td align="right">-0.326</td>
+<td align="right">24.9</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="right">14.1</td>
+<td align="right">2.81</td>
+<td align="right">10.40</td>
+<td align="right">0.916</td>
+<td align="right">-0.1030</td>
+<td align="right">-0.211</td>
+<td align="right">21.7</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="right">14.0</td>
+<td align="right">2.91</td>
+<td align="right">9.94</td>
+<td align="right">1.140</td>
+<td align="right">-0.0978</td>
+<td align="right">-0.178</td>
+<td align="right">21.5</td>
+</tr>
+</tbody>
+</table>
+<p>Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others.</p>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">age_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
+ <span class="va">summarised_nowcasts</span>,
+ <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>,
+ summarise_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"age_group"</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">age_score</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="34%">
+<col width="6%">
+<col width="10%">
+<col width="6%">
+<col width="10%">
+<col width="10%">
+<col width="12%">
+<col width="5%">
+<col width="4%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">model</th>
+<th align="left">age_group</th>
+<th align="right">interval_score</th>
+<th align="right">sharpness</th>
+<th align="right">underprediction</th>
+<th align="right">overprediction</th>
+<th align="right">coverage_deviation</th>
+<th align="right">bias</th>
+<th align="right">aem</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">00+</td>
+<td align="right">40.90</td>
+<td align="right">12.900</td>
+<td align="right">24.600</td>
+<td align="right">3.4000</td>
+<td align="right">-0.1970</td>
+<td align="right">-0.4430</td>
+<td align="right">77.20</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">00+</td>
+<td align="right">53.60</td>
+<td align="right">7.450</td>
+<td align="right">44.600</td>
+<td align="right">1.5100</td>
+<td align="right">-0.3730</td>
+<td align="right">-0.6640</td>
+<td align="right">81.10</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">00+</td>
+<td align="right">40.40</td>
+<td align="right">8.690</td>
+<td align="right">29.800</td>
+<td align="right">1.9900</td>
+<td align="right">-0.1970</td>
+<td align="right">-0.5430</td>
+<td align="right">66.90</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">00+</td>
+<td align="right">41.50</td>
+<td align="right">8.900</td>
+<td align="right">30.000</td>
+<td align="right">2.6300</td>
+<td align="right">-0.1970</td>
+<td align="right">-0.4710</td>
+<td align="right">66.70</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">00-04</td>
+<td align="right">1.79</td>
+<td align="right">0.673</td>
+<td align="right">0.000</td>
+<td align="right">1.1200</td>
+<td align="right">-0.0758</td>
+<td align="right">0.6070</td>
+<td align="right">2.57</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">00-04</td>
+<td align="right">2.01</td>
+<td align="right">0.618</td>
+<td align="right">0.033</td>
+<td align="right">1.3600</td>
+<td align="right">-0.1200</td>
+<td align="right">0.5290</td>
+<td align="right">3.00</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">00-04</td>
+<td align="right">2.27</td>
+<td align="right">0.654</td>
+<td align="right">0.011</td>
+<td align="right">1.6000</td>
+<td align="right">-0.1860</td>
+<td align="right">0.6140</td>
+<td align="right">3.29</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">00-04</td>
+<td align="right">2.38</td>
+<td align="right">0.673</td>
+<td align="right">0.011</td>
+<td align="right">1.6900</td>
+<td align="right">-0.1750</td>
+<td align="right">0.6290</td>
+<td align="right">3.57</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">05-14</td>
+<td align="right">1.22</td>
+<td align="right">0.508</td>
+<td align="right">0.560</td>
+<td align="right">0.1540</td>
+<td align="right">0.1000</td>
+<td align="right">-0.1640</td>
+<td align="right">2.14</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">05-14</td>
+<td align="right">1.32</td>
+<td align="right">0.449</td>
+<td align="right">0.692</td>
+<td align="right">0.1760</td>
+<td align="right">0.0341</td>
+<td align="right">-0.1790</td>
+<td align="right">2.14</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">05-14</td>
+<td align="right">1.31</td>
+<td align="right">0.494</td>
+<td align="right">0.593</td>
+<td align="right">0.2200</td>
+<td align="right">0.0670</td>
+<td align="right">-0.0929</td>
+<td align="right">2.00</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">05-14</td>
+<td align="right">1.29</td>
+<td align="right">0.522</td>
+<td align="right">0.549</td>
+<td align="right">0.2200</td>
+<td align="right">0.0670</td>
+<td align="right">-0.0929</td>
+<td align="right">2.00</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">15-34</td>
+<td align="right">7.32</td>
+<td align="right">2.850</td>
+<td align="right">2.190</td>
+<td align="right">2.2900</td>
+<td align="right">-0.0868</td>
+<td align="right">-0.1570</td>
+<td align="right">12.70</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">15-34</td>
+<td align="right">5.98</td>
+<td align="right">2.110</td>
+<td align="right">2.560</td>
+<td align="right">1.3100</td>
+<td align="right">-0.0648</td>
+<td align="right">-0.2570</td>
+<td align="right">11.10</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">15-34</td>
+<td align="right">5.66</td>
+<td align="right">2.400</td>
+<td align="right">1.650</td>
+<td align="right">1.6200</td>
+<td align="right">-0.0429</td>
+<td align="right">-0.0571</td>
+<td align="right">10.40</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">15-34</td>
+<td align="right">5.84</td>
+<td align="right">2.490</td>
+<td align="right">1.270</td>
+<td align="right">2.0800</td>
+<td align="right">-0.0429</td>
+<td align="right">-0.0571</td>
+<td align="right">10.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">35-59</td>
+<td align="right">30.70</td>
+<td align="right">4.860</td>
+<td align="right">25.700</td>
+<td align="right">0.1320</td>
+<td align="right">-0.3070</td>
+<td align="right">-0.6710</td>
+<td align="right">46.90</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">35-59</td>
+<td align="right">41.40</td>
+<td align="right">3.080</td>
+<td align="right">38.300</td>
+<td align="right">0.0000</td>
+<td align="right">-0.4160</td>
+<td align="right">-0.8710</td>
+<td align="right">53.00</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">35-59</td>
+<td align="right">35.90</td>
+<td align="right">3.530</td>
+<td align="right">32.400</td>
+<td align="right">0.0000</td>
+<td align="right">-0.4050</td>
+<td align="right">-0.8430</td>
+<td align="right">48.70</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">35-59</td>
+<td align="right">34.30</td>
+<td align="right">3.640</td>
+<td align="right">30.600</td>
+<td align="right">0.0769</td>
+<td align="right">-0.3950</td>
+<td align="right">-0.7640</td>
+<td align="right">48.10</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">60-79</td>
+<td align="right">7.77</td>
+<td align="right">2.650</td>
+<td align="right">4.150</td>
+<td align="right">0.9670</td>
+<td align="right">-0.0868</td>
+<td align="right">-0.3070</td>
+<td align="right">14.60</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">60-79</td>
+<td align="right">9.60</td>
+<td align="right">1.990</td>
+<td align="right">7.110</td>
+<td align="right">0.4950</td>
+<td align="right">-0.0538</td>
+<td align="right">-0.3640</td>
+<td align="right">14.10</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">60-79</td>
+<td align="right">8.55</td>
+<td align="right">2.230</td>
+<td align="right">5.690</td>
+<td align="right">0.6260</td>
+<td align="right">0.0011</td>
+<td align="right">-0.2290</td>
+<td align="right">12.40</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">60-79</td>
+<td align="right">7.95</td>
+<td align="right">2.360</td>
+<td align="right">4.760</td>
+<td align="right">0.8240</td>
+<td align="right">0.0341</td>
+<td align="right">-0.1860</td>
+<td align="right">11.80</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">80+</td>
+<td align="right">5.44</td>
+<td align="right">1.880</td>
+<td align="right">3.110</td>
+<td align="right">0.4510</td>
+<td align="right">-0.0648</td>
+<td align="right">-0.3930</td>
+<td align="right">10.10</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">80+</td>
+<td align="right">5.71</td>
+<td align="right">1.510</td>
+<td align="right">3.920</td>
+<td align="right">0.2860</td>
+<td align="right">-0.1090</td>
+<td align="right">-0.4710</td>
+<td align="right">9.86</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">80+</td>
+<td align="right">4.74</td>
+<td align="right">1.670</td>
+<td align="right">2.710</td>
+<td align="right">0.3520</td>
+<td align="right">0.0451</td>
+<td align="right">-0.3290</td>
+<td align="right">8.43</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">80+</td>
+<td align="right">4.61</td>
+<td align="right">1.760</td>
+<td align="right">2.380</td>
+<td align="right">0.4730</td>
+<td align="right">0.0231</td>
+<td align="right">-0.3000</td>
+<td align="right">8.00</td>
+</tr>
+</tbody>
+</table>
+<p>Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomolous or we may have identified a real trend).</p>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">date_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
+ <span class="va">summarised_nowcasts</span>,
+ <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>,
+ summarise_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span><span class="op">)</span>
+<span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">date_score</span><span class="op">)</span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="9%">
+<col width="9%">
+<col width="6%">
+<col width="10%">
+<col width="9%">
+<col width="12%">
+<col width="4%">
+<col width="3%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">model</th>
+<th align="left">reference_date</th>
+<th align="right">interval_score</th>
+<th align="right">sharpness</th>
+<th align="right">underprediction</th>
+<th align="right">overprediction</th>
+<th align="right">coverage_deviation</th>
+<th align="right">bias</th>
+<th align="right">aem</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-08-26</td>
+<td align="right">12.20</td>
+<td align="right">2.13</td>
+<td align="right">10.000</td>
+<td align="right">0.0330</td>
+<td align="right">-0.1090</td>
+<td align="right">-0.550</td>
+<td align="right">19.70</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-08-26</td>
+<td align="right">14.60</td>
+<td align="right">1.66</td>
+<td align="right">12.900</td>
+<td align="right">0.0330</td>
+<td align="right">-0.1530</td>
+<td align="right">-0.564</td>
+<td align="right">19.90</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-08-26</td>
+<td align="right">8.36</td>
+<td align="right">2.00</td>
+<td align="right">6.210</td>
+<td align="right">0.1430</td>
+<td align="right">-0.0209</td>
+<td align="right">-0.314</td>
+<td align="right">13.50</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-08-26</td>
+<td align="right">8.61</td>
+<td align="right">2.00</td>
+<td align="right">6.430</td>
+<td align="right">0.1760</td>
+<td align="right">-0.0429</td>
+<td align="right">-0.329</td>
+<td align="right">14.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-08-27</td>
+<td align="right">11.00</td>
+<td align="right">2.27</td>
+<td align="right">8.630</td>
+<td align="right">0.1100</td>
+<td align="right">-0.2190</td>
+<td align="right">-0.543</td>
+<td align="right">18.70</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-08-27</td>
+<td align="right">11.70</td>
+<td align="right">1.81</td>
+<td align="right">9.750</td>
+<td align="right">0.1430</td>
+<td align="right">-0.2300</td>
+<td align="right">-0.521</td>
+<td align="right">17.70</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-08-27</td>
+<td align="right">8.01</td>
+<td align="right">2.07</td>
+<td align="right">5.700</td>
+<td align="right">0.2420</td>
+<td align="right">-0.1750</td>
+<td align="right">-0.379</td>
+<td align="right">13.30</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-08-27</td>
+<td align="right">8.19</td>
+<td align="right">2.11</td>
+<td align="right">5.900</td>
+<td align="right">0.1870</td>
+<td align="right">-0.1750</td>
+<td align="right">-0.464</td>
+<td align="right">13.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-08-28</td>
+<td align="right">13.30</td>
+<td align="right">2.48</td>
+<td align="right">10.400</td>
+<td align="right">0.3850</td>
+<td align="right">-0.2410</td>
+<td align="right">-0.514</td>
+<td align="right">23.00</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-08-28</td>
+<td align="right">10.70</td>
+<td align="right">2.09</td>
+<td align="right">8.110</td>
+<td align="right">0.4840</td>
+<td align="right">-0.1640</td>
+<td align="right">-0.414</td>
+<td align="right">17.70</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-08-28</td>
+<td align="right">8.31</td>
+<td align="right">2.48</td>
+<td align="right">5.300</td>
+<td align="right">0.5270</td>
+<td align="right">-0.0978</td>
+<td align="right">-0.343</td>
+<td align="right">14.60</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-08-28</td>
+<td align="right">8.49</td>
+<td align="right">2.49</td>
+<td align="right">5.450</td>
+<td align="right">0.5490</td>
+<td align="right">-0.0538</td>
+<td align="right">-0.307</td>
+<td align="right">15.20</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-08-29</td>
+<td align="right">13.10</td>
+<td align="right">2.75</td>
+<td align="right">10.200</td>
+<td align="right">0.2420</td>
+<td align="right">-0.0978</td>
+<td align="right">-0.400</td>
+<td align="right">22.60</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-08-29</td>
+<td align="right">13.60</td>
+<td align="right">2.15</td>
+<td align="right">11.000</td>
+<td align="right">0.3960</td>
+<td align="right">-0.1530</td>
+<td align="right">-0.314</td>
+<td align="right">20.70</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-08-29</td>
+<td align="right">11.50</td>
+<td align="right">2.44</td>
+<td align="right">8.580</td>
+<td align="right">0.4510</td>
+<td align="right">-0.1090</td>
+<td align="right">-0.243</td>
+<td align="right">18.40</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-08-29</td>
+<td align="right">10.90</td>
+<td align="right">2.53</td>
+<td align="right">7.860</td>
+<td align="right">0.4950</td>
+<td align="right">-0.0868</td>
+<td align="right">-0.214</td>
+<td align="right">17.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-08-30</td>
+<td align="right">9.91</td>
+<td align="right">3.37</td>
+<td align="right">0.000</td>
+<td align="right">6.5400</td>
+<td align="right">-0.2410</td>
+<td align="right">0.821</td>
+<td align="right">17.40</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-08-30</td>
+<td align="right">6.19</td>
+<td align="right">2.19</td>
+<td align="right">0.022</td>
+<td align="right">3.9800</td>
+<td align="right">-0.1750</td>
+<td align="right">0.707</td>
+<td align="right">10.90</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-08-30</td>
+<td align="right">7.27</td>
+<td align="right">2.47</td>
+<td align="right">0.000</td>
+<td align="right">4.8100</td>
+<td align="right">-0.2300</td>
+<td align="right">0.771</td>
+<td align="right">12.20</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-08-30</td>
+<td align="right">8.84</td>
+<td align="right">2.60</td>
+<td align="right">0.000</td>
+<td align="right">6.2400</td>
+<td align="right">-0.3070</td>
+<td align="right">0.857</td>
+<td align="right">14.90</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-08-31</td>
+<td align="right">6.54</td>
+<td align="right">5.17</td>
+<td align="right">0.187</td>
+<td align="right">1.1800</td>
+<td align="right">0.1880</td>
+<td align="right">0.143</td>
+<td align="right">8.86</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-08-31</td>
+<td align="right">6.31</td>
+<td align="right">2.85</td>
+<td align="right">3.360</td>
+<td align="right">0.0989</td>
+<td align="right">0.0231</td>
+<td align="right">-0.457</td>
+<td align="right">11.60</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-08-31</td>
+<td align="right">5.42</td>
+<td align="right">3.21</td>
+<td align="right">1.970</td>
+<td align="right">0.2420</td>
+<td align="right">0.1110</td>
+<td align="right">-0.300</td>
+<td align="right">8.43</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-08-31</td>
+<td align="right">5.27</td>
+<td align="right">3.48</td>
+<td align="right">1.460</td>
+<td align="right">0.3300</td>
+<td align="right">0.1660</td>
+<td align="right">-0.171</td>
+<td align="right">6.43</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Fixed, Report: Fixed</td>
+<td align="left">2021-09-01</td>
+<td align="right">29.00</td>
+<td align="right">8.10</td>
+<td align="right">20.900</td>
+<td align="right">0.0220</td>
+<td align="right">0.0011</td>
+<td align="right">-0.486</td>
+<td align="right">55.90</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Fixed, Report: Day of week</td>
+<td align="left">2021-09-01</td>
+<td align="right">56.50</td>
+<td align="right">4.47</td>
+<td align="right">52.100</td>
+<td align="right">0.0000</td>
+<td align="right">-0.2520</td>
+<td align="right">-0.714</td>
+<td align="right">76.00</td>
+</tr>
+<tr class="odd">
+<td align="left">Reference: Age group, Report: Day of week</td>
+<td align="left">2021-09-01</td>
+<td align="right">50.10</td>
+<td align="right">5.01</td>
+<td align="right">45.100</td>
+<td align="right">0.0000</td>
+<td align="right">-0.1970</td>
+<td align="right">-0.671</td>
+<td align="right">71.80</td>
+</tr>
+<tr class="even">
+<td align="left">Reference: Age group and week, Report: Day of week</td>
+<td align="left">2021-09-01</td>
+<td align="right">47.60</td>
+<td align="right">5.13</td>
+<td align="right">42.500</td>
+<td align="right">0.0110</td>
+<td align="right">-0.1860</td>
+<td align="right">-0.614</td>
+<td align="right">68.90</td>
+</tr>
+</tbody>
+</table>
+<p>Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models.</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
+ <span class="va">summarised_nowcasts</span>,
+ <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>
+<span class="op">)</span>
+<span class="va">fixed_score</span> <span class="op">&lt;-</span> <span class="va">score</span><span class="op">[</span><span class="va">model</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Reference: Fixed, Report: Fixed"</span>,
+                     <span class="fu">.</span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">age_group</span>, fixed_is <span class="op">=</span> <span class="va">interval_score</span><span class="op">)</span><span class="op">]</span>
+<span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">score</span>, <span class="va">fixed_score</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">score</span> <span class="op">&lt;-</span> <span class="va">score</span><span class="op">[</span>, <span class="va">interval_score</span> <span class="op">:=</span> <span class="va">interval_score</span> <span class="op">/</span> <span class="va">fixed_is</span><span class="op">]</span>
+<span class="va">score</span> <span class="op">&lt;-</span> <span class="va">score</span><span class="op">[</span><span class="op">!</span><span class="va">model</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Reference: Fixed, Report: Fixed"</span><span class="op">]</span>
+<span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">score</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">reference_date</span>, y <span class="op">=</span> <span class="va">interval_score</span>, col <span class="op">=</span> <span class="va">model</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="fl">2</span>, size <span class="op">=</span> <span class="fl">1.2</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.1</span>, alpha <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_color_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org/reference/label_percent.html" class="external-link">percent</a></span><span class="op">)</span>
+
+<span class="va">plot</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_plot_theme.html">enw_plot_theme</a></span><span class="op">(</span><span class="va">plot</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Reference date"</span>,
+       y <span class="op">=</span> <span class="st">"Weighted interval score (relative to Reference: Fixed, Report: Fixed model)"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># nolint</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>col <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Model"</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>
+<span class="va">plot</span></code></pre></div>
+<p><img src="figures/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" width="100%"></p>
+</div>
+<div class="section level1">
+<h1 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
+</h1>
+<p>In this vignette we showcased using <code>epinowcast</code> to nowcast age stratified COVID-19 hospitalisations in Germany by date of test with a series of increasingly complex models motivated by the data. We also showed some simple methods for exploring these nowcasts and evaluating them.</p>
+<p>Using the limited information available to us (as we have only nowcast a single data point) it appears that all models performed acceptably and that, aside from the last data point, models with age and day of the week effects likely performed better. It is also fairly clear that performance degrades as the amount of reported data is reduced which intuitively makes sense with perforance being particularly sensitive the first day reported data is available (i.e “now”).</p>
+<p>Despite the fixed effect model doing well overall, for most applications if choosing a model based on this evaluation, I would likely select the final model (with day of the week, age group, and weekly variation) and rely on the hierarchical structure to limit overfitting. However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling secton of this vignette).</p>
 </div>
   </div>
 
