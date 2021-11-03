@@ -18,6 +18,8 @@ enw_posterior_as_prior(
 
 \item{variables}{A character vector of variables both in the
 posterior and in the default priors.}
+
+\item{DESCRIPTION}{}
 }
 \value{
 RETURN_DESCRIPTION

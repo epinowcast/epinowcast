@@ -127,6 +127,8 @@ enw_priors_as_data_list <- function(priors) {
 #' @param variables A character vector of variables both in the
 #' posterior and in the default priors.
 #'
+#' @param DESCRIPTION
+#'
 #' @return RETURN_DESCRIPTION
 #' @family modeltools
 #' @importFrom data.table setDT

@@ -9,7 +9,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "../vignettes/figures/",
+  fig.path = "vignettes/figures/",
   cache = TRUE, cache.path = "cache/",
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
