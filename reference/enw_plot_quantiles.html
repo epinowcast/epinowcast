@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.1000</span>
       </span>
     </div>
 
@@ -44,7 +44,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/germany-age-stratified-nowcasting.html">Nowcasting COVID-19 hospitalisations in Germany stratified by age</a>
+      <a href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     </li>
     <li>
       <a href="../articles/model-definitions.html">Model definition</a>
@@ -87,17 +87,20 @@
     <p>Generic quantile plot</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_plot_quantiles</span><span class="op">(</span><span class="va">posterior</span>, obs <span class="op">=</span> <span class="cn">NULL</span>, log <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_plot_quantiles</span><span class="op">(</span><span class="va">posterior</span>, latest_obs <span class="op">=</span> <span class="cn">NULL</span>, log <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
 
     <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>posterior</dt>
 <dd><p>A <code>data.frame</code> of summarised posterior estimates
-containing at least a <code>confirm</code> count column and a date variable</p></dd>
-<dt>obs</dt>
-<dd><p>A data frame of observed data containing at least a <code>confirm</code>
-count variable and the same date variable as in <code>posterior</code>.</p></dd>
+containing at least a <code>confirm</code> count column a date variable,
+quantile estimates for the 5%, 20%, 80%, and 95% quantiles and the
+mean and median.</p></dd>
+<dt>latest_obs</dt>
+<dd><p>A data frame of observed data containing at least a
+<code>confirm</code> count variable and the same date variable as in the main data.frame
+used for plotting.</p></dd>
 <dt>log</dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should counts be plot on the log
 scale.</p></dd>
@@ -113,6 +116,7 @@ specify the x date variable.</p></dd>
     <h2>See also</h2>
     <div class="dont-index"><p>Plotting functions
 <code><a href="enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a>()</code>,
+<code><a href="enw_plot_obs.html">enw_plot_obs</a>()</code>,
 <code><a href="enw_plot_pp_quantiles.html">enw_plot_pp_quantiles</a>()</code>,
 <code><a href="enw_plot_theme.html">enw_plot_theme</a>()</code>,
 <code><a href="plot.epinowcast.html">plot.epinowcast</a>()</code></p></div>

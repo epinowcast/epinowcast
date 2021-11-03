@@ -53,7 +53,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.1000</span>
       </span>
     </div>
 
@@ -70,7 +70,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/germany-age-stratified-nowcasting.html">Nowcasting COVID-19 hospitalisations in Germany stratified by age</a>
+      <a href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     </li>
     <li>
       <a href="articles/model-definitions.html">Model definition</a>
@@ -141,7 +141,7 @@
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h2>
-<p>In this quick start we use COVID-19 hospitalisations by date of positive test in Germany available up to the 1st of October 2021 to demonstrate the specification and fitting of a simple nowcasting model using <a href="https://epiforecasts.io/epinowcast/">epinowcast</a>.Examples using more complex models are available in the package vignettes and in the papers linked to in the literature vignette.</p>
+<p>In this quick start we use COVID-19 hospitalisations by date of positive test in Germany available up to the 1st of October 2021 to demonstrate the specification and fitting of a simple nowcasting model using <code>epinowcast</code>.Examples using more complex models are available in the package vignettes and in the papers linked to in the literature vignette.</p>
 <div class="section level3">
 <h3 id="package">Package<a class="anchor" aria-label="anchor" href="#package"></a>
 </h3>
@@ -154,7 +154,7 @@
 <div class="section level3">
 <h3 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h3>
-<p>These data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a> where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitialisations by date of positive test.</p>
+<p>These data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a> where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span>
 <span class="va">nat_germany_hosp</span><span class="op">[</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-10-01"</span><span class="op">)</span><span class="op">]</span>
@@ -228,7 +228,7 @@
 <div class="section level3">
 <h3 id="data-preprocessing-and-model-specification">Data preprocessing and model specification<a class="anchor" aria-label="anchor" href="#data-preprocessing-and-model-specification"></a>
 </h3>
-<p>Process reported data into format required for <code>epinowcast</code> and return in a <a href="https://r-datatable.com" class="external-link">data.table</a>. At this stage specify grouping (i.e age, location) if any. It can be useful to check this output before beginning to model to make sure everything is as expected.</p>
+<p>Process reported data into format required for <code>epinowcast</code> and return in a <code>data.table</code>. At this stage specify grouping (i.e age, location) if any. It can be useful to check this output before beginning to model to make sure everything is as expected.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span>
 <span class="va">pobs</span>
@@ -238,14 +238,14 @@
 <span class="co">#&gt; 1: &lt;data.table[495x8]&gt; &lt;data.table[31x32]&gt; &lt;data.table[31x7]&gt;</span>
 <span class="co">#&gt;            metareport time snapshots groups max_delay   max_date</span>
 <span class="co">#&gt; 1: &lt;data.table[60x8]&gt;   31        31      1        30 2021-09-20</span></code></pre></div>
-<p>Construct an intercept only model for the date of reference using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <a href="https://epiforecasts.io/epinowcast/">epinowcast</a> uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
+<p>Construct an intercept only model for the date of reference using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
 <span class="va">reference_effects</span>
 <span class="co">#&gt; $fixed</span>
 <span class="co">#&gt; $fixed$formula</span>
 <span class="co">#&gt; ~1</span>
-<span class="co">#&gt; &lt;environment: 0x56443f6c1168&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55f3056088c8&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $fixed$design</span>
 <span class="co">#&gt;   (Intercept)</span>
@@ -258,7 +258,7 @@
 <span class="co">#&gt; $random</span>
 <span class="co">#&gt; $random$formula</span>
 <span class="co">#&gt; ~1</span>
-<span class="co">#&gt; &lt;environment: 0x56443f6c1168&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55f3056088c8&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $random$design</span>
 <span class="co">#&gt;      (Intercept)</span>
@@ -274,7 +274,7 @@
 <span class="co">#&gt; $fixed</span>
 <span class="co">#&gt; $fixed$formula</span>
 <span class="co">#&gt; ~1 + day_of_week</span>
-<span class="co">#&gt; &lt;environment: 0x56443fb491a8&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55f305a59ec8&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $fixed$design</span>
 <span class="co">#&gt;   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday</span>
@@ -302,7 +302,7 @@
 <span class="co">#&gt; $random</span>
 <span class="co">#&gt; $random$formula</span>
 <span class="co">#&gt; ~0 + fixed + day_of_week</span>
-<span class="co">#&gt; &lt;environment: 0x56443fb491a8&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55f305a59ec8&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $random$design</span>
 <span class="co">#&gt;   fixed day_of_week</span>
@@ -334,21 +334,21 @@
   reference_effects <span class="op">=</span> <span class="va">reference_effects</span>,
   save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,
   chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="fl">2</span>,
-  refresh <span class="op">=</span> <span class="fl">0</span>, show_messages <span class="op">=</span> <span class="cn">FALSE</span>
+  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>
 <span class="op">)</span>
 <span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Chain 1 finished in 44.2 seconds.</span>
-<span class="co">#&gt; Chain 2 finished in 44.2 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 44.4 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 45.7 seconds.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Both chains finished successfully.</span>
-<span class="co">#&gt; Mean chain execution time: 44.2 seconds.</span>
-<span class="co">#&gt; Total execution time: 44.3 seconds.</span></code></pre></div>
+<span class="co">#&gt; Mean chain execution time: 45.0 seconds.</span>
+<span class="co">#&gt; Total execution time: 45.8 seconds.</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
 </h3>
-<p>Print the output from <a href="https://epiforecasts.io/epinowcast/">epinowcast</a> which includes diagnostic information, the data used for fitting, and the <code>{cmdstanr</code>} object.</p>
+<p>Print the output from <code>epinowcast</code> which includes diagnostic information, the data used for fitting, and the <code>cmdstanr</code> object.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nowcast</span>
 <span class="co">#&gt;                    obs         new_confirm             latest</span>
@@ -358,81 +358,81 @@
 <span class="co">#&gt;            metareport time snapshots groups max_delay   max_date</span>
 <span class="co">#&gt; 1: &lt;data.table[60x8]&gt;   31        31      1        30 2021-09-20</span>
 <span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span>
-<span class="co">#&gt; 1: &lt;CmdStanMCMC[31]&gt; &lt;list[29]&gt; &lt;list[6]&gt;    2000     1.01</span>
+<span class="co">#&gt; 1: &lt;CmdStanMCMC[31]&gt; &lt;list[36]&gt; &lt;list[6]&gt;    2000     1.01</span>
 <span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span>
 <span class="co">#&gt; 1:                     0                         0             7</span>
 <span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth time</span>
-<span class="co">#&gt; 1:                1879               0.9395 44.3</span></code></pre></div>
+<span class="co">#&gt; 1:                1702                0.851 45.8</span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>
-<span class="co">#&gt;     reference_date location age_group confirm group     mean median         sd</span>
-<span class="co">#&gt;  1:     2021-08-22       DE       00+     239     1 239.0000    239  0.0000000</span>
-<span class="co">#&gt;  2:     2021-08-23       DE       00+     186     1 186.6275    186  0.8081276</span>
-<span class="co">#&gt;  3:     2021-08-24       DE       00+     437     1 439.0925    439  1.5786671</span>
-<span class="co">#&gt;  4:     2021-08-25       DE       00+     539     1 543.7920    544  2.4993718</span>
-<span class="co">#&gt;  5:     2021-08-26       DE       00+     509     1 515.9025    516  2.9776546</span>
-<span class="co">#&gt;  6:     2021-08-27       DE       00+     442     1 450.4590    450  3.3410927</span>
-<span class="co">#&gt;  7:     2021-08-28       DE       00+     412     1 422.8270    423  3.8066148</span>
-<span class="co">#&gt;  8:     2021-08-29       DE       00+     322     1 333.9690    334  4.1993876</span>
-<span class="co">#&gt;  9:     2021-08-30       DE       00+     204     1 212.0110    212  3.1330156</span>
-<span class="co">#&gt; 10:     2021-08-31       DE       00+     409     1 423.2020    423  4.4781942</span>
-<span class="co">#&gt; 11:     2021-09-01       DE       00+     535     1 563.5335    563  6.9731765</span>
-<span class="co">#&gt; 12:     2021-09-02       DE       00+     475     1 507.3505    507  7.3041992</span>
-<span class="co">#&gt; 13:     2021-09-03       DE       00+     444     1 478.7115    478  7.5850533</span>
-<span class="co">#&gt; 14:     2021-09-04       DE       00+     437     1 481.8540    481  9.3148842</span>
-<span class="co">#&gt; 15:     2021-09-05       DE       00+     310     1 348.9480    348  8.2244220</span>
-<span class="co">#&gt; 16:     2021-09-06       DE       00+     190     1 215.6990    215  6.1972253</span>
-<span class="co">#&gt; 17:     2021-09-07       DE       00+     395     1 440.5830    440  9.0374193</span>
-<span class="co">#&gt; 18:     2021-09-08       DE       00+     518     1 600.8125    600 13.9180171</span>
-<span class="co">#&gt; 19:     2021-09-09       DE       00+     433     1 518.5695    518 14.3046664</span>
-<span class="co">#&gt; 20:     2021-09-10       DE       00+     395     1 490.2430    490 15.3162085</span>
-<span class="co">#&gt; 21:     2021-09-11       DE       00+     365     1 483.7110    483 18.4334038</span>
-<span class="co">#&gt; 22:     2021-09-12       DE       00+     239     1 333.6055    333 16.1735173</span>
-<span class="co">#&gt; 23:     2021-09-13       DE       00+     147     1 211.8540    211 12.2386509</span>
-<span class="co">#&gt; 24:     2021-09-14       DE       00+     324     1 429.1345    428 17.6633068</span>
-<span class="co">#&gt; 25:     2021-09-15       DE       00+     313     1 459.0355    458 24.1502766</span>
-<span class="co">#&gt; 26:     2021-09-16       DE       00+     289     1 487.3125    486 32.2624593</span>
-<span class="co">#&gt; 27:     2021-09-17       DE       00+     203     1 421.9865    418 37.1980936</span>
-<span class="co">#&gt; 28:     2021-09-18       DE       00+     144     1 434.7650    430 55.2334241</span>
-<span class="co">#&gt; 29:     2021-09-19       DE       00+      73     1 400.4825    393 68.4068231</span>
-<span class="co">#&gt; 30:     2021-09-20       DE       00+      23     1 317.8180    310 85.1455328</span>
-<span class="co">#&gt;     reference_date location age_group confirm group     mean median         sd</span>
+<span class="co">#&gt;     reference_date location age_group confirm group     mean median        sd</span>
+<span class="co">#&gt;  1:     2021-08-22       DE       00+     239     1 239.0000    239  0.000000</span>
+<span class="co">#&gt;  2:     2021-08-23       DE       00+     186     1 186.5530    186  0.783261</span>
+<span class="co">#&gt;  3:     2021-08-24       DE       00+     437     1 439.0415    439  1.518859</span>
+<span class="co">#&gt;  4:     2021-08-25       DE       00+     539     1 543.5600    543  2.416675</span>
+<span class="co">#&gt;  5:     2021-08-26       DE       00+     509     1 515.4930    515  2.929888</span>
+<span class="co">#&gt;  6:     2021-08-27       DE       00+     442     1 450.0540    450  3.305230</span>
+<span class="co">#&gt;  7:     2021-08-28       DE       00+     412     1 422.5300    422  3.894186</span>
+<span class="co">#&gt;  8:     2021-08-29       DE       00+     322     1 333.5820    333  3.945004</span>
+<span class="co">#&gt;  9:     2021-08-30       DE       00+     204     1 211.9955    212  3.168043</span>
+<span class="co">#&gt; 10:     2021-08-31       DE       00+     409     1 423.0055    423  4.424167</span>
+<span class="co">#&gt; 11:     2021-09-01       DE       00+     535     1 562.9745    563  6.795362</span>
+<span class="co">#&gt; 12:     2021-09-02       DE       00+     475     1 506.8375    506  7.303134</span>
+<span class="co">#&gt; 13:     2021-09-03       DE       00+     444     1 478.7440    478  7.679320</span>
+<span class="co">#&gt; 14:     2021-09-04       DE       00+     437     1 481.6125    481  9.179895</span>
+<span class="co">#&gt; 15:     2021-09-05       DE       00+     310     1 348.3345    348  8.270297</span>
+<span class="co">#&gt; 16:     2021-09-06       DE       00+     190     1 215.4710    215  6.136937</span>
+<span class="co">#&gt; 17:     2021-09-07       DE       00+     395     1 440.5250    440  8.831839</span>
+<span class="co">#&gt; 18:     2021-09-08       DE       00+     518     1 600.5690    600 13.474718</span>
+<span class="co">#&gt; 19:     2021-09-09       DE       00+     433     1 519.0615    518 14.105573</span>
+<span class="co">#&gt; 20:     2021-09-10       DE       00+     395     1 489.5885    489 15.148726</span>
+<span class="co">#&gt; 21:     2021-09-11       DE       00+     365     1 483.4045    482 18.518514</span>
+<span class="co">#&gt; 22:     2021-09-12       DE       00+     239     1 332.9950    332 15.224285</span>
+<span class="co">#&gt; 23:     2021-09-13       DE       00+     147     1 211.7365    211 12.087768</span>
+<span class="co">#&gt; 24:     2021-09-14       DE       00+     324     1 429.2535    428 17.308091</span>
+<span class="co">#&gt; 25:     2021-09-15       DE       00+     313     1 459.1785    458 23.483342</span>
+<span class="co">#&gt; 26:     2021-09-16       DE       00+     289     1 488.0755    486 31.492454</span>
+<span class="co">#&gt; 27:     2021-09-17       DE       00+     203     1 423.9575    422 37.787996</span>
+<span class="co">#&gt; 28:     2021-09-18       DE       00+     144     1 436.7725    432 52.441909</span>
+<span class="co">#&gt; 29:     2021-09-19       DE       00+      73     1 404.4645    396 68.991620</span>
+<span class="co">#&gt; 30:     2021-09-20       DE       00+      23     1 317.6785    305 87.012331</span>
+<span class="co">#&gt;     reference_date location age_group confirm group     mean median        sd</span>
 <span class="co">#&gt;         mad     q5    q95      rhat ess_bulk ess_tail</span>
 <span class="co">#&gt;  1:  0.0000 239.00 239.00        NA       NA       NA</span>
-<span class="co">#&gt;  2:  0.0000 186.00 188.00 0.9992215 1795.159 1751.494</span>
-<span class="co">#&gt;  3:  1.4826 437.00 442.00 1.0001363 1942.576 1828.531</span>
-<span class="co">#&gt;  4:  2.9652 540.00 548.00 1.0009785 1787.301 1740.478</span>
-<span class="co">#&gt;  5:  2.9652 512.00 521.00 0.9996505 1846.076 1943.944</span>
-<span class="co">#&gt;  6:  2.9652 446.00 456.00 1.0007271 1972.206 1872.466</span>
-<span class="co">#&gt;  7:  4.4478 417.00 430.00 1.0007874 1663.478 1814.270</span>
-<span class="co">#&gt;  8:  4.4478 328.00 341.00 0.9997741 1791.221 1947.035</span>
-<span class="co">#&gt;  9:  2.9652 207.00 217.00 1.0013510 1974.714 1732.971</span>
-<span class="co">#&gt; 10:  4.4478 416.95 431.00 1.0000087 1541.149 1883.132</span>
-<span class="co">#&gt; 11:  7.4130 553.00 576.00 1.0009724 1688.602 1811.652</span>
-<span class="co">#&gt; 12:  7.4130 496.00 520.00 1.0002539 2163.127 2058.544</span>
-<span class="co">#&gt; 13:  7.4130 467.00 492.00 0.9994651 2118.903 1915.943</span>
-<span class="co">#&gt; 14:  8.8956 467.00 498.00 0.9996567 1928.605 1865.422</span>
-<span class="co">#&gt; 15:  7.4130 336.00 363.00 1.0009321 2004.644 1678.558</span>
-<span class="co">#&gt; 16:  5.9304 206.00 227.00 1.0005243 2121.367 1977.602</span>
-<span class="co">#&gt; 17:  8.8956 426.00 456.00 0.9997277 2089.715 1835.294</span>
-<span class="co">#&gt; 18: 13.3434 579.00 625.00 1.0004889 2035.469 1917.989</span>
-<span class="co">#&gt; 19: 13.3434 496.00 543.00 1.0003562 2094.522 1987.369</span>
-<span class="co">#&gt; 20: 16.3086 467.00 516.00 1.0002750 2066.929 1825.524</span>
-<span class="co">#&gt; 21: 17.7912 455.00 516.00 1.0026167 2077.616 1893.522</span>
-<span class="co">#&gt; 22: 16.3086 309.00 361.00 0.9996277 2249.448 2022.962</span>
-<span class="co">#&gt; 23: 11.8608 193.00 233.00 0.9997477 2089.114 1958.539</span>
-<span class="co">#&gt; 24: 17.7912 402.00 461.00 1.0009739 2395.142 1939.378</span>
-<span class="co">#&gt; 25: 23.7216 422.00 501.00 1.0033148 2219.340 1830.752</span>
-<span class="co">#&gt; 26: 31.1346 436.00 543.05 1.0029336 2528.973 1924.160</span>
-<span class="co">#&gt; 27: 37.0650 367.00 488.00 1.0012985 1837.448 1906.721</span>
-<span class="co">#&gt; 28: 50.4084 354.00 530.00 0.9998739 2567.897 1800.778</span>
-<span class="co">#&gt; 29: 66.7170 301.95 526.00 1.0005864 2703.717 1948.242</span>
-<span class="co">#&gt; 30: 81.5430 196.00 467.05 1.0000453 2744.299 1885.458</span>
+<span class="co">#&gt;  2:  0.0000 186.00 188.00 1.0011355 1748.013 1683.923</span>
+<span class="co">#&gt;  3:  1.4826 437.00 442.00 1.0016667 2051.155 1855.236</span>
+<span class="co">#&gt;  4:  2.9652 540.00 548.00 0.9995236 1976.784 1882.572</span>
+<span class="co">#&gt;  5:  2.9652 511.00 521.00 1.0019635 2200.587 2082.110</span>
+<span class="co">#&gt;  6:  2.9652 445.00 456.00 1.0008425 1810.801 2050.181</span>
+<span class="co">#&gt;  7:  4.4478 417.00 430.00 1.0016124 2011.310 2067.515</span>
+<span class="co">#&gt;  8:  4.4478 328.00 340.00 1.0000859 1813.239 2030.680</span>
+<span class="co">#&gt;  9:  2.9652 207.00 218.00 1.0005271 2137.998 1833.634</span>
+<span class="co">#&gt; 10:  4.4478 416.00 431.00 1.0004651 1852.400 1747.592</span>
+<span class="co">#&gt; 11:  7.4130 553.00 575.00 1.0001108 1939.186 1931.899</span>
+<span class="co">#&gt; 12:  7.4130 496.00 519.00 1.0007521 2109.944 1763.695</span>
+<span class="co">#&gt; 13:  7.4130 467.00 492.00 1.0004613 1944.067 1910.117</span>
+<span class="co">#&gt; 14:  8.8956 467.95 498.00 1.0006668 2038.571 1858.508</span>
+<span class="co">#&gt; 15:  8.8956 336.00 363.00 1.0006592 1892.507 1756.191</span>
+<span class="co">#&gt; 16:  5.9304 206.00 226.00 1.0002649 2058.708 1860.034</span>
+<span class="co">#&gt; 17:  8.8956 427.00 456.00 1.0002989 2117.516 1769.627</span>
+<span class="co">#&gt; 18: 13.3434 579.00 624.00 1.0003806 2286.819 2011.733</span>
+<span class="co">#&gt; 19: 13.3434 497.00 543.00 1.0005675 2186.568 2039.634</span>
+<span class="co">#&gt; 20: 14.8260 467.00 515.00 1.0008054 2064.401 1877.129</span>
+<span class="co">#&gt; 21: 17.7912 453.00 516.00 1.0007999 2351.109 2011.789</span>
+<span class="co">#&gt; 22: 14.8260 309.00 360.00 0.9996425 2187.500 1760.445</span>
+<span class="co">#&gt; 23: 11.8608 193.00 232.00 1.0015021 2215.999 2002.483</span>
+<span class="co">#&gt; 24: 16.3086 403.00 460.00 0.9996287 2274.178 1770.189</span>
+<span class="co">#&gt; 25: 23.7216 424.95 501.00 0.9993421 2324.935 1923.692</span>
+<span class="co">#&gt; 26: 31.1346 440.95 543.05 1.0002299 2090.750 1617.826</span>
+<span class="co">#&gt; 27: 35.5824 366.00 490.05 1.0002439 2272.594 1681.046</span>
+<span class="co">#&gt; 28: 53.3736 357.00 528.00 0.9995004 2609.756 1902.914</span>
+<span class="co">#&gt; 29: 65.2344 305.00 528.05 1.0026114 2139.333 1878.615</span>
+<span class="co">#&gt; 30: 80.0604 199.00 475.15 1.0018779 2436.114 1602.356</span>
 <span class="co">#&gt;         mad     q5    q95      rhat ess_bulk ess_tail</span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></code></pre></div>
 <p><img src="reference/figures/README-nowcast-1.png" width="100%"></p>
 <p>Plot posterior predictions for observed notifications by date of report as a check of how well the model reproduces the observed data.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -470,12 +470,12 @@
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
 <p>We welcome contributions and new contributors! We particularly appreciate help on priority problems in the <a href="https://github.com/epiforecasts/epinowcast/issues" class="external-link">issues</a>. Please check and add to the issues, and/or add a <a href="https://github.com/epiforecasts/epinowcast/pulls" class="external-link">pull request</a>.</p>
-<p>If interested in expanding the functionality of the underlying model note that <a href="https://epiforecasts.io/epinowcast/">epinowcast</a> allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested using the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome.</p>
+<p>If interested in expanding the functionality of the underlying model note that <code>epinowcast</code> allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors.</p>
 </div>
 <div class="section level2">
 <h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
 </h2>
-<p>Please note that the <code>forecast.vocs</code> project is released with a <a href="https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>Please note that the <code>epinowcast</code> project is released with a <a href="https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
   </div>

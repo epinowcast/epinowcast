@@ -73,6 +73,9 @@
     <loc>epiforecasts.io/epinowcast/reference/enw_formula.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_formula_as_data_list.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_inits.html</loc>
   </url>
   <url>
@@ -91,7 +94,16 @@
     <loc>epiforecasts.io/epinowcast/reference/enw_nowcast_summary.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_obs_as_data_list.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_opts_as_data_list.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_plot_nowcast_quantiles.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_plot_obs.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_plot_pp_quantiles.html</loc>
@@ -106,10 +118,22 @@
     <loc>epiforecasts.io/epinowcast/reference/enw_posterior.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_posterior_as_prior.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_pp_summary.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_preprocess_data.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_priors.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_priors_as_data_list.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_quantiles_to_long.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_random_intercept_scenario.html</loc>
@@ -125,6 +149,9 @@
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_sample.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_score_nowcast.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_simulate_lnorm_trunc_obs.html</loc>

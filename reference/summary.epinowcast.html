@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.2.1000</span>
       </span>
     </div>
 
@@ -44,7 +44,7 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/germany-age-stratified-nowcasting.html">Nowcasting COVID-19 hospitalisations in Germany stratified by age</a>
+      <a href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     </li>
     <li>
       <a href="../articles/model-definitions.html">Model definition</a>
@@ -79,7 +79,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Summary method for epinowcast</h1>
-    <small class="dont-index">Source: <a href="https://github.com/epiforecasts/epinowcast/blob/HEAD/R/epinowcast-methods.R" class="external-link"><code>R/epinowcast-methods.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/epiforecasts/epinowcast/blob/HEAD/R/methods.R" class="external-link"><code>R/methods.R</code></a></small>
     <div class="hidden name"><code>summary.epinowcast.Rd</code></div>
     </div>
 
@@ -99,9 +99,9 @@
 <dd><p>A character string indicating the type of summary to return.
 Currently supported options are "nowcast" which summaries the nowcast
 posterior using <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>,  "fit" which returns the
-summarised <code>cmdstanr</code> fit, and "posterior_prediction" which returns
-summarised posterior predictions for observations used in fitting (
-using <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>).</p></dd>
+summarised <code>cmdstanr</code> fit using <code><a href="enw_posterior.html">enw_posterior()</a></code>, and
+"posterior_prediction" which returns summarised posterior predictions for
+observations used in fitting (using <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>).</p></dd>
 <dt>...</dt>
 <dd><p>Pass additional arguments to summary functions.</p></dd>
 </dl></div>
