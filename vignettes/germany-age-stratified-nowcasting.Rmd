@@ -121,12 +121,697 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 453.8 seconds.
-#> Chain 2 finished in 456.1 seconds.
+#> Chain 1 finished in 299.4 seconds.
+#> Chain 2 finished in 301.8 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 455.0 seconds.
-#> Total execution time: 456.1 seconds.
+#> Mean chain execution time: 300.6 seconds.
+#> Total execution time: 301.8 seconds.
 ```
 
 We first visualise the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.
+
+
+```r
+plot(nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+<img src="figures/nowcast-1.png" title="plot of chunk nowcast" alt="plot of chunk nowcast" width="100%" />
+
+In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. Here we see fairly clearly oscillations in reported cases every 7 days indicating some kind of week day adjustment may be needed.
+
+
+```r
+plot(nowcast, type = "posterior") +
+  facet_wrap(vars(age_group, reference_date), scales = "free")
+```
+
+<img src="figures/simple_pp-1.png" title="plot of chunk simple_pp" alt="plot of chunk simple_pp" width="100%" />
+
+## Reporting day of the week effect
+
+As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
+
+
+```r
+dow_report_effects <- enw_formula(pobs$metareport, random = "day_of_week")
+dow_report_effects
+#> $fixed
+#> $fixed$formula
+#> ~1 + day_of_week
+#> <environment: 0x2f7c13b8>
+#> 
+#> $fixed$design
+#>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday day_of_weekSunday
+#> 1           1                 1                 0                   0                 0
+#> 2           1                 0                 0                   1                 0
+#> 3           1                 0                 0                   0                 1
+#> 4           1                 0                 1                   0                 0
+#> 5           1                 0                 0                   0                 0
+#> 6           1                 0                 0                   0                 0
+#> 7           1                 0                 0                   0                 0
+#>   day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
+#> 1                   0                  0                    0
+#> 2                   0                  0                    0
+#> 3                   0                  0                    0
+#> 4                   0                  0                    0
+#> 5                   0                  1                    0
+#> 6                   0                  0                    1
+#> 7                   1                  0                    0
+#> 
+#> $fixed$index
+#>   [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
+#>  [42] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2
+#>  [83] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1
+#> [124] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4
+#> [165] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
+#> [206] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6
+#> [247] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5
+#> [288] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1
+#> [329] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7
+#> [370] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3
+#> [411] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2
+#> [452] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5
+#> [493] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4
+#> [534] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
+#> 
+#> 
+#> $random
+#> $random$formula
+#> ~0 + fixed + day_of_week
+#> <environment: 0x2f7c13b8>
+#> 
+#> $random$design
+#>   fixed day_of_week
+#> 1     0           1
+#> 2     0           1
+#> 3     0           1
+#> 4     0           1
+#> 5     0           1
+#> 6     0           1
+#> 7     0           1
+#> attr(,"assign")
+#> [1] 1 2
+#> 
+#> $random$index
+#> [1] 1 2 3 4 5 6 7
+```
+
+To speed up model fitting we make use of posterior information from the previous model (with inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
+
+
+```r
+priors <- enw_posterior_as_prior(
+  nowcast, variables = c("logmean_int", "logsd_int", "sqrt_phi"), scale = 5
+)
+priors
+#>       variable                                             description
+#> 1:    eobs_lsd      Standard deviation for expected final observations
+#> 2:  logmean_sd     Standard deviation of scaled pooled logmean effects
+#> 3:    logsd_sd       Standard deviation of scaled pooled logsd effects
+#> 4:   rd_eff_sd Standard deviation of scaled pooled report date effects
+#> 5: logmean_int                                                    <NA>
+#> 6:   logsd_int                                                    <NA>
+#> 7:    sqrt_phi                                                    <NA>
+#>             distribution      mean         sd
+#> 1: Zero truncated normal 0.0000000 1.00000000
+#> 2: Zero truncated normal 0.0000000 1.00000000
+#> 3: Zero truncated normal 0.0000000 1.00000000
+#> 4: Zero truncated normal 0.0000000 1.00000000
+#> 5:                  <NA> 1.1199440 0.22111416
+#> 6:                  <NA> 1.7294223 0.24361933
+#> 7:                  <NA> 0.1271288 0.07725554
+```
+
+We now repeat the nowcasting step with the day of the week reporting model included.
+
+
+```r
+options(mc.cores = 2)
+dow_nowcast <- epinowcast(pobs,
+  model = model,
+  report_effects = dow_report_effects,
+  priors = priors,
+  save_warmup = FALSE,
+  output_loglik = TRUE, pp = TRUE, debug = TRUE,
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
+)
+#> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
+#> 
+#> Chain 2 finished in 654.5 seconds.
+#> Chain 1 finished in 663.4 seconds.
+#> 
+#> Both chains finished successfully.
+#> Mean chain execution time: 659.0 seconds.
+#> Total execution time: 663.2 seconds.
+```
+
+Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance). We could also plot the posterior predictions for this model in the same way as for the previous model.
+
+
+```r
+plot(dow_nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+<img src="figures/dow_nowcast-1.png" title="plot of chunk dow_nowcast" alt="plot of chunk dow_nowcast" width="100%" />
+
+## Age group variation
+
+It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).
+
+
+```r
+age_reference_effects <- enw_formula(
+  pobs$metareference,
+  random = "age_group"
+)
+age_reference_effects
+#> $fixed
+#> $fixed$formula
+#> ~1 + age_group
+#> <environment: 0x37ca3030>
+#> 
+#> $fixed$design
+#>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34
+#> 1             1              1            0              0              0
+#> 42            1              0            1              0              0
+#> 83            1              0            0              1              0
+#> 124           1              0            0              0              1
+#> 165           1              0            0              0              0
+#> 206           1              0            0              0              0
+#> 247           1              0            0              0              0
+#>     age_group35-59 age_group60-79 age_group80+
+#> 1                0              0            0
+#> 42               0              0            0
+#> 83               0              0            0
+#> 124              0              0            0
+#> 165              1              0            0
+#> 206              0              1            0
+#> 247              0              0            1
+#> 
+#> $fixed$index
+#>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+#>  [42] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
+#>  [83] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+#> [124] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+#> [165] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
+#> [206] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+#> [247] 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+#> 
+#> 
+#> $random
+#> $random$formula
+#> ~0 + fixed + age_group
+#> <environment: 0x37ca3030>
+#> 
+#> $random$design
+#>   fixed age_group
+#> 1     0         1
+#> 2     0         1
+#> 3     0         1
+#> 4     0         1
+#> 5     0         1
+#> 6     0         1
+#> 7     0         1
+#> attr(,"assign")
+#> [1] 1 2
+#> 
+#> $random$index
+#> [1] 1 2 3 4 5 6 7
+```
+
+We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.
+
+
+```r
+options(mc.cores = 2)
+age_nowcast <- epinowcast(pobs,
+  model = model,
+  reference_effects = age_reference_effects,
+  report_effects = dow_report_effects,
+  priors = priors,
+  save_warmup = FALSE,
+  output_loglik = TRUE, pp = TRUE,
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
+)
+#> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
+#> 
+#> Chain 2 finished in 783.7 seconds.
+#> Chain 1 finished in 784.2 seconds.
+#> 
+#> Both chains finished successfully.
+#> Mean chain execution time: 783.9 seconds.
+#> Total execution time: 783.9 seconds.
+```
+
+Fit looks slightly better with this adjustment though uncertainty has also increased for all age groups and performance for the final day of data may have reduced compared to the first model.
+
+
+```r
+plot(age_nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+<img src="figures/age_nowcast-1.png" title="plot of chunk age_nowcast" alt="plot of chunk age_nowcast" width="100%" />
+
+## Variation based on reference date
+
+It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.
+
+To define this reference date model we first need to create new features in the metadata that capture the order weeks occur in.
+
+
+```r
+metareference <- enw_add_cumulative_membership(
+  pobs$metareference[[1]],
+  feature = "week"
+)
+metareference
+#>      age_group       date location group day_of_week week month cweek1 cweek2 cweek3
+#>   1:     00-04 2021-07-23       DE     2      Friday    0     0      0      0      0
+#>   2:     00-04 2021-07-24       DE     2    Saturday    0     0      0      0      0
+#>   3:     00-04 2021-07-25       DE     2      Sunday    0     0      0      0      0
+#>   4:     00-04 2021-07-26       DE     2      Monday    0     0      0      0      0
+#>   5:     00-04 2021-07-27       DE     2     Tuesday    0     0      0      0      0
+#>  ---                                                                                
+#> 283:       80+ 2021-08-28       DE     7    Saturday    5     1      1      1      1
+#> 284:       80+ 2021-08-29       DE     7      Sunday    5     1      1      1      1
+#> 285:       80+ 2021-08-30       DE     7      Monday    5     1      1      1      1
+#> 286:       80+ 2021-08-31       DE     7     Tuesday    5     1      1      1      1
+#> 287:       80+ 2021-09-01       DE     7   Wednesday    5     2      1      1      1
+#>      cweek4 cweek5
+#>   1:      0      0
+#>   2:      0      0
+#>   3:      0      0
+#>   4:      0      0
+#>   5:      0      0
+#>  ---              
+#> 283:      1      1
+#> 284:      1      1
+#> 285:      1      1
+#> 286:      1      1
+#> 287:      1      1
+```
+
+We can now define the model formula as previously but this time making use of the `custom_random` argument which also creates a random effect but this time using partial matching and without creating new features automatically.
+
+
+```r
+week_age_reference_effects <- enw_formula(
+  metareference,
+  random = "age_group", custom_random = "cweek"
+)
+week_age_reference_effects
+#> $fixed
+#> $fixed$formula
+#> ~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5
+#> <environment: 0x3553d4b0>
+#> 
+#> $fixed$design
+#>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34
+#> 1             1              1            0              0              0
+#> 8             1              1            0              0              0
+#> 15            1              1            0              0              0
+#> 22            1              1            0              0              0
+#> 29            1              1            0              0              0
+#> 36            1              1            0              0              0
+#> 42            1              0            1              0              0
+#> 49            1              0            1              0              0
+#> 56            1              0            1              0              0
+#> 63            1              0            1              0              0
+#> 70            1              0            1              0              0
+#> 77            1              0            1              0              0
+#> 83            1              0            0              1              0
+#> 90            1              0            0              1              0
+#> 97            1              0            0              1              0
+#> 104           1              0            0              1              0
+#> 111           1              0            0              1              0
+#> 118           1              0            0              1              0
+#> 124           1              0            0              0              1
+#> 131           1              0            0              0              1
+#> 138           1              0            0              0              1
+#> 145           1              0            0              0              1
+#> 152           1              0            0              0              1
+#> 159           1              0            0              0              1
+#> 165           1              0            0              0              0
+#> 172           1              0            0              0              0
+#> 179           1              0            0              0              0
+#> 186           1              0            0              0              0
+#> 193           1              0            0              0              0
+#> 200           1              0            0              0              0
+#> 206           1              0            0              0              0
+#> 213           1              0            0              0              0
+#> 220           1              0            0              0              0
+#> 227           1              0            0              0              0
+#> 234           1              0            0              0              0
+#> 241           1              0            0              0              0
+#> 247           1              0            0              0              0
+#> 254           1              0            0              0              0
+#> 261           1              0            0              0              0
+#> 268           1              0            0              0              0
+#> 275           1              0            0              0              0
+#> 282           1              0            0              0              0
+#>     age_group35-59 age_group60-79 age_group80+ cweek1 cweek2 cweek3 cweek4 cweek5
+#> 1                0              0            0      0      0      0      0      0
+#> 8                0              0            0      1      0      0      0      0
+#> 15               0              0            0      1      1      0      0      0
+#> 22               0              0            0      1      1      1      0      0
+#> 29               0              0            0      1      1      1      1      0
+#> 36               0              0            0      1      1      1      1      1
+#> 42               0              0            0      0      0      0      0      0
+#> 49               0              0            0      1      0      0      0      0
+#> 56               0              0            0      1      1      0      0      0
+#> 63               0              0            0      1      1      1      0      0
+#> 70               0              0            0      1      1      1      1      0
+#> 77               0              0            0      1      1      1      1      1
+#> 83               0              0            0      0      0      0      0      0
+#> 90               0              0            0      1      0      0      0      0
+#> 97               0              0            0      1      1      0      0      0
+#> 104              0              0            0      1      1      1      0      0
+#> 111              0              0            0      1      1      1      1      0
+#> 118              0              0            0      1      1      1      1      1
+#> 124              0              0            0      0      0      0      0      0
+#> 131              0              0            0      1      0      0      0      0
+#> 138              0              0            0      1      1      0      0      0
+#> 145              0              0            0      1      1      1      0      0
+#> 152              0              0            0      1      1      1      1      0
+#> 159              0              0            0      1      1      1      1      1
+#> 165              1              0            0      0      0      0      0      0
+#> 172              1              0            0      1      0      0      0      0
+#> 179              1              0            0      1      1      0      0      0
+#> 186              1              0            0      1      1      1      0      0
+#> 193              1              0            0      1      1      1      1      0
+#> 200              1              0            0      1      1      1      1      1
+#> 206              0              1            0      0      0      0      0      0
+#> 213              0              1            0      1      0      0      0      0
+#> 220              0              1            0      1      1      0      0      0
+#> 227              0              1            0      1      1      1      0      0
+#> 234              0              1            0      1      1      1      1      0
+#> 241              0              1            0      1      1      1      1      1
+#> 247              0              0            1      0      0      0      0      0
+#> 254              0              0            1      1      0      0      0      0
+#> 261              0              0            1      1      1      0      0      0
+#> 268              0              0            1      1      1      1      0      0
+#> 275              0              0            1      1      1      1      1      0
+#> 282              0              0            1      1      1      1      1      1
+#> 
+#> $fixed$index
+#>   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4  4  4
+#>  [28]  4  5  5  5  5  5  5  5  6  6  6  6  6  6  7  7  7  7  7  7  7  8  8  8  8  8  8
+#>  [55]  8  9  9  9  9  9  9  9 10 10 10 10 10 10 10 11 11 11 11 11 11 11 12 12 12 12 12
+#>  [82] 12 13 13 13 13 13 13 13 14 14 14 14 14 14 14 15 15 15 15 15 15 15 16 16 16 16 16
+#> [109] 16 16 17 17 17 17 17 17 17 18 18 18 18 18 18 19 19 19 19 19 19 19 20 20 20 20 20
+#> [136] 20 20 21 21 21 21 21 21 21 22 22 22 22 22 22 22 23 23 23 23 23 23 23 24 24 24 24
+#> [163] 24 24 25 25 25 25 25 25 25 26 26 26 26 26 26 26 27 27 27 27 27 27 27 28 28 28 28
+#> [190] 28 28 28 29 29 29 29 29 29 29 30 30 30 30 30 30 31 31 31 31 31 31 31 32 32 32 32
+#> [217] 32 32 32 33 33 33 33 33 33 33 34 34 34 34 34 34 34 35 35 35 35 35 35 35 36 36 36
+#> [244] 36 36 36 37 37 37 37 37 37 37 38 38 38 38 38 38 38 39 39 39 39 39 39 39 40 40 40
+#> [271] 40 40 40 40 41 41 41 41 41 41 41 42 42 42 42 42 42
+#> 
+#> 
+#> $random
+#> $random$formula
+#> ~0 + fixed + age_group + cweek
+#> <environment: 0x3553d4b0>
+#> 
+#> $random$design
+#>    fixed age_group cweek
+#> 1      0         1     0
+#> 2      0         1     0
+#> 3      0         1     0
+#> 4      0         1     0
+#> 5      0         1     0
+#> 6      0         1     0
+#> 7      0         1     0
+#> 8      0         0     1
+#> 9      0         0     1
+#> 10     0         0     1
+#> 11     0         0     1
+#> 12     0         0     1
+#> attr(,"assign")
+#> [1] 1 2 3
+#> 
+#> $random$index
+#>  [1]  1  2  3  4  5  6  7  8  9 10 11 12
+```
+
+As before we fit the nowcasting model,
+
+
+```r
+options(mc.cores = 2)
+week_nowcast <- epinowcast(pobs,
+  model = model,
+  reference_effects = week_age_reference_effects,
+  report_effects = dow_report_effects,
+  priors = priors,
+  save_warmup = FALSE,
+  output_loglik = TRUE, pp = TRUE,
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
+)
+#> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
+#> 
+#> Chain 1 finished in 1331.7 seconds.
+#> Chain 2 finished in 1343.4 seconds.
+#> 
+#> Both chains finished successfully.
+#> Mean chain execution time: 1337.6 seconds.
+#> Total execution time: 1342.8 seconds.
+```
+
+
+```r
+plot(week_nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+<img src="figures/week_nowcast-1.png" title="plot of chunk week_nowcast" alt="plot of chunk week_nowcast" width="100%" />
+
+## Alternative models
+
+In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by `epinowcast`) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.
+
+There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models where there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
+
+If interested in expanding the functionality of the underlying model to address some of these issues note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.
+
+# Evaluation
+
+As we have only nowcast a single date this evaluation is anything but complete however we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
+
+We first list all models and give them informative names,
+
+
+```r
+nowcasts <- list(
+  "Reference: Fixed, Report: Fixed" = nowcast,
+  "Reference: Fixed, Report: Day of week" = dow_nowcast,
+  "Reference: Age group, Report: Day of week" = age_nowcast,
+  "Reference: Age group and week, Report: Day of week" = week_nowcast
+)
+```
+
+and then summarise the nowcast posterior for each model and join into a tidy data frame to make further analysis easier.
+
+
+```r
+summarised_nowcasts <- map(
+  nowcasts, summary,
+  probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
+)
+summarised_nowcasts <- rbindlist(summarised_nowcasts, idcol = "model")
+summarised_nowcasts[, `:=`(
+  model = factor(
+    model, levels = c("Reference: Fixed, Report: Fixed",
+                      "Reference: Fixed, Report: Day of week",
+                      "Reference: Age group, Report: Day of week",
+                      "Reference: Age group and week, Report: Day of week")),
+  age_group = factor(
+    age_group, levels = c("00+", "00-04", "05-14", "15-34", "35-59", "60-79",
+                          "80+"))
+)]
+```
+
+This allows us to plot nowcasts for each model and age group compared to the latest data. Looking at the plot shows some small differences across models with uncertainty generally decreasing as model complexity increases. Some age groups are clearly better nowcast than others with the 35-59 year old age group in particular having poor nowcast coverage.
+
+
+```r
+enw_plot_nowcast_quantiles(
+  summarised_nowcasts, latest_obs = latest_nat_germany) +
+  facet_grid(vars(age_group), vars(model), scales = "free_y")
+```
+
+<img src="figures/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" width="100%" />
+
+As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the `loo` package though note this is not typically appropriate for time series data, the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required (see the warnings below).
+
+
+```r
+loos <- map(nowcasts, ~ .$fit[[1]]$loo())
+loo_compare(loos)
+#>                                                    elpd_diff se_diff
+#> Reference: Age group, Report: Day of week             0.0       0.0 
+#> Reference: Age group and week, Report: Day of week   -1.8       3.3 
+#> Reference: Fixed, Report: Day of week               -15.8       7.0 
+#> Reference: Fixed, Report: Fixed                    -589.4      45.7
+```
+
+We see that the model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but only marginally.
+
+More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::eval_forecasts()`. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more infomed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
+
+As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only the model that includes day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
+
+
+```r
+overall_score <- enw_score_nowcast(
+ summarised_nowcasts,
+ latest_nat_germany[reference_date > (max(reference_date) - 7)],
+ summarise_by = "model"
+)
+kable(overall_score)
+```
+
+
+
+|model                                              | interval_score| sharpness| underprediction| overprediction| coverage_deviation|   bias|  aem|
+|:--------------------------------------------------|--------------:|---------:|---------------:|--------------:|------------------:|------:|----:|
+|Reference: Fixed, Report: Fixed                    |           13.6|      3.75|            8.62|          1.220|            -0.1030| -0.218| 23.7|
+|Reference: Fixed, Report: Day of week              |           17.1|      2.46|           13.90|          0.733|            -0.1570| -0.326| 24.9|
+|Reference: Age group, Report: Day of week          |           14.1|      2.81|           10.40|          0.916|            -0.1030| -0.211| 21.7|
+|Reference: Age group and week, Report: Day of week |           14.0|      2.91|            9.94|          1.140|            -0.0978| -0.178| 21.5|
+
+Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
+
+
+```r
+age_score <- enw_score_nowcast(
+ summarised_nowcasts,
+ latest_nat_germany[reference_date > (max(reference_date) - 7)],
+ summarise_by = c("model", "age_group")
+)
+kable(age_score)
+```
+
+
+
+|model                                              |age_group | interval_score| sharpness| underprediction| overprediction| coverage_deviation|    bias|   aem|
+|:--------------------------------------------------|:---------|--------------:|---------:|---------------:|--------------:|------------------:|-------:|-----:|
+|Reference: Fixed, Report: Fixed                    |00+       |          40.90|    12.900|          24.600|         3.4000|            -0.1970| -0.4430| 77.20|
+|Reference: Fixed, Report: Day of week              |00+       |          53.60|     7.450|          44.600|         1.5100|            -0.3730| -0.6640| 81.10|
+|Reference: Age group, Report: Day of week          |00+       |          40.40|     8.690|          29.800|         1.9900|            -0.1970| -0.5430| 66.90|
+|Reference: Age group and week, Report: Day of week |00+       |          41.50|     8.900|          30.000|         2.6300|            -0.1970| -0.4710| 66.70|
+|Reference: Fixed, Report: Fixed                    |00-04     |           1.79|     0.673|           0.000|         1.1200|            -0.0758|  0.6070|  2.57|
+|Reference: Fixed, Report: Day of week              |00-04     |           2.01|     0.618|           0.033|         1.3600|            -0.1200|  0.5290|  3.00|
+|Reference: Age group, Report: Day of week          |00-04     |           2.27|     0.654|           0.011|         1.6000|            -0.1860|  0.6140|  3.29|
+|Reference: Age group and week, Report: Day of week |00-04     |           2.38|     0.673|           0.011|         1.6900|            -0.1750|  0.6290|  3.57|
+|Reference: Fixed, Report: Fixed                    |05-14     |           1.22|     0.508|           0.560|         0.1540|             0.1000| -0.1640|  2.14|
+|Reference: Fixed, Report: Day of week              |05-14     |           1.32|     0.449|           0.692|         0.1760|             0.0341| -0.1790|  2.14|
+|Reference: Age group, Report: Day of week          |05-14     |           1.31|     0.494|           0.593|         0.2200|             0.0670| -0.0929|  2.00|
+|Reference: Age group and week, Report: Day of week |05-14     |           1.29|     0.522|           0.549|         0.2200|             0.0670| -0.0929|  2.00|
+|Reference: Fixed, Report: Fixed                    |15-34     |           7.32|     2.850|           2.190|         2.2900|            -0.0868| -0.1570| 12.70|
+|Reference: Fixed, Report: Day of week              |15-34     |           5.98|     2.110|           2.560|         1.3100|            -0.0648| -0.2570| 11.10|
+|Reference: Age group, Report: Day of week          |15-34     |           5.66|     2.400|           1.650|         1.6200|            -0.0429| -0.0571| 10.40|
+|Reference: Age group and week, Report: Day of week |15-34     |           5.84|     2.490|           1.270|         2.0800|            -0.0429| -0.0571| 10.40|
+|Reference: Fixed, Report: Fixed                    |35-59     |          30.70|     4.860|          25.700|         0.1320|            -0.3070| -0.6710| 46.90|
+|Reference: Fixed, Report: Day of week              |35-59     |          41.40|     3.080|          38.300|         0.0000|            -0.4160| -0.8710| 53.00|
+|Reference: Age group, Report: Day of week          |35-59     |          35.90|     3.530|          32.400|         0.0000|            -0.4050| -0.8430| 48.70|
+|Reference: Age group and week, Report: Day of week |35-59     |          34.30|     3.640|          30.600|         0.0769|            -0.3950| -0.7640| 48.10|
+|Reference: Fixed, Report: Fixed                    |60-79     |           7.77|     2.650|           4.150|         0.9670|            -0.0868| -0.3070| 14.60|
+|Reference: Fixed, Report: Day of week              |60-79     |           9.60|     1.990|           7.110|         0.4950|            -0.0538| -0.3640| 14.10|
+|Reference: Age group, Report: Day of week          |60-79     |           8.55|     2.230|           5.690|         0.6260|             0.0011| -0.2290| 12.40|
+|Reference: Age group and week, Report: Day of week |60-79     |           7.95|     2.360|           4.760|         0.8240|             0.0341| -0.1860| 11.80|
+|Reference: Fixed, Report: Fixed                    |80+       |           5.44|     1.880|           3.110|         0.4510|            -0.0648| -0.3930| 10.10|
+|Reference: Fixed, Report: Day of week              |80+       |           5.71|     1.510|           3.920|         0.2860|            -0.1090| -0.4710|  9.86|
+|Reference: Age group, Report: Day of week          |80+       |           4.74|     1.670|           2.710|         0.3520|             0.0451| -0.3290|  8.43|
+|Reference: Age group and week, Report: Day of week |80+       |           4.61|     1.760|           2.380|         0.4730|             0.0231| -0.3000|  8.00|
+
+Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomolous or we may have identified a real trend). 
+
+
+```r
+date_score <- enw_score_nowcast(
+ summarised_nowcasts,
+ latest_nat_germany[reference_date > (max(reference_date) - 7)],
+ summarise_by = c("model", "reference_date")
+)
+kable(date_score)
+```
+
+
+
+|model                                              |reference_date | interval_score| sharpness| underprediction| overprediction| coverage_deviation|   bias|   aem|
+|:--------------------------------------------------|:--------------|--------------:|---------:|---------------:|--------------:|------------------:|------:|-----:|
+|Reference: Fixed, Report: Fixed                    |2021-08-26     |          12.20|      2.13|          10.000|         0.0330|            -0.1090| -0.550| 19.70|
+|Reference: Fixed, Report: Day of week              |2021-08-26     |          14.60|      1.66|          12.900|         0.0330|            -0.1530| -0.564| 19.90|
+|Reference: Age group, Report: Day of week          |2021-08-26     |           8.36|      2.00|           6.210|         0.1430|            -0.0209| -0.314| 13.50|
+|Reference: Age group and week, Report: Day of week |2021-08-26     |           8.61|      2.00|           6.430|         0.1760|            -0.0429| -0.329| 14.40|
+|Reference: Fixed, Report: Fixed                    |2021-08-27     |          11.00|      2.27|           8.630|         0.1100|            -0.2190| -0.543| 18.70|
+|Reference: Fixed, Report: Day of week              |2021-08-27     |          11.70|      1.81|           9.750|         0.1430|            -0.2300| -0.521| 17.70|
+|Reference: Age group, Report: Day of week          |2021-08-27     |           8.01|      2.07|           5.700|         0.2420|            -0.1750| -0.379| 13.30|
+|Reference: Age group and week, Report: Day of week |2021-08-27     |           8.19|      2.11|           5.900|         0.1870|            -0.1750| -0.464| 13.40|
+|Reference: Fixed, Report: Fixed                    |2021-08-28     |          13.30|      2.48|          10.400|         0.3850|            -0.2410| -0.514| 23.00|
+|Reference: Fixed, Report: Day of week              |2021-08-28     |          10.70|      2.09|           8.110|         0.4840|            -0.1640| -0.414| 17.70|
+|Reference: Age group, Report: Day of week          |2021-08-28     |           8.31|      2.48|           5.300|         0.5270|            -0.0978| -0.343| 14.60|
+|Reference: Age group and week, Report: Day of week |2021-08-28     |           8.49|      2.49|           5.450|         0.5490|            -0.0538| -0.307| 15.20|
+|Reference: Fixed, Report: Fixed                    |2021-08-29     |          13.10|      2.75|          10.200|         0.2420|            -0.0978| -0.400| 22.60|
+|Reference: Fixed, Report: Day of week              |2021-08-29     |          13.60|      2.15|          11.000|         0.3960|            -0.1530| -0.314| 20.70|
+|Reference: Age group, Report: Day of week          |2021-08-29     |          11.50|      2.44|           8.580|         0.4510|            -0.1090| -0.243| 18.40|
+|Reference: Age group and week, Report: Day of week |2021-08-29     |          10.90|      2.53|           7.860|         0.4950|            -0.0868| -0.214| 17.40|
+|Reference: Fixed, Report: Fixed                    |2021-08-30     |           9.91|      3.37|           0.000|         6.5400|            -0.2410|  0.821| 17.40|
+|Reference: Fixed, Report: Day of week              |2021-08-30     |           6.19|      2.19|           0.022|         3.9800|            -0.1750|  0.707| 10.90|
+|Reference: Age group, Report: Day of week          |2021-08-30     |           7.27|      2.47|           0.000|         4.8100|            -0.2300|  0.771| 12.20|
+|Reference: Age group and week, Report: Day of week |2021-08-30     |           8.84|      2.60|           0.000|         6.2400|            -0.3070|  0.857| 14.90|
+|Reference: Fixed, Report: Fixed                    |2021-08-31     |           6.54|      5.17|           0.187|         1.1800|             0.1880|  0.143|  8.86|
+|Reference: Fixed, Report: Day of week              |2021-08-31     |           6.31|      2.85|           3.360|         0.0989|             0.0231| -0.457| 11.60|
+|Reference: Age group, Report: Day of week          |2021-08-31     |           5.42|      3.21|           1.970|         0.2420|             0.1110| -0.300|  8.43|
+|Reference: Age group and week, Report: Day of week |2021-08-31     |           5.27|      3.48|           1.460|         0.3300|             0.1660| -0.171|  6.43|
+|Reference: Fixed, Report: Fixed                    |2021-09-01     |          29.00|      8.10|          20.900|         0.0220|             0.0011| -0.486| 55.90|
+|Reference: Fixed, Report: Day of week              |2021-09-01     |          56.50|      4.47|          52.100|         0.0000|            -0.2520| -0.714| 76.00|
+|Reference: Age group, Report: Day of week          |2021-09-01     |          50.10|      5.01|          45.100|         0.0000|            -0.1970| -0.671| 71.80|
+|Reference: Age group and week, Report: Day of week |2021-09-01     |          47.60|      5.13|          42.500|         0.0110|            -0.1860| -0.614| 68.90|
+
+Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models.
+
+
+```r
+score <- enw_score_nowcast(
+ summarised_nowcasts,
+ latest_nat_germany[reference_date > (max(reference_date) - 7)]
+)
+fixed_score <- score[model %in% "Reference: Fixed, Report: Fixed",
+                     .(reference_date, age_group, fixed_is = interval_score)]
+score <- merge(score, fixed_score, by = c("reference_date", "age_group"))
+
+score <- score[, interval_score := interval_score / fixed_is]
+score <- score[!model %in% "Reference: Fixed, Report: Fixed"]
+plot <- ggplot(score) +
+  aes(x = reference_date, y = interval_score, col = model) +
+  geom_hline(yintercept = 1, linetype = 2, size = 1.2, alpha = 0.5) +
+  geom_line(size = 1.1, alpha = 0.6) +
+  geom_point(size = 1.2) +
+  facet_wrap(vars(age_group)) +
+  scale_color_brewer(palette = "Dark2") +
+  scale_y_log10(labels = scales::percent)
+
+plot <- enw_plot_theme(plot) +
+  labs(x = "Reference date",
+       y = "Weighted interval score (relative to Reference: Fixed, Report: Fixed model)") + # nolint
+  guides(col = guide_legend(title = "Model", ncol = 2))
+plot
+```
+
+<img src="figures/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" width="100%" />
+
+# Summary
+
+In this vignette we showcased using `epinowcast` to nowcast age stratified COVID-19 hospitalisations in Germany by date of test with a series of increasingly complex models motivated by the data. We also showed some simple methods for exploring these nowcasts and evaluating them.
+
+Using the limited information available to us (as we have only nowcast a single data point) it appears that all models performed acceptably and that, aside from the last data point, models with age and day of the week effects likely performed better. It is also fairly clear that performance degrades as the amount of reported data is reduced which intuitively makes sense with perforance being particularly sensitive the first day reported data is available (i.e "now").
+
+Despite the fixed effect model doing well overall, for most applications if choosing a model based on this evaluation, I would likely select the final model (with day of the week, age group, and weekly variation) and rely on the hierarchical structure to limit overfitting. However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling secton of this vignette).
