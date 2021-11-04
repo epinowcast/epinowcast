@@ -86,12 +86,10 @@ Another key modelling choice we make at this stage is to model age groups jointl
 ```r
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
 pobs
-#>                     obs          new_confirm              latest                 diff
-#> 1: <data.table[6020x6]> <data.table[6020x8]> <data.table[287x5]> <data.table[6020x8]>
-#>      reporting_triangle       metareference          metareport time snapshots groups
-#> 1: <data.table[287x42]> <data.table[287x7]> <data.table[560x8]>   41       287      7
-#>    max_delay   max_date
-#> 1:        40 2021-09-01
+#>                     obs          new_confirm              latest                 diff   reporting_triangle
+#> 1: <data.table[6020x6]> <data.table[6020x8]> <data.table[287x5]> <data.table[6020x8]> <data.table[287x42]>
+#>          metareference          metareport time snapshots groups max_delay   max_date
+#> 1: <data.table[287x7]> <data.table[560x8]>   41       287      7        40 2021-09-01
 ```
 
 # Models 
@@ -103,9 +101,6 @@ Here we explore a range of increasingly complex models using subject area knowle
 We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
 
-```r
-model <- enw_model(threads = TRUE)
-```
 
 Note that here we use two chains each using 2 threads as a demonstration but in general using 4 chains is recommended. Also note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
@@ -121,12 +116,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 299.4 seconds.
-#> Chain 2 finished in 301.8 seconds.
+#> Chain 1 finished in 312.1 seconds.
+#> Chain 2 finished in 316.7 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 300.6 seconds.
-#> Total execution time: 301.8 seconds.
+#> Mean chain execution time: 314.4 seconds.
+#> Total execution time: 317.0 seconds.
 ```
 
 We first visualise the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.
@@ -160,47 +155,44 @@ dow_report_effects
 #> $fixed
 #> $fixed$formula
 #> ~1 + day_of_week
-#> <environment: 0x2f7c13b8>
+#> <environment: 0x4319e008>
 #> 
 #> $fixed$design
-#>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday day_of_weekSunday
-#> 1           1                 1                 0                   0                 0
-#> 2           1                 0                 0                   1                 0
-#> 3           1                 0                 0                   0                 1
-#> 4           1                 0                 1                   0                 0
-#> 5           1                 0                 0                   0                 0
-#> 6           1                 0                 0                   0                 0
-#> 7           1                 0                 0                   0                 0
-#>   day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
-#> 1                   0                  0                    0
-#> 2                   0                  0                    0
-#> 3                   0                  0                    0
-#> 4                   0                  0                    0
-#> 5                   0                  1                    0
-#> 6                   0                  0                    1
-#> 7                   1                  0                    0
+#>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday day_of_weekSunday day_of_weekThursday
+#> 1           1                 1                 0                   0                 0                   0
+#> 2           1                 0                 0                   1                 0                   0
+#> 3           1                 0                 0                   0                 1                   0
+#> 4           1                 0                 1                   0                 0                   0
+#> 5           1                 0                 0                   0                 0                   0
+#> 6           1                 0                 0                   0                 0                   0
+#> 7           1                 0                 0                   0                 0                   1
+#>   day_of_weekTuesday day_of_weekWednesday
+#> 1                  0                    0
+#> 2                  0                    0
+#> 3                  0                    0
+#> 4                  0                    0
+#> 5                  1                    0
+#> 6                  0                    1
+#> 7                  0                    0
 #> 
 #> $fixed$index
-#>   [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
-#>  [42] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2
-#>  [83] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1
-#> [124] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4
-#> [165] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
-#> [206] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6
-#> [247] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5
-#> [288] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1
-#> [329] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7
-#> [370] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3
-#> [411] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2
-#> [452] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5
-#> [493] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4
-#> [534] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
+#>   [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
+#>  [53] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
+#> [105] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
+#> [157] 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
+#> [209] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
+#> [261] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2
+#> [313] 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2
+#> [365] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2
+#> [417] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5
+#> [469] 6 7 1 2 3 4 5 6 7 1 2 3 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5
+#> [521] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
 #> 
 #> 
 #> $random
 #> $random$formula
 #> ~0 + fixed + day_of_week
-#> <environment: 0x2f7c13b8>
+#> <environment: 0x4319e008>
 #> 
 #> $random$design
 #>   fixed day_of_week
@@ -226,22 +218,22 @@ priors <- enw_posterior_as_prior(
   nowcast, variables = c("logmean_int", "logsd_int", "sqrt_phi"), scale = 5
 )
 priors
-#>       variable                                             description
-#> 1:    eobs_lsd      Standard deviation for expected final observations
-#> 2:  logmean_sd     Standard deviation of scaled pooled logmean effects
-#> 3:    logsd_sd       Standard deviation of scaled pooled logsd effects
-#> 4:   rd_eff_sd Standard deviation of scaled pooled report date effects
-#> 5: logmean_int                                                    <NA>
-#> 6:   logsd_int                                                    <NA>
-#> 7:    sqrt_phi                                                    <NA>
-#>             distribution      mean         sd
-#> 1: Zero truncated normal 0.0000000 1.00000000
-#> 2: Zero truncated normal 0.0000000 1.00000000
-#> 3: Zero truncated normal 0.0000000 1.00000000
-#> 4: Zero truncated normal 0.0000000 1.00000000
-#> 5:                  <NA> 1.1199440 0.22111416
-#> 6:                  <NA> 1.7294223 0.24361933
-#> 7:                  <NA> 0.1271288 0.07725554
+#>       variable                                             description          distribution     mean
+#> 1:    eobs_lsd      Standard deviation for expected final observations Zero truncated normal 0.000000
+#> 2:  logmean_sd     Standard deviation of scaled pooled logmean effects Zero truncated normal 0.000000
+#> 3:    logsd_sd       Standard deviation of scaled pooled logsd effects Zero truncated normal 0.000000
+#> 4:   rd_eff_sd Standard deviation of scaled pooled report date effects Zero truncated normal 0.000000
+#> 5: logmean_int                                                    <NA>                  <NA> 1.119679
+#> 6:   logsd_int                                                    <NA>                  <NA> 1.729366
+#> 7:    sqrt_phi                                                    <NA>                  <NA> 0.127701
+#>           sd
+#> 1: 1.0000000
+#> 2: 1.0000000
+#> 3: 1.0000000
+#> 4: 1.0000000
+#> 5: 0.2214600
+#> 6: 0.2478321
+#> 7: 0.0788346
 ```
 
 We now repeat the nowcasting step with the day of the week reporting model included.
@@ -260,12 +252,12 @@ dow_nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 654.5 seconds.
-#> Chain 1 finished in 663.4 seconds.
+#> Chain 1 finished in 687.1 seconds.
+#> Chain 2 finished in 689.5 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 659.0 seconds.
-#> Total execution time: 663.2 seconds.
+#> Mean chain execution time: 688.3 seconds.
+#> Total execution time: 689.3 seconds.
 ```
 
 Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance). We could also plot the posterior predictions for this model in the same way as for the previous model.
@@ -292,40 +284,39 @@ age_reference_effects
 #> $fixed
 #> $fixed$formula
 #> ~1 + age_group
-#> <environment: 0x37ca3030>
+#> <environment: 0xa682ac8>
 #> 
 #> $fixed$design
-#>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34
-#> 1             1              1            0              0              0
-#> 42            1              0            1              0              0
-#> 83            1              0            0              1              0
-#> 124           1              0            0              0              1
-#> 165           1              0            0              0              0
-#> 206           1              0            0              0              0
-#> 247           1              0            0              0              0
-#>     age_group35-59 age_group60-79 age_group80+
-#> 1                0              0            0
-#> 42               0              0            0
-#> 83               0              0            0
-#> 124              0              0            0
-#> 165              1              0            0
-#> 206              0              1            0
-#> 247              0              0            1
+#>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34 age_group35-59 age_group60-79
+#> 1             1              1            0              0              0              0              0
+#> 42            1              0            1              0              0              0              0
+#> 83            1              0            0              1              0              0              0
+#> 124           1              0            0              0              1              0              0
+#> 165           1              0            0              0              0              1              0
+#> 206           1              0            0              0              0              0              1
+#> 247           1              0            0              0              0              0              0
+#>     age_group80+
+#> 1              0
+#> 42             0
+#> 83             0
+#> 124            0
+#> 165            0
+#> 206            0
+#> 247            1
 #> 
 #> $fixed$index
-#>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-#>  [42] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2
-#>  [83] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
-#> [124] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
-#> [165] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5
-#> [206] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
-#> [247] 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+#>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2
+#>  [53] 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3
+#> [105] 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
+#> [157] 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 6 6 6
+#> [209] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 7 7 7 7 7 7 7 7 7 7 7 7 7 7
+#> [261] 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7
 #> 
 #> 
 #> $random
 #> $random$formula
 #> ~0 + fixed + age_group
-#> <environment: 0x37ca3030>
+#> <environment: 0xa682ac8>
 #> 
 #> $random$design
 #>   fixed age_group
@@ -360,12 +351,12 @@ age_nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 783.7 seconds.
-#> Chain 1 finished in 784.2 seconds.
+#> Chain 1 finished in 787.8 seconds.
+#> Chain 2 finished in 791.5 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 783.9 seconds.
-#> Total execution time: 783.9 seconds.
+#> Mean chain execution time: 789.6 seconds.
+#> Total execution time: 791.3 seconds.
 ```
 
 Fit looks slightly better with this adjustment though uncertainty has also increased for all age groups and performance for the final day of data may have reduced compared to the first model.
@@ -391,30 +382,18 @@ metareference <- enw_add_cumulative_membership(
   feature = "week"
 )
 metareference
-#>      age_group       date location group day_of_week week month cweek1 cweek2 cweek3
-#>   1:     00-04 2021-07-23       DE     2      Friday    0     0      0      0      0
-#>   2:     00-04 2021-07-24       DE     2    Saturday    0     0      0      0      0
-#>   3:     00-04 2021-07-25       DE     2      Sunday    0     0      0      0      0
-#>   4:     00-04 2021-07-26       DE     2      Monday    0     0      0      0      0
-#>   5:     00-04 2021-07-27       DE     2     Tuesday    0     0      0      0      0
-#>  ---                                                                                
-#> 283:       80+ 2021-08-28       DE     7    Saturday    5     1      1      1      1
-#> 284:       80+ 2021-08-29       DE     7      Sunday    5     1      1      1      1
-#> 285:       80+ 2021-08-30       DE     7      Monday    5     1      1      1      1
-#> 286:       80+ 2021-08-31       DE     7     Tuesday    5     1      1      1      1
-#> 287:       80+ 2021-09-01       DE     7   Wednesday    5     2      1      1      1
-#>      cweek4 cweek5
-#>   1:      0      0
-#>   2:      0      0
-#>   3:      0      0
-#>   4:      0      0
-#>   5:      0      0
-#>  ---              
-#> 283:      1      1
-#> 284:      1      1
-#> 285:      1      1
-#> 286:      1      1
-#> 287:      1      1
+#>      age_group       date location group day_of_week week month cweek1 cweek2 cweek3 cweek4 cweek5
+#>   1:     00-04 2021-07-23       DE     2      Friday    0     0      0      0      0      0      0
+#>   2:     00-04 2021-07-24       DE     2    Saturday    0     0      0      0      0      0      0
+#>   3:     00-04 2021-07-25       DE     2      Sunday    0     0      0      0      0      0      0
+#>   4:     00-04 2021-07-26       DE     2      Monday    0     0      0      0      0      0      0
+#>   5:     00-04 2021-07-27       DE     2     Tuesday    0     0      0      0      0      0      0
+#>  ---                                                                                              
+#> 283:       80+ 2021-08-28       DE     7    Saturday    5     1      1      1      1      1      1
+#> 284:       80+ 2021-08-29       DE     7      Sunday    5     1      1      1      1      1      1
+#> 285:       80+ 2021-08-30       DE     7      Monday    5     1      1      1      1      1      1
+#> 286:       80+ 2021-08-31       DE     7     Tuesday    5     1      1      1      1      1      1
+#> 287:       80+ 2021-09-01       DE     7   Wednesday    5     2      1      1      1      1      1
 ```
 
 We can now define the model formula as previously but this time making use of the `custom_random` argument which also creates a random effect but this time using partial matching and without creating new features automatically.
@@ -429,114 +408,112 @@ week_age_reference_effects
 #> $fixed
 #> $fixed$formula
 #> ~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5
-#> <environment: 0x3553d4b0>
+#> <environment: 0x3ce02988>
 #> 
 #> $fixed$design
-#>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34
-#> 1             1              1            0              0              0
-#> 8             1              1            0              0              0
-#> 15            1              1            0              0              0
-#> 22            1              1            0              0              0
-#> 29            1              1            0              0              0
-#> 36            1              1            0              0              0
-#> 42            1              0            1              0              0
-#> 49            1              0            1              0              0
-#> 56            1              0            1              0              0
-#> 63            1              0            1              0              0
-#> 70            1              0            1              0              0
-#> 77            1              0            1              0              0
-#> 83            1              0            0              1              0
-#> 90            1              0            0              1              0
-#> 97            1              0            0              1              0
-#> 104           1              0            0              1              0
-#> 111           1              0            0              1              0
-#> 118           1              0            0              1              0
-#> 124           1              0            0              0              1
-#> 131           1              0            0              0              1
-#> 138           1              0            0              0              1
-#> 145           1              0            0              0              1
-#> 152           1              0            0              0              1
-#> 159           1              0            0              0              1
-#> 165           1              0            0              0              0
-#> 172           1              0            0              0              0
-#> 179           1              0            0              0              0
-#> 186           1              0            0              0              0
-#> 193           1              0            0              0              0
-#> 200           1              0            0              0              0
-#> 206           1              0            0              0              0
-#> 213           1              0            0              0              0
-#> 220           1              0            0              0              0
-#> 227           1              0            0              0              0
-#> 234           1              0            0              0              0
-#> 241           1              0            0              0              0
-#> 247           1              0            0              0              0
-#> 254           1              0            0              0              0
-#> 261           1              0            0              0              0
-#> 268           1              0            0              0              0
-#> 275           1              0            0              0              0
-#> 282           1              0            0              0              0
-#>     age_group35-59 age_group60-79 age_group80+ cweek1 cweek2 cweek3 cweek4 cweek5
-#> 1                0              0            0      0      0      0      0      0
-#> 8                0              0            0      1      0      0      0      0
-#> 15               0              0            0      1      1      0      0      0
-#> 22               0              0            0      1      1      1      0      0
-#> 29               0              0            0      1      1      1      1      0
-#> 36               0              0            0      1      1      1      1      1
-#> 42               0              0            0      0      0      0      0      0
-#> 49               0              0            0      1      0      0      0      0
-#> 56               0              0            0      1      1      0      0      0
-#> 63               0              0            0      1      1      1      0      0
-#> 70               0              0            0      1      1      1      1      0
-#> 77               0              0            0      1      1      1      1      1
-#> 83               0              0            0      0      0      0      0      0
-#> 90               0              0            0      1      0      0      0      0
-#> 97               0              0            0      1      1      0      0      0
-#> 104              0              0            0      1      1      1      0      0
-#> 111              0              0            0      1      1      1      1      0
-#> 118              0              0            0      1      1      1      1      1
-#> 124              0              0            0      0      0      0      0      0
-#> 131              0              0            0      1      0      0      0      0
-#> 138              0              0            0      1      1      0      0      0
-#> 145              0              0            0      1      1      1      0      0
-#> 152              0              0            0      1      1      1      1      0
-#> 159              0              0            0      1      1      1      1      1
-#> 165              1              0            0      0      0      0      0      0
-#> 172              1              0            0      1      0      0      0      0
-#> 179              1              0            0      1      1      0      0      0
-#> 186              1              0            0      1      1      1      0      0
-#> 193              1              0            0      1      1      1      1      0
-#> 200              1              0            0      1      1      1      1      1
-#> 206              0              1            0      0      0      0      0      0
-#> 213              0              1            0      1      0      0      0      0
-#> 220              0              1            0      1      1      0      0      0
-#> 227              0              1            0      1      1      1      0      0
-#> 234              0              1            0      1      1      1      1      0
-#> 241              0              1            0      1      1      1      1      1
-#> 247              0              0            1      0      0      0      0      0
-#> 254              0              0            1      1      0      0      0      0
-#> 261              0              0            1      1      1      0      0      0
-#> 268              0              0            1      1      1      1      0      0
-#> 275              0              0            1      1      1      1      1      0
-#> 282              0              0            1      1      1      1      1      1
+#>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34 age_group35-59 age_group60-79
+#> 1             1              1            0              0              0              0              0
+#> 8             1              1            0              0              0              0              0
+#> 15            1              1            0              0              0              0              0
+#> 22            1              1            0              0              0              0              0
+#> 29            1              1            0              0              0              0              0
+#> 36            1              1            0              0              0              0              0
+#> 42            1              0            1              0              0              0              0
+#> 49            1              0            1              0              0              0              0
+#> 56            1              0            1              0              0              0              0
+#> 63            1              0            1              0              0              0              0
+#> 70            1              0            1              0              0              0              0
+#> 77            1              0            1              0              0              0              0
+#> 83            1              0            0              1              0              0              0
+#> 90            1              0            0              1              0              0              0
+#> 97            1              0            0              1              0              0              0
+#> 104           1              0            0              1              0              0              0
+#> 111           1              0            0              1              0              0              0
+#> 118           1              0            0              1              0              0              0
+#> 124           1              0            0              0              1              0              0
+#> 131           1              0            0              0              1              0              0
+#> 138           1              0            0              0              1              0              0
+#> 145           1              0            0              0              1              0              0
+#> 152           1              0            0              0              1              0              0
+#> 159           1              0            0              0              1              0              0
+#> 165           1              0            0              0              0              1              0
+#> 172           1              0            0              0              0              1              0
+#> 179           1              0            0              0              0              1              0
+#> 186           1              0            0              0              0              1              0
+#> 193           1              0            0              0              0              1              0
+#> 200           1              0            0              0              0              1              0
+#> 206           1              0            0              0              0              0              1
+#> 213           1              0            0              0              0              0              1
+#> 220           1              0            0              0              0              0              1
+#> 227           1              0            0              0              0              0              1
+#> 234           1              0            0              0              0              0              1
+#> 241           1              0            0              0              0              0              1
+#> 247           1              0            0              0              0              0              0
+#> 254           1              0            0              0              0              0              0
+#> 261           1              0            0              0              0              0              0
+#> 268           1              0            0              0              0              0              0
+#> 275           1              0            0              0              0              0              0
+#> 282           1              0            0              0              0              0              0
+#>     age_group80+ cweek1 cweek2 cweek3 cweek4 cweek5
+#> 1              0      0      0      0      0      0
+#> 8              0      1      0      0      0      0
+#> 15             0      1      1      0      0      0
+#> 22             0      1      1      1      0      0
+#> 29             0      1      1      1      1      0
+#> 36             0      1      1      1      1      1
+#> 42             0      0      0      0      0      0
+#> 49             0      1      0      0      0      0
+#> 56             0      1      1      0      0      0
+#> 63             0      1      1      1      0      0
+#> 70             0      1      1      1      1      0
+#> 77             0      1      1      1      1      1
+#> 83             0      0      0      0      0      0
+#> 90             0      1      0      0      0      0
+#> 97             0      1      1      0      0      0
+#> 104            0      1      1      1      0      0
+#> 111            0      1      1      1      1      0
+#> 118            0      1      1      1      1      1
+#> 124            0      0      0      0      0      0
+#> 131            0      1      0      0      0      0
+#> 138            0      1      1      0      0      0
+#> 145            0      1      1      1      0      0
+#> 152            0      1      1      1      1      0
+#> 159            0      1      1      1      1      1
+#> 165            0      0      0      0      0      0
+#> 172            0      1      0      0      0      0
+#> 179            0      1      1      0      0      0
+#> 186            0      1      1      1      0      0
+#> 193            0      1      1      1      1      0
+#> 200            0      1      1      1      1      1
+#> 206            0      0      0      0      0      0
+#> 213            0      1      0      0      0      0
+#> 220            0      1      1      0      0      0
+#> 227            0      1      1      1      0      0
+#> 234            0      1      1      1      1      0
+#> 241            0      1      1      1      1      1
+#> 247            1      0      0      0      0      0
+#> 254            1      1      0      0      0      0
+#> 261            1      1      1      0      0      0
+#> 268            1      1      1      1      0      0
+#> 275            1      1      1      1      1      0
+#> 282            1      1      1      1      1      1
 #> 
 #> $fixed$index
-#>   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4  4  4
-#>  [28]  4  5  5  5  5  5  5  5  6  6  6  6  6  6  7  7  7  7  7  7  7  8  8  8  8  8  8
-#>  [55]  8  9  9  9  9  9  9  9 10 10 10 10 10 10 10 11 11 11 11 11 11 11 12 12 12 12 12
-#>  [82] 12 13 13 13 13 13 13 13 14 14 14 14 14 14 14 15 15 15 15 15 15 15 16 16 16 16 16
-#> [109] 16 16 17 17 17 17 17 17 17 18 18 18 18 18 18 19 19 19 19 19 19 19 20 20 20 20 20
-#> [136] 20 20 21 21 21 21 21 21 21 22 22 22 22 22 22 22 23 23 23 23 23 23 23 24 24 24 24
-#> [163] 24 24 25 25 25 25 25 25 25 26 26 26 26 26 26 26 27 27 27 27 27 27 27 28 28 28 28
-#> [190] 28 28 28 29 29 29 29 29 29 29 30 30 30 30 30 30 31 31 31 31 31 31 31 32 32 32 32
-#> [217] 32 32 32 33 33 33 33 33 33 33 34 34 34 34 34 34 34 35 35 35 35 35 35 35 36 36 36
-#> [244] 36 36 36 37 37 37 37 37 37 37 38 38 38 38 38 38 38 39 39 39 39 39 39 39 40 40 40
-#> [271] 40 40 40 40 41 41 41 41 41 41 41 42 42 42 42 42 42
+#>   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4  4  4  4  5  5  5  5  5  5
+#>  [35]  5  6  6  6  6  6  6  7  7  7  7  7  7  7  8  8  8  8  8  8  8  9  9  9  9  9  9  9 10 10 10 10 10 10
+#>  [69] 10 11 11 11 11 11 11 11 12 12 12 12 12 12 13 13 13 13 13 13 13 14 14 14 14 14 14 14 15 15 15 15 15 15
+#> [103] 15 16 16 16 16 16 16 16 17 17 17 17 17 17 17 18 18 18 18 18 18 19 19 19 19 19 19 19 20 20 20 20 20 20
+#> [137] 20 21 21 21 21 21 21 21 22 22 22 22 22 22 22 23 23 23 23 23 23 23 24 24 24 24 24 24 25 25 25 25 25 25
+#> [171] 25 26 26 26 26 26 26 26 27 27 27 27 27 27 27 28 28 28 28 28 28 28 29 29 29 29 29 29 29 30 30 30 30 30
+#> [205] 30 31 31 31 31 31 31 31 32 32 32 32 32 32 32 33 33 33 33 33 33 33 34 34 34 34 34 34 34 35 35 35 35 35
+#> [239] 35 35 36 36 36 36 36 36 37 37 37 37 37 37 37 38 38 38 38 38 38 38 39 39 39 39 39 39 39 40 40 40 40 40
+#> [273] 40 40 41 41 41 41 41 41 41 42 42 42 42 42 42
 #> 
 #> 
 #> $random
 #> $random$formula
 #> ~0 + fixed + age_group + cweek
-#> <environment: 0x3553d4b0>
+#> <environment: 0x3ce02988>
 #> 
 #> $random$design
 #>    fixed age_group cweek
@@ -576,12 +553,12 @@ week_nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 1331.7 seconds.
-#> Chain 2 finished in 1343.4 seconds.
+#> Chain 1 finished in 1293.1 seconds.
+#> Chain 2 finished in 1328.1 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 1337.6 seconds.
-#> Total execution time: 1342.8 seconds.
+#> Mean chain execution time: 1310.6 seconds.
+#> Total execution time: 1327.6 seconds.
 ```
 
 
@@ -656,9 +633,9 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                    elpd_diff se_diff
 #> Reference: Age group, Report: Day of week             0.0       0.0 
-#> Reference: Age group and week, Report: Day of week   -1.8       3.3 
-#> Reference: Fixed, Report: Day of week               -15.8       7.0 
-#> Reference: Fixed, Report: Fixed                    -589.4      45.7
+#> Reference: Age group and week, Report: Day of week   -1.9       3.7 
+#> Reference: Fixed, Report: Day of week               -14.9       6.8 
+#> Reference: Fixed, Report: Fixed                    -592.7      46.0
 ```
 
 We see that the model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but only marginally.
@@ -681,10 +658,10 @@ kable(overall_score)
 
 |model                                              | interval_score| sharpness| underprediction| overprediction| coverage_deviation|   bias|  aem|
 |:--------------------------------------------------|--------------:|---------:|---------------:|--------------:|------------------:|------:|----:|
-|Reference: Fixed, Report: Fixed                    |           13.6|      3.75|            8.62|          1.220|            -0.1030| -0.218| 23.7|
-|Reference: Fixed, Report: Day of week              |           17.1|      2.46|           13.90|          0.733|            -0.1570| -0.326| 24.9|
-|Reference: Age group, Report: Day of week          |           14.1|      2.81|           10.40|          0.916|            -0.1030| -0.211| 21.7|
-|Reference: Age group and week, Report: Day of week |           14.0|      2.91|            9.94|          1.140|            -0.0978| -0.178| 21.5|
+|Reference: Fixed, Report: Fixed                    |           13.6|      3.77|            8.66|          1.200|            -0.1150| -0.227| 23.6|
+|Reference: Fixed, Report: Day of week              |           16.9|      2.47|           13.70|          0.730|            -0.1570| -0.315| 24.9|
+|Reference: Age group, Report: Day of week          |           14.2|      2.83|           10.40|          0.921|            -0.0900| -0.214| 21.9|
+|Reference: Age group and week, Report: Day of week |           14.0|      2.93|            9.94|          1.150|            -0.0978| -0.174| 21.6|
 
 Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
 
@@ -702,34 +679,34 @@ kable(age_score)
 
 |model                                              |age_group | interval_score| sharpness| underprediction| overprediction| coverage_deviation|    bias|   aem|
 |:--------------------------------------------------|:---------|--------------:|---------:|---------------:|--------------:|------------------:|-------:|-----:|
-|Reference: Fixed, Report: Fixed                    |00+       |          40.90|    12.900|          24.600|         3.4000|            -0.1970| -0.4430| 77.20|
-|Reference: Fixed, Report: Day of week              |00+       |          53.60|     7.450|          44.600|         1.5100|            -0.3730| -0.6640| 81.10|
-|Reference: Age group, Report: Day of week          |00+       |          40.40|     8.690|          29.800|         1.9900|            -0.1970| -0.5430| 66.90|
-|Reference: Age group and week, Report: Day of week |00+       |          41.50|     8.900|          30.000|         2.6300|            -0.1970| -0.4710| 66.70|
-|Reference: Fixed, Report: Fixed                    |00-04     |           1.79|     0.673|           0.000|         1.1200|            -0.0758|  0.6070|  2.57|
-|Reference: Fixed, Report: Day of week              |00-04     |           2.01|     0.618|           0.033|         1.3600|            -0.1200|  0.5290|  3.00|
-|Reference: Age group, Report: Day of week          |00-04     |           2.27|     0.654|           0.011|         1.6000|            -0.1860|  0.6140|  3.29|
-|Reference: Age group and week, Report: Day of week |00-04     |           2.38|     0.673|           0.011|         1.6900|            -0.1750|  0.6290|  3.57|
-|Reference: Fixed, Report: Fixed                    |05-14     |           1.22|     0.508|           0.560|         0.1540|             0.1000| -0.1640|  2.14|
-|Reference: Fixed, Report: Day of week              |05-14     |           1.32|     0.449|           0.692|         0.1760|             0.0341| -0.1790|  2.14|
-|Reference: Age group, Report: Day of week          |05-14     |           1.31|     0.494|           0.593|         0.2200|             0.0670| -0.0929|  2.00|
-|Reference: Age group and week, Report: Day of week |05-14     |           1.29|     0.522|           0.549|         0.2200|             0.0670| -0.0929|  2.00|
-|Reference: Fixed, Report: Fixed                    |15-34     |           7.32|     2.850|           2.190|         2.2900|            -0.0868| -0.1570| 12.70|
-|Reference: Fixed, Report: Day of week              |15-34     |           5.98|     2.110|           2.560|         1.3100|            -0.0648| -0.2570| 11.10|
-|Reference: Age group, Report: Day of week          |15-34     |           5.66|     2.400|           1.650|         1.6200|            -0.0429| -0.0571| 10.40|
-|Reference: Age group and week, Report: Day of week |15-34     |           5.84|     2.490|           1.270|         2.0800|            -0.0429| -0.0571| 10.40|
-|Reference: Fixed, Report: Fixed                    |35-59     |          30.70|     4.860|          25.700|         0.1320|            -0.3070| -0.6710| 46.90|
-|Reference: Fixed, Report: Day of week              |35-59     |          41.40|     3.080|          38.300|         0.0000|            -0.4160| -0.8710| 53.00|
-|Reference: Age group, Report: Day of week          |35-59     |          35.90|     3.530|          32.400|         0.0000|            -0.4050| -0.8430| 48.70|
-|Reference: Age group and week, Report: Day of week |35-59     |          34.30|     3.640|          30.600|         0.0769|            -0.3950| -0.7640| 48.10|
-|Reference: Fixed, Report: Fixed                    |60-79     |           7.77|     2.650|           4.150|         0.9670|            -0.0868| -0.3070| 14.60|
-|Reference: Fixed, Report: Day of week              |60-79     |           9.60|     1.990|           7.110|         0.4950|            -0.0538| -0.3640| 14.10|
-|Reference: Age group, Report: Day of week          |60-79     |           8.55|     2.230|           5.690|         0.6260|             0.0011| -0.2290| 12.40|
-|Reference: Age group and week, Report: Day of week |60-79     |           7.95|     2.360|           4.760|         0.8240|             0.0341| -0.1860| 11.80|
-|Reference: Fixed, Report: Fixed                    |80+       |           5.44|     1.880|           3.110|         0.4510|            -0.0648| -0.3930| 10.10|
-|Reference: Fixed, Report: Day of week              |80+       |           5.71|     1.510|           3.920|         0.2860|            -0.1090| -0.4710|  9.86|
-|Reference: Age group, Report: Day of week          |80+       |           4.74|     1.670|           2.710|         0.3520|             0.0451| -0.3290|  8.43|
-|Reference: Age group and week, Report: Day of week |80+       |           4.61|     1.760|           2.380|         0.4730|             0.0231| -0.3000|  8.00|
+|Reference: Fixed, Report: Fixed                    |00+       |          40.70|    13.000|          24.400|         3.2800|            -0.1970| -0.4430| 76.30|
+|Reference: Fixed, Report: Day of week              |00+       |          52.40|     7.490|          43.400|         1.4400|            -0.3730| -0.6640| 80.90|
+|Reference: Age group, Report: Day of week          |00+       |          40.70|     8.720|          30.000|         1.9800|            -0.1970| -0.5430| 67.60|
+|Reference: Age group and week, Report: Day of week |00+       |          41.10|     9.170|          29.300|         2.6500|            -0.1750| -0.4430| 67.40|
+|Reference: Fixed, Report: Fixed                    |00-04     |           1.83|     0.675|           0.000|         1.1600|            -0.0978|  0.6140|  2.79|
+|Reference: Fixed, Report: Day of week              |00-04     |           2.07|     0.605|           0.033|         1.4300|            -0.1420|  0.5360|  3.00|
+|Reference: Age group, Report: Day of week          |00-04     |           2.24|     0.642|           0.011|         1.5800|            -0.1420|  0.5930|  3.29|
+|Reference: Age group and week, Report: Day of week |00-04     |           2.41|     0.680|           0.011|         1.7100|            -0.1750|  0.6290|  3.57|
+|Reference: Fixed, Report: Fixed                    |05-14     |           1.26|     0.510|           0.593|         0.1540|             0.0560| -0.2000|  2.00|
+|Reference: Fixed, Report: Day of week              |05-14     |           1.31|     0.451|           0.681|         0.1760|             0.0451| -0.1500|  2.00|
+|Reference: Age group, Report: Day of week          |05-14     |           1.26|     0.516|           0.571|         0.1760|             0.0890| -0.1070|  2.00|
+|Reference: Age group and week, Report: Day of week |05-14     |           1.29|     0.520|           0.549|         0.2200|             0.0670| -0.0929|  2.00|
+|Reference: Fixed, Report: Fixed                    |15-34     |           7.39|     2.800|           2.230|         2.3600|            -0.1090| -0.1860| 12.90|
+|Reference: Fixed, Report: Day of week              |15-34     |           5.95|     2.140|           2.510|         1.3100|            -0.0648| -0.2570| 11.00|
+|Reference: Age group, Report: Day of week          |15-34     |           5.82|     2.380|           1.730|         1.7100|            -0.0648| -0.0857| 10.70|
+|Reference: Age group and week, Report: Day of week |15-34     |           5.78|     2.480|           1.290|         2.0100|            -0.0429| -0.0571| 10.30|
+|Reference: Fixed, Report: Fixed                    |35-59     |          30.90|     4.860|          25.900|         0.0989|            -0.3290| -0.6790| 47.10|
+|Reference: Fixed, Report: Day of week              |35-59     |          41.60|     3.090|          38.600|         0.0000|            -0.4160| -0.8710| 53.30|
+|Reference: Age group, Report: Day of week          |35-59     |          36.00|     3.530|          32.500|         0.0000|            -0.3840| -0.8290| 49.00|
+|Reference: Age group and week, Report: Day of week |35-59     |          35.00|     3.570|          31.300|         0.0769|            -0.4160| -0.7710| 48.10|
+|Reference: Fixed, Report: Fixed                    |60-79     |           7.83|     2.640|           4.300|         0.8790|            -0.0648| -0.3000| 14.30|
+|Reference: Fixed, Report: Day of week              |60-79     |           9.67|     1.990|           7.180|         0.4950|            -0.0648| -0.3360| 14.10|
+|Reference: Age group, Report: Day of week          |60-79     |           8.63|     2.280|           5.700|         0.6480|             0.0231| -0.2000| 12.60|
+|Reference: Age group and week, Report: Day of week |60-79     |           8.02|     2.350|           4.810|         0.8570|             0.0341| -0.1860| 12.00|
+|Reference: Fixed, Report: Fixed                    |80+       |           5.44|     1.850|           3.130|         0.4510|            -0.0648| -0.3930| 10.10|
+|Reference: Fixed, Report: Day of week              |80+       |           5.60|     1.500|           3.830|         0.2640|            -0.0868| -0.4640|  9.71|
+|Reference: Age group, Report: Day of week          |80+       |           4.66|     1.730|           2.580|         0.3520|             0.0451| -0.3290|  8.43|
+|Reference: Age group and week, Report: Day of week |80+       |           4.61|     1.740|           2.350|         0.5160|             0.0231| -0.3000|  7.86|
 
 Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomolous or we may have identified a real trend). 
 
@@ -747,34 +724,34 @@ kable(date_score)
 
 |model                                              |reference_date | interval_score| sharpness| underprediction| overprediction| coverage_deviation|   bias|   aem|
 |:--------------------------------------------------|:--------------|--------------:|---------:|---------------:|--------------:|------------------:|------:|-----:|
-|Reference: Fixed, Report: Fixed                    |2021-08-26     |          12.20|      2.13|          10.000|         0.0330|            -0.1090| -0.550| 19.70|
-|Reference: Fixed, Report: Day of week              |2021-08-26     |          14.60|      1.66|          12.900|         0.0330|            -0.1530| -0.564| 19.90|
-|Reference: Age group, Report: Day of week          |2021-08-26     |           8.36|      2.00|           6.210|         0.1430|            -0.0209| -0.314| 13.50|
-|Reference: Age group and week, Report: Day of week |2021-08-26     |           8.61|      2.00|           6.430|         0.1760|            -0.0429| -0.329| 14.40|
-|Reference: Fixed, Report: Fixed                    |2021-08-27     |          11.00|      2.27|           8.630|         0.1100|            -0.2190| -0.543| 18.70|
-|Reference: Fixed, Report: Day of week              |2021-08-27     |          11.70|      1.81|           9.750|         0.1430|            -0.2300| -0.521| 17.70|
-|Reference: Age group, Report: Day of week          |2021-08-27     |           8.01|      2.07|           5.700|         0.2420|            -0.1750| -0.379| 13.30|
-|Reference: Age group and week, Report: Day of week |2021-08-27     |           8.19|      2.11|           5.900|         0.1870|            -0.1750| -0.464| 13.40|
-|Reference: Fixed, Report: Fixed                    |2021-08-28     |          13.30|      2.48|          10.400|         0.3850|            -0.2410| -0.514| 23.00|
-|Reference: Fixed, Report: Day of week              |2021-08-28     |          10.70|      2.09|           8.110|         0.4840|            -0.1640| -0.414| 17.70|
-|Reference: Age group, Report: Day of week          |2021-08-28     |           8.31|      2.48|           5.300|         0.5270|            -0.0978| -0.343| 14.60|
-|Reference: Age group and week, Report: Day of week |2021-08-28     |           8.49|      2.49|           5.450|         0.5490|            -0.0538| -0.307| 15.20|
-|Reference: Fixed, Report: Fixed                    |2021-08-29     |          13.10|      2.75|          10.200|         0.2420|            -0.0978| -0.400| 22.60|
-|Reference: Fixed, Report: Day of week              |2021-08-29     |          13.60|      2.15|          11.000|         0.3960|            -0.1530| -0.314| 20.70|
-|Reference: Age group, Report: Day of week          |2021-08-29     |          11.50|      2.44|           8.580|         0.4510|            -0.1090| -0.243| 18.40|
-|Reference: Age group and week, Report: Day of week |2021-08-29     |          10.90|      2.53|           7.860|         0.4950|            -0.0868| -0.214| 17.40|
-|Reference: Fixed, Report: Fixed                    |2021-08-30     |           9.91|      3.37|           0.000|         6.5400|            -0.2410|  0.821| 17.40|
-|Reference: Fixed, Report: Day of week              |2021-08-30     |           6.19|      2.19|           0.022|         3.9800|            -0.1750|  0.707| 10.90|
-|Reference: Age group, Report: Day of week          |2021-08-30     |           7.27|      2.47|           0.000|         4.8100|            -0.2300|  0.771| 12.20|
-|Reference: Age group and week, Report: Day of week |2021-08-30     |           8.84|      2.60|           0.000|         6.2400|            -0.3070|  0.857| 14.90|
-|Reference: Fixed, Report: Fixed                    |2021-08-31     |           6.54|      5.17|           0.187|         1.1800|             0.1880|  0.143|  8.86|
-|Reference: Fixed, Report: Day of week              |2021-08-31     |           6.31|      2.85|           3.360|         0.0989|             0.0231| -0.457| 11.60|
-|Reference: Age group, Report: Day of week          |2021-08-31     |           5.42|      3.21|           1.970|         0.2420|             0.1110| -0.300|  8.43|
-|Reference: Age group and week, Report: Day of week |2021-08-31     |           5.27|      3.48|           1.460|         0.3300|             0.1660| -0.171|  6.43|
-|Reference: Fixed, Report: Fixed                    |2021-09-01     |          29.00|      8.10|          20.900|         0.0220|             0.0011| -0.486| 55.90|
-|Reference: Fixed, Report: Day of week              |2021-09-01     |          56.50|      4.47|          52.100|         0.0000|            -0.2520| -0.714| 76.00|
-|Reference: Age group, Report: Day of week          |2021-09-01     |          50.10|      5.01|          45.100|         0.0000|            -0.1970| -0.671| 71.80|
-|Reference: Age group and week, Report: Day of week |2021-09-01     |          47.60|      5.13|          42.500|         0.0110|            -0.1860| -0.614| 68.90|
+|Reference: Fixed, Report: Fixed                    |2021-08-26     |          12.20|      2.17|           9.960|         0.0330|            -0.1090| -0.571| 19.60|
+|Reference: Fixed, Report: Day of week              |2021-08-26     |          14.50|      1.67|          12.800|         0.0330|            -0.1530| -0.564| 19.70|
+|Reference: Age group, Report: Day of week          |2021-08-26     |           8.25|      2.03|           6.040|         0.1760|            -0.0209| -0.314| 14.00|
+|Reference: Age group and week, Report: Day of week |2021-08-26     |           8.85|      2.03|           6.650|         0.1760|            -0.0429| -0.329| 14.70|
+|Reference: Fixed, Report: Fixed                    |2021-08-27     |          11.00|      2.25|           8.600|         0.1150|            -0.2630| -0.579| 18.90|
+|Reference: Fixed, Report: Day of week              |2021-08-27     |          11.80|      1.78|           9.910|         0.1540|            -0.2410| -0.493| 17.70|
+|Reference: Age group, Report: Day of week          |2021-08-27     |           7.76|      2.10|           5.440|         0.2200|            -0.1530| -0.393| 13.00|
+|Reference: Age group and week, Report: Day of week |2021-08-27     |           8.13|      2.13|           5.820|         0.1760|            -0.1530| -0.436| 13.10|
+|Reference: Fixed, Report: Fixed                    |2021-08-28     |          13.20|      2.52|          10.300|         0.3850|            -0.2410| -0.514| 23.00|
+|Reference: Fixed, Report: Day of week              |2021-08-28     |          10.70|      2.11|           8.130|         0.5050|            -0.1640| -0.414| 17.70|
+|Reference: Age group, Report: Day of week          |2021-08-28     |           8.48|      2.49|           5.440|         0.5490|            -0.0978| -0.343| 15.00|
+|Reference: Age group and week, Report: Day of week |2021-08-28     |           8.76|      2.46|           5.750|         0.5490|            -0.0758| -0.314| 15.60|
+|Reference: Fixed, Report: Fixed                    |2021-08-29     |          13.20|      2.77|          10.200|         0.2640|            -0.1200| -0.393| 22.40|
+|Reference: Fixed, Report: Day of week              |2021-08-29     |          13.60|      2.16|          11.000|         0.4400|            -0.1750| -0.307| 20.60|
+|Reference: Age group, Report: Day of week          |2021-08-29     |          11.40|      2.52|           8.430|         0.4510|            -0.1090| -0.243| 18.40|
+|Reference: Age group and week, Report: Day of week |2021-08-29     |          11.00|      2.51|           8.010|         0.4950|            -0.0868| -0.214| 17.60|
+|Reference: Fixed, Report: Fixed                    |2021-08-30     |           9.76|      3.45|           0.000|         6.3100|            -0.2410|  0.821| 16.90|
+|Reference: Fixed, Report: Day of week              |2021-08-30     |           6.06|      2.15|           0.033|         3.8800|            -0.1750|  0.707| 10.60|
+|Reference: Age group, Report: Day of week          |2021-08-30     |           7.29|      2.48|           0.000|         4.8100|            -0.1860|  0.750| 12.30|
+|Reference: Age group and week, Report: Day of week |2021-08-30     |           8.89|      2.59|           0.000|         6.3000|            -0.3070|  0.857| 15.10|
+|Reference: Fixed, Report: Fixed                    |2021-08-31     |           6.52|      5.09|           0.187|         1.2500|             0.1880|  0.143|  8.64|
+|Reference: Fixed, Report: Day of week              |2021-08-31     |           6.32|      2.77|           3.450|         0.0989|             0.0231| -0.457| 11.60|
+|Reference: Age group, Report: Day of week          |2021-08-31     |           5.40|      3.22|           1.930|         0.2420|             0.1330| -0.286|  8.86|
+|Reference: Age group and week, Report: Day of week |2021-08-31     |           5.44|      3.61|           1.490|         0.3410|             0.1660| -0.171|  6.43|
+|Reference: Fixed, Report: Fixed                    |2021-09-01     |          29.50|      8.12|          21.400|         0.0330|            -0.0209| -0.493| 56.00|
+|Reference: Fixed, Report: Day of week              |2021-09-01     |          55.60|      4.63|          50.900|         0.0000|            -0.2190| -0.679| 76.10|
+|Reference: Age group, Report: Day of week          |2021-09-01     |          50.80|      4.95|          45.800|         0.0000|            -0.1970| -0.671| 72.00|
+|Reference: Age group and week, Report: Day of week |2021-09-01     |          47.10|      5.19|          41.900|         0.0110|            -0.1860| -0.614| 68.70|
 
 Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models.
 

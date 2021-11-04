@@ -9,8 +9,8 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "vignettes/figures/",
-  cache = TRUE, cache.path = "cache/",
+  fig.path = "figures/",
+  cache = TRUE, cache.path = "cache/", dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
   eval = TRUE
