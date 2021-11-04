@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-In the following sections we provide methodological and implementation details for the nowcasting framework implemented in `epinowcast`. Our approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds an optional parametric assumption for the underlying delay from occurrence to report, support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallisation to reduce runtimes [@stan; @cmdstanr].
+In the following sections we provide methodological and implementation details for the nowcasting framework implemented in `epinowcast`. Our approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds an optional parametric assumption for the underlying delay from occurrence to report, support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr].
 
 # Decomposition into expected final notifications and report delay components
 
@@ -34,7 +34,7 @@ An alternative approach, not explored here, is to consider each $n_{gtd}$ indepe
 
 # Expected final notifications
 
-Here we follow the approach of Günther et al.[gunther2021] and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.
+Here we follow the approach of Günther et al.[@gunther2021] and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.
 
 \begin{align}
   \log (\lambda_{gt}) &\sim \text{Normal}\left(\log (\lambda_{gt-1}) , \sigma^{\lambda}_{g} \right) \\
@@ -92,6 +92,6 @@ Expected notifications by time of occurrence ($t$) and reporting delay can now b
 
 # Implementation
 
-The model is implemented in `stan` using `cmdstanr` with no defaults altered[@stan; @cmdstanr]. Optional within chain parallisation is available across dates of occurrence to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
+The model is implemented in `stan` using `cmdstanr` with no defaults altered[@stan; @cmdstanr]. Optional within chain parallelisation is available across dates of occurrence to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
 
 # References
