@@ -79,7 +79,7 @@ latest_nat_germany <- enw_latest_data(latest_nat_germany)
 
 # Data preprocessing
 
-`epinowcast` works by assuming data has been preprocessed into the format it expects. It is at this stage that arbitrary groupings of observations can be defined which will then be propagated throughout all subsequent modelling steps. Here we have data stratified by age and so group by age group but in principle this could be any grouping or combination of groups independent of the reference and report date models. Here we also assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data but note that in most cases the majority of right censoring occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e a 20 day delay will be much faster to fit a model for than a 40 day delay). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.
+`epinowcast` works by assuming data has been preprocessed into the format it expects. It is at this stage that arbitrary groupings of observations can be defined which will then be propagated throughout all subsequent modelling steps. Here we have data stratified by age and so grouped by age group but in principle this could be any grouping or combination of groups independent of the reference and report date models. Here we also assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data but note that in most cases the majority of right censoring occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e a 20 day delay will be much faster to fit a model for than a 40 day delay). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.
 
 Another key modelling choice we make at this stage is to model age groups jointly with aggregated hospitalisations. This implicitly assumes that aggregated and non-aggregated data are not comparable (which may or may not be the case) but that the reporting process shares some of the same mechanisms. Another way to approach this would be to only model age stratified hospitalisations and then to aggregate the nowcast estimates into total counts after fitting the model which assumes that this aggregation is possible.
 
@@ -664,7 +664,7 @@ kable(overall_score)
 |Reference: Age group, Report: Day of week          |           14.2|      2.83|           10.40|          0.921|            -0.0900| -0.214| 21.9|
 |Reference: Age group and week, Report: Day of week |           14.0|      2.93|            9.94|          1.150|            -0.0978| -0.174| 21.6|
 
-Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
+Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model outperforms the others. 
 
 
 ```r
