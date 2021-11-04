@@ -2,6 +2,7 @@
 
 * Add support for passing in priors
 * Add case study vignette
+* Add model definition and implementation details.
 * Add support for out of sample scoring (using `scoringutils`).
 
 # epinowcast 0.0.2
