@@ -121,39 +121,62 @@
 
     
     
-<p>In the following sections we provide methodological and implementation details for the nowcasting framework implemented in <code>epinowcast</code>. Our approach is an extension of that proposed by Gunther et al. which was itself an extension of the model proposed by Hohle and Heiden and implemented in the <code>surveillance</code> R package. <code>epinowcast</code> adds an optional parametric assumption for the underlying delay from occurance to report, support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an efficient implementation in <code>stan</code> which makes use of with-in chain parallisation to reduce runtimes.</p>
+<p>In the following sections we provide methodological and implementation details for the nowcasting framework implemented in <code>epinowcast</code>. Our approach is an extension of that proposed by Günther et al. which was itself an extension of the model proposed by Höhle and Heiden and implemented in the <code>surveillance</code> R package. <code>epinowcast</code> adds an optional parametric assumption for the underlying delay from occurance to report, support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an efficient implementation in <code>stan</code> which makes use of within chain parallisation to reduce runtimes when more cores than MCMC chains are available.</p>
 <div class="section level1">
 <h1 id="decomposition-into-expected-final-notifications-and-report-delay-components">Decomposition into expected final notifications and report delay components<a class="anchor" aria-label="anchor" href="#decomposition-into-expected-final-notifications-and-report-delay-components"></a>
 </h1>
-<p>We follow the approach of Hohle and Heiden and consider the distribution of counts (<span class="math inline">\(n_{gtd}\)</span>) by time of occurrence (<span class="math inline">\(t\)</span>) and reporting delay (<span class="math inline">\(d\)</span>) conditional on the final observed count <span class="math inline">\(N_{gt}\)</span> for each dataset (<span class="math inline">\(g\)</span>) such that,</p>
+<p>We follow the approach of Höhle and Heiden and consider the distribution of notifications (<span class="math inline">\(n_{gtd}\)</span>) by time of occurrence (<span class="math inline">\(t\)</span>) and reporting delay (<span class="math inline">\(d\)</span>) conditional on the final observed count <span class="math inline">\(N_{gt}\)</span> for each dataset (<span class="math inline">\(g\)</span>) such that,</p>
 <p><span class="math display">\[\begin{equation}
   N_{gt} = \sum_{d=0}^{D} n_{gtd}
 \end{equation}\]</span></p>
-<p>where <span class="math inline">\(D\)</span> represents the maximum delay between time of occurance and time of report which in theory could be infinite but in practice we set in order to make the model identifiable. This formulation means that <span class="math inline">\(n_{gtd} | N_{gt}\)</span> is multinomial with a probability vector (<span class="math inline">\(p_tgd\)</span>) of length <span class="math inline">\(D\)</span> for each <span class="math inline">\(t\)</span> and <span class="math inline">\(g\)</span> that needs to be estimated at the same time as estimating the expected number of final notifications <span class="math inline">\(\mathbb{E}[N_{gt}] = \lambda_{gt}\)</span>.</p>
+<p>where <span class="math inline">\(D\)</span> represents the maximum delay between time of occurance and time of report which in theory could be infinite but in practice we set to a value in order to make the model identifiable and computationally feasible. This formulation means that <span class="math inline">\(n_{gtd} \mid N_{gt}\)</span> is multinomial with a probability vector (<span class="math inline">\(p_{gtd}\)</span>) of length <span class="math inline">\(D\)</span> for each <span class="math inline">\(t\)</span> and <span class="math inline">\(g\)</span> that needs to be estimated at the same time as estimating the expected number of final notifications <span class="math inline">\(\mathbb{E}[N_{gt}] = \lambda_{gt}\)</span>.</p>
 <p>An alternative approach, not explored here, is to consider each <span class="math inline">\(n_{gtd}\)</span> independently at which point the model can be defined as a standard regression with the appropriate observation model and adjustment for reporting delay (i.e it becomes a Poisson or Negative Binomial regression). An implementation of this approach is available in . More work needs to be done to evaluate which of these approaches produces more accurate nowcasts for epidemiological count data.</p>
 </div>
 <div class="section level1">
 <h1 id="expected-final-notifications">Expected final notifications<a class="anchor" aria-label="anchor" href="#expected-final-notifications"></a>
 </h1>
-<p>Here we follow the approach of Gunther et al. and specify the model for expected final notifications as a first order random walk based on the findings of McGough, Johansson, Lipsitch, and Menzies. This model can in principle be any model such as a more complex time-series appproach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.</p>
-<p><span class="math display">\[\begin{equation}
-  \log \lambda_{gt} &amp;\sim \text{Normal}\left(\log\lambda_{gt-1} ,\ \log \lambda_{g0} \sim \text{Normal}\left(\log \lambda_{g0} , 1 \right),
-\end{equation}\]</span></p>
+<p>Here we follow the approach of Günther et al. and specify the model for expected final notifications as a first order random walk based on the findings of McGough, Johansson, Lipsitch, and Menzies. This model can in principle be any model such as a more complex time-series appproach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.</p>
+<p><span class="math display">\[\begin{align}
+  \log (\lambda_{gt}) &amp;\sim \text{Normal}\left(\log (\lambda_{gt-1}) , \sigma^{\lambda}_{g} \right) \\
+  \log (\lambda_{g0}) &amp;\sim \text{Normal}\left(\log (N_{g0}), 1 \right) \\ \sigma^{\lambda}_{g} &amp;\sim \text{Half-Normal}\left(0, 1\right)
+\end{align}\]</span></p>
 </div>
 <div class="section level1">
 <h1 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
 </h1>
-<p>Again following the approach of Gunther et al. we define the delay distribution (<span class="math inline">\(p_gtd\)</span>) as a discrete time hazard model (<span class="math inline">\(h_gtd =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)\)</span>) but we extend this model to decompose <span class="math inline">\(W_{gtd}\)</span> into 3 components: a parametric delay distribution (<span class="math inline">\(\gamma_{gtd}\)</span>) dependent on covariates at the date of occurance, hazard not dependent on a parametric distribution (<span class="math inline">\(\alpha_{gtd}\)</span>) dependent on covariates at the date of occurance, and hazard dependent on covariates referenced to the date of report.</p>
+<p>Again following the approach of Günther et al. we define the delay distribution (<span class="math inline">\(p_{gtd}\)</span>) as a discrete time hazard model (<span class="math inline">\(h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)\)</span>) but we extend this model to decompose <span class="math inline">\(W_{gtd}\)</span> into 3 components: hazard derived from a parametric delay distribution (<span class="math inline">\(\gamma_{gtd}\)</span>) dependent on covariates at the date of occurance, hazard not derived from a parametric distribution (<span class="math inline">\(\delta_{gtd}\)</span>) dependent on covariates at the date of occurance, and hazard dependent on covariates referenced to the date of report (<span class="math inline">\(\epsilon_{gtd}\)</span>).</p>
+<p>For first component (<span class="math inline">\(\gamma_{gtd}\)</span>) we assume that the probability of reporting <span class="math inline">\(p^{\prime}_{gtd}\)</span> given parametric effects on the reference day only follow a parametric distribution (in the baseline case a discretised log normal distribution) with the log mean and log standard deviation being defined using an intercept and arbitrary shared covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients,</p>
 <p><span class="math display">\[\begin{align}
-  \text{logit}\left(h_{gtd}\right) &amp;= \gamma_{gtd} + \alpha_{gtd} + \beta{gtd} \\
-  \gamma_{gtd} &amp;\sim \text{LogNormal}\left( \right)
+  p^{\prime}_{gtd} &amp;\sim \text{LogNormal} \left(\mu_{gt}, \upsilon_{gt} \right) \\
+  \mu_{gt} &amp;= \mu_0 + \alpha_{\mu} X_{\gamma} + \beta_{\mu} Z_{\gamma} \\
+  \upsilon_{gt} &amp;= \upsilon_0 + \alpha_{\upsilon} X_{\gamma} + \beta_{\upsilon} Z_{\gamma}
 \end{align}\]</span></p>
+<p>The parametric logit hazard for this component of the model is then,</p>
+<p><span class="math display">\[\begin{equation}
+  \text{logit} \left(\gamma_{gtd}\right) = \frac{p^{\prime}_{gtd}}{\left(1 -\sum^{d-1}_{d=0} p^{\prime}_{gtd} \right)}
+\end{equation}\]</span></p>
+<p>The non-distributional components for the date of occurance and report are then again defined using an intercept and arbitrary shared covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients.</p>
+<p><span class="math display">\[\begin{align}
+  \delta_{gtd} &amp;= \mu_0 + \alpha_{\delta} X_{\delta} + \beta_{\delta} Z_{\delta} \\
+  \epsilon_{gtd} &amp;= \epsilon_0 + \alpha_{\epsilon} X_{\epsilon} + \beta_{\epsilon} Z_{\epsilon}
+\end{align}\]</span></p>
+<p>The overall hazard for each group, occurance time, and delay is then,</p>
+<p><span class="math display">\[\begin{equation}
+  \text{logit} (h_{gtd}) = \gamma_{gtd} + \delta_{gtd} +  \upsilon_{gtd},\ h_{gtD} = 1
+\end{equation}\]</span></p>
+<p>and so the probability of report for a given delay, occurance date, and group is as follows.</p>
+<p><span class="math display">\[\begin{equation}
+  p_{gt0} = h_{gt0},\ p_{gtd} = \left(1 -\sum^{d-1}_{d=0} p_{gtd} \right) \times h_{gtd}
+\end{equation}\]</span></p>
+<p>All (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.</p>
 </div>
 <div class="section level1">
 <h1 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h1>
+<p>Expected notifications by time of occurance (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{gtd}\)</span>). We then assume a negative binomial observation model with a joint overdispersion parameter (with a 1 over square root standard half normal prior) and produce a nowcast of final observed notifications at each occurance time by summing posterior estimates for each observed notification for that occurance time.</p>
 <p><span class="math display">\[\begin{align}
-  n_{gtd} | \lambda_{gt},p_{gtd}  &amp;\sim \text{NB}(\lambda_{gt} \times p{gtd}, \phi),\ t=1,...,T. \\
+  n_{gtd} \mid \lambda_{gt},p_{gtd}  &amp;\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
+  \frac{1}{\phi^2} &amp;\sim \text{Half-Normal}(0, 1) \\
   N_{gt} &amp;= \sum_{d=0}^{D} n_{gtd}
 \end{align}\]</span></p>
 </div>
