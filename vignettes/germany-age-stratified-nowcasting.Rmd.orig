@@ -1,5 +1,6 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
+author: Sam Abbott
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
