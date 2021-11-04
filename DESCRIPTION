@@ -1,5 +1,5 @@
 Package: epinowcast
-Title: Nowcast Right Censored Epidemiological Counts
+Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
 Version: 0.0.2.1000
 Authors@R:
     c(person(given = "Sam Abbott",
