@@ -46,6 +46,8 @@ threads <- 2
 
 # Data
 
+Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations and typically this means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in `epinowcast`).
+
 Here we use COVID-19 hospitalisations by date of positive test in Germany stratified by age group available from up to the 1st of September 2020 (with 40 days of data included prior to this) as an example of data available in real-time and hospitalisations by date of positive test available up to 20th of October to represent hospitalisations as finally reported. These data are sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence) where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted.
 
 We first filter out the data that would have been available on the 1st of September for the last 40 days.
@@ -92,8 +94,8 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
-```{r, include = FALSE}
-model <- enw_model(threads = TRUE)
+```{r, message = FALSE}
+multithread_model <- enw_model(threads = TRUE)
 ```
 
 Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
@@ -101,7 +103,7 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 ```{r}
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
-  model = model,
+  model = multithread_model,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
@@ -146,11 +148,11 @@ We now repeat the nowcasting step with the day of the week reporting model inclu
 ```{r}
 options(mc.cores = 2)
 dow_nowcast <- epinowcast(pobs,
-  model = model,
+  model = multithread_model,
   report_effects = dow_report_effects,
   priors = priors,
   save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE, debug = TRUE,
+  output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
   show_messages = FALSE, refresh = 0
 )
@@ -180,7 +182,7 @@ We again nowcast this time using both the age adjusted reference date model and 
 ```{r}
 options(mc.cores = 2)
 age_nowcast <- epinowcast(pobs,
-  model = model,
+  model = multithread_model,
   reference_effects = age_reference_effects,
   report_effects = dow_report_effects,
   priors = priors,
@@ -227,7 +229,7 @@ As before we fit the nowcasting model,
 ```{r}
 options(mc.cores = 2)
 week_nowcast <- epinowcast(pobs,
-  model = model,
+  model = multithread_model,
   reference_effects = week_age_reference_effects,
   report_effects = dow_report_effects,
   priors = priors,
@@ -238,22 +240,159 @@ week_nowcast <- epinowcast(pobs,
 )
 ```
 
+In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.
+
 ```{r week_nowcast, height = 9, width = 9}
 plot(week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
+## Variation based on reference date stratified by age
+
+As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary across age groups and time independently. In this scenario the assumption is that delays evolve differently over time for each age group but reporting effects and measurement error are still shared across data  sets.
+
+Models with this level of flexibility are not currently supported by `enw_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
+
+```{r}
+fixed_form <- as.formula(paste0(
+  "~ 1 + age_group + ",
+  paste(paste0(
+    "age_group:",
+    grep("cweek", colnames(metareference), value = TRUE),
+        collapse = " + ")),
+  " + ",
+  paste(grep("cweek", colnames(metareference), value = TRUE),
+        collapse = " + ")
+))
+fixed <- enw_design(fixed_form, metareference, no_contrasts = TRUE, sparse = TRUE)
+fixed$formula
+fixed$design[1:10, 1:10]
+```
+
+We now need to design the random effects which interact with this design matrix. The first step is to extract all fixed effects.
+
+```{r}
+effects <- enw_effects_metadata(fixed$design)
+effects
+```
+
+We can then start building shared pooling standard deviations for parameters. Note that here we have assumed that all age groups share a prior for their independent random walks.
+
+```{r}
+effects <- enw_add_pooling_effect(effects, "cweek", "cweek")
+effects <- enw_add_pooling_effect(effects, "age_group", "age_group")
+effects <- enw_add_pooling_effect(
+  effects, ":", "age_group_walk",
+  finder_fn = function(effect, pattern) {
+    grepl(pattern, effect)
+  })
+effects[grepl(":", effects), age_group := 0]
+effects
+```
+
+Now we can create the pooling standard deviation design matrix and create the list describing the model.
+
+```{r}
+random <- enw_design(~ 0 + fixed + cweek + age_group + age_group_walk,
+                     effects, sparse = FALSE)
+random
+custom_reference_effects <- list(fixed = fixed, random = random)
+```
+
+We can now fit this model as before (note that this model is quite complex and so may take some time to fit).
+
+```{r}
+options(mc.cores = 2)
+age_week_nowcast <- epinowcast(pobs,
+  model = multithread_model,
+  reference_effects = custom_reference_effects,
+  report_effects = dow_report_effects,
+  priors = priors,
+  save_warmup = FALSE,
+  output_loglik = TRUE, pp = TRUE,
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
+)
+```
+
+In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.
+
+```{r age_week_nowcast, height = 9, width = 9}
+plot(age_week_nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+
+## Independent models  for each age group.
+
+The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the occurance date stratified by age) to each age group independently.
+
+We could define this model with a single call to `epinowcast` but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.
+
+```{r}
+independent_epinowcast <- function(obs, max_delay = 40, ...) {
+  pobs_ind <- enw_preprocess_data(obs, max_delay = max_delay)
+
+  metareference <- enw_add_cumulative_membership(
+    pobs_ind$metareference[[1]],
+    feature = "week"
+  )
+
+  reference_effects <- enw_formula(metareference, custom_random = "cweek")
+  report_effects <- enw_formula(pobs_ind$metareport, random = "day_of_week")
+
+  nowcast <- epinowcast(
+    pobs_ind,
+    reference_effects = reference_effects,
+    report_effects = report_effects,
+     ...)
+
+  nowcast_summary <- summary(
+    nowcast,
+    probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
+  )
+  return(nowcast_summary)
+}
+```
+
+We can now use this wrapper function on the data available for each age group, sumarise the resulting nowcast, and then join these into a single data frame.
+
+```{r}
+options(mc.cores = 2)
+
+independent_nowcast <- map(
+  split(retro_nat_germany, by = "age_group"),
+  independent_epinowcast,
+  model = multithread_model,
+  priors = priors,
+  save_warmup = FALSE,
+  output_loglik = TRUE, pp = TRUE,
+  chains = 2, threads_per_chain = threads,
+  show_messages = FALSE, refresh = 0
+)
+independent_nowcast <- rbindlist(independent_nowcast)
+```
+
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly thge 35-59 year old age group is being captured at least as well as in the heirarchical models without obviously reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+
+```{r ind_nowcast, height = 9, width = 9}
+enw_plot_nowcast_quantiles(
+  independent_nowcast, latest_obs = latest_nat_germany) +
+  facet_grid(vars(age_group), scales = "free_y")
+```
+
+
 ## Alternative models
 
 In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by `epinowcast`) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.
 
-There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. Some obvious choices are models that deal with age groups more flexibly either in a single model with time-varying parameters for each age group or by using independent models where there is no shared learning across age groups. We could also explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
+There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. For example, we could explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
 
 If interested in expanding the functionality of the underlying model to address some of these issues note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.
 
 # Evaluation
 
-As we have only nowcast a single date this evaluation is anything but complete however we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
+As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous however we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
 
 We first list all models and give them informative names,
 
@@ -262,7 +401,8 @@ nowcasts <- list(
   "Reference: Fixed, Report: Fixed" = nowcast,
   "Reference: Fixed, Report: Day of week" = dow_nowcast,
   "Reference: Age group, Report: Day of week" = age_nowcast,
-  "Reference: Age group and week, Report: Day of week" = week_nowcast
+  "Reference: Age group and week, Report: Day of week" = week_nowcast,
+  "Reference: Age group and week by age, Report: Day of week" = age_week_nowcast
 )
 ```
 
@@ -273,13 +413,19 @@ summarised_nowcasts <- map(
   nowcasts, summary,
   probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
 )
-summarised_nowcasts <- rbindlist(summarised_nowcasts, idcol = "model")
+summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- 
+  independent_nowcast
+
+summarised_nowcasts <- rbindlist(summarised_nowcasts, idcol = "model",
+                                 use.names = TRUE)
 summarised_nowcasts[, `:=`(
   model = factor(
     model, levels = c("Reference: Fixed, Report: Fixed",
                       "Reference: Fixed, Report: Day of week",
                       "Reference: Age group, Report: Day of week",
-                      "Reference: Age group and week, Report: Day of week")),
+                      "Reference: Age group and week, Report: Day of week",
+                      "Reference: Age group and week by age, Report: Day of week", # nolint
+                      "Independent by age, Reference: Week, Report: Day of week")), # nolint
   age_group = factor(
     age_group, levels = c("00+", "00-04", "05-14", "15-34", "35-59", "60-79",
                           "80+"))
@@ -288,7 +434,7 @@ summarised_nowcasts[, `:=`(
 
 This allows us to plot nowcasts for each model and age group compared to the latest data. Looking at the plot shows some small differences across models with uncertainty generally decreasing as model complexity increases. Some age groups are clearly better nowcast than others with the 35-59 year old age group in particular having poor nowcast coverage.
 
-```{r, fig.width = 16, fig.height = 16}
+```{r, fig.width = 24, fig.height = 16}
 enw_plot_nowcast_quantiles(
   summarised_nowcasts, latest_obs = latest_nat_germany) +
   facet_grid(vars(age_group), vars(model), scales = "free_y")
@@ -301,7 +447,7 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 ```
 
-We see that the model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but only marginally.
+We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these esimates was wide.
 
 More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::eval_forecasts()`. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
 
@@ -371,6 +517,6 @@ plot
 
 In this vignette we showcased using `epinowcast` to nowcast age stratified COVID-19 hospitalisations in Germany by date of test with a series of increasingly complex models motivated by the data. We also showed some simple methods for exploring these nowcasts and evaluating them.
 
-Using the limited information available to us (as we have only nowcast a single data point) it appears that all models performed acceptably and that, aside from the last data point, models with age and day of the week effects likely performed better. It is also fairly clear that performance degrades as the amount of reported data is reduced which intuitively makes sense with performance being particularly sensitive the first day reported data is available (i.e "now").
+Using the limited information available to us (as we have only nowcast a single date and used performance for this date to motivate new models) it appears that all models performed acceptably and that, aside from the last data point, models with age and day of the week effects likely performed better. It is also fairly clear that performance degrades as the amount of reported data is reduced which intuitively makes sense with performance being particularly sensitive the first day reported data is available (i.e "now"). Our apparent finding that delays evolve fairly independently across age groups motivates choosing a model that is very flexible to this, at least for the date of reference model. 
 
-Despite the fixed effect model doing well overall, for most applications if choosing a model based on this evaluation, I would likely select the final model (with day of the week, age group, and weekly variation) and rely on the hierarchical structure to limit overfitting. However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling section of this vignette).
+Despite the independent model and the fixed effect model both doing well overall, for most applications if choosing a model based on this evaluation, I would likely select a relatively flexible model (with day of the week, age group, and age stratified weekly variation) and rely on the hierarchical structure to limit overfitting. However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling section of this vignette).

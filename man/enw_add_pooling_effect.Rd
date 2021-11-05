@@ -4,7 +4,12 @@
 \alias{enw_add_pooling_effect}
 \title{FUNCTION_TITLE}
 \usage{
-enw_add_pooling_effect(effects, string, var_name = "sd")
+enw_add_pooling_effect(
+  effects,
+  string,
+  var_name = "sd",
+  finder_fn = startsWith
+)
 }
 \arguments{
 \item{effects}{PARAM_DESCRIPTION}
@@ -12,6 +17,8 @@ enw_add_pooling_effect(effects, string, var_name = "sd")
 \item{string}{PARAM_DESCRIPTION}
 
 \item{var_name}{PARAM_DESCRIPTION, Default: 'sd'}
+
+\item{finder_fn}{PARAM_DESCRIPTION, Default: startsWith}
 }
 \value{
 OUTPUT_DESCRIPTION
