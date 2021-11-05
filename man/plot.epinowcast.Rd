@@ -22,7 +22,7 @@ model (using \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}).}
 \item{log}{Logical, defaults to \code{FALSE}. Should counts be plot on the log
 scale.}
 
-\item{...}{Pass additional arguments to plot functions.}
+\item{...}{Pass additional arguments to lower level plot functions.}
 }
 \value{
 \code{ggplot2} object
