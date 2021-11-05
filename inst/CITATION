@@ -1,7 +1,7 @@
 citHeader("To cite epinowcast in publications use:")
 
 citEntry(entry = "Article",
-  title        = "epinowcast: Nowcast right censored epidemiological count data", # nolint
+  title        = "epinowcast: Hierarchical nowcasting of right censored epidemological counts", # nolint
   author       = personList(as.person("Sam Abbott")),
   journal      = "Zenodo",
   year         = "2021",
@@ -12,6 +12,6 @@ citEntry(entry = "Article",
 
   textVersion  =
   paste("Sam Abbott (2021).",
-        "epinowcast: Nowcast right censored epidemiological count data, ", # nolint
+        "epinowcast: Hierarchical nowcasting of right censored epidemological counts, ", # nolint
         "DOI: 10.5281/zenodo.5637165")
 )
