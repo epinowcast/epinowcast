@@ -249,7 +249,7 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 
 ## Variation based on reference date stratified by age
 
-As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary across age groups and time independently. In this scenario the assumption is that delays evolve differently over time for each age group but reporting effects and measurement error are still shared across data  sets.
+As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary across age groups and time independently. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
 
 Models with this level of flexibility are not currently supported by `enw_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
 
@@ -264,7 +264,8 @@ fixed_form <- as.formula(paste0(
   paste(grep("cweek", colnames(metareference), value = TRUE),
         collapse = " + ")
 ))
-fixed <- enw_design(fixed_form, metareference, no_contrasts = TRUE, sparse = TRUE)
+fixed <- enw_design(fixed_form, metareference, no_contrasts = TRUE,
+                    sparse = TRUE)
 fixed$formula
 fixed$design[1:10, 1:10]
 ```
@@ -276,16 +277,18 @@ effects <- enw_effects_metadata(fixed$design)
 effects
 ```
 
-We can then start building shared pooling standard deviations for parameters. Note that here we have assumed that all age groups share a prior for their independent random walks.
+We can then start building shared pooling standard deviations for parameters with a global random walk for all age groups and then a random walk in the residuals for each age group.
 
 ```{r}
 effects <- enw_add_pooling_effect(effects, "cweek", "cweek")
 effects <- enw_add_pooling_effect(effects, "age_group", "age_group")
-effects <- enw_add_pooling_effect(
-  effects, ":", "age_group_walk",
-  finder_fn = function(effect, pattern) {
-    grepl(pattern, effect)
+for (i in  unique(metareference$age_group)) {
+  effects <- enw_add_pooling_effect(
+  effects, c(":", i), paste0(i, "_walk"),
+    finder_fn = function(effect, pattern) {
+      grepl(pattern[1], effect) & grepl(pattern[2], effect)
   })
+}
 effects[grepl(":", effects), age_group := 0]
 effects
 ```
