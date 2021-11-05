@@ -1,5 +1,6 @@
 ---
 title: Model definition and implementation
+description: "Model formulation and implementation details"
 author: Sam Abbott
 output: rmarkdown::html_document
 bibliography: library.bib

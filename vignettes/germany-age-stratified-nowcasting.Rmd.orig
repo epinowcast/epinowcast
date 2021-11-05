@@ -1,6 +1,10 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
+description: "A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
 author: Sam Abbott
+opengraph:
+  image: 
+    src: figures/unnamed-chunk-22-1.png
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}

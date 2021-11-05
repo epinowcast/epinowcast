@@ -10,6 +10,9 @@ template:
     image:
       src: vignettes/figures/unnamed-chunk-17-1.png
       alt: An R package for hierarchical nowcasting of right censored epidemiolgical counts
+    twitter: 
+      creator: "@seabbs"
+      card: summary_large_image
 
 
 development:
