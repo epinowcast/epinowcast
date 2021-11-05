@@ -50,7 +50,7 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
 #' observations reported at the time against simulated observations from  the
 #'  model (using [enw_plot_pp_quantiles()]).
 #'
-#' @param ... Pass additional arguments to plot functions.
+#' @param ... Pass additional arguments to lower level plot functions.
 #'
 #' @family epinowcast
 #' @family plot
@@ -64,9 +64,6 @@ plot.epinowcast <- function(x, latest_obs = NULL, type = "nowcast",
 
   if (type %in% "nowcast") {
     n <- summary(x, type = "nowcast")
-    if (is.null(latest_obs)) {
-      atest_obs <- x$latest[[1]]
-    }
     plot <- enw_plot_nowcast_quantiles(n, latest_obs, log = log, ...)
   } else if (type %in% "posterior_prediction") {
     n <- summary(x, type = type)

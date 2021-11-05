@@ -59,7 +59,7 @@ cmdstanr::install_cmdstan()
 In this quick start we use COVID-19 hospitalisations by date of positive
 test in Germany available up to the 1st of October 2021 to demonstrate
 the specification and fitting of a simple nowcasting model using
-`epinowcast`.Examples using more complex models are available in the
+`epinowcast`. Examples using more complex models are available in the
 package vignettes and in the papers linked to in the literature
 vignette.
 
