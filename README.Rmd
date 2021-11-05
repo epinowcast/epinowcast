@@ -162,7 +162,7 @@ plot(nowcast, type = "posterior") +
 
 ## Citation
 
-If using `epinowccast` in your work please consider citing it using the following,
+If using `epinowcast` in your work please consider citing it using the following,
 
 ```{r, echo = FALSE}
 citation("epinowcast")
