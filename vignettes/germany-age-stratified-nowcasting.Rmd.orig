@@ -14,7 +14,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "figures/",
+  fig.path = "vignettes/figures/",
   cache = TRUE, cache.path = "cache/", dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
@@ -378,7 +378,7 @@ As we now have the summarised nowcasts rather than an object of class `epinowcas
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
   independent_nowcast, latest_obs = latest_nat_germany) +
-  facet_grid(vars(age_group), scales = "free_y")
+  facet_wrap(vars(age_group), scales = "free_y")
 ```
 
 
