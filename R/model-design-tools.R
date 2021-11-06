@@ -123,13 +123,15 @@ enw_effects_metadata <- function(design) {
 #'
 #' @param var_name PARAM_DESCRIPTION, Default: 'sd'
 #'
+#' @param finder_fn PARAM_DESCRIPTION, Default: startsWith
 #' @return OUTPUT_DESCRIPTION
 #'
 #' @family modeldesign
 #' @export
-enw_add_pooling_effect <- function(effects, string, var_name = "sd") {
-  effects[, (var_name) := ifelse(startsWith(effects, string), 1, 0)]
-  effects[startsWith(effects, string), fixed := 0]
+enw_add_pooling_effect <- function(effects, string, var_name = "sd",
+                                   finder_fn = startsWith) {
+  effects[, (var_name) := ifelse(finder_fn(effects, string), 1, 0)]
+  effects[finder_fn(effects, string), fixed := 0]
   return(effects[])
 }
 
