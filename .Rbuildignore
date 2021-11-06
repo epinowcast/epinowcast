@@ -1,6 +1,6 @@
 ^LICENSE\.md$
 ^\.devcontainer$
-^inst/stan/nowcast$
+^inst/stan/epinowcast$
 ^data-raw$
 ^README\.Rmd$
 ^\.github$
@@ -11,6 +11,6 @@
 ^docs$
 ^pkgdown$
 ^CODE_OF_CONDUCT\.md$
-^\.cache$
+^vignettes/cache$
 ^vignettes/germany-age-stratified-nowcasting.Rmd.orig\.Rmd\.orig$
 ^vignettes/precompile.R$

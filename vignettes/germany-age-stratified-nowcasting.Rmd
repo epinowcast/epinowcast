@@ -4,7 +4,7 @@ description: "A case study exploring heirarchical models of varying complexity t
 author: Sam Abbott
 opengraph:
   image: 
-    src: figures/performance-1.png
+    src: vignettes/figures/performance-1.png
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
