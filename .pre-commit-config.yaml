@@ -21,6 +21,7 @@ repos:
         args: ['--maxkb=200']
         exclude: 'data/germany_covid19_hosp.rda'
         exclude: 'vignettes/figures/simple_pp-1.png'
+        exclude: 'vignettes/figures/performance-1.png'
     -   id: end-of-file-fixer
         exclude: '\.Rd'
 -   repo: local
