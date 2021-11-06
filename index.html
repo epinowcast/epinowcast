@@ -30,8 +30,15 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Hierarchical Nowcasting of Right Censored Epidemiological Counts">
 <meta property="og:description" content="Tools to enable flexible and efficient hierarchical nowcasting of
-    right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. ">
-<meta property="og:image" content="epiforecasts.io/epinowcast/vignettes/figures/unnamed-chunk-17-1.png">
+    right censored epidemiological counts using a semi-mechanistic Bayesian
+    method with support for both day of reference and day of report effects. 
+    Nowcasting in this context is the estimation of the total notifications
+    (for example hospitalisations or deaths) that will be reported for a given
+    date based on those currently reported and the pattern of reporting for
+    previous days. This can be useful when tracking the spread of infectious
+    disease in real-time as otherwise changes in trends can be obfuscated by
+    partial reporting or their detection may be delayed due to the use of simpler methods like truncation.">
+<meta property="og:image" content="epiforecasts.io/epinowcast/reference/figures/README-nowcast-1.png">
 <meta property="og:image:alt" content="An R package for hierarchical nowcasting of right censored epidemiolgical counts">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@seabbs">
@@ -56,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.1000</span>
       </span>
     </div>
 
@@ -119,7 +126,7 @@
 
 <p><a href="https://epiforecasts.r-universe.dev/" class="external-link"><img src="https://epiforecasts.r-universe.dev/badges/epinowcast" alt="Universe"></a> <a href="https://github.com/epiforecasts/epinowcast/blob/master/LICENSE.md/" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a> <a href="https://github.com/epiforecasts/epinowcast/graphs/contributors" class="external-link"><img src="https://img.shields.io/github/contributors/epiforecasts/epinowcast" alt="GitHub contributors"></a></p>
 <p><a href="https://zenodo.org/badge/latestdoi/422611952" class="external-link"><img src="https://zenodo.org/badge/422611952.svg" alt="DOI"></a></p>
-<p>This package contains tools to enable flexible and efficient hierarchical nowcasting of right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects.</p>
+<p>This package contains tools to enable flexible and efficient hierarchical nowcasting of right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. Nowcasting in this context is the estimation of the total notifications (for example hospitalisations or deaths) that will be reported for a given date based on those currently reported and the pattern of reporting for previous days. This can be useful when tracking the spread of infectious disease in real-time as otherwise changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -157,7 +164,8 @@
 <div class="section level3">
 <h3 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h3>
-<p>These data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a> where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.</p>
+<p>Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations and typically this means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in <code>epinowcast</code>). For this quick start these data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a> where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted.</p>
+<p>Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span>
 <span class="va">nat_germany_hosp</span><span class="op">[</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-10-01"</span><span class="op">)</span><span class="op">]</span>
