@@ -4,7 +4,7 @@ description: "A case study exploring heirarchical models of varying complexity t
 author: Sam Abbott
 opengraph:
   image: 
-    src: figures/unnamed-chunk-22-1.png
+    src: figures/performance-1.png
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
@@ -14,7 +14,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "vignettes/figures/",
+  fig.path = "figures/",
   cache = TRUE, cache.path = "cache/", dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
@@ -249,7 +249,7 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 
 ## Variation based on reference date stratified by age
 
-As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary across age groups and time independently. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
+As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
 
 Models with this level of flexibility are not currently supported by `enw_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
 
@@ -284,10 +284,10 @@ effects <- enw_add_pooling_effect(effects, "cweek", "cweek")
 effects <- enw_add_pooling_effect(effects, "age_group", "age_group")
 for (i in  unique(metareference$age_group)) {
   effects <- enw_add_pooling_effect(
-  effects, c(":", i), paste0(i, "_walk"),
-    finder_fn = function(effect, pattern) {
-      grepl(pattern[1], effect) & grepl(pattern[2], effect)
-  })
+    effects, c("cweek", paste0("age_group", i)), paste0( i, "_walk"),
+      finder_fn = function(effect, pattern) {
+        grepl(pattern[1], effect) & startsWith(effect, pattern[2])
+    })
 }
 effects[grepl(":", effects), age_group := 0]
 effects
@@ -296,13 +296,17 @@ effects
 Now we can create the pooling standard deviation design matrix and create the list describing the model.
 
 ```{r}
-random <- enw_design(~ 0 + fixed + cweek + age_group + age_group_walk,
-                     effects, sparse = FALSE)
+form <- as.formula(
+  paste0("~ 0 + fixed + cweek + age_group + ",
+         paste(paste0("`", unique(metareference$age_group), "_walk`"),
+               collapse = " + ")
+))
+random <- enw_design(form, effects, sparse = FALSE)
 random
 custom_reference_effects <- list(fixed = fixed, random = random)
 ```
 
-We can now fit this model as before (note that this model is quite complex and so may take some time to fit).
+We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.95 here to mitigate divergent transitions).
 
 ```{r}
 options(mc.cores = 2)
@@ -314,6 +318,7 @@ age_week_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  adapt_delta = 0.95,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -376,7 +381,7 @@ independent_nowcast <- map(
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly thge 35-59 year old age group is being captured at least as well as in the heirarchical models without obviously reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
@@ -395,7 +400,7 @@ If interested in expanding the functionality of the underlying model to address 
 
 # Evaluation
 
-As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous however we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
+As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous but we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
 
 We first list all models and give them informative names,
 
@@ -403,9 +408,9 @@ We first list all models and give them informative names,
 nowcasts <- list(
   "Reference: Fixed, Report: Fixed" = nowcast,
   "Reference: Fixed, Report: Day of week" = dow_nowcast,
-  "Reference: Age group, Report: Day of week" = age_nowcast,
-  "Reference: Age group and week, Report: Day of week" = week_nowcast,
-  "Reference: Age group and week by age, Report: Day of week" = age_week_nowcast
+  "Reference: Age, Report: Day of week" = age_nowcast,
+  "Reference: Age and week, Report: Day of week" = week_nowcast,
+  "Reference: Age and week by age, Report: Day of week" = age_week_nowcast
 )
 ```
 
@@ -416,22 +421,22 @@ summarised_nowcasts <- map(
   nowcasts, summary,
   probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
 )
-summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- 
-  independent_nowcast
+summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- independent_nowcast # nolint
 
 summarised_nowcasts <- rbindlist(summarised_nowcasts, idcol = "model",
                                  use.names = TRUE)
 summarised_nowcasts[, `:=`(
   model = factor(
-    model, levels = c("Reference: Fixed, Report: Fixed",
-                      "Reference: Fixed, Report: Day of week",
-                      "Reference: Age group, Report: Day of week",
-                      "Reference: Age group and week, Report: Day of week",
-                      "Reference: Age group and week by age, Report: Day of week", # nolint
-                      "Independent by age, Reference: Week, Report: Day of week")), # nolint
+    model,
+    levels = c("Reference: Fixed, Report: Fixed",
+               "Reference: Fixed, Report: Day of week",
+               "Reference: Age, Report: Day of week",
+               "Reference: Age and week, Report: Day of week",
+               "Reference: Age and week by age, Report: Day of week",
+               "Independent by age, Reference: Week, Report: Day of week")),
   age_group = factor(
-    age_group, levels = c("00+", "00-04", "05-14", "15-34", "35-59", "60-79",
-                          "80+"))
+    age_group,
+    levels = c("00+", "00-04", "05-14", "15-34", "35-59", "60-79", "80+"))
 )]
 ```
 
@@ -443,7 +448,7 @@ enw_plot_nowcast_quantiles(
   facet_grid(vars(age_group), vars(model), scales = "free_y")
 ```
 
-As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the `loo` package though note this is not typically appropriate for time series data, the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required (see the warnings below).
+As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the `loo` package though note this is not typically appropriate for time series data, the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required.
 
 ```{r}
 loos <- map(nowcasts, ~ .$fit[[1]]$loo())
@@ -454,7 +459,7 @@ We see that the most model which includes day of the week effects for the date o
 
 More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::eval_forecasts()`. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
 
-As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only the model that includes day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
+As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
 
 ```{r}
 overall_score <- enw_score_nowcast(
@@ -487,9 +492,9 @@ date_score <- enw_score_nowcast(
 kable(date_score)
 ```
 
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models.
+Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treates age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
-```{r, fig.width = 9, fig.height = 9}
+```{r performance, fig.width = 9, fig.height = 9}
 score <- enw_score_nowcast(
  summarised_nowcasts,
  latest_nat_germany[reference_date > (max(reference_date) - 7)]
@@ -522,4 +527,4 @@ In this vignette we showcased using `epinowcast` to nowcast age stratified COVID
 
 Using the limited information available to us (as we have only nowcast a single date and used performance for this date to motivate new models) it appears that all models performed acceptably and that, aside from the last data point, models with age and day of the week effects likely performed better. It is also fairly clear that performance degrades as the amount of reported data is reduced which intuitively makes sense with performance being particularly sensitive the first day reported data is available (i.e "now"). Our apparent finding that delays evolve fairly independently across age groups motivates choosing a model that is very flexible to this, at least for the date of reference model. 
 
-Despite the independent model and the fixed effect model both doing well overall, for most applications if choosing a model based on this evaluation, I would likely select a relatively flexible model (with day of the week, age group, and age stratified weekly variation) and rely on the hierarchical structure to limit overfitting. However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling section of this vignette).
+Despite the independent model and the fixed effect model both doing well overall, for most applications if choosing a model based on this evaluation, I would likely select a relatively flexible model (with day of the week, age group, and age stratified weekly variation) relying on the hierarchical structure to limit overfitting, and excepting a small reduction in performance in some edge cases (with the hope that these are edge cases and not a common feature of the data). However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling section of this vignette). Note that with the proper scoring approach taken here to understand model performance (and commonly used in the literature) we are ranking models based on absolute errors and so groups with high counts (such as the 35-59 age group) are more important to nowcast correctly than groups with smaller counts (such as those aged 80+). 
