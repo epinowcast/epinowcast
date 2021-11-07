@@ -91,6 +91,9 @@
     <loc>epiforecasts.io/epinowcast/reference/enw_new_reports.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_nowcast_samples.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_nowcast_summary.html</loc>
   </url>
   <url>
@@ -155,6 +158,9 @@
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/enw_simulate_lnorm_trunc_obs.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/enw_summarise_samples.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/reference/epinowcast.html</loc>

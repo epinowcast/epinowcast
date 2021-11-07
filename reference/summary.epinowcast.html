@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.1000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.2000</span>
       </span>
     </div>
 
@@ -98,7 +98,8 @@
 <dt>type</dt>
 <dd><p>A character string indicating the type of summary to return.
 Currently supported options are "nowcast" which summaries the nowcast
-posterior using <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>,  "fit" which returns the
+posterior using <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>, "nowcast_samples" which returns
+posterior samples from the most recent nowcast, "fit" which returns the
 summarised <code>cmdstanr</code> fit using <code><a href="enw_posterior.html">enw_posterior()</a></code>, and
 "posterior_prediction" which returns summarised posterior predictions for
 observations used in fitting (using <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>).</p></dd>
@@ -107,7 +108,7 @@ observations used in fitting (using <code><a href="enw_pp_summary.html">enw_pp_s
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code>ggplot2</code> object</p>
+    <p>A summary data.frame</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
