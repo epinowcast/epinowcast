@@ -143,6 +143,7 @@ enw_nowcast_samples <- function(fit, obs) {
 #' @inheritParams enw_nowcast_summary
 #' @importFrom posterior mad
 #' @importFrom purrr reduce
+#' @export
 #' @family postprocess
 enw_summarise_samples <- function(samples, probs = c(
                                     0.05, 0.2, 0.35, 0.5,

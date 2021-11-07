@@ -74,21 +74,21 @@ library(ggplot2)
 
 Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations and typically this means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in `epinowcast`). For this quick start these data are sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence) where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted. 
 
-Below we first filter for a snapshot of retrospective data available 30 days before the 1st of October that contains 30 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.
+Below we first filter for a snapshot of retrospective data available 40 days before the 1st of October that contains 40 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.
 
 ```{r}
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
-nat_germany_hosp[report_date <= as.Date("2021-10-01")]
+nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
 
 retro_nat_germany <- enw_retrospective_data(
   nat_germany_hosp,
-  rep_days = 30, ref_days = 30
+  rep_days = 40, ref_days = 40
 )
 retro_nat_germany
 ```
 
 ```{r}
-latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(60, 30))
+latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
 latest_germany_hosp
 ```
 
@@ -97,7 +97,7 @@ latest_germany_hosp
 Process reported data into format required for `epinowcast` and return in a `data.table`. At this stage specify grouping (i.e age, location) if any. It can be useful to check this output before beginning to model to make sure everything is as expected.
 
 ```{r}
-pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
+pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 ```
 
@@ -109,6 +109,7 @@ reference_effects
 ```
 
 Construct a model with a random effect for the day of report using the metadata produced by `enw_preprocess_data()`.
+
 ```{r}
 report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
 report_effects
@@ -117,6 +118,7 @@ report_effects
 ### Model fitting
 
 First compile the model. This step can be left to `epinowcast` but here we want to use multiple cores per chain to speed up model fitting and so need to compile the model with this feature turned on.
+
 ```{r}
 model <- enw_model(threads = TRUE)
 ```
@@ -146,7 +148,7 @@ nowcast
 Summarise the nowcast for the latest snapshot of data.
 
 ```{r}
-summary(nowcast, probs = c(0.05, 0.95))
+head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
 ```
 
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
@@ -161,6 +163,27 @@ report as a check of how well the model reproduces the observed data.
 ```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
 plot(nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
+```
+
+Rather than using the methods supplied for `epinowcast` directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.
+
+```{r week_nowcast}
+# extract samples
+samples <- summary(nowcast, type = "nowcast_samples")
+
+# Take a 7 day rolling sum of both samples and observations
+cols <- c("confirm", "sample")
+samples[, (cols) := lapply(.SD, frollsum, n =  7),
+          .SDcols = cols, by = ".draw"][!is.na(sample)]
+latest_germany_hosp_7day <- copy(latest_germany_hosp)[,
+  confirm := frollsum(confirm, n =  7)
+][!is.na(confirm)]
+
+# Summarise samples
+sum_across_last_7_days <- enw_summarise_samples(samples)
+
+# Plot samples
+enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 ```
 
 ## Citation
