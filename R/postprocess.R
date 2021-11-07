@@ -92,6 +92,46 @@ enw_nowcast_summary <- function(fit, obs,
 }
 
 #' @title FUNCTION_TITLE
+#'
+#' @description FUNCTION_DESCRIPTION
+#'
+#' @return OUTPUT_DESCRIPTION
+#'
+#' @inheritParams enw_nowcast_summary
+#' @family postprocess
+#' @export
+#' @importFrom data.table as.data.table copy setorderv
+enw_nowcast_samples <- function(fit, obs) {
+  nowcast <- fit$draws(
+    variables = "pp_inf_obs",
+    format = "draws_df"
+  )
+  nowcast <- data.table::setDT(nowcast)
+  nowcast <- melt(
+    nowcast,
+    value.name = "sample", variable.name = "variable",
+    id.vars = c(".chain", ".iteration", ".draw")
+  )
+  max_delay <- nrow(nowcast) / (max(obs$group) * max(nowcast$.draw))
+
+  ord_obs <- data.table::copy(obs)
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  data.table::setorderv(ord_obs, c("group", "reference_date"))
+  ord_obs <- data.table::data.table(
+    .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
+  )
+  ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
+  ord_obs <- ord_obs[order(group, reference_date)]
+  nowcast <- cbind(
+    ord_obs,
+    nowcast
+  )
+  data.table::setorderv(nowcast, c("group", "reference_date"))
+  nowcast[, variable := NULL][, .draws := NULL]
+  return(nowcast[])
+}
+
+#' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param nowcast PARAM_DESCRIPTION
 #' @param obs PARAM_DESCRIPTION

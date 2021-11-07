@@ -11,7 +11,8 @@
 
 \item{type}{A character string indicating the type of summary to return.
 Currently supported options are "nowcast" which summaries the nowcast
-posterior using \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}},  "fit" which returns the
+posterior using \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}}, "nowcast_samples" which returns
+posterior samples from the most recent nowcast, "fit" which returns the
 summarised \code{cmdstanr} fit using \code{\link[=enw_posterior]{enw_posterior()}}, and
 "posterior_prediction" which returns summarised posterior predictions for
 observations used in fitting (using \code{\link[=enw_pp_summary]{enw_pp_summary()}}).}
@@ -19,7 +20,7 @@ observations used in fitting (using \code{\link[=enw_pp_summary]{enw_pp_summary(
 \item{...}{Pass additional arguments to summary functions.}
 }
 \value{
-\code{ggplot2} object
+A summary data.frame
 }
 \description{
 \code{summary} method for class "epinowcast".
