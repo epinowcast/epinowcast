@@ -131,6 +131,51 @@ enw_nowcast_samples <- function(fit, obs) {
   return(nowcast[])
 }
 
+#' FUNCTION_TITLE
+#'
+#' FUNCTION_DESCRIPTION
+#'
+#' @param samples DESCRIPTION.
+#'
+#' @param by DESCRIPTION
+#'
+#' @return RETURN_DESCRIPTION
+#' @inheritParams enw_nowcast_summary
+#' @importFrom posterior mad
+#' @importFrom purrr reduce
+#' @family postprocess
+enw_summarise_samples <- function(samples, probs = c(
+                                    0.05, 0.2, 0.35, 0.5,
+                                    0.65, 0.8, 0.95
+                                  ),
+                                  by = c("reference_date", "group")) {
+  obs <- samples[.draw == 1]
+  obs[, c(".draw", ".iteration", "sample", ".chain") := NULL]
+
+  summary <- samples[,
+    .(
+      mean = mean(sample),
+      median = median(sample),
+      sd = sd(sample),
+      mad = posterior::mad(sample)
+    ),
+    by = by
+  ]
+
+  quantiles <- unique(samples[, c(..by, "sample")][,
+    paste0("q", probs * 100) := as.list(
+      quantile(sample, probs, na.rm = TRUE)
+    ),
+    by = by
+  ])
+
+  summary <- purrr::reduce(
+    list(obs, summary, quantiles), merge,
+    by = by
+  )
+  return(summary[])
+}
+
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param nowcast PARAM_DESCRIPTION

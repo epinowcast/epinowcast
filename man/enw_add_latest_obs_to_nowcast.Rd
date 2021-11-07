@@ -23,6 +23,7 @@ Functions used for postprocessing of model fits
 \code{\link{enw_nowcast_summary}()},
 \code{\link{enw_posterior}()},
 \code{\link{enw_pp_summary}()},
-\code{\link{enw_quantiles_to_long}()}
+\code{\link{enw_quantiles_to_long}()},
+\code{\link{enw_summarise_samples}()}
 }
 \concept{postprocess}
