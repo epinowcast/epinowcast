@@ -16,7 +16,7 @@
 // @param rep_lh A vector of logit hazards (i.e conditional probabilities) 
 // for day of report effects
 // 
-// @param ref_as_p Logical (0/1), should the reference date input be treated as 
+// @param ref_as_p Logical (0/1), should the reference date input be treatsd as 
 // a probability. Useful when no report date effects are present.
 // @return A vector of expected observations for a given date by date of report
 // 
