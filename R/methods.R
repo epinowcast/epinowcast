@@ -6,7 +6,8 @@
 #'
 #' @param type A character string indicating the type of summary to return.
 #' Currently supported options are "nowcast" which summaries the nowcast
-#' posterior using [enw_nowcast_summary()],  "fit" which returns the
+#' posterior using [enw_nowcast_summary()], "nowcast_samples" which returns
+#' posterior samples from the most recent nowcast, "fit" which returns the
 #' summarised `cmdstanr` fit using [enw_posterior()], and
 #' "posterior_prediction" which returns summarised posterior predictions for
 #' observations used in fitting (using [enw_pp_summary()]).
@@ -16,16 +17,18 @@
 #' @family epinowcast
 #' @seealso summary epinowcast
 #' @method summary epinowcast
-#' @return `ggplot2` object
+#' @return A summary data.frame
 #' @export
 summary.epinowcast <- function(object, type = "nowcast", ...) {
   type <- match.arg(
     type,
-    choices = c("nowcast", "fit", "posterior_prediction")
+    choices = c("nowcast", "nowcast_samples", "fit", "posterior_prediction")
   )
 
   if (type %in% "nowcast") {
     s <- enw_nowcast_summary(object$fit[[1]], object$latest[[1]], ...)
+  } else if (type %in% "nowcast_samples") {
+    s <- enw_nowcast_samples(object$fit[[1]], object$latest[[1]], ...)
   } else if (type %in% "fit") {
     s <- enw_posterior(object$fit[[1]], ...)
   } else if (type %in% "posterior_prediction") {

@@ -333,7 +333,7 @@ plot(age_week_nowcast, latest_obs = latest_nat_germany) +
 
 ## Independent models  for each age group.
 
-The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the occurance date stratified by age) to each age group independently.
+The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the occurrence date stratified by age) to each age group independently.
 
 We could define this model with a single call to `epinowcast` but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.
 
@@ -363,7 +363,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
 }
 ```
 
-We can now use this wrapper function on the data available for each age group, sumarise the resulting nowcast, and then join these into a single data frame.
+We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data frame.
 
 ```{r}
 options(mc.cores = 2)
@@ -455,7 +455,7 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 ```
 
-We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these esimates was wide.
+We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
 
 More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::eval_forecasts()`. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
 
@@ -492,7 +492,7 @@ date_score <- enw_score_nowcast(
 kable(date_score)
 ```
 
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treates age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treatss age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
 ```{r performance, fig.width = 9, fig.height = 9}
 score <- enw_score_nowcast(
