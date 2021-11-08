@@ -42,8 +42,7 @@ enw_posterior <- function(fit, variables = NULL,
       ...
     ),
     fit$summary(
-      variables = variables, posterior::default_convergence_measures(),
-      .args = list(na.rm = TRUE), ...
+      variables = variables, posterior::default_convergence_measures(), ...
     )
   )
   cbind_custom <- function(x, y) {
