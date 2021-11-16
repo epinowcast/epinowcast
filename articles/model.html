@@ -148,17 +148,17 @@
 <h1 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
 </h1>
 <p>Again following the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> we define the delay distribution (<span class="math inline">\(p_{gtd}\)</span>) as a discrete time hazard model (<span class="math inline">\(h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)\)</span>) but we extend this model to decompose <span class="math inline">\(W_{gtd}\)</span> into 3 components: hazard derived from a parametric delay distribution (<span class="math inline">\(\gamma_{gtd}\)</span>) dependent on covariates at the date of occurrence, hazard not derived from a parametric distribution (<span class="math inline">\(\delta_{gtd}\)</span>) dependent on covariates at the date of occurrence, and hazard dependent on covariates referenced to the date of report (<span class="math inline">\(\epsilon_{gtd}\)</span>).</p>
-<p>For first component (<span class="math inline">\(\gamma_{gtd}\)</span>) we assume that the probability of reporting <span class="math inline">\(p^{\prime}_{gtd}\)</span> given parametric effects on the reference day only follow a parametric distribution (in the baseline case a discretised log normal distribution) with the log mean and log standard deviation being defined using an intercept and arbitrary shared covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients,</p>
+<p>For first component (<span class="math inline">\(\gamma_{gtd}\)</span>) we assume that the probability of reporting <span class="math inline">\(p^{\prime}_{gtd}\)</span> on a given date given follow a parametric distribution (in the baseline case a discretised log normal distribution) with the log mean and log standard deviation being defined using an intercept and arbitrary shared, reference date indexed, covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients,</p>
 <p><span class="math display">\[\begin{align}
   p^{\prime}_{gtd} &amp;\sim \text{LogNormal} \left(\mu_{gt}, \upsilon_{gt} \right) \\
   \mu_{gt} &amp;= \mu_0 + \alpha_{\mu} X_{\gamma} + \beta_{\mu} Z_{\gamma} \\
   \upsilon_{gt} &amp;= \text{exp} \left( \upsilon_0 + \alpha_{\upsilon} X_{\gamma} + \beta_{\upsilon} Z_{\gamma} \right)
 \end{align}\]</span></p>
-<p>The parametric logit hazard for this component of the model is then,</p>
+<p>The parametric logit hazard (probability of report on a given date conditional on not already having reported) for this component of the model is then,</p>
 <p><span class="math display">\[\begin{equation}
-  \gamma_{gtd} = \text{logit} \left(\frac{p^{\prime}_{gtd}}{\left(1 -\sum^{d-1}_{d=0} p^{\prime}_{gtd} \right)} \right)
+  \gamma_{gtd} = \text{logit} \left(\frac{p^{\prime}_{gtd}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{gtd^{\prime}} \right)} \right)
 \end{equation}\]</span></p>
-<p>The non-distributional components for the date of occurrence and report are then again defined using an intercept and arbitrary shared covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients.</p>
+<p>The non-distributional logit hazarad components for the date of occurrence and report are then again defined using an intercept and arbitrary shared covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients.</p>
 <p><span class="math display">\[\begin{align}
   \delta_{gtd} &amp;= \mu_0 + \alpha_{\delta} X_{\delta} + \beta_{\delta} Z_{\delta} \\
   \epsilon_{gtd} &amp;= \epsilon_0 + \alpha_{\epsilon} X_{\epsilon} + \beta_{\epsilon} Z_{\epsilon}
@@ -167,9 +167,9 @@
 <p><span class="math display">\[\begin{equation}
   \text{logit} (h_{gtd}) = \gamma_{gtd} + \delta_{gtd} +  \upsilon_{gtd},\ h_{gtD} = 1
 \end{equation}\]</span></p>
-<p>and so the probability of report for a given delay, occurrence date, and group is as follows.</p>
+<p>where the hazard on the final day has been assumed to be 1 in order to enforce the constraint that all reported observations are reported within the specified maximum delay. The probability of report for a given delay, occurrence date, and group is then as follows,</p>
 <p><span class="math display">\[\begin{equation}
-  p_{gt0} = h_{gt0},\ p_{gtd} = \left(1 -\sum^{d-1}_{d=0} p_{gtd} \right) \times h_{gtd}
+  p_{gt0} = h_{gt0},\ p_{gtd} = \left(1 -\sum^{d-1}_{d^{\prime}=0} p_{gtd^{\prime}} \right) \times h_{gtd}
 \end{equation}\]</span></p>
 <p>All (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.</p>
 </div>
