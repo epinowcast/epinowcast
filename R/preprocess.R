@@ -33,7 +33,7 @@ enw_add_metaobs_features <- function(metaobs, holidays_to = "Sunday") {
 
   # make holidays be sundays
   if (!is.null(metaobs$holiday)) {
-    metaobs[holidays == TRUE, day_of_week := holidays_to]
+    metaobs[holiday == TRUE, day_of_week := holidays_to]
   }
 
   # make day of week a factor
