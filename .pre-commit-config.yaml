@@ -2,7 +2,7 @@
 # R specific hooks: https://github.com/lorenzwalthert/precommit
 repos:
 -   repo: https://github.com/lorenzwalthert/precommit
-    rev: v0.1.3.9133
+    rev: v0.1.3.9135+renv-concurrency2
     hooks: 
     -   id: style-files
         args: [--style_pkg=styler, --style_fun=tidyverse_style]    
@@ -19,9 +19,9 @@ repos:
     hooks: 
     -   id: check-added-large-files
         args: ['--maxkb=200']
-        exclude: 'data/germany_covid19_hosp.rda'
-        exclude: 'vignettes/figures/simple_pp-1.png'
-        exclude: 'vignettes/figures/performance-1.png'
+        exclude: 'data/germany_covid19_hosp.rda| 
+                  vignettes/figures/simple_pp-1.png|,
+                  vignettes/figures/performance-1.png'
     -   id: end-of-file-fixer
         exclude: '\.Rd'
 -   repo: local
