@@ -4,9 +4,15 @@
 \alias{enw_model}
 \title{Load and compile the nowcasting model}
 \usage{
-enw_model(compile = TRUE, threads = FALSE, verbose = TRUE, ...)
+enw_model(model, include, compile = TRUE, threads = FALSE, verbose = TRUE, ...)
 }
 \arguments{
+\item{model}{A character string indicating the path to the model.
+If not supplied the package default model is used.}
+
+\item{include}{A character string specifying the path to any stan
+files to include in the model. If missing the package default is used.}
+
 \item{compile}{Logical, defaults to \code{TRUE}. Should the model
 be loaded and compiled using \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 

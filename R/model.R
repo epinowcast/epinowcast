@@ -212,6 +212,11 @@ enw_inits <- function(data) {
 
 #' Load and compile the nowcasting model
 #'
+#' @param model A character string indicating the path to the model.
+#' If not supplied the package default model is used.
+#'
+#' @param include A character string specifying the path to any stan
+#' files to include in the model. If missing the package default is used.
 #' @param compile Logical, defaults to `TRUE`. Should the model
 #' be loaded and compiled using [cmdstanr::cmdstan_model()].
 #'
@@ -231,11 +236,16 @@ enw_inits <- function(data) {
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(compile = TRUE, threads = FALSE, verbose = TRUE, ...) {
-  model <- "stan/epinowcast.stan"
+enw_model <- function(model, include,
+                      compile = TRUE, threads = FALSE, verbose = TRUE, ...) {
+  if (missing(model)) {
+    model <- "stan/epinowcast.stan"
+    model <- system.file(model, package = "epinowcast")
+  }
+  if (missing(include)) {
+    include <- system.file("stan", package = "epinowcast")
+  }
 
-  model <- system.file(model, package = "epinowcast")
-  include <- system.file("stan", package = "epinowcast")
   if (compile) {
     if (verbose) {
       model <- cmdstanr::cmdstan_model(model,
