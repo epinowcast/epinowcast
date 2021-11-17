@@ -20,19 +20,20 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param metaobs PARAM_DESCRIPTION
-#' @param holidays PARAM_DESCRIPTION, Default: c()
+#' @param holidays_to A character string to assign to holidays when present.
+#' Replaces the day of the week and defaults to Sunday.
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table
-enw_add_metaobs_features <- function(metaobs, holidays = c()) {
+enw_add_metaobs_features <- function(metaobs, holidays_to = "Sunday") {
   # add days of week
   metaobs <- data.table::copy(metaobs)
   metaobs[, day_of_week := weekdays(date)]
 
   # make holidays be sundays
-  if (length(holidays) != 0) {
-    metaobs[date %in% as.Date(holidays), day_of_week := "Sunday"]
+  if (!is.null(metaobs$holiday)) {
+    metaobs[holidays == TRUE, day_of_week := holidays_to]
   }
 
   # make day of week a factor

@@ -20,8 +20,6 @@ enw_preprocess_data(
 
 \item{max_delay}{PARAM_DESCRIPTION, Default: 20}
 
-\item{holidays}{PARAM_DESCRIPTION, Default: c()}
-
 \item{min_report_date}{PARAM_DESCRIPTION}
 
 \item{set_negatives_to_zero}{PARAM_DESCRIPTION, Default: TRUE}

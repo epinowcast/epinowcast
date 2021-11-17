@@ -4,12 +4,13 @@
 \alias{enw_add_metaobs_features}
 \title{FUNCTION_TITLE}
 \usage{
-enw_add_metaobs_features(metaobs, holidays = c())
+enw_add_metaobs_features(metaobs, holidays_to = "Sundays")
 }
 \arguments{
 \item{metaobs}{PARAM_DESCRIPTION}
 
-\item{holidays}{PARAM_DESCRIPTION, Default: c()}
+\item{holidays_to}{A character string to assign to holidays when present.
+Replaces the day of the week and defaults to Sunday.}
 }
 \value{
 OUTPUT_DESCRIPTION
