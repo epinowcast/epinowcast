@@ -8,7 +8,8 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
-  holidays = c(),
+  rep_holidays = c(),
+  ref_holidays = c(),
   min_report_date,
   set_negatives_to_zero = TRUE
 )
@@ -19,6 +20,10 @@ enw_preprocess_data(
 \item{by}{PARAM_DESCRIPTION, Default: c()}
 
 \item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+
+\item{rep_holidays}{DESCRIPTION}
+
+\item{ref_holidays}{DESCRIPTION}
 
 \item{min_report_date}{PARAM_DESCRIPTION}
 

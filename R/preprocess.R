@@ -14,26 +14,29 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   metaobs[, c(date_to_drop, "confirm") := NULL]
   metaobs <- unique(metaobs)
   setnames(metaobs, target_date, "date")
+  metaobs <- metaobs[, .SD[1, ], by = c("date", "group")]
   return(metaobs[])
 }
 
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param metaobs PARAM_DESCRIPTION
+#' @param holidays PARAM_DESCRIPTION
 #' @param holidays_to A character string to assign to holidays when present.
 #' Replaces the day of the week and defaults to Sunday.
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table
-enw_add_metaobs_features <- function(metaobs, holidays_to = "Sunday") {
+enw_add_metaobs_features <- function(metaobs, holidays = c(),
+                                     holidays_to = "Sunday") {
   # add days of week
   metaobs <- data.table::copy(metaobs)
   metaobs[, day_of_week := weekdays(date)]
 
   # make holidays be sundays
-  if (!is.null(metaobs$holiday)) {
-    metaobs[holiday == TRUE, day_of_week := holidays_to]
+  if (length(holidays) != 0) {
+    metaobs[get(holidays) == TRUE, day_of_week := holidays_to]
   }
 
   # make day of week a factor
@@ -234,17 +237,21 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param max_delay PARAM_DESCRIPTION, Default: 20
 #'
+#' @param ref_holidays DESCRIPTION
+#'
+#' @param rep_holidays DESCRIPTION
+#'
 #' @param min_report_date PARAM_DESCRIPTION
 #'
 #' @param set_negatives_to_zero PARAM_DESCRIPTION, Default: TRUE
 #'
 #' @return OUTPUT_DESCRIPTION
 #'
-#' @inheritParams enw_add_metaobs_features
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table data.table
-enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
+enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
+                                rep_holidays = c(), ref_holidays = c(),
                                 min_report_date, set_negatives_to_zero = TRUE) {
   obs <- data.table::as.data.table(obs)
   obs <- obs[order(reference_date)]
@@ -295,11 +302,14 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(obs, target_date = "report_date")
   metareport <- enw_extend_date(metareport, max_delay = max_delay)
-  metareport <- enw_add_metaobs_features(metareport, holidays = holidays)
+  metareport <- enw_add_metaobs_features(metareport, holidays = rep_holidays)
 
   # extract and add features for reference date
   metareference <- enw_metadata(obs, target_date = "reference_date")
-  metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
+  metareference <- enw_add_metaobs_features(
+    metareference,
+    holidays = ref_holidays
+  )
 
   out <- data.table::data.table(
     obs = list(obs),
