@@ -5,6 +5,7 @@
 * Update read me quick start to use 40 days of delay vs 30
 * Add a section to the read me quick start showing an example of handling nowcast samples.
 * Add support for passing custom models and included files to `enw_model()`.
+* Fix a bug where `enw_summarise_samples()` returned duplicate samples.
 
 # epinowcast 0.0.3
 
