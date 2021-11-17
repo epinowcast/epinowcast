@@ -167,7 +167,7 @@ enw_summarise_samples <- function(samples, probs = c(
       quantile(sample, probs, na.rm = TRUE)
     ),
     by = by
-  ])
+  ][, sample := NULL])
 
   summary <- purrr::reduce(
     list(obs, summary, quantiles), merge,
