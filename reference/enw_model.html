@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">epinowcast</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.2000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.0.3.3000</span>
       </span>
     </div>
 
@@ -87,12 +87,18 @@
     <p>Load and compile the nowcasting model</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_model</span><span class="op">(</span>compile <span class="op">=</span> <span class="cn">TRUE</span>, threads <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">include</span>, compile <span class="op">=</span> <span class="cn">TRUE</span>, threads <span class="op">=</span> <span class="cn">FALSE</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
 
     <div id="ref-sections">
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>compile</dt>
+    <dl><dt>model</dt>
+<dd><p>A character string indicating the path to the model.
+If not supplied the package default model is used.</p></dd>
+<dt>include</dt>
+<dd><p>A character string specifying the path to any stan
+files to include in the model. If missing the package default is used.</p></dd>
+<dt>compile</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should the model
 be loaded and compiled using <code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code>.</p></dd>
 <dt>threads</dt>
