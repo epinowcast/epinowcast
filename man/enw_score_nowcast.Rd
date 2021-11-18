@@ -4,12 +4,14 @@
 \alias{enw_score_nowcast}
 \title{FUNCTION_TITLE}
 \usage{
-enw_score_nowcast(nowcast, latest_obs, round_to = 3, ...)
+enw_score_nowcast(nowcast, latest_obs, log = FALSE, round_to = 3, ...)
 }
 \arguments{
 \item{nowcast}{DESCRIPTION.}
 
 \item{latest_obs}{DESCRIPTION.}
+
+\item{log}{DESCRIPTION.}
 
 \item{round_to}{DESCRIPTION}
 

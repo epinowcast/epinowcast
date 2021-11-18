@@ -78,8 +78,6 @@ Below we first filter for a snapshot of retrospective data available 40 days bef
 
 ```{r}
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
-nat_germany_hosp[, holiday := FALSE]
-nat_germany_hosp[report_date == (as.Date("2021-10-01") - 40), holiday := TRUE]
 nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
 
 retro_nat_germany <- enw_retrospective_data(
