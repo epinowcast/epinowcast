@@ -13,6 +13,7 @@
 #' @return RETURN_DESCRIPTION
 #' @family modelvalidation
 #' @importFrom data.table copy setnames
+#' @export
 enw_score_nowcast <- function(nowcast, latest_obs, round_to = 3, ...) {
   if (!requireNamespace("scoringutils")) {
     stop("scoringutils is required for this function to work")

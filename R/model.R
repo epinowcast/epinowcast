@@ -317,7 +317,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
     out <- cbind(out, diagnostics)
 
     timing <- round(fit$time()$total, 1)
-    out[, time := timing]
+    out[, run_time := timing]
   }
   return(out[])
 }
