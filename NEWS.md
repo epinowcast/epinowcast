@@ -6,6 +6,8 @@
 * Add a section to the read me quick start showing an example of handling nowcast samples.
 * Add support for passing custom models and included files to `enw_model()`.
 * Fix a bug where `enw_summarise_samples()` returned duplicate samples.
+* Add support for passing holidays as a variable and then adjusting by converting the holiday day into a custom day of the week (by default Sunday but this is set by the user).
+* Added support for scoring on both the natural and log scale. This represents absolute and relative scoring respectively.
 
 # epinowcast 0.0.3
 
