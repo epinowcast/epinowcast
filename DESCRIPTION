@@ -2,9 +2,7 @@ Package: epinowcast
 Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
 Version: 0.0.3.5000
 Authors@R:
-    person(given = "Sam Abbott",
-           role = c("aut", "cre"),
-           email = "sam.abbott@lshtm.ac.uk",
+    person("Sam Abbott", , , "sam.abbott@lshtm.ac.uk", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8057-8037"))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right censored epidemiological counts using a semi-mechanistic Bayesian
