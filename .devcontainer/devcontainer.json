@@ -1,13 +1,8 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.183.0/containers/r
 {
-	"name": "R (Community)",
-	"build": {
-		"dockerfile": "Dockerfile",
-	        "context": "..",
-		// Update VARIANT to pick a specific R version: latest, ... ,4.0.1 , 4.0.0
-		"args": { "VARIANT": "latest" }
-	},
+	"name": "epinowcast",
+	"image": "ghcr.io/epiforecasts/epinowcast:main",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
