@@ -42,7 +42,8 @@ VignetteBuilder:
 Remotes:
     stan-dev/cmdstanr,
     stan-dev/loo
-Config/Needs/website: r-lib/pkgdown
+Config/Needs/website: 
+    r-lib/pkgdown,
     amirmasoudabdol/preferably
 Config/testthat/edition: 3
 Encoding: UTF-8
