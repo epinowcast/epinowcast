@@ -4,7 +4,7 @@ pkgdown_sha: fed40303a7e825fbfcf74d1b46931b16d2b43c52
 articles:
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
-last_built: 2021-11-25T15:00Z
+last_built: 2021-11-25T15:03Z
 urls:
   reference: epiforecasts.io/epinowcast/reference
   article: epiforecasts.io/epinowcast/articles
