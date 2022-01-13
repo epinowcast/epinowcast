@@ -249,7 +249,7 @@ enw_model <- function(model, include,
   if (compile) {
     if (verbose) {
       model <- cmdstanr::cmdstan_model(model,
-        include_path = include,
+        include_paths = include,
         cpp_options = list(
           stan_threads = threads
         ),
@@ -258,7 +258,7 @@ enw_model <- function(model, include,
     } else {
       suppressMessages(
         model <- cmdstanr::cmdstan_model(model,
-          include_path = include,
+          include_paths = include,
           cpp_options = list(
             stan_threads = threads
           ), ...
