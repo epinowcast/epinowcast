@@ -1,3 +1,8 @@
+# epinowcast 0.0.4.9000
+
+* Convert retrospective data date fields to class of `IDate` when utilising `enw_retrospective_data` to solve esoteric error.
+* Added full argument name for `include_paths` to avoid console chatter
+
 # epinowcast 0.0.4
 
 * Add support for extracting and summarising posterior nowcast samples
