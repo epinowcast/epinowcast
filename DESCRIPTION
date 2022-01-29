@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
-Version: 0.0.4
+Version: 0.0.4.9000
 Authors@R:
   person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -52,4 +52,5 @@ Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.1.2.9000
+SystemRequirements: CmdStan (>=2.28)
