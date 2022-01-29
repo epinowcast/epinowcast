@@ -29,7 +29,8 @@ Imports:
     posterior,
     purrr,
     rstan,
-    scales
+    scales,
+    lme4
 Suggests:
     loo (>= 2.4.1),
     knitr,

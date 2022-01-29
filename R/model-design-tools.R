@@ -219,14 +219,3 @@ enw_formula <- function(metaobs, fixed = c(), random = c(),
   }
   return(list(fixed = fixed, random = random))
 }
-
-
-enw_parse_formula <- function(formula) {
-  # split out into terms based on presence of pluses
-
-  # look for special functions that package supports.
-  # These are random effects (1 | variable) and (variable | variable)
-  # rw(variable, by = "variable")
-  # pass the output of these functions to get fixed and random effects
-  # return fixed and random effects
-}
