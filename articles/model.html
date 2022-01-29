@@ -49,7 +49,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,6 +99,9 @@
     
   </div>
 </nav><div class="container template-article">
+
+
+
 <script src="model_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <main id="main"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Model definition and implementation</h1>
@@ -112,9 +115,9 @@
     
     
 <p>In the following sections we provide methodological and implementation details for the nowcasting framework implemented in <code>epinowcast</code>. Our approach is an extension of that proposed by Günther et al.<span class="citation"><sup>[1]</sup></span> which was itself an extension of the model proposed by Höhle and Heiden<span class="citation"><sup>[2]</sup></span> and implemented in the <code>surveillance</code> R package<span class="citation"><sup>[3]</sup></span>. Compared to the model proposed in Günther et al.<span class="citation"><sup>[1]</sup></span>, <code>epinowcast</code> adds an optional parametric assumption for the underlying delay from occurrence to report, support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an efficient implementation in <code>stan</code> which makes use of sparse design matrices and within chain parallelisation to reduce runtimes.<span class="citation"><sup>[4,5]</sup></span></p>
-<div class="section level1">
-<h1 id="decomposition-into-expected-final-notifications-and-report-delay-components">Decomposition into expected final notifications and report delay components<a class="anchor" aria-label="anchor" href="#decomposition-into-expected-final-notifications-and-report-delay-components"></a>
-</h1>
+<div class="section level2">
+<h2 id="decomposition-into-expected-final-notifications-and-report-delay-components">Decomposition into expected final notifications and report delay components<a class="anchor" aria-label="anchor" href="#decomposition-into-expected-final-notifications-and-report-delay-components"></a>
+</h2>
 <p>We follow the approach of Höhle and Heiden<span class="citation"><sup>[2]</sup></span> and consider the distribution of notifications (<span class="math inline">\(n_{gtd}\)</span>) by time of occurrence (<span class="math inline">\(t\)</span>) and reporting delay (<span class="math inline">\(d\)</span>) conditional on the final observed count <span class="math inline">\(N_{gt}\)</span> for each dataset (<span class="math inline">\(g\)</span>) such that,</p>
 <p><span class="math display">\[\begin{equation}
   N_{gt} = \sum_{d=0}^{D} n_{gtd}
@@ -122,18 +125,18 @@
 <p>where <span class="math inline">\(D\)</span> represents the maximum delay between time of occurrence and time of report which in theory could be infinite but in practice we set to a value in order to make the model identifiable and computationally feasible. This formulation means that <span class="math inline">\(n_{gtd} \mid N_{gt}\)</span> is multinomial with a probability vector (<span class="math inline">\(p_{gtd}\)</span>) of length <span class="math inline">\(D\)</span> for each <span class="math inline">\(t\)</span> and <span class="math inline">\(g\)</span> that needs to be estimated at the same time as estimating the expected number of final notifications <span class="math inline">\(\mathbb{E}[N_{gt}] = \lambda_{gt}\)</span>.</p>
 <p>An alternative approach, not explored here, is to consider each <span class="math inline">\(n_{gtd}\)</span> independently at which point the model can be defined as a standard regression with the appropriate observation model and adjustment for reporting delay (i.e it becomes a Poisson or Negative Binomial regression)<span class="citation"><sup>[6]</sup></span>. An implementation of this approach is available in Bastos et al.<span class="citation"><sup>[6]</sup></span>. More work needs to be done to evaluate which of these approaches produces more accurate nowcasts for epidemiological count data.</p>
 </div>
-<div class="section level1">
-<h1 id="expected-final-notifications">Expected final notifications<a class="anchor" aria-label="anchor" href="#expected-final-notifications"></a>
-</h1>
+<div class="section level2">
+<h2 id="expected-final-notifications">Expected final notifications<a class="anchor" aria-label="anchor" href="#expected-final-notifications"></a>
+</h2>
 <p>Here we follow the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.</p>
 <p><span class="math display">\[\begin{align}
   \log (\lambda_{gt}) &amp;\sim \text{Normal}\left(\log (\lambda_{gt-1}) , \sigma^{\lambda}_{g} \right) \\
   \log (\lambda_{g0}) &amp;\sim \text{Normal}\left(\log (N_{g0}), 1 \right) \\ \sigma^{\lambda}_{g} &amp;\sim \text{Half-Normal}\left(0, 1\right)
 \end{align}\]</span></p>
 </div>
-<div class="section level1">
-<h1 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
-</h1>
+<div class="section level2">
+<h2 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
+</h2>
 <p>Again following the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> we define the delay distribution (<span class="math inline">\(p_{gtd}\)</span>) as a discrete time hazard model (<span class="math inline">\(h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)\)</span>) but we extend this model to decompose <span class="math inline">\(W_{gtd}\)</span> into 3 components: hazard derived from a parametric delay distribution (<span class="math inline">\(\gamma_{gtd}\)</span>) dependent on covariates at the date of occurrence, hazard not derived from a parametric distribution (<span class="math inline">\(\delta_{gtd}\)</span>) dependent on covariates at the date of occurrence, and hazard dependent on covariates referenced to the date of report (<span class="math inline">\(\epsilon_{gtd}\)</span>).</p>
 <p>For first component (<span class="math inline">\(\gamma_{gtd}\)</span>) we assume that the probability of reporting <span class="math inline">\(p^{\prime}_{gtd}\)</span> on a given date given follow a parametric distribution (in the baseline case a discretised log normal distribution) with the log mean and log standard deviation being defined using an intercept and arbitrary shared, reference date indexed, covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients,</p>
 <p><span class="math display">\[\begin{align}
@@ -160,9 +163,9 @@
 \end{equation}\]</span></p>
 <p>All (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.</p>
 </div>
-<div class="section level1">
-<h1 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
-</h1>
+<div class="section level2">
+<h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
+</h2>
 <p>Expected notifications by time of occurrence (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{gtd}\)</span>). We then assume a negative binomial observation model with a joint overdispersion parameter (with a 1 over square root standard half normal prior) and produce a nowcast of final observed notifications at each occurrence time by summing posterior estimates for each observed notification for that occurrence time.</p>
 <p><span class="math display">\[\begin{align}
   n_{gtd} \mid \lambda_{gt},p_{gtd}  &amp;\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
@@ -170,14 +173,14 @@
   N_{gt} &amp;= \sum_{d=0}^{D} n_{gtd}
 \end{align}\]</span></p>
 </div>
-<div class="section level1">
-<h1 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
-</h1>
+<div class="section level2">
+<h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
+</h2>
 <p>The model is implemented in <code>stan</code> using <code>cmdstanr</code> with no defaults altered<span class="citation"><sup>[4,5]</sup></span>. Optional within chain parallelisation is available across dates of occurrence to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[7]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[8]</sup></span>. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
 </div>
-<div class="section level1 unnumbered">
-<h1 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h1>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references">
 <div id="ref-gunther2021">
 <p>1. Günther, F., Bender, A., Katz, K., Küchenhoff, H., &amp; Höhle, M. (2021). Nowcasting the COVID-19 pandemic in Bavaria. <em>Biometrical Journal</em>, <em>63</em>(3), 490–502. <a href="https://doi.org/10.1002/bimj.202000112" class="external-link">https://doi.org/10.1002/bimj.202000112</a></p>
@@ -205,7 +208,8 @@
 </div>
 </div>
 </div>
-  </main>
+  </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
@@ -217,7 +221,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
