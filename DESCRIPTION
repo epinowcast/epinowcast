@@ -2,10 +2,15 @@ Package: epinowcast
 Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
 Version: 0.0.4.9000
 Authors@R:
-  person(given = "Sam Abbott",
+  c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
            email = "sam.abbott@lshtm.ac.uk",
-           comment = c(ORCID = "0000-0001-8057-8037"))
+           comment = c(ORCID = "0000-0001-8057-8037")),
+    person(given = "Michael",
+             family = "DeWitt",
+             role = "ctb",
+             email = "me.dewitt.jr@gmail.com",
+             comment = c(ORCID = "0000-0001-8940-1967")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right censored epidemiological counts using a semi-mechanistic Bayesian
     method with support for both day of reference and day of report effects. 
