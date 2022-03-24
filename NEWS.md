@@ -1,7 +1,8 @@
-# epinowcast 0.0.4.9000
+# epinowcast 0.0.4.10000
 
 * Convert retrospective data date fields to class of `IDate` when utilising `enw_retrospective_data` to solve esoteric error.
 * Added full argument name for `include_paths` to avoid console chatter
+* Adds a `stanc_options` argument to `enw_model()` and specifies a new default of `list("01")` which enables simple pre-compilation optimisations. See [here](https://blog.mc-stan.org/2022/02/15/release-of-cmdstan-2-29/) of these optimisatiosn for details.
 
 # epinowcast 0.0.4
 
