@@ -229,8 +229,9 @@ enw_inits <- function(data) {
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
 #'
-#' @param stanc_options A list of options to pass to the `stanc_options` of [cmdstanr::cmdstan_model()]
-#' by default "01" is passed which specifies simple optimisations should be done by the prior to compilation
+#' @param stanc_options A list of options to pass to the `stanc_options` of
+#' [cmdstanr::cmdstan_model()] by default "01" is passed which specifies simple
+#' optimisations should be done by the prior to compilation
 #'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
@@ -242,7 +243,8 @@ enw_inits <- function(data) {
 #' @examplesIf interactive()
 #' mod <- enw_model()
 enw_model <- function(model, include,
-                      compile = TRUE, threads = FALSE, stanc_options = list("O1"), verbose = TRUE, ...) {
+                      compile = TRUE, threads = FALSE,
+                      stanc_options = list("O1"), verbose = TRUE, ...) {
   if (missing(model)) {
     model <- "stan/epinowcast.stan"
     model <- system.file(model, package = "epinowcast")

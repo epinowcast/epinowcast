@@ -125,8 +125,9 @@ transformed parameters{
 model {
   // priors for unobserved expected reported cases
   leobs_init ~ normal(eobs_init, 1);
+  eobs_lsd ~ normal(eobs_lsd_p[1], eobs_lsd_p[2]);
+  target += -normal_lccdf(0 | eobs_lsd_p[1], eobs_lsd_p[2]);
   for (i in 1:g) {
-    eobs_lsd[i] ~ normal(eobs_lsd_p[1], eobs_lsd_p[2]) T[0,];
     leobs_resids[i] ~ std_normal();
   }
   // priors for the intercept of the log normal truncation distribution
@@ -137,19 +138,18 @@ model {
     logmean_eff ~ std_normal();
     logsd_eff ~ std_normal();
     if (neff_sds) {
-      for (i in 1:neff_sds) {
-        logmean_sd[i] ~ normal(logmean_sd_p[1], logmean_sd_p[2]) T[0,];
-        logsd_sd[i] ~ normal(logsd_sd_p[1], logsd_sd_p[2]) T[0,];
-      }
+      logmean_sd ~ normal(logmean_sd_p[1], logmean_sd_p[2]);
+      target += -normal_lccdf(0 | logmean_sd_p[1], logmean_sd_p[2]);
+      logsd_sd ~ normal(logsd_sd_p[1], logsd_sd_p[2]);
+      target += -normal_lccdf(0 | logsd_sd_p[1], logsd_sd_p[2]);
     }
   }
   // priors and scaling for date of report effects
   if (nrd_effs) {
     rd_eff ~ std_normal();
     if (nrd_eff_sds) {
-      for (i in 1:nrd_eff_sds) {
-        rd_eff_sd[i] ~ normal(rd_eff_sd_p[1], rd_eff_sd_p[2]) T[0,];
-      }
+      rd_eff_sd ~ normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
+      target += -normal_lccdf(0 | rd_eff_sd_p[1], rd_eff_sd_p[2]);
     }
   }
   // reporting overdispersion (1/sqrt)
