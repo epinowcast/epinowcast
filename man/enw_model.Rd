@@ -29,8 +29,9 @@ support for multi-thread support in chain. Note that this requires the use of
 the \code{threads_per_chain} argument when model fitting using \code{\link[=enw_sample]{enw_sample()}},
 and \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{stanc_options}{A list of options to pass to the \code{stanc_options} of \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}
-by default "01" is passed which specifies simple optimisations should be done by the prior to compilation}
+\item{stanc_options}{A list of options to pass to the \code{stanc_options} of
+\code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}} by default "01" is passed which specifies simple
+optimisations should be done by the prior to compilation}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}
