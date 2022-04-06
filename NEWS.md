@@ -1,4 +1,8 @@
-# epinowcast 0.0.4.10000
+# epinowcast 0.0.6
+
+* Fully vectorise the likelihood by flattening observatons and pre-specify expected observations into a vector before calculating the log likelihood.
+
+# epinowcast 0.0.5
 
 * Convert retrospective data date fields to class of `IDate` when utilising `enw_retrospective_data` to solve esoteric error.
 * Added full argument name for `include_paths` to avoid console chatter

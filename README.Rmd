@@ -132,8 +132,7 @@ nowcast <- epinowcast(pobs,
   report_effects = report_effects,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 2,
-  show_messages = FALSE, refresh = 0
+  chains = 2, threads_per_chain = 2
 )
 ```
 
