@@ -8,16 +8,19 @@ functions {
 
 data {
   // Indexes and lookups
+  int n; // total observations
   int t; // time range over which data is available 
   int s; // number of snapshots there are
   int g; // number of data groups
   int st[s]; // when in this time snapshots are from
   int ts[t, g]; // snapshot related  to time and group
   int sl[s]; // how many days of reported data does each snapshot have
+  int csl[s]; // cumulative version of the above
   int sg[s]; // how snapshots are related
   int dmax; // maximum possible report date
   // Observations
   int obs[s, dmax]; // obs for each primary date (row) and report date (column)
+  int flat_obs[n]; // obs stored as a flat vector
   int latest_obs[t, g]; // latest obs for each snapshot group
   // Reference day model
   int npmfs; // how many unique pmfs there are
@@ -156,8 +159,8 @@ model {
   sqrt_phi ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
   // log density: observed vs model
   if (likelihood) {
-    target += reduce_sum(obs_lupmf, st, 1, obs, sl, imp_obs, sg, st, rdlurd,
-                         srdlh, ref_lh, dpmfs, ref_p, phi);
+    target += reduce_sum(obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
+                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, phi);
   }
 }
 
