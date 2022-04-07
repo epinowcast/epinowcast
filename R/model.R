@@ -229,6 +229,8 @@ enw_inits <- function(data) {
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
 #'
+#' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
+#'
 #' @param stanc_options A list of options to pass to the `stanc_options` of [cmdstanr::cmdstan_model()]
 #' by default "01" is passed which specifies simple optimisations should be done by the prior to compilation
 #'
