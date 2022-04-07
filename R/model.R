@@ -254,13 +254,12 @@ enw_model <- function(model, include,
   }
 
   if (compile) {
-    
-    if(!profile){
-      code <- paste(readLines(model),collapse="\n")
+    if (!profile) {
+      code <- paste(readLines(model), collapse = "\n")
       code_no_profile <- remove_profiling(code)
       model <- cmdstanr::write_stan_file(code_no_profile)
     }
-    
+
     if (verbose) {
       model <- cmdstanr::cmdstan_model(model,
         include_paths = include,
@@ -289,8 +288,8 @@ enw_model <- function(model, include,
 #'
 #' @param s Character vector representing stan code
 #' @return A `character` vector of the stan code without profiling statements
-remove_profiling <- function(s){
-  while(grepl("profile\\(.+\\)\\{", s, perl = T)){
+remove_profiling <- function(s) {
+  while (grepl("profile\\(.+\\)\\{", s, perl = T)) {
     s <- gsub("profile\\(.+\\)\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = T)
   }
   return(s)
