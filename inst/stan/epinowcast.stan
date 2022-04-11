@@ -176,6 +176,7 @@ model {
 }
 
 generated quantities {
+  profile("generated_total") {
   int pp_obs[pp ? sum(sl) : 0];
   vector[ologlik ? s : 0] log_lik;
   int pp_inf_obs[cast ? dmax : 0,cast ? g : 0];
@@ -186,18 +187,23 @@ generated quantities {
     int pp_obs_tmp[s, dmax];
     // Posterior predictions for observations
     for (i in 1:s) {
+      profile("generated_obs") {
       tar_obs = imp_obs[sg[i]][st[i]];
       rdlh = srdlh[rdlurd[st[i]:(st[i] + dmax - 1), sg[i]]];
       exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs, phi);
+      }
+      profile("generated_loglik") {
       if (ologlik) {
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
           log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j], phi);
         }
       }
+      }
     }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
+    profile("generated_obs") {
     for (k in 1:g) {
       int start_t = t - dmax;
       for (i in 1:dmax) {
@@ -218,5 +224,7 @@ generated quantities {
         start_t += sl[i];
       }
     }
+    }
   }
+}
 }
