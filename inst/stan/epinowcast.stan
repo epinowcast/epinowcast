@@ -84,8 +84,8 @@ transformed parameters{
   vector[t] imp_obs[g]; // Expected final observations
   real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
-  profile("parametric delay reference date") {
-  profile("parametric delay reference date - predictor") {
+  profile("transformed_delay_reference_date_total") {
+  profile("transformed_delay_reference_date_effects") {
   logmean = combine_effects(logmean_int, logmean_eff, d_fixed, logmean_sd,
                             d_random);
   logsd = combine_effects(log(logsd_int), logsd_eff, d_fixed, logsd_sd,
@@ -93,7 +93,7 @@ transformed parameters{
   logsd = exp(logsd);
   }
   // calculate pmfs
-  profile("parametric delay reference date - pmfs") {
+  profile("transformed_delay_reference_date_pmfs") {
   for (i in 1:npmfs) {
     pmfs[, i] = calculate_pmf(logmean[i], logsd[i], dmax, dist);
   }
@@ -108,13 +108,13 @@ transformed parameters{
   }
   }
   // calculate sparse report date effects with forced 0 intercept
-  profile("non-parametric delay reporting date") {
+  profile("transformed_delay_reporting_date_effects") {
   srdlh = combine_effects(0, rd_eff, rd_fixed, rd_eff_sd, rd_random);
   }
   // estimate unobserved expected final reported cases for each group
   // this could be any forecasting model but here its a 
   // first order random walk for each group on the log scale.
-  profile("final expectation model") {
+  profile("transformed_expected_final_observations") {
   for (k in 1:g) {
     real llast_obs;
     imp_obs[k][1] = leobs_init[k];
@@ -133,7 +133,7 @@ transformed parameters{
 }
   
 model {
-  profile("priors") {
+  profile("model_priors") {
   // priors for unobserved expected reported cases
   leobs_init ~ normal(eobs_init, 1);
   for (i in 1:g) {
@@ -168,7 +168,7 @@ model {
   }
   // log density: observed vs model
   if (likelihood) {
-    profile("likelihood") {
+    profile("model_likelihood") {
     target += reduce_sum(obs_lupmf, st, 1, obs, sl, imp_obs, sg, st, rdlurd,
                          srdlh, ref_lh, dpmfs, ref_p, phi);
     }
