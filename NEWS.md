@@ -1,4 +1,7 @@
-# epinowcast 0.0.4.10000
+# epinowcast 0.0.6
+* Add profiling switch to model compilation, allowing to toggle profiling (https://mc-stan.org/cmdstanr/articles/profiling.html) on/off in the same model (see [PR#41](https://github.com/epiforecasts/epinowcast/pull/41) by [@adrian-lison](https://github.com/adrian-lison)).
+
+# epinowcast 0.0.5
 
 * Convert retrospective data date fields to class of `IDate` when utilising `enw_retrospective_data` to solve esoteric error.
 * Added full argument name for `include_paths` to avoid console chatter

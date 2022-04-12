@@ -229,6 +229,8 @@ enw_inits <- function(data) {
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
 #'
+#' @param profile Logical, defaults to `FALSE`. Should the model be profiled (see https://mc-stan.org/cmdstanr/articles/profiling.html)?
+#'
 #' @param stanc_options A list of options to pass to the `stanc_options` of [cmdstanr::cmdstan_model()]
 #' by default "01" is passed which specifies simple optimisations should be done by the prior to compilation
 #'
@@ -242,7 +244,7 @@ enw_inits <- function(data) {
 #' @examplesIf interactive()
 #' mod <- enw_model()
 enw_model <- function(model, include,
-                      compile = TRUE, threads = FALSE, stanc_options = list("O1"), verbose = TRUE, ...) {
+                      compile = TRUE, threads = FALSE, stanc_options = list("O1"), verbose = TRUE, profile = FALSE, ...) {
   if (missing(model)) {
     model <- "stan/epinowcast.stan"
     model <- system.file(model, package = "epinowcast")
@@ -252,6 +254,12 @@ enw_model <- function(model, include,
   }
 
   if (compile) {
+    if (!profile) {
+      code <- paste(readLines(model), collapse = "\n")
+      code_no_profile <- remove_profiling(code)
+      model <- cmdstanr::write_stan_file(code_no_profile)
+    }
+
     if (verbose) {
       model <- cmdstanr::cmdstan_model(model,
         include_paths = include,
@@ -274,6 +282,17 @@ enw_model <- function(model, include,
     }
   }
   return(model)
+}
+
+#' Remove profiling statements from a character vector representing stan code
+#'
+#' @param s Character vector representing stan code
+#' @return A `character` vector of the stan code without profiling statements
+remove_profiling <- function(s) {
+  while (grepl("profile\\(.+\\)\\{", s, perl = T)) {
+    s <- gsub("profile\\(.+\\)\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = T)
+  }
+  return(s)
 }
 
 #' Fit a CmdStan model using NUTS
