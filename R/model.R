@@ -125,7 +125,7 @@ enw_as_data_list <- function(pobs,
                                pobs$metareport[[1]]
                              ),
                              priors = epinowcast::enw_priors(),
-                             dist = "lognormal",
+                             distribution = "lognormal",
                              nowcast = TRUE, pp = FALSE,
                              likelihood = TRUE, debug = FALSE,
                              output_loglik = FALSE) {
@@ -145,7 +145,7 @@ enw_as_data_list <- function(pobs,
   data <- c(
     data,
     enw_opts_as_data_list(
-      dist = dist,
+      distribution = distribution,
       debug = debug,
       likelihood = likelihood,
       pp = pp,

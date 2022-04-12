@@ -129,7 +129,7 @@ We now fit the model and produce a nowcast using this fit. Note that here we use
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
   model = model,
-  dist = "lognormal",
+  distribution = "lognormal",
   report_effects = report_effects,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
