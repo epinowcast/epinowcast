@@ -2,6 +2,7 @@ functions {
 #include functions/regression.stan
 #include functions/pmfs.stan
 #include functions/hazard.stan
+#include functions/zero_truncated_normal.stan
 #include functions/expected-observations.stan
 #include functions/obs_lpmf.stan
 }
@@ -139,8 +140,7 @@ model {
   profile("model_priors") {
   // priors for unobserved expected reported cases
   leobs_init ~ normal(eobs_init, 1);
-  eobs_lsd ~ normal(eobs_lsd_p[1], eobs_lsd_p[2]);
-  target += -normal_lccdf(0 | eobs_lsd_p[1], eobs_lsd_p[2]);
+  eobs_lsd ~ zero_truncated_normal(eobs_lsd_p[1], eobs_lsd_p[2]);
   for (i in 1:g) {
     leobs_resids[i] ~ std_normal();
   }
@@ -152,18 +152,15 @@ model {
     logmean_eff ~ std_normal();
     logsd_eff ~ std_normal();
     if (neff_sds) {
-      logmean_sd ~ normal(logmean_sd_p[1], logmean_sd_p[2]);
-      target += -normal_lccdf(0 | logmean_sd_p[1], logmean_sd_p[2]);
-      logsd_sd ~ normal(logsd_sd_p[1], logsd_sd_p[2]);
-      target += -normal_lccdf(0 | logsd_sd_p[1], logsd_sd_p[2]);
+      logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
+      logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
     }
   }
   // priors and scaling for date of report effects
   if (nrd_effs) {
     rd_eff ~ std_normal();
     if (nrd_eff_sds) {
-      rd_eff_sd ~ normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
-      target += -normal_lccdf(0 | rd_eff_sd_p[1], rd_eff_sd_p[2]);
+      rd_eff_sd ~ zero_truncated_normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
     }
   }
   // reporting overdispersion (1/sqrt)
