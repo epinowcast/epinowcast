@@ -134,7 +134,7 @@ transformed parameters{
   if (debug) {
 #include /chunks/debug.stan
   }
-}
+} 
   
 model {
   profile("model_priors") {
