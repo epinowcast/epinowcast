@@ -11,6 +11,7 @@ enw_model(
   threads = FALSE,
   stanc_options = list("O1"),
   verbose = TRUE,
+  profile = FALSE,
   ...
 )
 }
@@ -35,6 +36,8 @@ optimisations should be done by the prior to compilation}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}
+
+\item{profile}{Logical, defaults to \code{FALSE}. Should the model be profiled?}
 
 \item{...}{Additional arguments passed to \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 }

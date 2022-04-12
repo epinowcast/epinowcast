@@ -239,9 +239,12 @@ enw_inits <- function(data) {
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
 #'
+#' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
+#' For more on profiling see the [cmdstanr documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
+#'
 #' @param stanc_options A list of options to pass to the `stanc_options` of
-#' [cmdstanr::cmdstan_model()] by default "01" is passed which specifies simple
-#' optimisations should be done by the prior to compilation
+#' [cmdstanr::cmdstan_model()]. By default "01" is passed which specifies simple
+#' optimisations should be done by the prior to compilation.
 #'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
@@ -252,8 +255,8 @@ enw_inits <- function(data) {
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(model, include,
-                      compile = TRUE, threads = FALSE,
+enw_model <- function(model, include, compile = TRUE,
+                      threads = FALSE, profile = FALSE,
                       stanc_options = list("O1"), verbose = TRUE, ...) {
   if (missing(model)) {
     model <- "stan/epinowcast.stan"
@@ -264,6 +267,12 @@ enw_model <- function(model, include,
   }
 
   if (compile) {
+    if (!profile) {
+      code <- paste(readLines(model), collapse = "\n")
+      code_no_profile <- remove_profiling(code)
+      model <- cmdstanr::write_stan_file(code_no_profile)
+    }
+
     if (verbose) {
       model <- cmdstanr::cmdstan_model(model,
         include_paths = include,
@@ -286,6 +295,19 @@ enw_model <- function(model, include,
     }
   }
   return(model)
+}
+
+#' Remove profiling statements from a character vector representing stan code
+#'
+#' @param s Character vector representing stan code
+#' @return A `character` vector of the stan code without profiling statements
+remove_profiling <- function(s) {
+  while (grepl("profile\\(.+\\)\\{", s, perl = TRUE)) {
+    s <- gsub(
+      "profile\\(.+\\)\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
+    )
+  }
+  return(s)
 }
 
 #' Fit a CmdStan model using NUTS
