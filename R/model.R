@@ -60,15 +60,22 @@ enw_obs_as_data_list <- function(pobs) {
   )
   latest_matrix <- as.matrix(latest_matrix[, -1])
 
+  # get new confirm for processing
+  new_confirm <- data.table::copy(pobs$new_confirm[[1]])
+  data.table::setorderv(new_confirm, c("reference_date", "group",  "delay"))
+
+  # get flat observations
+  flat_obs <- new_confirm$new_confirm
+
   # format vector of snapshot lengths
-  snap_length <- pobs$new_confirm[[1]]
+  snap_length <- new_confirm
   snap_length <- snap_length[, .SD[delay == max(delay)],
     by = c("reference_date", "group")
   ]
   snap_length <- snap_length$delay + 1
 
   # snap lookup
-  snap_lookup <- unique(pobs$new_confirm[[1]][, .(reference_date, group)])
+  snap_lookup <- unique(new_confirm[, .(reference_date, group)])
   snap_lookup[, s := 1:.N]
   snap_lookup <- data.table::dcast(
     snap_lookup, reference_date ~ group,
@@ -77,22 +84,25 @@ enw_obs_as_data_list <- function(pobs) {
   snap_lookup <- as.matrix(snap_lookup[, -1])
 
   # snap time
-  snap_time <- unique(pobs$new_confirm[[1]][, .(reference_date, group)])
+  snap_time <- unique(new_confirm[, .(reference_date, group)])
   snap_time[, t := 1:.N, by = "group"]
   snap_time <- snap_time$t
 
   # Format indexing and observed data
   # See stan code for docs on what all of these are
   data <- list(
+    n = length(flat_obs),
     t = pobs$time[[1]],
     s = pobs$snapshots[[1]],
     g = pobs$groups[[1]],
     st = snap_time,
     ts = snap_lookup,
     sl = snap_length,
-    sg = unique(pobs$new_confirm[[1]][, .(reference_date, group)])$group,
+    csl = cumsum(snap_length),
+    sg = unique(new_confirm[, .(reference_date, group)])$group,
     dmax = pobs$max_delay[[1]],
     obs = as.matrix(pobs$reporting_triangle[[1]][, -c(1:2)]),
+    flat_obs = flat_obs,
     latest_obs = latest_matrix
   )
   return(data)
@@ -229,8 +239,12 @@ enw_inits <- function(data) {
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
 #'
-#' @param stanc_options A list of options to pass to the `stanc_options` of [cmdstanr::cmdstan_model()]
-#' by default "01" is passed which specifies simple optimisations should be done by the prior to compilation
+#' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
+#' For more on profiling see the [cmdstanr documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
+#'
+#' @param stanc_options A list of options to pass to the `stanc_options` of
+#' [cmdstanr::cmdstan_model()]. By default "01" is passed which specifies simple
+#' optimisations should be done by the prior to compilation.
 #'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
@@ -241,14 +255,21 @@ enw_inits <- function(data) {
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(model, include,
-                      compile = TRUE, threads = FALSE, stanc_options = list("O1"), verbose = TRUE, ...) {
+enw_model <- function(model, include, compile = TRUE,
+                      threads = FALSE, profile = FALSE,
+                      stanc_options = list("O1"), verbose = TRUE, ...) {
   if (missing(model)) {
     model <- "stan/epinowcast.stan"
     model <- system.file(model, package = "epinowcast")
   }
   if (missing(include)) {
     include <- system.file("stan", package = "epinowcast")
+  }
+
+  if (!profile) {
+    code <- paste(readLines(model), collapse = "\n")
+    code_no_profile <- remove_profiling(code)
+    model <- cmdstanr::write_stan_file(code_no_profile)
   }
 
   if (compile) {
@@ -274,6 +295,19 @@ enw_model <- function(model, include,
     }
   }
   return(model)
+}
+
+#' Remove profiling statements from a character vector representing stan code
+#'
+#' @param s Character vector representing stan code
+#' @return A `character` vector of the stan code without profiling statements
+remove_profiling <- function(s) {
+  while (grepl("profile\\(.+\\) \\{", s, perl = TRUE)) {
+    s <- gsub(
+      "profile\\(.+\\) \\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
+    )
+  }
+  return(s)
 }
 
 #' Fit a CmdStan model using NUTS
