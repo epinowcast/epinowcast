@@ -1,6 +1,6 @@
 functions {
 #include functions/regression.stan
-#include functions/pmfs.stan
+#include functions/discretised_reporting_prob.stan
 #include functions/hazard.stan
 #include functions/zero_truncated_normal.stan
 #include functions/expected-observations.stan
@@ -99,7 +99,7 @@ transformed parameters{
   // calculate pmfs
   profile("transformed_delay_reference_date_pmfs") {
   for (i in 1:npmfs) {
-    pmfs[, i] = calculate_pmf(logmean[i], logsd[i], dmax, dist);
+    pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
   }
   if (ref_p == 0) {
     for (i in 1:npmfs) {
@@ -161,7 +161,7 @@ model {
     rd_eff ~ std_normal();
     if (nrd_eff_sds) {
       rd_eff_sd ~ zero_truncated_normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
-    }
+    } 
   }
   // reporting overdispersion (1/sqrt)
   sqrt_phi ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
