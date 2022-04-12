@@ -8,16 +8,19 @@ functions {
 
 data {
   // Indexes and lookups
+  int n; // total observations
   int t; // time range over which data is available 
   int s; // number of snapshots there are
   int g; // number of data groups
   int st[s]; // when in this time snapshots are from
   int ts[t, g]; // snapshot related  to time and group
   int sl[s]; // how many days of reported data does each snapshot have
+  int csl[s]; // cumulative version of the above
   int sg[s]; // how snapshots are related
   int dmax; // maximum possible report date
   // Observations
   int obs[s, dmax]; // obs for each primary date (row) and report date (column)
+  int flat_obs[n]; // obs stored as a flat vector
   int latest_obs[t, g]; // latest obs for each snapshot group
   // Reference day model
   int npmfs; // how many unique pmfs there are
@@ -169,8 +172,8 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    target += reduce_sum(obs_lupmf, st, 1, obs, sl, imp_obs, sg, st, rdlurd,
-                         srdlh, ref_lh, dpmfs, ref_p, phi);
+    target += reduce_sum(obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
+                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, phi);
     }
   }
 }
@@ -179,7 +182,7 @@ generated quantities {
   profile("generated_total") {
   int pp_obs[pp ? sum(sl) : 0];
   vector[ologlik ? s : 0] log_lik;
-  int pp_inf_obs[cast ? dmax : 0,cast ? g : 0];
+  int pp_inf_obs[cast ? dmax : 0, cast ? g : 0];
   if (cast) {
     real tar_obs;
     vector[dmax] exp_obs;
