@@ -302,9 +302,9 @@ enw_model <- function(model, include, compile = TRUE,
 #' @param s Character vector representing stan code
 #' @return A `character` vector of the stan code without profiling statements
 remove_profiling <- function(s) {
-  while (grepl("profile\\(.+\\) \\{", s, perl = TRUE)) {
+  while (grepl("profile\\(.+\\)\\s*\\{", s, perl = TRUE)) {
     s <- gsub(
-      "profile\\(.+\\) \\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
+      "profile\\(.+\\)\\s*\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
     )
   }
   return(s)
