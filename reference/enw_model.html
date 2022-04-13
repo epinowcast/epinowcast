@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4.10000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6.2000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,7 @@
   <span class="va">include</span>,
   compile <span class="op">=</span> <span class="cn">TRUE</span>,
   threads <span class="op">=</span> <span class="cn">FALSE</span>,
+  profile <span class="op">=</span> <span class="cn">FALSE</span>,
   stanc_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"O1"</span><span class="op">)</span>,
   verbose <span class="op">=</span> <span class="cn">TRUE</span>,
   <span class="va">...</span>
@@ -107,9 +108,13 @@ be loaded and compiled using <code><a href="https://mc-stan.org/cmdstanr/referen
 support for multi-thread support in chain. Note that this requires the use of
 the <code>threads_per_chain</code> argument when model fitting using <code><a href="enw_sample.html">enw_sample()</a></code>,
 and <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
+<dt>profile</dt>
+<dd><p>Logical, defaults to <code>FALSE</code>. Should the model be profiled?
+For more on profiling see the <a href="https://mc-stan.org/cmdstanr/articles/profiling.html" class="external-link">cmdstanr documentation</a>. # nolint</p></dd>
 <dt>stanc_options</dt>
-<dd><p>A list of options to pass to the <code>stanc_options</code> of <code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code>
-by default "01" is passed which specifies simple optimisations should be done by the prior to compilation</p></dd>
+<dd><p>A list of options to pass to the <code>stanc_options</code> of
+<code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code>. By default "01" is passed which specifies simple
+optimisations should be done by the prior to compilation.</p></dd>
 <dt>verbose</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should verbose
 messages be shown.</p></dd>

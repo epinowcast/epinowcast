@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.4.10000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6.2000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,7 +74,12 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.0.4.10000" id="epinowcast-00410000">epinowcast 0.0.4.10000<a class="anchor" aria-label="anchor" href="#epinowcast-00410000"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.6" id="epinowcast-006">epinowcast 0.0.6<a class="anchor" aria-label="anchor" href="#epinowcast-006"></a></h2>
+<ul><li>Fully vectorise the likelihood by flattening observations and pre-specify expected observations into a vector before calculating the log-likelihood (see <a href="https://github.com/epiforecasts/epinowcast/pull/40" class="external-link">#38</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>).</li>
+<li>Add profiling switch to model compilation, allowing to toggle profiling (<a href="https://mc-stan.org/cmdstanr/articles/profiling.html" class="external-link uri">https://mc-stan.org/cmdstanr/articles/profiling.html</a>) on/off in the same model (see <a href="https://github.com/epiforecasts/epinowcast/pull/41" class="external-link">#41</a> by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.5" id="epinowcast-005">epinowcast 0.0.5<a class="anchor" aria-label="anchor" href="#epinowcast-005"></a></h2>
 <ul><li>Convert retrospective data date fields to class of <code>IDate</code> when utilising <code>enw_retrospective_data</code> to solve esoteric error.</li>
 <li>Added full argument name for <code>include_paths</code> to avoid console chatter</li>
 <li>Adds a <code>stanc_options</code> argument to <code><a href="../reference/enw_model.html">enw_model()</a></code> and specifies a new default of <code>list("01")</code> which enables simple pre-compilation optimisations. See <a href="https://blog.mc-stan.org/2022/02/15/release-of-cmdstan-2-29/" class="external-link">here</a> of these optimisatiosn for details.</li>
