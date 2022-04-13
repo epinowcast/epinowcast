@@ -297,19 +297,6 @@ enw_model <- function(model, include, compile = TRUE,
   return(model)
 }
 
-#' Remove profiling statements from a character vector representing stan code
-#'
-#' @param s Character vector representing stan code
-#' @return A `character` vector of the stan code without profiling statements
-remove_profiling <- function(s) {
-  while (grepl("profile\\(.+\\)\\s*\\{", s, perl = TRUE)) {
-    s <- gsub(
-      "profile\\(.+\\)\\s*\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
-    )
-  }
-  return(s)
-}
-
 #' Fit a CmdStan model using NUTS
 #'
 #' @param data A list of data as produced by [enw_as_data_list()].
