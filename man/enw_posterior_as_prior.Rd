@@ -31,6 +31,7 @@ FUNCTION_DESCRIPTION
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_opts_as_data_list}()},
-\code{\link{enw_priors_as_data_list}()}
+\code{\link{enw_priors_as_data_list}()},
+\code{\link{remove_profiling}()}
 }
 \concept{modeltools}
