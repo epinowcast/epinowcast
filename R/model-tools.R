@@ -142,3 +142,18 @@ enw_posterior_as_prior <- function(nowcast, priors = epinowcast::enw_priors(),
   priors <- rbind(priors, posteriors, fill = TRUE)
   return(priors[])
 }
+
+#' Remove profiling statements from a character vector representing stan code
+#'
+#' @param s Character vector representing stan code
+#'
+#' @return A `character` vector of the stan code without profiling statements
+#' @family modeltools
+remove_profiling <- function(s) {
+  while (grepl("profile\\(.+\\)\\s*\\{", s, perl = TRUE)) {
+    s <- gsub(
+      "profile\\(.+\\)\\s*\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
+    )
+  }
+  return(s)
+}
