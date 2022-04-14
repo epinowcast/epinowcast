@@ -45,9 +45,9 @@ enw_formula_as_data_list <- function(data, reference_effects, report_effects) {
 
 #' Format model options for use with stan
 #'
-#' @param dist Character string indicating the type of distribution to use for
-#' reference date effects. The default is to use a lognormal but other options
-#' available include: gamma distributed ("gamma").
+#' @param distribution Character string indicating the type of distribution to
+#' use for reference date effects. The default is to use a lognormal but other
+#' options available include: gamma distributed ("gamma").
 #'
 #' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
 #' posterior predictions of the unobserved future reported notifications.
@@ -69,21 +69,21 @@ enw_formula_as_data_list <- function(data, reference_effects, report_effects) {
 #' @importFrom data.table fcase
 #' @family modeltools
 #' @export
-enw_opts_as_data_list <- function(dist = "lognormal", nowcast = TRUE,
+enw_opts_as_data_list <- function(distribution = "lognormal", nowcast = TRUE,
                                   pp = FALSE, likelihood = TRUE, debug = FALSE,
                                   output_loglik = FALSE) {
   if (pp) {
     nowcast <- TRUE
   }
-  # check dist type is supported and change to numeric
-  dist <- match.arg(dist, c("lognormal", "gamma"))
-  dist <- data.table::fcase(
-    dist %in% "lognormal", 0,
-    dist %in% "gamma", 1
+  # check distribution type is supported and change to numeric
+  distribution <- match.arg(distribution, c("lognormal", "gamma"))
+  distribution <- data.table::fcase(
+    distribution %in% "lognormal", 0,
+    distribution %in% "gamma", 1
   )
 
   data <- list(
-    dist = dist,
+    dist = distribution,
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
     pp = as.numeric(pp),

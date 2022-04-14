@@ -62,7 +62,7 @@ enw_obs_as_data_list <- function(pobs) {
 
   # get new confirm for processing
   new_confirm <- data.table::copy(pobs$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", "group",  "delay"))
+  data.table::setorderv(new_confirm, c("reference_date", "group", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -125,7 +125,7 @@ enw_as_data_list <- function(pobs,
                                pobs$metareport[[1]]
                              ),
                              priors = epinowcast::enw_priors(),
-                             dist = "lognormal",
+                             distribution = "lognormal",
                              nowcast = TRUE, pp = FALSE,
                              likelihood = TRUE, debug = FALSE,
                              output_loglik = FALSE) {
@@ -145,7 +145,7 @@ enw_as_data_list <- function(pobs,
   data <- c(
     data,
     enw_opts_as_data_list(
-      dist = dist,
+      distribution = distribution,
       debug = debug,
       likelihood = likelihood,
       pp = pp,

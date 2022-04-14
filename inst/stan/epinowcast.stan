@@ -1,7 +1,8 @@
 functions {
 #include functions/regression.stan
-#include functions/pmfs.stan
+#include functions/discretised_reporting_prob.stan
 #include functions/hazard.stan
+#include functions/zero_truncated_normal.stan
 #include functions/expected-observations.stan
 #include functions/obs_lpmf.stan
 }
@@ -98,7 +99,7 @@ transformed parameters{
   // calculate pmfs
   profile("transformed_delay_reference_date_pmfs") {
   for (i in 1:npmfs) {
-    pmfs[, i] = calculate_pmf(logmean[i], logsd[i], dmax, dist);
+    pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
   }
   if (ref_p == 0) {
     for (i in 1:npmfs) {
@@ -133,14 +134,14 @@ transformed parameters{
   if (debug) {
 #include /chunks/debug.stan
   }
-}
+} 
   
 model {
   profile("model_priors") {
   // priors for unobserved expected reported cases
   leobs_init ~ normal(eobs_init, 1);
+  eobs_lsd ~ zero_truncated_normal(eobs_lsd_p[1], eobs_lsd_p[2]);
   for (i in 1:g) {
-    eobs_lsd[i] ~ normal(eobs_lsd_p[1], eobs_lsd_p[2]) T[0,];
     leobs_resids[i] ~ std_normal();
   }
   // priors for the intercept of the log normal truncation distribution
@@ -151,20 +152,16 @@ model {
     logmean_eff ~ std_normal();
     logsd_eff ~ std_normal();
     if (neff_sds) {
-      for (i in 1:neff_sds) {
-        logmean_sd[i] ~ normal(logmean_sd_p[1], logmean_sd_p[2]) T[0,];
-        logsd_sd[i] ~ normal(logsd_sd_p[1], logsd_sd_p[2]) T[0,];
-      }
+      logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
+      logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
     }
   }
   // priors and scaling for date of report effects
   if (nrd_effs) {
     rd_eff ~ std_normal();
     if (nrd_eff_sds) {
-      for (i in 1:nrd_eff_sds) {
-        rd_eff_sd[i] ~ normal(rd_eff_sd_p[1], rd_eff_sd_p[2]) T[0,];
-      }
-    }
+      rd_eff_sd ~ zero_truncated_normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
+    } 
   }
   // reporting overdispersion (1/sqrt)
   sqrt_phi ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
