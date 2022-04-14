@@ -9,7 +9,7 @@ enw_as_data_list(
   reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
   report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
   priors = epinowcast::enw_priors(),
-  distribution = "lognormal",
+  dist = "lognormal",
   nowcast = TRUE,
   pp = FALSE,
   likelihood = TRUE,
@@ -30,9 +30,9 @@ which is an intercept only model.}
 
 \item{priors}{DESCRIPTION.}
 
-\item{distribution}{Character string indicating the type of distribution to
-use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+\item{dist}{Character string indicating the type of distribution to use for
+reference date effects. The default is to use a lognormal but other options
+available include: gamma distributed ("gamma").}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}

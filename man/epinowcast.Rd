@@ -9,7 +9,7 @@ epinowcast(
   reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
   report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
   priors = epinowcast::enw_priors(),
-  distribution = "lognormal",
+  dist = "lognormal",
   model = epinowcast::enw_model(),
   as_data_list = epinowcast::enw_as_data_list,
   inits = epinowcast::enw_inits,
@@ -35,9 +35,9 @@ which is an intercept only model.}
 
 \item{priors}{DESCRIPTION.}
 
-\item{distribution}{Character string indicating the type of distribution to
-use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+\item{dist}{Character string indicating the type of distribution to use for
+reference date effects. The default is to use a lognormal but other options
+available include: gamma distributed ("gamma").}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
 
