@@ -176,10 +176,10 @@ model {
 }
 
 generated quantities {
-  profile("generated_total") {
   int pp_obs[pp ? sum(sl) : 0];
   vector[ologlik ? s : 0] log_lik;
   int pp_inf_obs[cast ? dmax : 0, cast ? g : 0];
+  profile("generated_total") {
   if (cast) {
     real tar_obs;
     vector[dmax] exp_obs;
