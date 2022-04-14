@@ -62,7 +62,7 @@ enw_obs_as_data_list <- function(pobs) {
 
   # get new confirm for processing
   new_confirm <- data.table::copy(pobs$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", "group",  "delay"))
+  data.table::setorderv(new_confirm, c("reference_date", "group", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -304,7 +304,8 @@ enw_model <- function(model, include, compile = TRUE,
 remove_profiling <- function(s) {
   while (grepl("profile\\(.+\\) \\{", s, perl = TRUE)) {
     s <- gsub(
-      "profile\\(.+\\) \\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
+      "profile\\(.+\\) \\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s,
+      perl = TRUE
     )
   }
   return(s)
