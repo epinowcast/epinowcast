@@ -127,8 +127,8 @@ enw_assign_group <- function(obs, by = c()) {
 enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
                                    ref_days) {
   retro_data <- data.table::copy(obs)
-  retro_data[,report_date := as.IDate(report_date)]
-  retro_data[,reference_date := as.IDate(reference_date)]
+  retro_data[, report_date := as.IDate(report_date)]
+  retro_data[, reference_date := as.IDate(reference_date)]
   if (!missing(rep_days)) {
     rep_date <- max(retro_data$report_date) - rep_days
   }
@@ -155,8 +155,8 @@ enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
 #' @importFrom data.table copy as.IDate
 enw_latest_data <- function(obs, ref_window) {
   latest_data <- data.table::copy(obs)
-  latest_data[,report_date := as.IDate(report_date)]
-  latest_data[,reference_date := as.IDate(reference_date)]
+  latest_data[, report_date := as.IDate(report_date)]
+  latest_data[, reference_date := as.IDate(reference_date)]
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date))],

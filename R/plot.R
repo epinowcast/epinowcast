@@ -40,7 +40,8 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
 
   plot <- plot +
     geom_point(aes(y = confirm, fill = NULL),
-                   na.rm = TRUE, alpha = 0.7, size = 1.1)
+      na.rm = TRUE, alpha = 0.7, size = 1.1
+    )
 
   if (!is.null(latest_obs)) {
     latest_obs <- data.table::copy(latest_obs)
@@ -113,7 +114,8 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = TRUE, ...) {
 enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
                                        log = FALSE, ...) {
   plot <- enw_plot_quantiles(
-    nowcast, latest_obs = latest_obs, x = reference_date, log = log, ...
+    nowcast,
+    latest_obs = latest_obs, x = reference_date, log = log, ...
   ) +
     labs(y = "Notifications", x = "Reference date")
   return(plot)

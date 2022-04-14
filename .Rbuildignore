@@ -14,3 +14,5 @@
 ^vignettes/cache$
 ^vignettes/germany-age-stratified-nowcasting.Rmd.orig\.Rmd\.orig$
 ^vignettes/precompile.R$
+^.*\.Rproj$
+^\.Rproj\.user$

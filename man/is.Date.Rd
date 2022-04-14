@@ -17,8 +17,6 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Utility functions
-\code{\link{expose_stan_fns}()},
-\code{\link{inv_logit}()},
-\code{\link{logit}()}
+\code{\link{expose_stan_fns}()}
 }
 \concept{utils}

@@ -21,8 +21,6 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Utility functions
-\code{\link{inv_logit}()},
-\code{\link{is.Date}()},
-\code{\link{logit}()}
+\code{\link{is.Date}()}
 }
 \concept{utils}
