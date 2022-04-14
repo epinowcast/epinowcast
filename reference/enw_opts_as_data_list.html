@@ -81,7 +81,7 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_opts_as_data_list</span><span class="op">(</span>
-  dist <span class="op">=</span> <span class="st">"lognormal"</span>,
+  distribution <span class="op">=</span> <span class="st">"lognormal"</span>,
   nowcast <span class="op">=</span> <span class="cn">TRUE</span>,
   pp <span class="op">=</span> <span class="cn">FALSE</span>,
   likelihood <span class="op">=</span> <span class="cn">TRUE</span>,
@@ -92,10 +92,10 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>dist</dt>
-<dd><p>Character string indicating the type of distribution to use for
-reference date effects. The default is to use a lognormal but other options
-available include: gamma distributed ("gamma").</p></dd>
+    <dl><dt>distribution</dt>
+<dd><p>Character string indicating the type of distribution to
+use for reference date effects. The default is to use a lognormal but other
+options available include: gamma distributed ("gamma").</p></dd>
 <dt>nowcast</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.</p></dd>

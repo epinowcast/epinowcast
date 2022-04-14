@@ -91,7 +91,7 @@ a report model.</p>
   reference_effects <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
   report_effects <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareport</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,
   priors <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_priors.html">enw_priors</a></span><span class="op">(</span><span class="op">)</span>,
-  dist <span class="op">=</span> <span class="st">"lognormal"</span>,
+  distribution <span class="op">=</span> <span class="st">"lognormal"</span>,
   model <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span>,
   as_data_list <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="enw_as_data_list.html">enw_as_data_list</a></span>,
   inits <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="enw_inits.html">enw_inits</a></span>,
@@ -119,10 +119,10 @@ defining the date of reports model. Defaults to <code><a href="enw_formula.html"
 which is an intercept only model.</p></dd>
 <dt>priors</dt>
 <dd><p>DESCRIPTION.</p></dd>
-<dt>dist</dt>
-<dd><p>Character string indicating the type of distribution to use for
-reference date effects. The default is to use a lognormal but other options
-available include: gamma distributed ("gamma").</p></dd>
+<dt>distribution</dt>
+<dd><p>Character string indicating the type of distribution to
+use for reference date effects. The default is to use a lognormal but other
+options available include: gamma distributed ("gamma").</p></dd>
 <dt>model</dt>
 <dd><p>A <code>cmdstanr</code> model object as loaded by <code><a href="enw_model.html">enw_model()</a></code>.</p></dd>
 <dt>as_data_list</dt>
