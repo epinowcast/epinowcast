@@ -5,7 +5,7 @@
 \title{Format model options for use with stan}
 \usage{
 enw_opts_as_data_list(
-  distribution = "lognormal",
+  dist = "lognormal",
   nowcast = TRUE,
   pp = FALSE,
   likelihood = TRUE,
@@ -14,9 +14,9 @@ enw_opts_as_data_list(
 )
 }
 \arguments{
-\item{distribution}{Character string indicating the type of distribution to
-use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+\item{dist}{Character string indicating the type of distribution to use for
+reference date effects. The default is to use a lognormal but other options
+available include: gamma distributed ("gamma").}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}
