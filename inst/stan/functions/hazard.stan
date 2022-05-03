@@ -12,8 +12,10 @@ vector prob_to_hazard(vector p) {
 
 vector cumulative_converse_hazard(vector h) {
   int l = num_elements(h);
+  vector[l] h_shifted;
+  h_shifted = append_row(rep_vector(0.0,1),h[1:(l-1)]);
   vector[l] ch;
-  ch = log1m(h);
+  ch = log1m(h_shifted);
   ch = cumulative_sum(ch);
   ch = exp(ch);
   return(ch);
@@ -21,13 +23,7 @@ vector cumulative_converse_hazard(vector h) {
 
 vector hazard_to_prob(vector h) {
   int l = num_elements(h);
-  int i = l - 1;
   vector[l] p;
-  p[1] = h[1]; 
-  if (i) {
-    vector[i] ch;
-    ch = cumulative_converse_hazard(h[1:i]);
-    p[2:l] = h[2:l] .* ch;
-  }
+  p[1:l] = h[1:l] .* cumulative_converse_hazard(h[1:l]);
   return(p);
 }
