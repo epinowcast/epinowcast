@@ -17,6 +17,7 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
     t = st[i];
     l = sl[i];
     vector[l] rdlh;
+    vector[l] ref_lh_i;
     // Find final observed/imputed expected observation
     tar_obs = imp_obs[g][t];
     // allocate reference day effects
