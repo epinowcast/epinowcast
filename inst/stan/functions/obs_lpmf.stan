@@ -19,12 +19,14 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
     vector[l] rdlh;
     // Find final observed/imputed expected observation
     tar_obs = imp_obs[g][t];
+    // allocate reference day effects
+    ref_lh_i = ref_lh[1:l, dpmfs[i]];
     // allocate report day effects
     rdlh = srdlh[rdlurd[t:(t + l - 1), g]];
     // combine expected final obs and date effects to get expected obs
     esnap += l;
     exp_obs[ssnap:esnap] = expected_obs(
-      tar_obs, ref_lh[1:l, dpmfs[i]], rdlh, ref_p
+      tar_obs, ref_lh_i, rdlh, ref_p
     );
     ssnap += l;
   }
