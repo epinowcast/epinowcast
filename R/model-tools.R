@@ -152,7 +152,8 @@ enw_posterior_as_prior <- function(nowcast, priors = epinowcast::enw_priors(),
 remove_profiling <- function(s) {
   while (grepl("profile\\(.+\\)\\s*\\{", s, perl = TRUE)) {
     s <- gsub(
-      "profile\\(.+\\)\\s*\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s, perl = TRUE
+      "profile\\(.+\\)\\s*\\{((?:[^{}]++|\\{(?1)\\})++)\\}", "\\1", s,
+      perl = TRUE
     )
   }
   return(s)
