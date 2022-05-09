@@ -72,8 +72,12 @@ vector expected_obs(real tar_obs, vector ref_lh, vector rep_lh, int ref_as_p) {
     exp_obs = tar_obs * ref_lh + 1e-4;
   }else{
     vector[t] p;
+    profile("model_likelihood_expected_obs_inv_logit") {
     p = inv_logit(ref_lh + rep_lh);
+    }
+    profile("model_likelihood_expected_obs_hazard_to_prob") {
     p = hazard_to_prob(p);
+    }
     exp_obs = tar_obs * p + 1e-4;
   }
   return(exp_obs);
