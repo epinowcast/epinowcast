@@ -158,3 +158,38 @@ remove_profiling <- function(s) {
   }
   return(s)
 }
+
+#' Write copies of the .stan files of a Stan model and its #include files
+#' with all profiling statements removed.
+#'
+#' @param stan_file The path to a .stan file containing a Stan program.
+#'
+#' @param include_paths Paths to directories where Stan should look for files
+#' specified in #include directives in the Stan program.
+#'
+#' @param target_dir The path to a directory in which the manipulated .stan files without
+#' profiling statements should be stored. To avoid overriding of the original .stan files,
+#' this should be different from the directory of the original model and the `include_paths`.
+#'
+#' @return A `list` containing the path to the .stan file without profiling statements
+#' and the include_paths for the included .stan files without profiling statements
+#' @family modeltools
+write_stan_files_no_profile <- function(stan_file, include_paths = NULL, target_dir = tempdir()) {
+  code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
+  code_main_model_no_profile <- remove_profiling(code_main_model)
+  if (!dir.exists(target_dir)) dir.create(target_dir, recursive = T)
+  main_model <- cmdstanr::write_stan_file(code_main_model_no_profile, dir = target_dir, basename = basename(stan_file))
+  include_paths_no_profile <- rep(NA, length(include_paths))
+  for (i in length(include_paths)) {
+    include_paths_no_profile[i] <- file.path(target_dir, paste0("include_", i), basename(include_paths[i]))
+    include_files <- list.files(include_paths[i], pattern = "*.stan", recursive = TRUE)
+    for (f in include_files) {
+      include_paths_no_profile_fdir <- file.path(include_paths_no_profile[i], dirname(f))
+      code_include <- paste(readLines(file.path(include_paths[i], f), warn = FALSE), collapse = "\n")
+      code_include_paths_no_profile <- remove_profiling(code_include)
+      if (!dir.exists(include_paths_no_profile_fdir)) dir.create(include_paths_no_profile_fdir, recursive = T)
+      cmdstanr::write_stan_file(code_include_paths_no_profile, dir = include_paths_no_profile_fdir, basename = basename(f))
+    }
+  }
+  return(list(model = main_model, include_paths = include_paths_no_profile))
+}
