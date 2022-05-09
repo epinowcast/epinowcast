@@ -267,9 +267,24 @@ enw_model <- function(model, include, compile = TRUE,
   }
 
   if (!profile) {
-    code <- paste(readLines(model), collapse = "\n")
+    dir_no_profile <- tempdir()
+    if (!dir.exists(dir_no_profile)) dir.create(dir_no_profile, recursive = T)
+    code <- paste(readLines(model, warn = FALSE), collapse = "\n")
     code_no_profile <- remove_profiling(code)
-    model <- cmdstanr::write_stan_file(code_no_profile)
+    model <- cmdstanr::write_stan_file(code_no_profile, dir = dir_no_profile, basename = basename(model))
+    include_no_profile <- rep(NA, length(include))
+    for (i in length(include)) {
+      include_no_profile[i] <- file.path(dir_no_profile, paste0("include_", i), basename(include[i]))
+      include_files <- list.files(include[i], pattern = "*.stan", recursive = TRUE)
+      for (f in include_files) {
+        include_no_profile_fdir <- file.path(include_no_profile[i], dirname(f))
+        if (!dir.exists(include_no_profile_fdir)) dir.create(include_no_profile_fdir, recursive = T)
+        code_include <- paste(readLines(file.path(include[i], f), warn = FALSE), collapse = "\n")
+        code_include_no_profile <- remove_profiling(code_include)
+        cmdstanr::write_stan_file(code_include_no_profile, dir = include_no_profile_fdir, basename = basename(f))
+      }
+    }
+    include <- include_no_profile
   }
 
   if (compile) {
