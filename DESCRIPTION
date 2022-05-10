@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
-Version: 0.0.6.2000
+Version: 0.0.6.2100
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
