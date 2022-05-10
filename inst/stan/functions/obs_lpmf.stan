@@ -13,9 +13,11 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
   int esnap = 0;
 
   for (i in start:end) {
+    profile("model_likelihood_allocations") {
     g = sg[i];
     t = st[i];
     l = sl[i];
+    }
     vector[l] rdlh;
     vector[l] ref_lh_i;
     profile("model_likelihood_allocations") {

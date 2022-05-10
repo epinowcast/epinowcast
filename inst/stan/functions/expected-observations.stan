@@ -69,7 +69,9 @@ vector expected_obs(real tar_obs, vector ref_lh, vector rep_lh, int ref_as_p) {
   int t = num_elements(ref_lh);
   vector[t] exp_obs;
   if (ref_as_p == 1) {
+    profile("model_likelihood_expected_obs_prod_p") {
     exp_obs = tar_obs * ref_lh + 1e-4;
+    }
   }else{
     vector[t] p;
     profile("model_likelihood_expected_obs_inv_logit") {
@@ -78,7 +80,9 @@ vector expected_obs(real tar_obs, vector ref_lh, vector rep_lh, int ref_as_p) {
     profile("model_likelihood_expected_obs_hazard_to_prob") {
     p = hazard_to_prob(p);
     }
+    profile("model_likelihood_expected_obs_prod_p") {
     exp_obs = tar_obs * p + 1e-4;
+    }
   }
   return(exp_obs);
 }
