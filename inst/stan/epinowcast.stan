@@ -19,10 +19,6 @@ data {
   int csl[s]; // cumulative version of the above
   int sg[s]; // how snapshots are related
   int dmax; // maximum possible report date
-  // Observations
-  int obs[s, dmax]; // obs for each primary date (row) and report date (column)
-  int flat_obs[n]; // obs stored as a flat vector
-  int latest_obs[t, g]; // latest obs for each snapshot group
   // Reference day model
   int npmfs; // how many unique pmfs there are
   int dpmfs[s]; // how each date links to a pmf
@@ -39,6 +35,11 @@ data {
   matrix[urds, nrd_effs + 1] rd_fixed; // design matrix for report dates
   int nrd_eff_sds; // number of standard deviations to use for pooling for rds
   matrix[nrd_effs, nrd_eff_sds + 1] rd_random; // Pooling pmf design matrix 
+  // Observations
+  int obs[s, dmax]; // obs for each primary date (row) and report date (column)
+  int flat_obs[n]; // obs stored as a flat vector
+  int obs_miss[dmax]; // obs with missing primary date
+  int latest_obs[t, g]; // latest obs for each snapshot group
   // Control parameters
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
