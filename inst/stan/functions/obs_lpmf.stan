@@ -1,9 +1,10 @@
-real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
+real obs_lpmf(int[] obs, int[] sl, int[] csl,
               vector[] imp_obs, int[] sg, int[] st, int[,] rdlurd,
               vector srdlh, matrix ref_lh, int[] dpmfs, int ref_p, real phi) {
+  int end = num_elements(st);
   real tar = 0;
   real tar_obs;
-  int start_n = csl[start] - sl[start];
+  int start_n = csl[1] - sl[1];
   int end_n = csl[end];
   int n = end_n - start_n;
   int snap_obs[n] = obs[(start_n + 1):end_n];
@@ -12,7 +13,7 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
   int ssnap = 1;
   int esnap = 0;
 
-  for (i in start:end) {
+  for (i in 1:end) {
     g = sg[i];
     t = st[i];
     l = sl[i];

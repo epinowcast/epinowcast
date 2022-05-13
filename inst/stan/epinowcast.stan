@@ -169,7 +169,7 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    target += reduce_sum(obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
+    target += obs_lupmf(flat_obs | sl, csl, imp_obs, sg, st,
                          rdlurd, srdlh, ref_lh, dpmfs, ref_p, phi);
     }
   }
