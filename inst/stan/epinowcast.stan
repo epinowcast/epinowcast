@@ -87,6 +87,7 @@ transformed parameters{
   matrix[dmax, npmfs] ref_lh; // sparse report logit hazards
   vector[urds] srdlh; // sparse report day logit hazards
   vector[t] imp_obs[g]; // Expected final observations
+  vector<lower=0,upper=1>[t] alpha[g]; // share of cases with known reference date
   real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
