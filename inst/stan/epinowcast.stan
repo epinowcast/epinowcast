@@ -135,7 +135,7 @@ transformed parameters{
     imp_obs[k] = exp(imp_obs[k]);
   }
   }
-  // estimate share of cases with eventually known onset date, modeled as
+  // estimate share of cases with eventually known reference date, modeled as
   // a first order random walk for each group on the logit scale
   for (k in 1:g) {
     alpha[k] = logit(alpha_start[k] + cumulative_sum(alpha_epsilon[k]));
@@ -175,7 +175,7 @@ model {
       rd_eff_sd ~ zero_truncated_normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
     } 
   }
-  // share of cases with eventually known onset date
+  // share of cases with eventually known reference date
   alpha_sd ~ normal(alpha_sd_p[1], alpha_sd_p[2]) T[0, ];
   for (k in 1:g){
     alpha_start[k] ~ normal(alpha_start_p[1], alpha_start_p[2]);
