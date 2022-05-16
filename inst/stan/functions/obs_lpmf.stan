@@ -1,19 +1,16 @@
 real obs_lpmf(int[] obs, int[] sl, int[] csl,
               vector[] imp_obs, int[] sg, int[] st, int[,] rdlurd,
               vector srdlh, matrix ref_lh, int[] dpmfs, int ref_p, real phi) {
-  int end = num_elements(st);
   real tar = 0;
   real tar_obs;
-  int start_n = csl[1] - sl[1];
-  int end_n = csl[end];
-  int n = end_n - start_n;
-  int snap_obs[n] = obs[(start_n + 1):end_n];
-  vector[n] exp_obs;
+  int n_snaps = num_elements(st);
+  int n_obs = num_elements(obs);
+  vector[n_obs] exp_obs;
   int g, t, l;
   int ssnap = 1;
   int esnap = 0;
 
-  for (i in 1:end) {
+  for (i in 1:n_snaps) {
     g = sg[i];
     t = st[i];
     l = sl[i];
@@ -30,6 +27,6 @@ real obs_lpmf(int[] obs, int[] sl, int[] csl,
     ssnap += l;
   }
   // observation error model (across all reference times and groups)
-  tar = neg_binomial_2_lupmf(snap_obs | exp_obs, phi);
+  tar = neg_binomial_2_lupmf(obs | exp_obs, phi);
   return(tar);
 }
