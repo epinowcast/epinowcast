@@ -48,6 +48,8 @@ data {
   int ologlik; // Should the pointwise log likelihood be calculated
   // Priors (1st index = mean, 2nd index = standard deviation)
   real eobs_lsd_p[2]; // Standard deviation for expected final observations
+  real alpha_start_p[2]; // starting value for alpha random walk (logit scale)
+  real alpha_sd_p[2]; // standard deviation for alpha random walk increments
   real logmean_int_p[2]; // log mean intercept for reference date delay
   real logsd_int_p[2]; // log standard deviation for the reference date delay
   real logmean_sd_p[2]; // standard deviation of scaled pooled logmean effects
@@ -77,6 +79,9 @@ parameters {
   vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
   vector<lower=0>[neff_sds] logsd_sd; // pooled modifiers to logsd
   vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
+  real alpha_start[g]; // starting value for alpha
+  real alpha_sd; // standard deviation of the random walk increments
+  vector<offset=0, multiplier=alpha_sd>[t] alpha_epsilon[g]; // random walk increments, non-centered
   real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
 }
 
@@ -130,6 +135,11 @@ transformed parameters{
     imp_obs[k] = exp(imp_obs[k]);
   }
   }
+  // estimate share of cases with eventually known onset date, modeled as
+  // a first order random walk for each group on the logit scale
+  for (k in 1:g) {
+    alpha[k] = logit(alpha_start[k] + cumulative_sum(alpha_epsilon[k]));
+  }
   // transform phi to overdispersion scale
   phi = 1 / sqrt(sqrt_phi);
   // debug issues in truncated data if/when they appear
@@ -164,6 +174,12 @@ model {
     if (nrd_eff_sds) {
       rd_eff_sd ~ zero_truncated_normal(rd_eff_sd_p[1], rd_eff_sd_p[2]);
     } 
+  }
+  // share of cases with eventually known onset date
+  alpha_sd ~ normal(alpha_sd_p[1], alpha_sd_p[2]) T[0, ];
+  for (k in 1:g){
+    alpha_start[k] ~ normal(alpha_start_p[1], alpha_start_p[2]);
+    alpha_epsilon[k] ~ normal(0, alpha_sd);
   }
   // reporting overdispersion (1/sqrt)
   sqrt_phi ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
