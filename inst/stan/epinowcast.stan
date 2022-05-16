@@ -38,7 +38,7 @@ data {
   // Observations
   int obs[s, dmax]; // obs for each primary date (row) and report date (column)
   int flat_obs[n]; // obs stored as a flat vector
-  int obs_miss[dmax]; // obs with missing primary date
+  int obs_miss[g, rd]; // obs with missing primary date (group first)
   int latest_obs[t, g]; // latest obs for each snapshot group
   // Control parameters
   int debug; // should debug information be shown
@@ -187,8 +187,8 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    target += obs_lupmf(flat_obs | sl, csl, imp_obs, sg, st,
-                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, phi);
+    target += obs_lupmf(flat_obs | obs_miss, dmax, sl, csl, g, imp_obs, sg, st,
+                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, alpha, phi);
     }
   }
 }
