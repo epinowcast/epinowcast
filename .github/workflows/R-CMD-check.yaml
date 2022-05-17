@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/checkout@v2
 
-       - name: Install Rtools42
+      - name: Install Rtools42
         if: runner.os == 'Windows'
         run: |
           $source = 'https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5168-5107.exe'
