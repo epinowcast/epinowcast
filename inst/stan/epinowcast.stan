@@ -195,34 +195,55 @@ model {
 
 generated quantities {
   int pp_obs[pp ? sum(sl) : 0];
+  int pp_obs_miss[pp ? sum(sl) : 0];
   vector[ologlik ? s : 0] log_lik;
+  vector[ologlik ? rd : 0] log_lik_miss;
   int pp_inf_obs[cast ? dmax : 0, cast ? g : 0];
+  int pp_inf_obs_miss[cast ? t : 0, cast ? g : 0];
+  int pp_inf_obs_miss_rep[cast ? rd : 0, cast ? g : 0];
   profile("generated_total") {
   if (cast) {
-    real tar_obs;
-    vector[dmax] exp_obs;
+    int i_group, i_time;
+    real tar_obs, tar_alpha;
     vector[dmax] rdlh;
+    vector[dmax] exp_obs;
+    vector[ologlik ? rd : 0] exp_obs_miss_rep[ologlik ? g : 0] = rep_array(rep_vector(0, rd), g);
     int pp_obs_tmp[s, dmax];
+    int pp_obs_tmp_miss[s, dmax];
     // Posterior predictions for observations
     for (i in 1:s) {
       profile("generated_obs") {
-      tar_obs = imp_obs[sg[i]][st[i]];
-      rdlh = srdlh[rdlurd[st[i]:(st[i] + dmax - 1), sg[i]]];
+      i_group = sg[i];
+      i_time = st[i];
+      tar_obs = imp_obs[i_group][i_time];
+      tar_alpha = alpha[i_group][i_time];
+      rdlh = srdlh[rdlurd[i_time:(i_time + dmax - 1), i_group]];
       exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
-      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs, phi);
+      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs * tar_alpha, phi);
+      pp_obs_tmp_miss[i, 1:dmax] = neg_binomial_2_rng(exp_obs * (1 - tar_alpha), phi);
       }
       profile("generated_loglik") {
       if (ologlik) {
+        exp_obs_miss_rep[i_group][max(1 + dmax, i_time):(i_time + dmax)] += (exp_obs * (1 - tar_alpha))[max(1 + dmax - i_time, 1):dmax];
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
-          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j], phi);
+          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j] * tar_alpha, phi);
         }
       }
       }
     }
+    profile("generated_loglik") {
+    for (i in (1+dmax):rd) {
+      log_lik_miss[i] = 0;
+      for (k in 1:g) {
+        log_lik_miss[i] += neg_binomial_2_lpmf(obs_miss[k, i] | exp_obs_miss_rep[k][i], phi);
+      }
+    }
+    }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
     profile("generated_obs") {
     for (k in 1:g) {
+      // cases with known reference date (by reference date)
       int start_t = t - dmax;
       for (i in 1:dmax) {
         int snap = ts[start_t + i, k];
@@ -230,6 +251,17 @@ generated quantities {
         if (sl[snap] < dmax) {
           pp_inf_obs[i, k] += sum(pp_obs_tmp[snap, (sl[snap]+1):dmax]);
         }
+      }
+      // cases with missing reference date (by estimated reference date)
+      for (i in 1:t) {
+        int snap = ts[i, k];
+        pp_inf_obs_miss[i, k] = sum(pp_obs_tmp_miss[snap, 1:dmax]);
+      }
+      // cases with missing reference date (by reporting date)
+      pp_inf_obs_miss_rep = rep_array(0, rd, g);
+      for (i in (1+dmax):rd) {
+        int snap = ts[i, k];
+        pp_inf_obs_miss_rep[max(1 + dmax, i):(i + dmax), i_group] = pp_obs_tmp_miss[snap, max(1 + dmax - i, 1):dmax];
       }
     }
     // If posterior predictions for all observations are needed copy
@@ -239,6 +271,7 @@ generated quantities {
       int start_t = 0;
       for (i in 1:s) {
         pp_obs[(start_t + 1):(start_t + sl[i])] = pp_obs_tmp[i, 1:sl[i]];
+        pp_obs_miss[(start_t + 1):(start_t + sl[i])] = pp_obs_tmp_miss[i, 1:sl[i]];
         start_t += sl[i];
       }
     }
