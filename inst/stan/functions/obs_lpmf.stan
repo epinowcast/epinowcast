@@ -9,7 +9,8 @@ real obs_lpmf(int[] obs, int[,] obs_miss, int dmax, int[] sl, int[] csl, int n_g
   int n_obs_miss = num_elements(obs_miss[1]);
   vector[n_obs] exp_obs_all;
   vector[n_obs] exp_obs;
-  vector[n_obs_miss] exp_obs_miss[n_groups];
+  vector[n_obs_miss] exp_obs_miss[n_groups] = rep_array(rep_vector(0, n_obs_miss), n_groups);
+  
   int g, t, l;
   int ssnap = 1;
   int esnap = 0;
@@ -31,9 +32,9 @@ real obs_lpmf(int[] obs, int[,] obs_miss, int dmax, int[] sl, int[] csl, int n_g
       tar_obs, ref_lh[1:l, dpmfs[i]], rdlh, ref_p
     );
     // compute expected final obs with known and missing reference date
-    exp_obs[ssnap:esnap] = exp_obs * tar_alpha;
+    exp_obs[ssnap:esnap] = exp_obs_all * tar_alpha;
     if(t+l>=1+dmax){
-      exp_obs_miss[g][max(1+dmax,t):(t + l)] = exp_obs[max(1+dmax-t,1):l] * (1-tar_alpha);
+      exp_obs_miss[g][max(1 + dmax, t):(t + l)] += exp_obs_all[max(1 + dmax - t, 1):l] * (1 - tar_alpha);
     }
     ssnap += l;
   }
@@ -41,7 +42,7 @@ real obs_lpmf(int[] obs, int[,] obs_miss, int dmax, int[] sl, int[] csl, int n_g
   tar = neg_binomial_2_lupmf(obs | exp_obs, phi);
   // observation error model with missing reference dates
   for (k in 1:n_groups) {
-    tar += neg_binomial_2_lupmf(obs_miss[k][(1+dmax):n_obs_miss] | exp_obs_miss[k][(1+dmax):n_obs_miss], phi);
+    tar += neg_binomial_2_lupmf(obs_miss[k][(1 + dmax):n_obs_miss] | exp_obs_miss[k][(1 + dmax):n_obs_miss], phi);
   }
   return(tar);
-}]
+}
