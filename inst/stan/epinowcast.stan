@@ -259,9 +259,11 @@ generated quantities {
       }
       // cases with missing reference date (by reporting date)
       pp_inf_obs_miss_rep = rep_array(0, rd, g);
-      for (i in (1+dmax):rd) {
+      for (i in dmax:rd) {
         int snap = ts[i, k];
-        pp_inf_obs_miss_rep[max(1 + dmax, i):(i + dmax), i_group] = pp_obs_tmp_miss[snap, max(1 + dmax - i, 1):dmax];
+        for (l in 1:dmax){
+          pp_inf_obs_miss_rep[i + l, i_group] += pp_obs_tmp_miss[snap, l];
+        }
       }
     }
     // If posterior predictions for all observations are needed copy
