@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6.2000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6.3000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,6 +79,10 @@
 <li>Add profiling switch to model compilation, allowing to toggle profiling (<a href="https://mc-stan.org/cmdstanr/articles/profiling.html" class="external-link uri">https://mc-stan.org/cmdstanr/articles/profiling.html</a>) on/off in the same model (see <a href="https://github.com/epiforecasts/epinowcast/pull/41" class="external-link">#41</a> by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>).</li>
 <li>Fully vectorise the likelihood by flattening observations and pre-specify expected observations into a vector before calculating the log-likelihood (see <a href="https://github.com/epiforecasts/epinowcast/pull/40" class="external-link">#40</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>).</li>
 <li>Adds vectorisation of zero truncated normal distributions (see <a href="https://github.com/epiforecasts/epinowcast/pull/38" class="external-link">#38</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>)</li>
+<li>
+<code>hazard_to_prob</code> has been optimised using vectorisation (see [#53] by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>).</li>
+<li>
+<code>prob_to_hazard</code> has been optimised so that only required cumulative probabilties are calculated (see [#53] by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.5" id="epinowcast-005">epinowcast 0.0.5<a class="anchor" aria-label="anchor" href="#epinowcast-005"></a></h2>
