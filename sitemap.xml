@@ -186,4 +186,7 @@
   <url>
     <loc>epiforecasts.io/epinowcast/reference/summary.epinowcast.html</loc>
   </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/reference/write_stan_files_no_profile.html</loc>
+  </url>
 </urlset>
