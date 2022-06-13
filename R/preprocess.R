@@ -34,7 +34,7 @@ enw_add_metaobs_features <- function(metaobs, holidays = c(),
   metaobs <- data.table::copy(metaobs)
   metaobs[, day_of_week := weekdays(date)]
 
-  # make holidays be sundays
+  # make holidays be Sundays
   if (length(holidays) != 0) {
     metaobs[get(holidays) == TRUE, day_of_week := holidays_to]
   }
