@@ -273,8 +273,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   # complete missing report dates
   comp <- rbind(
     obs[!is.na(reference_date)][rep(1:.N,each=max_delay), .(report_date = reference_date + 0:(.N - 1)), by = c("reference_date", "group")],
-    CJ(reference_date = as.Date(NA), group = unique(obs[,group]), report_date = obs[,seq.Date(pmin(min(report_date,na.rm=T),min(reference_date,na.rm=T)),
-                                                                                              pmin(max(report_date,na.rm=T),max(reference_date,na.rm=T)),by=1)])
+    CJ(reference_date = as.Date(NA), group = unique(obs[,group]), report_date = obs[,seq.Date(min(reference_date,na.rm=T),
+                                                                                              max(reference_date,na.rm=T)+max_delay-1,by=1)])
   )
   grouping_factors <- obs[, lapply(.SD, min, na.rm = TRUE), .SDcols = by, by = "group"]
   comp <- comp[grouping_factors, on = "group"]
