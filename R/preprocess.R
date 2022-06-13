@@ -310,25 +310,26 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   )
   diff_obs[, group := new_group][, new_group := NULL]
   obs[, old_group := NULL]
+  
+  # separate obs with and without missing reference date
+  reporting_available <- diff_obs[!is.na(reference_date)]
+  reporting_missing <- diff_obs[is.na(reference_date)]
 
   # calculate reporting matrix on obs with available reference date
-  reporting_triangle <- enw_reporting_triangle(diff_obs[!is.na(reference_date)])
-  
-  # extract obs with missing reference date
-  reporting_missing <- diff_obs[is.na(reference_date)]
+  reporting_triangle <- enw_reporting_triangle(reporting_available)
 
   # extract latest data
   # Note: currently, only the obs with available reference date are used
   # This should to be extended to missing reference dates to avoid bias
-  latest <- enw_latest_data(obs[!is.na(reference_date)])
+  latest <- enw_latest_data(reporting_available)
 
   # extract and extend report date meta data to include unobserved reports
-  metareport <- enw_metadata(obs, target_date = "report_date")
+  metareport <- enw_metadata(reporting_available, target_date = "report_date")
   metareport <- enw_extend_date(metareport, max_delay = max_delay)
   metareport <- enw_add_metaobs_features(metareport, holidays = rep_holidays)
 
   # extract and add features for reference date
-  metareference <- enw_metadata(obs[!is.na(reference_date)], target_date = "reference_date")
+  metareference <- enw_metadata(reporting_available, target_date = "reference_date")
   metareference <- enw_add_metaobs_features(
     metareference,
     holidays = ref_holidays
@@ -336,11 +337,11 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   out <- data.table::data.table(
     obs = list(obs),
-    new_confirm = list(diff_obs),
+    new_confirm = list(reporting_available),
+    new_confirm_missing = list(reporting_missing),
     latest = list(latest),
-    diff = list(diff_obs),
+    diff = list(reporting_available),
     reporting_triangle = list(reporting_triangle),
-    reporting_missing = list(reporting_missing),
     metareference = list(metareference),
     metareport = list(metareport),
     time = nrow(latest[group == 1]),
