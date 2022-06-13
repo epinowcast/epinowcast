@@ -192,7 +192,7 @@ enw_new_reports <- function(obs) {
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
     by = c("reference_date", "group")
   ]
-  reports <- reports[, .SD[reference_date >= min(report_date)],
+  reports <- reports[, .SD[reference_date >= min(report_date) | is.na(reference_date)],
     by = c("group")
   ]
   reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", "group")]
@@ -271,7 +271,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   obs <- enw_assign_group(obs, by = by)
 
   # filter by maximum report date
-  obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
+  obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)],
     by = c("reference_date", "group")
   ]
 
@@ -300,11 +300,16 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   diff_obs[, group := new_group][, new_group := NULL]
   obs[, old_group := NULL]
 
-  # calculate reporting matrix
-  reporting_triangle <- enw_reporting_triangle(diff_obs)
+  # calculate reporting matrix on obs with available reference date
+  reporting_triangle <- enw_reporting_triangle(diff_obs[!is.na(reference_date)])
+  
+  # extract obs with missing reference date
+  reporting_missing <- diff_obs[is.na(reference_date)]
 
   # extract latest data
-  latest <- enw_latest_data(obs)
+  # Note: currently, only the obs with available reference date are used
+  # This should to be extended to missing reference dates to avoid bias
+  latest <- enw_latest_data(obs[!is.na(reference_date)])
 
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(obs, target_date = "report_date")
@@ -312,7 +317,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareport <- enw_add_metaobs_features(metareport, holidays = rep_holidays)
 
   # extract and add features for reference date
-  metareference <- enw_metadata(obs, target_date = "reference_date")
+  metareference <- enw_metadata(obs[!is.na(reference_date)], target_date = "reference_date")
   metareference <- enw_add_metaobs_features(
     metareference,
     holidays = ref_holidays
@@ -324,6 +329,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     latest = list(latest),
     diff = list(diff_obs),
     reporting_triangle = list(reporting_triangle),
+    reporting_missing = list(reporting_missing),
     metareference = list(metareference),
     metareport = list(metareport),
     time = nrow(latest[group == 1]),
