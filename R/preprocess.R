@@ -94,6 +94,9 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
 #' @export
 #' @importFrom data.table as.data.table copy
 enw_assign_group <- function(obs, by = c()) {
+  if ("group" %in% names(obs)) {
+    stop("Dataset cannot have a column called 'group'.")
+  }
   obs <- data.table::as.data.table(obs)
   if (length(by) == 0) {
     obs <- obs[, group := 1]
