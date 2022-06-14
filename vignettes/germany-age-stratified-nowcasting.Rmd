@@ -1046,14 +1046,15 @@ More rigorously, we can evaluate the nowcasts using proper scoring rules from th
 
 As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
 
-
 ```r
-overall_score <- enw_score_nowcast(
+score <- enw_score_nowcast(
  summarised_nowcasts,
- latest_nat_germany[reference_date > (max(reference_date) - 7)],
- summarise_by = "model"
+ latest_nat_germany[reference_date > (max(reference_date) - 7)]
 )
-kable(overall_score)
+
+overall_score <- score |>
+  summarise_score(by = "model") |>
+  kable()
 ```
 
 
@@ -1071,12 +1072,9 @@ Stratifying by age group we see that trends in performance are fairly consistent
 
 
 ```r
-age_score <- enw_score_nowcast(
- summarised_nowcasts,
- latest_nat_germany[reference_date > (max(reference_date) - 7)],
- summarise_by = c("model", "age_group")
-)
-kable(age_score)
+age_score <- score |>
+  summarise_score(by = c("model", "age_group")) |>
+  kable()
 ```
 
 
@@ -1130,12 +1128,9 @@ Stratifying by date we find that interestingly the more complex models appear to
 
 
 ```r
-date_score <- enw_score_nowcast(
- summarised_nowcasts,
- latest_nat_germany[reference_date > (max(reference_date) - 7)],
- summarise_by = c("model", "reference_date")
-)
-kable(date_score)
+date_score <- score |>
+  summarise_score(by = c("model", "reference_date")) |>
+  kable()
 ```
 
 
@@ -1189,10 +1184,6 @@ Finally we can look across all scores relative to the simple model with no varia
 
 
 ```r
-score <- enw_score_nowcast(
- summarised_nowcasts,
- latest_nat_germany[reference_date > (max(reference_date) - 7)]
-)
 fixed_score <- score[model %in% "Reference: Fixed, Report: Fixed",
                      .(reference_date, age_group, fixed_is = interval_score)]
 score <- merge(score, fixed_score, by = c("reference_date", "age_group"))
