@@ -28,7 +28,7 @@
 #' @importFrom data.table copy setnames
 #' @export
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
-                              round_to = 3, ...) {
+                              check = FALSE, round_to = 3, ...) {
   if (!requireNamespace("scoringutils")) {
     stop("scoringutils is required for this function to work")
   }

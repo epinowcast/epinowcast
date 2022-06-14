@@ -4,7 +4,14 @@
 \alias{enw_score_nowcast}
 \title{Evaluate nowcasts using proper scoring rules}
 \usage{
-enw_score_nowcast(nowcast, latest_obs, log = FALSE, round_to = 3, ...)
+enw_score_nowcast(
+  nowcast,
+  latest_obs,
+  log = FALSE,
+  check = FALSE,
+  round_to = 3,
+  ...
+)
 }
 \arguments{
 \item{nowcast}{A posterior nnowcast or posterior prediction as returned by
@@ -17,13 +24,13 @@ measure. It may be useful when targets are on very different scales or when
 the forecaster is more interested in good all round performance versus good
 performance for targets with large values.}
 
+\item{check}{Logical, defaults to FALSE. Should
+\code{\link[scoringutils:check_forecasts]{scoringutils::check_forecasts()}} be used to check input nowcasts.}
+
 \item{round_to}{Integer defaults to 3. Number of digits to round scoring
 output to.}
 
 \item{...}{Additional arguments passed to \code{\link[scoringutils:score]{scoringutils::score()}}.}
-
-\item{check}{Logical, defaults to FALSE. Should
-\code{\link[scoringutils:check_forecasts]{scoringutils::check_forecasts()}} be used to check input nowcasts.}
 }
 \value{
 A \code{data.table} as returned by \code{\link[scoringutils:score]{scoringutils::score()}}.
