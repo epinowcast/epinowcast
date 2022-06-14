@@ -6,11 +6,7 @@
 #' on forecast scoring.
 #'
 #' @param nowcast A posterior nnowcast or posterior prediction as returned by
-#' [summary.fv_posterior()], [summary.fv_forecast()] or [fv_extract_forecast()].
-#' Internally case forecasts are filtered for using the `value_type` variable
-#' if present as are only overall or combined case counts (i.e as returned)
-#' by the 1 and 2 strain models. If looking for more complex scoring it may be
-#' wise to implement a custom wrapper.
+#' [summary.epinowcast()], when used on the output of [epinowcast()].
 #'
 #' @param log Logical, defaults to FALSE. Should scores be calculated on the
 #' log scale (with a 0.01 shift) for both observations and nowcasts. Scoring in
