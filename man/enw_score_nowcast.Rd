@@ -41,4 +41,28 @@ handling filtering nowcast summary output and linking this output to
 observed data. See the documentation for the \code{scoringutils} package for more
 on forecast scoring.
 }
+\examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+library(data.table)
+library(scoringutils)
+
+# Summarise example nowcast
+nowcast <- enw_example("nowcast")
+summarised_nowcast <- summary(nowcast)
+
+# Load latest available observations
+obs <- enw_example("observations")
+
+# Keep the last 7 days of data
+obs <- obs[reference_date > (max(reference_date) - 7)]
+
+# score on the absolute scale
+scores <- enw_score_nowcast(summarised_nowcast, obs)
+summarise_scores(scores, by = "location")
+
+# score overall on a log scale
+log_scores <- enw_score_nowcast(summarised_nowcast, obs, log = TRUE)
+summarise_scores(log_scores, by = "location")
+\dontshow{\}) # examplesIf}
+}
 \concept{modelvalidation}

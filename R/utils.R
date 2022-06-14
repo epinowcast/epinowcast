@@ -36,10 +36,10 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' functionality without needing to install `cmdstanr`.
 #'
 #' @param type A character string indicating the example to load.
-#'  Supported options are "nowcast, "observations", and "script" which are the
-#' output of epinowcast()],  and [enw_preprocess_data()] applied to the
-#' [germany_covid19_hosp] package dataset), and the script used to generate
-#' these examples respectively.
+#' Supported options are "nowcast, "preprocessed_observations", "observations",
+#' and "script" which are the output of epinowcast()], [enw_preprocess_data()],
+#' and [enw_latest_data()] applied to the [germany_covid19_hosp] package
+#' dataset), and the script used to generate these examples respectively.
 #'
 #' @return A `data.table` of summarised output
 #'
@@ -50,7 +50,10 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' enw_example(type = "nowcast")
 #'
 #' # Load the preprocessed observations
-#' enw_example(strains = 1, type = "forecast")
+#' enw_example(type = "preprocessed_observations")
+#'
+#' # Load the latest observations
+#' enw_example(type = "observations")
 #'
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
@@ -58,19 +61,15 @@ expose_stan_fns <- function(files, target_dir, ...) {
 enw_example <- function(type = "nowcast") {
   type <- match.arg(
     type,
-    choices = c("nowcast", "observations", "script")
+    choices = c(
+      "nowcast", "preprocessed_observations", "observations", "script"
+    )
   )
 
-  if (type %in% c("nowcast", "observations")) {
-    file <- system.file(
-      "extdata", paste(type, "_example.rds", sep = "_"),
-      package = "epinowcast"
-    )
+  if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
+    file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
   } else if (type %in% "script") {
-    file <- system.file(
-      "scripts", paste("germany_example.R", sep = "_"),
-      package = "epinowcast"
-    )
+    file <- system.file("scripts", "germany_example.R", package = "epinowcast")
   }
 
   if (type %in% "script") {

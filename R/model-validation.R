@@ -27,6 +27,27 @@
 #' @family modelvalidation
 #' @importFrom data.table copy setnames
 #' @export
+#' @examplesIf interactive()
+#' library(data.table)
+#' library(scoringutils)
+#'
+#' # Summarise example nowcast
+#' nowcast <- enw_example("nowcast")
+#' summarised_nowcast <- summary(nowcast)
+#'
+#' # Load latest available observations
+#' obs <- enw_example("observations")
+#'
+#' # Keep the last 7 days of data
+#' obs <- obs[reference_date > (max(reference_date) - 7)]
+#'
+#' # score on the absolute scale
+#' scores <- enw_score_nowcast(summarised_nowcast, obs)
+#' summarise_scores(scores, by = "location")
+#'
+#' # score overall on a log scale
+#' log_scores <- enw_score_nowcast(summarised_nowcast, obs, log = TRUE)
+#' summarise_scores(log_scores, by = "location")
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
                               check = FALSE, round_to = 3, ...) {
   if (!requireNamespace("scoringutils")) {

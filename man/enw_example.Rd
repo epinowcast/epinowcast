@@ -8,10 +8,10 @@ enw_example(type = "nowcast")
 }
 \arguments{
 \item{type}{A character string indicating the example to load.
-Supported options are "nowcast, "observations", and "script" which are the
-output of epinowcast()],  and \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} applied to the
-\link{germany_covid19_hosp} package dataset), and the script used to generate
-these examples respectively.}
+Supported options are "nowcast, "preprocessed_observations", "observations",
+and "script" which are the output of epinowcast()], \code{\link[=enw_preprocess_data]{enw_preprocess_data()}},
+and \code{\link[=enw_latest_data]{enw_latest_data()}} applied to the \link{germany_covid19_hosp} package
+dataset), and the script used to generate these examples respectively.}
 }
 \value{
 A \code{data.table} of summarised output
@@ -26,7 +26,10 @@ functionality without needing to install \code{cmdstanr}.
 enw_example(type = "nowcast")
 
 # Load the preprocessed observations
-enw_example(strains = 1, type = "forecast")
+enw_example(type = "preprocessed_observations")
+
+# Load the latest observations
+enw_example(type = "observations")
 
 # Load the script used to generate these examples
 # Optionally source this script to regenerate the example
