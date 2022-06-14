@@ -5,8 +5,11 @@
 #' observed data. See the documentation for the `scoringutils` package for more
 #' on forecast scoring.
 #'
-#' @param nowcast A posterior nnowcast or posterior prediction as returned by
+#' @param nowcast A posterior nowcast or posterior prediction as returned by
 #' [summary.epinowcast()], when used on the output of [epinowcast()].
+#'
+#' @param latest_obs A data frame of the latest available observations as
+#' producd by [enw_latest_data()] or otherwise.
 #'
 #' @param log Logical, defaults to FALSE. Should scores be calculated on the
 #' log scale (with a 0.01 shift) for both observations and nowcasts. Scoring in
