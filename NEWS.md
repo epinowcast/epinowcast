@@ -6,6 +6,7 @@
 * Adds vectorisation of zero truncated normal distributions (see [#38](https://github.com/epiforecasts/epinowcast/pull/38) by [@seabbs](https://github.com/seabbs))
 * `hazard_to_prob` has been optimised using vectorisation (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
 * `prob_to_hazard` has been optimised so that only required cumulative probabilties are calculated (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
+* Updated to use  the `inv_sqrt` stan function (see [#60] by @seabbs).
 
 # epinowcast 0.0.5
 
