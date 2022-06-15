@@ -98,12 +98,13 @@ construct_rw <- function(data, rw) {
   data <- enw_add_cumulative_membership(
     data,
     feature = rw$time
-
+  )
   terms <- grep(paste0("c", rw$time), colnames(data), value = TRUE)
+  fdata <- data.table::copy(data)
+  fdata <- fdata[, c(terms, rw$group)]
   if (!is.null(rw$group)) {
     terms <- paste0(rw$group, ":", terms)
   }
-  # filter data to just columns needed here
   # make a fixed effects design matrix
   # extract effects metadata
   # implement random walk structure effects
