@@ -35,8 +35,7 @@ norws <- function(x) {
   form <- gsub("\\+ rw\\(.*?\\)", "", form)
   form <- gsub("rw\\(.*?\\)", "", form)
 
-  form <- tryCatch(
-    {
+  form <- tryCatch({
       as.formula(form)
     },
     error = function(cond) {
@@ -88,7 +87,7 @@ rw <- function(time, group) {
   if (missing(group)) {
     group <- NULL
   } else {
-    group <- deparse(substitute(gr))
+    group <- deparse(substitute(group))
   }
   out <- list(time = time, group = group)
   class(out) <- c("rw_term")
@@ -99,10 +98,38 @@ construct_rw <- function(data, rw) {
   data <- enw_add_cumulative_membership(
     data,
     feature = rw$time
-  )
+
   terms <- grep(paste0("c", rw$time), colnames(data), value = TRUE)
   if (!is.null(rw$group)) {
     terms <- paste0(rw$group, ":", terms)
   }
+  # filter data to just columns needed here
+  # make a fixed effects design matrix
+  # extract effects metadata
+  # implement random walk structure effects
+  # output updated data, fixed effects, and random effects meta data
   return(list(data = data, terms = terms))
+}
+
+construct_re <- function(data, re) {
+  # filter data to just columns required here
+  # get random effect fixed effects
+  # make interactions with group effect
+  # set the intercept to the the group effect (i.e 1:group -> group)
+  # make a fixed effects design matrix
+  # make metadata for this design matrix
+  # assign random effect groups based on fixed affects interaction with group
+  # output fixed effects and random effects metadata
+}
+
+construct_fixed_design(components) {
+  # iterate over component design matrices and rbind
+  # for each look up in the sparse design matrix inflate lookup based on number
+  # of rows in current combined design matrix
+  # output combined design matrix and lookup vector
+}
+
+construct_random_design(components) {
+  # rbind all random effect design matrices
+  # output combined design matrix
 }

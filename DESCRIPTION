@@ -35,6 +35,7 @@ Imports:
     cmdstanr,
     data.table,
     lubridate,
+    lme4,
     ggplot2,
     posterior,
     purrr,
