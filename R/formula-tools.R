@@ -122,14 +122,6 @@ construct_re <- function(data, re) {
   # output fixed effects and random effects metadata
 }
 
-construct_fixed_design(components) {
-  # iterate over component design matrices and rbind
-  # for each look up in the sparse design matrix inflate lookup based on number
-  # of rows in current combined design matrix
-  # output combined design matrix and lookup vector
-}
-
-construct_random_design(components) {
-  # rbind all random effect design matrices
-  # output combined design matrix
-}
+# Make fixed design matrix using all fixed effects from all components
+# Construct a complete random design matrix by combining all of the random
+# effect design matrices from each component
