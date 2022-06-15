@@ -267,9 +267,9 @@ enw_model <- function(model, include, compile = TRUE,
   }
 
   if (!profile) {
-    code <- paste(readLines(model), collapse = "\n")
-    code_no_profile <- remove_profiling(code)
-    model <- cmdstanr::write_stan_file(code_no_profile)
+    stan_no_profile <- write_stan_files_no_profile(model, include)
+    model <- stan_no_profile$model
+    include <- stan_no_profile$include_paths
   }
 
   if (compile) {

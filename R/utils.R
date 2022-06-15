@@ -29,6 +29,57 @@ expose_stan_fns <- function(files, target_dir, ...) {
   return(invisible(NULL))
 }
 
+#' Load a package example
+#'
+#' Loads examples of nowcasts produce using example scripts. Used to streamline
+#' examples, in package tests and to enable users to explore package
+#' functionality without needing to install `cmdstanr`.
+#'
+#' @param type A character string indicating the example to load.
+#' Supported options are "nowcast, "preprocessed_observations", "observations",
+#' and "script" which are the output of epinowcast()], [enw_preprocess_data()],
+#' and [enw_latest_data()] applied to the [germany_covid19_hosp] package
+#' dataset), and the script used to generate these examples respectively.
+#'
+#' @return A `data.table` of summarised output
+#'
+#' @family data
+#' @export
+#' @examples
+#' # Load the nowcast
+#' enw_example(type = "nowcast")
+#'
+#' # Load the preprocessed observations
+#' enw_example(type = "preprocessed_observations")
+#'
+#' # Load the latest observations
+#' enw_example(type = "observations")
+#'
+#' # Load the script used to generate these examples
+#' # Optionally source this script to regenerate the example
+#' readLines(enw_example(type = "script"))
+enw_example <- function(type = "nowcast") {
+  type <- match.arg(
+    type,
+    choices = c(
+      "nowcast", "preprocessed_observations", "observations", "script"
+    )
+  )
+
+  if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
+    file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
+  } else if (type %in% "script") {
+    file <- system.file("scripts", "germany_example.R", package = "epinowcast")
+  }
+
+  if (type %in% "script") {
+    out <- file
+  } else {
+    out <- readRDS(file)
+  }
+  return(out)
+}
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",

@@ -1,9 +1,14 @@
 # epinowcast 0.0.6
 
 * Simplifies and optimises the internal functions used to estimate the parametric daily reporting probability. These are now exposed to the user via the `distribution` parameter with both the Lognormal and Gamma families being tested to work. Note that both parameterisations use their standard parameterisations as given in the stan manual (see [#42](https://github.com/epiforecasts/epinowcast/pull/42) by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs))
-* Add profiling switch to model compilation, allowing to toggle profiling (https://mc-stan.org/cmdstanr/articles/profiling.html) on/off in the same model (see [#41](https://github.com/epiforecasts/epinowcast/pull/41) by [@adrian-lison](https://github.com/adrian-lison)).
+* Add profiling switch to model compilation, allowing to toggle profiling (https://mc-stan.org/cmdstanr/articles/profiling.html) on/off in the same model. Also supports .stan files found in `include_paths` (see [#41](https://github.com/epiforecasts/epinowcast/pull/41) and [#54](https://github.com/epiforecasts/epinowcast/pull/54) by [@adrian-lison](https://github.com/adrian-lison)).
 * Fully vectorise the likelihood by flattening observations and pre-specify expected observations into a vector before calculating the log-likelihood (see [#40](https://github.com/epiforecasts/epinowcast/pull/40) by [@seabbs](https://github.com/seabbs)).
 * Adds vectorisation of zero truncated normal distributions (see [#38](https://github.com/epiforecasts/epinowcast/pull/38) by [@seabbs](https://github.com/seabbs))
+* `hazard_to_prob` has been optimised using vectorisation (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
+* `prob_to_hazard` has been optimised so that only required cumulative probabilties are calculated (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
+* Updated to use  the `inv_sqrt` stan function (see [#60] by @seabbs).
+* Added support for `scoringutils 1.0.0` (see [#61] by @seabbs). 
+* Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see [#61] by @seabbs).
 
 # epinowcast 0.0.5
 

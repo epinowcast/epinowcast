@@ -129,7 +129,7 @@ transformed parameters{
   }
   }
   // transform phi to overdispersion scale
-  phi = 1 / sqrt(sqrt_phi);
+  phi = inv_sqrt(sqrt_phi);
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan

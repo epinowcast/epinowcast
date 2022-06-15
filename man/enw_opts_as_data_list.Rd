@@ -45,6 +45,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_posterior_as_prior}()},
 \code{\link{enw_priors_as_data_list}()},
-\code{\link{remove_profiling}()}
+\code{\link{remove_profiling}()},
+\code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}
