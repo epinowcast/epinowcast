@@ -7,14 +7,16 @@ if (requireNamespace("scoringutils")) {
 
     expect_data_table(
       suppressWarnings(suppressMessages(
-        enw_score_nowcast(summarised_nowcast, obs))
-      )
+        enw_score_nowcast(summarised_nowcast, obs)
+      ))
     )
     expect_data_table(
       suppressWarnings(suppressMessages(
         enw_score_nowcast(
-          summarised_nowcast, obs, log = TRUE
-      )))
+          summarised_nowcast, obs,
+          log = TRUE
+        )
+      ))
     )
     expect_data_table(
       suppressWarnings(suppressMessages(enw_score_nowcast(
