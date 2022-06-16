@@ -38,7 +38,7 @@ data {
   // Observations
   int obs[s, dmax]; // obs for each primary date (row) and report date (column)
   int flat_obs[n]; // obs stored as a flat vector
-  int obs_miss[g, rd]; // obs with missing primary date (group first)
+  int obs_miss[g, t]; // obs with missing primary date (group first)
   int latest_obs[t, g]; // latest obs for each snapshot group
   // Control parameters
   int debug; // should debug information be shown
@@ -200,14 +200,14 @@ generated quantities {
   vector[ologlik ? rd : 0] log_lik_miss;
   int pp_inf_obs[cast ? dmax : 0, cast ? g : 0];
   int pp_inf_obs_miss[cast ? t : 0, cast ? g : 0];
-  int pp_inf_obs_miss_rep[cast ? rd : 0, cast ? g : 0];
+  int pp_inf_obs_miss_rep[cast ? t : 0, cast ? g : 0];
   profile("generated_total") {
   if (cast) {
     int i_group, i_time;
     real tar_obs, tar_alpha;
     vector[dmax] rdlh;
     vector[dmax] exp_obs;
-    vector[ologlik ? rd : 0] exp_obs_miss_rep[ologlik ? g : 0] = rep_array(rep_vector(0, rd), g);
+    vector[ologlik ? t : 0] exp_obs_miss_rep[ologlik ? g : 0] = rep_array(rep_vector(0, t), g);
     int pp_obs_tmp[s, dmax];
     int pp_obs_tmp_miss[s, dmax];
     // Posterior predictions for observations
@@ -233,7 +233,7 @@ generated quantities {
       }
     }
     profile("generated_loglik") {
-    for (i in (1+dmax):rd) {
+    for (i in (1+dmax):t) {
       log_lik_miss[i] = 0;
       for (k in 1:g) {
         log_lik_miss[i] += neg_binomial_2_lpmf(obs_miss[k, i] | exp_obs_miss_rep[k][i], phi);
@@ -258,7 +258,7 @@ generated quantities {
         pp_inf_obs_miss[i, k] = sum(pp_obs_tmp_miss[snap, 1:dmax]);
       }
       // cases with missing reference date (by reporting date)
-      pp_inf_obs_miss_rep = rep_array(0, rd, g);
+      pp_inf_obs_miss_rep = rep_array(0, t, g);
       for (i in dmax:rd) {
         int snap = ts[i, k];
         for (l in 1:dmax){
