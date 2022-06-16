@@ -80,7 +80,7 @@ parameters {
   vector<lower=0>[neff_sds] logsd_sd; // pooled modifiers to logsd
   vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
   real alpha_start[g]; // starting value for alpha
-  real alpha_sd; // standard deviation of the random walk increments
+  real<lower=0> alpha_sd; // standard deviation of the random walk increments
   vector<offset=0, multiplier=alpha_sd>[t] alpha_epsilon[g]; // random walk increments, non-centered
   real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
 }
@@ -138,7 +138,7 @@ transformed parameters{
   // estimate share of cases with eventually known reference date, modeled as
   // a first order random walk for each group on the logit scale
   for (k in 1:g) {
-    alpha[k] = logit(alpha_start[k] + cumulative_sum(alpha_epsilon[k]));
+    alpha[k] = inv_logit(alpha_start[k] + cumulative_sum(alpha_epsilon[k]));
   }
   // transform phi to overdispersion scale
   phi = 1 / sqrt(sqrt_phi);
