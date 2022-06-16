@@ -88,9 +88,13 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>x</dt>
 <dd><p>A <code>data.table</code> of output as produced by <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
+
+
 <dt>latest_obs</dt>
 <dd><p>A <code>data.frame</code> of observed data which may be passed to
 lower level methods.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>A character string indicating the type of plot required.
 Currently supported options are "nowcast" which plots the nowcast
@@ -98,15 +102,22 @@ for each dataset along with the latest available observed data (using
 <code><a href="enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles()</a></code>), and "posterior_prediction" which plots
 observations reported at the time against simulated observations from  the
 model (using <code><a href="enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code>).</p></dd>
+
+
 <dt>log</dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should counts be plot on the log
 scale.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Pass additional arguments to lower level plot functions.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>ggplot2</code> object</p>
+    
+
+<p><code>ggplot2</code> object</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -130,7 +141,7 @@ scale.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 

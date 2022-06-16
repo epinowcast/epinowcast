@@ -103,7 +103,7 @@
 
 
 <script src="germany-age-stratified-nowcasting_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
-  <main id="main"><div class="page-header">
+  <main id="main" class="col-md-9"><div class="page-header">
       <img src="" class="logo" alt=""><h1>Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</h1>
                         <h4 data-toc-skip class="author">Sam Abbott</h4>
             
@@ -1015,12 +1015,14 @@
 <p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code>scoringutils::eval_forecasts()</code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
 <p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">overall_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
+<code class="sourceCode R"><span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
  <span class="va">summarised_nowcasts</span>,
- <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>,
- summarise_by <span class="op">=</span> <span class="st">"model"</span>
+ <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>
 <span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">overall_score</span><span class="op">)</span></code></pre></div>
+
+<span class="va">overall_score</span> <span class="op">&lt;-</span> <span class="va">score</span> |&gt;
+  <span class="fu">summarise_score</span><span class="op">(</span>by <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="40%">
@@ -1107,12 +1109,9 @@
 </table>
 <p>Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others.</p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">age_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
- <span class="va">summarised_nowcasts</span>,
- <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>,
- summarise_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"age_group"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">age_score</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">age_score</span> <span class="op">&lt;-</span> <span class="va">score</span> |&gt;
+  <span class="fu">summarise_score</span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table style="width:100%;" class="table">
 <colgroup>
 <col width="36%">
@@ -1603,12 +1602,9 @@
 </table>
 <p>Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend).</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">date_score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
- <span class="va">summarised_nowcasts</span>,
- <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>,
- summarise_by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span><span class="op">)</span>
-<span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="va">date_score</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">date_score</span> <span class="op">&lt;-</span> <span class="va">score</span> |&gt;
+  <span class="fu">summarise_score</span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span><span class="op">)</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="35%">
@@ -2099,11 +2095,7 @@
 </table>
 <p>Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treatss age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span>
- <span class="va">summarised_nowcasts</span>,
- <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span>
-<span class="op">)</span>
-<span class="va">fixed_score</span> <span class="op">&lt;-</span> <span class="va">score</span><span class="op">[</span><span class="va">model</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Reference: Fixed, Report: Fixed"</span>,
+<code class="sourceCode R"><span class="va">fixed_score</span> <span class="op">&lt;-</span> <span class="va">score</span><span class="op">[</span><span class="va">model</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"Reference: Fixed, Report: Fixed"</span>,
                      <span class="fu">.</span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">age_group</span>, fixed_is <span class="op">=</span> <span class="va">interval_score</span><span class="op">)</span><span class="op">]</span>
 <span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/merge.html" class="external-link">merge</a></span><span class="op">(</span><span class="va">score</span>, <span class="va">fixed_score</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span>
 
@@ -2145,7 +2137,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 

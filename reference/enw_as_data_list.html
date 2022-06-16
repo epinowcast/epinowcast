@@ -98,40 +98,61 @@
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>pobs</dt>
 <dd><p>Output from <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p></dd>
+
+
 <dt>reference_effects</dt>
 <dd><p>A list of fixed and random design matrices
 defining the date of reference model. Defaults to <code><a href="enw_formula.html">enw_formula()</a></code>
 which is an intercept only model.</p></dd>
+
+
 <dt>report_effects</dt>
 <dd><p>A list of fixed and random design matrices
 defining the date of reports model. Defaults to <code><a href="enw_formula.html">enw_formula()</a></code>
 which is an intercept only model.</p></dd>
+
+
 <dt>priors</dt>
 <dd><p>DESCRIPTION.</p></dd>
+
+
 <dt>distribution</dt>
 <dd><p>Character string indicating the type of distribution to
 use for reference date effects. The default is to use a lognormal but other
 options available include: gamma distributed ("gamma").</p></dd>
+
+
 <dt>nowcast</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.</p></dd>
+
+
 <dt>pp</dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should posterior predictions be made
 for observed data. Useful for evaluating the performance of the model.</p></dd>
+
+
 <dt>likelihood</dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should the likelihood be
 included in the model</p></dd>
+
+
 <dt>debug</dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should within model debug
 information be returned.</p></dd>
+
+
 <dt>output_loglik</dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should the
 log-likelihood be output. Disabling this will speed up fitting
 if evaluating the model fit is not required.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list as required by stan.</p>
+    
+
+<p>A list as required by stan.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -152,7 +173,7 @@ if evaluating the model fit is not required.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
