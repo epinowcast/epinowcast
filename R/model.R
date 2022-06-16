@@ -19,7 +19,9 @@ enw_priors <- function() {
       "logmean_sd",
       "logsd_sd",
       "rd_eff_sd",
-      "sqrt_phi"
+      "sqrt_phi",
+      "alpha_start",
+      "alpha_sd"
     ),
     description = c(
       "Standard deviation for expected final observations",
@@ -28,7 +30,9 @@ enw_priors <- function() {
       "Standard deviation of scaled pooled logmean effects",
       "Standard deviation of scaled pooled logsd effects",
       "Standard deviation of scaled pooled report date effects",
-      "One over the square of the reporting overdispersion"
+      "One over the square of the reporting overdispersion",
+      "Logit start value for share of cases with known reference date",
+      "Standard deviation of random walk for share of cases with known reference date"
     ),
     distribution = c(
       "Zero truncated normal",
@@ -37,10 +41,12 @@ enw_priors <- function() {
       "Zero truncated normal",
       "Zero truncated normal",
       "Zero truncated normal",
+      "Zero truncated normal",
+      "Normal",
       "Zero truncated normal"
     ),
-    mean = c(0, 1, 0.5, rep(0, 4)),
-    sd = rep(1, 7)
+    mean = c(0, 1, 0.5, rep(0, 4), 0, 0),
+    sd = c(rep(1, 7), 1, 0.1)
   )
 }
 
