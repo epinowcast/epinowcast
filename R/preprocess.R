@@ -281,12 +281,12 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   obs <- obs[comp, on = c("reference_date", "group", "report_date", by)]
   obs[, confirm:=nafill(nafill(confirm, "locf"), fill = 0), by = c("reference_date", "group")]
   
-  # filter by maximum report date
+  # filter by maximum reporting delay
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)],
     by = c("reference_date", "group")
   ]
 
-  # difference reports and filter for max delay an report date
+  # difference reports and filter for max delay and report date
   diff_obs <- enw_new_reports(obs)
 
   if (set_negatives_to_zero) {
