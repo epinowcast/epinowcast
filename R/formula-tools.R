@@ -73,10 +73,14 @@ terms_rw <- function(x) {
 #' construction.
 #'
 #' @param time Defines the random walk time period.
+#'
 #' @param group Defines the grouping parameter used for the random walk.
 #' If not specified no grouping is used.
+#'
 #' @return A list to be parsed internally.
 #' @export
+#' @example
+#' rw(time, age)
 rw <- function(time, group) {
   if (missing(time)) {
     stop("time must be present")
