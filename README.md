@@ -449,12 +449,12 @@ following,
     #> To cite epinowcast in publications use:
     #> 
     #>   Sam Abbott (2021). epinowcast: Hierarchical nowcasting of right
-    #>   censored epidemological counts, DOI: 10.5281/zenodo.5637165
+    #>   censored epidemiological counts, DOI: 10.5281/zenodo.5637165
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 
     #>   @Article{,
-    #>     title = {epinowcast: Hierarchical nowcasting of right censored epidemological counts},
+    #>     title = {epinowcast: Hierarchical nowcasting of right censored epidemiological counts},
     #>     author = {Sam Abbott},
     #>     journal = {Zenodo},
     #>     year = {2021},
