@@ -7,6 +7,11 @@
 enw_new_reports(obs, set_negatives_to_zero = TRUE)
 }
 \arguments{
+\item{obs}{A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date), and \code{group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).}
+
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
 downstream modelling does not support negative counts and so setting must be
@@ -18,10 +23,7 @@ The input data frame with a new variable \code{new_confirm}. If
 reported on each day (\code{prop_reported}) is also added.
 }
 \description{
-#' @param obs A data frame containing at least the following variables:
-\verb{reference date} (index date of interest), \code{report_date} (report date for
-observations), \code{confirm} (cumulative observations by reference and report
-date), and \code{group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).
+Calculate incidence of new reports from cumulative reports
 }
 \examples{
 # Default reconstruct incidence

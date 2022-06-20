@@ -9,9 +9,7 @@ enw_preprocess_data(
   by = c(),
   max_delay = 20,
   max_delay_strat = "add_to_max_delay",
-  rep_holidays = c(),
-  ref_holidays = c(),
-  min_report_date,
+  holidays = c(),
   set_negatives_to_zero = TRUE
 )
 }
@@ -36,11 +34,9 @@ excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
 Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
 \code{prop_reported} columns to understand the impact of this assumption.}
 
-\item{rep_holidays}{Depreciated. Will be removed in 0.0.8}
-
-\item{ref_holidays}{Depreciated. Will be removed in 0.0.8}
-
-\item{min_report_date}{Depreciated. Will be removed in 0.0.8}
+\item{holidays}{A vector of dates indicating when holidays occur used by
+\code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treate holidays as sundays within the
+\code{day_of_week} variable it creates internally.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
@@ -85,11 +81,12 @@ library(data.table)
 
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-nat_germany_hosp <- germany_covid19_hosp[age_group \%in\% "00+"]
+nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
 
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
 pobs
+
 # Preprocess using exclusion beyond the maximum delay and a max delay of 10
 pobs_exclude <- enw_preprocess_data(
  nat_germany_hosp, max_delay = 10, max_delay_strat = "exclude"
@@ -101,7 +98,6 @@ pobs_all <- enw_preprocess_data(
  germany_covid19_hosp, by = c("location", "age_group")
 )
 pobs_all
-
 }
 \seealso{
 Preprocessing functions

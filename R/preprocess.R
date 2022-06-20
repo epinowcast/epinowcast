@@ -192,7 +192,7 @@ enw_latest_data <- function(obs, ref_window) {
 
 #' Calculate incidence of new reports from cumulative reports
 #'
-#' #' @param obs A data frame containing at least the following variables:
+#' @param obs A data frame containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
 #' observations), `confirm` (cumulative observations by reference and report
 #' date), and `group` (as added by [enw_assign_group()]).
@@ -348,11 +348,9 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' Adding to the maximum delay is the default. Compare `confirm`, `max_confirm`,
 #' `prop_reported` columns to understand the impact of this assumption.
 #'
-#' @param ref_holidays Depreciated. Will be removed in 0.0.8
-#'
-#' @param rep_holidays Depreciated. Will be removed in 0.0.8
-#'
-#' @param min_report_date Depreciated. Will be removed in 0.0.8
+#' @param holidays A vector of dates indicating when holidays occur used by
+#' [enw_add_metaobs_features()] to treate holidays as sundays within the 
+#' `day_of_week` variable it creates internally.
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data frames as well as variables containing metadata. These are:
@@ -382,11 +380,12 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' # Filter example hospitalisation data to be natioanl and over all ages
 #' nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-#' nat_germany_hosp <- germany_covid19_hosp[age_group %in% "00+"]
+#' nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
 #'
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
+#'
 #' # Preprocess using exclusion beyond the maximum delay and a max delay of 10
 #' pobs_exclude <- enw_preprocess_data(
 #'  nat_germany_hosp, max_delay = 10, max_delay_strat = "exclude"
@@ -398,21 +397,15 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'  germany_covid19_hosp, by = c("location", "age_group")
 #' )
 #' pobs_all
-#'
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
                                 max_delay_strat = "add_to_max_delay",
-                                rep_holidays = c(), ref_holidays = c(),
-                                min_report_date, set_negatives_to_zero = TRUE) {
+                                holidays = c(), set_negatives_to_zero = TRUE) {
   max_delay_strat <- match.arg(
     max_delay_strat,
     choices = c("exclude", "add_to_max_delay")
   )
   obs <- data.table::as.data.table(obs)
   obs <- obs[order(reference_date)]
-
-  if (!missing(min_report_date)) {
-    obs <- obs[report_date >= min_report_date]
-  }
 
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)
@@ -457,14 +450,11 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(obs, target_date = "report_date")
   metareport <- enw_extend_date(metareport, max_delay = max_delay)
-  metareport <- enw_add_metaobs_features(metareport, holidays = rep_holidays)
+  metareport <- enw_add_metaobs_features(metareport, holidays = holidays)
 
   # extract and add features for reference date
   metareference <- enw_metadata(obs, target_date = "reference_date")
-  metareference <- enw_add_metaobs_features(
-    metareference,
-    holidays = ref_holidays
-  )
+  metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
   out <- data.table::data.table(
     obs = list(obs),
