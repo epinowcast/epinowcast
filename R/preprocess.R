@@ -208,6 +208,7 @@ enw_new_reports <- function(obs) {
     by = c("group")
   ]
   reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", "group")]
+  reports[, prop_reported := new_confirm / max_confirm]
   return(reports[])
 }
 
@@ -227,7 +228,7 @@ enw_add_max_reported <- function(obs) {
     .(reference_date, group, max_confirm = confirm)
   ]
   obs <- obs[orig_latest, on = c("reference_date", "group")]
-  obs[, prop_reported := confirm / max_confirm]
+  obs[, cum_prop_reported := confirm / max_confirm]
   return(obs[])
 }
 
