@@ -224,7 +224,8 @@ enw_new_reports <- function(obs) {
 enw_add_max_reported <- function(obs) {
   obs <- data.table::copy(obs)
   orig_latest <- enw_latest_data(obs)
-  orig_latest <- orig_latest[,
+  orig_latest <- orig_latest[
+    ,
     .(reference_date, group, max_confirm = confirm)
   ]
   obs <- obs[orig_latest, on = c("reference_date", "group")]
@@ -288,13 +289,30 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
+#' Preprocess observations
 #'
-#' @param by PARAM_DESCRIPTION, Default: c()
+#' This function preprocesses raw observations under the
+#' assumption they are reported as cumulative counts by a reference and
+#' report date and is used to assign groups. It also constructs data objects
+#' used by downstreaming visualisation and modelling functions including the
+#' observed empirical probability of a report on a given day, the cumulative
+#' probability of report, the latest available observations, incidence of
+#' observations, and metadata about the date of reference and report (used to
+#' construct models).
 #'
-#' @param max_delay PARAM_DESCRIPTION, Default: 20
+#' @param obs A data frame containing at least the following variables:
+#' `reference date` (index date of interest), `report_date` (report date for
+#' observations), `confirm` (cumulative observations by reference and report
+#' date).
+#'
+#' @param by A character vector describing the stratification of
+#' observations. This defaults to no grouping. This should be used
+#' when modelling multiple time series in order to identify them for
+#' downstream modelling
+#'
+#' @param max_delay Numeric defaults to 20. The maximum number of days to
+#' include in the delay distribution. Computation scales non-linearly with this
+#' setting so consider what maximum makes sense for your data carefully.
 #'
 #' @param max_delay_strat Character string indicating how to handle
 #' reported cases beyond the specified maximum delay. Options include:
@@ -308,9 +326,13 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param min_report_date PARAM_DESCRIPTION
 #'
-#' @param set_negatives_to_zero PARAM_DESCRIPTION, Default: TRUE
+#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
+#' counts (for calculated incidence of observations) be set to zero. Currently
+#' downstream modelling does not support negative counts and so setting must be
+#' TRUE if intending to use [epinowcast()].
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @return A data.table containing processed observations as a series of nested
+#' data frames.
 #'
 #' @family preprocess
 #' @export
@@ -320,7 +342,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
                                 rep_holidays = c(), ref_holidays = c(),
                                 min_report_date, set_negatives_to_zero = TRUE) {
   max_delay_strat <- match.arg(
-    max_delay_strat, choices = c("exclude", "add_to_max_delay")
+    max_delay_strat,
+    choices = c("exclude", "add_to_max_delay")
   )
   obs <- data.table::as.data.table(obs)
   obs <- obs[order(reference_date)]

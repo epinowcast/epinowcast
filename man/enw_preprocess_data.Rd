@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_preprocess_data}
 \alias{enw_preprocess_data}
-\title{FUNCTION_TITLE}
+\title{Preprocess observations}
 \usage{
 enw_preprocess_data(
   obs,
@@ -16,11 +16,19 @@ enw_preprocess_data(
 )
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date).}
 
-\item{by}{PARAM_DESCRIPTION, Default: c()}
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 
-\item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+\item{max_delay}{Numeric defaults to 20. The maximum number of days to
+include in the delay distribution. Computation scales non-linearly with this
+setting so consider what maximum makes sense for your data carefully.}
 
 \item{max_delay_strat}{Character string indicating how to handle
 reported cases beyond the specified maximum delay. Options include:
@@ -34,13 +42,24 @@ Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_co
 
 \item{min_report_date}{PARAM_DESCRIPTION}
 
-\item{set_negatives_to_zero}{PARAM_DESCRIPTION, Default: TRUE}
+\item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
+counts (for calculated incidence of observations) be set to zero. Currently
+downstream modelling does not support negative counts and so setting must be
+TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table containing processed observations as a series of nested
+data frames.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function preprocesses raw observations under the
+assumption they are reported as cumulative counts by a reference and
+report date and is used to assign groups. It also constructs data objects
+used by downstreaming visualisation and modelling functions including the
+observed empirical probability of a report on a given day, the cumulative
+probability of report, the latest available observations, incidence of
+observations, and metadata about the date of reference and report (used to
+construct models).
 }
 \seealso{
 Preprocessing functions
