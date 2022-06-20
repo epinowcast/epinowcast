@@ -2,20 +2,26 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_filter_obs}
 \alias{enw_filter_obs}
-\title{FUNCTION_TITLE}
+\title{Filter observations to retrict the maximum reporting delay}
 \usage{
 enw_filter_obs(obs, max_delay)
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date), and \code{group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).}
 
-\item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+\item{max_delay}{Numeric defaults to 20. The maximum number of days to
+include in the delay distribution. Computation scales non-linearly with this
+setting so consider what maximum makes sense for your data carefully.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data frame filtered so that dates by report are less than or equal
+the reference date plus the maximum delay.
 }
 \description{
-FUNCTION_DESCRIPTION
+Filter observations to retrict the maximum reporting delay
 }
 \seealso{
 Preprocessing functions

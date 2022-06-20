@@ -122,6 +122,27 @@ enw_add_delay <- function(obs) {
 }
 
 #' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#'
+#' @return OUTPUT_DESCRIPTION
+#'
+#' @family preprocess
+#' @export
+#' @importFrom data.table copy
+enw_add_max_reported <- function(obs) {
+  obs <- data.table::copy(obs)
+  orig_latest <- enw_latest_data(obs)
+  orig_latest <- orig_latest[
+    ,
+    .(reference_date, group, max_confirm = confirm)
+  ]
+  obs <- obs[orig_latest, on = c("reference_date", "group")]
+  obs[, cum_prop_reported := confirm / max_confirm]
+  return(obs[])
+}
+
+#' @title FUNCTION_TITLE
 #'
 #' @description FUNCTION_DESCRIPTION
 #'
@@ -156,18 +177,25 @@ enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
   return(retro_data[])
 }
 
-#' @title FUNCTION_TITLE
+#' Filter observations to the latest available
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @param obs A data frame containing at least the following variables:
+#' `reference date` (index date of interest), and `report_date` (report date for
+#' observations).
 #'
-#' @param obs PARAM_DESCRIPTION
+#' @param ref_window Numeric vector of length 2. Can optionally be used to
+#' restrict the reference date to a window referenced to the maximum available
+#' reference date.
 #'
-#' @param ref_window PARAM_DESCRIPTION
-#'
-#' @return OUTPUT_DESCRIPTION
+#' @return A filtered data frame with the same variables as `obs`.
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy as.IDate
+#' # Filter for latest available data
+#' enw_latest_data(germany_covid19_hosp)
+#'
+#' # Restrict to a window of 40 days ignoring the most recent 10 days
+#' enw_latest_data(germany_covid19_hosp, c(50, 10))
 enw_latest_data <- function(obs, ref_window) {
   latest_data <- data.table::copy(obs)
   latest_data[, report_date := as.IDate(report_date)]
@@ -239,38 +267,18 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
   return(reports[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
+#' Filter observations to retrict the maximum reporting delay
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @return A data frame filtered so that dates by report are less than or equal
+#' the reference date plus the maximum delay.
 #'
+#' @inheritParams enw_new_reports
+#' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy
-enw_add_max_reported <- function(obs) {
-  obs <- data.table::copy(obs)
-  orig_latest <- enw_latest_data(obs)
-  orig_latest <- orig_latest[
-    ,
-    .(reference_date, group, max_confirm = confirm)
-  ]
-  obs <- obs[orig_latest, on = c("reference_date", "group")]
-  obs[, cum_prop_reported := confirm / max_confirm]
-  return(obs[])
-}
-
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#'
-#' @param max_delay PARAM_DESCRIPTION, Default: 20
-#'
-#' @return OUTPUT_DESCRIPTION
-#'
-#' @family preprocess
-#' @export
-#' @importFrom data.table copy
+#' obs <- enw_example("preprocessed")$obs[[1]]
+#' enw_filter_obs(obs, max_delay = 2)
 enw_filter_obs <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
@@ -279,13 +287,21 @@ enw_filter_obs <- function(obs, max_delay) {
   return(obs[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' Construct the reporting triangle
+#'
+#' Constructs the reporting triangle with each row representing a reference date
+#' and columns being observations by report date
+#'
+#' @param obs A data frame as produced by [enw_new_reports()]. Must contain the
+#' following variables: `reference_date`, `group`, `delay`.
+#'
+#' @return A data frame with each row being a reference date, and columns being 
+#' observations by reporting delay.
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table dcast setorderv
+#' obs <- enw_example("preprocessed")$new_confirm
+#' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
   obs <- data.table::as.data.table(obs)
   if (any(obs$new_confirm < 0)) {

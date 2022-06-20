@@ -2,18 +2,21 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_reporting_triangle}
 \alias{enw_reporting_triangle}
-\title{FUNCTION_TITLE}
+\title{Construct the reporting triangle}
 \usage{
 enw_reporting_triangle(obs)
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data frame as produced by \code{\link[=enw_new_reports]{enw_new_reports()}}. Must contain the
+following variables: \code{reference_date}, \code{group}, \code{delay}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data frame with each row being a reference date, and columns being
+observations by reporting delay.
 }
 \description{
-FUNCTION_DESCRIPTION
+Constructs the reporting triangle with each row representing a reference date
+and columns being observations by report date
 }
 \seealso{
 Preprocessing functions
