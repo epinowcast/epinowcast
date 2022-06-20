@@ -107,6 +107,21 @@ enw_assign_group <- function(obs, by = c()) {
 }
 
 #' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @family preprocess
+#' @export
+#' @importFrom data.table as.data.table copy
+enw_add_delay <- function(obs) {
+  obs <- data.table::as.data.table(obs)
+  obs[, report_date := as.IDate(report_date)]
+  obs[, reference_date := as.IDate(reference_date)]
+  obs[, delay := as.numeric(report_date - reference_date)]
+  return(obs = obs[])
+}
+
+#' @title FUNCTION_TITLE
 #'
 #' @description FUNCTION_DESCRIPTION
 #'
@@ -199,6 +214,45 @@ enw_new_reports <- function(obs) {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param obs PARAM_DESCRIPTION
+#'
+#' @return OUTPUT_DESCRIPTION
+#'
+#' @family preprocess
+#' @export
+#' @importFrom data.table copy
+enw_add_max_reported <- function(obs) {
+  obs <- data.table::copy(obs)
+  orig_latest <- enw_latest_data(obs)
+  orig_latest <- orig_latest[,
+    .(reference_date, group, max_confirm = confirm)
+  ]
+  obs <- obs[orig_latest, on = c("reference_date", "group")]
+  obs[, prop_reported := confirm / max_confirm]
+  return(obs[])
+}
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
+#'
+#' @param max_delay PARAM_DESCRIPTION, Default: 20
+#'
+#' @return OUTPUT_DESCRIPTION
+#'
+#' @family preprocess
+#' @export
+#' @importFrom data.table copy
+enw_filter_obs <- function(obs, max_delay) {
+  obs <- data.table::copy(obs)
+  obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
+    by = c("reference_date", "group")
+  ]
+  return(obs[])
+}
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param obs PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
 #' @export
@@ -241,6 +295,12 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param max_delay PARAM_DESCRIPTION, Default: 20
 #'
+#' @param max_delay_strat Character string indicating how to handle
+#' reported cases beyond the specified maximum delay. Options include:
+#' excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
+#' Adding to the maximum delay is the default. Compare `confirm`, `max_confirm`,
+#' `prop_reported` columns to understand the impact of this assumption.
+#'
 #' @param ref_holidays DESCRIPTION
 #'
 #' @param rep_holidays DESCRIPTION
@@ -255,8 +315,12 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @export
 #' @importFrom data.table as.data.table data.table
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
+                                max_delay_strat = "add_to_max_delay",
                                 rep_holidays = c(), ref_holidays = c(),
                                 min_report_date, set_negatives_to_zero = TRUE) {
+  max_delay_strat <- match.arg(
+    max_delay_strat, choices = c("exclude", "add_to_max_delay")
+  )
   obs <- data.table::as.data.table(obs)
   obs <- obs[order(reference_date)]
 
@@ -264,15 +328,20 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     obs <- obs[report_date >= min_report_date]
   }
 
-  # assign groups
   obs <- enw_assign_group(obs, by = by)
+  obs <- enw_add_max_reported(obs)
+  obs <- enw_add_delay(obs)
 
-  # filter by maximum report date
-  obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
-    by = c("reference_date", "group")
-  ]
+  if (max_delay_strat %in% "add_to_max_delay") {
+    obs[
+      report_date == (reference_date + max_delay - 1),
+      confirm := max_confirm,
+      by = "group"
+    ]
+  }
 
-  # difference reports and filter for max delay an report date
+  obs <- enw_filter_obs(obs, max_delay = max_delay)
+
   diff_obs <- enw_new_reports(obs)
 
   if (set_negatives_to_zero) {
@@ -297,10 +366,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   diff_obs[, group := new_group][, new_group := NULL]
   obs[, old_group := NULL]
 
-  # calculate reporting matrix
   reporting_triangle <- enw_reporting_triangle(diff_obs)
 
-  # extract latest data
   latest <- enw_latest_data(obs)
 
   # extract and extend report date meta data to include unobserved reports

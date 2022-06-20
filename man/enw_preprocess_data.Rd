@@ -8,6 +8,7 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
+  max_delay_strat = "add_to_max_delay",
   rep_holidays = c(),
   ref_holidays = c(),
   min_report_date,
@@ -20,6 +21,12 @@ enw_preprocess_data(
 \item{by}{PARAM_DESCRIPTION, Default: c()}
 
 \item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+
+\item{max_delay_strat}{Character string indicating how to handle
+reported cases beyond the specified maximum delay. Options include:
+excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
+Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
+\code{prop_reported} columns to understand the impact of this assumption.}
 
 \item{rep_holidays}{DESCRIPTION}
 
@@ -37,9 +44,12 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Preprocessing functions
+\code{\link{enw_add_delay}()},
+\code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_obs}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},
