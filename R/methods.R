@@ -32,7 +32,7 @@ summary.epinowcast <- function(object, type = "nowcast", ...) {
   } else if (type %in% "fit") {
     s <- enw_posterior(object$fit[[1]], ...)
   } else if (type %in% "posterior_prediction") {
-    s <- enw_pp_summary(object$fit[[1]], object$diff[[1]], ...)
+    s <- enw_pp_summary(object$fit[[1]], object$new_confirm[[1]], ...)
   }
   return(s)
 }
