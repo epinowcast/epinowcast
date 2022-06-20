@@ -36,11 +36,11 @@ excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
 Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
 \code{prop_reported} columns to understand the impact of this assumption.}
 
-\item{rep_holidays}{DESCRIPTION}
+\item{rep_holidays}{Depreciated. Will be removed in 0.0.8}
 
-\item{ref_holidays}{DESCRIPTION}
+\item{ref_holidays}{Depreciated. Will be removed in 0.0.8}
 
-\item{min_report_date}{PARAM_DESCRIPTION}
+\item{min_report_date}{Depreciated. Will be removed in 0.0.8}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
@@ -49,7 +49,25 @@ TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 }
 \value{
 A data.table containing processed observations as a series of nested
-data frames.
+data frames as well as variables containing metadata. These are:
+\itemize{
+\item \code{obs}: (observations with the addition of empirical reporting proportions
+and and restricted to the specified maximum delay).
+\item \code{new_confirm}: Incidence of notifications by reference and report date.
+Empirical reporting distributions are also added.
+\item \code{latest}: The latest available observations.
+\item \code{reporting_triangle}: Incident observations by report and reference date in
+the standard reporting triangle matrix format.
+\item \code{metareference}: Metadata reference dates derived from observations.
+\item \code{metrareport}: Metadata for report dates.
+\item \code{time}: Numeric, number of timepoints in the data.
+\item \code{snapshots}: Numeric, nnumber of available data snapshots to use for
+nowcasting.
+\item \code{groups}: Numeric, Number of groups/strata in the supplied observations
+(set using \code{by}).
+\item \code{max_delay}: Numeric, the maximum delay in the processed data
+\item \code{max_date}: The maximum available report date.
+}
 }
 \description{
 This function preprocesses raw observations under the
@@ -59,7 +77,31 @@ used by downstreaming visualisation and modelling functions including the
 observed empirical probability of a report on a given day, the cumulative
 probability of report, the latest available observations, incidence of
 observations, and metadata about the date of reference and report (used to
-construct models).
+construct models). This function wraps other preprocessing functions that may
+be instead used individually if required.
+}
+\examples{
+library(data.table)
+
+# Filter example hospitalisation data to be natioanl and over all ages
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
+nat_germany_hosp <- germany_covid19_hosp[age_group \%in\% "00+"]
+
+# Preprocess with default settings
+pobs <- enw_preprocess_data(nat_germany_hosp)
+pobs
+# Preprocess using exclusion beyond the maximum delay and a max delay of 10
+pobs_exclude <- enw_preprocess_data(
+ nat_germany_hosp, max_delay = 10, max_delay_strat = "exclude"
+)
+pobs_exclude
+
+# Preprocess all data
+pobs_all <- enw_preprocess_data(
+ germany_covid19_hosp, by = c("location", "age_group")
+)
+pobs_all
+
 }
 \seealso{
 Preprocessing functions

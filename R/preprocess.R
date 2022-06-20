@@ -190,15 +190,35 @@ enw_latest_data <- function(obs, ref_window) {
   return(latest_data[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' Calculate incidence of new reports from cumulative reports
+#'
+#' #' @param obs A data frame containing at least the following variables:
+#' `reference date` (index date of interest), `report_date` (report date for
+#' observations), `confirm` (cumulative observations by reference and report
+#' date), and `group` (as added by [enw_assign_group()]).
+#'
+#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
+#' counts (for calculated incidence of observations) be set to zero. Currently
+#' downstream modelling does not support negative counts and so setting must be
+#' TRUE if intending to use [epinowcast()].
+#'
+#' @return The input data frame with a new variable `new_confirm`. If
+#' `max_confirm` was present in the data frame then the proportion
+#' reported on each day (`prop_reported`) is also added.
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy shift
-enw_new_reports <- function(obs) {
+#' @examples
+#' # Default reconstruct incidence
+#' dt <- enw_assign_group(
+#'  germany_covid19_hosp[location == "DE"], by = "age_group"
+#' )
+#' enw_new_reports(dt)
+#'
+#' # Make use of maximum reported to calculate empirical daily reporting
+#' dt <- enw_add_max_reported(dt)
+#' enw_new_reports(dt)
+enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
   reports <- data.table::copy(obs)
   reports <- reports[order(reference_date)]
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
@@ -208,7 +228,14 @@ enw_new_reports <- function(obs) {
     by = c("group")
   ]
   reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", "group")]
-  reports[, prop_reported := new_confirm / max_confirm]
+
+  if (!is.null(reports$max_confirm)) {
+    reports[, prop_reported := new_confirm / max_confirm]
+  }
+
+  if (set_negatives_to_zero) {
+    reports <- reports[new_confirm < 0, new_confirm := 0]
+  }
   return(reports[])
 }
 
@@ -298,7 +325,8 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' observed empirical probability of a report on a given day, the cumulative
 #' probability of report, the latest available observations, incidence of
 #' observations, and metadata about the date of reference and report (used to
-#' construct models).
+#' construct models). This function wraps other preprocessing functions that may
+#' be instead used individually if required.
 #'
 #' @param obs A data frame containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
@@ -320,23 +348,57 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' Adding to the maximum delay is the default. Compare `confirm`, `max_confirm`,
 #' `prop_reported` columns to understand the impact of this assumption.
 #'
-#' @param ref_holidays DESCRIPTION
+#' @param ref_holidays Depreciated. Will be removed in 0.0.8
 #'
-#' @param rep_holidays DESCRIPTION
+#' @param rep_holidays Depreciated. Will be removed in 0.0.8
 #'
-#' @param min_report_date PARAM_DESCRIPTION
-#'
-#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
-#' counts (for calculated incidence of observations) be set to zero. Currently
-#' downstream modelling does not support negative counts and so setting must be
-#' TRUE if intending to use [epinowcast()].
+#' @param min_report_date Depreciated. Will be removed in 0.0.8
 #'
 #' @return A data.table containing processed observations as a series of nested
-#' data frames.
+#' data frames as well as variables containing metadata. These are:
+#'  - `obs`: (observations with the addition of empirical reporting proportions
+#'  and and restricted to the specified maximum delay).
+#' - `new_confirm`: Incidence of notifications by reference and report date.
+#' Empirical reporting distributions are also added.
+#' - `latest`: The latest available observations.
+#' - `reporting_triangle`: Incident observations by report and reference date in
+#' the standard reporting triangle matrix format.
+#' - `metareference`: Metadata reference dates derived from observations.
+#' - `metrareport`: Metadata for report dates.
+#' - `time`: Numeric, number of timepoints in the data.
+#' - `snapshots`: Numeric, nnumber of available data snapshots to use for
+#'  nowcasting.
+#' - `groups`: Numeric, Number of groups/strata in the supplied observations
+#'  (set using `by`).
+#' - `max_delay`: Numeric, the maximum delay in the processed data
+#' - `max_date`: The maximum available report date.
 #'
 #' @family preprocess
+#' @inheritParams enw_new_reports
 #' @export
 #' @importFrom data.table as.data.table data.table
+#' @examples
+#' library(data.table)
+#'
+#' # Filter example hospitalisation data to be natioanl and over all ages
+#' nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
+#' nat_germany_hosp <- germany_covid19_hosp[age_group %in% "00+"]
+#'
+#' # Preprocess with default settings
+#' pobs <- enw_preprocess_data(nat_germany_hosp)
+#' pobs
+#' # Preprocess using exclusion beyond the maximum delay and a max delay of 10
+#' pobs_exclude <- enw_preprocess_data(
+#'  nat_germany_hosp, max_delay = 10, max_delay_strat = "exclude"
+#' )
+#' pobs_exclude
+#'
+#' # Preprocess all data
+#' pobs_all <- enw_preprocess_data(
+#'  germany_covid19_hosp, by = c("location", "age_group")
+#' )
+#' pobs_all
+#'
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
                                 max_delay_strat = "add_to_max_delay",
                                 rep_holidays = c(), ref_holidays = c(),
@@ -366,11 +428,9 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   obs <- enw_filter_obs(obs, max_delay = max_delay)
 
-  diff_obs <- enw_new_reports(obs)
-
-  if (set_negatives_to_zero) {
-    diff_obs <- diff_obs[new_confirm < 0, new_confirm := 0]
-  }
+  diff_obs <- enw_new_reports(
+    obs, set_negatives_to_zero = set_negatives_to_zero
+  )
 
   # filter obs based on diff constraints
   obs <- merge(obs, diff_obs[, .(reference_date, report_date, group)],
@@ -410,7 +470,6 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     obs = list(obs),
     new_confirm = list(diff_obs),
     latest = list(latest),
-    diff = list(diff_obs),
     reporting_triangle = list(reporting_triangle),
     metareference = list(metareference),
     metareport = list(metareport),

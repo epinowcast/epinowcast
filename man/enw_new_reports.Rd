@@ -2,21 +2,37 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_new_reports}
 \alias{enw_new_reports}
-\title{FUNCTION_TITLE}
+\title{Calculate incidence of new reports from cumulative reports}
 \usage{
-enw_new_reports(obs)
+enw_new_reports(obs, set_negatives_to_zero = TRUE)
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
+counts (for calculated incidence of observations) be set to zero. Currently
+downstream modelling does not support negative counts and so setting must be
+TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+The input data frame with a new variable \code{new_confirm}. If
+\code{max_confirm} was present in the data frame then the proportion
+reported on each day (\code{prop_reported}) is also added.
 }
 \description{
-FUNCTION_DESCRIPTION
+#' @param obs A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date), and \code{group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).
 }
-\details{
-DETAILS
+\examples{
+# Default reconstruct incidence
+dt <- enw_assign_group(
+ germany_covid19_hosp[location == "DE"], by = "age_group"
+)
+enw_new_reports(dt)
+
+# Make use of maximum reported to calculate empirical daily reporting
+dt <- enw_add_max_reported(dt)
+enw_new_reports(dt)
 }
 \seealso{
 Preprocessing functions
