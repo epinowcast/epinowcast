@@ -21,6 +21,13 @@ A filtered data frame with the same variables as \code{obs}.
 \description{
 Filter observations to the latest available
 }
+\examples{
+# Filter for latest available data
+enw_latest_data(germany_covid19_hosp)
+
+# Restrict to a window of 40 days ignoring the most recent 10 days
+enw_latest_data(germany_covid19_hosp, c(50, 10))
+}
 \seealso{
 Preprocessing functions
 \code{\link{enw_add_delay}()},

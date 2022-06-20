@@ -191,6 +191,7 @@ enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy as.IDate
+#' @examples
 #' # Filter for latest available data
 #' enw_latest_data(germany_covid19_hosp)
 #'
@@ -277,6 +278,7 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy
+#' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_filter_obs(obs, max_delay = 2)
 enw_filter_obs <- function(obs, max_delay) {
@@ -300,6 +302,7 @@ enw_filter_obs <- function(obs, max_delay) {
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table dcast setorderv
+#' @examples
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {

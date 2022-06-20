@@ -23,6 +23,10 @@ the reference date plus the maximum delay.
 \description{
 Filter observations to retrict the maximum reporting delay
 }
+\examples{
+obs <- enw_example("preprocessed")$obs[[1]]
+enw_filter_obs(obs, max_delay = 2)
+}
 \seealso{
 Preprocessing functions
 \code{\link{enw_add_delay}()},

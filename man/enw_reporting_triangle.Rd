@@ -18,6 +18,10 @@ observations by reporting delay.
 Constructs the reporting triangle with each row representing a reference date
 and columns being observations by report date
 }
+\examples{
+obs <- enw_example("preprocessed")$new_confirm
+enw_reporting_triangle(obs)
+}
 \seealso{
 Preprocessing functions
 \code{\link{enw_add_delay}()},
