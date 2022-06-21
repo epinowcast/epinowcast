@@ -105,10 +105,12 @@ construct_rw <- function(data, rw) {
   )
   terms <- grep(paste0("c", rw$time), colnames(data), value = TRUE)
   fdata <- data.table::copy(data)
-  fdata <- fdata[, c(terms, rw$group)]
+  fdata <- fdata[, c(terms, rw$group), with = FALSE]
   if (!is.null(rw$group)) {
     terms <- paste0(rw$group, ":", terms)
   }
+  fixed <- enw_formula(fdata, fixed = terms)$fixed$design
+  fixed_effs <- enw_effects_metadata(fixed)
   # make a fixed effects design matrix
   # extract effects metadata
   # implement random walk structure effects
