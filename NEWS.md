@@ -10,7 +10,7 @@
 * Fully vectorise the likelihood by flattening observations and pre-specify expected observations into a vector before calculating the log-likelihood (see [#40](https://github.com/epiforecasts/epinowcast/pull/40) by [@seabbs](https://github.com/seabbs)).
 * Adds vectorisation of zero truncated normal distributions (see [#38](https://github.com/epiforecasts/epinowcast/pull/38) by [@seabbs](https://github.com/seabbs))
 * `hazard_to_prob` has been optimised using vectorisation (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
-* `prob_to_hazard` has been optimised so that only required cumulative probabilties are calculated (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
+* `prob_to_hazard` has been optimised so that only required cumulative probabilities are calculated (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
 * Updated to use  the `inv_sqrt` stan function (see [#60] by @seabbs).
 * Added support for `scoringutils 1.0.0` (see [#61] by @seabbs). 
 * Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see [#61] by @seabbs).
@@ -19,7 +19,7 @@
 
 * Convert retrospective data date fields to class of `IDate` when utilising `enw_retrospective_data` to solve esoteric error.
 * Added full argument name for `include_paths` to avoid console chatter
-* Adds a `stanc_options` argument to `enw_model()` and specifies a new default of `list("01")` which enables simple pre-compilation optimisations. See [here](https://blog.mc-stan.org/2022/02/15/release-of-cmdstan-2-29/) of these optimisatiosn for details.
+* Adds a `stanc_options` argument to `enw_model()` and specifies a new default of `list("01")` which enables simple pre-compilation optimisations. See [here](https://blog.mc-stan.org/2022/02/15/release-of-cmdstan-2-29/) of these optimisation for details.
 * Remove `inv_logit` and `logit` as may instead use base R `plogit` and `qlogit`.
 
 # epinowcast 0.0.4

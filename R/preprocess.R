@@ -269,7 +269,7 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
   return(reports[])
 }
 
-#' Filter observations to retrict the maximum reporting delay
+#' Filter observations to restrict the maximum reporting delay
 #'
 #' @return A data frame filtered so that dates by report are less than or equal
 #' the reference date plus the maximum delay.
@@ -366,7 +366,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param metareference Metadata reference dates derived from observations.
 #'
-#' @param metrareport Metadata for report dates.
+#' @param metarareport Metadata for report dates.
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
@@ -406,7 +406,7 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' This function preprocesses raw observations under the
 #' assumption they are reported as cumulative counts by a reference and
 #' report date and is used to assign groups. It also constructs data objects
-#' used by downstreaming visualisation and modelling functions including the
+#' used by visualisation and modelling functions including the
 #' observed empirical probability of a report on a given day, the cumulative
 #' probability of report, the latest available observations, incidence of
 #' observations, and metadata about the date of reference and report (used to
@@ -434,7 +434,7 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' `prop_reported` columns to understand the impact of this assumption.
 #'
 #' @param holidays A vector of dates indicating when holidays occur used by
-#' [enw_add_metaobs_features()] to treate holidays as sundays within the
+#' [enw_add_metaobs_features()] to treat holidays as sundays within the
 #' `day_of_week` variable it creates internally.
 #'
 #' @return A data.table containing processed observations as a series of nested
@@ -449,7 +449,7 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' - `metareference`: Metadata reference dates derived from observations.
 #' - `metrareport`: Metadata for report dates.
 #' - `time`: Numeric, number of timepoints in the data.
-#' - `snapshots`: Numeric, nnumber of available data snapshots to use for
+#' - `snapshots`: Numeric, number of available data snapshots to use for
 #'  nowcasting.
 #' - `groups`: Numeric, Number of groups/strata in the supplied observations
 #'  (set using `by`).

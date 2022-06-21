@@ -9,7 +9,7 @@
 #' [summary.epinowcast()], when used on the output of [epinowcast()].
 #'
 #' @param latest_obs A data frame of the latest available observations as
-#' producd by [enw_latest_data()] or otherwise.
+#' produced by [enw_latest_data()] or otherwise.
 #'
 #' @param log Logical, defaults to FALSE. Should scores be calculated on the
 #' log scale (with a 0.01 shift) for both observations and nowcasts. Scoring in

@@ -32,7 +32,7 @@ date in the standard reporting triangle matrix format.}
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
 
-\item{metrareport}{Metadata for report dates.}
+\item{metarareport}{Metadata for report dates.}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -48,7 +48,7 @@ the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{time}: Numeric, number of timepoints in the data.
-\item \code{snapshots}: Numeric, nnumber of available data snapshots to use for
+\item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).

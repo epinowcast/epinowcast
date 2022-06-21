@@ -35,7 +35,7 @@ Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_co
 \code{prop_reported} columns to understand the impact of this assumption.}
 
 \item{holidays}{A vector of dates indicating when holidays occur used by
-\code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treate holidays as sundays within the
+\code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
 \code{day_of_week} variable it creates internally.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
@@ -57,7 +57,7 @@ the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{time}: Numeric, number of timepoints in the data.
-\item \code{snapshots}: Numeric, nnumber of available data snapshots to use for
+\item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
@@ -69,7 +69,7 @@ nowcasting.
 This function preprocesses raw observations under the
 assumption they are reported as cumulative counts by a reference and
 report date and is used to assign groups. It also constructs data objects
-used by downstreaming visualisation and modelling functions including the
+used by visualisation and modelling functions including the
 observed empirical probability of a report on a given day, the cumulative
 probability of report, the latest available observations, incidence of
 observations, and metadata about the date of reference and report (used to

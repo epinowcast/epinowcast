@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_filter_obs}
 \alias{enw_filter_obs}
-\title{Filter observations to retrict the maximum reporting delay}
+\title{Filter observations to restrict the maximum reporting delay}
 \usage{
 enw_filter_obs(obs, max_delay)
 }
@@ -21,7 +21,7 @@ A data frame filtered so that dates by report are less than or equal
 the reference date plus the maximum delay.
 }
 \description{
-Filter observations to retrict the maximum reporting delay
+Filter observations to restrict the maximum reporting delay
 }
 \examples{
 obs <- enw_example("preprocessed")$obs[[1]]
