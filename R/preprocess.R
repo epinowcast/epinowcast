@@ -546,7 +546,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   out <- enw_construct_data(
     obs = obs,
-    new_confirm = new_confirm,
+    new_confirm = diff_obs,
     latest = latest,
     reporting_triangle = reporting_triangle,
     metareference = metareference,
