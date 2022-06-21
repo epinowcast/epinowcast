@@ -342,6 +342,63 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' Construct preprocessed data
+#'
+#' This function is used internally by [enw_preprocess_data()] to combine
+#' various pieces of processed observed data into a single object. It
+#' is exposed to the user in order to allow for modular data preprocessing
+#' though this is not currently recommended. See documentation and code 
+#' of [enw_preprocess_data()] for more on the expected inputs.
+#'
+#' @param obs Observations with the addition of empirical reporting proportions
+#'  and and restricted to the specified maximum delay).
+#' 
+#' @param new_confirm`: Incidence of notifications by reference and report date.
+#' Empirical reporting distributions are also added.
+#' 
+#' @param latest`: The latest available observations.
+#' 
+#' @param reporting_triangle`: Incident observations by report and reference
+#'  date in the standard reporting triangle matrix format.
+#' 
+#' @param metareference`: Metadata reference dates derived from observations.
+#' 
+#' @param metrareport`: Metadata for report dates.
+#
+#' @inheritParams enw_preprocess_data
+#' @inherit enw_preprocess_data return
+#' @export
+#' @examples
+#' pobs <- enw_example("preprocessed")
+#' enw_construct_data(
+#'  obs = pobs$obs[[1]],
+#'  new_confirm = pobs$new_confirm[[1]],
+#'  latest = pobs$latest[[1]],
+#'  reporting_triangle = pobs$reporting_triangle[[1]],
+#'  metareport = pobs$metareport[[1]],
+#'  metareference = pobs$metareference[[1]],
+#'  max_delay = pobs$max_delay[[1]]
+#' )
+enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
+                               metareport, metareference, max_delay) {
+    out <- data.table::data.table(
+      obs = list(obs),
+      new_confirm = list(new_confirm),
+      latest = list(latest),
+      reporting_triangle = list(reporting_triangle),
+      metareference = list(metareference),
+      metareport = list(metareport),
+      time = nrow(latest[group == 1]),
+      snapshots = nrow(unique(obs[, .(group, report_date)])),
+      groups = length(unique(obs$group)),
+      max_delay = max_delay,
+      max_date = max(obs$report_date)
+    )
+    class(out) <- c("enw_preprocess_data", class(out))
+    return(out[])
+  }
+
+
 #' Preprocess observations
 #'
 #' This function preprocesses raw observations under the
@@ -429,8 +486,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
                                 max_delay_strat = "add_to_max_delay",
                                 holidays = c(), set_negatives_to_zero = TRUE) {
   max_delay_strat <- match.arg(
-    max_delay_strat,
-    choices = c("exclude", "add_to_max_delay")
+    max_delay_strat, choices = c("exclude", "add_to_max_delay")
   )
   obs <- data.table::as.data.table(obs)
   obs <- obs[order(reference_date)]
@@ -450,8 +506,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   obs <- enw_filter_obs(obs, max_delay = max_delay)
 
   diff_obs <- enw_new_reports(
-    obs,
-    set_negatives_to_zero = set_negatives_to_zero
+    obs, set_negatives_to_zero = set_negatives_to_zero
   )
 
   # filter obs based on diff constraints
@@ -485,19 +540,15 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_metadata(obs, target_date = "reference_date")
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
-  out <- data.table::data.table(
-    obs = list(obs),
-    new_confirm = list(diff_obs),
-    latest = list(latest),
-    reporting_triangle = list(reporting_triangle),
-    metareference = list(metareference),
-    metareport = list(metareport),
-    time = nrow(latest[group == 1]),
-    snapshots = nrow(unique(obs[, .(group, report_date)])),
-    groups = length(unique(obs$group)),
-    max_delay = max_delay,
-    max_date = max(obs$report_date)
+  out <- enw_construct_data(
+    obs = obs,
+    new_confirm = new_confirm,
+    latest = latest,
+    reporting_triangle = reporting_triangle,
+    metareference = metareference,
+    metareport = metareport,
+    max_delay = max_delay
   )
-  class(out) <- c("enw_preprocess_data", class(out))
+
   return(out[])
 }

@@ -89,13 +89,15 @@ pobs
 
 # Preprocess using exclusion beyond the maximum delay and a max delay of 10
 pobs_exclude <- enw_preprocess_data(
- nat_germany_hosp, max_delay = 10, max_delay_strat = "exclude"
+  nat_germany_hosp,
+  max_delay = 10, max_delay_strat = "exclude"
 )
 pobs_exclude
 
 # Preprocess all data
 pobs_all <- enw_preprocess_data(
- germany_covid19_hosp, by = c("location", "age_group")
+  germany_covid19_hosp,
+  by = c("location", "age_group")
 )
 pobs_all
 }

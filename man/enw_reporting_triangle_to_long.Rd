@@ -2,18 +2,24 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_reporting_triangle_to_long}
 \alias{enw_reporting_triangle_to_long}
-\title{FUNCTION_TITLE}
+\title{Recast the reporting triangle from wide to long format}
 \usage{
 enw_reporting_triangle_to_long(obs)
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A dataframe in the format produced by \code{\link[=enw_reporting_triangle]{enw_reporting_triangle()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A long format reporting triangle as a data frame with additional
+variables \code{new_confirm} and \code{delay}.
 }
 \description{
-FUNCTION_DESCRIPTION
+Recast the reporting triangle from wide to long format
+}
+\examples{
+obs <- enw_example("preprocessed")$new_confirm
+rt <- enw_reporting_triangle(obs)
+enw_reporting_triangle_to_long(rt)
 }
 \seealso{
 Preprocessing functions

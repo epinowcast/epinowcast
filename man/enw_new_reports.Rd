@@ -28,7 +28,8 @@ Calculate incidence of new reports from cumulative reports
 \examples{
 # Default reconstruct incidence
 dt <- enw_assign_group(
- germany_covid19_hosp[location == "DE"], by = "age_group"
+  germany_covid19_hosp[location == "DE"],
+  by = "age_group"
 )
 enw_new_reports(dt)
 
