@@ -240,7 +240,8 @@ enw_latest_data <- function(obs, ref_window) {
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- enw_assign_group(
-#'  germany_covid19_hosp[location == "DE"], by = "age_group"
+#'   germany_covid19_hosp[location == "DE"],
+#'   by = "age_group"
 #' )
 #' enw_new_reports(dt)
 #'
@@ -297,7 +298,7 @@ enw_filter_obs <- function(obs, max_delay) {
 #' @param obs A data frame as produced by [enw_new_reports()]. Must contain the
 #' following variables: `reference_date`, `group`, `delay`.
 #'
-#' @return A data frame with each row being a reference date, and columns being 
+#' @return A data frame with each row being a reference date, and columns being
 #' observations by reporting delay.
 #' @family preprocess
 #' @export
@@ -368,7 +369,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' `prop_reported` columns to understand the impact of this assumption.
 #'
 #' @param holidays A vector of dates indicating when holidays occur used by
-#' [enw_add_metaobs_features()] to treate holidays as sundays within the 
+#' [enw_add_metaobs_features()] to treate holidays as sundays within the
 #' `day_of_week` variable it creates internally.
 #'
 #' @return A data.table containing processed observations as a series of nested
@@ -407,13 +408,15 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' # Preprocess using exclusion beyond the maximum delay and a max delay of 10
 #' pobs_exclude <- enw_preprocess_data(
-#'  nat_germany_hosp, max_delay = 10, max_delay_strat = "exclude"
+#'   nat_germany_hosp,
+#'   max_delay = 10, max_delay_strat = "exclude"
 #' )
 #' pobs_exclude
 #'
 #' # Preprocess all data
 #' pobs_all <- enw_preprocess_data(
-#'  germany_covid19_hosp, by = c("location", "age_group")
+#'   germany_covid19_hosp,
+#'   by = c("location", "age_group")
 #' )
 #' pobs_all
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
@@ -441,7 +444,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   obs <- enw_filter_obs(obs, max_delay = max_delay)
 
   diff_obs <- enw_new_reports(
-    obs, set_negatives_to_zero = set_negatives_to_zero
+    obs,
+    set_negatives_to_zero = set_negatives_to_zero
   )
 
   # filter obs based on diff constraints
