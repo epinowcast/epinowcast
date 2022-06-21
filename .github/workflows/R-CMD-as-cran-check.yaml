@@ -21,7 +21,6 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      CMDSTAN_VERSION: "2.29.2"
       NOT_CRAN: false
       
     steps:
@@ -62,18 +61,11 @@ jobs:
           install.packages("curl")
         shell: Rscript {0}
 
-      - name: Cache cmdstan
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.CMDSTAN_PATH }}
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
-          restore-keys: ${{ runner.os }}-cmdstan-
-
-      - name: Install cmdstan
+     - name: Install cmdstan
         run: |
-          version <- Sys.getenv("CMDSTAN_VERSION")
-          url <- sprintf("https://github.com/stan-dev/cmdstan/releases/download/v%s/cmdstan-%s.tar.gz", version, version)
-          cmdstanr::install_cmdstan(cores = 2, release_url = url)
+          print(list.files("C:/rtools42"))
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = 2)
         shell: Rscript {0}
 
       - name: Session info
