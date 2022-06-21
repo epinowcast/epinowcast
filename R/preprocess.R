@@ -370,6 +370,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
+#' @family preprocess
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed")
