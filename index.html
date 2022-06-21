@@ -43,7 +43,7 @@
     disease in real-time as otherwise changes in trends can be obfuscated by
     partial reporting or their detection may be delayed due to the use of simpler methods like truncation.">
 <meta property="og:image" content="epiforecasts.io/epinowcast/reference/figures/README-nowcast-1.png">
-<meta property="og:image:alt" content="An R package for hierarchical nowcasting of right censored epidemiolgical counts">
+<meta property="og:image:alt" content="An R package for hierarchical nowcasting of right censored epidemiological counts">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@seabbs">
 <meta name="twitter:site" content="@seabbs">
@@ -65,7 +65,7 @@
     
     <a class="navbar-brand me-2" href="index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.6.4000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.0.7.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,7 +117,7 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="hierarchical-nowcasting-of-right-censored-epidemological-counts">Hierarchical nowcasting of right censored epidemological counts<a class="anchor" aria-label="anchor" href="#hierarchical-nowcasting-of-right-censored-epidemological-counts"></a>
+<div class="page-header"><h1 id="hierarchical-nowcasting-of-right-censored-epidemiological-counts">Hierarchical nowcasting of right censored epidemiological counts<a class="anchor" aria-label="anchor" href="#hierarchical-nowcasting-of-right-censored-epidemiological-counts"></a>
 </h1></div>
 
 <p><a href="https://epiforecasts.r-universe.dev/" class="external-link"><img src="https://epiforecasts.r-universe.dev/badges/epinowcast" alt="Universe"></a> <a href="https://github.com/epiforecasts/epinowcast/blob/master/LICENSE.md/" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a> <a href="https://github.com/epiforecasts/epinowcast/graphs/contributors" class="external-link"><img src="https://img.shields.io/github/contributors/epiforecasts/epinowcast" alt="GitHub contributors"></a></p>
@@ -164,8 +164,6 @@
 <p>Below we first filter for a snapshot of retrospective data available 40 days before the 1st of October that contains 40 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span>
-<span class="va">nat_germany_hosp</span><span class="op">[</span>, <span class="va">holiday</span> <span class="op">:=</span> <span class="cn">FALSE</span><span class="op">]</span>
-<span class="va">nat_germany_hosp</span><span class="op">[</span><span class="va">report_date</span> <span class="op">==</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-10-01"</span><span class="op">)</span> <span class="op">-</span> <span class="fl">40</span><span class="op">)</span>, <span class="va">holiday</span> <span class="op">:=</span> <span class="cn">TRUE</span><span class="op">]</span>
 <span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span><span class="op">[</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-10-01"</span><span class="op">)</span><span class="op">]</span>
 
 <span class="va">retro_nat_germany</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_retrospective_data.html">enw_retrospective_data</a></span><span class="op">(</span>
@@ -173,64 +171,64 @@
   rep_days <span class="op">=</span> <span class="fl">40</span>, ref_days <span class="op">=</span> <span class="fl">40</span>
 <span class="op">)</span>
 <span class="va">retro_nat_germany</span>
-<span class="co">#&gt;      reference_date location age_group confirm report_date holiday</span>
-<span class="co">#&gt;   1:     2021-07-13       DE       00+      21  2021-07-13   FALSE</span>
-<span class="co">#&gt;   2:     2021-07-14       DE       00+      22  2021-07-14   FALSE</span>
-<span class="co">#&gt;   3:     2021-07-15       DE       00+      28  2021-07-15   FALSE</span>
-<span class="co">#&gt;   4:     2021-07-16       DE       00+      19  2021-07-16   FALSE</span>
-<span class="co">#&gt;   5:     2021-07-17       DE       00+      20  2021-07-17   FALSE</span>
-<span class="co">#&gt;  ---                                                              </span>
-<span class="co">#&gt; 857:     2021-07-14       DE       00+      72  2021-08-21   FALSE</span>
-<span class="co">#&gt; 858:     2021-07-15       DE       00+      69  2021-08-22    TRUE</span>
-<span class="co">#&gt; 859:     2021-07-13       DE       00+      59  2021-08-21   FALSE</span>
-<span class="co">#&gt; 860:     2021-07-14       DE       00+      72  2021-08-22    TRUE</span>
-<span class="co">#&gt; 861:     2021-07-13       DE       00+      59  2021-08-22    TRUE</span></code></pre></div>
+<span class="co">#&gt;      reference_date location age_group confirm report_date</span>
+<span class="co">#&gt;   1:     2021-07-13       DE       00+      21  2021-07-13</span>
+<span class="co">#&gt;   2:     2021-07-14       DE       00+      22  2021-07-14</span>
+<span class="co">#&gt;   3:     2021-07-15       DE       00+      28  2021-07-15</span>
+<span class="co">#&gt;   4:     2021-07-16       DE       00+      19  2021-07-16</span>
+<span class="co">#&gt;   5:     2021-07-17       DE       00+      20  2021-07-17</span>
+<span class="co">#&gt;  ---                                                      </span>
+<span class="co">#&gt; 857:     2021-07-14       DE       00+      72  2021-08-21</span>
+<span class="co">#&gt; 858:     2021-07-15       DE       00+      69  2021-08-22</span>
+<span class="co">#&gt; 859:     2021-07-13       DE       00+      59  2021-08-21</span>
+<span class="co">#&gt; 860:     2021-07-14       DE       00+      72  2021-08-22</span>
+<span class="co">#&gt; 861:     2021-07-13       DE       00+      59  2021-08-22</span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="va">nat_germany_hosp</span>, ref_window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span>
 <span class="va">latest_germany_hosp</span>
-<span class="co">#&gt;     reference_date location age_group confirm holiday</span>
-<span class="co">#&gt;  1:     2021-07-13       DE       00+      60   FALSE</span>
-<span class="co">#&gt;  2:     2021-07-14       DE       00+      74   FALSE</span>
-<span class="co">#&gt;  3:     2021-07-15       DE       00+      69   FALSE</span>
-<span class="co">#&gt;  4:     2021-07-16       DE       00+      49   FALSE</span>
-<span class="co">#&gt;  5:     2021-07-17       DE       00+      67   FALSE</span>
-<span class="co">#&gt;  6:     2021-07-18       DE       00+      51   FALSE</span>
-<span class="co">#&gt;  7:     2021-07-19       DE       00+      36   FALSE</span>
-<span class="co">#&gt;  8:     2021-07-20       DE       00+      96   FALSE</span>
-<span class="co">#&gt;  9:     2021-07-21       DE       00+      94   FALSE</span>
-<span class="co">#&gt; 10:     2021-07-22       DE       00+      99   FALSE</span>
-<span class="co">#&gt; 11:     2021-07-23       DE       00+      88   FALSE</span>
-<span class="co">#&gt; 12:     2021-07-24       DE       00+      95   FALSE</span>
-<span class="co">#&gt; 13:     2021-07-25       DE       00+      75   FALSE</span>
-<span class="co">#&gt; 14:     2021-07-26       DE       00+      29   FALSE</span>
-<span class="co">#&gt; 15:     2021-07-27       DE       00+      81   FALSE</span>
-<span class="co">#&gt; 16:     2021-07-28       DE       00+     159   FALSE</span>
-<span class="co">#&gt; 17:     2021-07-29       DE       00+     143   FALSE</span>
-<span class="co">#&gt; 18:     2021-07-30       DE       00+     117   FALSE</span>
-<span class="co">#&gt; 19:     2021-07-31       DE       00+     132   FALSE</span>
-<span class="co">#&gt; 20:     2021-08-01       DE       00+      80   FALSE</span>
-<span class="co">#&gt; 21:     2021-08-02       DE       00+      59   FALSE</span>
-<span class="co">#&gt; 22:     2021-08-03       DE       00+     156   FALSE</span>
-<span class="co">#&gt; 23:     2021-08-04       DE       00+     183   FALSE</span>
-<span class="co">#&gt; 24:     2021-08-05       DE       00+     147   FALSE</span>
-<span class="co">#&gt; 25:     2021-08-06       DE       00+     155   FALSE</span>
-<span class="co">#&gt; 26:     2021-08-07       DE       00+     159   FALSE</span>
-<span class="co">#&gt; 27:     2021-08-08       DE       00+     119   FALSE</span>
-<span class="co">#&gt; 28:     2021-08-09       DE       00+      65   FALSE</span>
-<span class="co">#&gt; 29:     2021-08-10       DE       00+     204   FALSE</span>
-<span class="co">#&gt; 30:     2021-08-11       DE       00+     275   FALSE</span>
-<span class="co">#&gt; 31:     2021-08-12       DE       00+     273   FALSE</span>
-<span class="co">#&gt; 32:     2021-08-13       DE       00+     270   FALSE</span>
-<span class="co">#&gt; 33:     2021-08-14       DE       00+     262   FALSE</span>
-<span class="co">#&gt; 34:     2021-08-15       DE       00+     192   FALSE</span>
-<span class="co">#&gt; 35:     2021-08-16       DE       00+     140   FALSE</span>
-<span class="co">#&gt; 36:     2021-08-17       DE       00+     323   FALSE</span>
-<span class="co">#&gt; 37:     2021-08-18       DE       00+     409   FALSE</span>
-<span class="co">#&gt; 38:     2021-08-19       DE       00+     370   FALSE</span>
-<span class="co">#&gt; 39:     2021-08-20       DE       00+     361   FALSE</span>
-<span class="co">#&gt; 40:     2021-08-21       DE       00+     339   FALSE</span>
-<span class="co">#&gt; 41:     2021-08-22       DE       00+     258   FALSE</span>
-<span class="co">#&gt;     reference_date location age_group confirm holiday</span></code></pre></div>
+<span class="co">#&gt;     reference_date location age_group confirm</span>
+<span class="co">#&gt;  1:     2021-07-13       DE       00+      60</span>
+<span class="co">#&gt;  2:     2021-07-14       DE       00+      74</span>
+<span class="co">#&gt;  3:     2021-07-15       DE       00+      69</span>
+<span class="co">#&gt;  4:     2021-07-16       DE       00+      49</span>
+<span class="co">#&gt;  5:     2021-07-17       DE       00+      67</span>
+<span class="co">#&gt;  6:     2021-07-18       DE       00+      51</span>
+<span class="co">#&gt;  7:     2021-07-19       DE       00+      36</span>
+<span class="co">#&gt;  8:     2021-07-20       DE       00+      96</span>
+<span class="co">#&gt;  9:     2021-07-21       DE       00+      94</span>
+<span class="co">#&gt; 10:     2021-07-22       DE       00+      99</span>
+<span class="co">#&gt; 11:     2021-07-23       DE       00+      88</span>
+<span class="co">#&gt; 12:     2021-07-24       DE       00+      95</span>
+<span class="co">#&gt; 13:     2021-07-25       DE       00+      75</span>
+<span class="co">#&gt; 14:     2021-07-26       DE       00+      29</span>
+<span class="co">#&gt; 15:     2021-07-27       DE       00+      81</span>
+<span class="co">#&gt; 16:     2021-07-28       DE       00+     159</span>
+<span class="co">#&gt; 17:     2021-07-29       DE       00+     143</span>
+<span class="co">#&gt; 18:     2021-07-30       DE       00+     117</span>
+<span class="co">#&gt; 19:     2021-07-31       DE       00+     132</span>
+<span class="co">#&gt; 20:     2021-08-01       DE       00+      80</span>
+<span class="co">#&gt; 21:     2021-08-02       DE       00+      59</span>
+<span class="co">#&gt; 22:     2021-08-03       DE       00+     156</span>
+<span class="co">#&gt; 23:     2021-08-04       DE       00+     183</span>
+<span class="co">#&gt; 24:     2021-08-05       DE       00+     147</span>
+<span class="co">#&gt; 25:     2021-08-06       DE       00+     155</span>
+<span class="co">#&gt; 26:     2021-08-07       DE       00+     159</span>
+<span class="co">#&gt; 27:     2021-08-08       DE       00+     119</span>
+<span class="co">#&gt; 28:     2021-08-09       DE       00+      65</span>
+<span class="co">#&gt; 29:     2021-08-10       DE       00+     204</span>
+<span class="co">#&gt; 30:     2021-08-11       DE       00+     275</span>
+<span class="co">#&gt; 31:     2021-08-12       DE       00+     273</span>
+<span class="co">#&gt; 32:     2021-08-13       DE       00+     270</span>
+<span class="co">#&gt; 33:     2021-08-14       DE       00+     262</span>
+<span class="co">#&gt; 34:     2021-08-15       DE       00+     192</span>
+<span class="co">#&gt; 35:     2021-08-16       DE       00+     140</span>
+<span class="co">#&gt; 36:     2021-08-17       DE       00+     323</span>
+<span class="co">#&gt; 37:     2021-08-18       DE       00+     409</span>
+<span class="co">#&gt; 38:     2021-08-19       DE       00+     370</span>
+<span class="co">#&gt; 39:     2021-08-20       DE       00+     361</span>
+<span class="co">#&gt; 40:     2021-08-21       DE       00+     339</span>
+<span class="co">#&gt; 41:     2021-08-22       DE       00+     258</span>
+<span class="co">#&gt;     reference_date location age_group confirm</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="data-preprocessing-and-model-specification">Data preprocessing and model specification<a class="anchor" aria-label="anchor" href="#data-preprocessing-and-model-specification"></a>
@@ -239,12 +237,12 @@
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span><span class="op">)</span>
 <span class="va">pobs</span>
-<span class="co">#&gt;                    obs         new_confirm             latest</span>
-<span class="co">#&gt; 1: &lt;data.table[860x7]&gt; &lt;data.table[860x9]&gt; &lt;data.table[41x6]&gt;</span>
-<span class="co">#&gt;                   diff  reporting_triangle      metareference</span>
-<span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[41x42]&gt; &lt;data.table[41x8]&gt;</span>
-<span class="co">#&gt;            metareport time snapshots groups max_delay   max_date</span>
-<span class="co">#&gt; 1: &lt;data.table[80x9]&gt;   41        41      1        40 2021-08-22</span></code></pre></div>
+<span class="co">#&gt;                    obs          new_confirm             latest</span>
+<span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x8]&gt;</span>
+<span class="co">#&gt;     reporting_triangle       metareference          metareport time snapshots</span>
+<span class="co">#&gt; 1: &lt;data.table[41x42]&gt; &lt;data.table[41x10]&gt; &lt;data.table[80x11]&gt;   41        41</span>
+<span class="co">#&gt;    groups max_delay   max_date</span>
+<span class="co">#&gt; 1:      1        40 2021-08-22</span></code></pre></div>
 <p>Construct an intercept only model for the date of reference using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>
@@ -252,7 +250,7 @@
 <span class="co">#&gt; $fixed</span>
 <span class="co">#&gt; $fixed$formula</span>
 <span class="co">#&gt; ~1</span>
-<span class="co">#&gt; &lt;environment: 0x55c4b4a462f0&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55e47ce786d0&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $fixed$design</span>
 <span class="co">#&gt;   (Intercept)</span>
@@ -266,7 +264,7 @@
 <span class="co">#&gt; $random</span>
 <span class="co">#&gt; $random$formula</span>
 <span class="co">#&gt; ~1</span>
-<span class="co">#&gt; &lt;environment: 0x55c4b4a462f0&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55e47ce786d0&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $random$design</span>
 <span class="co">#&gt;      (Intercept)</span>
@@ -282,7 +280,7 @@
 <span class="co">#&gt; $fixed</span>
 <span class="co">#&gt; $fixed$formula</span>
 <span class="co">#&gt; ~1 + day_of_week</span>
-<span class="co">#&gt; &lt;environment: 0x55c4b4e74c68&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55e47d3691c8&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $fixed$design</span>
 <span class="co">#&gt;   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday</span>
@@ -311,7 +309,7 @@
 <span class="co">#&gt; $random</span>
 <span class="co">#&gt; $random$formula</span>
 <span class="co">#&gt; ~0 + fixed + day_of_week</span>
-<span class="co">#&gt; &lt;environment: 0x55c4b4e74c68&gt;</span>
+<span class="co">#&gt; &lt;environment: 0x55e47d3691c8&gt;</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $random$design</span>
 <span class="co">#&gt;   fixed day_of_week</span>
@@ -347,12 +345,12 @@
 <span class="op">)</span>
 <span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Chain 2 finished in 91.0 seconds.</span>
-<span class="co">#&gt; Chain 1 finished in 95.2 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 117.2 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 122.0 seconds.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Both chains finished successfully.</span>
-<span class="co">#&gt; Mean chain execution time: 93.1 seconds.</span>
-<span class="co">#&gt; Total execution time: 95.2 seconds.</span></code></pre></div>
+<span class="co">#&gt; Mean chain execution time: 119.6 seconds.</span>
+<span class="co">#&gt; Total execution time: 122.1 seconds.</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -360,43 +358,52 @@
 <p>Print the output from <code>epinowcast</code> which includes diagnostic information, the data used for fitting, and the <code>cmdstanr</code> object.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">nowcast</span>
-<span class="co">#&gt;                    obs         new_confirm             latest</span>
-<span class="co">#&gt; 1: &lt;data.table[860x7]&gt; &lt;data.table[860x9]&gt; &lt;data.table[41x6]&gt;</span>
-<span class="co">#&gt;                   diff  reporting_triangle      metareference</span>
-<span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[41x42]&gt; &lt;data.table[41x8]&gt;</span>
-<span class="co">#&gt;            metareport time snapshots groups max_delay   max_date</span>
-<span class="co">#&gt; 1: &lt;data.table[80x9]&gt;   41        41      1        40 2021-08-22</span>
-<span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span>
-<span class="co">#&gt; 1: &lt;CmdStanMCMC[31]&gt; &lt;list[36]&gt; &lt;list[6]&gt;    2000     1.01</span>
-<span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span>
-<span class="co">#&gt; 1:                     0                         0             9</span>
+<span class="co">#&gt;                    obs          new_confirm             latest</span>
+<span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x8]&gt;</span>
+<span class="co">#&gt;     reporting_triangle       metareference          metareport time snapshots</span>
+<span class="co">#&gt; 1: &lt;data.table[41x42]&gt; &lt;data.table[41x10]&gt; &lt;data.table[80x11]&gt;   41        41</span>
+<span class="co">#&gt;    groups max_delay   max_date               fit       data  fit_args samples</span>
+<span class="co">#&gt; 1:      1        40 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[39]&gt; &lt;list[6]&gt;    2000</span>
+<span class="co">#&gt;    max_rhat divergent_transitions per_divergent_transitions max_treedepth</span>
+<span class="co">#&gt; 1:     1.01                     0                         0             8</span>
 <span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span>
-<span class="co">#&gt; 1:                   1                5e-04     95.2</span></code></pre></div>
+<span class="co">#&gt; 1:                  50                0.025    122.1</span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>
-<span class="co">#&gt;     reference_date location age_group confirm holiday group     mean median</span>
-<span class="co">#&gt;  1:     2021-07-14       DE       00+      72    TRUE     1  72.0000     72</span>
-<span class="co">#&gt;  2:     2021-07-15       DE       00+      69    TRUE     1  69.0530     69</span>
-<span class="co">#&gt;  3:     2021-07-16       DE       00+      47    TRUE     1  47.0720     47</span>
-<span class="co">#&gt;  4:     2021-07-17       DE       00+      65    TRUE     1  65.2075     65</span>
-<span class="co">#&gt;  5:     2021-07-18       DE       00+      50    TRUE     1  50.2420     50</span>
-<span class="co">#&gt;  6:     2021-07-19       DE       00+      36    TRUE     1  36.2365     36</span>
-<span class="co">#&gt;  7:     2021-07-20       DE       00+      94    TRUE     1  94.4500     94</span>
-<span class="co">#&gt;  8:     2021-07-21       DE       00+      91    TRUE     1  91.7115     91</span>
-<span class="co">#&gt;  9:     2021-07-22       DE       00+      99    TRUE     1 100.0160    100</span>
-<span class="co">#&gt; 10:     2021-07-23       DE       00+      86    TRUE     1  87.1525     87</span>
-<span class="co">#&gt;            sd    mad q5 q95      rhat ess_bulk ess_tail</span>
-<span class="co">#&gt;  1: 0.0000000 0.0000 72  72        NA       NA       NA</span>
-<span class="co">#&gt;  2: 0.2349864 0.0000 69  70 0.9995485 1983.117 1970.516</span>
-<span class="co">#&gt;  3: 0.2717589 0.0000 47  48 1.0007393 1816.646 1835.730</span>
-<span class="co">#&gt;  4: 0.4738734 0.0000 65  66 0.9997308 1726.126 1804.809</span>
-<span class="co">#&gt;  5: 0.4914843 0.0000 50  51 0.9993501 1851.588 1871.446</span>
-<span class="co">#&gt;  6: 0.4946616 0.0000 36  37 0.9994999 1836.039 1874.814</span>
-<span class="co">#&gt;  7: 0.6721055 0.0000 94  96 0.9993199 2144.631 2026.271</span>
-<span class="co">#&gt;  8: 0.9288160 0.0000 91  93 0.9996500 1856.991 1851.302</span>
-<span class="co">#&gt;  9: 1.0882721 1.4826 99 102 1.0015263 1694.077 1686.568</span>
-<span class="co">#&gt; 10: 1.1277764 1.4826 86  89 1.0002425 1960.065 2058.952</span></code></pre></div>
+<span class="co">#&gt;     reference_date location age_group confirm max_confirm cum_prop_reported</span>
+<span class="co">#&gt;  1:     2021-07-14       DE       00+      72          72                 1</span>
+<span class="co">#&gt;  2:     2021-07-15       DE       00+      69          69                 1</span>
+<span class="co">#&gt;  3:     2021-07-16       DE       00+      47          47                 1</span>
+<span class="co">#&gt;  4:     2021-07-17       DE       00+      65          65                 1</span>
+<span class="co">#&gt;  5:     2021-07-18       DE       00+      50          50                 1</span>
+<span class="co">#&gt;  6:     2021-07-19       DE       00+      36          36                 1</span>
+<span class="co">#&gt;  7:     2021-07-20       DE       00+      94          94                 1</span>
+<span class="co">#&gt;  8:     2021-07-21       DE       00+      91          91                 1</span>
+<span class="co">#&gt;  9:     2021-07-22       DE       00+      99          99                 1</span>
+<span class="co">#&gt; 10:     2021-07-23       DE       00+      86          86                 1</span>
+<span class="co">#&gt;     delay group    mean median        sd    mad q5 q95      rhat ess_bulk</span>
+<span class="co">#&gt;  1:    39     1 72.0000     72 0.0000000 0.0000 72  72        NA       NA</span>
+<span class="co">#&gt;  2:    38     1 69.0440     69 0.2099668 0.0000 69  69 0.9992454 1665.980</span>
+<span class="co">#&gt;  3:    37     1 47.0910     47 0.3110746 0.0000 47  48 0.9994101 1947.687</span>
+<span class="co">#&gt;  4:    36     1 65.2030     65 0.4548565 0.0000 65  66 1.0019851 1877.879</span>
+<span class="co">#&gt;  5:    35     1 50.2450     50 0.4980954 0.0000 50  51 0.9992548 1752.784</span>
+<span class="co">#&gt;  6:    34     1 36.2320     36 0.5111816 0.0000 36  37 1.0018554 1814.197</span>
+<span class="co">#&gt;  7:    33     1 94.4740     94 0.6946692 0.0000 94  96 0.9994547 1876.378</span>
+<span class="co">#&gt;  8:    32     1 91.7315     91 0.9142350 0.0000 91  94 1.0009333 1706.214</span>
+<span class="co">#&gt;  9:    31     1 99.9980    100 1.0632786 1.4826 99 102 0.9997293 1924.759</span>
+<span class="co">#&gt; 10:    30     1 87.1405     87 1.1394775 1.4826 86  89 0.9994695 1833.535</span>
+<span class="co">#&gt;     ess_tail</span>
+<span class="co">#&gt;  1:       NA</span>
+<span class="co">#&gt;  2: 1685.329</span>
+<span class="co">#&gt;  3: 1783.730</span>
+<span class="co">#&gt;  4: 1840.178</span>
+<span class="co">#&gt;  5: 1727.676</span>
+<span class="co">#&gt;  6: 1802.610</span>
+<span class="co">#&gt;  7: 1893.233</span>
+<span class="co">#&gt;  8: 1817.178</span>
+<span class="co">#&gt;  9: 1665.602</span>
+<span class="co">#&gt; 10: 1868.667</span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></code></pre></div>
@@ -416,30 +423,30 @@
 <span class="va">samples</span><span class="op">[</span>, <span class="op">(</span><span class="va">cols</span><span class="op">)</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">frollsum</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>,
   .SDcols <span class="op">=</span> <span class="va">cols</span>, by <span class="op">=</span> <span class="st">".draw"</span>
 <span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sample</span><span class="op">)</span><span class="op">]</span>
-<span class="co">#&gt;        reference_date location age_group confirm holiday group .chain</span>
-<span class="co">#&gt;     1:     2021-07-20       DE       00+     433    TRUE     1      1</span>
-<span class="co">#&gt;     2:     2021-07-20       DE       00+     433    TRUE     1      1</span>
-<span class="co">#&gt;     3:     2021-07-20       DE       00+     433    TRUE     1      1</span>
-<span class="co">#&gt;     4:     2021-07-20       DE       00+     433    TRUE     1      1</span>
-<span class="co">#&gt;     5:     2021-07-20       DE       00+     433    TRUE     1      1</span>
-<span class="co">#&gt;    ---                                                               </span>
-<span class="co">#&gt; 67996:     2021-08-22       DE       00+    1093    TRUE     1      2</span>
-<span class="co">#&gt; 67997:     2021-08-22       DE       00+    1093    TRUE     1      2</span>
-<span class="co">#&gt; 67998:     2021-08-22       DE       00+    1093    TRUE     1      2</span>
-<span class="co">#&gt; 67999:     2021-08-22       DE       00+    1093    TRUE     1      2</span>
-<span class="co">#&gt; 68000:     2021-08-22       DE       00+    1093    TRUE     1      2</span>
-<span class="co">#&gt;        .iteration .draw sample</span>
-<span class="co">#&gt;     1:          1     1    434</span>
-<span class="co">#&gt;     2:          2     2    433</span>
-<span class="co">#&gt;     3:          3     3    434</span>
-<span class="co">#&gt;     4:          4     4    436</span>
-<span class="co">#&gt;     5:          5     5    433</span>
-<span class="co">#&gt;    ---                        </span>
-<span class="co">#&gt; 67996:        996  1996   1937</span>
-<span class="co">#&gt; 67997:        997  1997   2220</span>
-<span class="co">#&gt; 67998:        998  1998   2080</span>
-<span class="co">#&gt; 67999:        999  1999   2154</span>
-<span class="co">#&gt; 68000:       1000  2000   2127</span>
+<span class="co">#&gt;        reference_date location age_group confirm max_confirm cum_prop_reported</span>
+<span class="co">#&gt;     1:     2021-07-20       DE       00+     433          94                 1</span>
+<span class="co">#&gt;     2:     2021-07-20       DE       00+     433          94                 1</span>
+<span class="co">#&gt;     3:     2021-07-20       DE       00+     433          94                 1</span>
+<span class="co">#&gt;     4:     2021-07-20       DE       00+     433          94                 1</span>
+<span class="co">#&gt;     5:     2021-07-20       DE       00+     433          94                 1</span>
+<span class="co">#&gt;    ---                                                                        </span>
+<span class="co">#&gt; 67996:     2021-08-22       DE       00+    1093          45                 1</span>
+<span class="co">#&gt; 67997:     2021-08-22       DE       00+    1093          45                 1</span>
+<span class="co">#&gt; 67998:     2021-08-22       DE       00+    1093          45                 1</span>
+<span class="co">#&gt; 67999:     2021-08-22       DE       00+    1093          45                 1</span>
+<span class="co">#&gt; 68000:     2021-08-22       DE       00+    1093          45                 1</span>
+<span class="co">#&gt;        delay group .chain .iteration .draw sample</span>
+<span class="co">#&gt;     1:    33     1      1          1     1    435</span>
+<span class="co">#&gt;     2:    33     1      1          2     2    441</span>
+<span class="co">#&gt;     3:    33     1      1          3     3    435</span>
+<span class="co">#&gt;     4:    33     1      1          4     4    435</span>
+<span class="co">#&gt;     5:    33     1      1          5     5    438</span>
+<span class="co">#&gt;    ---                                           </span>
+<span class="co">#&gt; 67996:     0     1      2        996  1996   2014</span>
+<span class="co">#&gt; 67997:     0     1      2        997  1997   2109</span>
+<span class="co">#&gt; 67998:     0     1      2        998  1998   2051</span>
+<span class="co">#&gt; 67999:     0     1      2        999  1999   2031</span>
+<span class="co">#&gt; 68000:     0     1      2       1000  2000   2311</span>
 <span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span>
   ,
   <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>
@@ -461,12 +468,12 @@
 <span id="cb17-2"><a href="#cb17-2"></a><span class="co">#&gt; To cite epinowcast in publications use:</span></span>
 <span id="cb17-3"><a href="#cb17-3"></a><span class="co">#&gt; </span></span>
 <span id="cb17-4"><a href="#cb17-4"></a><span class="co">#&gt;   Sam Abbott (2021). epinowcast: Hierarchical nowcasting of right</span></span>
-<span id="cb17-5"><a href="#cb17-5"></a><span class="co">#&gt;   censored epidemological counts, DOI: 10.5281/zenodo.5637165</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="co">#&gt;   censored epidemiological counts, DOI: 10.5281/zenodo.5637165</span></span>
 <span id="cb17-6"><a href="#cb17-6"></a><span class="co">#&gt; </span></span>
 <span id="cb17-7"><a href="#cb17-7"></a><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
 <span id="cb17-8"><a href="#cb17-8"></a><span class="co">#&gt; </span></span>
 <span id="cb17-9"><a href="#cb17-9"></a><span class="co">#&gt;   @Article{,</span></span>
-<span id="cb17-10"><a href="#cb17-10"></a><span class="co">#&gt;     title = {epinowcast: Hierarchical nowcasting of right censored epidemological counts},</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="co">#&gt;     title = {epinowcast: Hierarchical nowcasting of right censored epidemiological counts},</span></span>
 <span id="cb17-11"><a href="#cb17-11"></a><span class="co">#&gt;     author = {Sam Abbott},</span></span>
 <span id="cb17-12"><a href="#cb17-12"></a><span class="co">#&gt;     journal = {Zenodo},</span></span>
 <span id="cb17-13"><a href="#cb17-13"></a><span class="co">#&gt;     year = {2021},</span></span>

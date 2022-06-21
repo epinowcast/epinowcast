@@ -1,10 +1,10 @@
 pandoc: 2.7.3
 pkgdown: 2.0.4.9000
-pkgdown_sha: d8e324b82076d32846fa3bc8edf7a13154410641
+pkgdown_sha: 5203a63f002405e99b8510debe809ff3d9f18b02
 articles:
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
-last_built: 2022-06-16T15:16Z
+last_built: 2022-06-21T17:55Z
 urls:
   reference: epiforecasts.io/epinowcast/reference
   article: epiforecasts.io/epinowcast/articles
