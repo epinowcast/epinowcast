@@ -240,7 +240,7 @@ enw_inits <- function(data) {
 #' messages be shown.
 #'
 #' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
-#' For more on profiling see the [cmdstanr documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
+#' For more on profiling see the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
 #'
 #' @param stanc_options A list of options to pass to the `stanc_options` of
 #' [cmdstanr::cmdstan_model()]. By default "01" is passed which specifies simple
