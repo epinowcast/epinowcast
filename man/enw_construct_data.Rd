@@ -75,3 +75,20 @@ enw_construct_data(
   max_delay = pobs$max_delay[[1]]
 )
 }
+\seealso{
+Preprocessing functions
+\code{\link{enw_add_delay}()},
+\code{\link{enw_add_max_reported}()},
+\code{\link{enw_add_metaobs_features}()},
+\code{\link{enw_assign_group}()},
+\code{\link{enw_extend_date}()},
+\code{\link{enw_filter_obs}()},
+\code{\link{enw_latest_data}()},
+\code{\link{enw_metadata}()},
+\code{\link{enw_new_reports}()},
+\code{\link{enw_preprocess_data}()},
+\code{\link{enw_reporting_triangle_to_long}()},
+\code{\link{enw_reporting_triangle}()},
+\code{\link{enw_retrospective_data}()}
+}
+\concept{preprocess}
