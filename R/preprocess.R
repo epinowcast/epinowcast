@@ -138,9 +138,9 @@ enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
   retro_data <- retro_data[report_date <= rep_date]
 
   if (!missing(ref_days)) {
-    ref_date <- max(retro_data$reference_date) - ref_days
+    ref_date <- max(retro_data$reference_date, na.rm = TRUE) - ref_days
   }
-  retro_data <- retro_data[reference_date >= ref_date]
+  retro_data <- retro_data[reference_date >= ref_date | is.na(reference_date)]
   return(retro_data[])
 }
 
