@@ -60,7 +60,7 @@ The parametric logit hazard (probability of report on a given date conditional o
   \gamma_{gtd} = \text{logit} \left(\frac{p^{\prime}_{gtd}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{gtd^{\prime}} \right)} \right)
 \end{equation}
 
-The non-distributional logit hazarad components for the date of occurrence and report are then again defined using an intercept and arbitrary shared covariates with fixed ($\alpha_{i}$) and random ($\beta_{i}$) coefficients.
+The non-distributional logit hazard components for the date of occurrence and report are then again defined using an intercept and arbitrary shared covariates with fixed ($\alpha_{i}$) and random ($\beta_{i}$) coefficients.
 
 \begin{align}
   \delta_{gtd} &= \mu_0 + \alpha_{\delta} X_{\delta} + \beta_{\delta} Z_{\delta} \\

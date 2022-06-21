@@ -7,6 +7,7 @@ CmdStanR's
 CmdStanR’s
 Codecov
 Höhle
+LFO
 Lifecycle
 LogNormal
 Nowcast
@@ -15,9 +16,8 @@ PARAM
 Poisson
 aem
 discretised
-epidemological
+enw
 frac
-generatedata
 geq
 gt
 gtD
@@ -27,6 +27,7 @@ mathbb
 modeldesign
 modeltools
 modelvalidation
+nolint
 nowcast
 nowcasting
 nowcasts
@@ -41,8 +42,8 @@ sim
 st
 stan
 startsWith
+sundays
 th
 tradeoffs
 treatss
 underprediction
-IDate

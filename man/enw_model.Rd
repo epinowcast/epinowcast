@@ -31,7 +31,7 @@ the \code{threads_per_chain} argument when model fitting using \code{\link[=enw_
 and \code{\link[=epinowcast]{epinowcast()}}.}
 
 \item{profile}{Logical, defaults to \code{FALSE}. Should the model be profiled?
-For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{cmdstanr documentation}. # nolint}
+For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{\code{cmdstanr} documentation}. # nolint}
 
 \item{stanc_options}{A list of options to pass to the \code{stanc_options} of
 \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default "01" is passed which specifies simple

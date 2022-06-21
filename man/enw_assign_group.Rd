@@ -19,8 +19,11 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Preprocessing functions
+\code{\link{enw_add_delay}()},
+\code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_obs}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},

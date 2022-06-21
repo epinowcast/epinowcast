@@ -2,44 +2,113 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_preprocess_data}
 \alias{enw_preprocess_data}
-\title{FUNCTION_TITLE}
+\title{Preprocess observations}
 \usage{
 enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
-  rep_holidays = c(),
-  ref_holidays = c(),
-  min_report_date,
+  max_delay_strat = "add_to_max_delay",
+  holidays = c(),
   set_negatives_to_zero = TRUE
 )
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date).}
 
-\item{by}{PARAM_DESCRIPTION, Default: c()}
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 
-\item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+\item{max_delay}{Numeric defaults to 20. The maximum number of days to
+include in the delay distribution. Computation scales non-linearly with this
+setting so consider what maximum makes sense for your data carefully.}
 
-\item{rep_holidays}{DESCRIPTION}
+\item{max_delay_strat}{Character string indicating how to handle
+reported cases beyond the specified maximum delay. Options include:
+excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
+Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
+\code{prop_reported} columns to understand the impact of this assumption.}
 
-\item{ref_holidays}{DESCRIPTION}
+\item{holidays}{A vector of dates indicating when holidays occur used by
+\code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
+\code{day_of_week} variable it creates internally.}
 
-\item{min_report_date}{PARAM_DESCRIPTION}
-
-\item{set_negatives_to_zero}{PARAM_DESCRIPTION, Default: TRUE}
+\item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
+counts (for calculated incidence of observations) be set to zero. Currently
+downstream modelling does not support negative counts and so setting must be
+TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table containing processed observations as a series of nested
+data frames as well as variables containing metadata. These are:
+\itemize{
+\item \code{obs}: (observations with the addition of empirical reporting proportions
+and and restricted to the specified maximum delay).
+\item \code{new_confirm}: Incidence of notifications by reference and report date.
+Empirical reporting distributions are also added.
+\item \code{latest}: The latest available observations.
+\item \code{reporting_triangle}: Incident observations by report and reference date in
+the standard reporting triangle matrix format.
+\item \code{metareference}: Metadata reference dates derived from observations.
+\item \code{metrareport}: Metadata for report dates.
+\item \code{time}: Numeric, number of timepoints in the data.
+\item \code{snapshots}: Numeric, number of available data snapshots to use for
+nowcasting.
+\item \code{groups}: Numeric, Number of groups/strata in the supplied observations
+(set using \code{by}).
+\item \code{max_delay}: Numeric, the maximum delay in the processed data
+\item \code{max_date}: The maximum available report date.
+}
 }
 \description{
-FUNCTION_DESCRIPTION
+This function preprocesses raw observations under the
+assumption they are reported as cumulative counts by a reference and
+report date and is used to assign groups. It also constructs data objects
+used by visualisation and modelling functions including the
+observed empirical probability of a report on a given day, the cumulative
+probability of report, the latest available observations, incidence of
+observations, and metadata about the date of reference and report (used to
+construct models). This function wraps other preprocessing functions that may
+be instead used individually if required.
+}
+\examples{
+library(data.table)
+
+# Filter example hospitalisation data to be natioanl and over all ages
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
+nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
+
+# Preprocess with default settings
+pobs <- enw_preprocess_data(nat_germany_hosp)
+pobs
+
+# Preprocess using exclusion beyond the maximum delay and a max delay of 10
+pobs_exclude <- enw_preprocess_data(
+  nat_germany_hosp,
+  max_delay = 10, max_delay_strat = "exclude"
+)
+pobs_exclude
+
+# Preprocess all data
+pobs_all <- enw_preprocess_data(
+  germany_covid19_hosp,
+  by = c("location", "age_group")
+)
+pobs_all
 }
 \seealso{
 Preprocessing functions
+\code{\link{enw_add_delay}()},
+\code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_obs}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},

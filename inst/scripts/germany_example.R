@@ -29,11 +29,12 @@ report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
 model <- enw_model(threads = TRUE)
 
 # Fit nowcast model and produce a nowcast
-options(mc.cores = 2)
+# Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
   model = model,
   report_effects = report_effects,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 2
+  chains = 2, threads_per_chain = 1,
+  iter_warmup = 500, iter_sampling = 500
 )

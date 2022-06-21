@@ -144,7 +144,7 @@ plot(nowcast, latest_obs = latest_nat_germany) +
 
 <img src="figures/nowcast-1.png" title="plot of chunk nowcast" alt="plot of chunk nowcast" width="100%" />
 
-In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is facetted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.
+In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is faceted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.
 
 ```r
 plot(nowcast, type = "posterior") +

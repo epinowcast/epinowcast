@@ -2,26 +2,40 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_latest_data}
 \alias{enw_latest_data}
-\title{FUNCTION_TITLE}
+\title{Filter observations to the latest available}
 \usage{
 enw_latest_data(obs, ref_window)
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), and \code{report_date} (report date for
+observations).}
 
-\item{ref_window}{PARAM_DESCRIPTION}
+\item{ref_window}{Numeric vector of length 2. Can optionally be used to
+restrict the reference date to a window referenced to the maximum available
+reference date.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A filtered data frame with the same variables as \code{obs}.
 }
 \description{
-FUNCTION_DESCRIPTION
+Filter observations to the latest available
+}
+\examples{
+# Filter for latest available data
+enw_latest_data(germany_covid19_hosp)
+
+# Restrict to a window of 40 days ignoring the most recent 10 days
+enw_latest_data(germany_covid19_hosp, c(50, 10))
 }
 \seealso{
 Preprocessing functions
+\code{\link{enw_add_delay}()},
+\code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_obs}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},

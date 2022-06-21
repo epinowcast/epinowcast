@@ -183,7 +183,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
   code_main_model_no_profile <- remove_profiling(code_main_model)
   if (!dir.exists(target_dir)) {
-    dir.create(target_dir, recursive = T)
+    dir.create(target_dir, recursive = TRUE)
   }
   main_model <- cmdstanr::write_stan_file(
     code_main_model_no_profile,
@@ -211,7 +211,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
       )
       code_include_paths_no_profile <- remove_profiling(code_include)
       if (!dir.exists(include_paths_no_profile_fdir)) {
-        dir.create(include_paths_no_profile_fdir, recursive = T)
+        dir.create(include_paths_no_profile_fdir, recursive = TRUE)
       }
       cmdstanr::write_stan_file(
         code_include_paths_no_profile,
