@@ -356,17 +356,17 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param obs Observations with the addition of empirical reporting proportions
 #'  and and restricted to the specified maximum delay).
 #'
-#' @param new_confirm`: Incidence of notifications by reference and report date.
+#' @param new_confirm Incidence of notifications by reference and report date.
 #' Empirical reporting distributions are also added.
 #'
-#' @param latest`: The latest available observations.
+#' @param latest The latest available observations.
 #'
-#' @param reporting_triangle`: Incident observations by report and reference
+#' @param reporting_triangle Incident observations by report and reference
 #'  date in the standard reporting triangle matrix format.
 #'
-#' @param metareference`: Metadata reference dates derived from observations.
+#' @param metareference Metadata reference dates derived from observations.
 #'
-#' @param metrareport`: Metadata for report dates.
+#' @param metrareport Metadata for report dates.
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
@@ -400,7 +400,6 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
   class(out) <- c("enw_preprocess_data", class(out))
   return(out[])
 }
-
 
 #' Preprocess observations
 #'

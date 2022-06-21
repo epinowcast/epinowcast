@@ -18,21 +18,21 @@ enw_construct_data(
 \item{obs}{Observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay).}
 
+\item{new_confirm}{Incidence of notifications by reference and report date.
+Empirical reporting distributions are also added.}
+
+\item{latest}{The latest available observations.}
+
+\item{reporting_triangle}{Incident observations by report and reference
+date in the standard reporting triangle matrix format.}
+
+\item{metareference}{Metadata reference dates derived from observations.}
+
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
 
-\item{new_confirm`:}{Incidence of notifications by reference and report date.
-Empirical reporting distributions are also added.}
-
-\item{latest`:}{The latest available observations.}
-
-\item{reporting_triangle`:}{Incident observations by report and reference
-date in the standard reporting triangle matrix format.}
-
-\item{metareference`:}{Metadata reference dates derived from observations.}
-
-\item{metrareport`:}{Metadata for report dates.}
+\item{metrareport}{Metadata for report dates.}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -66,12 +66,12 @@ of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} for more on the exp
 \examples{
 pobs <- enw_example("preprocessed")
 enw_construct_data(
- obs = pobs$obs[[1]],
- new_confirm = pobs$new_confirm[[1]],
- latest = pobs$latest[[1]],
- reporting_triangle = pobs$reporting_triangle[[1]],
- metareport = pobs$metareport[[1]],
- metareference = pobs$metareference[[1]],
- max_delay = pobs$max_delay[[1]]
+  obs = pobs$obs[[1]],
+  new_confirm = pobs$new_confirm[[1]],
+  latest = pobs$latest[[1]],
+  reporting_triangle = pobs$reporting_triangle[[1]],
+  metareport = pobs$metareport[[1]],
+  metareference = pobs$metareference[[1]],
+  max_delay = pobs$max_delay[[1]]
 )
 }
