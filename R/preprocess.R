@@ -366,7 +366,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param metareference Metadata reference dates derived from observations.
 #'
-#' @param metarareport Metadata for report dates.
+#' @param metareport Metadata for report dates.
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return

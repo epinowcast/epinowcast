@@ -26,13 +26,13 @@ Empirical reporting distributions are also added.}
 \item{reporting_triangle}{Incident observations by report and reference
 date in the standard reporting triangle matrix format.}
 
+\item{metareport}{Metadata for report dates.}
+
 \item{metareference}{Metadata reference dates derived from observations.}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
-
-\item{metarareport}{Metadata for report dates.}
 }
 \value{
 A data.table containing processed observations as a series of nested
