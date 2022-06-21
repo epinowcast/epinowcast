@@ -21,7 +21,7 @@ jobs:
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      CMDSTAN_VERSION: "2.28.0"
+      CMDSTAN_VERSION: "2.29.2"
       NOT_CRAN: false
       
     steps:
