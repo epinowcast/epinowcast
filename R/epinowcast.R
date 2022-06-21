@@ -49,6 +49,6 @@ epinowcast <- function(pobs,
   fit <- fit(data = stan_data, model = model, init = inits, ...)
 
   out <- cbind(pobs, fit)
-  class(out) <- c("epinowcast", class(out))
+  class(out) <- c("epinowcast", "enw_preprocess_data", class(out))
   return(out[])
 }

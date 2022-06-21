@@ -319,13 +319,19 @@ enw_reporting_triangle <- function(obs) {
   return(reports[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' Recast the reporting triangle from wide to long format
+#'
+#' @param obs A dataframe in the format produced by [enw_reporting_triangle()].
+#'
+#' @return A long format reporting triangle as a data frame with additional
+#' variables `new_confirm` and `delay`.
 #' @family preprocess
 #' @export
 #' @importFrom data.table melt setorderv
+#' @examples
+#' obs <- enw_example("preprocessed")$new_confirm
+#' rt <- enw_reporting_triangle(obs)
+#' enw_reporting_triangle_to_long(rt)
 enw_reporting_triangle_to_long <- function(obs) {
   reports_long <- data.table::melt(
     obs,
