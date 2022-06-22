@@ -77,11 +77,16 @@ terms_rw <- function(x) {
 #' @param group Defines the grouping parameter used for the random walk.
 #' If not specified no grouping is used.
 #'
+#' @param type Character string, defaults to "independent". How should the
+#' standard deviation of grouped random walks be estimated. Currently this can
+#' be set to be independent by group or dependent across groups.
+#'
 #' @return A list to be parsed internally.
 #' @export
 #' @example
 #' rw(time, age)
-rw <- function(time, group) {
+rw <- function(time, group, type = "independent") {
+  type <- match.arg(type, choices = c("independent", "dependent"))
   if (missing(time)) {
     stop("time must be present")
   } else {
@@ -93,29 +98,45 @@ rw <- function(time, group) {
   } else {
     group <- deparse(substitute(group))
   }
-  out <- list(time = time, group = group)
-  class(out) <- c("rw_term")
+  out <- list(time = time, group = group, type = type)
+  class(out) <- c("enw_rw_term")
   return(out)
 }
 
 construct_rw <- function(data, rw) {
+  if (!(class(rw) %in% "enw_rw_term")) {
+    stop("rw must be a random walk term as constructed by rw")
+  }
+  data <- data.table::copy(data)
   data <- enw_add_cumulative_membership(
     data,
     feature = rw$time
   )
-  terms <- grep(paste0("c", rw$time), colnames(data), value = TRUE)
+  ctime  <- paste0("c", rw$time)
+  terms <- grep(ctime, colnames(data), value = TRUE)
   fdata <- data.table::copy(data)
   fdata <- fdata[, c(terms, rw$group), with = FALSE]
   if (!is.null(rw$group)) {
     terms <- paste0(rw$group, ":", terms)
   }
-  fixed <- enw_formula(fdata, fixed = terms)$fixed$design
-  fixed_effs <- enw_effects_metadata(fixed)
   # make a fixed effects design matrix
+  fixed <- enw_formula(fdata, fixed = terms)$fixed$design
   # extract effects metadata
+  effects <- enw_effects_metadata(fixed)
   # implement random walk structure effects
-  # output updated data, fixed effects, and random effects meta data
-  return(list(data = data, terms = terms))
+  if (is.null(rw$group) || rw$type %in% "dependent") {
+    effects <- enw_add_pooling_effect(effects, ctime, rw$time)
+  }else {
+    for (i in  unique(fdata[[rw$group]])) {
+    ngroup <- paste0(rw$group, i)
+    effects <- enw_add_pooling_effect(
+      effects, c(ctime, paste0(rw$group, i)), paste0(ngroup, ":", rw$time),
+        finder_fn = function(effect, pattern) {
+          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
+      })
+    }
+  }
+  return(list(data = data, terms = terms, effects = effects))
 }
 
 construct_re <- function(data, re) {

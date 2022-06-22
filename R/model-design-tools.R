@@ -49,7 +49,9 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   data <- suppressWarnings(
     data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
   )
-
+  # drop missing factor levels
+  data <- droplevels(data)
+  
   # make model.matrix helper
   mod_matrix <- function(formula, data, ...) {
     design <- model.matrix(formula, data, ...)
@@ -149,17 +151,22 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd",
 enw_add_cumulative_membership <- function(metaobs, feature) {
   metaobs <- data.table::as.data.table(metaobs)
   cfeature <- paste0("c", feature)
-  metaobs[, (cfeature) := as.factor(get(feature))]
-  metaobs <- cbind(
-    metaobs, model.matrix(as.formula(paste0("~ 0 + ", cfeature)), metaobs)
-  )
-  metaobs[, (cfeature) := NULL]
-  metaobs[, (paste0(cfeature, "0")) := NULL]
-  cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
-  metaobs[,
-    (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),
-    .SDcols = cfeatures, by = "group"
-  ]
+  if (!any(grepl(cfeature, colnames(metaobs)))) {
+    if (is.null(metaobs[[feature]])) {
+      stop("Requested variable is not present in the supplied data frame.")
+    }
+    metaobs[, (cfeature) := as.factor(get(feature))]
+    metaobs <- cbind(
+      metaobs, model.matrix(as.formula(paste0("~ 0 + ", cfeature)), metaobs)
+    )
+    metaobs[, (cfeature) := NULL]
+    metaobs[, (paste0(cfeature, "0")) := NULL]
+    cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
+    metaobs[,
+      (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),
+      .SDcols = cfeatures, by = "group"
+    ]
+  }
   return(metaobs[])
 }
 
