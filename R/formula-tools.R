@@ -82,9 +82,6 @@ terms_rw <- function(x) {
 #' be set to be independent by group or dependent across groups.
 #'
 #' @return A list to be parsed internally.
-#' @export
-#' @example
-#' rw(time, age)
 rw <- function(time, group, type = "independent") {
   type <- match.arg(type, choices = c("independent", "dependent"))
   if (missing(time)) {
@@ -108,6 +105,7 @@ construct_rw <- function(data, rw) {
     stop("rw must be a random walk term as constructed by rw")
   }
   data <- data.table::copy(data)
+  # add new cumulative features to use for the random walk
   data <- enw_add_cumulative_membership(
     data,
     feature = rw$time
@@ -150,9 +148,6 @@ construct_rw <- function(data, rw) {
 #' effects
 #'
 #' @return A list to be parsed internally.
-#' @export
-#' @example
-#' re("1 | age_group")
 re <- function(formula) {
   terms <- strsplit(as.character(formula), " \\| ")[[1]]
   fixed <- terms[1]
@@ -199,14 +194,13 @@ construct_re <- function(data, re) {
   return(list(terms = terms, effects = effects))
 }
 
-enw_complex_formula()
-# Get random effects by looping through all random effects
-# Get random walk effects by iteratively looping through (as variables are
-# created)
-# Make fixed design matrix using all fixed effects from all components 
-# this should include new variables added by the random effects
-# Make the random effects design matrix
-# Output: formula, fixed effects formula, fixed effects design,
-# random effects formul, random effects dataframe, random effects design
-
-# effect design matrices from each component
+parsed_formula_to_design <- function(parsed_formula) {
+  # Get random effects by looping through all random effects
+  # Get random walk effects by iteratively looping through (as variables are
+  # created)
+  # Make fixed design matrix using all fixed effects from all components 
+  # this should include new variables added by the random effects
+  # Make the random effects design matrix
+  # Output: formula, fixed effects formula, fixed effects design,
+  # random effects formul, random effects dataframe, random effects design
+}
