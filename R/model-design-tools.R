@@ -51,7 +51,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   )
   # drop missing factor levels
   data <- droplevels(data)
-  
+
   # make model.matrix helper
   mod_matrix <- function(formula, data, ...) {
     design <- model.matrix(formula, data, ...)
@@ -180,6 +180,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
 #'
 #' @param custom_random PARAM_DESCRIPTION. Default: c()
 #'
+#' @param no_contrasts PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #'
 #' @family modeldesign
@@ -187,10 +188,9 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
 #' @importFrom stats as.formula
 #' @export
 enw_formula <- function(metaobs, fixed = c(), random = c(),
-                        custom_random = c()) {
+                        custom_random = c(), no_contrasts = FALSE) {
   metaobs <- data.table::copy(metaobs)
   form <- c("1")
-  no_contrasts <- FALSE
 
   cr_in_dt <- purrr::map(
     custom_random, ~ colnames(metaobs)[startsWith(colnames(metaobs), .)]

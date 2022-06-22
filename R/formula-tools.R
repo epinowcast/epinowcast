@@ -120,7 +120,7 @@ construct_rw <- function(data, rw) {
     terms <- paste0(rw$group, ":", terms)
   }
   # make a fixed effects design matrix
-  fixed <- enw_formula(fdata, fixed = terms)$fixed$design
+  fixed <- enw_formula(fdata, fixed = terms, no_contrasts = TRUE)$fixed$design
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
   # implement random walk structure effects
@@ -139,7 +139,63 @@ construct_rw <- function(data, rw) {
   return(list(data = data, terms = terms, effects = effects))
 }
 
+#' Defines random effect terms using the lme4 syntax
+#'
+#' A call to `rw()` can be used in the 'formula' argument of model
+#' construction functions in the `epinowcast` package. Does not evaluate
+#' arguments but instead simply passes information for use in model
+#' construction.
+#'
+#' @param formula A formula in the format used by [lme4] to define random
+#' effects
+#'
+#' @return A list to be parsed internally.
+#' @export
+#' @example
+#' re("1 | age_group")
+re <- function(formula) {
+  terms <- strsplit(as.character(formula), " \\| ")[[1]]
+  fixed <- terms[1]
+  random <- terms[2]
+  out <- list(fixed = terms[1], random = terms[2])
+  class(out) <- c("enw_re_term")
+  return(out)
+}
+
 construct_re <- function(data, re) {
+  if (!(class(re) %in% "enw_re_term")) {
+    stop("re must be a random effect term as constructed by re")
+  }
+  data <- data.table::as.data.table(data)
+
+  # extract random and fixed effects
+  fixed <- strsplit(re$fixed, " \\+ ")[[1]]
+  random <- strsplit(re$random, " \\+ ")[[1]]
+
+  # combine into fixed effects terms
+  terms <- c()
+  for (i in random) {
+    terms <- c(terms, paste0(fixed, ":", i))
+  }
+  terms <- gsub("1:", "", terms)
+
+  # make a fixed effects design matrix
+  fixed <- enw_formula(data, fixed = terms, no_contrasts = TRUE)$fixed$design
+  # extract effects metadata
+  effects <- enw_effects_metadata(fixed)
+  # implement random walk structure effects
+  for (i in  terms) {
+    loc_terms <- strsplit(i, ":")[[1]]
+    if (length(loc_terms) == 1) {
+      effects <- enw_add_pooling_effect(effects, i, i)
+    } 
+    effects <- enw_add_pooling_effect(
+      effects, c(ctime, paste0(rw$group, i)), paste0(ngroup, ":", rw$time),
+        finder_fn = function(effect, pattern) {
+          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
+      })
+    }
+  return(list(data = data, terms = terms, effects = effects))
   # filter data to just columns required here
   # get random effect fixed effects
   # make interactions with group effect
