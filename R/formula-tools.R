@@ -199,6 +199,14 @@ construct_re <- function(data, re) {
   return(list(terms = terms, effects = effects))
 }
 
-# Make fixed design matrix using all fixed effects from all components
-# Construct a complete random design matrix by combining all of the random
+enw_complex_formula()
+# Get random effects by looping through all random effects
+# Get random walk effects by iteratively looping through (as variables are
+# created)
+# Make fixed design matrix using all fixed effects from all components 
+# this should include new variables added by the random effects
+# Make the random effects design matrix
+# Output: formula, fixed effects formula, fixed effects design,
+# random effects formul, random effects dataframe, random effects design
+
 # effect design matrices from each component
