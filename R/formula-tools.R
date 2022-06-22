@@ -183,27 +183,20 @@ construct_re <- function(data, re) {
   fixed <- enw_formula(data, fixed = terms, no_contrasts = TRUE)$fixed$design
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
-  # implement random walk structure effects
+  # implement random effects structure
   for (i in  terms) {
     loc_terms <- strsplit(i, ":")[[1]]
-    if (length(loc_terms) == 1) {
-      effects <- enw_add_pooling_effect(effects, i, i)
-    } 
-    effects <- enw_add_pooling_effect(
-      effects, c(ctime, paste0(rw$group, i)), paste0(ngroup, ":", rw$time),
-        finder_fn = function(effect, pattern) {
-          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-      })
-    }
-  return(list(data = data, terms = terms, effects = effects))
-  # filter data to just columns required here
-  # get random effect fixed effects
-  # make interactions with group effect
-  # set the intercept to the the group effect (i.e 1:group -> group)
-  # make a fixed effects design matrix
-  # make metadata for this design matrix
-  # assign random effect groups based on fixed affects interaction with group
-  # output fixed effects and random effects metadata
+      if (length(loc_terms) == 1) {
+        effects <- enw_add_pooling_effect(effects, i, i)
+      }else {
+        effects <- enw_add_pooling_effect(
+          effects, rev(loc_terms), i,
+            finder_fn = function(effect, pattern) {
+              grepl(pattern[1], effect) & startsWith(effect, pattern[2])
+          })
+      }
+   }
+  return(list(terms = terms, effects = effects))
 }
 
 # Make fixed design matrix using all fixed effects from all components
