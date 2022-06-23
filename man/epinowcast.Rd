@@ -6,8 +6,8 @@
 \usage{
 epinowcast(
   pobs,
-  reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
-  report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
+  reference_effects = epinowcast::enw_manual_formula(pobs$metareference[[1]]),
+  report_effects = epinowcast::enw_manual_formula(pobs$metareport[[1]]),
   priors = epinowcast::enw_priors(),
   distribution = "lognormal",
   model = epinowcast::enw_model(),
@@ -26,11 +26,11 @@ epinowcast(
 \item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reference model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 
 \item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reports model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 
 \item{priors}{DESCRIPTION.}

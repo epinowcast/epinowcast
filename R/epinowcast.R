@@ -20,10 +20,10 @@
 #' @family epinowcast
 #' @export
 epinowcast <- function(pobs,
-                       reference_effects = epinowcast::enw_formula(
+                       reference_effects = epinowcast::enw_manual_formula(
                          pobs$metareference[[1]]
                        ),
-                       report_effects = epinowcast::enw_formula(
+                       report_effects = epinowcast::enw_manual_formula(
                          pobs$metareport[[1]]
                        ),
                        priors = epinowcast::enw_priors(),

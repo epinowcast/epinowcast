@@ -187,7 +187,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
 #' @importFrom data.table copy
 #' @importFrom stats as.formula
 #' @export
-enw_formula <- function(metaobs, fixed = c(), random = c(),
+enw_manual_formula <- function(metaobs, fixed = c(), random = c(),
                         custom_random = c(), no_contrasts = FALSE) {
   metaobs <- data.table::copy(metaobs)
   form <- c("1")

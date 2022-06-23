@@ -195,7 +195,7 @@ shows only unique rows with `index` containing the mapping to the full
 design matrix.
 
 ``` r
-reference_effects <- enw_formula(pobs$metareference[[1]])
+reference_effects <- enw_manual_formula(pobs$metareference[[1]])
 reference_effects
 #> $fixed
 #> $fixed$formula
@@ -229,7 +229,7 @@ Construct a model with a random effect for the day of report using the
 metadata produced by `enw_preprocess_data()`.
 
 ``` r
-report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
+report_effects <- enw_manual_formula(pobs$metareport[[1]], random = "day_of_week")
 report_effects
 #> $fixed
 #> $fixed$formula

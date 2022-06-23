@@ -159,7 +159,7 @@ As noted using the posterior predictions from the simple model fit above there a
 
 
 ```r
-dow_report_effects <- enw_formula(pobs$metareport, random = "day_of_week")
+dow_report_effects <- enw_manual_formula(pobs$metareport, random = "day_of_week")
 dow_report_effects
 #> $fixed
 #> $fixed$formula
@@ -276,7 +276,7 @@ It is quite likely that there is some variation in the reporting delay by age an
 
 
 ```r
-age_reference_effects <- enw_formula(
+age_reference_effects <- enw_manual_formula(
   pobs$metareference,
   random = "age_group"
 )
@@ -391,7 +391,7 @@ We can now define the model formula as previously but this time making use of th
 
 
 ```r
-week_age_reference_effects <- enw_formula(
+week_age_reference_effects <- enw_manual_formula(
   metareference,
   random = "age_group", custom_random = "cweek"
 )
@@ -565,7 +565,7 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 
 As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
 
-Models with this level of flexibility are not currently supported by `enw_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
+Models with this level of flexibility are not currently supported by `enw_manual_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
 
 
 ```r
@@ -860,8 +860,8 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
     feature = "week"
   )
 
-  reference_effects <- enw_formula(metareference, custom_random = "cweek")
-  report_effects <- enw_formula(pobs_ind$metareport, random = "day_of_week")
+  reference_effects <- enw_manual_formula(metareference, custom_random = "cweek")
+  report_effects <- enw_manual_formula(pobs_ind$metareport, random = "day_of_week")
 
   nowcast <- epinowcast(
     pobs_ind,

@@ -11,7 +11,9 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   target_date <- match.arg(target_date, choices)
   date_to_drop <- setdiff(choices, target_date)
   metaobs <- data.table::as.data.table(obs)
-  metaobs[, c(date_to_drop, "confirm") := NULL]
+  metaobs[,
+   c(date_to_drop, "confirm", "max_confirm", "cum_prop_reported") := NULL
+  ]
   metaobs <- unique(metaobs)
   setnames(metaobs, target_date, "date")
   metaobs <- metaobs[, .SD[1, ], by = c("date", "group")]

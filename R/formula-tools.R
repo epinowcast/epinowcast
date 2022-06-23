@@ -100,7 +100,7 @@ rw <- function(time, group, type = "independent") {
   return(out)
 }
 
-construct_rw <- function(data, rw) {
+construct_rw <- function(rw, data) {
   if (!(class(rw) %in% "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
   }
@@ -118,7 +118,9 @@ construct_rw <- function(data, rw) {
     terms <- paste0(rw$group, ":", terms)
   }
   # make a fixed effects design matrix
-  fixed <- enw_formula(fdata, fixed = terms, no_contrasts = TRUE)$fixed$design
+  fixed <- enw_manual_formula(
+    fdata, fixed = terms, no_contrasts = TRUE
+  )$fixed$design
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
   # implement random walk structure effects
@@ -137,19 +139,15 @@ construct_rw <- function(data, rw) {
   return(list(data = data, terms = terms, effects = effects))
 }
 
+
 #' Defines random effect terms using the lme4 syntax
-#'
-#' A call to `rw()` can be used in the 'formula' argument of model
-#' construction functions in the `epinowcast` package. Does not evaluate
-#' arguments but instead simply passes information for use in model
-#' construction.
 #'
 #' @param formula A formula in the format used by [lme4] to define random
 #' effects
 #'
 #' @return A list to be parsed internally.
 re <- function(formula) {
-  terms <- strsplit(as.character(formula), " \\| ")[[1]]
+  terms <- strsplit(as_string_formula(formula), " \\| ")[[1]]
   fixed <- terms[1]
   random <- terms[2]
   out <- list(fixed = terms[1], random = terms[2])
@@ -157,7 +155,7 @@ re <- function(formula) {
   return(out)
 }
 
-construct_re <- function(data, re) {
+construct_re <- function(re, data) {
   if (!(class(re) %in% "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
@@ -175,7 +173,9 @@ construct_re <- function(data, re) {
   terms <- gsub("1:", "", terms)
 
   # make a fixed effects design matrix
-  fixed <- enw_formula(data, fixed = terms, no_contrasts = TRUE)$fixed$design
+  fixed <- enw_manual_formula(
+    data, fixed = terms, no_contrasts = TRUE
+  )$fixed$design
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
   # implement random effects structure
@@ -194,10 +194,30 @@ construct_re <- function(data, re) {
   return(list(terms = terms, effects = effects))
 }
 
-parsed_formula_to_design <- function(parsed_formula) {
-  # Get random effects by looping through all random effects
+enw_formula <- function(formula, data) {
+  # Parse formula
+  parsed_formula <- parse_formula(formula)
+
+  # Get random effects for all specified random effects
+  random_effects <- purrr::map(parsed_formula$random, re)
+  random_effects <- purrr::map(random_effects, construct_re, data = data)
+  random_effects <- purrr::transpose(random_effects)
+
+  random_effect_terms <- unlist(random_effects$terms)
+  random_effect_metadata <- data.table::rbindlist(
+    random_effects$effects, use.names = TRUE, fill = TRUE
+  )
+
   # Get random walk effects by iteratively looping through (as variables are
   # created)
+  if (length(parsed_formula$rw) > 0) {
+    rw_effects <- purrr::map(parsed_formula$rw, rw)
+    for (i in seq_along(rw_effects)) {
+      rw_effects[i] <- contruct_rw(rw_effects[i], data)
+      data <- rw_effects[i]$data
+    }
+  }
+
   # Make fixed design matrix using all fixed effects from all components 
   # this should include new variables added by the random effects
   # Make the random effects design matrix
