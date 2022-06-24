@@ -197,7 +197,7 @@ generated quantities {
   int pp_obs[pp ? sum(sl) : 0];
   int pp_obs_miss[pp ? sum(sl) : 0];
   vector[ologlik ? s : 0] log_lik;
-  vector[ologlik ? t : 0] log_lik_miss;
+  vector[ologlik ? (t-dmax) : 0] log_lik_miss;
   int pp_inf_obs[cast ? dmax : 0, cast ? g : 0];
   int pp_inf_obs_miss[cast ? t : 0, cast ? g : 0];
   int pp_inf_obs_miss_rep[cast ? (t-dmax) : 0, cast ? g : 0];
@@ -248,10 +248,10 @@ generated quantities {
     profile("generated_loglik") {
     if (ologlik) {
       for (i in (dmax+1):t) {
-        log_lik_miss[i] = 0;
+        log_lik_miss[i - dmax] = 0;
         for (k in 1:g) {
           // log-likelihood for observations with missing reference date
-          log_lik_miss[i] += neg_binomial_2_lpmf(
+          log_lik_miss[i - dmax] += neg_binomial_2_lpmf(
             obs_miss[k, i] | exp_obs_miss_rep[k][i], phi);
         }
       }
