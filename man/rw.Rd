@@ -25,3 +25,15 @@ construction functions in the \code{epinowcast} package. Does not evaluate
 arguments but instead simply passes information for use in model
 construction.
 }
+\seealso{
+Functions used to help convert formulas into model designs
+\code{\link{as_string_formula}()},
+\code{\link{construct_re}()},
+\code{\link{construct_rw}()},
+\code{\link{parse_formula}()},
+\code{\link{remove_rw_terms}()},
+\code{\link{re}()},
+\code{\link{split_formula_to_terms}()},
+\code{\link{terms_rw}()}
+}
+\concept{formulatools}

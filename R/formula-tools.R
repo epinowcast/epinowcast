@@ -1,24 +1,25 @@
-parse_formula <- function(formula) {
-  rw <- terms_rw(formula)
-  formula <- norws(formula)
-  fixed <- lme4::nobars(formula)
-  random <- lme4::findbars(formula)
-
-  model_terms <- list(
-    fixed = split_formula_to_terms(fixed),
-    random = random,
-    rw = rw
-  )
-  return(model_terms)
-}
-
+#' FUNCTION_TITLE
+#'
+#' FUNCTION_DESCRIPTION
+#'
+#' @param x DESCRIPTION.
+#'
+#' @return RETURN_DESCRIPTION
+#' @family formulatools
 as_string_formula <- function(x) {
   form <- paste(deparse(x), collapse = " ")
   form <- gsub("\\s+", " ", form, perl = FALSE)
   return(form)
 }
 
-
+#' FUNCTION_TITLE
+#'
+#' FUNCTION_DESCRIPTION
+#'
+#' @param formula DESCRIPTION.
+#'
+#' @return RETURN_DESCRIPTION
+#' @family formulatools
 split_formula_to_terms <- function(formula) {
   formula <- as_string_formula(formula)
   formula <- gsub("~", "", formula)
@@ -26,10 +27,17 @@ split_formula_to_terms <- function(formula) {
   return(formula)
 }
 
-# remove random walk terms
-# adapted from code in epidemia written by J Scott
-# https://github.com/ImperialCollegeLondon/epidemia/
-norws <- function(x) {
+#' Remove random walk terms
+#'
+#' This function was adapted from code written
+#' by J Scott (under an MIT license) as part of
+#' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
+#'
+#' @param x DESCRIPTION.
+#'
+#' @return RETURN_DESCRIPTION
+#' @family formulatools
+remove_rw_terms <- function(x) {
   form <- as_string_formula(x)
   form <- gsub("rw\\(.*?\\) \\+ ", "", form)
   form <- gsub("\\+ rw\\(.*?\\)", "", form)
@@ -45,12 +53,40 @@ norws <- function(x) {
   return(form)
 }
 
+#' FUNCTION_TITLE
+#'
+#' FUNCTION_DESCRIPTION
+#'
+#' @param formula DESCRIPTION.
+#'
+#' @return RETURN_DESCRIPTION
+#' @importFrom lme4 nobars findbars
+#' @family formulatools
+parse_formula <- function(formula) {
+  rw <- terms_rw(formula)
+  formula <- remove_rw_terms(formula)
+  fixed <- lme4::nobars(formula)
+  random <- lme4::findbars(formula)
+
+  model_terms <- list(
+    fixed = split_formula_to_terms(fixed),
+    random = random,
+    rw = rw
+  )
+  return(model_terms)
+}
+
 #' Finds random walk terms in a formula object
 #'
-#' @description Adapted from code in `epidemia` written by J. Scott.
+#' This function was adapted from code written
+#' by J Scott (under an MIT license) as part of
+#' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
+#'
 #' @param x An object of class "formula"
+#'
 #' @return The value of attributes. See \code{\link[base]{attr}} for more
 #' details.
+#' @family formulatools
 terms_rw <- function(x) {
   if (!inherits(x, "formula")) {
     stop("'formula' must be a formula object.")
@@ -82,6 +118,8 @@ terms_rw <- function(x) {
 #' be set to be independent by by or dependent across bys.
 #'
 #' @return A list to be parsed internally.
+#' @export
+#' @family formulatools
 rw <- function(time, by, type = "independent") {
   type <- match.arg(type, choices = c("independent", "dependent"))
   if (missing(time)) {
@@ -100,6 +138,15 @@ rw <- function(time, by, type = "independent") {
   return(out)
 }
 
+#' Constructs random walk terms
+#'
+#' @param rw
+#'
+#' @param data
+#'
+#' @return RETURN
+#' @importFrom data.table copy
+#' @family formulatools
 construct_rw <- function(rw, data) {
   if (!(class(rw) %in% "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
@@ -147,8 +194,9 @@ construct_rw <- function(rw, data) {
 #'
 #' @param formula A formula in the format used by [lme4] to define random
 #' effects
-#'
+#' @export
 #' @return A list to be parsed internally.
+#' @family formulatools
 re <- function(formula) {
   terms <- strsplit(as_string_formula(formula), " \\| ")[[1]]
   fixed <- terms[1]
@@ -158,6 +206,14 @@ re <- function(formula) {
   return(out)
 }
 
+#' Constructs random effect terms
+#'
+#' @param re
+#'
+#' @param data
+#'
+#' @return RETURN
+#' @family formulatools
 construct_re <- function(re, data) {
   if (!(class(re) %in% "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
@@ -199,6 +255,18 @@ construct_re <- function(re, data) {
   return(list(terms = terms, effects = effects))
 }
 
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#'
+#' @param formula DESCRIPTION
+#'
+#' @param data DESCRIPTION
+#
+#' @return A design matrix and metadata
+#' @family modeldesign
+#' @export
+#' @importFrom purrr map transpose
+#' @importFrom data.table rbindlist setnafill
 enw_formula <- function(formula, data) {
   # Parse formula
   parsed_formula <- parse_formula(formula)
