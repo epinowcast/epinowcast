@@ -74,15 +74,15 @@ terms_rw <- function(x) {
 #'
 #' @param time Defines the random walk time period.
 #'
-#' @param group Defines the grouping parameter used for the random walk.
-#' If not specified no grouping is used.
+#' @param by Defines the bying parameter used for the random walk.
+#' If not specified no bying is used.
 #'
 #' @param type Character string, defaults to "independent". How should the
-#' standard deviation of grouped random walks be estimated. Currently this can
-#' be set to be independent by group or dependent across groups.
+#' standard deviation of byed random walks be estimated. Currently this can
+#' be set to be independent by by or dependent across bys.
 #'
 #' @return A list to be parsed internally.
-rw <- function(time, group, type = "independent") {
+rw <- function(time, by, type = "independent") {
   type <- match.arg(type, choices = c("independent", "dependent"))
   if (missing(time)) {
     stop("time must be present")
@@ -90,12 +90,12 @@ rw <- function(time, group, type = "independent") {
     time <- deparse(substitute(time))
   }
 
-  if (missing(group)) {
-    group <- NULL
+  if (missing(by)) {
+    by <- NULL
   } else {
-    group <- deparse(substitute(group))
+    by <- deparse(substitute(by))
   }
-  out <- list(time = time, group = group, type = type)
+  out <- list(time = time, by = by, type = type)
   class(out) <- c("enw_rw_term")
   return(out)
 }
@@ -113,9 +113,9 @@ construct_rw <- function(rw, data) {
   ctime  <- paste0("c", rw$time)
   terms <- grep(ctime, colnames(data), value = TRUE)
   fdata <- data.table::copy(data)
-  fdata <- fdata[, c(terms, rw$group), with = FALSE]
-  if (!is.null(rw$group)) {
-    terms <- paste0(rw$group, ":", terms)
+  fdata <- fdata[, c(terms, rw$by), with = FALSE]
+  if (!is.null(rw$by)) {
+    terms <- paste0(rw$by, ":", terms)
   }
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
@@ -124,13 +124,13 @@ construct_rw <- function(rw, data) {
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
   # implement random walk structure effects
-  if (is.null(rw$group) || rw$type %in% "dependent") {
+  if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(effects, ctime, rw$time)
   }else {
-    for (i in  unique(fdata[[rw$group]])) {
-    ngroup <- paste0(rw$group, i)
+    for (i in  unique(fdata[[rw$by]])) {
+    nby <- paste0(rw$by, i)
     effects <- enw_add_pooling_effect(
-      effects, c(ctime, paste0(rw$group, i)), paste0(ngroup, ":", rw$time),
+      effects, c(ctime, paste0(rw$by, i)), paste0(nby, ":", rw$time),
         finder_fn = function(effect, pattern) {
           grepl(pattern[1], effect) & startsWith(effect, pattern[2])
       })
@@ -209,16 +209,22 @@ enw_formula <- function(formula, data) {
   )
 
   # Get random walk effects by iteratively looping through (as variables are
-  # created)
+  # created in input data so need to use iteratively)
   if (length(parsed_formula$rw) > 0) {
-    rw_effects <- purrr::map(parsed_formula$rw, rw)
+    rw_effects <- purrr::map(parsed_formula$rw, ~ eval(parse(text = .)))
     for (i in seq_along(rw_effects)) {
-      rw_effects[i] <- contruct_rw(rw_effects[i], data)
-      data <- rw_effects[i]$data
+      rw_effects[[i]] <- construct_rw(rw_effects[[i]], data)
+      data <- rw_effects[[i]]$data
+      rw_effects[[i]]$data <- NULL
     }
   }
+  rw_effects <- purrr::transpose(rw_effects)
+  rw_effects_terms <- unlist(rw_effects$terms)
+  rw_effects_metadata <- data.table::rbindlist(
+    rw_effects$effects, use.names = TRUE, fill = TRUE
+  )
 
-  # Make fixed design matrix using all fixed effects from all components 
+  # Make fixed design matrix using all fixed effects from all components
   # this should include new variables added by the random effects
   # Make the random effects design matrix
   # Output: formula, fixed effects formula, fixed effects design,
