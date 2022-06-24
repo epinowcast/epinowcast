@@ -105,6 +105,7 @@ construct_rw <- function(rw, data) {
     stop("rw must be a random walk term as constructed by rw")
   }
   data <- data.table::copy(data)
+
   # add new cumulative features to use for the random walk
   data <- enw_add_cumulative_membership(
     data,
@@ -117,12 +118,15 @@ construct_rw <- function(rw, data) {
   if (!is.null(rw$by)) {
     terms <- paste0(rw$by, ":", terms)
   }
+
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
     fdata, fixed = terms, no_contrasts = TRUE
   )$fixed$design
+
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
+
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(effects, ctime, rw$time)
@@ -130,7 +134,7 @@ construct_rw <- function(rw, data) {
     for (i in  unique(fdata[[rw$by]])) {
     nby <- paste0(rw$by, i)
     effects <- enw_add_pooling_effect(
-      effects, c(ctime, paste0(rw$by, i)), paste0(nby, ":", rw$time),
+      effects, c(ctime, paste0(rw$by, i)), paste0(nby, "__", rw$time),
         finder_fn = function(effect, pattern) {
           grepl(pattern[1], effect) & startsWith(effect, pattern[2])
       })
@@ -138,7 +142,6 @@ construct_rw <- function(rw, data) {
   }
   return(list(data = data, terms = terms, effects = effects))
 }
-
 
 #' Defines random effect terms using the lme4 syntax
 #'
@@ -176,8 +179,10 @@ construct_re <- function(re, data) {
   fixed <- enw_manual_formula(
     data, fixed = terms, no_contrasts = TRUE
   )$fixed$design
+
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
+
   # implement random effects structure
   for (i in  terms) {
     loc_terms <- strsplit(i, ":")[[1]]
@@ -185,7 +190,7 @@ construct_re <- function(re, data) {
         effects <- enw_add_pooling_effect(effects, i, i)
       }else {
         effects <- enw_add_pooling_effect(
-          effects, rev(loc_terms), i,
+          effects, rev(loc_terms), paste(loc_terms, collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & startsWith(effect, pattern[2])
           })
@@ -215,7 +220,6 @@ enw_formula <- function(formula, data) {
     random_metadata <- NULL
   }
 
-
   # Get random walk effects by iteratively looping through (as variables are
   # created in input data so need to use iteratively)
   if (length(parsed_formula$rw) > 0) {
@@ -228,16 +232,15 @@ enw_formula <- function(formula, data) {
       data <- rw[[i]]$data
       rw[[i]]$data <- NULL
     }
-    rw_effects <- purrr::transpose(rw_effects)
-    rw_terms <- unlist(rw_effects$terms)
+    rw <- purrr::transpose(rw)
+    rw_terms <- unlist(rw$terms)
     rw_metadata <- data.table::rbindlist(
-      rw_effects$effects, use.names = TRUE, fill = TRUE
+      rw$effects, use.names = TRUE, fill = TRUE
     )
   }else {
     rw_terms <- c()
     rw_metadata <- NULL
   }
-
 
   # Make fixed design matrix using all fixed effects from all components
   # this should include new variables added by the random effects
@@ -271,7 +274,7 @@ enw_formula <- function(formula, data) {
 
   # Make the random effects design matrix
   if (ncol(metadata) == 2) {
-    random <- enw_design(~1, effects, sparse = FALSE)
+    random <- enw_design(~1, metadata, sparse = FALSE)
   }else {
     random_formula <- as.formula(
       paste0("~ ", paste(colnames(metadata)[-1], collapse = " + "))
@@ -283,7 +286,7 @@ enw_formula <- function(formula, data) {
     formula = formula,
     parsed_formula = parsed_formula,
     expanded_formula = expanded_formula,
-    fixed = fixed, 
+    fixed = fixed,
     random = random
   )
   class(out) <- c("enw_formula", class(out))
