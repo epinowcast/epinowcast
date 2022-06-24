@@ -4,17 +4,17 @@
 \alias{rw}
 \title{Adds random walks with Gaussian steps to the model.}
 \usage{
-rw(time, group, type = "independent")
+rw(time, by, type = "independent")
 }
 \arguments{
 \item{time}{Defines the random walk time period.}
 
-\item{group}{Defines the grouping parameter used for the random walk.
-If not specified no grouping is used.}
+\item{by}{Defines the bying parameter used for the random walk.
+If not specified no bying is used.}
 
 \item{type}{Character string, defaults to "independent". How should the
-standard deviation of grouped random walks be estimated. Currently this can
-be set to be independent by group or dependent across groups.}
+standard deviation of byed random walks be estimated. Currently this can
+be set to be independent by by or dependent across bys.}
 }
 \value{
 A list to be parsed internally.
