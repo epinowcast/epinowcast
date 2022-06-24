@@ -107,24 +107,23 @@ retro_nat_germany <- enw_retrospective_data(
   nat_germany_hosp,
   rep_days = 40, ref_days = 40
 )
-retro_nat_germany
-#>      reference_date location age_group confirm report_date
-#>   1:     2021-07-13       DE       00+      21  2021-07-13
-#>   2:     2021-07-14       DE       00+      22  2021-07-14
-#>   3:     2021-07-15       DE       00+      28  2021-07-15
-#>   4:     2021-07-16       DE       00+      19  2021-07-16
-#>   5:     2021-07-17       DE       00+      20  2021-07-17
-#>  ---                                                      
-#> 857:     2021-07-14       DE       00+      72  2021-08-21
-#> 858:     2021-07-15       DE       00+      69  2021-08-22
-#> 859:     2021-07-13       DE       00+      59  2021-08-21
-#> 860:     2021-07-14       DE       00+      72  2021-08-22
-#> 861:     2021-07-13       DE       00+      59  2021-08-22
+head(retro_nat_germany, n = 10)
+#>     reference_date location age_group confirm report_date
+#>  1:     2021-07-13       DE       00+      21  2021-07-13
+#>  2:     2021-07-14       DE       00+      22  2021-07-14
+#>  3:     2021-07-15       DE       00+      28  2021-07-15
+#>  4:     2021-07-16       DE       00+      19  2021-07-16
+#>  5:     2021-07-17       DE       00+      20  2021-07-17
+#>  6:     2021-07-18       DE       00+       9  2021-07-18
+#>  7:     2021-07-19       DE       00+       3  2021-07-19
+#>  8:     2021-07-20       DE       00+      36  2021-07-20
+#>  9:     2021-07-21       DE       00+      28  2021-07-21
+#> 10:     2021-07-22       DE       00+      34  2021-07-22
 ```
 
 ``` r
 latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
-latest_germany_hosp
+head(latest_germany_hosp, n = 10)
 #>     reference_date location age_group confirm
 #>  1:     2021-07-13       DE       00+      60
 #>  2:     2021-07-14       DE       00+      74
@@ -136,38 +135,6 @@ latest_germany_hosp
 #>  8:     2021-07-20       DE       00+      96
 #>  9:     2021-07-21       DE       00+      94
 #> 10:     2021-07-22       DE       00+      99
-#> 11:     2021-07-23       DE       00+      88
-#> 12:     2021-07-24       DE       00+      95
-#> 13:     2021-07-25       DE       00+      75
-#> 14:     2021-07-26       DE       00+      29
-#> 15:     2021-07-27       DE       00+      81
-#> 16:     2021-07-28       DE       00+     159
-#> 17:     2021-07-29       DE       00+     143
-#> 18:     2021-07-30       DE       00+     117
-#> 19:     2021-07-31       DE       00+     132
-#> 20:     2021-08-01       DE       00+      80
-#> 21:     2021-08-02       DE       00+      59
-#> 22:     2021-08-03       DE       00+     156
-#> 23:     2021-08-04       DE       00+     183
-#> 24:     2021-08-05       DE       00+     147
-#> 25:     2021-08-06       DE       00+     155
-#> 26:     2021-08-07       DE       00+     159
-#> 27:     2021-08-08       DE       00+     119
-#> 28:     2021-08-09       DE       00+      65
-#> 29:     2021-08-10       DE       00+     204
-#> 30:     2021-08-11       DE       00+     275
-#> 31:     2021-08-12       DE       00+     273
-#> 32:     2021-08-13       DE       00+     270
-#> 33:     2021-08-14       DE       00+     262
-#> 34:     2021-08-15       DE       00+     192
-#> 35:     2021-08-16       DE       00+     140
-#> 36:     2021-08-17       DE       00+     323
-#> 37:     2021-08-18       DE       00+     409
-#> 38:     2021-08-19       DE       00+     370
-#> 39:     2021-08-20       DE       00+     361
-#> 40:     2021-08-21       DE       00+     339
-#> 41:     2021-08-22       DE       00+     258
-#>     reference_date location age_group confirm
 ```
 
 ### Data preprocessing and model specification
@@ -182,8 +149,8 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 #>                    obs          new_confirm             latest
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x8]>
-#>     reporting_triangle       metareference          metareport time snapshots
-#> 1: <data.table[41x42]> <data.table[41x10]> <data.table[80x11]>   41        41
+#>     reporting_triangle      metareference         metareport time snapshots
+#> 1: <data.table[41x42]> <data.table[41x8]> <data.table[80x9]>   41        41
 #>    groups max_delay   max_date
 #> 1:      1        40 2021-08-22
 ```
@@ -195,90 +162,14 @@ shows only unique rows with `index` containing the mapping to the full
 design matrix.
 
 ``` r
-reference_effects <- enw_manual_formula(pobs$metareference[[1]])
-reference_effects
-#> $fixed
-#> $fixed$formula
-#> ~1
-#> <environment: 0x55e47ce786d0>
-#> 
-#> $fixed$design
-#>   (Intercept)
-#> 1           1
-#> 
-#> $fixed$index
-#>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-#> [39] 1 1 1
-#> 
-#> 
-#> $random
-#> $random$formula
-#> ~1
-#> <environment: 0x55e47ce786d0>
-#> 
-#> $random$design
-#>      (Intercept)
-#> attr(,"assign")
-#> [1] 0
-#> 
-#> $random$index
-#> integer(0)
+reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
 ```
 
 Construct a model with a random effect for the day of report using the
 metadata produced by `enw_preprocess_data()`.
 
 ``` r
-report_effects <- enw_manual_formula(pobs$metareport[[1]], random = "day_of_week")
-report_effects
-#> $fixed
-#> $fixed$formula
-#> ~1 + day_of_week
-#> <environment: 0x55e47d3691c8>
-#> 
-#> $fixed$design
-#>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
-#> 1           1                 0                 0                   0
-#> 2           1                 0                 0                   0
-#> 3           1                 0                 0                   0
-#> 4           1                 1                 0                   0
-#> 5           1                 0                 0                   1
-#> 6           1                 0                 0                   0
-#> 7           1                 0                 1                   0
-#>   day_of_weekSunday day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
-#> 1                 0                   0                  1                    0
-#> 2                 0                   0                  0                    1
-#> 3                 0                   1                  0                    0
-#> 4                 0                   0                  0                    0
-#> 5                 0                   0                  0                    0
-#> 6                 1                   0                  0                    0
-#> 7                 0                   0                  0                    0
-#> 
-#> $fixed$index
-#>  [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
-#> [39] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
-#> [77] 7 1 2 3
-#> 
-#> 
-#> $random
-#> $random$formula
-#> ~0 + fixed + day_of_week
-#> <environment: 0x55e47d3691c8>
-#> 
-#> $random$design
-#>   fixed day_of_week
-#> 1     0           1
-#> 2     0           1
-#> 3     0           1
-#> 4     0           1
-#> 5     0           1
-#> 6     0           1
-#> 7     0           1
-#> attr(,"assign")
-#> [1] 1 2
-#> 
-#> $random$index
-#> [1] 1 2 3 4 5 6 7
+report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
 ```
 
 ### Model fitting
@@ -310,12 +201,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 117.2 seconds.
-#> Chain 1 finished in 122.0 seconds.
+#> Chain 1 finished in 134.6 seconds.
+#> Chain 2 finished in 154.4 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 119.6 seconds.
-#> Total execution time: 122.1 seconds.
+#> Mean chain execution time: 144.5 seconds.
+#> Total execution time: 155.3 seconds.
 ```
 
 ### Results
@@ -327,14 +218,14 @@ information, the data used for fitting, and the `cmdstanr` object.
 nowcast
 #>                    obs          new_confirm             latest
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x8]>
-#>     reporting_triangle       metareference          metareport time snapshots
-#> 1: <data.table[41x42]> <data.table[41x10]> <data.table[80x11]>   41        41
+#>     reporting_triangle      metareference         metareport time snapshots
+#> 1: <data.table[41x42]> <data.table[41x8]> <data.table[80x9]>   41        41
 #>    groups max_delay   max_date               fit       data  fit_args samples
 #> 1:      1        40 2021-08-22 <CmdStanMCMC[32]> <list[39]> <list[6]>    2000
 #>    max_rhat divergent_transitions per_divergent_transitions max_treedepth
 #> 1:     1.01                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  50                0.025    122.1
+#> 1:                  35               0.0175    155.3
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -354,26 +245,26 @@ head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
 #> 10:     2021-07-23       DE       00+      86          86                 1
 #>     delay group    mean median        sd    mad q5 q95      rhat ess_bulk
 #>  1:    39     1 72.0000     72 0.0000000 0.0000 72  72        NA       NA
-#>  2:    38     1 69.0440     69 0.2099668 0.0000 69  69 0.9992454 1665.980
-#>  3:    37     1 47.0910     47 0.3110746 0.0000 47  48 0.9994101 1947.687
-#>  4:    36     1 65.2030     65 0.4548565 0.0000 65  66 1.0019851 1877.879
-#>  5:    35     1 50.2450     50 0.4980954 0.0000 50  51 0.9992548 1752.784
-#>  6:    34     1 36.2320     36 0.5111816 0.0000 36  37 1.0018554 1814.197
-#>  7:    33     1 94.4740     94 0.6946692 0.0000 94  96 0.9994547 1876.378
-#>  8:    32     1 91.7315     91 0.9142350 0.0000 91  94 1.0009333 1706.214
-#>  9:    31     1 99.9980    100 1.0632786 1.4826 99 102 0.9997293 1924.759
-#> 10:    30     1 87.1405     87 1.1394775 1.4826 86  89 0.9994695 1833.535
+#>  2:    38     1 69.0365     69 0.1902258 0.0000 69  69 0.9996667 2036.814
+#>  3:    37     1 47.0610     47 0.2555615 0.0000 47  48 0.9994857 1877.162
+#>  4:    36     1 65.1645     65 0.4225269 0.0000 65  66 0.9995187 2011.176
+#>  5:    35     1 50.2190     50 0.4797438 0.0000 50  51 1.0011528 1778.811
+#>  6:    34     1 36.1795     36 0.4199618 0.0000 36  37 0.9992192 1839.550
+#>  7:    33     1 94.4040     94 0.6418645 0.0000 94  96 0.9992653 1780.700
+#>  8:    32     1 91.6155     91 0.8264389 0.0000 91  93 0.9990345 1907.169
+#>  9:    31     1 99.9575    100 1.0194181 1.4826 99 102 0.9995843 1491.443
+#> 10:    30     1 87.0305     87 1.0474342 1.4826 86  89 1.0007365 1786.679
 #>     ess_tail
 #>  1:       NA
-#>  2: 1685.329
-#>  3: 1783.730
-#>  4: 1840.178
-#>  5: 1727.676
-#>  6: 1802.610
-#>  7: 1893.233
-#>  8: 1817.178
-#>  9: 1665.602
-#> 10: 1868.667
+#>  2: 2041.975
+#>  3: 1851.329
+#>  4: 1981.462
+#>  5: 1824.462
+#>  6: 1800.141
+#>  7: 1801.064
+#>  8: 1782.389
+#>  9: 1668.254
+#> 10: 1683.275
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -423,16 +314,16 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 68000:     2021-08-22       DE       00+    1093          45                 1
 #>        delay group .chain .iteration .draw sample
 #>     1:    33     1      1          1     1    435
-#>     2:    33     1      1          2     2    441
-#>     3:    33     1      1          3     3    435
-#>     4:    33     1      1          4     4    435
-#>     5:    33     1      1          5     5    438
+#>     2:    33     1      1          2     2    436
+#>     3:    33     1      1          3     3    434
+#>     4:    33     1      1          4     4    433
+#>     5:    33     1      1          5     5    435
 #>    ---                                           
-#> 67996:     0     1      2        996  1996   2014
-#> 67997:     0     1      2        997  1997   2109
-#> 67998:     0     1      2        998  1998   2051
-#> 67999:     0     1      2        999  1999   2031
-#> 68000:     0     1      2       1000  2000   2311
+#> 67996:     0     1      2        996  1996   2083
+#> 67997:     0     1      2        997  1997   2120
+#> 67998:     0     1      2        998  1998   1945
+#> 67999:     0     1      2        999  1999   2618
+#> 68000:     0     1      2       1000  2000   1841
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
