@@ -199,34 +199,93 @@ enw_formula <- function(formula, data) {
   parsed_formula <- parse_formula(formula)
 
   # Get random effects for all specified random effects
-  random_effects <- purrr::map(parsed_formula$random, re)
-  random_effects <- purrr::map(random_effects, construct_re, data = data)
-  random_effects <- purrr::transpose(random_effects)
+  if (length(parsed_formula$random) > 0) {
+    random <- purrr::map(parsed_formula$random, re)
+    random <- purrr::map(random, construct_re, data = data)
+    random <- purrr::transpose(random)
 
-  random_effect_terms <- unlist(random_effects$terms)
-  random_effect_metadata <- data.table::rbindlist(
-    random_effects$effects, use.names = TRUE, fill = TRUE
-  )
+    random_terms <- unlist(random$terms)
+    random_metadata <- data.table::rbindlist(
+      random$effects, use.names = TRUE, fill = TRUE
+    )
+    no_contrasts <- random_terms
+  }else {
+    no_contrasts <- FALSE
+    random_terms <- c()
+    random_metadata <- NULL
+  }
+
 
   # Get random walk effects by iteratively looping through (as variables are
   # created in input data so need to use iteratively)
   if (length(parsed_formula$rw) > 0) {
-    rw_effects <- purrr::map(parsed_formula$rw, ~ eval(parse(text = .)))
-    for (i in seq_along(rw_effects)) {
-      rw_effects[[i]] <- construct_rw(rw_effects[[i]], data)
-      data <- rw_effects[[i]]$data
-      rw_effects[[i]]$data <- NULL
+    rw <- purrr::map(
+      parsed_formula$rw,
+      ~ eval(parse(text = paste0("epinowcast::", .)))
+    )
+    for (i in seq_along(rw)) {
+      rw[[i]] <- construct_rw(rw[[i]], data)
+      data <- rw[[i]]$data
+      rw[[i]]$data <- NULL
     }
+    rw_effects <- purrr::transpose(rw_effects)
+    rw_terms <- unlist(rw_effects$terms)
+    rw_metadata <- data.table::rbindlist(
+      rw_effects$effects, use.names = TRUE, fill = TRUE
+    )
+  }else {
+    rw_terms <- c()
+    rw_metadata <- NULL
   }
-  rw_effects <- purrr::transpose(rw_effects)
-  rw_effects_terms <- unlist(rw_effects$terms)
-  rw_effects_metadata <- data.table::rbindlist(
-    rw_effects$effects, use.names = TRUE, fill = TRUE
-  )
+
 
   # Make fixed design matrix using all fixed effects from all components
   # this should include new variables added by the random effects
+  # need to make sure all random effects don't have contrasts
+  terms <- c(parsed_formula$fixed, rw_terms, random_terms)
+  expanded_formula <- as.formula(paste0("~ ", paste(terms, collapse = " + ")))
+  fixed <- enw_design(
+    formula = expanded_formula,
+    no_contrasts = random_terms,
+    data = data,
+    sparse = TRUE
+  )
+  # Extract fixed effects metadata
+  metadata <- enw_effects_metadata(fixed$design)
+
+  # Combine with random effects and random walk effects
+  if (!is.null(random_metadata)) {
+    metadata <- metadata[!random_metadata, on = "effects"]
+    metadata <- rbind(metadata, random_metadata, use.names = TRUE, fill = TRUE)
+  }
+
+  if (!is.null(rw_metadata)) {
+    metadata <- metadata[!rw_metadata, on = "effects"]
+    metadata <- rbind(metadata, rw_metadata, use.names = TRUE, fill = TRUE)
+  }
+
+  metadata <- cbind(
+    metadata[, "effects"],
+    data.table::setnafill(metadata[, -"effects"], fill = 0)
+  )
+
   # Make the random effects design matrix
-  # Output: formula, fixed effects formula, fixed effects design,
-  # random effects formul, random effects dataframe, random effects design
+  if (ncol(metadata) == 2) {
+    random <- enw_design(~1, effects, sparse = FALSE)
+  }else {
+    random_formula <- as.formula(
+      paste0("~ ", paste(colnames(metadata)[-1], collapse = " + "))
+    )
+    random <- enw_design(random_formula, metadata, sparse = FALSE)
+  }
+
+  out <- list(
+    formula = formula,
+    parsed_formula = parsed_formula,
+    expanded_formula = expanded_formula,
+    fixed = fixed, 
+    random = random
+  )
+  class(out) <- c("enw_formula", class(out))
+  return(out)
 }
