@@ -24,7 +24,7 @@ epinowcast <- function(pobs,
                         ~ 1, pobs$metareference[[1]]
                        ),
                        report_effects = epinowcast::enw_formula(
-                         ~ 0, pobs$metareport[[1]]
+                         ~ 1, pobs$metareport[[1]]
                        ),
                        priors = epinowcast::enw_priors(),
                        distribution = "lognormal",
