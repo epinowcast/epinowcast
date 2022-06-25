@@ -345,7 +345,7 @@ enw_formula <- function(formula, data) {
     random <- enw_design(~1, metadata, sparse = FALSE)
   }else {
     random_formula <- as.formula(
-      paste0("~ ", paste(colnames(metadata)[-1], collapse = " + "))
+      paste0("~ 0  +", paste(colnames(metadata)[-1], collapse = " + "))
     )
     random <- enw_design(random_formula, metadata, sparse = FALSE)
   }

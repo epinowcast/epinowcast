@@ -130,8 +130,7 @@ plot(nowcast, type = "posterior") +
 As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
-dow_report_effects <- enw_manual_formula(pobs$metareport, random = "day_of_week")
-dow_report_effects
+dow_report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport)
 ```
 
 To speed up model fitting we make use of posterior information from the previous model (with inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
