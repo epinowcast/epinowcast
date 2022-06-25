@@ -7,7 +7,7 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
   int end_n = csl[end];
   int n = end_n - start_n;
   int snap_obs[n] = obs[(start_n + 1):end_n];
-  vector[n] exp_obs;
+  vector[n] log_exp_obs;
   int g, t, l;
   int ssnap = 1;
   int esnap = 0;
@@ -31,7 +31,7 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
     // combine expected final obs and date effects to get expected obs
     profile("model_likelihood_expected_obs") {
     esnap += l;
-    exp_obs[ssnap:esnap] = expected_obs(
+    log_exp_obs[ssnap:esnap] = expected_obs(
       tar_obs, ref_lh_i, rdlh, ref_p
     );
     ssnap += l;
@@ -39,7 +39,7 @@ real obs_lpmf(int[] dummy, int start, int end, int[] obs, int[] sl, int[] csl,
   }
   // observation error model (across all reference times and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = neg_binomial_2_lupmf(snap_obs | exp_obs, phi);
+  tar = neg_binomial_2_log_lupmf(snap_obs | log_exp_obs, phi);
   }
   return(tar);
 }

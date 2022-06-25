@@ -200,7 +200,7 @@ reference_effects
 #> $fixed
 #> $fixed$formula
 #> ~1
-#> <environment: 0x55e47ce786d0>
+#> <environment: 0x55a74d024f08>
 #> 
 #> $fixed$design
 #>   (Intercept)
@@ -214,7 +214,7 @@ reference_effects
 #> $random
 #> $random$formula
 #> ~1
-#> <environment: 0x55e47ce786d0>
+#> <environment: 0x55a74d024f08>
 #> 
 #> $random$design
 #>      (Intercept)
@@ -234,7 +234,7 @@ report_effects
 #> $fixed
 #> $fixed$formula
 #> ~1 + day_of_week
-#> <environment: 0x55e47d3691c8>
+#> <environment: 0x55a74d50f890>
 #> 
 #> $fixed$design
 #>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
@@ -263,7 +263,7 @@ report_effects
 #> $random
 #> $random$formula
 #> ~0 + fixed + day_of_week
-#> <environment: 0x55e47d3691c8>
+#> <environment: 0x55a74d50f890>
 #> 
 #> $random$design
 #>   fixed day_of_week
@@ -310,12 +310,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 117.2 seconds.
-#> Chain 1 finished in 122.0 seconds.
+#> Chain 2 finished in 103.9 seconds.
+#> Chain 1 finished in 105.8 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 119.6 seconds.
-#> Total execution time: 122.1 seconds.
+#> Mean chain execution time: 104.8 seconds.
+#> Total execution time: 105.9 seconds.
 ```
 
 ### Results
@@ -334,7 +334,7 @@ nowcast
 #>    max_rhat divergent_transitions per_divergent_transitions max_treedepth
 #> 1:     1.01                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  50                0.025    122.1
+#> 1:                   8                0.004    105.9
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -352,28 +352,28 @@ head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
 #>  8:     2021-07-21       DE       00+      91          91                 1
 #>  9:     2021-07-22       DE       00+      99          99                 1
 #> 10:     2021-07-23       DE       00+      86          86                 1
-#>     delay group    mean median        sd    mad q5 q95      rhat ess_bulk
-#>  1:    39     1 72.0000     72 0.0000000 0.0000 72  72        NA       NA
-#>  2:    38     1 69.0440     69 0.2099668 0.0000 69  69 0.9992454 1665.980
-#>  3:    37     1 47.0910     47 0.3110746 0.0000 47  48 0.9994101 1947.687
-#>  4:    36     1 65.2030     65 0.4548565 0.0000 65  66 1.0019851 1877.879
-#>  5:    35     1 50.2450     50 0.4980954 0.0000 50  51 0.9992548 1752.784
-#>  6:    34     1 36.2320     36 0.5111816 0.0000 36  37 1.0018554 1814.197
-#>  7:    33     1 94.4740     94 0.6946692 0.0000 94  96 0.9994547 1876.378
-#>  8:    32     1 91.7315     91 0.9142350 0.0000 91  94 1.0009333 1706.214
-#>  9:    31     1 99.9980    100 1.0632786 1.4826 99 102 0.9997293 1924.759
-#> 10:    30     1 87.1405     87 1.1394775 1.4826 86  89 0.9994695 1833.535
+#>     delay group     mean median        sd    mad q5 q95      rhat ess_bulk
+#>  1:    39     1  72.0000     72 0.0000000 0.0000 72  72        NA       NA
+#>  2:    38     1  69.0460     69 0.2119114 0.0000 69  69 0.9997889 2030.203
+#>  3:    37     1  47.0820     47 0.2903759 0.0000 47  48 0.9996847 1796.606
+#>  4:    36     1  65.1820     65 0.4471867 0.0000 65  66 0.9999339 1994.767
+#>  5:    35     1  50.2420     50 0.5015593 0.0000 50  51 0.9995075 1791.821
+#>  6:    34     1  36.2250     36 0.4716845 0.0000 36  37 1.0028378 2111.387
+#>  7:    33     1  94.4710     94 0.7137322 0.0000 94  96 1.0029932 1653.903
+#>  8:    32     1  91.7015     91 0.8909515 0.0000 91  93 1.0006565 1847.662
+#>  9:    31     1 100.0255    100 1.0594390 1.4826 99 102 0.9999984 1822.452
+#> 10:    30     1  87.1880     87 1.1354738 1.4826 86  89 0.9995039 1817.245
 #>     ess_tail
 #>  1:       NA
-#>  2: 1685.329
-#>  3: 1783.730
-#>  4: 1840.178
-#>  5: 1727.676
-#>  6: 1802.610
-#>  7: 1893.233
-#>  8: 1817.178
-#>  9: 1665.602
-#> 10: 1868.667
+#>  2: 2060.888
+#>  3: 1818.262
+#>  4: 1959.219
+#>  5: 1853.022
+#>  6: 2066.279
+#>  7: 1807.410
+#>  8: 1720.632
+#>  9: 1912.191
+#> 10: 1769.323
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -422,17 +422,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 67999:     2021-08-22       DE       00+    1093          45                 1
 #> 68000:     2021-08-22       DE       00+    1093          45                 1
 #>        delay group .chain .iteration .draw sample
-#>     1:    33     1      1          1     1    435
-#>     2:    33     1      1          2     2    441
-#>     3:    33     1      1          3     3    435
-#>     4:    33     1      1          4     4    435
-#>     5:    33     1      1          5     5    438
+#>     1:    33     1      1          1     1    433
+#>     2:    33     1      1          2     2    436
+#>     3:    33     1      1          3     3    434
+#>     4:    33     1      1          4     4    433
+#>     5:    33     1      1          5     5    435
 #>    ---                                           
-#> 67996:     0     1      2        996  1996   2014
-#> 67997:     0     1      2        997  1997   2109
-#> 67998:     0     1      2        998  1998   2051
-#> 67999:     0     1      2        999  1999   2031
-#> 68000:     0     1      2       1000  2000   2311
+#> 67996:     0     1      2        996  1996   2089
+#> 67997:     0     1      2        997  1997   1872
+#> 67998:     0     1      2        998  1998   2068
+#> 67999:     0     1      2        999  1999   2244
+#> 68000:     0     1      2       1000  2000   2601
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
