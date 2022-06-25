@@ -80,7 +80,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">obs</span>, set_negatives_to_zero <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">obs</span>, set_negatives_to_zero <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -127,12 +127,12 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Default reconstruct incidence</span></span>
-<span class="r-in"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_assign_group.html">enw_assign_group</a></span><span class="op">(</span></span>
-<span class="r-in">  <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span>,</span>
-<span class="r-in">  by <span class="op">=</span> <span class="st">"age_group"</span></span>
-<span class="r-in"><span class="op">)</span></span>
-<span class="r-in"><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Default reconstruct incidence</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_assign_group.html">enw_assign_group</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  by <span class="op">=</span> <span class="st">"age_group"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        group age_group reference_date location confirm report_date new_confirm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2     00-04     2021-04-06       DE       4  2021-04-06           4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2     00-04     2021-04-06       DE       6  2021-04-07           2</span>
@@ -157,10 +157,10 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 90403:     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 90404:     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 90405:     0</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Make use of maximum reported to calculate empirical daily reporting</span></span>
-<span class="r-in"><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_add_max_reported.html">enw_add_max_reported</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Make use of maximum reported to calculate empirical daily reporting</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_add_max_reported.html">enw_add_max_reported</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        group age_group reference_date location confirm report_date max_confirm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2     00-04     2021-04-06       DE       4  2021-04-06          11</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2     00-04     2021-04-06       DE       6  2021-04-07          11</span>
@@ -196,7 +196,7 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
