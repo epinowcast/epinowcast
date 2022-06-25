@@ -202,7 +202,7 @@ Please briefly describe your problem and what output you expect in an [issue](ht
 
 ## Contributing
 
-We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls).
+We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
 If interested in expanding the functionality of the underlying model note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors.
 

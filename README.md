@@ -479,9 +479,11 @@ page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
 
 We welcome contributions and new contributors\! We particularly
 appreciate help on priority problems in the
-[issues](https://github.com/epiforecasts/epinowcast/issues). Please
-check and add to the issues, and/or add a [pull
-request](https://github.com/epiforecasts/epinowcast/pulls).
+[issues](https://github.com/epiforecasts/epinowcast/issues).
+Please check and add to the issues, and/or add a
+[pull request](https://github.com/epiforecasts/epinowcast/pulls).
+See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
+for more information.
 
 If interested in expanding the functionality of the underlying model
 note that `epinowcast` allows users to pass in their own models meaning
