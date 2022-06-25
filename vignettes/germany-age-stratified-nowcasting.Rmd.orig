@@ -42,6 +42,7 @@ This vignette includes several models that take upwards of 30 minutes to fit to 
 
 ```{r, eval  = TRUE}
 threads <- 2
+options(mc.cores = 2)
 ```
 
 # Data
@@ -101,12 +102,12 @@ multithread_model <- enw_model(threads = TRUE)
 Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
 ```{r}
-options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
   model = multithread_model,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -145,7 +146,6 @@ priors
 We now repeat the nowcasting step with the day of the week reporting model included.
 
 ```{r}
-options(mc.cores = 2)
 dow_nowcast <- epinowcast(pobs,
   model = multithread_model,
   report_effects = dow_report_effects,
@@ -153,6 +153,7 @@ dow_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -169,17 +170,12 @@ plot(dow_nowcast, latest_obs = latest_nat_germany) +
 It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).
 
 ```{r}
-age_reference_effects <- enw_manual_formula(
-  pobs$metareference,
-  random = "age_group"
-)
-age_reference_effects
+age_reference_effects <- enw_formula(~ 1 + (1 | age_group), pobs$metareference)
 ```
 
 We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.
 
 ```{r}
-options(mc.cores = 2)
 age_nowcast <- epinowcast(pobs,
   model = multithread_model,
   reference_effects = age_reference_effects,
@@ -188,6 +184,7 @@ age_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -203,24 +200,10 @@ plot(age_nowcast, latest_obs = latest_nat_germany) +
 
 It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.
 
-To define this reference date model we first need to create new features in the metadata that capture the order weeks occur in.
-
 ```{r}
-metareference <- enw_add_cumulative_membership(
-  pobs$metareference[[1]],
-  feature = "week"
+week_age_reference_effects <- enw_formula(
+  ~ 1 + (1 | age_group) + rw(week), pobs$metareference[[1]]
 )
-metareference
-```
-
-We can now define the model formula as previously but this time making use of the `custom_random` argument which also creates a random effect but this time using partial matching and without creating new features automatically.
-
-```{r}
-week_age_reference_effects <- enw_manual_formula(
-  metareference,
-  random = "age_group", custom_random = "cweek"
-)
-week_age_reference_effects
 ```
 
 As before we fit the nowcasting model,
@@ -235,6 +218,7 @@ week_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -250,74 +234,25 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 
 As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
 
-Models with this level of flexibility are not currently supported by `enw_manual_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
-
 ```{r}
-fixed_form <- as.formula(paste0(
-  "~ 1 + age_group + ",
-  paste(paste0(
-    "age_group:",
-    grep("cweek", colnames(metareference), value = TRUE),
-        collapse = " + ")),
-  " + ",
-  paste(grep("cweek", colnames(metareference), value = TRUE),
-        collapse = " + ")
-))
-fixed <- enw_design(fixed_form, metareference, no_contrasts = TRUE,
-                    sparse = TRUE)
-fixed$formula
-fixed$design[1:10, 1:10]
-```
-
-We now need to design the random effects which interact with this design matrix. The first step is to extract all fixed effects.
-
-```{r}
-effects <- enw_effects_metadata(fixed$design)
-effects
-```
-
-We can then start building shared pooling standard deviations for parameters with a global random walk for all age groups and then a random walk in the residuals for each age group.
-
-```{r}
-effects <- enw_add_pooling_effect(effects, "cweek", "cweek")
-effects <- enw_add_pooling_effect(effects, "age_group", "age_group")
-for (i in  unique(metareference$age_group)) {
-  effects <- enw_add_pooling_effect(
-    effects, c("cweek", paste0("age_group", i)), paste0( i, "_walk"),
-      finder_fn = function(effect, pattern) {
-        grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-    })
-}
-effects[grepl(":", effects), age_group := 0]
-effects
-```
-
-Now we can create the pooling standard deviation design matrix and create the list describing the model.
-
-```{r}
-form <- as.formula(
-  paste0("~ 0 + fixed + cweek + age_group + ",
-         paste(paste0("`", unique(metareference$age_group), "_walk`"),
-               collapse = " + ")
-))
-random <- enw_design(form, effects, sparse = FALSE)
-random
-custom_reference_effects <- list(fixed = fixed, random = random)
+week_by_age_reference_effects <- enw_formula(
+  ~ 1 + (1 | age_group) + rw(week, age_group), pobs$metareference[[1]]
+)
 ```
 
 We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.95 here to mitigate divergent transitions).
 
 ```{r}
-options(mc.cores = 2)
 age_week_nowcast <- epinowcast(pobs,
   model = multithread_model,
-  reference_effects = custom_reference_effects,
+  reference_effects = week_by_age_reference_effects,
   report_effects = dow_report_effects,
   priors = priors,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
   adapt_delta = 0.95,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -340,19 +275,12 @@ We could define this model with a single call to `epinowcast` but fitting each d
 independent_epinowcast <- function(obs, max_delay = 40, ...) {
   pobs_ind <- enw_preprocess_data(obs, max_delay = max_delay)
 
-  metareference <- enw_add_cumulative_membership(
-    pobs_ind$metareference[[1]],
-    feature = "week"
-  )
-
-  reference_effects <- enw_manual_formula(metareference, custom_random = "cweek")
-  report_effects <- enw_manual_formula(pobs_ind$metareport, random = "day_of_week")
-
   nowcast <- epinowcast(
     pobs_ind,
-    reference_effects = reference_effects,
-    report_effects = report_effects,
-     ...)
+    reference_effects = enw_formula(~ rw(week), pobs_ind$metareference[[1]]),
+    report_effects = enw_formula(~ (1 | day_of_week), pobs_ind$metareport[[1]]),
+     ...
+  )
 
   nowcast_summary <- summary(
     nowcast,
@@ -375,6 +303,7 @@ independent_nowcast <- map(
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 independent_nowcast <- rbindlist(independent_nowcast)
