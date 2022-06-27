@@ -2,7 +2,7 @@
 % Please edit documentation in R/formula-tools.R
 \name{parse_formula}
 \alias{parse_formula}
-\title{FUNCTION_TITLE}
+\title{Parse a formula into components}
 \usage{
 parse_formula(formula)
 }
@@ -10,10 +10,35 @@ parse_formula(formula)
 \item{formula}{DESCRIPTION}
 }
 \value{
-RETURN_DESCRIPTION
+A list of formula components. These currently include:
+\itemize{
+\item \code{fixed}: A character vector of fixed effect terms
+\item \code{random}: A list of of \link{lme4} style random effects
+\item \code{rw}: A character vector of \code{\link[=rw]{rw()}} random walk terms.
+}
 }
 \description{
-FUNCTION_DESCRIPTION
+This function uses a series internal functions
+to break an input formula into its component parts each of which
+can then be handled separately. Currently supported componenets are
+fixed effects, \link{lme4} style random effects, and random walks using the
+\code{\link[=rw]{rw()}} helper function.
+}
+\section{Reference}{
+
+The random walk functions used internally by this function were
+adapted from code written by J Scott (under an MIT license) as part of
+the \code{epidemia} package (https://github.com/ImperialCollegeLondon/epidemia/).
+}
+
+\examples{
+parse_formula(~ 1 + age_group + location)
+
+parse_formula(~ 1 + age_group + (1 | location))
+
+parse_formula(~ 1 + (age_group | location))
+
+parse_formula(~ 1 + (1 | location) + rw(week, location))
 }
 \seealso{
 Functions used to help convert formulas into model designs

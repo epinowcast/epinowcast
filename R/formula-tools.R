@@ -91,14 +91,34 @@ remove_rw_terms <- function(formula) {
   return(form)
 }
 
-#' FUNCTION_TITLE
+#' Parse a formula into components
 #'
-#' FUNCTION_DESCRIPTION
+#' @description This function uses a series internal functions
+#' to break an input formula into its component parts each of which
+#' can then be handled separately. Currently supported componenets are
+#' fixed effects, [lme4] style random effects, and random walks using the
+#' [rw()] helper function.
 #'
-#' @return RETURN_DESCRIPTION
+#' @section Reference:
+#' The random walk functions used internally by this function were
+#' adapted from code written by J Scott (under an MIT license) as part of
+#' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
+#'
+#' @return A list of formula components. These currently include:
+#'  - `fixed`: A character vector of fixed effect terms
+#'  - `random`: A list of of [lme4] style random effects
+#'  - `rw`: A character vector of [rw()] random walk terms.
 #' @inheritParams enw_formula
 #' @importFrom lme4 nobars findbars
 #' @family formulatools
+#' @examples
+#' parse_formula(~ 1 + age_group + location)
+#'
+#' parse_formula(~ 1 + age_group + (1 | location))
+#'
+#' parse_formula(~ 1 + (age_group | location))
+#'
+#' parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
     stop("'formula' must be a formula object.")
