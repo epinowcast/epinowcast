@@ -1,3 +1,79 @@
+
+#' Define a model manually using fixed and random effects
+#'
+#' @description For most typical use cases [enw_formula()] should
+#' provide sufficient flexibility to allow models to be defined. However,
+#' there may be some instances where more manual model specification is
+#' required. This function supports this by allowing the user to supply
+#' vectors of fixed, random, and customised random effects (where they are
+#' not first treated as fixed effect terms). Prior to `1.0.0` this was the
+#' main interface for specifying models and it is still used internally to
+#' handle some parts of the model specification process.
+#'
+#' @param fixed A character vector of fixed effects.
+#'
+#' @param random A character vector of random effects. Random effects
+#' specified here will be added to the fixed effects.
+#'
+#' @param custom_random A vector of random effects. Random effects added here
+#' will not be added to the vector of fixed effects. This can be used to random
+#' effects for fixed effects that only have a partial name match.
+#'
+#' @param no_contrasts Defaults to `FALSE`. `TRUE` means that no variable uses
+#' contrast. Alternatively a character vector of variables can be supplied
+#' indicating which variables should  not have contrasts.
+#'
+#' @return A list specifying the fixed effects (formula, design matrix, and
+#' design matrix index), and random effects (formula and design matrix).
+#'
+#' @inheritParams enw_formula
+#' @family formulatools
+#' @importFrom data.table copy
+#' @importFrom stats as.formula
+#' @export
+#' @examples
+#' data <- enw_example("prep")$metareference[[1]]
+#' enw_manual_formula(data, fixed ="max_confirm", random = "day_of_week")
+enw_manual_formula <- function(data, fixed = c(), random = c(),
+                        custom_random = c(), no_contrasts = FALSE) {
+  data <- data.table::copy(data)
+  form <- c("1")
+
+  cr_in_dt <- purrr::map(
+    custom_random, ~ colnames(data)[startsWith(colnames(data), .)]
+  )
+  cr_in_dt <- unlist(cr_in_dt)
+
+  form <- c(form, fixed, random, cr_in_dt)
+  if (length(random) > 0) {
+    no_contrasts <- c(random)
+  }
+  form <- as.formula(paste0("~ ", paste(form, collapse = " + ")))
+
+  # build effects design matrix (with  no contrasts)
+  fixed <- enw_design(form, data,
+    no_contrasts = no_contrasts,
+    sparse = TRUE
+  )
+
+  # get effects
+  effects <- enw_effects_metadata(fixed$design)
+
+  random <- c(random, custom_random)
+
+  if (length(random) == 0) {
+    random <- enw_design(~1, effects, sparse = FALSE)
+  } else {
+    for (i in random) {
+      effects <- enw_add_pooling_effect(effects, i, var_name = i)
+    }
+    rand_form <- c("0", "fixed", random)
+    rand_form <- as.formula(paste0("~ ", paste(rand_form, collapse = " + ")))
+    random <- enw_design(rand_form, effects, sparse = FALSE)
+  }
+  return(list(fixed = fixed, random = random))
+}
+
 #' Converts formulas to strings
 #'
 #' @return A character string of the supplied formula
@@ -144,7 +220,8 @@ parse_formula <- function(formula) {
 #' @param time Defines the random walk time period.
 #'
 #' @param by Defines the grouping parameter used for the random walk.
-#' If not specified no grouping is used.
+#' If not specified no grouping is used. Currently this is limited to a single
+#' variable.
 #'
 #' @param type Character string, defaults to "independent". How should the
 #' standard deviation of byed random walks be estimated. Currently this can
@@ -271,16 +348,16 @@ construct_rw <- function(rw, data) {
 #' when a random effect is defined using the [lme4] syntax in
 #' formula. Currently only simplified random effecs (i.e
 #'  LHS | RHS) are supported.
-#' 
+#'
 #' @export
 #' @return A list defining the fixed and random effects of the specified
 #' random effect
 #' @family formulatools
 #' @examples
-#' form <- parse_formula(~ 1 + (1 | age_group))
+#' form <- epinowcast:::parse_formula(~ 1 + (1 | age_group))
 #' re(form$random[[1]])
 #'
-#' form <- parse_formula(~ 1 + (location | age_group))
+#' form <- epinowcast:::parse_formula(~ 1 + (location | age_group))
 #' re(form$random[[1]])
 re <- function(formula) {
   terms <- strsplit(as_string_formula(formula), " \\| ")[[1]]
@@ -292,7 +369,7 @@ re <- function(formula) {
 }
 
 #' Constructs random effect terms
-#' 
+#'
 #' @param re A random effect as defined using [re()] which itself takes
 #' random effects specifed in a model formula using the [lme4] syntax.
 #'
@@ -303,10 +380,11 @@ re <- function(formula) {
 #' @return A list containing the fixed effects terms ("terms") and
 #' a `data.frame` specfying the random effect structure betwee
 #' these terms (`effects`).
-#' 
+#'
 #' @family formulatools
+#' @importFrom data.table copy
 #' @examples
-#' form <- parse_formula(~ 1 + (1 | day_of_week))
+#' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
 #' data <- enw_example("prepr")$metareference[[1]]
 #' random_effect <- re(form$random[[1]])
 #' epinowcast:::construct_re(random_effect, data)
@@ -314,7 +392,7 @@ construct_re <- function(re, data) {
   if (!(class(re) %in% "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
-  data <- data.table::as.data.table(data)
+  data <- data.table::copy(data)
 
   # extract random and fixed effects
   fixed <- strsplit(re$fixed, " \\+ ")[[1]]
@@ -351,19 +429,56 @@ construct_re <- function(re, data) {
   return(list(terms = terms, effects = effects))
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' Define a model using a formula interface
 #'
-#' @param formula DESCRIPTION
+#' @description This function allows models to be defined using a
+#' flexible formula interface that supports fixed effects, random effects
+#' (using [lme4] syntax). Note that the returned fixed effects design matrix is
+#' sparse and so the index supplied is required to link observations to the
+#' appropriate design matrix row.
 #'
-#' @param data DESCRIPTION
+#' @param formula A model formula that may use standard fixed
+#' effects, random effects using [lme4] syntax (see [re()]), and random walks
+#' defined using the [rw()] helper function.
+#'
+#' @param data A `data.frame` of observations. It must include all
+#' variables used in the supplied formula.
 #
-#' @return A design matrix and metadata
-#' @family modeldesign
+#' @return A list containing the following:
+#'  - `formula`: The user supplied formula
+#'  - `parsed_formula`: The formula as parsed by [parse_formula()]
+#'  - `extended_formula`: The flattened version of the formula with 
+#'  both user supplied terms and terms added for the user supplied
+#'  complex model components.
+#'  - `fixed`:  A list containing the fixed effect formula, sparse design
+#'  matrix, and the index linking the design matrix with observations.
+#'  - `random`: A list containing the random effect formula, sparse design
+#'  matrix, and the index linking the design matrix with random effects.
+#'
+#' @family formulatools
 #' @export
 #' @importFrom purrr map transpose
-#' @importFrom data.table rbindlist setnafill
+#' @importFrom data.table as.data.table rbindlist setnafill
+#' @examples
+#' # Use meta data for references dates from the Germany COVID-19
+#' # hospitalisation data.
+#' obs <- enw_retrospective_data(
+#'  germany_covid19_hosp[location == "DE"], rep_days = 40, ref_days = 40
+#' )
+#' pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
+#' data <- pobs$metareference[[1]]
+#'
+#' # Model with fixed effects for age group
+#' enw_formula(~ 1 + age_group, data)
+#'
+#' # Model with random effects for age group
+#' enw_formula(~ 1 + (1 | age_group), data)
+#'
+#' # Model with a random effect for age group and a random walk
+#' enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 enw_formula <- function(formula, data) {
+  data <- data.table::as.data.table(data)
+
   # Parse formula
   parsed_formula <- parse_formula(formula)
 

@@ -7,7 +7,9 @@
 as_string_formula(formula)
 }
 \arguments{
-\item{formula}{DESCRIPTION}
+\item{formula}{A model formula that may use standard fixed
+effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), and random walks
+defined using the \code{\link[=rw]{rw()}} helper function.}
 }
 \value{
 A character string of the supplied formula
@@ -22,6 +24,8 @@ epinowcast:::as_string_formula(~ 1 + age_group)
 Functions used to help convert formulas into model designs
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
+\code{\link{enw_formula}()},
+\code{\link{enw_manual_formula}()},
 \code{\link{parse_formula}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{re}()},

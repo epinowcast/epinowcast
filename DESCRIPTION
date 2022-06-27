@@ -40,8 +40,7 @@ Imports:
     posterior,
     purrr,
     rstan,
-    scales,
-    lme4
+    scales
 Suggests:
     loo (>= 2.4.1),
     knitr,

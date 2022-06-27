@@ -20,8 +20,6 @@ Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_add_pooling_effect}()},
 \code{\link{enw_dates_to_factors}()},
-\code{\link{enw_design}()},
-\code{\link{enw_formula}()},
-\code{\link{enw_manual_formula}()}
+\code{\link{enw_design}()}
 }
 \concept{modeldesign}

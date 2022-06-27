@@ -32,6 +32,8 @@ epinowcast:::construct_re(random_effect, data)
 Functions used to help convert formulas into model designs
 \code{\link{as_string_formula}()},
 \code{\link{construct_rw}()},
+\code{\link{enw_formula}()},
+\code{\link{enw_manual_formula}()},
 \code{\link{parse_formula}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{re}()},

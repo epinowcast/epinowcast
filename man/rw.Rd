@@ -10,7 +10,8 @@ rw(time, by, type = "independent")
 \item{time}{Defines the random walk time period.}
 
 \item{by}{Defines the grouping parameter used for the random walk.
-If not specified no grouping is used.}
+If not specified no grouping is used. Currently this is limited to a single
+variable.}
 
 \item{type}{Character string, defaults to "independent". How should the
 standard deviation of byed random walks be estimated. Currently this can
@@ -38,6 +39,8 @@ Functions used to help convert formulas into model designs
 \code{\link{as_string_formula}()},
 \code{\link{construct_re}()},
 \code{\link{construct_rw}()},
+\code{\link{enw_formula}()},
+\code{\link{enw_manual_formula}()},
 \code{\link{parse_formula}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{re}()},
