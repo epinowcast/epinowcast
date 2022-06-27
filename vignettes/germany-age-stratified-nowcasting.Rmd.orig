@@ -95,7 +95,11 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
-```{r, message = FALSE}
+```{r, include = FALSE, message = FALSE}
+multithread_model <- enw_model(threads = TRUE)
+```
+
+```{r, message = FALSE, eval = FALSE}
 multithread_model <- enw_model(threads = TRUE)
 ```
 
@@ -396,7 +400,7 @@ score <- enw_score_nowcast(
 )
 
 overall_score <- score |>
-  summarise_score(by = "model") |>
+  summarise_scores(by = "model") |>
   kable()
 ```
 
@@ -404,7 +408,7 @@ Stratifying by age group we see that trends in performance are fairly consistent
 
 ```{r}
 age_score <- score |>
-  summarise_score(by = c("model", "age_group")) |>
+  summarise_scores(by = c("model", "age_group")) |>
   kable()
 ```
 
@@ -412,20 +416,26 @@ Stratifying by date we find that interestingly the more complex models appear to
 
 ```{r}
 date_score <- score |>
-  summarise_score(by = c("model", "reference_date")) |>
+  summarise_scores(by = c("model", "reference_date")) |>
   kable()
 ```
 
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treatss age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
 ```{r performance, fig.width = 9, fig.height = 9}
-fixed_score <- score[model %in% "Reference: Fixed, Report: Fixed",
-                     .(reference_date, age_group, fixed_is = interval_score)]
-score <- merge(score, fixed_score, by = c("reference_date", "age_group"))
+age_date_score <- score |>
+  summarise_scores(by = c("model", "reference_date", "age_group"))
+fixed_score <- age_date_score[
+  model %in% "Reference: Fixed, Report: Fixed",
+  .(reference_date, age_group, fixed_is = interval_score)
+]
+age_date_score <- merge(
+  age_date_score, fixed_score, by = c("reference_date", "age_group")
+)
 
-score <- score[, interval_score := interval_score / fixed_is]
-score <- score[!model %in% "Reference: Fixed, Report: Fixed"]
-plot <- ggplot(score) +
+age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
+age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
+plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
   geom_hline(yintercept = 1, linetype = 2, size = 1.2, alpha = 0.5) +
   geom_line(size = 1.1, alpha = 0.6) +
