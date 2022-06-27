@@ -16,3 +16,4 @@
 ^vignettes/precompile.R$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^codemeta\.json$
