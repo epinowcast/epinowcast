@@ -41,7 +41,6 @@ split_formula_to_terms <- function(formula) {
 #' identified in the supplied formula.
 #'
 #' @inheritParams enw_formula
-#' @inherit remove_rw_terms Reference
 #' @family formulatools
 #' @examples
 #' epinowcast:::rw_terms(~ 1 + age_group + location)
@@ -112,13 +111,13 @@ remove_rw_terms <- function(formula) {
 #' @importFrom lme4 nobars findbars
 #' @family formulatools
 #' @examples
-#' parse_formula(~ 1 + age_group + location)
+#' epinowcast:::parse_formula(~ 1 + age_group + location)
 #'
-#' parse_formula(~ 1 + age_group + (1 | location))
+#' epinowcast:::parse_formula(~ 1 + age_group + (1 | location))
 #'
-#' parse_formula(~ 1 + (age_group | location))
+#' epinowcast:::parse_formula(~ 1 + (age_group | location))
 #'
-#' parse_formula(~ 1 + (1 | location) + rw(week, location))
+#' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
     stop("'formula' must be a formula object.")

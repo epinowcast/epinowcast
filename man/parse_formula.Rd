@@ -32,13 +32,13 @@ the \code{epidemia} package (https://github.com/ImperialCollegeLondon/epidemia/)
 }
 
 \examples{
-parse_formula(~ 1 + age_group + location)
+epinowcast:::parse_formula(~ 1 + age_group + location)
 
-parse_formula(~ 1 + age_group + (1 | location))
+epinowcast:::parse_formula(~ 1 + age_group + (1 | location))
 
-parse_formula(~ 1 + (age_group | location))
+epinowcast:::parse_formula(~ 1 + (age_group | location))
 
-parse_formula(~ 1 + (1 | location) + rw(week, location))
+epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 }
 \seealso{
 Functions used to help convert formulas into model designs
