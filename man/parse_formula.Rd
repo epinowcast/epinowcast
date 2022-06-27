@@ -7,7 +7,7 @@
 parse_formula(formula)
 }
 \arguments{
-\item{formula}{DESCRIPTION.}
+\item{formula}{DESCRIPTION}
 }
 \value{
 RETURN_DESCRIPTION
@@ -22,8 +22,8 @@ Functions used to help convert formulas into model designs
 \code{\link{construct_rw}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{re}()},
+\code{\link{rw_terms}()},
 \code{\link{rw}()},
-\code{\link{split_formula_to_terms}()},
-\code{\link{terms_rw}()}
+\code{\link{split_formula_to_terms}()}
 }
 \concept{formulatools}

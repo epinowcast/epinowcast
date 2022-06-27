@@ -2,18 +2,21 @@
 % Please edit documentation in R/formula-tools.R
 \name{as_string_formula}
 \alias{as_string_formula}
-\title{FUNCTION_TITLE}
+\title{Converts formulas to strings}
 \usage{
-as_string_formula(x)
+as_string_formula(formula)
 }
 \arguments{
-\item{x}{DESCRIPTION.}
+\item{formula}{DESCRIPTION}
 }
 \value{
-RETURN_DESCRIPTION
+A character string of the supplied formula
 }
 \description{
-FUNCTION_DESCRIPTION
+Converts formulas to strings
+}
+\examples{
+epinowcast:::as_string_formula(~ 1 + age_group)
 }
 \seealso{
 Functions used to help convert formulas into model designs
@@ -22,8 +25,8 @@ Functions used to help convert formulas into model designs
 \code{\link{parse_formula}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{re}()},
+\code{\link{rw_terms}()},
 \code{\link{rw}()},
-\code{\link{split_formula_to_terms}()},
-\code{\link{terms_rw}()}
+\code{\link{split_formula_to_terms}()}
 }
 \concept{formulatools}

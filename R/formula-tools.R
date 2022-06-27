@@ -1,25 +1,24 @@
-#' FUNCTION_TITLE
+#' Converts formulas to strings
 #'
-#' FUNCTION_DESCRIPTION
-#'
-#' @param x DESCRIPTION.
-#'
-#' @return RETURN_DESCRIPTION
+#' @return A character string of the supplied formula
+#' @inheritParams split_formula_to_terms
 #' @family formulatools
-as_string_formula <- function(x) {
-  form <- paste(deparse(x), collapse = " ")
+#' @examples
+#' epinowcast:::as_string_formula(~ 1 + age_group)
+as_string_formula <- function(formula) {
+  form <- paste(deparse(formula), collapse = " ")
   form <- gsub("\\s+", " ", form, perl = FALSE)
   return(form)
 }
 
-#' FUNCTION_TITLE
+#' Split formula into individual terms
 #'
-#' FUNCTION_DESCRIPTION
 #'
-#' @param formula DESCRIPTION.
-#'
-#' @return RETURN_DESCRIPTION
+#' @return A character vector of formula terms
+#' @inheritParams enw_formula
 #' @family formulatools
+#' @examples
+#' epinowcast:::split_formula_to_terms(~ 1 + age_group + location)
 split_formula_to_terms <- function(formula) {
   formula <- as_string_formula(formula)
   formula <- gsub("~", "", formula)
@@ -27,18 +26,57 @@ split_formula_to_terms <- function(formula) {
   return(formula)
 }
 
-#' Remove random walk terms
+#' Finds random walk terms in a formula object
 #'
+#' @description This function extracts random walk terms
+#' denoted using [rw()] from a formula so that they can be
+#' processed on their own.
+#'
+#' @section Reference:
 #' This function was adapted from code written
 #' by J Scott (under an MIT license) as part of
 #' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
 #'
-#' @param x DESCRIPTION.
+#' @return A character vector containing the random walk terms that have been 
+#' identified in the supplied formula.
 #'
+#' @inheritParams enw_formula
+#' @inherit remove_rw_terms Reference
+#' @family formulatools
+#' @examples
+#' epinowcast:::rw_terms(~ 1 + age_group + location)
+#'
+#' epinowcast:::rw_terms(~ 1 + age_group + location + rw(week, location))
+rw_terms <- function(formula) {
+  # use regex to find random walk terms in formula
+  trms <- attr(terms(formula), "term.labels")
+  match <- grepl("(^(rw)\\([^:]*\\))$", trms)
+
+  # ignore when included in a random effects term
+  match <- match & !grepl("\\|", trms)
+  return(trms[match])
+}
+
+#' Remove random walk terms from a formula object
+#'
+#' @description This function removes random walk terms
+#' denoted using [rw()] from a formula so that they can be
+#' processed on their own.
+#'
+#' @section Reference:
+#' This function was adapted from code written
+#' by J Scott (under an MIT license) as part of
+#' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
+#'
+#' @inheritParams split_formula_to_terms
 #' @return RETURN_DESCRIPTION
 #' @family formulatools
-remove_rw_terms <- function(x) {
-  form <- as_string_formula(x)
+#' @examples
+#' epinowcast:::remove_rw_terms(~ 1 + age_group + location)
+#'
+#' epinowcast:::remove_rw_terms(~ 1 + age_group + location + rw(week, location))
+remove_rw_terms <- function(formula) {
+  form <- as_string_formula(formula)
   form <- gsub("rw\\(.*?\\) \\+ ", "", form)
   form <- gsub("\\+ rw\\(.*?\\)", "", form)
   form <- gsub("rw\\(.*?\\)", "", form)
@@ -57,13 +95,15 @@ remove_rw_terms <- function(x) {
 #'
 #' FUNCTION_DESCRIPTION
 #'
-#' @param formula DESCRIPTION.
-#'
 #' @return RETURN_DESCRIPTION
+#' @inheritParams enw_formula
 #' @importFrom lme4 nobars findbars
 #' @family formulatools
 parse_formula <- function(formula) {
-  rw <- terms_rw(formula)
+  if (!inherits(formula, "formula")) {
+    stop("'formula' must be a formula object.")
+  }
+  rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
   fixed <- lme4::nobars(formula)
   random <- lme4::findbars(formula)
@@ -74,31 +114,6 @@ parse_formula <- function(formula) {
     rw = rw
   )
   return(model_terms)
-}
-
-#' Finds random walk terms in a formula object
-#'
-#' This function was adapted from code written
-#' by J Scott (under an MIT license) as part of
-#' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
-#'
-#' @param x An object of class "formula"
-#'
-#' @return The value of attributes. See \code{\link[base]{attr}} for more
-#' details.
-#' @family formulatools
-terms_rw <- function(x) {
-  if (!inherits(x, "formula")) {
-    stop("'formula' must be a formula object.")
-  }
-
-  # use regex to find random walk terms in formula
-  trms <- attr(terms(x), "term.labels")
-  match <- grepl("(^(rw)\\([^:]*\\))$", trms)
-
-  # ignore when included in a random effects term
-  match <- match & !grepl("\\|", trms)
-  return(trms[match])
 }
 
 #' Adds random walks with Gaussian steps to the model.

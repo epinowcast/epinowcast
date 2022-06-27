@@ -2,20 +2,32 @@
 % Please edit documentation in R/formula-tools.R
 \name{remove_rw_terms}
 \alias{remove_rw_terms}
-\title{Remove random walk terms}
+\title{Remove random walk terms from a formula object}
 \usage{
-remove_rw_terms(x)
+remove_rw_terms(formula)
 }
 \arguments{
-\item{x}{DESCRIPTION.}
+\item{formula}{DESCRIPTION}
 }
 \value{
 RETURN_DESCRIPTION
 }
 \description{
+This function removes random walk terms
+denoted using \code{\link[=rw]{rw()}} from a formula so that they can be
+processed on their own.
+}
+\section{Reference}{
+
 This function was adapted from code written
 by J Scott (under an MIT license) as part of
 the \code{epidemia} package (https://github.com/ImperialCollegeLondon/epidemia/).
+}
+
+\examples{
+epinowcast:::remove_rw_terms(~ 1 + age_group + location)
+
+epinowcast:::remove_rw_terms(~ 1 + age_group + location + rw(week, location))
 }
 \seealso{
 Functions used to help convert formulas into model designs
@@ -24,8 +36,8 @@ Functions used to help convert formulas into model designs
 \code{\link{construct_rw}()},
 \code{\link{parse_formula}()},
 \code{\link{re}()},
+\code{\link{rw_terms}()},
 \code{\link{rw}()},
-\code{\link{split_formula_to_terms}()},
-\code{\link{terms_rw}()}
+\code{\link{split_formula_to_terms}()}
 }
 \concept{formulatools}

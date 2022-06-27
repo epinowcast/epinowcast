@@ -7,7 +7,7 @@
 epinowcast(
   pobs,
   reference_effects = epinowcast::enw_formula(~1, pobs$metareference[[1]]),
-  report_effects = epinowcast::enw_formula(~0, pobs$metareport[[1]]),
+  report_effects = epinowcast::enw_formula(~1, pobs$metareport[[1]]),
   priors = epinowcast::enw_priors(),
   distribution = "lognormal",
   model = epinowcast::enw_model(),

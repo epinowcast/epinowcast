@@ -2,18 +2,21 @@
 % Please edit documentation in R/formula-tools.R
 \name{split_formula_to_terms}
 \alias{split_formula_to_terms}
-\title{FUNCTION_TITLE}
+\title{Split formula into individual terms}
 \usage{
 split_formula_to_terms(formula)
 }
 \arguments{
-\item{formula}{DESCRIPTION.}
+\item{formula}{DESCRIPTION}
 }
 \value{
-RETURN_DESCRIPTION
+A character vector of formula terms
 }
 \description{
-FUNCTION_DESCRIPTION
+Split formula into individual terms
+}
+\examples{
+epinowcast:::split_formula_to_terms(~ 1 + age_group + location)
 }
 \seealso{
 Functions used to help convert formulas into model designs
@@ -23,7 +26,7 @@ Functions used to help convert formulas into model designs
 \code{\link{parse_formula}()},
 \code{\link{remove_rw_terms}()},
 \code{\link{re}()},
-\code{\link{rw}()},
-\code{\link{terms_rw}()}
+\code{\link{rw_terms}()},
+\code{\link{rw}()}
 }
 \concept{formulatools}
