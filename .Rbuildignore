@@ -17,3 +17,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^codemeta\.json$
+^CONTRIBUTING\.md$
+
