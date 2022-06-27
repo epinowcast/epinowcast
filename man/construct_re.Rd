@@ -7,15 +7,26 @@
 construct_re(re, data)
 }
 \arguments{
-\item{re}{}
+\item{re}{A random effect as defined using \code{\link[=re]{re()}} which itself takes
+random effects specifed in a model formula using the \link{lme4} syntax.}
 
-\item{data}{}
+\item{data}{A data.frame of observations used to define the
+random effects. Must contain the variables specified in the
+\code{\link[=re]{re()}} term.}
 }
 \value{
-RETURN
+A list containing the fixed effects terms ("terms") and
+a \code{data.frame} specfying the random effect structure betwee
+these terms (\code{effects}).
 }
 \description{
 Constructs random effect terms
+}
+\examples{
+form <- parse_formula(~ 1 + (1 | day_of_week))
+data <- enw_example("prepr")$metareference[[1]]
+random_effect <- re(form$random[[1]])
+epinowcast:::construct_re(random_effect, data)
 }
 \seealso{
 Functions used to help convert formulas into model designs

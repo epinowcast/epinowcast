@@ -267,11 +267,21 @@ construct_rw <- function(rw, data) {
 
 #' Defines random effect terms using the lme4 syntax
 #'
-#' @param formula A formula in the format used by [lme4] to define random
-#' effects
+#' @param formula A random effect as returned by [lme4::findbars()]
+#' when a random effect is defined using the [lme4] syntax in
+#' formula. Currently only simplified random effecs (i.e
+#'  LHS | RHS) are supported.
+#' 
 #' @export
-#' @return A list to be parsed internally.
+#' @return A list defining the fixed and random effects of the specified
+#' random effect
 #' @family formulatools
+#' @examples
+#' form <- parse_formula(~ 1 + (1 | age_group))
+#' re(form$random[[1]])
+#'
+#' form <- parse_formula(~ 1 + (location | age_group))
+#' re(form$random[[1]])
 re <- function(formula) {
   terms <- strsplit(as_string_formula(formula), " \\| ")[[1]]
   fixed <- terms[1]
@@ -282,13 +292,24 @@ re <- function(formula) {
 }
 
 #' Constructs random effect terms
+#' 
+#' @param re A random effect as defined using [re()] which itself takes
+#' random effects specifed in a model formula using the [lme4] syntax.
 #'
-#' @param re
+#' @param data A data.frame of observations used to define the
+#' random effects. Must contain the variables specified in the
+#' [re()] term.
 #'
-#' @param data
-#'
-#' @return RETURN
+#' @return A list containing the fixed effects terms ("terms") and
+#' a `data.frame` specfying the random effect structure betwee
+#' these terms (`effects`).
+#' 
 #' @family formulatools
+#' @examples
+#' form <- parse_formula(~ 1 + (1 | day_of_week))
+#' data <- enw_example("prepr")$metareference[[1]]
+#' random_effect <- re(form$random[[1]])
+#' epinowcast:::construct_re(random_effect, data)
 construct_re <- function(re, data) {
   if (!(class(re) %in% "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
