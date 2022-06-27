@@ -105,7 +105,7 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 ## Shared reporting delay distribution 
 
-We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
+We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
 
 ```r
@@ -952,7 +952,7 @@ independent_nowcast <- map(
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 
 ```r
@@ -1180,7 +1180,7 @@ date_score <- score |>
 |Reference: Age group and week by age, Report: Day of week |2021-09-01     |          47.40|      5.65|          41.700|         0.0000|            -0.1750| -0.6430| 71.10|
 |Independent by age, Reference: Week, Report: Day of week  |2021-09-01     |          41.80|      6.05|          35.700|         0.0000|            -0.1750| -0.6930| 66.20|
 
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treatss age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
 
 ```r
