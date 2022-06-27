@@ -1,9 +1,9 @@
 # epinowcast 0.0.7
 
-* Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing. 
-* The default approach to handling reported notifications beyond the maximum delay has been changed. In `0.0.6` and previous versions notifications beyond the maximum delay were silently dropped. In `0.0.7` this is now optional behaviour (set using `max_delay_strat` in [enw_preprocess_data()]) and the default is instead to add these notifications to the last included delay were present. This should produce more accurate long-term nowcasts when data is available but means that reported notifications for the maximum delay need to be interpreted with this in mind. 
-* Adds some basic testing and documentation for preprocessing functions.
-* Adds some inference testing setup.
+* Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see [#62](https://github.com/epiforecasts/epinowcast/pull/62) by [@seabbs](https://github.com/seabbs)). 
+* The default approach to handling reported notifications beyond the maximum delay has been changed. In `0.0.6` and previous versions notifications beyond the maximum delay were silently dropped. In `0.0.7` this is now optional behaviour (set using `max_delay_strat` in [enw_preprocess_data()]) and the default is instead to add these notifications to the last included delay were present. This should produce more accurate long-term nowcasts when data is available but means that reported notifications for the maximum delay need to be interpreted with this in mind. See [#62](https://github.com/epiforecasts/epinowcast/pull/62)by [@seabbs](https://github.com/seabbs).
+* Adds some basic testing and documentation for preprocessing functions. See [#62](https://github.com/epiforecasts/epinowcast/pull/62)by [@seabbs](https://github.com/seabbs).
+* Stabilises calculation of expected observations by increasing the proportion of the calculation performed on the log scale. This results in reduced computation time with the majority of this coming from switching to using the `neg_binomial_2_log` family of functions (over their natural scale counterparts). See [#65](https://github.com/epiforecasts/epinowcast/pull/65)by [@seabbs](https://github.com/seabbs)
 
 # epinowcast 0.0.6
 
@@ -13,9 +13,9 @@
 * Adds vectorisation of zero truncated normal distributions (see [#38](https://github.com/epiforecasts/epinowcast/pull/38) by [@seabbs](https://github.com/seabbs))
 * `hazard_to_prob` has been optimised using vectorisation (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
 * `prob_to_hazard` has been optimised so that only required cumulative probabilities are calculated (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
-* Updated to use  the `inv_sqrt` stan function (see [#60] by @seabbs).
-* Added support for `scoringutils 1.0.0` (see [#61] by @seabbs). 
-* Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see [#61] by @seabbs).
+* Updated to use  the `inv_sqrt` stan function (see [#60](https://github.com/epiforecasts/epinowcast/pull/60) by @seabbs).
+* Added support for `scoringutils 1.0.0` (see [#61](https://github.com/epiforecasts/epinowcast/pull/61) by @seabbs). 
+* Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see [#61](https://github.com/epiforecasts/epinowcast/pull/61) by @seabbs).
 
 # epinowcast 0.0.5
 

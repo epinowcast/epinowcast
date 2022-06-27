@@ -125,7 +125,6 @@ transformed parameters{
     for (i in 1:(t-1)) {
       imp_obs[k][i + 1] = imp_obs[k][i] + leobs_resids[k][i] * eobs_lsd[k];
     }
-    imp_obs[k] = exp(imp_obs[k]);
   }
   }
   // transform phi to overdispersion scale
@@ -182,7 +181,7 @@ generated quantities {
   profile("generated_total") {
   if (cast) {
     real tar_obs;
-    vector[dmax] exp_obs;
+    vector[dmax] lexp_obs;
     vector[dmax] rdlh;
     int pp_obs_tmp[s, dmax];
     // Posterior predictions for observations
@@ -190,14 +189,14 @@ generated quantities {
       profile("generated_obs") {
       tar_obs = imp_obs[sg[i]][st[i]];
       rdlh = srdlh[rdlurd[st[i]:(st[i] + dmax - 1), sg[i]]];
-      exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
-      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs, phi);
+      lexp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
+      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
       }
       profile("generated_loglik") {
       if (ologlik) {
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
-          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j], phi);
+          log_lik[i] += neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi);
         }
       }
       }
