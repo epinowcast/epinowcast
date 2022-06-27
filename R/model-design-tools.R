@@ -153,7 +153,10 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
   cfeature <- paste0("c", feature)
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (is.null(metaobs[[feature]])) {
-      stop("Requested variable is not present in the supplied data frame.")
+      stop(
+        "Requested variable ", metaobs[[feature]],
+        " is not present in the supplied data frame."
+      )
     }
     metaobs[, (cfeature) := as.factor(get(feature))]
     metaobs <- cbind(

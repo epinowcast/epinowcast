@@ -9,21 +9,29 @@ rw(time, by, type = "independent")
 \arguments{
 \item{time}{Defines the random walk time period.}
 
-\item{by}{Defines the bying parameter used for the random walk.
-If not specified no bying is used.}
+\item{by}{Defines the grouping parameter used for the random walk.
+If not specified no grouping is used.}
 
 \item{type}{Character string, defaults to "independent". How should the
 standard deviation of byed random walks be estimated. Currently this can
-be set to be independent by by or dependent across bys.}
+be set to be independent or dependent across groups.}
 }
 \value{
-A list to be parsed internally.
+A list defining the time frame, group, and type with class
+"enw_rw_term" that can be interpreted by \code{\link[=construct_rw]{construct_rw()}}.
 }
 \description{
 A call to \code{rw()} can be used in the 'formula' argument of model
-construction functions in the \code{epinowcast} package. Does not evaluate
-arguments but instead simply passes information for use in model
-construction.
+construction functions in the \code{epinowcast} package such as \code{\link[=enw_formula]{enw_formula()}}.
+Does not evaluate arguments but instead simply passes information for use in
+model construction.
+}
+\examples{
+rw(time)
+
+rw(time, location)
+
+rw(time, location, type = "dependent")
 }
 \seealso{
 Functions used to help convert formulas into model designs

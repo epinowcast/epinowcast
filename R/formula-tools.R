@@ -13,7 +13,6 @@ as_string_formula <- function(formula) {
 
 #' Split formula into individual terms
 #'
-#'
 #' @return A character vector of formula terms
 #' @inheritParams enw_formula
 #' @family formulatools
@@ -138,22 +137,29 @@ parse_formula <- function(formula) {
 #' Adds random walks with Gaussian steps to the model.
 #'
 #' A call to `rw()` can be used in the 'formula' argument of model
-#' construction functions in the `epinowcast` package. Does not evaluate
-#' arguments but instead simply passes information for use in model
-#' construction.
+#' construction functions in the `epinowcast` package such as [enw_formula()].
+#' Does not evaluate arguments but instead simply passes information for use in
+#' model construction.
 #'
 #' @param time Defines the random walk time period.
 #'
-#' @param by Defines the bying parameter used for the random walk.
-#' If not specified no bying is used.
+#' @param by Defines the grouping parameter used for the random walk.
+#' If not specified no grouping is used.
 #'
 #' @param type Character string, defaults to "independent". How should the
 #' standard deviation of byed random walks be estimated. Currently this can
-#' be set to be independent by by or dependent across bys.
+#' be set to be independent or dependent across groups.
 #'
-#' @return A list to be parsed internally.
+#' @return A list defining the time frame, group, and type with class
+#' "enw_rw_term" that can be interpreted by [construct_rw()].
 #' @export
 #' @family formulatools
+#' @examples
+#' rw(time)
+#'
+#' rw(time, location)
+#'
+#' rw(time, location, type = "dependent")
 rw <- function(time, by, type = "independent") {
   type <- match.arg(type, choices = c("independent", "dependent"))
   if (missing(time)) {
@@ -174,13 +180,35 @@ rw <- function(time, by, type = "independent") {
 
 #' Constructs random walk terms
 #'
-#' @param rw
+#' @description This function takes random walks as defined
+#' by [rw()], produces the required additional variables
+#' (denoted using a "c" prefix and constructed using
+#' [enw_add_cumulative_membership()]), and then returns the 
+#' extended data.frame along with the new fixed effects and the
+#' random effect structure.
 #'
-#' @param data
+#' @param rw A random walk term as defined by [rw()].
 #'
-#' @return RETURN
+#' @param data A data.frame of observations used to define the
+#' random walk term. Must contain the time and grouping variables
+#' defined in the [rw()] term specified.
+#'
+#' @return A list containing the following:
+#'  - `data`: The input data.frame with the addition of the new variables
+#' required by the specified random walk. These are added using
+#' [enw_add_cumulative_membership()].
+#'  -`terms`: A character vector of new fixed effects terms to add to a model
+#' formula.
+#'  - `effects`: A data.frame describing the random effect structure of the new
+#'  effects.
 #' @importFrom data.table copy
 #' @family formulatools
+#' @examples
+#' data <- enw_example("preproc")$metareference[[1]]
+#'
+#' epinowcast:::construct_rw(rw(week), data)
+#'
+#' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
   if (!(class(rw) %in% "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
@@ -197,6 +225,19 @@ construct_rw <- function(rw, data) {
   fdata <- data.table::copy(data)
   fdata <- fdata[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
+    if (is.null(fdata[[rw$by]])) {
+      stop(
+        "Requested grouping variable",
+        rw$by, " is not present in the supplied data"
+      )
+    }else {
+      if (length(unique(fdata[[rw$by]])) < 2) {
+        stop(
+          "A grouped random walk using ", rw$by,
+          " is not possible as this variable has fewer than 2 unique values."
+        )
+      }
+    }
     terms <- paste0(rw$by, ":", terms)
   }
 
