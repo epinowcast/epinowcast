@@ -45,7 +45,7 @@ handle some parts of the model specification process.
 }
 \examples{
 data <- enw_example("prep")$metareference[[1]]
-enw_manual_formula(data, fixed ="max_confirm", random = "day_of_week")
+enw_manual_formula(data, fixed = "max_confirm", random = "day_of_week")
 }
 \seealso{
 Functions used to help convert formulas into model designs

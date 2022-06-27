@@ -39,7 +39,8 @@ appropriate design matrix row.
 # Use meta data for references dates from the Germany COVID-19
 # hospitalisation data.
 obs <- enw_retrospective_data(
- germany_covid19_hosp[location == "DE"], rep_days = 40, ref_days = 40
+  germany_covid19_hosp[location == "DE"],
+  rep_days = 40, ref_days = 40
 )
 pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
 data <- pobs$metareference[[1]]
