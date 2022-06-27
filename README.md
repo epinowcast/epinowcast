@@ -184,7 +184,7 @@ model <- enw_model(threads = TRUE)
 
 We now fit the model and produce a nowcast using this fit. Note that
 here we use two chains each using two threads as a demonstration but in
-general using 4 chains is recommended. Also note that warmup and
+general using 4 chains is recommended. Also note that warm-up and
 sampling iterations have been set below default values to reduce compute
 requirements but this may not be sufficient for many real world use
 cases. Finally, note that here we have silenced fitting progress and

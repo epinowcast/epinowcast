@@ -14,8 +14,8 @@ If not specified no grouping is used. Currently this is limited to a single
 variable.}
 
 \item{type}{Character string, defaults to "independent". How should the
-standard deviation of byed random walks be estimated. Currently this can
-be set to be independent or dependent across groups.}
+standard deviation of the grouped random walks be estimated. Currently this
+can be set to be independent or dependent across groups.}
 }
 \value{
 A list defining the time frame, group, and type with class

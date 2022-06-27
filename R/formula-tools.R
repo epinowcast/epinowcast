@@ -33,9 +33,9 @@
 #' @export
 #' @examples
 #' data <- enw_example("prep")$metareference[[1]]
-#' enw_manual_formula(data, fixed ="max_confirm", random = "day_of_week")
+#' enw_manual_formula(data, fixed = "max_confirm", random = "day_of_week")
 enw_manual_formula <- function(data, fixed = c(), random = c(),
-                        custom_random = c(), no_contrasts = FALSE) {
+                               custom_random = c(), no_contrasts = FALSE) {
   data <- data.table::copy(data)
   form <- c("1")
 
@@ -112,7 +112,7 @@ split_formula_to_terms <- function(formula) {
 #' by J Scott (under an MIT license) as part of
 #' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
 #'
-#' @return A character vector containing the random walk terms that have been 
+#' @return A character vector containing the random walk terms that have been
 #' identified in the supplied formula.
 #'
 #' @inheritParams enw_formula
@@ -155,7 +155,8 @@ remove_rw_terms <- function(formula) {
   form <- gsub("\\+ rw\\(.*?\\)", "", form)
   form <- gsub("rw\\(.*?\\)", "", form)
 
-  form <- tryCatch({
+  form <- tryCatch(
+    {
       as.formula(form)
     },
     error = function(cond) {
@@ -169,7 +170,7 @@ remove_rw_terms <- function(formula) {
 #'
 #' @description This function uses a series internal functions
 #' to break an input formula into its component parts each of which
-#' can then be handled separately. Currently supported componenets are
+#' can then be handled separately. Currently supported components are
 #' fixed effects, [lme4] style random effects, and random walks using the
 #' [rw()] helper function.
 #'
@@ -224,8 +225,8 @@ parse_formula <- function(formula) {
 #' variable.
 #'
 #' @param type Character string, defaults to "independent". How should the
-#' standard deviation of byed random walks be estimated. Currently this can
-#' be set to be independent or dependent across groups.
+#' standard deviation of the grouped random walks be estimated. Currently this
+#' can be set to be independent or dependent across groups.
 #'
 #' @return A list defining the time frame, group, and type with class
 #' "enw_rw_term" that can be interpreted by [construct_rw()].
@@ -260,7 +261,7 @@ rw <- function(time, by, type = "independent") {
 #' @description This function takes random walks as defined
 #' by [rw()], produces the required additional variables
 #' (denoted using a "c" prefix and constructed using
-#' [enw_add_cumulative_membership()]), and then returns the 
+#' [enw_add_cumulative_membership()]), and then returns the
 #' extended data.frame along with the new fixed effects and the
 #' random effect structure.
 #'
@@ -297,7 +298,7 @@ construct_rw <- function(rw, data) {
     data,
     feature = rw$time
   )
-  ctime  <- paste0("c", rw$time)
+  ctime <- paste0("c", rw$time)
   terms <- grep(ctime, colnames(data), value = TRUE)
   fdata <- data.table::copy(data)
   fdata <- fdata[, c(terms, rw$by), with = FALSE]
@@ -307,7 +308,7 @@ construct_rw <- function(rw, data) {
         "Requested grouping variable",
         rw$by, " is not present in the supplied data"
       )
-    }else {
+    } else {
       if (length(unique(fdata[[rw$by]])) < 2) {
         stop(
           "A grouped random walk using ", rw$by,
@@ -320,7 +321,8 @@ construct_rw <- function(rw, data) {
 
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
-    fdata, fixed = terms, no_contrasts = TRUE
+    fdata,
+    fixed = terms, no_contrasts = TRUE
   )$fixed$design
 
   # extract effects metadata
@@ -329,14 +331,15 @@ construct_rw <- function(rw, data) {
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(effects, ctime, rw$time)
-  }else {
-    for (i in  unique(fdata[[rw$by]])) {
-    nby <- paste0(rw$by, i)
-    effects <- enw_add_pooling_effect(
-      effects, c(ctime, paste0(rw$by, i)), paste0(nby, "__", rw$time),
+  } else {
+    for (i in unique(fdata[[rw$by]])) {
+      nby <- paste0(rw$by, i)
+      effects <- enw_add_pooling_effect(
+        effects, c(ctime, paste0(rw$by, i)), paste0(nby, "__", rw$time),
         finder_fn = function(effect, pattern) {
           grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-      })
+        }
+      )
     }
   }
   return(list(data = data, terms = terms, effects = effects))
@@ -346,7 +349,7 @@ construct_rw <- function(rw, data) {
 #'
 #' @param formula A random effect as returned by [lme4::findbars()]
 #' when a random effect is defined using the [lme4] syntax in
-#' formula. Currently only simplified random effecs (i.e
+#' formula. Currently only simplified random effects (i.e
 #'  LHS | RHS) are supported.
 #'
 #' @export
@@ -371,14 +374,14 @@ re <- function(formula) {
 #' Constructs random effect terms
 #'
 #' @param re A random effect as defined using [re()] which itself takes
-#' random effects specifed in a model formula using the [lme4] syntax.
+#' random effects specified in a model formula using the [lme4] syntax.
 #'
 #' @param data A data.frame of observations used to define the
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
 #' @return A list containing the fixed effects terms ("terms") and
-#' a `data.frame` specfying the random effect structure betwee
+#' a `data.frame` specifying the random effect structure between
 #' these terms (`effects`).
 #'
 #' @family formulatools
@@ -407,25 +410,27 @@ construct_re <- function(re, data) {
 
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
-    data, fixed = terms, no_contrasts = TRUE
+    data,
+    fixed = terms, no_contrasts = TRUE
   )$fixed$design
 
   # extract effects metadata
   effects <- enw_effects_metadata(fixed)
 
   # implement random effects structure
-  for (i in  terms) {
+  for (i in terms) {
     loc_terms <- strsplit(i, ":")[[1]]
-      if (length(loc_terms) == 1) {
-        effects <- enw_add_pooling_effect(effects, i, i)
-      }else {
-        effects <- enw_add_pooling_effect(
-          effects, rev(loc_terms), paste(loc_terms, collapse = "__"),
-            finder_fn = function(effect, pattern) {
-              grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-          })
-      }
-   }
+    if (length(loc_terms) == 1) {
+      effects <- enw_add_pooling_effect(effects, i, i)
+    } else {
+      effects <- enw_add_pooling_effect(
+        effects, rev(loc_terms), paste(loc_terms, collapse = "__"),
+        finder_fn = function(effect, pattern) {
+          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
+        }
+      )
+    }
+  }
   return(list(terms = terms, effects = effects))
 }
 
@@ -447,7 +452,7 @@ construct_re <- function(re, data) {
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
-#'  - `extended_formula`: The flattened version of the formula with 
+#'  - `extended_formula`: The flattened version of the formula with
 #'  both user supplied terms and terms added for the user supplied
 #'  complex model components.
 #'  - `fixed`:  A list containing the fixed effect formula, sparse design
@@ -463,7 +468,8 @@ construct_re <- function(re, data) {
 #' # Use meta data for references dates from the Germany COVID-19
 #' # hospitalisation data.
 #' obs <- enw_retrospective_data(
-#'  germany_covid19_hosp[location == "DE"], rep_days = 40, ref_days = 40
+#'   germany_covid19_hosp[location == "DE"],
+#'   rep_days = 40, ref_days = 40
 #' )
 #' pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
 #' data <- pobs$metareference[[1]]
@@ -490,10 +496,11 @@ enw_formula <- function(formula, data) {
 
     random_terms <- unlist(random$terms)
     random_metadata <- data.table::rbindlist(
-      random$effects, use.names = TRUE, fill = TRUE
+      random$effects,
+      use.names = TRUE, fill = TRUE
     )
     no_contrasts <- random_terms
-  }else {
+  } else {
     no_contrasts <- FALSE
     random_terms <- c()
     random_metadata <- NULL
@@ -514,9 +521,10 @@ enw_formula <- function(formula, data) {
     rw <- purrr::transpose(rw)
     rw_terms <- unlist(rw$terms)
     rw_metadata <- data.table::rbindlist(
-      rw$effects, use.names = TRUE, fill = TRUE
+      rw$effects,
+      use.names = TRUE, fill = TRUE
     )
-  }else {
+  } else {
     rw_terms <- c()
     rw_metadata <- NULL
   }
@@ -554,11 +562,12 @@ enw_formula <- function(formula, data) {
   # Make the random effects design matrix
   if (ncol(metadata) == 2) {
     random <- enw_design(~1, metadata, sparse = FALSE)
-  }else {
+  } else {
     random_formula <- as.formula(
       paste0(
         "~ 0 + ",
-        paste(paste0("`", colnames(metadata)[-1], "`"), collapse = " + "))
+        paste(paste0("`", colnames(metadata)[-1], "`"), collapse = " + ")
+      )
     )
     random <- enw_design(random_formula, metadata, sparse = FALSE)
   }

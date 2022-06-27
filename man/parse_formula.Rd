@@ -22,7 +22,7 @@ A list of formula components. These currently include:
 \description{
 This function uses a series internal functions
 to break an input formula into its component parts each of which
-can then be handled separately. Currently supported componenets are
+can then be handled separately. Currently supported components are
 fixed effects, \link{lme4} style random effects, and random walks using the
 \code{\link[=rw]{rw()}} helper function.
 }

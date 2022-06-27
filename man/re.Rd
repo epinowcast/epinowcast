@@ -9,7 +9,7 @@ re(formula)
 \arguments{
 \item{formula}{A random effect as returned by \code{\link[lme4:findbars]{lme4::findbars()}}
 when a random effect is defined using the \link{lme4} syntax in
-formula. Currently only simplified random effecs (i.e
+formula. Currently only simplified random effects (i.e
 LHS | RHS) are supported.}
 }
 \value{
@@ -20,10 +20,10 @@ random effect
 Defines random effect terms using the lme4 syntax
 }
 \examples{
-form <- parse_formula(~ 1 + (1 | age_group))
+form <- epinowcast:::parse_formula(~ 1 + (1 | age_group))
 re(form$random[[1]])
 
-form <- parse_formula(~ 1 + (location | age_group))
+form <- epinowcast:::parse_formula(~ 1 + (location | age_group))
 re(form$random[[1]])
 }
 \seealso{
