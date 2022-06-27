@@ -573,9 +573,9 @@ enw_formula <- function(formula, data) {
   }
 
   out <- list(
-    formula = formula,
+    formula = as_string_formula(formula),
     parsed_formula = parsed_formula,
-    expanded_formula = expanded_formula,
+    expanded_formula = as_string_formula(expanded_formula),
     fixed = fixed,
     random = random
   )

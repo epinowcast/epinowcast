@@ -1,12 +1,11 @@
-# enw_manual_formual can return a basic fixed effects formula
+# enw_manual_formula can return a basic fixed effects formula
 
     Code
       enw_manual_formula(test_data, fixed = "day_of_week")
     Output
       $fixed
       $fixed$formula
-      ~1 + day_of_week
-      <environment: 0x559c5f3b9e68>
+      [1] "~1 + day_of_week"
       
       $fixed$design
         (Intercept) day_of_weekMonday day_of_weekSaturday day_of_weekSunday
@@ -33,8 +32,7 @@
       
       $random
       $random$formula
-      ~1
-      <environment: 0x559c5f3b9e68>
+      [1] "~1"
       
       $random$design
         (Intercept)
@@ -52,15 +50,14 @@
       
       
 
-# enw_manual_formual can return a basic random effects formula
+# enw_manual_formula can return a basic random effects formula
 
     Code
       enw_manual_formula(test_data, random = "day_of_week")
     Output
       $fixed
       $fixed$formula
-      ~1 + day_of_week
-      <environment: 0x559c5dd0f088>
+      [1] "~1 + day_of_week"
       
       $fixed$design
         (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
@@ -87,8 +84,7 @@
       
       $random
       $random$formula
-      ~0 + fixed + day_of_week
-      <environment: 0x559c5dd0f088>
+      [1] "~0 + fixed + day_of_week"
       
       $random$design
         fixed day_of_week
@@ -107,7 +103,7 @@
       
       
 
-# enw_manual_formual can return a basic customrandom effects
+# enw_manual_formula can return a basic custom random effects
            formula
 
     Code
@@ -115,8 +111,7 @@
     Output
       $fixed
       $fixed$formula
-      ~1 + day_of_week
-      <environment: 0x559c58f11bf0>
+      [1] "~1 + day_of_week"
       
       $fixed$design
         (Intercept) day_of_weekMonday day_of_weekSaturday day_of_weekSunday
@@ -143,8 +138,7 @@
       
       $random
       $random$formula
-      ~0 + fixed + day_of
-      <environment: 0x559c58f11bf0>
+      [1] "~0 + fixed + day_of"
       
       $random$design
         fixed day_of

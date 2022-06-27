@@ -21,6 +21,34 @@ enw_dates_to_factors <- function(data) {
   return(data[])
 }
 
+
+#' FUNCTION_TITLE
+#'
+#' FUNCTION_DESCRIPTION
+#'
+#' @param formula DESCRIPTION.
+#' @param data DESCRIPTION.
+#' @param sparse DESCRIPTION.
+#' @param ... DESCRIPTION.
+#' @keywords internal
+#' @noRd
+#' @return RETURN_DESCRIPTION
+mod_matrix <- function(formula, data, sparse = TRUE, ...) {
+  design <- model.matrix(formula, data, ...)
+  if (sparse) {
+    sparse_design <- unique(design)
+    index <- match(data.frame(t(design)), data.frame(t(sparse_design)))
+  } else {
+    sparse_design <- design
+    index <- seq_len(nrow(design))
+  }
+  return(list(
+    formula = as_string_formula(formula),
+    design = sparse_design,
+    index = index
+  ))
+}
+
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param formula PARAM_DESCRIPTION
@@ -53,21 +81,10 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   data <- droplevels(data)
 
   # make model.matrix helper
-  mod_matrix <- function(formula, data, ...) {
-    design <- model.matrix(formula, data, ...)
-    if (sparse) {
-      sparse_design <- unique(design)
-      index <- match(data.frame(t(design)), data.frame(t(sparse_design)))
-    } else {
-      sparse_design <- design
-      index <- seq_len(nrow(design))
-    }
-    return(list(formula = formula, design = sparse_design, index = index))
-  }
 
   if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
     if (!no_contrasts) {
-      design <- mod_matrix(formula, data, ...)
+      design <- mod_matrix(formula, data, sparse = sparse, ...)
       return(design)
     } else {
       no_contrasts <- colnames(data)[
@@ -83,7 +100,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   no_contrasts <- no_contrasts[no_contrasts %in% in_form]
 
   if (length(no_contrasts) == 0) {
-    design <- mod_matrix(formula, data, ...)
+    design <- mod_matrix(formula, data, sparse = sparse, ...)
     return(design)
   } else {
     # make list of contrast args
@@ -93,7 +110,9 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
     names(contrast_args) <- no_contrasts
 
     # model matrix with contrast options
-    design <- mod_matrix(formula, data, contrasts.arg = contrast_args, ...)
+    design <- mod_matrix(
+      formula, data, sparse = sparse, contrasts.arg = contrast_args, ...
+    )
     return(design)
   }
 }
