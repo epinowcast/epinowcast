@@ -1,5 +1,4 @@
 library(epinowcast)
-library(ggpubr)
 library(hexSticker)
 library(sysfonts)
 library(ggplot2)
@@ -12,11 +11,12 @@ nowcast <- enw_example("nowcast")
 obs <- enw_example("observations")
 
 # make standard plot
-plot <- plot(
-  nowcast,
+plot <- summary(nowcast)[, mean := NA] |>
+  enw_plot_nowcast_quantiles(
   latest = obs[reference_date >= (max(reference_date) - 19)]
 )
 
+# strip out most of the background
 hex_plot <- plot +
   scale_x_continuous(breaks = NULL) +
   scale_y_continuous(breaks = NULL) +
@@ -26,17 +26,19 @@ hex_plot <- plot +
   theme(legend.position = "none",
         panel.background = element_blank())
 
+# make and save hexsticker
 sticker(hex_plot,
         package = "epinowcast",
         p_size = 23,
         p_color = "#646770",
         s_x = 1,
-        s_y = .8,
-        s_width = 1.5,
-        s_height = 0.7,
-        h_fill = "#646770",
-        h_color = "#ffffff",
+        s_y = .85,
+        s_width = 1.3,
+        s_height = 0.85,
+        h_fill = "#ffffff",
+        h_color = "#646770",
         filename = "./man/figures/logo.png",
         url = "epiforecasts.io/epinowcast",
         u_color = "#646770",
-        u_size = 3.5)
+        u_size = 3.5
+)

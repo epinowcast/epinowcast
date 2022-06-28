@@ -13,3 +13,4 @@ cache
 .Rproj.user
 *.Rproj
 !inst/extdata/*.rds
+pkgdown
