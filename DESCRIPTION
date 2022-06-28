@@ -57,6 +57,10 @@ Remotes:
 Config/Needs/website: 
     r-lib/pkgdown,
     amirmasoudabdol/preferably
+Config/Needs/hexsticker: 
+    ggpubr,
+    GuangchuangYu/hexSticker,
+    sysfonts
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-GB

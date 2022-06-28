@@ -47,6 +47,13 @@ RUN Rscript -e 'devtools::install_github("mdlincoln/docthis")'
 RUN Rscript -e 'devtools::install_github("lorenzwalthert/precommit")'
 RUN Rscript -e 'devtools::install_github("milesmcbain/fnmate")'
 
+# add dependencies for logo making
+RUN install2.r --error --skipinstalled --repos ${CRAN} --ncpus -1 \
+        hexSticker \
+        sysfonts \
+        ggpubr \
+    && rm -rf /tmp/downloaded_packages
+
 # install dependencies
 COPY DESCRIPTION /tmp/package/DESCRIPTION
 RUN Rscript -e "devtools::install_deps('/tmp/package', dependencies = c( 'Depends', 'Imports', 'LinkingTo', 'Suggests', 'Config/Needs/website'))"
