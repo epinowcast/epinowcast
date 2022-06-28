@@ -40,10 +40,16 @@ Install the stable development version of the package with:
 install.packages("epinowcast", repos = "https://epiforecasts.r-universe.dev")
 ```
 
-Install the unstable development from GitHub using the following, 
+Alternatively, install the stable development from GitHub using the following, 
 
 ```{r, eval = FALSE}
 remotes::install_github("epiforecasts/epinowcast", dependencies = TRUE)
+```
+
+The unstable development version can also be installed from GitHub using the following,
+
+```{r, eval = FALSE}
+remotes::install_github("epiforecasts/epinowcast@develop", dependencies = TRUE)
 ```
 
 ### Installing CmdStan
