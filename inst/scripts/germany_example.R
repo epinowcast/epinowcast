@@ -20,10 +20,10 @@ latest_obs <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Reference date model
-reference_effects <- enw_manual_formula(pobs$metareference[[1]])
+reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
 
 # Report date model
-report_effects <- enw_manual_formula(pobs$metareport[[1]], random = "day_of_week")
+report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
 
 # Compile nowcasting model
 model <- enw_model(threads = TRUE)
