@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Hierarchical nowcasting of right censored epidemiological counts
+# Hierarchical nowcasting of right censored epidemiological counts <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -27,7 +27,7 @@ the pattern of reporting for previous days. This can be useful when
 tracking the spread of infectious disease in real-time as otherwise
 changes in trends can be obfuscated by partial reporting or their
 detection may be delayed due to the use of simpler methods like
-truncation
+truncation.
 
 ## Installation
 
@@ -39,10 +39,18 @@ Install the stable development version of the package with:
 install.packages("epinowcast", repos = "https://epiforecasts.r-universe.dev")
 ```
 
-Install the unstable development from GitHub using the following,
+Alternatively, install the stable development from GitHub using the
+following,
 
 ``` r
 remotes::install_github("epiforecasts/epinowcast", dependencies = TRUE)
+```
+
+The unstable development version can also be installed from GitHub using
+the following,
+
+``` r
+remotes::install_github("epiforecasts/epinowcast@develop", dependencies = TRUE)
 ```
 
 ### Installing CmdStan
@@ -204,12 +212,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 51.4 seconds.
-#> Chain 1 finished in 61.0 seconds.
+#> Chain 1 finished in 58.1 seconds.
+#> Chain 2 finished in 62.3 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 56.2 seconds.
-#> Total execution time: 61.1 seconds.
+#> Mean chain execution time: 60.2 seconds.
+#> Total execution time: 62.6 seconds.
 ```
 
 ### Results
@@ -226,9 +234,9 @@ nowcast
 #>    groups max_delay   max_date               fit       data  fit_args samples
 #> 1:      1        40 2021-08-22 <CmdStanMCMC[32]> <list[39]> <list[8]>    1000
 #>    max_rhat divergent_transitions per_divergent_transitions max_treedepth
-#> 1:     1.02                     0                         0             9
+#> 1:     1.02                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                   1                0.001     61.1
+#> 1:                  42                0.042     62.6
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -246,28 +254,28 @@ head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
 #>  8:     2021-07-21       DE       00+      91          91                 1
 #>  9:     2021-07-22       DE       00+      99          99                 1
 #> 10:     2021-07-23       DE       00+      86          86                 1
-#>     delay group   mean median        sd    mad q5 q95      rhat  ess_bulk
-#>  1:    39     1 72.000     72 0.0000000 0.0000 72  72        NA        NA
-#>  2:    38     1 69.047     69 0.2164205 0.0000 69  69 1.0021307  933.5079
-#>  3:    37     1 47.080     47 0.2822759 0.0000 47  48 0.9982380 1071.7051
-#>  4:    36     1 65.175     65 0.4201804 0.0000 65  66 0.9990363  959.3411
-#>  5:    35     1 50.240     50 0.5202602 0.0000 50  51 1.0035752 1063.1537
-#>  6:    34     1 36.242     36 0.5154626 0.0000 36  37 0.9997011  848.0256
-#>  7:    33     1 94.491     94 0.6988615 0.0000 94  96 0.9986895 1014.8616
-#>  8:    32     1 91.716     91 0.8911443 0.0000 91  93 0.9989238  965.3070
-#>  9:    31     1 99.991    100 1.0382663 1.4826 99 102 1.0003177  847.0244
-#> 10:    30     1 87.130     87 1.1603648 1.4826 86  89 0.9994779  955.0095
-#>      ess_tail
-#>  1:        NA
-#>  2:  918.3628
-#>  3: 1008.0968
-#>  4:  900.6168
-#>  5: 1000.8377
-#>  6:  896.4250
-#>  7:  988.5235
-#>  8:  988.8672
-#>  9:  969.3171
-#> 10:  927.6734
+#>     delay group    mean median        sd    mad q5    q95      rhat ess_bulk
+#>  1:    39     1  72.000     72 0.0000000 0.0000 72  72.00        NA       NA
+#>  2:    38     1  69.056     69 0.2343479 0.0000 69  70.00 0.9985644 940.8266
+#>  3:    37     1  47.081     47 0.3008813 0.0000 47  48.00 0.9997517 952.2063
+#>  4:    36     1  65.173     65 0.4040226 0.0000 65  66.00 0.9986539 969.5852
+#>  5:    35     1  50.240     50 0.4986468 0.0000 50  51.00 0.9981857 931.0131
+#>  6:    34     1  36.232     36 0.4862226 0.0000 36  37.00 1.0031487 850.7610
+#>  7:    33     1  94.462     94 0.7064383 0.0000 94  96.00 1.0002418 866.9168
+#>  8:    32     1  91.715     91 0.9102767 0.0000 91  93.05 0.9995648 938.3181
+#>  9:    31     1 100.021    100 1.0861578 1.4826 99 102.00 0.9998753 943.4611
+#> 10:    30     1  87.082     87 1.1038544 1.4826 86  89.00 1.0000586 695.2047
+#>     ess_tail
+#>  1:       NA
+#>  2: 936.1268
+#>  3: 955.9913
+#>  4: 893.5113
+#>  5: 888.8790
+#>  6: 870.6133
+#>  7: 801.0263
+#>  8: 872.2462
+#>  9: 872.8940
+#> 10: 687.3632
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -316,17 +324,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22       DE       00+    1093          45                 1
 #> 34000:     2021-08-22       DE       00+    1093          45                 1
 #>        delay group .chain .iteration .draw sample
-#>     1:    33     1      1          1     1    434
-#>     2:    33     1      1          2     2    436
+#>     1:    33     1      1          1     1    433
+#>     2:    33     1      1          2     2    434
 #>     3:    33     1      1          3     3    433
-#>     4:    33     1      1          4     4    435
-#>     5:    33     1      1          5     5    433
+#>     4:    33     1      1          4     4    434
+#>     5:    33     1      1          5     5    436
 #>    ---                                           
-#> 33996:     0     1      2        496   996   2518
-#> 33997:     0     1      2        497   997   1995
-#> 33998:     0     1      2        498   998   2100
-#> 33999:     0     1      2        499   999   1891
-#> 34000:     0     1      2        500  1000   2229
+#> 33996:     0     1      2        496   996   2119
+#> 33997:     0     1      2        497   997   2281
+#> 33998:     0     1      2        498   998   2246
+#> 33999:     0     1      2        499   999   1903
+#> 34000:     0     1      2        500  1000   2030
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -373,10 +381,11 @@ page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
 
 We welcome contributions and new contributors\! We particularly
 appreciate help on priority problems in the
-[issues](https://github.com/epiforecasts/epinowcast/issues).
-Please check and add to the issues, and/or add a
-[pull request](https://github.com/epiforecasts/epinowcast/pulls).
-See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
+[issues](https://github.com/epiforecasts/epinowcast/issues). Please
+check and add to the issues, and/or add a [pull
+request](https://github.com/epiforecasts/epinowcast/pulls). See our
+[contributing
+guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
 for more information.
 
 If interested in expanding the functionality of the underlying model

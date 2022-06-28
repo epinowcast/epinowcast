@@ -106,7 +106,7 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 ## Shared reporting delay distribution 
 
-We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
+We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
 
 
@@ -473,7 +473,7 @@ independent_nowcast <- map(
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 
 ```r
@@ -597,6 +597,51 @@ date_score <- score |>
   summarise_scores(by = c("model", "reference_date")) |>
   kable()
 ```
+
+|model                                                     |reference_date | interval_score| sharpness| underprediction| overprediction| coverage_deviation|    bias|   aem|
+|:---------------------------------------------------------|:--------------|--------------:|---------:|---------------:|--------------:|------------------:|-------:|-----:|
+|Reference: Fixed, Report: Fixed                           |2021-08-26     |          12.10|      2.17|           9.870|         0.0330|            -0.0868| -0.5430| 19.70|
+|Reference: Fixed, Report: Day of week                     |2021-08-26     |          14.50|      1.67|          12.800|         0.0330|            -0.1530| -0.5640| 20.00|
+|Reference: Age group, Report: Day of week                 |2021-08-26     |           8.35|      2.03|           6.140|         0.1760|            -0.0209| -0.3140| 13.90|
+|Reference: Age group and week, Report: Day of week        |2021-08-26     |           8.73|      2.05|           6.550|         0.1430|            -0.0429| -0.3290| 14.40|
+|Reference: Age group and week by age, Report: Day of week |2021-08-26     |           6.73|      2.38|           4.090|         0.2640|             0.0121| -0.1430| 11.80|
+|Independent by age, Reference: Week, Report: Day of week  |2021-08-26     |           6.27|      2.21|           4.060|         0.0000|            -0.0209| -0.6430| 12.30|
+|Reference: Fixed, Report: Fixed                           |2021-08-27     |          11.00|      2.29|           8.610|         0.1100|            -0.2410| -0.5500| 18.60|
+|Reference: Fixed, Report: Day of week                     |2021-08-27     |          11.70|      1.79|           9.780|         0.1430|            -0.2300| -0.5210| 17.60|
+|Reference: Age group, Report: Day of week                 |2021-08-27     |           7.75|      2.14|           5.390|         0.2200|            -0.1530| -0.3930| 13.00|
+|Reference: Age group and week, Report: Day of week        |2021-08-27     |           8.07|      2.09|           5.790|         0.1870|            -0.1530| -0.4360| 13.40|
+|Reference: Age group and week by age, Report: Day of week |2021-08-27     |           8.36|      2.26|           5.960|         0.1430|            -0.1200| -0.4360| 12.40|
+|Independent by age, Reference: Week, Report: Day of week  |2021-08-27     |           6.18|      2.58|           3.510|         0.0989|            -0.0538| -0.4790| 11.40|
+|Reference: Fixed, Report: Fixed                           |2021-08-28     |          13.00|      2.55|          10.100|         0.3630|            -0.2410| -0.5140| 22.60|
+|Reference: Fixed, Report: Day of week                     |2021-08-28     |          10.80|      2.08|           8.180|         0.5270|            -0.1640| -0.4140| 17.90|
+|Reference: Age group, Report: Day of week                 |2021-08-28     |           8.58|      2.44|           5.590|         0.5490|            -0.0758| -0.3140| 14.70|
+|Reference: Age group and week, Report: Day of week        |2021-08-28     |           8.65|      2.40|           5.690|         0.5490|            -0.0758| -0.3140| 15.10|
+|Reference: Age group and week by age, Report: Day of week |2021-08-28     |          10.40|      2.34|           7.570|         0.5410|            -0.1640| -0.4140| 17.60|
+|Independent by age, Reference: Week, Report: Day of week  |2021-08-28     |           4.78|      3.00|           1.670|         0.1100|             0.0451| -0.3430|  8.86|
+|Reference: Fixed, Report: Fixed                           |2021-08-29     |          12.80|      2.83|           9.730|         0.2420|            -0.0978| -0.4000| 22.10|
+|Reference: Fixed, Report: Day of week                     |2021-08-29     |          13.60|      2.17|          11.000|         0.4180|            -0.1750| -0.3430| 20.60|
+|Reference: Age group, Report: Day of week                 |2021-08-29     |          11.60|      2.46|           8.680|         0.4400|            -0.0868| -0.2140| 18.30|
+|Reference: Age group and week, Report: Day of week        |2021-08-29     |          10.70|      2.52|           7.740|         0.4510|            -0.0868| -0.2140| 17.30|
+|Reference: Age group and week by age, Report: Day of week |2021-08-29     |          11.70|      2.61|           8.620|         0.4290|            -0.0648| -0.2210| 19.10|
+|Independent by age, Reference: Week, Report: Day of week  |2021-08-29     |           6.76|      2.92|           3.740|         0.0879|             0.0560| -0.3710| 13.00|
+|Reference: Fixed, Report: Fixed                           |2021-08-30     |           9.69|      3.35|           0.000|         6.3500|            -0.2190|  0.7930| 16.90|
+|Reference: Fixed, Report: Day of week                     |2021-08-30     |           6.19|      2.18|           0.022|         3.9900|            -0.1970|  0.7140| 10.70|
+|Reference: Age group, Report: Day of week                 |2021-08-30     |           7.29|      2.46|           0.000|         4.8200|            -0.2410|  0.8000| 12.10|
+|Reference: Age group and week, Report: Day of week        |2021-08-30     |           9.02|      2.59|           0.000|         6.4300|            -0.3070|  0.8570| 15.10|
+|Reference: Age group and week by age, Report: Day of week |2021-08-30     |           8.27|      2.75|           0.000|         5.5200|            -0.2630|  0.8140| 14.40|
+|Independent by age, Reference: Week, Report: Day of week  |2021-08-30     |           9.26|      2.98|           0.000|         6.2900|            -0.1750|  0.7640| 16.60|
+|Reference: Fixed, Report: Fixed                           |2021-08-31     |           6.47|      5.07|           0.264|         1.1400|             0.1440|  0.0857|  8.57|
+|Reference: Fixed, Report: Day of week                     |2021-08-31     |           6.44|      2.86|           3.480|         0.0989|             0.0011| -0.4640| 11.70|
+|Reference: Age group, Report: Day of week                 |2021-08-31     |           5.38|      3.20|           1.930|         0.2420|             0.1330| -0.2860|  8.57|
+|Reference: Age group and week, Report: Day of week        |2021-08-31     |           5.36|      3.49|           1.520|         0.3520|             0.1660| -0.1710|  6.57|
+|Reference: Age group and week by age, Report: Day of week |2021-08-31     |           5.60|      3.82|           1.550|         0.2310|             0.1550| -0.2570|  6.86|
+|Independent by age, Reference: Week, Report: Day of week  |2021-08-31     |           5.38|      4.07|           0.813|         0.4950|             0.0890| -0.2290|  5.29|
+|Reference: Fixed, Report: Fixed                           |2021-09-01     |          30.00|      7.92|          22.000|         0.0220|            -0.0209| -0.4930| 56.60|
+|Reference: Fixed, Report: Day of week                     |2021-09-01     |          56.20|      4.49|          51.700|         0.0000|            -0.2520| -0.7140| 76.40|
+|Reference: Age group, Report: Day of week                 |2021-09-01     |          50.60|      4.84|          45.800|         0.0000|            -0.2190| -0.6790| 71.70|
+|Reference: Age group and week, Report: Day of week        |2021-09-01     |          46.70|      5.24|          41.400|         0.0110|            -0.1860| -0.6140| 68.70|
+|Reference: Age group and week by age, Report: Day of week |2021-09-01     |          47.40|      5.65|          41.700|         0.0000|            -0.1750| -0.6430| 71.10|
+|Independent by age, Reference: Week, Report: Day of week  |2021-09-01     |          41.80|      6.05|          35.700|         0.0000|            -0.1750| -0.6930| 66.20|
 
 Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
