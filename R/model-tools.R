@@ -4,11 +4,11 @@
 #' [enw_obs_as_data_list()].
 #'
 #' @param reference_effects A list of fixed and random design matrices
-#' defining the date of reference model. Defaults to [enw_formula()]
+#' defining the date of reference model. Defaults to [enw_manual_formula()]
 #' which is an intercept only model.
 #'
 #' @param report_effects A list of fixed and random design matrices
-#' defining the date of reports model. Defaults to [enw_formula()]
+#' defining the date of reports model. Defaults to [enw_manual_formula()]
 #' which is an intercept only model.
 #'
 #' @return A list as required by stan.

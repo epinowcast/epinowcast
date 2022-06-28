@@ -7,6 +7,7 @@ CmdStanR's
 CmdStanR’s
 Codecov
 Höhle
+ImperialCollegeLondon
 LFO
 Lifecycle
 LogNormal
@@ -15,14 +16,19 @@ Nowcasting
 PARAM
 Poisson
 aem
+com
 discretised
 enw
+epidemia
+formulatools
 frac
 geq
+github
 gt
 gtD
 gtd
 heirarchical
+lme
 mathbb
 modeldesign
 modeltools
@@ -37,6 +43,7 @@ parameterisations
 postprocess
 postprocessing
 runtimes
+rw
 sd
 sim
 st

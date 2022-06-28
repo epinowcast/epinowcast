@@ -1,3 +1,15 @@
+# epinowcast 0.1.0
+
+This is a major release and contains breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user interface with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing this interface. For ease we have stratified changes below into interface, package, and model changes.
+
+## Interface
+
+* A full featured and flexible formula interface has been added that allows the specification of fixed effects, `lme4` random effects, and random walks. See [#27](https://github.com/epiforecasts/epinowcast/pull/27) by [@seabbs](https://github.com/seabbs).
+
+## Package
+
+## Model
+
 # epinowcast 0.0.7
 
 * Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see [#62](https://github.com/epiforecasts/epinowcast/pull/62) by [@seabbs](https://github.com/seabbs)). 
