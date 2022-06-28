@@ -59,7 +59,7 @@ reference:
   - title: Model validation
     desc: Functions for validating model fits.
     contents:
-      - has_concept("modelvalidation"
+      - has_concept("modelvalidation")
   - title: Datasets
     desc: Package datasets used in examples and by users to explore the package functionality.
     contents:
