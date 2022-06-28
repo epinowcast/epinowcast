@@ -17,7 +17,7 @@ template:
 
 
 development:
-  mode: release
+  mode: auto
 
 authors:
   Sam Abbott:
