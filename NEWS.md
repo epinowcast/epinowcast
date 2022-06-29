@@ -8,6 +8,8 @@ This is a major release and contains breaking changes. If needing the old interf
 
 ## Package
 
+* A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for [#4](https://github.com/epiforecasts/epinowcast/issues/4) where this data frame with be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See [#80](https://github.com/epiforecasts/epinowcast/pull/80) by [@seabbs](https://github.com/seabbs).
+
 ## Model
 
 # epinowcast 0.0.7
