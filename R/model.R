@@ -164,14 +164,18 @@ enw_as_data_list <- function(pobs,
 
 #' Set up initial conditions for model
 #'
-#' @param data A list of data as produced by [enw_as_data_list()].
-#'
+#' @param data A list of data as produced by [enw_as_data_list()] and output as
+#' `data` by [epinowcast()].
+#' 
 #' @return A function that when called returns a list of initial conditions
 #' for the package stan models.
 #'
 #' @family model
 #' @importFrom purrr map_dbl
 #' @export
+#' @examples
+#' stan_data <- enw_example("nowcast")$data
+#' enw_inits(stan_data)
 enw_inits <- function(data) {
   init_fn <- function() {
     init <- list(
