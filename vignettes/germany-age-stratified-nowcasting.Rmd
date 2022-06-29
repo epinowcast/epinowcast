@@ -53,7 +53,8 @@ nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
 
 retro_nat_germany <- enw_retrospective_data(
   nat_germany_hosp,
-  rep_date = as.Date("2021-09-01"), ref_date = as.Date("2021-09-01") - 40
+  latest_rep_date = as.Date("2021-09-01"),
+  earliest_ref_date = as.Date("2021-09-01") - 40
 )
 retro_nat_germany
 #>       reference_date location age_group confirm report_date
@@ -76,7 +77,8 @@ Similarly we then find the data that were available on the 20th of October for t
 ```r
 latest_nat_germany <- enw_retrospective_data(
   nat_germany_hosp,
-  rep_date = as.Date("2021-10-20"), ref_date = as.Date("2021-09-01") - 40
+  latest_rep_date = as.Date("2021-10-20"),
+  earliest_ref_date = as.Date("2021-09-01") - 40
 )
 latest_nat_germany <- latest_nat_germany[
   reference_date <= as.Date("2021-09-01")

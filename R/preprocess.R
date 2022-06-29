@@ -145,38 +145,51 @@ enw_add_max_reported <- function(obs) {
   return(obs[])
 }
 
-#' @title FUNCTION_TITLE
+#' @title Create retrospective data from a full data set
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description This is a helper function which allows to create truncated data
+#' sets at past time points from a given larger data set.
 #'
-#' @param obs PARAM_DESCRIPTION
+#' @param obs an observation data frame containing \code{report_date} and
+#' \code{reference_date} columns
 #'
-#' @param rep_date PARAM_DESCRIPTION
+#' @param latest_rep_date latest report date to include in the retrospective
+#' data set
 #'
-#' @param rep_days PARAM_DESCRIPTION
+#' @param remove_rep_days if \code{latest_rep_date} is not given, the number
+#' of report dates to remove, starting from the latest date included
 #'
-#' @param ref_date PARAM_DESCRIPTION
+#' @param earliest_ref_date earliest reference date to include in the
+#' retrospective data set
 #'
-#' @param ref_days PARAM_DESCRIPTION
+#' @param include_ref_days if \code{earilest_ref_date} is not given, the number
+#' of reference dates to include, ending with the from the latest reference
+#' date included once reporting dates have been removed.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @return A data.table containing the retrospective data set
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy as.IDate
-enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
-                                   ref_days) {
+enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
+                                   earliest_ref_date, include_ref_days) {
   retro_data <- data.table::copy(obs)
   retro_data[, report_date := as.IDate(report_date)]
   retro_data[, reference_date := as.IDate(reference_date)]
   if (!missing(rep_days)) {
+    if (!missing(rep_date)) {
+      stop("`rep_days` and `rep_date` can't both be specified." )
+    }
     rep_date <- max(retro_data$report_date) - rep_days
   }
   retro_data <- retro_data[report_date <= rep_date]
 
   if (!missing(ref_days)) {
+    if (!missing(ref_date)) {
+      stop("`rep_days` and `rep_date` can't both be specified." )
+    }
     ref_date <- max(retro_data$reference_date) - ref_days
   }
-  retro_data <- retro_data[reference_date >= ref_date]
+  retro_data <- retro_data[reference_date > ref_date]
   return(retro_data[])
 }
 

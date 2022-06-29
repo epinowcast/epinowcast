@@ -113,7 +113,7 @@ nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
 
 retro_nat_germany <- enw_retrospective_data(
   nat_germany_hosp,
-  rep_days = 40, ref_days = 40
+  remove_rep_days = 40, include_ref_days = 40
 )
 head(retro_nat_germany, n = 10)
 #>     reference_date location age_group confirm report_date
