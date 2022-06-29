@@ -215,11 +215,15 @@ enw_inits <- function(data) {
     # initialise report date effects
     if (data$nrd_effs > 0) {
       init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
+    }else {
+      init$rd_eff <- numeric(0)
     }
     if (data$nrd_eff_sds > 0) {
       init$rd_eff_sd <- abs(rnorm(
         data$nrd_eff_sds, data$rd_eff_sd_p[1], data$rd_eff_sd_p[2] / 10
       ))
+    }else {
+      init$rd_eff_sd <- numeric(0)
     }
     return(init)
   }

@@ -12,7 +12,7 @@ This is a major release and contains breaking changes. If needing the old interf
 
 ## Internals
 
-* Remove warnings due to missing init values in some model variants. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk).
+* Remove spurious warnings due to missing initial values for optional parameters. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 # epinowcast 0.0.7
 
