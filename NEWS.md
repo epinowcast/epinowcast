@@ -10,6 +10,10 @@ This is a major release and contains breaking changes. If needing the old interf
 
 ## Model
 
+## Internals
+
+* Remove spurious warnings due to missing initial values for optional parameters. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+
 # epinowcast 0.0.7
 
 * Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see [#62](https://github.com/epiforecasts/epinowcast/pull/62) by [@seabbs](https://github.com/seabbs)). 

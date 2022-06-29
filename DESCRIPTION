@@ -15,7 +15,11 @@ Authors@R:
              family = "DeWitt",
              role = "ctb",
              email = "me.dewitt.jr@gmail.com",
-             comment = c(ORCID = "0000-0001-8940-1967")))
+             comment = c(ORCID = "0000-0001-8940-1967")),
+    person(given = "Sebastian",
+             family = "Funk",
+             role = "ctb",
+             email = "sebastian.funk@lshtm.ac.uk"))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right censored epidemiological counts using a semi-mechanistic Bayesian
     method with support for both day of reference and day of report effects. 
