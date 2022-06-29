@@ -420,6 +420,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
+#' @family preprocess
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed")
