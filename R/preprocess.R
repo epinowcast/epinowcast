@@ -369,18 +369,21 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'  models that assume a parametric distribution in order to increase the weight
 #'  of the tail of the reporting distribution in a pragmatic way.
 #' @inheritParams enw_preprocess_data
+#' @family preprocess
 #' @export
 #' @examples
-#' enw_delays_metadata(20, breaks = 4)
-enw_delays_metadata <- function(max_delay = 20, breaks = 4) {
+#' enw_delay_metadata(20, breaks = 4)
+enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
+  even_delay <- max_delay + max_delay %% 2
   delays <- delays[, `:=`(
       delay = delay,
       delay_cat = cut(
         delay, seq(
-          from = 0, to = max_delay, by = as.integer(max_delay / breaks)
+          from = 0, to = ceiling(even_delay / breaks) * breaks,
+          by = ceiling(even_delay / breaks)
           ),
-          dig.lab = 0
+          dig.lab = 0, right = FALSE
       ),
       delay_week = as.integer(delay / 7),
       delay_tail = delay > quantile(delay, probs = 0.75)
@@ -598,7 +601,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
   # extract and add features for delays
-  metadelay <- enw_delays_metadata(max_delay, breaks = 4)
+  metadelay <- enw_delay_metadata(max_delay, breaks = 4)
 
   out <- enw_construct_data(
     obs = obs,
