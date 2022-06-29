@@ -598,7 +598,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
   # extract and add features for delays
-  metadelays <- enw_delays_metadata(max_delay, breaks = 4)
+  metadelay <- enw_delays_metadata(max_delay, breaks = 4)
 
   out <- enw_construct_data(
     obs = obs,

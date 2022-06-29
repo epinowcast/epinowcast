@@ -11,6 +11,7 @@ enw_construct_data(
   reporting_triangle,
   metareport,
   metareference,
+  metadelay,
   by,
   max_delay
 )
@@ -39,6 +40,9 @@ downstream modelling}
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
+
+\item{metedelay}{Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -53,6 +57,8 @@ Empirical reporting distributions are also added.
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
+\item \code{metadelay}: Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
@@ -78,6 +84,7 @@ enw_construct_data(
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
+  metadelay = enw_metadelay(max_delay = 20)
   max_delay = pobs$max_delay[[1]]
 )
 }

@@ -56,6 +56,8 @@ Empirical reporting distributions are also added.
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
+\item \code{metadelay}: Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
