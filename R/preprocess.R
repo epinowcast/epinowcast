@@ -431,7 +431,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   reporting_triangle = pobs$reporting_triangle[[1]],
 #'   metareport = pobs$metareport[[1]],
 #'   metareference = pobs$metareference[[1]],
-#'   metadelay = enw_metadelay(max_delay = 20)
+#'   metadelay = enw_metadelay(max_delay = 20),
 #'   max_delay = pobs$max_delay[[1]]
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,

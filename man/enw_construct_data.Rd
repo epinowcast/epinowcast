@@ -84,7 +84,7 @@ enw_construct_data(
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
-  metadelay = enw_metadelay(max_delay = 20)
+  metadelay = enw_metadelay(max_delay = 20),
   max_delay = pobs$max_delay[[1]]
 )
 }

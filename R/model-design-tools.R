@@ -111,7 +111,8 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 
     # model matrix with contrast options
     design <- mod_matrix(
-      formula, data, sparse = sparse, contrasts.arg = contrast_args, ...
+      formula, data,
+      sparse = sparse, contrasts.arg = contrast_args, ...
     )
     return(design)
   }
