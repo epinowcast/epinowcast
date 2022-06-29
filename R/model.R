@@ -197,6 +197,9 @@ enw_inits <- function(data) {
     if (data$neffs > 0) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
       init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+    } else {
+      init$logmean_eff <- numeric(0)
+      init$logsd_eff <- numeric(0)
     }
     if (data$neff_sds > 0) {
       init$logmean_sd <- abs(rnorm(
@@ -205,6 +208,9 @@ enw_inits <- function(data) {
       init$logsd_sd <- abs(rnorm(
         data$neff_sds, data$logsd_sd_p[1], data$logsd_sd_p[2] / 10
       ))
+    } else {
+      init$logmean_sd <- numeric(0)
+      init$logsd_sd <- numeric(0)
     }
     # initialise report date effects
     if (data$nrd_effs > 0) {
