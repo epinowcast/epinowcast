@@ -348,6 +348,47 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' Calculate reporting delay metadata
+#'
+#' Calculate delay metadata based on the supplied maximum delay and independent
+#' of other metadata or date indexing. These data are meant to be used in
+#' conjunction with metadata on the date of reference. Users can build
+#' additional features this `data.frame` or regenerate it using this function
+#' in the output of `enw_preprocess_data()`.
+#'
+#' @param breaks Numeric, defaults to 4. The number of breaks to use when
+#' constructing a categorised version of numeric delays.
+#'
+#' @return A `data.frame` of delay metadata. This includes:
+#'  - `delay`: The numeric delay from reference date to report.
+#'  - `delay_cat`: The categorised delay. This may be useful for model building.
+#'  - `delay_week`: The numeric week since the delay was reported. This again
+#'  may be useful for model building.
+#'  - `delay_tail`: A logical variable defining if the delay is in the upper
+#'  75% of the potential delays. This may be particularly useful when building
+#'  models that assume a parametric distribution in order to increase the weight
+#'  of the tail of the reporting distribution in a pragmatic way.
+#' @inheritParams enw_preprocess_data
+#' @export
+#' @examples
+#' enw_delays_metadata(20, breaks = 4)
+enw_delays_metadata <- function(max_delay = 20, breaks = 4) {
+  delays <- data.table::data.table(delay = 0:(max_delay - 1))
+  delays <- delays[, `:=`(
+      delay = delay,
+      delay_cat = cut(
+        delay, seq(
+          from = 0, to = max_delay, by = as.integer(max_delay / breaks)
+          ),
+          dig.lab = 0
+      ),
+      delay_week = as.integer(delay / 7),
+      delay_tail = delay > quantile(delay, probs = 0.75)
+    )
+  ]
+  return(delays[])
+}
+
 #' Construct preprocessed data
 #'
 #' This function is used internally by [enw_preprocess_data()] to combine
@@ -370,6 +411,9 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param metareference Metadata reference dates derived from observations.
 #'
 #' @param metareport Metadata for report dates.
+#'
+#' @param metedelay Metadata for reporting delays produced using
+#'  [enw_delay_metadata()].
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
@@ -383,10 +427,12 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'   reporting_triangle = pobs$reporting_triangle[[1]],
 #'   metareport = pobs$metareport[[1]],
 #'   metareference = pobs$metareference[[1]],
+#'   metadelay = enw_metadelay(max_delay = 20)
 #'   max_delay = pobs$max_delay[[1]]
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
-                               metareport, metareference, by, max_delay) {
+                               metareport, metareference, metadelay, by,
+                               max_delay) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
@@ -394,6 +440,7 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
     reporting_triangle = list(reporting_triangle),
     metareference = list(metareference),
     metareport = list(metareport),
+    metadelay = list(metadelay),
     time = nrow(latest[group == 1]),
     snapshots = nrow(unique(obs[, .(group, report_date)])),
     by = list(by),
@@ -452,6 +499,8 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' the standard reporting triangle matrix format.
 #' - `metareference`: Metadata reference dates derived from observations.
 #' - `metrareport`: Metadata for report dates.
+#' - `metadelay`: Metadata for reporting delays produced using
+#'  [enw_delay_metadata()].
 #' - `time`: Numeric, number of timepoints in the data.
 #' - `snapshots`: Numeric, number of available data snapshots to use for
 #'  nowcasting.
@@ -549,18 +598,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
   # extract and add features for delays
-  # metadelays <- enw_delays_metadata(obs, by = by, max_delay)
+  metadelays <- enw_delays_metadata(max_delay, breaks = 4)
 
-  # enw_delays_metadata <- function(max_delay = 20) {
-  #   delays <- data.table::data.table(delay = 0:(max_delay - 1))
-  #   delays <- delays[, `:=`(
-  #       delay_numeric = delay,
-  #       delay = as.factor(delay),
-  #       delay_tail = delay > quantile(delay, probs = 0.75),
-  #       delay_week = as.integer(delay / 7)
-  #     )
-  #   ]
-  # }
   out <- enw_construct_data(
     obs = obs,
     new_confirm = diff_obs,
@@ -568,7 +607,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     reporting_triangle = reporting_triangle,
     metareference = metareference,
     metareport = metareport,
-    # metadelay = metadelay,
+    metadelay = metadelay,
     by = by,
     max_delay = max_delay
   )

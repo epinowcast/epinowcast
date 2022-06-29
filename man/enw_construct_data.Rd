@@ -11,6 +11,7 @@ enw_construct_data(
   reporting_triangle,
   metareport,
   metareference,
+  by,
   max_delay
 )
 }
@@ -29,6 +30,11 @@ date in the standard reporting triangle matrix format.}
 \item{metareport}{Metadata for report dates.}
 
 \item{metareference}{Metadata reference dates derived from observations.}
+
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
