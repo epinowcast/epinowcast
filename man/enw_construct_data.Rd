@@ -32,6 +32,9 @@ date in the standard reporting triangle matrix format.}
 
 \item{metareference}{Metadata reference dates derived from observations.}
 
+\item{metadelay}{Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.}
+
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
@@ -40,9 +43,6 @@ downstream modelling}
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
-
-\item{metedelay}{Metadata for reporting delays produced using
-\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -84,7 +84,7 @@ enw_construct_data(
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
-  metadelay = enw_metadelay(max_delay = 20),
+  metadelay = enw_delay_metadata(max_delay = 20),
   max_delay = pobs$max_delay[[1]]
 )
 }
