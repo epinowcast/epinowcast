@@ -380,9 +380,11 @@ re <- function(formula) {
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
-#' @return A list containing the fixed effects terms ("terms") and
-#' a `data.frame` specifying the random effect structure between
-#' these terms (`effects`).
+#' @return A list containing the transformed data ("data"),
+#' fixed effects terms ("terms") and a `data.frame` specifying
+#' the random effect structure between these terms (`effects`). Note
+#' that if the specified random effect was not a factor it will have been
+#' converted into one.
 #'
 #' @family formulatools
 #' @importFrom data.table copy
@@ -408,6 +410,9 @@ construct_re <- function(re, data) {
   }
   terms <- gsub("1:", "", terms)
 
+  # make all right hand side random effects factors
+  data <- data[, (random) := lapply(.SD, as.factor), .SDcols = random]
+
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
     data,
@@ -431,7 +436,7 @@ construct_re <- function(re, data) {
       )
     }
   }
-  return(list(terms = terms, effects = effects))
+  return(list(data = data, terms = terms, effects = effects))
 }
 
 #' Define a model using a formula interface
@@ -491,7 +496,11 @@ enw_formula <- function(formula, data) {
   # Get random effects for all specified random effects
   if (length(parsed_formula$random) > 0) {
     random <- purrr::map(parsed_formula$random, re)
-    random <- purrr::map(random, construct_re, data = data)
+    for (i in seq_along(random)) {
+      random[[i]] <- construct_re(random[[i]], data)
+      data <- random[[i]]$data
+      random[[i]]$data <- NULL
+    }
     random <- purrr::transpose(random)
 
     random_terms <- unlist(random$terms)

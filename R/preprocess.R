@@ -396,7 +396,7 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
     metareport = list(metareport),
     time = nrow(latest[group == 1]),
     snapshots = nrow(unique(obs[, .(group, report_date)])),
-    by = by,
+    by = list(by),
     groups = length(unique(obs$group)),
     max_delay = max_delay,
     max_date = max(obs$report_date)
@@ -549,8 +549,18 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
   # extract and add features for delays
-  metadelays <- enw_delays_metadata(obs)
+  # metadelays <- enw_delays_metadata(obs, by = by, max_delay)
 
+  # enw_delays_metadata <- function(max_delay = 20) {
+  #   delays <- data.table::data.table(delay = 0:(max_delay - 1))
+  #   delays <- delays[, `:=`(
+  #       delay_numeric = delay,
+  #       delay = as.factor(delay),
+  #       delay_tail = delay > quantile(delay, probs = 0.75),
+  #       delay_week = as.integer(delay / 7)
+  #     )
+  #   ]
+  # }
   out <- enw_construct_data(
     obs = obs,
     new_confirm = diff_obs,
@@ -558,7 +568,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     reporting_triangle = reporting_triangle,
     metareference = metareference,
     metareport = metareport,
-    metadelay = metadelay,
+    # metadelay = metadelay,
     by = by,
     max_delay = max_delay
   )

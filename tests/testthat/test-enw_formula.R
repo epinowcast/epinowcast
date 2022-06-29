@@ -35,3 +35,9 @@ test_that("enw_formula can return a model with a fixed effect, random effect
     enw_formula(~ 1 + day_of_week + (1 | age_group) + rw(week), data)
   )
 })
+
+test_that("enw_formula can handle random effects that are not factors", {
+    test_data <- data.table::data.table(d = 0:(14 - 1))
+    test_data <- test_data[, d_week := as.integer(d / 7)]
+    expect_snapshot(enw_formula(~ 1 + (1 | d_week), test_data))
+})
