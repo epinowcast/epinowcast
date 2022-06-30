@@ -6,7 +6,7 @@ vector discretised_reporting_prob(real mu, real sigma, int n, int dist) {
   if (dist == 0) {
     real emu = exp(-mu);
     for (i in 1:n) {
-      upper_cdf = exponential_cdf(i | emu);
+      upper_cdf[i] = exponential_cdf(i | emu);
     }
   } else if (dist == 1) {
     for (i in 1:n) {

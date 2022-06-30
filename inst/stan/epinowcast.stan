@@ -90,12 +90,13 @@ transformed parameters{
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
   profile("transformed_delay_reference_date_effects") {
-  logmean = combine_effects(logmean_int, logmean_eff, d_fixed, logmean_sd,
+  logmean = combine_effects(logmean_int[1], logmean_eff, d_fixed, logmean_sd,
                             d_random);
   if (dist) {
-    logsd = combine_effects(log(logsd_int), logsd_eff, d_fixed, logsd_sd,
+    logsd = combine_effects(log(logsd_int[1]), logsd_eff, d_fixed, logsd_sd,
                             d_random); 
     logsd = exp(logsd);
+  }
   }
   // calculate pmfs
   profile("transformed_delay_reference_date_pmfs") {
