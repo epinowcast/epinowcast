@@ -15,9 +15,11 @@ random effects. Must contain the variables specified in the
 \code{\link[=re]{re()}} term.}
 }
 \value{
-A list containing the fixed effects terms ("terms") and
-a \code{data.frame} specifying the random effect structure between
-these terms (\code{effects}).
+A list containing the transformed data ("data"),
+fixed effects terms ("terms") and a \code{data.frame} specifying
+the random effect structure between these terms (\code{effects}). Note
+that if the specified random effect was not a factor it will have been
+converted into one.
 }
 \description{
 Constructs random effect terms
