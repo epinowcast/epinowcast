@@ -4,10 +4,15 @@ vector discretised_reporting_prob(real mu, real sigma, int n, int dist) {
   vector[n] pmf; 
   vector[n] upper_cdf;
   if (dist == 0) {
+    real emu = exp(-mu);
+    for (i in 1:n) {
+      upper_cdf = exponential_cdf(i | emu);
+    }
+  } else if (dist == 1) {
     for (i in 1:n) {
       upper_cdf[i] = lognormal_cdf(i | mu, sigma);
     }
-  } else if (dist == 1) {
+  } else if (dist == 2) {
     real emu = exp(mu);
     for (i in 1:n) {
       upper_cdf[i] = gamma_cdf(i | emu, sigma);

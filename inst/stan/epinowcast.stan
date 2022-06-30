@@ -68,13 +68,13 @@ parameters {
   real leobs_init[g]; // First time point for expected observations
   real<lower=0> eobs_lsd[g]; // standard deviation of rw for primary obs 
   vector[t - 1] leobs_resids[g]; // unscaled rw for primary obs
-  real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
-  real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
+  array[1] real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
+  array[dist ? 1 : 0] real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
   vector[neffs] logmean_eff; // unscaled modifiers to log mean
-  vector[neffs] logsd_eff; // unscaled modifiers to log sd
+  vector[dist ? neffs : 0] logsd_eff; // unscaled modifiers to log sd
   vector[nrd_effs] rd_eff; // unscaled modifiers to report date hazard
   vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
-  vector<lower=0>[neff_sds] logsd_sd; // pooled modifiers to logsd
+  vector<lower=0>[dist ? neff_sds : 0] logsd_sd; // pooled modifiers to logsd
   vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
   real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
 }
@@ -92,9 +92,10 @@ transformed parameters{
   profile("transformed_delay_reference_date_effects") {
   logmean = combine_effects(logmean_int, logmean_eff, d_fixed, logmean_sd,
                             d_random);
-  logsd = combine_effects(log(logsd_int), logsd_eff, d_fixed, logsd_sd,
-                          d_random); 
-  logsd = exp(logsd);
+  if (dist) {
+    logsd = combine_effects(log(logsd_int), logsd_eff, d_fixed, logsd_sd,
+                            d_random); 
+    logsd = exp(logsd);
   }
   // calculate pmfs
   profile("transformed_delay_reference_date_pmfs") {
@@ -145,14 +146,20 @@ model {
   }
   // priors for the intercept of the log normal truncation distribution
   logmean_int ~ normal(logmean_int_p[1], logmean_int_p[2]);
-  logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
+  if (dist) {
+    logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
+  }
   // priors and scaling for date of reference effects
   if (neffs) {
     logmean_eff ~ std_normal();
-    logsd_eff ~ std_normal();
+    if (dist) {
+      logsd_eff ~ std_normal();
+    }
     if (neff_sds) {
       logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
-      logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+      if (dist) {
+        logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+      }
     }
   }
   // priors and scaling for date of report effects
