@@ -25,6 +25,15 @@ expose_stan_fns <- function(files, target_dir, ...) {
     ),
     "\n }"
   )
+
+  functions <- gsub("array\\[\\] ([a-z]+) ([a-z_]+)", "\\1[] \\2", functions)
+  functions <- gsub(
+    "array\\[,\\] ([a-z]+) ([a-z_]+)", "\\1[,] \\2", functions
+  )
+  functions <- gsub(
+    "array\\[([a-z]+)\\] ([a-z]+) ([a-z_]+)", "\\2 \\3[\\1]", functions
+  )
+  functions <- remove_profiling(functions)
   rstan::expose_stan_functions(rstan::stanc(model_code = functions), ...)
   return(invisible(NULL))
 }

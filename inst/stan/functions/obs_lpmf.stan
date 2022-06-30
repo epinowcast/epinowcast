@@ -9,7 +9,9 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
   int n = end_n - start_n;
   array[n] int snap_obs = obs[(start_n + 1):end_n];
   vector[n] log_exp_obs;
-  int g, t, l;
+  int g;
+  int t;
+  int l;
   int ssnap = 1;
   int esnap = 0;
 
