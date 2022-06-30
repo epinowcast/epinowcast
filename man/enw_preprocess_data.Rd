@@ -56,6 +56,8 @@ Empirical reporting distributions are also added.
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
+\item \code{metadelay}: Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
@@ -108,6 +110,7 @@ Preprocessing functions
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_obs}()},
 \code{\link{enw_latest_data}()},

@@ -440,3 +440,58 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
+# enw_formula can handle random effects that are not factors
+
+    Code
+      enw_formula(~ 1 + (1 | d_week), test_data)
+    Output
+      $formula
+      [1] "~1 + (1 | d_week)"
+      
+      $parsed_formula
+      $parsed_formula$fixed
+      [1] "1"
+      
+      $parsed_formula$random
+      $parsed_formula$random[[1]]
+      1 | d_week
+      
+      
+      $parsed_formula$rw
+      character(0)
+      
+      
+      $expanded_formula
+      [1] "~1 + d_week"
+      
+      $fixed
+      $fixed$formula
+      [1] "~1 + d_week"
+      
+      $fixed$design
+        (Intercept) d_week0 d_week1
+      1           1       1       0
+      8           1       0       1
+      
+      $fixed$index
+       [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2
+      
+      
+      $random
+      $random$formula
+      [1] "~0 + fixed + d_week"
+      
+      $random$design
+        fixed d_week
+      1     0      1
+      2     0      1
+      attr(,"assign")
+      [1] 1 2
+      
+      $random$index
+      [1] 1 2
+      
+      
+      attr(,"class")
+      [1] "enw_formula" "list"       
+

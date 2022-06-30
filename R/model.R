@@ -164,14 +164,18 @@ enw_as_data_list <- function(pobs,
 
 #' Set up initial conditions for model
 #'
-#' @param data A list of data as produced by [enw_as_data_list()].
-#'
+#' @param data A list of data as produced by [enw_as_data_list()] and output as
+#' `data` by [epinowcast()].
+#' 
 #' @return A function that when called returns a list of initial conditions
 #' for the package stan models.
 #'
 #' @family model
 #' @importFrom purrr map_dbl
 #' @export
+#' @examples
+#' stan_data <- enw_example("nowcast")$data
+#' enw_inits(stan_data)
 enw_inits <- function(data) {
   init_fn <- function() {
     init <- list(
@@ -197,6 +201,9 @@ enw_inits <- function(data) {
     if (data$neffs > 0) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
       init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+    } else {
+      init$logmean_eff <- numeric(0)
+      init$logsd_eff <- numeric(0)
     }
     if (data$neff_sds > 0) {
       init$logmean_sd <- abs(rnorm(
@@ -205,15 +212,22 @@ enw_inits <- function(data) {
       init$logsd_sd <- abs(rnorm(
         data$neff_sds, data$logsd_sd_p[1], data$logsd_sd_p[2] / 10
       ))
+    } else {
+      init$logmean_sd <- numeric(0)
+      init$logsd_sd <- numeric(0)
     }
     # initialise report date effects
     if (data$nrd_effs > 0) {
       init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
+    }else {
+      init$rd_eff <- numeric(0)
     }
     if (data$nrd_eff_sds > 0) {
       init$rd_eff_sd <- abs(rnorm(
         data$nrd_eff_sds, data$rd_eff_sd_p[1], data$rd_eff_sd_p[2] / 10
       ))
+    }else {
+      init$rd_eff_sd <- numeric(0)
     }
     return(init)
   }
