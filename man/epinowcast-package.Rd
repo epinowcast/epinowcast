@@ -2,7 +2,6 @@
 % Please edit documentation in R/epinowcast-package.R
 \docType{package}
 \name{epinowcast-package}
-\alias{epinowcast}
 \alias{epinowcast-package}
 \title{epinowcast: Hierarchical Nowcasting of Right Censored Epidemiological Counts}
 \description{
