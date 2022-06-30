@@ -85,7 +85,9 @@
 <div class="section level3"><h3 id="model-0-1-0">Model<a class="anchor" aria-label="anchor" href="#model-0-1-0"></a></h3></div>
 <div class="section level3">
 <h3 id="internals-0-1-0">Internals<a class="anchor" aria-label="anchor" href="#internals-0-1-0"></a></h3>
-<ul><li>Remove spurious warnings due to missing initial values for optional parameters. See <a href="https://github.com/epiforecasts/epinowcast/issues/75" class="external-link">#76</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li></ul></div>
+<ul><li>Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on <code>rstan</code>) additional functionality has been added to parse stan code in this function. See <a href="https://github.com/epiforecasts/epinowcast/issues/74" class="external-link">#74</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<li>Remove spurious warnings due to missing initial values for optional parameters. See <a href="https://github.com/epiforecasts/epinowcast/issues/75" class="external-link">#76</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.7" id="epinowcast-007">epinowcast 0.0.7<a class="anchor" aria-label="anchor" href="#epinowcast-007"></a></h2>
