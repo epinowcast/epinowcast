@@ -33,7 +33,7 @@
 #' @export
 #' @examples
 #' data <- enw_example("prep")$metareference[[1]]
-#' enw_manual_formula(data, fixed = "max_confirm", random = "day_of_week")
+#' enw_manual_formula(data, fixed = "week", random = "day_of_week")
 enw_manual_formula <- function(data, fixed = c(), random = c(),
                                custom_random = c(), no_contrasts = FALSE) {
   data <- data.table::copy(data)
