@@ -239,7 +239,7 @@
 <p>We now fit the model and produce a nowcast using this fit. Note that here we use two chains each using two threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages for the purposes of keeping this quick start short but in general this should not be done.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">model</span>,</span>
 <span>  report_effects <span class="op">=</span> <span class="va">report_effects</span>,</span>
 <span>  reference_effects <span class="op">=</span> <span class="va">reference_effects</span>,</span>

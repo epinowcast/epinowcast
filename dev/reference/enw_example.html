@@ -117,21 +117,21 @@ dataset), and the script used to generate these examples respectively.</p></dd>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"nowcast"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm             latest</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[630x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x8]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle       metareference          metareport time snapshots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x10]&gt; &lt;data.table[60x11]&gt;   41        41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle      metareference         metareport time snapshots</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt; &lt;data.table[60x9]&gt;   41        41</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    groups max_delay   max_date               fit       data  fit_args samples</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1        20 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[39]&gt; &lt;list[6]&gt;    1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    max_rhat divergent_transitions per_divergent_transitions max_treedepth</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1.01                     0                         0             8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    no_at_max_treedepth per_at_max_treedepth run_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 272                0.272     75.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 205                0.205       88</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the preprocessed observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"preprocessed_observations"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm             latest</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[630x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x8]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle       metareference          metareport time snapshots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x10]&gt; &lt;data.table[60x11]&gt;   41        41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle      metareference         metareport time snapshots</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt; &lt;data.table[60x9]&gt;   41        41</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    groups max_delay   max_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1        20 2021-08-22</span>
 <span class="r-in"><span></span></span>

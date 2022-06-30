@@ -201,7 +201,7 @@
 <code class="sourceCode R"><span><span class="va">multithread_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Note that here we use two chains each using 2 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -258,7 +258,7 @@
 <span><span class="co">#&gt; 7:                  &lt;NA&gt; 0.128200 0.08118917</span></span></code></pre></div>
 <p>We now repeat the nowcasting step with the day of the week reporting model included.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dow_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<code class="sourceCode R"><span><span class="va">dow_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span>,</span>
@@ -290,7 +290,7 @@
 <code class="sourceCode R"><span><span class="va">age_reference_effects</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span>, <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">)</span></span></code></pre></div>
 <p>We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">age_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<code class="sourceCode R"><span><span class="va">age_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  reference_effects <span class="op">=</span> <span class="va">age_reference_effects</span>,</span>
 <span>  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,</span>
@@ -326,7 +326,7 @@
 <p>As before we fit the nowcasting model,</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<span><span class="va">week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  reference_effects <span class="op">=</span> <span class="va">week_age_reference_effects</span>,</span>
 <span>  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,</span>
@@ -361,7 +361,7 @@
 <span><span class="op">)</span></span></code></pre></div>
 <p>We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the <code>adapt_delta</code> setting to 0.95 here to mitigate divergent transitions).</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">age_week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<code class="sourceCode R"><span><span class="va">age_week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  reference_effects <span class="op">=</span> <span class="va">week_by_age_reference_effects</span>,</span>
 <span>  report_effects <span class="op">=</span> <span class="va">dow_report_effects</span>,</span>
@@ -396,7 +396,7 @@
 <code class="sourceCode R"><span><span class="va">independent_epinowcast</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span> <span class="op">=</span> <span class="fl">40</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">pobs_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">obs</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="epiforecasts.io/epinowcast/reference/epinowcast-package.html">epinowcast</a></span><span class="op">(</span></span>
+<span>  <span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>    <span class="va">pobs_ind</span>,</span>
 <span>    reference_effects <span class="op">=</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, <span class="va">pobs_ind</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
 <span>    report_effects <span class="op">=</span> <span class="fu"><a href="../reference/enw_formula.html">enw_formula</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, <span class="va">pobs_ind</span><span class="op">$</span><span class="va">metareport</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
