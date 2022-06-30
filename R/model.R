@@ -179,8 +179,17 @@ enw_as_data_list <- function(pobs,
 enw_inits <- function(data) {
   init_fn <- function() {
     init <- list(
-      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10),
-      logsd_int = abs(rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)),
+      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10)
+    )
+    if (data$dist > 0) {
+      init$logsd_int <- abs(
+        rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)
+      )
+    }else{
+      init$logsd_int <- numeric(0)
+    }
+
+    init <- c(init, list(
       leobs_init = array(purrr::map_dbl(
         data$latest_obs[1, ] + 1,
         ~ rnorm(1, log(.), 1)
@@ -193,7 +202,7 @@ enw_inits <- function(data) {
         dim = c(data$t - 1, data$g)
       ),
       sqrt_phi = abs(rnorm(1, data$sqrt_phi_p[1], data$sqrt_phi_p[2] / 10))
-    )
+    ))
     init$logmean <- rep(init$logmean_int, data$npmfs)
     init$logsd <- rep(init$logsd_int, data$npmfs)
     init$phi <- 1 / sqrt(init$sqrt_phi)

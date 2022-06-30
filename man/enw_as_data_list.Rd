@@ -32,7 +32,7 @@ which is an intercept only model.}
 
 \item{distribution}{Character string indicating the type of distribution to
 use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+options available include the, exponential and gamma distributions.}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}
