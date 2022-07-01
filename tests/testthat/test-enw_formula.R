@@ -4,7 +4,7 @@ obs <- enw_retrospective_data(
   germany_covid19_hosp[location == "DE"][
     age_group %in% c("00+", "05-14", "15-34")
   ],
-   rep_days = 10, ref_days = 10
+   remove_rep_days = 10, include_ref_days = 10
 )
 pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
 data <- pobs$metareference[[1]]

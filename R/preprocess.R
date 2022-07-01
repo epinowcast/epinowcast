@@ -175,21 +175,21 @@ enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
   retro_data <- data.table::copy(obs)
   retro_data[, report_date := as.IDate(report_date)]
   retro_data[, reference_date := as.IDate(reference_date)]
-  if (!missing(rep_days)) {
-    if (!missing(rep_date)) {
-      stop("`rep_days` and `rep_date` can't both be specified." )
+  if (!missing(remove_rep_days)) {
+    if (!missing(latest_rep_date)) {
+      stop("`remove_rep_days` and `latest_rep_date` can't both be specified." )
     }
-    rep_date <- max(retro_data$report_date) - rep_days
+    latest_rep_date <- max(retro_data$report_date) - remove_rep_days
   }
-  retro_data <- retro_data[report_date <= rep_date]
+  retro_data <- retro_data[report_date <= latest_rep_date]
 
-  if (!missing(ref_days)) {
-    if (!missing(ref_date)) {
-      stop("`rep_days` and `rep_date` can't both be specified." )
+  if (!missing(include_ref_days)) {
+    if (!missing(earliest_ref_date)) {
+      stop("`include_ref_days` and `earliest_rep_date` can't both be specified.")
     }
-    ref_date <- max(retro_data$reference_date) - ref_days
+    earliest_ref_date <- max(retro_data$reference_date) - include_ref_days
   }
-  retro_data <- retro_data[reference_date > ref_date]
+  retro_data <- retro_data[reference_date > earliest_ref_date]
   return(retro_data[])
 }
 

@@ -469,7 +469,7 @@ construct_re <- function(re, data) {
 #' # hospitalisation data.
 #' obs <- enw_retrospective_data(
 #'   germany_covid19_hosp[location == "DE"],
-#'   rep_days = 40, ref_days = 40
+#'   remove_rep_days = 40, include_ref_days = 40
 #' )
 #' pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
 #' data <- pobs$metareference[[1]]
