@@ -14,6 +14,8 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
   int l;
   int ssnap = 1;
   int esnap = 0;
+  vector[l] rdlh;
+  vector[l] ref_lh_i;
 
   for (i in start:end) {
     profile("model_likelihood_allocations") {
@@ -21,8 +23,6 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
     t = st[i];
     l = sl[i];
     }
-    vector[l] rdlh;
-    vector[l] ref_lh_i;
     profile("model_likelihood_allocations") {
     // Find final observed/imputed expected observation
     tar_obs = imp_obs[g][t];

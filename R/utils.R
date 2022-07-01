@@ -27,9 +27,17 @@ expose_stan_fns <- function(files, target_dir, ...) {
   )
 
   functions <- gsub("array\\[\\] ([a-z]+) ([a-z_]+)", "\\1[] \\2", functions)
+  ## some model changes are necessary for backwards compatibility with rstan:
+  ##   build legacy cdf syntax
+  functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
+  ##   replace lupmf with lpmf
+  functions <- gsub("_lupmf", "_lpmf", functions)
+  ##   replace array syntax
+  ##     case #1: array[] real x -> real[] x
   functions <- gsub(
-    "array\\[,\\] ([a-z]+) ([a-z_]+)", "\\1[,] \\2", functions
+    "array\\[(,?)\\] ([a-z]+) ([a-z_]+)", "\\2[\\1] \\3", functions
   )
+  ##     case #2: array[n] real x -> real x[n]
   functions <- gsub(
     "array\\[([a-z]+)\\] ([a-z]+) ([a-z_]+)", "\\2 \\3[\\1]", functions
   )
