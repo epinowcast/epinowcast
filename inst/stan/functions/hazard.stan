@@ -13,11 +13,11 @@ vector prob_to_hazard(vector p) {
 vector cumulative_converse_log_hazard(vector h) {
   int l = num_elements(h);
   vector[l] h_shifted;
+  vector[l] ch;
   h_shifted[1] = 0;
   if (l > 1) {
     h_shifted[2:l] = h[1:(l-1)];
   }
-  vector[l] ch;
   ch = log1m(h_shifted);
   ch = cumulative_sum(ch);
   return(ch);

@@ -164,7 +164,8 @@ enw_as_data_list <- function(pobs,
 
 #' Set up initial conditions for model
 #'
-#' @param data A list of data as produced by [enw_as_data_list()].
+#' @param data A list of data as produced by [enw_as_data_list()] and output as
+#' `data` by [epinowcast()].
 #'
 #' @return A function that when called returns a list of initial conditions
 #' for the package stan models.
@@ -172,11 +173,23 @@ enw_as_data_list <- function(pobs,
 #' @family model
 #' @importFrom purrr map_dbl
 #' @export
+#' @examples
+#' stan_data <- enw_example("nowcast")$data
+#' enw_inits(stan_data)
 enw_inits <- function(data) {
   init_fn <- function() {
     init <- list(
-      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10),
-      logsd_int = abs(rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)),
+      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10)
+    )
+    if (data$dist > 1) {
+      init$logsd_int <- abs(
+        rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)
+      )
+    } else {
+      init$logsd_int <- numeric(0)
+    }
+
+    init <- c(init, list(
       leobs_init = array(purrr::map_dbl(
         data$latest_obs[1, ] + 1,
         ~ rnorm(1, log(.), 1)
@@ -189,14 +202,19 @@ enw_inits <- function(data) {
         dim = c(data$t - 1, data$g)
       ),
       sqrt_phi = abs(rnorm(1, data$sqrt_phi_p[1], data$sqrt_phi_p[2] / 10))
-    )
+    ))
     init$logmean <- rep(init$logmean_int, data$npmfs)
     init$logsd <- rep(init$logsd_int, data$npmfs)
     init$phi <- 1 / sqrt(init$sqrt_phi)
     # initialise reference date effects
     if (data$neffs > 0) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
-      init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+      if (data$dist > 1) {
+        init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+      }
+    } else {
+      init$logmean_eff <- numeric(0)
+      init$logsd_eff <- numeric(0)
     }
     if (data$neff_sds > 0) {
       init$logmean_sd <- abs(rnorm(
@@ -205,15 +223,22 @@ enw_inits <- function(data) {
       init$logsd_sd <- abs(rnorm(
         data$neff_sds, data$logsd_sd_p[1], data$logsd_sd_p[2] / 10
       ))
+    } else {
+      init$logmean_sd <- numeric(0)
+      init$logsd_sd <- numeric(0)
     }
     # initialise report date effects
     if (data$nrd_effs > 0) {
       init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
+    } else {
+      init$rd_eff <- numeric(0)
     }
     if (data$nrd_eff_sds > 0) {
       init$rd_eff_sd <- abs(rnorm(
         data$nrd_eff_sds, data$rd_eff_sd_p[1], data$rd_eff_sd_p[2] / 10
       ))
+    } else {
+      init$rd_eff_sd <- numeric(0)
     }
     return(init)
   }
