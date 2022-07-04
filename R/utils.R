@@ -4,17 +4,28 @@
 #' @importFrom stats median rnorm
 NULL
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param files PARAM_DESCRIPTION
-#' @param target_dir PARAM_DESCRIPTION
-#' @param ... PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' Expose stan functions in R
+#'
+#' @description This function builds on top of
+#' [rstan::expose_stan_functions()] in order to facilitate exposing package
+#' functions in R for internal use, testing, and exploration. Crucially
+#' it performs a conversion between the package `cmdstan` stan code
+#' and `rstan` compatible stan code. It is not generally recommended that users
+#' make use of this function apart from when exploring package functionality.
+#'
+#' @param files A character vector of file names
+#'
+#' @param target_dir A character string giving the directory in which
+#' files can be found.
+#'
+#' @param ... Arguments to pass to [rstan::expose_stan_functions()]
+#'
+#' @return NULL (invisibily)
 #' @family utils
-#' @export
 #' @importFrom purrr map_chr
 #' @importFrom rstan expose_stan_functions stanc
 expose_stan_fns <- function(files, target_dir, ...) {
+  # Make functions into a string
   functions <- paste0(
     "\n functions{ \n",
     paste(purrr::map_chr(
@@ -25,23 +36,23 @@ expose_stan_fns <- function(files, target_dir, ...) {
     ),
     "\n }"
   )
-
-  functions <- gsub("array\\[\\] ([a-z]+) ([a-z_]+)", "\\1[] \\2", functions)
-  ## some model changes are necessary for backwards compatibility with rstan:
-  ##   build legacy cdf syntax
+  # Convert from cmdstan -> rstan to allow for in R uses
+  # replace bars in CDF with commas
   functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
-  ##   replace lupmf with lpmf
+  # replace lupmf with lpmf
   functions <- gsub("_lupmf", "_lpmf", functions)
-  ##   replace array syntax
-  ##     case #1: array[] real x -> real[] x
+  # replace array syntax
+  #   case 1: array[] real x -> real[] x
   functions <- gsub(
     "array\\[(,?)\\] ([a-z]+) ([a-z_]+)", "\\2[\\1] \\3", functions
   )
-  ##     case #2: array[n] real x -> real x[n]
+  #   case 2: array[n] real x -> real x[n]
   functions <- gsub(
     "array\\[([a-z]+)\\] ([a-z]+) ([a-z_]+)", "\\2 \\3[\\1]", functions
   )
+  # remove profiling code
   functions <- remove_profiling(functions)
+  # expose stan codef
   rstan::expose_stan_functions(rstan::stanc(model_code = functions), ...)
   return(invisible(NULL))
 }
