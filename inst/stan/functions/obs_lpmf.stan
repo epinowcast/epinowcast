@@ -1,9 +1,9 @@
 real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
               array[] int sl, array[] int csl, array[] vector imp_obs,
               array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh,
-              matrix ref_lh, array[] int dpmfs, int ref_p, real phi) {
+              matrix ref_lh, array[] int dpmfs, int ref_p, int rep_h,
+              int ref_as_p, real phi) {
   real tar = 0;
-  real tar_obs;
   int start_n = csl[start] - sl[start];
   int end_n = csl[end];
   int n = end_n - start_n;
@@ -21,21 +21,11 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
     t = st[i];
     l = sl[i];
     }
-    vector[l] rdlh;
-    vector[l] ref_lh_i;
-    profile("model_likelihood_allocations") {
-    // Find final observed/imputed expected observation
-    tar_obs = imp_obs[g][t];
-    // allocate reference day effects
-    ref_lh_i = ref_lh[1:l, dpmfs[i]];
-    // allocate report day effects
-    rdlh = srdlh[rdlurd[t:(t + l - 1), g]];
-    }
     // combine expected final obs and date effects to get expected obs
-    profile("model_likelihood_expected_obs") {
+    profile("model_likelihood_expected_obs_from_index") {
     esnap += l;
-    log_exp_obs[ssnap:esnap] = expected_obs(
-      tar_obs, ref_lh_i, rdlh, ref_p
+    log_exp_obs[ssnap:esnap] = expected_obs_from_index(
+      imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t, l
     );
     ssnap += l;
     }

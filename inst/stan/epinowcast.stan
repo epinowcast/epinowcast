@@ -3,7 +3,8 @@ functions {
 #include functions/discretised_reporting_prob.stan
 #include functions/hazard.stan
 #include functions/zero_truncated_normal.stan
-#include functions/expected-observations.stan
+#include functions/expected_obs.stan
+#include functions/expected_obs_from_index.stan
 #include functions/obs_lpmf.stan
 }
 
@@ -192,16 +193,15 @@ generated quantities {
   array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
-    real tar_obs;
     vector[dmax] lexp_obs;
-    vector[dmax] rdlh;
     array[s, dmax] int pp_obs_tmp;
     // Posterior predictions for observations
     for (i in 1:s) {
       profile("generated_obs") {
-      tar_obs = imp_obs[sg[i]][st[i]];
-      rdlh = srdlh[rdlurd[st[i]:(st[i] + dmax - 1), sg[i]]];
-      lexp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
+      lexp_obs = expected_obs_from_index(
+        imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sg[i],
+        st[i], dmax
+      );
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
       }
       profile("generated_loglik") {
