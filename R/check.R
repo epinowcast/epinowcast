@@ -39,7 +39,7 @@ check_dates <- function(obs) {
       function"
     )
   }
-  retro_data[, report_date := as.IDate(report_date)]
-  retro_data[, reference_date := as.IDate(reference_date)]
+  obs[, report_date := as.IDate(report_date)]
+  obs[, reference_date := as.IDate(reference_date)]
   return(obs[])
 }

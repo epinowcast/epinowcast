@@ -214,7 +214,7 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days) {
     }
     earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
   }
-  filt_obs <- filt_obs[reference_date >= as.Date(earliest_ref_date)]
+  filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
 }
 
 #' Filter observations to the latest available reported
@@ -240,7 +240,6 @@ enw_latest_data <- function(obs) {
     .SD[report_date == (max(report_date))],
     by = c("reference_date")
   ]
-  latest_date[, report_date := NULL]
   return(latest_data[])
 }
 

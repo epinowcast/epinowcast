@@ -1,4 +1,3 @@
-
 # Load epinowcast and data.table
 library(epinowcast)
 library(data.table)
@@ -8,13 +7,21 @@ nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
 
 # Make a retrospective dataset
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  remove_rep_days = 40, include_ref_days = 40
+retro_nat_germany <- enw_filter_report_dates(
+  nat_germany_hosp, remove_days = 40
+)
+retro_nat_germany <- enw_filter_reference_dates(
+  retro_nat_germany, include_days = 40
 )
 
 # Get latest observations for the same time period
-latest_obs <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
+latest_obs <- enw_latest_data(nat_germany_hosp)
+latest_obs <- enw_filter_report_dates(
+  latest_obs, remove_days = 40
+)
+latest_obs <- enw_filter_reference_dates(
+  latest_obs, include_days = 40
+)
 
 # Preprocess observations
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
