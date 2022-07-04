@@ -105,7 +105,7 @@ transformed parameters{
     for (i in 1:npmfs) {
       pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
     }
-    if (ref_p == 0) {
+    if (ref_as_p == 0) {
       for (i in 1:npmfs) {
         ref_lh[, i] = prob_to_hazard(pmfs[, i]);
         ref_lh[, i] = logit(ref_lh[, i]);
@@ -183,7 +183,7 @@ model {
     profile("model_likelihood") {
     target += reduce_sum(
       obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rdlurd, srdlh,
-      ref_lh, dpmfs, dist, nrd_effs,ref_as_p, phi
+      ref_lh, dpmfs, dist, nrd_effs, ref_as_p, phi
     );
     }
   }
@@ -201,8 +201,8 @@ generated quantities {
     for (i in 1:s) {
       profile("generated_obs") {
       lexp_obs = expected_obs_from_index(
-        imp_obs, rdlurd, srdlh, ref_lh, dpmfs, dist, nrd_effs, ref_as_p, sg[i],
-        st[i], dmax
+        i, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, dist, nrd_effs, ref_as_p,
+        sg[i], st[i], dmax
       );
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
       }

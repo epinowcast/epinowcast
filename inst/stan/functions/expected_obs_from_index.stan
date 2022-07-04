@@ -1,6 +1,6 @@
-vector expected_obs_from_index(array[] vector imp_obs, 
+vector expected_obs_from_index(int i, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
-                               matrix ref_lh, array[] int dpmfs, int ref_p, 
+                               matrix ref_lh, array[] int dpmfs, int ref_p,
                                int rep_h, int ref_as_p, int g, int t, int l) {
   real tar_obs;
   vector[l] rdlh;
@@ -24,7 +24,7 @@ vector expected_obs_from_index(array[] vector imp_obs,
   }
   // combine expected final obs and date effects to get expected obs
   profile("model_likelihood_expected_obs") {
-  esnap += l;
   log_exp_obs = expected_obs(tar_obs, ref_lh_i, rdlh, ref_as_p);
+  }
   return(log_exp_obs);
 }

@@ -80,6 +80,12 @@ enw_opts_as_data_list <- function(distribution = "lognormal", nowcast = TRUE,
   distribution <- match.arg(
     distribution, c("none", "exponential", "lognormal", "gamma")
   )
+  if (distribution %in% "none") {
+    warning(
+      "As non-parametric hazards have yet to be implemented a parametric hazard
+       is likely required for all real-world use cases"
+    )
+  }
   distribution <- data.table::fcase(
     distribution %in% "none", 0,
     distribution %in% "exponential", 1,

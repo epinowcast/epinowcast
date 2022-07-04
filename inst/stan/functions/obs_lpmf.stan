@@ -25,7 +25,7 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
     profile("model_likelihood_expected_obs_from_index") {
     esnap += l;
     log_exp_obs[ssnap:esnap] = expected_obs_from_index(
-      imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t, l
+      i, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t, l
     );
     ssnap += l;
     }

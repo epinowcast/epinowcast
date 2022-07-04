@@ -12,7 +12,7 @@ This is a major release and contains breaking changes. If needing the old interf
 
 ## Model
 
-* Added support for parametric exponential delay distributions (note that this is comparable to an intercept only non-parametric hazard model). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
+* Added support for parametric exponential delay distributions (note that this is comparable to an intercept only non-parametric hazard model) and potentially no parametric delay (though this will currently error due to the lack of appropriate non-parametric hazard). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
 
 ## Internals
 
