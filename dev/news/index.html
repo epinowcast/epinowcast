@@ -82,7 +82,9 @@
 <div class="section level3">
 <h3 id="package-0-1-0">Package<a class="anchor" aria-label="anchor" href="#package-0-1-0"></a></h3>
 <ul><li>A new helper function <code><a href="../reference/enw_delay_metadata.html">enw_delay_metadata()</a></code> has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for <a href="https://github.com/epiforecasts/epinowcast/issues/4" class="external-link">#4</a> where this data frame with be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function it has also been added to the output of <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> in order to make the metadata readily available to end-users. See <a href="https://github.com/epiforecasts/epinowcast/pull/80" class="external-link">#80</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li></ul></div>
-<div class="section level3"><h3 id="model-0-1-0">Model<a class="anchor" aria-label="anchor" href="#model-0-1-0"></a></h3></div>
+<div class="section level3">
+<h3 id="model-0-1-0">Model<a class="anchor" aria-label="anchor" href="#model-0-1-0"></a></h3>
+<ul><li>Added support for parametric exponential delay distributions (note that this is comparable to an intercept only non-parametric hazard model) and potentially no parametric delay (though this will currently error due to the lack of appropriate non-parametric hazard). See <a href="https://github.com/epiforecasts/epinowcast/pull/84" class="external-link">#84</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li></ul></div>
 <div class="section level3">
 <h3 id="internals-0-1-0">Internals<a class="anchor" aria-label="anchor" href="#internals-0-1-0"></a></h3>
 <ul><li>Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on <code>rstan</code>) additional functionality has been added to parse stan code in this function. See <a href="https://github.com/epiforecasts/epinowcast/issues/74" class="external-link">#74</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
@@ -147,7 +149,7 @@
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk.</p>
 </div>
 
 <div class="pkgdown">
