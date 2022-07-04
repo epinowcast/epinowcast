@@ -9,7 +9,7 @@ NULL
 #' @inheritParams expose_stan_fns
 #' @return A character string in the of stan functions.
 #' @family utils
-#' @importFrom purrr map_ch
+#' @importFrom purrr map_chr
 stan_fns_as_string <- function(files, target_dir) {
   functions <- paste0(
     "\n functions{ \n",
@@ -39,11 +39,11 @@ convert_cmdstan_to_rstan <- function(functions) {
   # replace array syntax
   #   case 1: array[] real x -> real[] x
   functions <- gsub(
-    "array\\[(,?)\\] ([a-z]+) ([a-z_]+)", "\\2[\\1] \\3", functions
+    "array\\[(,?)\\] (.*) ([a-z_]+)", "\\2[\\1] \\3", functions
   )
   #   case 2: array[n] real x -> real x[n]
   functions <- gsub(
-    "array\\[([a-z]+)\\] ([a-z]+) ([a-z_]+)", "\\2 \\3[\\1]", functions
+    "array\\[(.*)\\] (.*) ([a-z_]+)", "\\2 \\3[\\1]", functions
   )
   # remove profiling code
   functions <- remove_profiling(functions)
