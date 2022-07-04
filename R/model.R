@@ -166,7 +166,7 @@ enw_as_data_list <- function(pobs,
 #'
 #' @param data A list of data as produced by [enw_as_data_list()] and output as
 #' `data` by [epinowcast()].
-#' 
+#'
 #' @return A function that when called returns a list of initial conditions
 #' for the package stan models.
 #'
@@ -185,7 +185,7 @@ enw_inits <- function(data) {
       init$logsd_int <- abs(
         rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)
       )
-    }else {
+    } else {
       init$logsd_int <- numeric(0)
     }
 
@@ -230,14 +230,14 @@ enw_inits <- function(data) {
     # initialise report date effects
     if (data$nrd_effs > 0) {
       init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
-    }else {
+    } else {
       init$rd_eff <- numeric(0)
     }
     if (data$nrd_eff_sds > 0) {
       init$rd_eff_sd <- abs(rnorm(
         data$nrd_eff_sds, data$rd_eff_sd_p[1], data$rd_eff_sd_p[2] / 10
       ))
-    }else {
+    } else {
       init$rd_eff_sd <- numeric(0)
     }
     return(init)
