@@ -181,11 +181,11 @@ enw_inits <- function(data) {
     init <- list(
       logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10)
     )
-    if (data$dist > 0) {
+    if (data$dist > 1) {
       init$logsd_int <- abs(
         rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)
       )
-    }else{
+    }else {
       init$logsd_int <- numeric(0)
     }
 
@@ -209,7 +209,9 @@ enw_inits <- function(data) {
     # initialise reference date effects
     if (data$neffs > 0) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
-      init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+      if (data$dist > 1) {
+        init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+      }
     } else {
       init$logmean_eff <- numeric(0)
       init$logsd_eff <- numeric(0)

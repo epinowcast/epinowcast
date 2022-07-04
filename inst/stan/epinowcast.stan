@@ -31,7 +31,7 @@ data {
   matrix[npmfs, neffs + 1] d_fixed; // design matrix for pmfs
   int neff_sds; // number of standard deviations to use for pooling
   matrix[neffs, neff_sds + 1] d_random; // Pooling pmf design matrix 
-  int dist; // parametric distribution (0 = exp. 1 = lognormal, 2 = gamma)
+  int dist; // parametric distribution (0 = none, 1 = exp. 2 = lognormal, 2 = gamma)
   // Reporting day model
   int rd; // how many reporting days are there (t + dmax - 1)
   int urds; // how many unique reporting days are there
@@ -183,7 +183,7 @@ model {
     profile("model_likelihood") {
     target += reduce_sum(
       obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rdlurd, srdlh,
-      ref_lh, dpmfs, dist, nrd_effs, ref_as_p, phi
+      ref_lh, dpmfs, dist, nrd_effs,ref_as_p, phi
     );
     }
   }

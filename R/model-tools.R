@@ -47,7 +47,8 @@ enw_formula_as_data_list <- function(data, reference_effects, report_effects) {
 #'
 #' @param distribution Character string indicating the type of distribution to
 #' use for reference date effects. The default is to use a lognormal but other
-#' options available include the exponential and gamma distributions.
+#' options available include the exponential and gamma distributions. If "none"
+#' is specfied then no parametric delay distribution is used.
 #'
 #' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
 #' posterior predictions of the unobserved future reported notifications.
@@ -77,12 +78,13 @@ enw_opts_as_data_list <- function(distribution = "lognormal", nowcast = TRUE,
   }
   # check distribution type is supported and change to numeric
   distribution <- match.arg(
-    distribution, c("exponential", "lognormal", "gamma")
+    distribution, c("none", "exponential", "lognormal", "gamma")
   )
   distribution <- data.table::fcase(
-    distribution %in% "exponential", 0,
-    distribution %in% "lognormal", 1,
-    distribution %in% "gamma", 2
+    distribution %in% "none", 0,
+    distribution %in% "exponential", 1,
+    distribution %in% "lognormal", 2,
+    distribution %in% "gamma", 3
   )
 
   data <- list(
