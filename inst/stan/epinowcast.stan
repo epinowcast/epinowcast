@@ -68,10 +68,10 @@ parameters {
   array[g] real leobs_init; // First time point for expected observations
   array[g] real<lower=0> eobs_lsd; // standard deviation of rw for primary obs
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
-  array[1] real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
-  array[dist ? 1 : 0]real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
-  vector[neffs] logmean_eff; // unscaled modifiers to log mean
-  vector[dist ? neffs : 0] logsd_eff; // unscaled modifiers to log sd
+  array[dist ? 1 : 0] real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
+  array[dist > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
+  vector[dist ? neffs : 0] logmean_eff; // unscaled modifiers to log mean
+  vector[dist > 1 ? neffs : 0] logsd_eff; // unscaled modifiers to log sd
   vector[nrd_effs] rd_eff; // unscaled modifiers to report date hazard
   vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
   vector<lower=0>[dist ? neff_sds : 0] logsd_sd; // pooled modifiers to logsd
@@ -89,28 +89,30 @@ transformed parameters{
   real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
-  profile("transformed_delay_reference_date_effects") {
-  logmean = combine_effects(logmean_int[1], logmean_eff, d_fixed, logmean_sd,
-                            d_random);
   if (dist) {
-    logsd = combine_effects(log(logsd_int[1]), logsd_eff, d_fixed, logsd_sd,
-                            d_random); 
-    logsd = exp(logsd);
-  }
-  }
-  // calculate pmfs
-  profile("transformed_delay_reference_date_pmfs") {
-  for (i in 1:npmfs) {
-    pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
-  }
-  if (ref_p == 0) {
-    for (i in 1:npmfs) {
-      ref_lh[, i] = prob_to_hazard(pmfs[, i]);
-      ref_lh[, i] = logit(ref_lh[, i]);
+    profile("transformed_delay_reference_date_effects") {
+    logmean = combine_effects(logmean_int[1], logmean_eff, d_fixed, logmean_sd,
+                              d_random);
+    if (dist > 1) {
+      logsd = combine_effects(log(logsd_int[1]), logsd_eff, d_fixed, logsd_sd,
+                              d_random); 
+      logsd = exp(logsd);
     }
-  }else{
-    ref_lh = pmfs;
-  }
+    }
+    // calculate pmfs
+    profile("transformed_delay_reference_date_pmfs") {
+    for (i in 1:npmfs) {
+      pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
+    }
+    if (ref_p == 0) {
+      for (i in 1:npmfs) {
+        ref_lh[, i] = prob_to_hazard(pmfs[, i]);
+        ref_lh[, i] = logit(ref_lh[, i]);
+      }
+    }else{
+      ref_lh = pmfs;
+    }
+    }
   }
   }
   // calculate sparse report date effects with forced 0 intercept
@@ -146,20 +148,22 @@ model {
     leobs_resids[i] ~ std_normal();
   }
   // priors for the intercept of the log normal truncation distribution
-  logmean_int ~ normal(logmean_int_p[1], logmean_int_p[2]);
   if (dist) {
-    logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
-  }
-  // priors and scaling for date of reference effects
-  if (neffs) {
-    logmean_eff ~ std_normal();
-    if (dist) {
-      logsd_eff ~ std_normal();
+    logmean_int ~ normal(logmean_int_p[1], logmean_int_p[2]);
+    if (dist > 1) {
+      logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
     }
-    if (neff_sds) {
-      logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
-      if (dist) {
-        logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+    // priors and scaling for date of reference effects
+    if (neffs) {
+      logmean_eff ~ std_normal();
+      if (dist > 1) {
+        logsd_eff ~ std_normal();
+      }
+      if (neff_sds) {
+        logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
+        if (dist > 1) {
+          logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+        }
       }
     }
   }
