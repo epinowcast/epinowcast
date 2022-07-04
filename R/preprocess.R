@@ -145,13 +145,15 @@ enw_add_max_reported <- function(obs) {
   return(obs[])
 }
 
-#' @title Create retrospective data from a full data set
+#' Create retrospective data from a full data set
 #'
-#' @description This is a helper function which allows to create truncated data
-#' sets at past time points from a given larger data set.
+#' @description This is a helper function which allows users to create
+#' truncated data sets at past time points from a given larger data set.
+#' This is useful when evaluating nowcast performance against fully
+#' observed data.
 #'
 #' @param obs an observation data frame containing \code{report_date} and
-#' \code{reference_date} columns
+#' \code{reference_date} columns.
 #'
 #' @param latest_rep_date latest report date to include in the retrospective
 #' data set
@@ -163,21 +165,29 @@ enw_add_max_reported <- function(obs) {
 #' retrospective data set
 #'
 #' @param include_ref_days if \code{earilest_ref_date} is not given, the number
-#' of reference dates to include, ending with the from the latest reference
+#' of reference dates to include, ending with the latest reference
 #' date included once reporting dates have been removed.
 #'
 #' @return A data.table containing the retrospective data set
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy as.IDate
+#' @examples
+#'
 enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
                                    earliest_ref_date, include_ref_days) {
   retro_data <- data.table::copy(obs)
+  if (is.null(obs$reference_date) || is.null(obs$report_date)) {
+    stop(
+      "Both reference_date and report_date must be present in order to use this
+      function"
+    )
+  }
   retro_data[, report_date := as.IDate(report_date)]
   retro_data[, reference_date := as.IDate(reference_date)]
   if (!missing(remove_rep_days)) {
     if (!missing(latest_rep_date)) {
-      stop("`remove_rep_days` and `latest_rep_date` can't both be specified." )
+      stop("`remove_rep_days` and `latest_rep_date` can't both be specified.")
     }
     latest_rep_date <- max(retro_data$report_date) - remove_rep_days
   }
@@ -185,11 +195,14 @@ enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
 
   if (!missing(include_ref_days)) {
     if (!missing(earliest_ref_date)) {
-      stop("`include_ref_days` and `earliest_rep_date` can't both be specified.")
+      stop(
+        "`include_ref_days` and `earliest_rep_date` can't both be specified."
+      )
     }
-    earliest_ref_date <- max(retro_data$reference_date) - include_ref_days
+    earliest_ref_date <-
+      max(retro_data$reference_date, na.rm = TRUE) - include_ref_days
   }
-  retro_data <- retro_data[reference_date > earliest_ref_date]
+  retro_data <- retro_data[reference_date >= earliest_ref_date]
   return(retro_data[])
 }
 

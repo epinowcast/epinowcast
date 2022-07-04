@@ -14,7 +14,7 @@ enw_retrospective_data(
 }
 \arguments{
 \item{obs}{an observation data frame containing \code{report_date} and
-\code{reference_date} columns}
+\code{reference_date} columns.}
 
 \item{latest_rep_date}{latest report date to include in the retrospective
 data set}
@@ -26,15 +26,17 @@ of report dates to remove, starting from the latest date included}
 retrospective data set}
 
 \item{include_ref_days}{if \code{earilest_ref_date} is not given, the number
-of reference dates to include, ending with the from the latest reference
+of reference dates to include, ending with the latest reference
 date included once reporting dates have been removed.}
 }
 \value{
 A data.table containing the retrospective data set
 }
 \description{
-This is a helper function which allows to create truncated data
-sets at past time points from a given larger data set.
+This is a helper function which allows users to create
+truncated data sets at past time points from a given larger data set.
+This is useful when evaluating nowcast performance against fully
+observed data.
 }
 \seealso{
 Preprocessing functions
