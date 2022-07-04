@@ -12,10 +12,14 @@
         print(pmfs[, i]);
         print("Logmean and Logsd intercept");
         print(logmean_int);
-        print(logsd_int);
+        if (dist) {
+          print(logsd_int);
+        }
         print("Logmean and Logsd for pmf");
         print(logmean[i]);
-        print(logsd[i]);
+        if (dist) {
+          print(logsd[i]);
+        }
         print("Unique report day hazards");
         print(srdlh);
         print("Overdispersion");

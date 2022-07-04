@@ -377,18 +377,17 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
   delays <- delays[, `:=`(
-      delay = delay,
-      delay_cat = cut(
-        delay, seq(
-          from = 0, to = ceiling(even_delay / breaks) * breaks,
-          by = ceiling(even_delay / breaks)
-          ),
-          dig.lab = 0, right = FALSE
+    delay = delay,
+    delay_cat = cut(
+      delay, seq(
+        from = 0, to = ceiling(even_delay / breaks) * breaks,
+        by = ceiling(even_delay / breaks)
       ),
-      delay_week = as.integer(delay / 7),
-      delay_tail = delay > quantile(delay, probs = 0.75)
-    )
-  ]
+      dig.lab = 0, right = FALSE
+    ),
+    delay_week = as.integer(delay / 7),
+    delay_tail = delay > quantile(delay, probs = 0.75)
+  )]
   return(delays[])
 }
 
