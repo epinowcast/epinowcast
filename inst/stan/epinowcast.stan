@@ -30,7 +30,7 @@ data {
   matrix[npmfs, neffs + 1] d_fixed; // design matrix for pmfs
   int neff_sds; // number of standard deviations to use for pooling
   matrix[neffs, neff_sds + 1] d_random; // Pooling pmf design matrix 
-  int dist; // distribution used for pmfs (0 = lognormal, 1 = gamma)
+  int dist; // parametric distribution (0 = exp. 1 = lognormal, 2 = gamma)
   // Reporting day model
   int rd; // how many reporting days are there (t + dmax - 1)
   int urds; // how many unique reporting days are there
