@@ -4,7 +4,7 @@
 \alias{enw_latest_data}
 \title{Filter observations to the latest available}
 \usage{
-enw_latest_data(obs, ref_window)
+enw_latest_data(obs)
 }
 \arguments{
 \item{obs}{A data frame containing at least the following variables:
@@ -22,11 +22,8 @@ A filtered data frame with the same variables as \code{obs}.
 Filter observations to the latest available
 }
 \examples{
-# Filter for latest available data
+# Filter for latest reported data
 enw_latest_data(germany_covid19_hosp)
-
-# Restrict to a window of 40 days ignoring the most recent 10 days
-enw_latest_data(germany_covid19_hosp, c(50, 10))
 }
 \seealso{
 Preprocessing functions
@@ -35,9 +32,9 @@ Preprocessing functions
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
-\code{\link{enw_filter_obs}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},

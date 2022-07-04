@@ -117,9 +117,7 @@ enw_assign_group <- function(obs, by = c()) {
 #' @export
 #' @importFrom data.table as.data.table copy
 enw_add_delay <- function(obs) {
-  obs <- data.table::as.data.table(obs)
-  obs[, report_date := as.IDate(report_date)]
-  obs[, reference_date := as.IDate(reference_date)]
+  obs <- check_dates(obs)
   obs[, delay := as.numeric(report_date - reference_date)]
   return(obs = obs[])
 }
@@ -176,15 +174,7 @@ enw_add_max_reported <- function(obs) {
 #'
 enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
                                    earliest_ref_date, include_ref_days) {
-  retro_data <- data.table::copy(obs)
-  if (is.null(obs$reference_date) || is.null(obs$report_date)) {
-    stop(
-      "Both reference_date and report_date must be present in order to use this
-      function"
-    )
-  }
-  retro_data[, report_date := as.IDate(report_date)]
-  retro_data[, reference_date := as.IDate(reference_date)]
+  retro_data <- check_dates(obs)
   if (!missing(remove_rep_days)) {
     if (!missing(latest_rep_date)) {
       stop("`remove_rep_days` and `latest_rep_date` can't both be specified.")
@@ -221,30 +211,15 @@ enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
 #' @export
 #' @importFrom data.table copy as.IDate
 #' @examples
-#' # Filter for latest available data
+#' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
-#'
-#' # Restrict to a window of 40 days ignoring the most recent 10 days
-#' enw_latest_data(germany_covid19_hosp, c(50, 10))
-enw_latest_data <- function(obs, ref_window) {
-  latest_data <- data.table::copy(obs)
-  latest_data[, report_date := as.IDate(report_date)]
-  latest_data[, reference_date := as.IDate(reference_date)]
+enw_latest_data <- function(obs) {
+  latest_data <- check_dates(obs)
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date))],
     by = c("reference_date")
   ]
-
-  latest_data[, report_date := NULL]
-  if (!missing(ref_window)) {
-    latest_data <-
-      latest_data[reference_date >= (max(reference_date) - ref_window[1])]
-    if (length(ref_window) == 2) {
-      latest_data <-
-        latest_data[reference_date <= (max(reference_date) - ref_window[2])]
-    }
-  }
   return(latest_data[])
 }
 
@@ -310,8 +285,8 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 #' @importFrom data.table copy
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
-#' enw_filter_obs(obs, max_delay = 2)
-enw_filter_obs <- function(obs, max_delay) {
+#' enw_delay_filter(obs, max_delay = 2)
+enw_delay_filter <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
     by = c("reference_date", "group")
@@ -574,7 +549,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     max_delay_strat,
     choices = c("exclude", "add_to_max_delay")
   )
-  obs <- data.table::as.data.table(obs)
+  obs <- check_dates(obs)
   obs <- obs[order(reference_date)]
 
   obs <- enw_assign_group(obs, by = by)
@@ -589,7 +564,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     ]
   }
 
-  obs <- enw_filter_obs(obs, max_delay = max_delay)
+  obs <- enw_delay_filter(obs, max_delay = max_delay)
 
   diff_obs <- enw_new_reports(
     obs,
