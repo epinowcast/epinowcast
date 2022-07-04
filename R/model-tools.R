@@ -47,7 +47,7 @@ enw_formula_as_data_list <- function(data, reference_effects, report_effects) {
 #'
 #' @param distribution Character string indicating the type of distribution to
 #' use for reference date effects. The default is to use a lognormal but other
-#' options available include the exponential and gamma distributions. 
+#' options available include the exponential and gamma distributions.
 #'
 #' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
 #' posterior predictions of the unobserved future reported notifications.
