@@ -143,73 +143,93 @@ enw_add_max_reported <- function(obs) {
   return(obs[])
 }
 
-#' Create retrospective data from a full data set
+#' Filter by report dates
 #'
 #' @description This is a helper function which allows users to create
 #' truncated data sets at past time points from a given larger data set.
 #' This is useful when evaluating nowcast performance against fully
-#' observed data.
+#' observed data. Users may wish to combine this function with
+#' [enw_filter_reference_dates()].
 #'
-#' @param obs an observation data frame containing \code{report_date} and
-#' \code{reference_date} columns.
+#' @param latest_date Date, the latest report date to include in the
+#' returned dataset.
 #'
-#' @param latest_rep_date latest report date to include in the retrospective
-#' data set
+#' @param remove_days Integer, if \code{latest_date} is not given, the number
+#' of report dates to remove, starting from the latest date included.
 #'
-#' @param remove_rep_days if \code{latest_rep_date} is not given, the number
-#' of report dates to remove, starting from the latest date included
+#' @inheritParams check_dates
+#' @return A data.table  filtered by report date
+#' @family preprocess
+#' @export
+#' @examples
+#' # Filter by date
+#' enw_filter_report_dates(germany_covid19_hosp, latest_date = "2021-09-01")
+#
+#' # Filter by days
+#' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
+enw_filter_report_dates <- function(obs, latest_date, remove_days) {
+  filt_obs <- check_dates(obs)
+  if (!missing(remove_days)) {
+    if (!missing(latest_date)) {
+      stop("`remove_days` and `latest_date` can't both be specified.")
+    }
+    latest_date <- max(filt_obs$report_date) - remove_days
+  }
+  filt_obs <- filt_obs[report_date <= as.Date(latest_date)]
+  return(filt_obs[])
+}
+
+#' Filter by reference dates
 #'
-#' @param earliest_ref_date earliest reference date to include in the
+#' @description This is a helper function which allows users to filter
+#' datasets by reference date. This is useful, for example, when evaluating
+#' nowcast performance against fully observed data. Users may wish to combine
+#' this function with [enw_filter_report_dates()].
+#'
+#' @param earliest_date earliest reference date to include in the
 #' retrospective data set
 #'
-#' @param include_ref_days if \code{earilest_ref_date} is not given, the number
+#' @param include_days if \code{earilest_ref_date} is not given, the number
 #' of reference dates to include, ending with the latest reference
 #' date included once reporting dates have been removed.
 #'
-#' @return A data.table containing the retrospective data set
+#' @inheritParams check_dates
+#' @return A data.table  filtered by report date
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy as.IDate
 #' @examples
-#'
-enw_retrospective_data <- function(obs, latest_rep_date, remove_rep_days,
-                                   earliest_ref_date, include_ref_days) {
-  retro_data <- check_dates(obs)
-  if (!missing(remove_rep_days)) {
-    if (!missing(latest_rep_date)) {
-      stop("`remove_rep_days` and `latest_rep_date` can't both be specified.")
-    }
-    latest_rep_date <- max(retro_data$report_date) - remove_rep_days
-  }
-  retro_data <- retro_data[report_date <= latest_rep_date]
-
-  if (!missing(include_ref_days)) {
-    if (!missing(earliest_ref_date)) {
+#' enw_filter_reference_dates(
+#'  germany_covid19_hosp, earliest_date = "2021-09-01"
+#' )
+#
+#' # Filter by days
+#' enw_filter_reference_dates(germany_covid19_hosp, include_days = 10)
+enw_filter_reference_dates <- function(obs,  earliest_date, include_days) {
+  filt_obs <- check_dates(obs)
+  if (!missing(include_days)) {
+    if (!missing(earliest_date)) {
       stop(
-        "`include_ref_days` and `earliest_rep_date` can't both be specified."
+        "`include_days` and `earliest_date` can't both be specified."
       )
     }
-    earliest_ref_date <-
-      max(retro_data$reference_date, na.rm = TRUE) - include_ref_days
+    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
   }
-  retro_data <- retro_data[reference_date >= earliest_ref_date]
-  return(retro_data[])
+  filt_obs <- filt_obs[reference_date >= as.Date(earliest_ref_date)]
 }
 
-#' Filter observations to the latest available
+#' Filter observations to the latest available reported
 #'
-#' @param obs A data frame containing at least the following variables:
-#' `reference date` (index date of interest), and `report_date` (report date for
-#' observations).
+#' @description Filter observations to be the latest available reported
+#' data for each reference date. Note this is not the same as filtering 
+#' for the maximum report date in all cases as data may only be updated 
+#' up to some mamimum number of days.
 #'
-#' @param ref_window Numeric vector of length 2. Can optionally be used to
-#' restrict the reference date to a window referenced to the maximum available
-#' reference date.
+#' @return A data.frame of observations filtered for the latest available data
+#' for each reference date.
 #'
-#' @return A filtered data frame with the same variables as `obs`.
+#' @inheritParams check_dates
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy as.IDate
 #' @examples
 #' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
@@ -220,6 +240,7 @@ enw_latest_data <- function(obs) {
     .SD[report_date == (max(report_date))],
     by = c("reference_date")
   ]
+  latest_date[, report_date := NULL]
   return(latest_data[])
 }
 

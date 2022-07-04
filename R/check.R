@@ -22,7 +22,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 
 #' Check Report and Reference Dates are present
 #'
-#' @param obs A data.frame to check for the required date variables
+#' @param obs An observation data frame containing \code{report_date} and
+#' \code{reference_date} columns.
 #'
 #' @return Returns the input data.frame with dates converted to date format
 #' if not already.

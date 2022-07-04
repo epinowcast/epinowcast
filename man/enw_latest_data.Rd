@@ -2,24 +2,23 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_latest_data}
 \alias{enw_latest_data}
-\title{Filter observations to the latest available}
+\title{Filter observations to the latest available reported}
 \usage{
 enw_latest_data(obs)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
-\verb{reference date} (index date of interest), and \code{report_date} (report date for
-observations).}
-
-\item{ref_window}{Numeric vector of length 2. Can optionally be used to
-restrict the reference date to a window referenced to the maximum available
-reference date.}
+\item{obs}{An observation data frame containing \code{report_date} and
+\code{reference_date} columns.}
 }
 \value{
-A filtered data frame with the same variables as \code{obs}.
+A data.frame of observations filtered for the latest available data
+for each reference date.
 }
 \description{
-Filter observations to the latest available
+Filter observations to be the latest available reported
+data for each reference date. Note this is not the same as filtering
+for the maximum report date in all cases as data may only be updated
+up to some mamimum number of days.
 }
 \examples{
 # Filter for latest reported data
@@ -35,11 +34,12 @@ Preprocessing functions
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_report_dates}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_retrospective_data}()}
+\code{\link{enw_reporting_triangle}()}
 }
 \concept{preprocess}

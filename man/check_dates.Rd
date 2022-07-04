@@ -7,7 +7,8 @@
 check_dates(obs)
 }
 \arguments{
-\item{obs}{A data.frame to check for the required date variables}
+\item{obs}{An observation data frame containing \code{report_date} and
+\code{reference_date} columns.}
 }
 \value{
 Returns the input data.frame with dates converted to date format
