@@ -62,7 +62,7 @@ transformed data{
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
   // effects
-  int ref_p = nrd_effs > 0 ? 0 : 1; 
+  int ref_as_p = (nrd_effs > 0 || dist) ? 0 : 1; 
 }
 
 parameters {
@@ -182,7 +182,9 @@ model {
   if (likelihood) {
     profile("model_likelihood") {
     target += reduce_sum(obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
-                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, phi);
+                         rdlurd, srdlh, ref_lh, dpmfs, dist, nrd_effs,
+                         ref_as_p, phi
+    );
     }
   }
 }
@@ -199,7 +201,7 @@ generated quantities {
     for (i in 1:s) {
       profile("generated_obs") {
       lexp_obs = expected_obs_from_index(
-        imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sg[i],
+        imp_obs, rdlurd, srdlh, ref_lh, dpmfs, dist, nrd_effs, ref_as_p, sg[i],
         st[i], dmax
       );
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
