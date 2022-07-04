@@ -2,25 +2,33 @@
 % Please edit documentation in R/utils.R
 \name{expose_stan_fns}
 \alias{expose_stan_fns}
-\title{FUNCTION_TITLE}
+\title{Expose stan functions in R}
 \usage{
 expose_stan_fns(files, target_dir, ...)
 }
 \arguments{
-\item{files}{PARAM_DESCRIPTION}
+\item{files}{A character vector of file names}
 
-\item{target_dir}{PARAM_DESCRIPTION}
+\item{target_dir}{A character string giving the directory in which
+files can be found.}
 
-\item{...}{PARAM_DESCRIPTION}
+\item{...}{Arguments to pass to \code{\link[rstan:expose_stan_functions]{rstan::expose_stan_functions()}}}
 }
 \value{
-OUTPUT_DESCRIPTION
+NULL (invisibily)
 }
 \description{
-FUNCTION_DESCRIPTION
+This function builds on top of
+\code{\link[rstan:expose_stan_functions]{rstan::expose_stan_functions()}} in order to facilitate exposing package
+functions in R for internal use, testing, and exploration. Crucially
+it performs a conversion between the package \code{cmdstan} stan code
+and \code{rstan} compatible stan code. It is not generally recommended that users
+make use of this function apart from when exploring package functionality.
 }
 \seealso{
 Utility functions
-\code{\link{is.Date}()}
+\code{\link{convert_cmdstan_to_rstan}()},
+\code{\link{is.Date}()},
+\code{\link{stan_fns_as_string}()}
 }
 \concept{utils}

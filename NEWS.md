@@ -16,7 +16,7 @@ This is a major release and contains breaking changes. If needing the old interf
 
 ## Internals
 
-* Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on `rstan`) additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on `rstan`) additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74) and [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 * Remove spurious warnings due to missing initial values for optional parameters. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 

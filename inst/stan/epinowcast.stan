@@ -67,7 +67,7 @@ transformed data{
 
 parameters {
   array[g] real leobs_init; // First time point for expected observations
-  array[g] real<lower=0> eobs_lsd; // standard deviation of rw for primary obs
+  vector<lower=0>[g] eobs_lsd; // standard deviation of rw for primary obs
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
   array[dist ? 1 : 0] real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
   array[dist > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
