@@ -3,7 +3,8 @@ functions {
 #include functions/discretised_reporting_prob.stan
 #include functions/hazard.stan
 #include functions/zero_truncated_normal.stan
-#include functions/expected-observations.stan
+#include functions/expected_obs.stan
+#include functions/expected_obs_from_index.stan
 #include functions/obs_lpmf.stan
 }
 
@@ -30,7 +31,7 @@ data {
   matrix[npmfs, neffs + 1] d_fixed; // design matrix for pmfs
   int neff_sds; // number of standard deviations to use for pooling
   matrix[neffs, neff_sds + 1] d_random; // Pooling pmf design matrix 
-  int dist; // distribution used for pmfs (0 = lognormal, 1 = gamma)
+  int dist; // parametric distribution (0 = none, 1 = exp. 2 = lognormal, 2 = gamma)
   // Reporting day model
   int rd; // how many reporting days are there (t + dmax - 1)
   int urds; // how many unique reporting days are there
@@ -61,20 +62,20 @@ transformed data{
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
   // effects
-  int ref_p = nrd_effs > 0 ? 0 : 1; 
+  int ref_as_p = (nrd_effs > 0 || dist) ? 0 : 1; 
 }
 
 parameters {
   array[g] real leobs_init; // First time point for expected observations
   array[g] real<lower=0> eobs_lsd; // standard deviation of rw for primary obs
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
-  real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
-  real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
-  vector[neffs] logmean_eff; // unscaled modifiers to log mean
-  vector[neffs] logsd_eff; // unscaled modifiers to log sd
+  array[dist ? 1 : 0] real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
+  array[dist > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
+  vector[dist ? neffs : 0] logmean_eff; // unscaled modifiers to log mean
+  vector[dist > 1 ? neffs : 0] logsd_eff; // unscaled modifiers to log sd
   vector[nrd_effs] rd_eff; // unscaled modifiers to report date hazard
   vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
-  vector<lower=0>[neff_sds] logsd_sd; // pooled modifiers to logsd
+  vector<lower=0>[dist ? neff_sds : 0] logsd_sd; // pooled modifiers to logsd
   vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
   real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
 }
@@ -89,26 +90,30 @@ transformed parameters{
   real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
-  profile("transformed_delay_reference_date_effects") {
-  logmean = combine_effects(logmean_int, logmean_eff, d_fixed, logmean_sd,
-                            d_random);
-  logsd = combine_effects(log(logsd_int), logsd_eff, d_fixed, logsd_sd,
-                          d_random); 
-  logsd = exp(logsd);
-  }
-  // calculate pmfs
-  profile("transformed_delay_reference_date_pmfs") {
-  for (i in 1:npmfs) {
-    pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
-  }
-  if (ref_p == 0) {
-    for (i in 1:npmfs) {
-      ref_lh[, i] = prob_to_hazard(pmfs[, i]);
-      ref_lh[, i] = logit(ref_lh[, i]);
+  if (dist) {
+    profile("transformed_delay_reference_date_effects") {
+    logmean = combine_effects(logmean_int[1], logmean_eff, d_fixed, logmean_sd,
+                              d_random);
+    if (dist > 1) {
+      logsd = combine_effects(log(logsd_int[1]), logsd_eff, d_fixed, logsd_sd,
+                              d_random); 
+      logsd = exp(logsd);
     }
-  }else{
-    ref_lh = pmfs;
-  }
+    }
+    // calculate pmfs
+    profile("transformed_delay_reference_date_pmfs") {
+    for (i in 1:npmfs) {
+      pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
+    }
+    if (ref_as_p == 0) {
+      for (i in 1:npmfs) {
+        ref_lh[, i] = prob_to_hazard(pmfs[, i]);
+        ref_lh[, i] = logit(ref_lh[, i]);
+      }
+    }else{
+      ref_lh = pmfs;
+    }
+    }
   }
   }
   // calculate sparse report date effects with forced 0 intercept
@@ -144,15 +149,23 @@ model {
     leobs_resids[i] ~ std_normal();
   }
   // priors for the intercept of the log normal truncation distribution
-  logmean_int ~ normal(logmean_int_p[1], logmean_int_p[2]);
-  logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
-  // priors and scaling for date of reference effects
-  if (neffs) {
-    logmean_eff ~ std_normal();
-    logsd_eff ~ std_normal();
-    if (neff_sds) {
-      logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
-      logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+  if (dist) {
+    logmean_int ~ normal(logmean_int_p[1], logmean_int_p[2]);
+    if (dist > 1) {
+      logsd_int ~ normal(logsd_int_p[1], logsd_int_p[2]);
+    }
+    // priors and scaling for date of reference effects
+    if (neffs) {
+      logmean_eff ~ std_normal();
+      if (dist > 1) {
+        logsd_eff ~ std_normal();
+      }
+      if (neff_sds) {
+        logmean_sd ~ zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
+        if (dist > 1) {
+          logsd_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+        }
+      }
     }
   }
   // priors and scaling for date of report effects
@@ -168,8 +181,10 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    target += reduce_sum(obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
-                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, phi);
+    target += reduce_sum(
+      obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rdlurd, srdlh,
+      ref_lh, dpmfs, dist, nrd_effs, ref_as_p, phi
+    );
     }
   }
 }
@@ -180,16 +195,15 @@ generated quantities {
   array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
-    real tar_obs;
     vector[dmax] lexp_obs;
-    vector[dmax] rdlh;
     array[s, dmax] int pp_obs_tmp;
     // Posterior predictions for observations
     for (i in 1:s) {
       profile("generated_obs") {
-      tar_obs = imp_obs[sg[i]][st[i]];
-      rdlh = srdlh[rdlurd[st[i]:(st[i] + dmax - 1), sg[i]]];
-      lexp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
+      lexp_obs = expected_obs_from_index(
+        i, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, dist, nrd_effs, ref_as_p,
+        sg[i], st[i], dmax
+      );
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
       }
       profile("generated_loglik") {

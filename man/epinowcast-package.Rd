@@ -24,6 +24,7 @@ Useful links:
 Authors:
 \itemize{
   \item Adrian Lison \email{adrian.lison@bsse.ethz.ch} (\href{https://orcid.org/0000-0002-6822-8437}{ORCID})
+  \item Sebastian Funk \email{sebastian.funk@lshtm.ac.uk}
 }
 
 Other contributors:
