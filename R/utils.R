@@ -43,7 +43,12 @@ convert_cmdstan_to_rstan <- function(functions) {
   )
   #   case 2: array[n] real x -> real x[n]
   functions <- gsub(
-    "array\\[(.*)\\] (.*) ([a-z_]+)", "\\2 \\3[\\1]", functions
+    "array\\[([^]]*)\\]\\s+([a-z_]+)\\s+([a-z_]+)", "\\2 \\3[\\1]", functions
+  )
+  #   case 3: array[nl, np] matrix[n, l] x -> matrix[n, l] x[nl, np]
+  functions <- gsub(
+    "array\\[([^]]*)\\]\\s+([a-z_]+)\\[([^]]*)\\]\\s+([a-z_]+)",
+    "\\2[\\3] \\4[\\1]", functions
   )
   # remove profiling code
   functions <- remove_profiling(functions)

@@ -24,4 +24,8 @@ test_that(
     epinowcast:::convert_cmdstan_to_rstan("array[nl, pq] vector[n] x;"),
     "vector[n] x[nl, pq];"
   )
+  expect_equal(
+    epinowcast:::convert_cmdstan_to_rstan("array[nl, pq] matrix[n, l] x;"),
+    "matrix[n, l] x[nl, pq];"
+  )
 })
