@@ -198,6 +198,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @family preprocess
 #' @export
 #' @examples
+#' # Filter by date
 #' enw_filter_reference_dates(
 #'  germany_covid19_hosp, earliest_date = "2021-09-01"
 #' )
