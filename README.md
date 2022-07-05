@@ -108,13 +108,14 @@ produce the nowcast target based on the latest available
 hospitalisations by date of positive test.
 
 ``` r
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
-nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
+nat_germany_hosp <-
+  germany_covid19_hosp[location == "DE"][age_group %in% "00+"] |>
+  enw_filter_report_dates(latest_date = "2021-10-01")
 
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  remove_rep_days = 40, include_ref_days = 40
-)
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 40)
+
 head(retro_nat_germany, n = 10)
 #>     reference_date location age_group confirm report_date
 #>  1:     2021-07-13       DE       00+      21  2021-07-13
@@ -130,7 +131,10 @@ head(retro_nat_germany, n = 10)
 ```
 
 ``` r
-latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
+latest_germany_hosp <- nat_germany_hosp |>
+  enw_latest_data() |>
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 40)
 head(latest_germany_hosp, n = 10)
 #>     reference_date location age_group confirm
 #>  1:     2021-07-13       DE       00+      60
@@ -242,7 +246,9 @@ nowcast
 Summarise the nowcast for the latest snapshot of data.
 
 ``` r
-head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
+nowcast |>
+  summary(probs = c(0.05, 0.95)) |>
+  head(n = 10)
 #>     reference_date location age_group confirm max_confirm cum_prop_reported
 #>  1:     2021-07-14       DE       00+      72          72                 1
 #>  2:     2021-07-15       DE       00+      69          69                 1

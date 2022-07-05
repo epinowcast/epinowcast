@@ -27,6 +27,7 @@ nowcast performance against fully observed data. Users may wish to combine
 this function with \code{\link[=enw_filter_report_dates]{enw_filter_report_dates()}}.
 }
 \examples{
+# Filter by date
 enw_filter_reference_dates(
  germany_covid19_hosp, earliest_date = "2021-09-01"
 )
