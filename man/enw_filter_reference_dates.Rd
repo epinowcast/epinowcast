@@ -4,18 +4,30 @@
 \alias{enw_filter_reference_dates}
 \title{Filter by reference dates}
 \usage{
-enw_filter_reference_dates(obs, earliest_date, include_days)
+enw_filter_reference_dates(
+  obs,
+  earliest_date,
+  include_days,
+  latest_date,
+  remove_days
+)
 }
 \arguments{
 \item{obs}{An observation data frame containing \code{report_date} and
 \code{reference_date} columns.}
 
-\item{earliest_date}{earliest reference date to include in the
-retrospective data set}
+\item{earliest_date}{earliest reference date to include in the data set}
 
-\item{include_days}{if \code{earilest_ref_date} is not given, the number
+\item{include_days}{if \code{earilest_date} is not given, the number
 of reference dates to include, ending with the latest reference
-date included once reporting dates have been removed.}
+date included once reporting dates have been removed. If specifed
+this is indexed to \code{latest_date} or \code{remove_days}.}
+
+\item{latest_date}{Date, the latest reference date to include in the
+returned dataset.}
+
+\item{remove_days}{Integer, if \code{latest_date} is not given, the number
+of reference dates to remove, starting from the latest date included.}
 }
 \value{
 A data.table  filtered by report date
@@ -29,10 +41,13 @@ this function with \code{\link[=enw_filter_report_dates]{enw_filter_report_dates
 \examples{
 # Filter by date
 enw_filter_reference_dates(
- germany_covid19_hosp, earliest_date = "2021-09-01"
+ germany_covid19_hosp, earliest_date = "2021-09-01",
+ latest_date = "2021-10-01"
 )
 # Filter by days
-enw_filter_reference_dates(germany_covid19_hosp, include_days = 10)
+enw_filter_reference_dates(
+ germany_covid19_hosp, include_days = 10, remove_days = 10
+)
 }
 \seealso{
 Preprocessing functions
