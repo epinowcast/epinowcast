@@ -33,11 +33,15 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 check_dates <- function(obs) {
   obs <- data.table::as.data.table(obs)
   obs <- data.table::copy(obs)
-  if (is.null(obs$reference_date) || is.null(obs$report_date)) {
+  if (is.null(obs$reference_date) && is.null(obs$report_date)) {
     stop(
       "Both reference_date and report_date must be present in order to use this
       function"
     )
+  } else if (is.null(obs$reference_date)) {
+    stop("reference_date must be present")
+  } else if (is.null(obs$report_date)) {
+    stop("report_date must be present")
   }
   obs[, report_date := as.IDate(report_date)]
   obs[, reference_date := as.IDate(reference_date)]
