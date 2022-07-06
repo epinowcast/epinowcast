@@ -128,7 +128,7 @@ transformed parameters{
     real llast_obs;
     imp_obs[k][1] = leobs_init[k];
     for (i in 1:(t-1)) {
-      imp_obs[k][i + 1] = imp_obs[k][i] + leobs_resids[k][i] * eobs_lsd[k];
+      imp_obs[k][2:t] = imp_obs[k][i] + leobs_resids[k][i] * eobs_lsd[k];
     }
   }
   }
