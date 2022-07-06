@@ -239,25 +239,28 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param obs A `data.table` with the observations to complete
-#' 
+#'
 #' @param min_date The first date from which to complete.
-#' 
+#'
 #' @param max_date The last date until which to complete.
-#' 
-#' @param groups A `data.table` with one row per group, a column for each group
-#' attribute and a column `group` holding the group ID.
-#' 
+#'
 #' @param max_delay The maximum reporting delay.
-#' 
+#'
+#' @param by A character vector describing the stratification of
+#' observations. Defaults to no grouping.
+#'
 #' @param include_missing Should entries for cases with missing reference date
 #' be completed as well?, Default: FALSE
-#' 
+#'
 #' @return A `data.table` with completed entries for all combinations of reference
 #' dates, groups and possible report dates.
 #' @family preprocess
-enw_complete_dates <- function(obs, min_date, max_date, groups, max_delay, include_missing = FALSE) {
+enw_complete_dates <- function(obs, min_date, max_date, max_delay, by = c(), include_missing = FALSE) {
   obs <- data.table::as.data.table(obs)
-  dates = seq.Date(min_date,max_date,by=1)
+  dates <- seq.Date(min_date, max_date, by = 1)
+  by_with_group_id <- c("group", by)
+  groups <- unique(obs[, ..by_with_group_id])
+
   completion <- CJ(
     reference_date = dates,
     group = groups$group,
@@ -319,18 +322,19 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   # assign groups
   obs <- enw_assign_group(obs, by = by)
-  by_with_group_id <- c("group",by)
-  
+
   # complete missing report dates
   # Note: it might be better to get the "now" date as last date instead of
   # estimating it from data using the max report date
-  obs <- enw_complete_dates(obs,
-                            min_date = min(obs$reference_date,na.rm=T),
-                            max_date =  max(obs$report_date),
-                            groups = unique(obs[,..by_with_group_id]),
-                            max_delay = max_delay,
-                            include_missing = any(is.na(obs$reference_date)))
-  
+  obs <- enw_complete_dates(
+    obs,
+    min_date = min(obs$reference_date, na.rm = T),
+    max_date = max(obs$report_date),
+    max_delay = max_delay,
+    by = by,
+    include_missing = any(is.na(obs$reference_date))
+  )
+
   # filter by maximum reporting delay
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)],
     by = c("reference_date", "group")
@@ -344,7 +348,9 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   }
 
   # filter obs based on diff constraints
-  obs <- merge(obs, diff_obs[, .(reference_date, report_date, group)],
+  obs <- merge(
+    obs,
+    diff_obs[, .(reference_date, report_date, group)],
     by = c("reference_date", "report_date", "group")
   )
 
@@ -360,7 +366,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   )
   diff_obs[, group := new_group][, new_group := NULL]
   obs[, old_group := NULL]
-  
+
   # separate obs with and without missing reference date
   reporting_available <- diff_obs[!is.na(reference_date)]
   reporting_missing <- diff_obs[is.na(reference_date)]
