@@ -223,7 +223,7 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days) {
 #' @description Filter observations to be the latest available reported
 #' data for each reference date. Note this is not the same as filtering 
 #' for the maximum report date in all cases as data may only be updated 
-#' up to some mamimum number of days.
+#' up to some maximum number of days.
 #'
 #' @return A data.frame of observations filtered for the latest available data
 #' for each reference date.
