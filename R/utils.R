@@ -71,7 +71,7 @@ convert_cmdstan_to_rstan <- function(functions) {
 #'
 #' @param ... Arguments to pass to [rstan::expose_stan_functions()]
 #'
-#' @return NULL (invisibly)
+#' @return NULL (invisibily)
 #' @family utils
 #' @importFrom rstan expose_stan_functions stanc
 expose_stan_fns <- function(files, target_dir, ...) {
