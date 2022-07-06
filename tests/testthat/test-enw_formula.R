@@ -3,7 +3,7 @@
 obs <- enw_filter_report_dates(
   germany_covid19_hosp[location == "DE"][
     age_group %in% c("00+", "05-14", "15-34")
-  ], 
+  ],
   remove_days = 10
 )
 obs <- enw_filter_reference_dates(obs, include_days = 10)

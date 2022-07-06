@@ -164,7 +164,7 @@ enw_add_max_reported <- function(obs) {
 #' @examples
 #' # Filter by date
 #' enw_filter_report_dates(germany_covid19_hosp, latest_date = "2021-09-01")
-#
+#' #
 #' # Filter by days
 #' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 enw_filter_report_dates <- function(obs, latest_date, remove_days) {
@@ -200,12 +200,13 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @examples
 #' # Filter by date
 #' enw_filter_reference_dates(
-#'  germany_covid19_hosp, earliest_date = "2021-09-01"
+#'   germany_covid19_hosp,
+#'   earliest_date = "2021-09-01"
 #' )
-#
+#' #
 #' # Filter by days
 #' enw_filter_reference_dates(germany_covid19_hosp, include_days = 10)
-enw_filter_reference_dates <- function(obs,  earliest_date, include_days) {
+enw_filter_reference_dates <- function(obs, earliest_date, include_days) {
   filt_obs <- check_dates(obs)
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
@@ -221,8 +222,8 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days) {
 #' Filter observations to the latest available reported
 #'
 #' @description Filter observations to be the latest available reported
-#' data for each reference date. Note this is not the same as filtering 
-#' for the maximum report date in all cases as data may only be updated 
+#' data for each reference date. Note this is not the same as filtering
+#' for the maximum report date in all cases as data may only be updated
 #' up to some mamimum number of days.
 #'
 #' @return A data.frame of observations filtered for the latest available data
@@ -572,6 +573,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   )
   obs <- check_dates(obs)
   obs <- obs[order(reference_date)]
+  check_group(obs)
 
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)
@@ -604,7 +606,10 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   # update diff data groups using updated groups
   diff_obs <- merge(
     diff_obs,
-    obs[, .(reference_date, report_date, .new_group = .group, .group = .old_group)],
+    obs[
+      ,
+      .(reference_date, report_date, .new_group = .group, .group = .old_group)
+    ],
     by = c("reference_date", "report_date", ".group")
   )
   diff_obs[, .group := .new_group][, .new_group := NULL]

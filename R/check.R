@@ -47,3 +47,31 @@ check_dates <- function(obs) {
   obs[, reference_date := as.IDate(reference_date)]
   return(obs[])
 }
+
+#' Check Observations for reserved grouping variables
+#'
+#' @param obs An observation data frame that does not contain`.group`,
+#' `.old_group`, or `new_group` as these are reserved variables.
+#'
+#' @return NULL
+#'
+#' @family check
+check_group <- function(obs) {
+  if (!is.null(obs$.group)) {
+    stop(
+      ".group is a reserved variables and must not be present in the input
+       data"
+    )
+  } else if (!is.null(obs$.new_group)) {
+    stop(
+      ".new_group is a reserved variables and must not be present in the input
+       data"
+    )
+  } else if (!is.null(obs$.old_group)) {
+    stop(
+      ".old_group is a reserved variables and must not be present in the input
+       data"
+    )
+  }
+  return(invisible(NULL))
+}

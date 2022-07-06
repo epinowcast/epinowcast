@@ -13,12 +13,12 @@ NULL
 stan_fns_as_string <- function(files, target_dir) {
   functions <- paste0(
     "\n functions{ \n",
-      paste(purrr::map_chr(
-        files,
-        ~ paste(readLines(file.path(target_dir, .)), collapse = "\n")
-      ),
-      collapse = "\n"
-      ),
+    paste(purrr::map_chr(
+      files,
+      ~ paste(readLines(file.path(target_dir, .)), collapse = "\n")
+    ),
+    collapse = "\n"
+    ),
     "\n }"
   )
   return(functions)
