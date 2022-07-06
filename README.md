@@ -133,8 +133,7 @@ head(retro_nat_germany, n = 10)
 ``` r
 latest_germany_hosp <- nat_germany_hosp |>
   enw_latest_data() |>
-  enw_filter_report_dates(remove_days = 40) |>
-  enw_filter_reference_dates(include_days = 40)
+  enw_filter_reference_dates(remove_days = 40, include_days = 40)
 head(latest_germany_hosp, n = 10)
 #>     reference_date location age_group confirm
 #>  1:     2021-07-13       DE       00+      60

@@ -198,7 +198,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @param remove_days Integer, if \code{latest_date} is not given, the number
 #' of reference dates to remove, starting from the latest date included.
-#' 
+#'
 #' @inheritParams check_dates
 #' @return A data.table  filtered by report date
 #' @family preprocess
@@ -223,7 +223,9 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
     }
     latest_date <- max(filt_obs$reference_date) - remove_days
   }
-  filt_obs <- filt_obs[reference_date <= as.Date(latest_date)]
+  if (!missing(remove_days) || !missing(latest_date)) {
+    filt_obs <- filt_obs[reference_date <= as.Date(latest_date)]
+  }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
       stop(
@@ -232,7 +234,10 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
     }
     earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
   }
-  filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
+  if (!missing(include_days) || !missing(earliest_date)) {
+    filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
+  }
+  return(filt_obs[])
 }
 
 #' Filter observations to the latest available reported

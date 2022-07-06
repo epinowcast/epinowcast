@@ -15,7 +15,7 @@ files can be found.}
 \item{...}{Arguments to pass to \code{\link[rstan:expose_stan_functions]{rstan::expose_stan_functions()}}}
 }
 \value{
-NULL (invisibly)
+NULL (invisibily)
 }
 \description{
 This function builds on top of

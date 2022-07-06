@@ -18,7 +18,7 @@ for each reference date.
 Filter observations to be the latest available reported
 data for each reference date. Note this is not the same as filtering
 for the maximum report date in all cases as data may only be updated
-up to some maximum number of days.
+up to some mamimum number of days.
 }
 \examples{
 # Filter for latest reported data
