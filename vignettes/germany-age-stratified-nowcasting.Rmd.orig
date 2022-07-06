@@ -56,24 +56,20 @@ We first filter out the data that would have been available on the 1st of Septem
 ```{r}
 nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
 
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_date = as.Date("2021-09-01"), ref_date = as.Date("2021-09-01") - 40
-)
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(latest_date = "2021-09-01") |>
+  enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 ```
 
 Similarly we then find the data that were available on the 20th of October for these dates which will serve as the target "true" data.
 
 ```{r}
-latest_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_date = as.Date("2021-10-20"), ref_date = as.Date("2021-09-01") - 40
-)
-latest_nat_germany <- latest_nat_germany[
-  reference_date <= as.Date("2021-09-01")
-]
-latest_nat_germany <- enw_latest_data(latest_nat_germany)
+latest_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(latest_date ="2021-10-20") |>
+  enw_latest_data() |>
+  enw_filter_report_dates(latest_date = "2021-09-01") |>
+  enw_filter_reference_dates(include_days = 40)
 ```
 
 # Data preprocessing

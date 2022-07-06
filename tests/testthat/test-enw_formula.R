@@ -1,11 +1,12 @@
 # Use meta data for references dates from the Germany COVID-19
 # hospitalisation data.
-obs <- enw_retrospective_data(
+obs <- enw_filter_report_dates(
   germany_covid19_hosp[location == "DE"][
     age_group %in% c("00+", "05-14", "15-34")
-  ],
-  rep_days = 10, ref_days = 10
+  ], 
+  remove_days = 10
 )
+obs <- enw_filter_reference_dates(obs, include_days = 10)
 pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
 data <- pobs$metareference[[1]]
 

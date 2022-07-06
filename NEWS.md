@@ -1,6 +1,6 @@
 # epinowcast 0.1.0
 
-This is a major release and contains breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user interface with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing this interface. For ease we have stratified changes below into interface, package, and model changes.
+This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. For ease, we have stratified changes below into interface, package, and model changes.
 
 ## Interface
 
@@ -9,6 +9,7 @@ This is a major release and contains breaking changes. If needing the old interf
 ## Package
 
 * A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for [#4](https://github.com/epiforecasts/epinowcast/issues/4) where this data frame with be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See [#80](https://github.com/epiforecasts/epinowcast/pull/80) by [@seabbs](https://github.com/seabbs).
+* Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. See [#82](https://github.com/epiforecasts/epinowcast/pull/82) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 ## Model
 
