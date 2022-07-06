@@ -127,9 +127,8 @@ transformed parameters{
   for (k in 1:g) {
     real llast_obs;
     imp_obs[k][1] = leobs_init[k];
-    for (i in 1:(t-1)) {
-      imp_obs[k][2:t] = imp_obs[k][i] + leobs_resids[k][i] * eobs_lsd[k];
-    }
+    imp_obs[k][2:t] = 
+      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
   }
   }
   // transform phi to overdispersion scale
