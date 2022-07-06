@@ -36,14 +36,14 @@
 // all.equal(eobs, date_p)
 //
 // Example with hazard effect only on last day of report
-// ref_lh <- logit(prob_to_hazard(date_p))
+// ref_lh <- logit(hazard_to_log_prob(date_p))
 // eobs <- exp(expected_obs(tar_obs, ref_lh, c(rep(0, 29), 0.1), 0))
 // all.equal(eobs, date_p)
 //
 // Example with a single day of additional reporting hazard and
 // no differential probability due to the reference date.
 // rep_lh <- rep(0, 30); rep_lh[7] = 2
-// equal_lh <- logit(prob_to_hazard(rep(1/30, 30)))
+// equal_lh <- logit(hazard_to_log_prob(rep(1/30, 30)))
 // round(exp(expected_obs(tar_obs, equal_lh, rep_lh, 0)), 3)
 // # 0.033 0.033 0.033 0.033 0.033 0.033 0.195 0.026 0.026 0.026 0.026 0.026
 // # 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026
