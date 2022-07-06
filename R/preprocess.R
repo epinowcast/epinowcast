@@ -81,7 +81,7 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
     data.table::copy(metaobs)[, observed := TRUE],
     exts[, observed := FALSE]
   )
-  data.table::setorderv(exts, c("group", "date"))
+  data.table::setorderv(exts, c(".group", "date"))
   return(exts[])
 }
 
@@ -94,16 +94,16 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
 #' @export
 #' @importFrom data.table as.data.table copy
 enw_assign_group <- function(obs, by = c()) {
-  if ("group" %in% names(obs)) {
-    stop("Dataset cannot have a column called 'group'.")
+  if (".group" %in% names(obs)) {
+    stop("Dataset cannot have a column called '.group'.")
   }
   obs <- data.table::as.data.table(obs)
   if (length(by) == 0) {
-    obs <- obs[, group := 1]
+    obs <- obs[, .group := 1]
   } else {
     groups_index <- data.table::copy(obs)
     groups_index <- unique(groups_index[, ..by])
-    groups_index[, group := 1:.N]
+    groups_index[, .group := 1:.N]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
   }
   return(obs = obs[])
@@ -190,12 +190,12 @@ enw_new_reports <- function(obs) {
   reports <- data.table::copy(obs)
   reports <- reports[order(reference_date)]
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
   reports <- reports[, .SD[reference_date >= min(report_date) | is.na(reference_date)],
-    by = c("group")
+    by = c(".group")
   ]
-  reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", "group")]
+  reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", ".group")]
   return(reports[])
 }
 
@@ -274,17 +274,17 @@ enw_complete_dates <- function(obs, min_date, max_date, max_delay, by = c(), inc
       completion,
       CJ(
         reference_date = as.Date(NA),
-        group = groups$group,
+        .group = groups$.group,
         report_date = dates
       )
     )
   }
   # join completion with groups and original obs
-  completion <- completion[groups, on = "group"]
+  completion <- completion[groups, on = ".group"]
   obs <- obs[completion, on = c("reference_date", "report_date", names(groups))]
   # impute
   obs[, confirm := nafill(nafill(confirm, "locf"), fill = 0),
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
   return(obs)
 }
@@ -337,7 +337,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   # filter by maximum reporting delay
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)],
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
 
   # difference reports and filter for max delay and report date
@@ -350,22 +350,22 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   # filter obs based on diff constraints
   obs <- merge(
     obs,
-    diff_obs[, .(reference_date, report_date, group)],
-    by = c("reference_date", "report_date", "group")
+    diff_obs[, .(reference_date, report_date, .group)],
+    by = c("reference_date", "report_date", ".group")
   )
 
   # update grouping in case any are now missing
-  setnames(obs, "group", "old_group")
+  setnames(obs, ".group", ".old_group")
   obs <- enw_assign_group(obs, by)
 
   # update diff data groups using updated groups
   diff_obs <- merge(
     diff_obs,
-    obs[, .(reference_date, report_date, new_group = group, group = old_group)],
-    by = c("reference_date", "report_date", "group")
+    obs[, .(reference_date, report_date, .new_group = .group, .group = .old_group)],
+    by = c("reference_date", "report_date", ".group")
   )
-  diff_obs[, group := new_group][, new_group := NULL]
-  obs[, old_group := NULL]
+  diff_obs[, .group := .new_group][, .new_group := NULL]
+  obs[, .old_group := NULL]
 
   # separate obs with and without missing reference date
   reporting_available <- diff_obs[!is.na(reference_date)]
@@ -400,9 +400,9 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     reporting_triangle = list(reporting_triangle),
     metareference = list(metareference),
     metareport = list(metareport),
-    time = nrow(latest[group == 1]),
-    snapshots = nrow(unique(obs[, .(group, report_date)])),
-    groups = length(unique(obs$group)),
+    time = nrow(latest[.group == 1]),
+    snapshots = nrow(unique(obs[, .(.group, report_date)])),
+    groups = length(unique(obs$.group)),
     max_delay = max_delay,
     max_date = max(obs$report_date)
   )
