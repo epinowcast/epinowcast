@@ -8,7 +8,7 @@ enw_reporting_triangle(obs)
 }
 \arguments{
 \item{obs}{A data frame as produced by \code{\link[=enw_new_reports]{enw_new_reports()}}. Must contain the
-following variables: \code{reference_date}, \code{group}, \code{delay}.}
+following variables: \code{reference_date}, \code{.group}, \code{delay}.}
 }
 \value{
 A data frame with each row being a reference date, and columns being

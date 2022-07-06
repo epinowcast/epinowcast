@@ -55,14 +55,14 @@ enw_obs_as_data_list <- function(pobs) {
   # format latest matrix
   latest_matrix <- pobs$latest[[1]]
   latest_matrix <- data.table::dcast(
-    latest_matrix, reference_date ~ group,
+    latest_matrix, reference_date ~ .group,
     value.var = "confirm"
   )
   latest_matrix <- as.matrix(latest_matrix[, -1])
 
   # get new confirm for processing
   new_confirm <- data.table::copy(pobs$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", "group", "delay"))
+  data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -70,22 +70,22 @@ enw_obs_as_data_list <- function(pobs) {
   # format vector of snapshot lengths
   snap_length <- new_confirm
   snap_length <- snap_length[, .SD[delay == max(delay)],
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
   snap_length <- snap_length$delay + 1
 
   # snap lookup
-  snap_lookup <- unique(new_confirm[, .(reference_date, group)])
+  snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
   snap_lookup[, s := 1:.N]
   snap_lookup <- data.table::dcast(
-    snap_lookup, reference_date ~ group,
+    snap_lookup, reference_date ~ .group,
     value.var = "s"
   )
   snap_lookup <- as.matrix(snap_lookup[, -1])
 
   # snap time
-  snap_time <- unique(new_confirm[, .(reference_date, group)])
-  snap_time[, t := 1:.N, by = "group"]
+  snap_time <- unique(new_confirm[, .(reference_date, .group)])
+  snap_time[, t := 1:.N, by = ".group"]
   snap_time <- snap_time$t
 
   # Format indexing and observed data
@@ -99,7 +99,7 @@ enw_obs_as_data_list <- function(pobs) {
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
-    sg = unique(new_confirm[, .(reference_date, group)])$group,
+    sg = unique(new_confirm[, .(reference_date, .group)])$.group,
     dmax = pobs$max_delay[[1]],
     obs = as.matrix(pobs$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
