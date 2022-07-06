@@ -34,6 +34,9 @@
     <loc>epiforecasts.io/epinowcast/dev/reference/as_string_formula.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/dev/reference/check_dates.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/check_quantiles.html</loc>
   </url>
   <url>
@@ -76,6 +79,9 @@
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_dates_to_factors.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/dev/reference/enw_delay_filter.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_delay_metadata.html</loc>
   </url>
   <url>
@@ -91,7 +97,10 @@
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_extend_date.html</loc>
   </url>
   <url>
-    <loc>epiforecasts.io/epinowcast/dev/reference/enw_filter_obs.html</loc>
+    <loc>epiforecasts.io/epinowcast/dev/reference/enw_filter_reference_dates.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/dev/reference/enw_filter_report_dates.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_formula.html</loc>
@@ -170,9 +179,6 @@
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_reporting_triangle_to_long.html</loc>
-  </url>
-  <url>
-    <loc>epiforecasts.io/epinowcast/dev/reference/enw_retrospective_data.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_sample.html</loc>

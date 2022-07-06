@@ -176,13 +176,14 @@
 <p>Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations and typically this means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in <code>epinowcast</code>). For this quick start these data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a> where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted.</p>
 <p>Below we first filter for a snapshot of retrospective data available 40 days before the 1st of October that contains 40 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span></span>
-<span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span><span class="op">[</span><span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-10-01"</span><span class="op">)</span><span class="op">]</span></span>
+<code class="sourceCode R"><span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span></span>
+<span>  <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-01"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">retro_nat_germany</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_retrospective_data.html">enw_retrospective_data</a></span><span class="op">(</span></span>
-<span>  <span class="va">nat_germany_hosp</span>,</span>
-<span>  rep_days <span class="op">=</span> <span class="fl">40</span>, ref_days <span class="op">=</span> <span class="fl">40</span></span>
-<span><span class="op">)</span></span>
+<span><span class="va">retro_nat_germany</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>remove_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
+<span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date location age_group confirm report_date</span></span>
 <span><span class="co">#&gt;  1:     2021-07-13       DE       00+      21  2021-07-13</span></span>
@@ -196,7 +197,10 @@
 <span><span class="co">#&gt;  9:     2021-07-21       DE       00+      28  2021-07-21</span></span>
 <span><span class="co">#&gt; 10:     2021-07-22       DE       00+      34  2021-07-22</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="va">nat_germany_hosp</span>, ref_window <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">40</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>remove_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date location age_group confirm</span></span>
 <span><span class="co">#&gt;  1:     2021-07-13       DE       00+      60</span></span>
@@ -275,7 +279,9 @@
 <span><span class="co">#&gt; 1:                  42                0.042     62.6</span></span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date location age_group confirm max_confirm cum_prop_reported</span></span>
 <span><span class="co">#&gt;  1:     2021-07-14       DE       00+      72          72                 1</span></span>
 <span><span class="co">#&gt;  2:     2021-07-15       DE       00+      69          69                 1</span></span>
