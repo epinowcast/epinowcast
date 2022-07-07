@@ -20,7 +20,7 @@ enw_priors <- function() {
       "logsd_sd",
       "rd_eff_sd",
       "sqrt_phi",
-      "alpha_start",
+      "alpha_int",
       "alpha_sd"
     ),
     description = c(
@@ -32,7 +32,8 @@ enw_priors <- function() {
       "Standard deviation of scaled pooled report date effects",
       "One over the square of the reporting overdispersion",
       "Logit start value for share of cases with known reference date",
-      "Standard deviation of random walk for share of cases with known reference date"
+      "Standard deviation of random walk for share of cases with known
+       reference date"
     ),
     distribution = c(
       "Zero truncated normal",
@@ -68,13 +69,9 @@ enw_obs_as_data_list <- function(pobs) {
 
   # get new confirm for processing
   new_confirm <- data.table::copy(pobs$new_confirm[[1]])
-<<<<<<< HEAD
-  data.table::setorderv(new_confirm, c("reference_date", "group", "delay"))
-  new_confirm_missing <- data.table::copy(pobs$new_confirm_missing[[1]])
-  data.table::setorderv(new_confirm_missing, c("group", "reference_date"))
-=======
   data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
->>>>>>> develop
+  new_confirm_missing <- data.table::copy(pobs$new_confirm_missing[[1]])
+  data.table::setorderv(new_confirm_missing, c(".group", "reference_date"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -99,13 +96,14 @@ enw_obs_as_data_list <- function(pobs) {
   snap_time <- unique(new_confirm[, .(reference_date, .group)])
   snap_time[, t := 1:.N, by = ".group"]
   snap_time <- snap_time$t
-  
+
   # obs with missing reference date
-  obs_miss <- as.matrix(data.table::dcast(
-    new_confirm_missing,
-    group ~ report_date,
-    value.var = "new_confirm", fill = 0
-  )[, -1])
+  obs_miss <- as.matrix(
+    data.table::dcast(
+      new_confirm_missing, group ~ report_date, value.var = "new_confirm",
+      fill = 0
+    )[, -1]
+  )
 
   # Format indexing and observed data
   # See stan code for docs on what all of these are
