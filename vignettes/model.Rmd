@@ -1,7 +1,7 @@
 ---
 title: Model definition and implementation
 description: "Model formulation and implementation details"
-author: Sam Abbott
+author: Sam Abbott, Sebastian Funk
 output: rmarkdown::html_document
 bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
@@ -19,11 +19,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-In the following sections we provide methodological and implementation details for the nowcasting framework implemented in `epinowcast`. Our approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds an optional parametric assumption for the underlying reporting delay, support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr].
+In the following sections we provide methodological and implementation details for the nowcasting framework implemented in `epinowcast`. Our approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr] as well as a range of other model extensions.
 
 # Decomposition into expected final notifications and report delay components
 
-We are concerned with outcomes that occur at a time of _reference_ (e.g., date of symptom onset or test for a disease) that are reported only with a delay, at the time of _report_. We assume that these times are measured in discrete time steps, usually of a day (in which case the times are dates).
+We are concerned with outcomes that occur at a time of _reference_ (e.g., date of symptom onset or test for a disease) that are reported only with a delay, at the time of _report_ (e.g. the date onsets are entered into a central database and so become available for analysis). We assume that these times are measured in discrete time steps, usually of a day (in which case the times are dates).
 
 We follow the approach of Höhle and Heiden[@hohle] and consider the distribution of notifications ($n_{gtd}$) by time of reference ($t$) and reporting delay ($d$) conditional on the final observed count $N_{gt}$ for each dataset ($g$) such that,
 
@@ -31,9 +31,9 @@ We follow the approach of Höhle and Heiden[@hohle] and consider the distributio
   N_{gt} = \sum_{d=0}^{D} n_{gtd}
 \end{equation}
 
-where $D$ represents the maximum delay between time of reference and time of report which in theory could be infinite but in practice we set to a finite value in order to make the model identifiable and computationally feasible. For each $t$ and $g$ these notifications are assumed to be drawn from a multinomial distribution with $N_{gt}$ trials and a probability vector ($p_{gtd}$) of length $D$.  The aim of nowcasting is to predict the final observed counts $N_{gt}$ given information available up to time $t$. We do this by estimating the components of this probability vector jointly with the expected number of final notifications in dataset $g$ at time $t$ in dataset  $\lambda_{gt} = \mathbb{E}[N_{gt}]$.
+where $D$ represents the maximum delay between time of reference and time of report which in theory could be infinite but in practice we set to a finite value in order to make the model identifiable and computationally feasible. For each $t$ and $g$ these notifications are assumed to be drawn from a multinomial distribution with $N_{gt}$ trials and a probability vector ($p_{gtd}$) of length $D$.  The aim of nowcasting is to predict the final observed counts $N_{gt}$ given information available up to time $t$. We do this by estimating the components of this probability vector jointly with the expected number of final notifications ($\lambda_{gt} = \mathbb{E}[N_{gt}]$) in dataset $g$ at time $t$.
 
-An alternative approach, not explored here, would be to consider each $n_{gtd}$ independently at which point the model can be defined as a standard regression with the appropriate observation model and adjustment for reporting delay (i.e it becomes a Poisson or Negative Binomial regression)[@bastos]. An implementation of this approach is available in Bastos et al.[@bastos]. More work needs to be done to evaluate which of these approaches produces more accurate nowcasts for epidemiological count data.
+An alternative approach, not explored here, would be to consider each $n_{gtd}$ independently at which point the model can be defined as a regression that can be fit using standard software with the appropriate observation model and adjustment for reporting delay (i.e it becomes a Poisson or Negative Binomial regression). An implementation of this approach is available in Bastos et al.[@bastos]. A downside of this simplified approach is that reporting is not conditinally dependent which may make specifying models for complex reporting distributions difficult.
 
 # Expected final notifications
 
@@ -48,13 +48,13 @@ where $N_{g0}$, the first time point for expected observations in dataset $d$, i
 
 # Delay distribution
 
-Again following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{gtd}$) using a discrete time hazard model
+Again following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{gtd}$) using a discrete time logistic hazard model
 $$
 h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)
 $$
 but we extend this model to decompose $W_{gtd}$ into 3 components: hazard derived from a parametric delay distribution ($\gamma_{gtd}$) dependent on covariates at the time of reference, hazard not derived from a parametric distribution ($\delta_{gtd}$) dependent on covariates at the time of reference, and hazard dependent on covariates referenced to the time of report ($\epsilon_{gtd}$).
 
-The first component ($\gamma_{gtd}$) we estimate what would be the probability of reporting $p^{\prime}_{gtd}$ at a given time if it followed a parametric distribution, here implemented using a discretised log normal (other forms might be implemented in the future) with the log mean and log standard deviation being defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed ($\alpha_{i}$) and random ($\beta_{i}$) coefficients,
+The first component ($\gamma_{gtd}$) we estimate what would be the probability of reporting $p^{\prime}_{gtd}$ at a given time if it followed a parametric distribution, here implemented using a discretised log normal (with other distributions being available) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed ($\alpha_{i}$) and random ($\beta_{i}$) coefficients (note these can include auto-regressive terms),
 
 \begin{align}
   p^{\prime}_{gtd} &\sim \text{LogNormal} \left(\mu_{gt}, \upsilon_{gt} \right) \\
@@ -62,17 +62,17 @@ The first component ($\gamma_{gtd}$) we estimate what would be the probability o
   \upsilon_{gt} &= \text{exp} \left( \upsilon_0 + \alpha_{\upsilon} X_{\gamma} + \beta_{\upsilon} Z_{\gamma} \right)
 \end{align}
 
-The parametric logit hazard (i.e. the probability of report at a given time conditional on not already having reported) for this component of the model is then,
+Note we normalise this distribution but assuming that all of the probability mass after the maximum delay is shifted to the last permissible delay. The parametric logit hazard (i.e. the probability of report at a given time conditional on not already having reported) for this component of the model is then,
 
 \begin{equation}
   \gamma_{gtd} = \text{logit} \left(\frac{p^{\prime}_{gtd}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{gtd^{\prime}} \right)} \right)
 \end{equation}
 
-We assume that the there might be additional reporting effects that are not explained by the parametric distribution. These are represented by the non-distributional logit hazard components for the time of reference and report, again defined using an intercept and arbitrary shared covariates with fixed ($\alpha_{i}$) and random ($\beta_{i}$) coefficients.
+In addition to parametric reporting effects there may also be non-parametric effects referenced by both reference and report dates. These are represented by the non-distributional logit hazard components for the time of reference and report, defined using an intercept and arbitrary shared covariates with fixed ($\alpha_{i}$) and random ($\beta_{i}$) coefficients (note these can include auto-regressive terms).
 
 \begin{align}
   \delta_{gtd} &= \mu_0 + \alpha_{\delta} X_{\delta} + \beta_{\delta} Z_{\delta} \\
-  \epsilon_{gtd} &= \epsilon_0 + \alpha_{\epsilon} X_{\epsilon} + \beta_{\epsilon} Z_{\epsilon}
+  \epsilon_{gtd} &= \alpha_{\epsilon} X_{\epsilon} + \beta_{\epsilon} Z_{\epsilon}
 \end{align}
 
 The overall hazard for each group, reference time, and delay is then,
@@ -91,7 +91,7 @@ All ($\alpha_{i}$) and random ($\beta_{i}$) coefficients have standard normal pr
 
 # Observation model and nowcast
 
-Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We assume a negative binomial observation model with a joint overdispersion parameter (with a 1 over square root standard half normal prior) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for each observed notification for that reference time.
+Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We assume a negative binomial observation model with a joint overdispersion parameter (with a 1 over square root standard half normal prior) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.
 
 \begin{align}
   n_{gtd} \mid \lambda_{gt},p_{gtd}  &\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
@@ -101,6 +101,6 @@ Expected notifications by time of reference ($t$) and reporting delay can now be
 
 # Implementation
 
-The model is implemented in `stan` using `cmdstanr` with no defaults altered[@stan; @cmdstanr]. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
+The model is implemented in `stan` using `cmdstanr` with no defaults altered[@stan; @cmdstanr]. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. A flexible formula interface is provideed to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
 
 # References
