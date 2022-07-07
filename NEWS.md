@@ -1,6 +1,6 @@
 # epinowcast 0.1.0
 
-This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. For ease, we have stratified changes below into interface, package, and model changes.
+This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. For ease, we have stratified changes below into interface, package, documentation, and model changes.
 
 ## Interface
 
@@ -15,6 +15,10 @@ This is a major release and contains multiple breaking changes. If needing the o
 
 * Added support for parametric exponential delay distributions (note that this is comparable to an intercept only non-parametric hazard model) and potentially no parametric delay (though this will currently error due to the lack of appropriate non-parametric hazard). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
 * Update the expectation random walk model to use a more efficient `cumulative_sum` implementation suggested by [@adrian-lison](https://github.com/adrian-lison) in [#98](https://github.com/epiforecasts/epinowcast/issues/98)]. See [#103](https://github.com/epiforecasts/epinowcast/pull/103/) by [@seabbs](https://github.com/seabbs).
+
+## Documentation
+
+* The model descriptipn has been updated to reflect the currently implemented model and to improve readability. The use use of reference and report date nomenclature has also been standardised across the package. See [#71](https://github.com/epiforecasts/epinowcast/pull/71) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 ## Internals
 
