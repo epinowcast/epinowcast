@@ -116,70 +116,70 @@ dataset), and the script used to generate these examples respectively.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load the nowcast</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"nowcast"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm             latest</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[630x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x8]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle      metareference         metareport time snapshots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt; &lt;data.table[60x9]&gt;   41        41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    groups max_delay   max_date               fit       data  fit_args samples</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1        20 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[39]&gt; &lt;list[6]&gt;    1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    max_rhat divergent_transitions per_divergent_transitions max_treedepth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1.01                     0                         0             8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    no_at_max_treedepth per_at_max_treedepth run_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 205                0.205       88</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[630x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x9]&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle      metareference         metareport          metadelay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt; &lt;data.table[60x9]&gt; &lt;data.table[20x4]&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    time snapshots by groups max_delay   max_date               fit       data</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   41        41         1        20 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[39]&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fit_args samples max_rhat divergent_transitions per_divergent_transitions</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;list[6]&gt;    1000     1.03                     0                         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    max_treedepth no_at_max_treedepth per_at_max_treedepth run_time</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:             8                  95                0.095     98.8</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the preprocessed observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"preprocessed_observations"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm             latest</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[630x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x8]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle      metareference         metareport time snapshots</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt; &lt;data.table[60x9]&gt;   41        41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    groups max_delay   max_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1        20 2021-08-22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[630x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x9]&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reporting_triangle      metareference         metareport          metadelay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt; &lt;data.table[60x9]&gt; &lt;data.table[20x4]&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    time snapshots by groups max_delay   max_date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:   41        41         1        20 2021-08-22</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the latest observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"observations"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group confirm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-07-13       DE       00+      60</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-07-14       DE       00+      74</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-07-15       DE       00+      69</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-07-16       DE       00+      49</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-07-17       DE       00+      67</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-07-18       DE       00+      51</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-07-19       DE       00+      36</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-07-20       DE       00+      96</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-07-21       DE       00+      94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-07-22       DE       00+      99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-07-23       DE       00+      88</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-07-24       DE       00+      95</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-07-25       DE       00+      75</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-07-26       DE       00+      29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-07-27       DE       00+      81</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-07-28       DE       00+     159</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-07-29       DE       00+     143</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-07-30       DE       00+     117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-07-31       DE       00+     132</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-08-01       DE       00+      80</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:     2021-08-02       DE       00+      59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:     2021-08-03       DE       00+     156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:     2021-08-04       DE       00+     183</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:     2021-08-05       DE       00+     147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:     2021-08-06       DE       00+     155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:     2021-08-07       DE       00+     159</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:     2021-08-08       DE       00+     119</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:     2021-08-09       DE       00+      65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:     2021-08-10       DE       00+     204</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:     2021-08-11       DE       00+     275</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:     2021-08-12       DE       00+     273</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:     2021-08-13       DE       00+     270</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:     2021-08-14       DE       00+     262</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:     2021-08-15       DE       00+     192</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:     2021-08-16       DE       00+     140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:     2021-08-17       DE       00+     323</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:     2021-08-18       DE       00+     409</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:     2021-08-19       DE       00+     370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:     2021-08-20       DE       00+     361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:     2021-08-21       DE       00+     339</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:     2021-08-22       DE       00+     258</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group confirm report_date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-07-13       DE       00+      60  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-07-14       DE       00+      74  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-07-15       DE       00+      69  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-07-16       DE       00+      49  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-07-17       DE       00+      67  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-07-18       DE       00+      51  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-07-19       DE       00+      36  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-07-20       DE       00+      96  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-07-21       DE       00+      94  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-07-22       DE       00+      99  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-07-23       DE       00+      88  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-07-24       DE       00+      95  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-07-25       DE       00+      75  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-07-26       DE       00+      29  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-07-27       DE       00+      81  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-07-28       DE       00+     159  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-07-29       DE       00+     143  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-07-30       DE       00+     117  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-07-31       DE       00+     132  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-08-01       DE       00+      80  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:     2021-08-02       DE       00+      59  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:     2021-08-03       DE       00+     156  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:     2021-08-04       DE       00+     183  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:     2021-08-05       DE       00+     147  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:     2021-08-06       DE       00+     155  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:     2021-08-07       DE       00+     159  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:     2021-08-08       DE       00+     119  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:     2021-08-09       DE       00+      65  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:     2021-08-10       DE       00+     204  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:     2021-08-11       DE       00+     275  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:     2021-08-12       DE       00+     273  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:     2021-08-13       DE       00+     270  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:     2021-08-14       DE       00+     262  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:     2021-08-15       DE       00+     192  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:     2021-08-16       DE       00+     140  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:     2021-08-17       DE       00+     323  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:     2021-08-18       DE       00+     409  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:     2021-08-19       DE       00+     370  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:     2021-08-20       DE       00+     361  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:     2021-08-21       DE       00+     339  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:     2021-08-22       DE       00+     258  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group confirm report_date</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the script used to generate these examples</span></span></span>
 <span class="r-in"><span><span class="co"># Optionally source this script to regenerate the example</span></span></span>
@@ -202,35 +202,32 @@ dataset), and the script used to generate these examples respectively.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [16] ""                                                                                    </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [17] "# Get latest observations for the same time period"                                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [18] "latest_obs &lt;- enw_latest_data(nat_germany_hosp)"                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "latest_obs &lt;- enw_filter_report_dates("                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "  latest_obs, remove_days = 40"                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "latest_obs &lt;- enw_filter_reference_dates("                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "  latest_obs, remove_days = 40, include_days = 40"                                   </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [21] ")"                                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [22] "latest_obs &lt;- enw_filter_reference_dates("                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "  latest_obs, include_days = 40"                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [24] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "# Preprocess observations"                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [25] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "# Preprocess observations"                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "# Reference date model"                                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "reference_effects &lt;- enw_formula(~ 1, pobs$metareference[[1]])"                      </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [28] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "# Reference date model"                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "reference_effects &lt;- enw_formula(~ 1, pobs$metareference[[1]])"                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "# Report date model"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "report_effects &lt;- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])"            </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [31] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "# Report date model"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "report_effects &lt;- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])"            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "# Compile nowcasting model"                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "model &lt;- enw_model(threads = TRUE)"                                                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [34] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "# Compile nowcasting model"                                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "model &lt;- enw_model(threads = TRUE)"                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "# Fit nowcast model and produce a nowcast"                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "# Note that we have reduced samples for this example to reduce runtimes"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [40] "nowcast &lt;- epinowcast(pobs,"                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "  model = model,"                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "  report_effects = report_effects,"                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "  reference_effects = reference_effects,"                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "  save_warmup = FALSE, pp = TRUE,"                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "  chains = 2, threads_per_chain = 1,"                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "  iter_warmup = 500, iter_sampling = 500"                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "# Fit nowcast model and produce a nowcast"                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "# Note that we have reduced samples for this example to reduce runtimes"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "nowcast &lt;- epinowcast(pobs,"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "  model = model,"                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "  report_effects = report_effects,"                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40] "  reference_effects = reference_effects,"                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "  save_warmup = FALSE, pp = TRUE,"                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "  chains = 2, threads_per_chain = 1,"                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "  iter_warmup = 500, iter_sampling = 500"                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44] ")"                                                                                   </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
