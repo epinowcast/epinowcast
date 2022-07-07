@@ -266,7 +266,7 @@ plot(age_week_nowcast, latest_obs = latest_nat_germany) +
 
 ## Independent models  for each age group.
 
-The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the occurrence date stratified by age) to each age group independently.
+The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the reference date stratified by age) to each age group independently.
 
 We could define this model with a single call to `epinowcast` but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.
 
