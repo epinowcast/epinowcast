@@ -19,7 +19,7 @@ enw_construct_data(
 }
 \arguments{
 \item{obs}{Observations with the addition of empirical reporting proportions
-and and restricted to the specified maximum delay).}
+and and restricted to the specified maximum dela.}
 
 \item{new_confirm}{Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.}

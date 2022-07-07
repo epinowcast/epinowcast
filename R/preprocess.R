@@ -141,8 +141,8 @@ enw_add_max_reported <- function(obs) {
     ,
     .(reference_date, .group, max_confirm = confirm)
   ]
-  orig_latest[is.na(reference_date), max_confirm := confirm]
-  obs <- obs[orig_latest, on = c("reference_date", ".group")]
+  obs <- orig_latest[obs, on = c("reference_date", ".group")]
+  obs[is.na(reference_date), max_confirm := confirm]
   obs[, cum_prop_reported := confirm / max_confirm]
   return(obs[])
 }
@@ -228,7 +228,9 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
     latest_date <- max(filt_obs$reference_date) - remove_days
   }
   if (!missing(remove_days) || !missing(latest_date)) {
-    filt_obs <- filt_obs[reference_date <= as.Date(latest_date)]
+    filt_obs <- filt_obs[
+      reference_date <= as.Date(latest_date) | is.na(reference_date)
+    ]
   }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
@@ -239,7 +241,9 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
     earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
   }
   if (!missing(include_days) || !missing(earliest_date)) {
-    filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
+    filt_obs <- filt_obs[
+      reference_date >= as.Date(earliest_date) | is.na(reference_date)
+    ]
   }
   return(filt_obs[])
 }
@@ -267,6 +271,7 @@ enw_latest_data <- function(obs) {
     .SD[report_date == (max(report_date))],
     by = c("reference_date")
   ]
+  latest_data <- latest_data[!is.na(reference_date)]
   return(latest_data[])
 }
 
@@ -336,7 +341,9 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 #' enw_delay_filter(obs, max_delay = 2)
 enw_delay_filter <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
-  obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
+  obs <- obs[,
+    .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
+   ],
     by = c("reference_date", ".group")
   ]
   return(obs[])
@@ -401,9 +408,9 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' Ensures that all reference and report dates are present for
 #' all groups based on the maximum and minimum dates found in the data.
-#' This function may be of use to users when preprocessing their data but is
-#' also used internally by `enw_preprocess_data()` to ensure the data is in the
-#' format that the model assumes.
+#' This function may be of use to users when preprocessing their data. In
+#' general all features that you may consider using as grouping variables
+#' or as covariates need to be included in the `by` variable.
 #'
 #' @param include_missing Should entries for cases with missing reference date
 #' be completed as well?, Default: TRUE
@@ -411,34 +418,40 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
 #'
-#' @inheritParams check_dates
 #' @inheritParams enw_preprocess_data
 #' @export
 #' @importFrom data.table as.data.table CJ
 #' @family preprocess
 #' @examples
 #' obs <- data.frame(
-#'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01"
+#'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+#'  confirm = 1
 #' )
 #' enw_complete_dates(obs)
-enw_complete_dates <- function(obs, by = c(), include_missing = TRUE) {
+enw_complete_dates <- function(obs, by = c(), max_delay,
+                               include_missing = TRUE) {
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)
-  if (is.null(obs$delay)) {
-    obs <- enw_add_delay(obs)
+  if (missing(max_delay)) {
+    if (is.null(obs$delay)) {
+      obs <- enw_add_delay(obs)
+    }
+    max_delay <- max(obs$delay, na.rm = TRUE)
+    obs[, delay := NULL]
   }
-  max_delay <- max(obs$delay, na.rm = TRUE)
+
   dates <- seq.Date(min_date, max_date, by = 1)
+
+  obs <- enw_assign_group(obs, by = by)
   by_with_group_id <- c(".group", by)
-  by_with_group_id <- intersect(colnames(obs), by_with_group_id)
   groups <- unique(obs[, ..by_with_group_id])
 
   completion <- data.table::CJ(
     reference_date = dates,
-    group = groups$group,
+    .group = groups$.group,
     report_date = 0:max_delay
   )
   completion <- completion[, report_date := reference_date + report_date]
@@ -457,11 +470,12 @@ enw_complete_dates <- function(obs, by = c(), include_missing = TRUE) {
   # join completion with groups and original obs
   completion <- completion[groups, on = ".group"]
   obs <- obs[completion, on = c("reference_date", "report_date", names(groups))]
-  # impute missing as zero
+  # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", ".group")
   ]
+  obs[, .group := NULL]
   return(obs[])
 }
 
@@ -517,7 +531,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #' of [enw_preprocess_data()] for more on the expected inputs.
 #'
 #' @param obs Observations with the addition of empirical reporting proportions
-#'  and and restricted to the specified maximum delay).
+#'  and and restricted to the specified maximum dela.
 #'
 #' @param new_confirm Incidence of notifications by reference and report date.
 #' Empirical reporting distributions are also added.
@@ -562,7 +576,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     obs = list(obs),
     new_confirm = list(new_confirm),
     latest = list(latest),
-    missing_reference = list(reference_missing),
+    missing_reference = list(missing_reference),
     reporting_triangle = list(reporting_triangle),
     metareference = list(metareference),
     metareport = list(metareport),
@@ -590,7 +604,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' construct models). This function wraps other preprocessing functions that may
 #' be instead used individually if required. Note that internally reports
 #' beyond the user specified delay are reassigned to the last permissible delay
-#' for modelling purposes.
+#' for modelling purposes. Also note that if missing reference or report dates 
+#' are suspected to occur in your data then these need to be completed with
+#' [enw_complete_dates()].
 #'
 #' @param obs A data frame containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
@@ -663,13 +679,12 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
                                 set_negatives_to_zero = TRUE) {
   obs <- check_dates(obs)
-  obs <- obs[order(reference_date)]
   check_group(obs)
+  obs <- obs[order(reference_date)]
 
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)
   obs <- enw_add_delay(obs)
-  obs <- enw_complete_dates(obs, by = by)
 
   obs[
     report_date == (reference_date + max_delay - 1),

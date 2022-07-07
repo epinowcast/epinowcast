@@ -4,16 +4,22 @@
 \alias{enw_complete_dates}
 \title{Complete missing reference and report dates}
 \usage{
-enw_complete_dates(obs, by = c(), include_missing = TRUE)
+enw_complete_dates(obs, by = c(), max_delay, include_missing = TRUE)
 }
 \arguments{
-\item{obs}{An observation data frame containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{A data frame containing at least the following variables:
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date).}
 
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
+
+\item{max_delay}{Numeric defaults to 20. The maximum number of days to
+include in the delay distribution. Computation scales non-linearly with this
+setting so consider what maximum makes sense for your data carefully.}
 
 \item{include_missing}{Should entries for cases with missing reference date
 be completed as well?, Default: TRUE}
@@ -25,13 +31,14 @@ reference dates, groups and possible report dates.
 \description{
 Ensures that all reference and report dates are present for
 all groups based on the maximum and minimum dates found in the data.
-This function may be of use to users when preprocessing their data but is
-also used internally by \code{enw_preprocess_data()} to ensure the data is in the
-format that the model assumes.
+This function may be of use to users when preprocessing their data. In
+general all features that you may consider using as grouping variables
+or as covariates need to be included in the \code{by} variable.
 }
 \examples{
 obs <- data.frame(
- report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01"
+ report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+ confirm = 1
 )
 enw_complete_dates(obs)
 }
