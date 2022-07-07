@@ -10,7 +10,7 @@ enw_delay_filter(obs, max_delay)
 \item{obs}{A data frame containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
-date), and \code{group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).}
+date), and \code{.group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this

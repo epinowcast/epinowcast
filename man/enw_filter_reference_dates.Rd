@@ -44,6 +44,7 @@ enw_filter_reference_dates(
  germany_covid19_hosp, earliest_date = "2021-09-01",
  latest_date = "2021-10-01"
 )
+#
 # Filter by days
 enw_filter_reference_dates(
  germany_covid19_hosp, include_days = 10, remove_days = 10

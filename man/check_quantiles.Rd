@@ -18,6 +18,7 @@ Check Quantiles Required are Present
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_dates}()}
+\code{\link{check_dates}()},
+\code{\link{check_group}()}
 }
 \concept{check}

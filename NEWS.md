@@ -4,21 +4,22 @@ This is a major release and contains multiple breaking changes. If needing the o
 
 ## Interface
 
-* A full featured and flexible formula interface has been added that allows the specification of fixed effects, `lme4` random effects, and random walks. See [#27](https://github.com/epiforecasts/epinowcast/pull/27) by [@seabbs](https://github.com/seabbs).
+* A fully featured and flexible formula interface has been added that allows the specification of fixed effects, `lme4` random effects, and random walks. See [#27](https://github.com/epiforecasts/epinowcast/pull/27) by [@seabbs](https://github.com/seabbs).
 
 ## Package
 
-* A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for [#4](https://github.com/epiforecasts/epinowcast/issues/4) where this data frame with be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See [#80](https://github.com/epiforecasts/epinowcast/pull/80) by [@seabbs](https://github.com/seabbs).
+* A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for [#4](https://github.com/epiforecasts/epinowcast/issues/4) where this data frame will be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function, it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See [#80](https://github.com/epiforecasts/epinowcast/pull/80) by [@seabbs](https://github.com/seabbs).
 * Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. See [#82](https://github.com/epiforecasts/epinowcast/pull/82) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* The internal grouping variables have been refactored to reduce the chance of clashes with columns in the data frames supplied by the user. There will also be an error thrown in case of a variable clash, making preprocessing safer. See [#102](https://github.com/epiforecasts/epinowcast/pull/102) by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs), which solves [#99](https://github.com/epiforecasts/epinowcast/issues/99).
 
 ## Model
 
-* Added support for parametric exponential delay distributions (note that this is comparable to an intercept only non-parametric hazard model) and potentially no parametric delay (though this will currently error due to the lack of appropriate non-parametric hazard). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
+* Added support for parametric exponential delay distributions (note that this is comparable to an intercept-only non-parametric hazard model) and potentially no parametric delay (though this will currently throw an error due to the lack of appropriate non-parametric hazard). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
 * Update the expectation random walk model to use a more efficient `cumulative_sum` implementation suggested by [@adrian-lison](https://github.com/adrian-lison) in [#98](https://github.com/epiforecasts/epinowcast/issues/98)]. See [#103](https://github.com/epiforecasts/epinowcast/pull/103/) by [@seabbs](https://github.com/seabbs).
 
 ## Internals
 
-* Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on `rstan`) additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74), [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003), and [#93](https://github.com/epiforecasts/epinowcast/pull/93) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on `rstan`), additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74), [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003), and [#93](https://github.com/epiforecasts/epinowcast/pull/93) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 * Remove spurious warnings due to missing initial values for optional parameters. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 

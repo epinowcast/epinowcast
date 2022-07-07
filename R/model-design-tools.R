@@ -187,7 +187,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
     cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
     metaobs[,
       (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),
-      .SDcols = cfeatures, by = "group"
+      .SDcols = cfeatures, by = ".group"
     ]
   }
   return(metaobs[])

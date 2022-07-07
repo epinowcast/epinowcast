@@ -17,7 +17,7 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   ]
   metaobs <- unique(metaobs)
   setnames(metaobs, target_date, "date")
-  metaobs <- metaobs[, .SD[1, ], by = c("date", "group")]
+  metaobs <- metaobs[, .SD[1, ], by = c("date", ".group")]
   return(metaobs[])
 }
 
@@ -67,8 +67,8 @@ enw_add_metaobs_features <- function(metaobs, holidays = c(),
 #' @importFrom purrr map
 enw_extend_date <- function(metaobs, max_delay = 20) {
   exts <- data.table::copy(metaobs)
-  exts <- exts[, .SD[date == max(date)], by = group]
-  exts <- split(exts, by = "group")
+  exts <- exts[, .SD[date == max(date)], by = .group]
+  exts <- split(exts, by = ".group")
   exts <- purrr::map(
     exts,
     ~ data.table::data.table(
@@ -84,7 +84,7 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
     data.table::copy(metaobs)[, observed := TRUE],
     exts[, observed := FALSE]
   )
-  data.table::setorderv(exts, c("group", "date"))
+  data.table::setorderv(exts, c(".group", "date"))
   return(exts[])
 }
 
@@ -99,11 +99,11 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
 enw_assign_group <- function(obs, by = c()) {
   obs <- data.table::as.data.table(obs)
   if (length(by) == 0) {
-    obs <- obs[, group := 1]
+    obs <- obs[, .group := 1]
   } else {
     groups_index <- data.table::copy(obs)
     groups_index <- unique(groups_index[, ..by])
-    groups_index[, group := 1:.N]
+    groups_index[, .group := 1:.N]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
   }
   return(obs = obs[])
@@ -136,9 +136,9 @@ enw_add_max_reported <- function(obs) {
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
     ,
-    .(reference_date, group, max_confirm = confirm)
+    .(reference_date, .group, max_confirm = confirm)
   ]
-  obs <- obs[orig_latest, on = c("reference_date", "group")]
+  obs <- obs[orig_latest, on = c("reference_date", ".group")]
   obs[, cum_prop_reported := confirm / max_confirm]
   return(obs[])
 }
@@ -164,7 +164,7 @@ enw_add_max_reported <- function(obs) {
 #' @examples
 #' # Filter by date
 #' enw_filter_report_dates(germany_covid19_hosp, latest_date = "2021-09-01")
-#
+#' #
 #' # Filter by days
 #' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 enw_filter_report_dates <- function(obs, latest_date, remove_days) {
@@ -209,7 +209,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'  germany_covid19_hosp, earliest_date = "2021-09-01",
 #'  latest_date = "2021-10-01"
 #' )
-#
+#' #
 #' # Filter by days
 #' enw_filter_reference_dates(
 #'  germany_covid19_hosp, include_days = 10, remove_days = 10
@@ -243,8 +243,8 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
 #' Filter observations to the latest available reported
 #'
 #' @description Filter observations to be the latest available reported
-#' data for each reference date. Note this is not the same as filtering 
-#' for the maximum report date in all cases as data may only be updated 
+#' data for each reference date. Note this is not the same as filtering
+#' for the maximum report date in all cases as data may only be updated
 #' up to some mamimum number of days.
 #'
 #' @return A data.frame of observations filtered for the latest available data
@@ -271,7 +271,7 @@ enw_latest_data <- function(obs) {
 #' @param obs A data frame containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
 #' observations), `confirm` (cumulative observations by reference and report
-#' date), and `group` (as added by [enw_assign_group()]).
+#' date), and `.group` (as added by [enw_assign_group()]).
 #'
 #' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
 #' counts (for calculated incidence of observations) be set to zero. Currently
@@ -299,12 +299,12 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
   reports <- data.table::copy(obs)
   reports <- reports[order(reference_date)]
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
   reports <- reports[, .SD[reference_date >= min(report_date)],
-    by = c("group")
+    by = c(".group")
   ]
-  reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", "group")]
+  reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", ".group")]
 
   if (!is.null(reports$max_confirm)) {
     reports[, prop_reported := new_confirm / max_confirm]
@@ -332,7 +332,7 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 enw_delay_filter <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
   return(obs[])
 }
@@ -343,7 +343,7 @@ enw_delay_filter <- function(obs, max_delay) {
 #' and columns being observations by report date
 #'
 #' @param obs A data frame as produced by [enw_new_reports()]. Must contain the
-#' following variables: `reference_date`, `group`, `delay`.
+#' following variables: `reference_date`, `.group`, `delay`.
 #'
 #' @return A data frame with each row being a reference date, and columns being
 #' observations by reporting delay.
@@ -362,10 +362,10 @@ enw_reporting_triangle <- function(obs) {
     )
   }
   reports <- data.table::dcast(
-    obs, group + reference_date ~ delay,
+    obs, .group + reference_date ~ delay,
     value.var = "new_confirm", fill = 0
   )
-  data.table::setorderv(reports, c("reference_date", "group"))
+  data.table::setorderv(reports, c("reference_date", ".group"))
   return(reports[])
 }
 
@@ -385,10 +385,10 @@ enw_reporting_triangle <- function(obs) {
 enw_reporting_triangle_to_long <- function(obs) {
   reports_long <- data.table::melt(
     obs,
-    id.vars = c("reference_date", "group"),
+    id.vars = c("reference_date", ".group"),
     variable.name = "delay", value.name = "new_confirm"
   )
-  data.table::setorderv(reports_long, c("reference_date", "group"))
+  data.table::setorderv(reports_long, c("reference_date", ".group"))
   return(reports_long[])
 }
 
@@ -489,10 +489,10 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
     metareference = list(metareference),
     metareport = list(metareport),
     metadelay = list(metadelay),
-    time = nrow(latest[group == 1]),
-    snapshots = nrow(unique(obs[, .(group, report_date)])),
+    time = nrow(latest[.group == 1]),
+    snapshots = nrow(unique(obs[, .(.group, report_date)])),
     by = list(by),
-    groups = length(unique(obs$group)),
+    groups = length(unique(obs$.group)),
     max_delay = max_delay,
     max_date = max(obs$report_date)
   )
@@ -594,6 +594,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   )
   obs <- check_dates(obs)
   obs <- obs[order(reference_date)]
+  check_group(obs)
 
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)
@@ -603,7 +604,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     obs[
       report_date == (reference_date + max_delay - 1),
       confirm := max_confirm,
-      by = "group"
+      by = ".group"
     ]
   }
 
@@ -615,22 +616,25 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   )
 
   # filter obs based on diff constraints
-  obs <- merge(obs, diff_obs[, .(reference_date, report_date, group)],
-    by = c("reference_date", "report_date", "group")
+  obs <- merge(obs, diff_obs[, .(reference_date, report_date, .group)],
+    by = c("reference_date", "report_date", ".group")
   )
 
   # update grouping in case any are now missing
-  setnames(obs, "group", "old_group")
+  setnames(obs, ".group", ".old_group")
   obs <- enw_assign_group(obs, by)
 
   # update diff data groups using updated groups
   diff_obs <- merge(
     diff_obs,
-    obs[, .(reference_date, report_date, new_group = group, group = old_group)],
-    by = c("reference_date", "report_date", "group")
+    obs[
+      ,
+      .(reference_date, report_date, .new_group = .group, .group = .old_group)
+    ],
+    by = c("reference_date", "report_date", ".group")
   )
-  diff_obs[, group := new_group][, new_group := NULL]
-  obs[, old_group := NULL]
+  diff_obs[, .group := .new_group][, .new_group := NULL]
+  obs[, .old_group := NULL]
 
   reporting_triangle <- enw_reporting_triangle(diff_obs)
 
