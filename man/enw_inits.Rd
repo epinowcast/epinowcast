@@ -7,7 +7,8 @@
 enw_inits(data)
 }
 \arguments{
-\item{data}{A list of data as produced by \code{\link[=enw_as_data_list]{enw_as_data_list()}}.}
+\item{data}{A list of data as produced by \code{\link[=enw_as_data_list]{enw_as_data_list()}} and output as
+\code{data} by \code{\link[=epinowcast]{epinowcast()}}.}
 }
 \value{
 A function that when called returns a list of initial conditions
@@ -15,6 +16,10 @@ for the package stan models.
 }
 \description{
 Set up initial conditions for model
+}
+\examples{
+stan_data <- enw_example("nowcast")$data
+enw_inits(stan_data)
 }
 \seealso{
 Functions used for modelling

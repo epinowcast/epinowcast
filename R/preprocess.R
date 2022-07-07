@@ -11,7 +11,10 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   target_date <- match.arg(target_date, choices)
   date_to_drop <- setdiff(choices, target_date)
   metaobs <- data.table::as.data.table(obs)
-  metaobs[, c(date_to_drop, "confirm") := NULL]
+  metaobs[
+    ,
+    c(date_to_drop, "confirm", "max_confirm", "cum_prop_reported") := NULL
+  ]
   metaobs <- unique(metaobs)
   setnames(metaobs, target_date, "date")
   metaobs <- metaobs[, .SD[1, ], by = c("date", "group")]
@@ -114,9 +117,7 @@ enw_assign_group <- function(obs, by = c()) {
 #' @export
 #' @importFrom data.table as.data.table copy
 enw_add_delay <- function(obs) {
-  obs <- data.table::as.data.table(obs)
-  obs[, report_date := as.IDate(report_date)]
-  obs[, reference_date := as.IDate(reference_date)]
+  obs <- check_dates(obs)
   obs[, delay := as.numeric(report_date - reference_date)]
   return(obs = obs[])
 }
@@ -142,80 +143,126 @@ enw_add_max_reported <- function(obs) {
   return(obs[])
 }
 
-#' @title FUNCTION_TITLE
+#' Filter by report dates
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description This is a helper function which allows users to create
+#' truncated data sets at past time points from a given larger data set.
+#' This is useful when evaluating nowcast performance against fully
+#' observed data. Users may wish to combine this function with
+#' [enw_filter_reference_dates()].
 #'
-#' @param obs PARAM_DESCRIPTION
+#' @param latest_date Date, the latest report date to include in the
+#' returned dataset.
 #'
-#' @param rep_date PARAM_DESCRIPTION
+#' @param remove_days Integer, if \code{latest_date} is not given, the number
+#' of report dates to remove, starting from the latest date included.
 #'
-#' @param rep_days PARAM_DESCRIPTION
-#'
-#' @param ref_date PARAM_DESCRIPTION
-#'
-#' @param ref_days PARAM_DESCRIPTION
-#'
-#' @return OUTPUT_DESCRIPTION
+#' @inheritParams check_dates
+#' @return A data.table  filtered by report date
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy as.IDate
-enw_retrospective_data <- function(obs, rep_date, rep_days, ref_date,
-                                   ref_days) {
-  retro_data <- data.table::copy(obs)
-  retro_data[, report_date := as.IDate(report_date)]
-  retro_data[, reference_date := as.IDate(reference_date)]
-  if (!missing(rep_days)) {
-    rep_date <- max(retro_data$report_date) - rep_days
+#' @examples
+#' # Filter by date
+#' enw_filter_report_dates(germany_covid19_hosp, latest_date = "2021-09-01")
+#
+#' # Filter by days
+#' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
+enw_filter_report_dates <- function(obs, latest_date, remove_days) {
+  filt_obs <- check_dates(obs)
+  if (!missing(remove_days)) {
+    if (!missing(latest_date)) {
+      stop("`remove_days` and `latest_date` can't both be specified.")
+    }
+    latest_date <- max(filt_obs$report_date) - remove_days
   }
-  retro_data <- retro_data[report_date <= rep_date]
-
-  if (!missing(ref_days)) {
-    ref_date <- max(retro_data$reference_date) - ref_days
-  }
-  retro_data <- retro_data[reference_date >= ref_date]
-  return(retro_data[])
+  filt_obs <- filt_obs[report_date <= as.Date(latest_date)]
+  return(filt_obs[])
 }
 
-#' Filter observations to the latest available
+#' Filter by reference dates
 #'
-#' @param obs A data frame containing at least the following variables:
-#' `reference date` (index date of interest), and `report_date` (report date for
-#' observations).
+#' @description This is a helper function which allows users to filter
+#' datasets by reference date. This is useful, for example, when evaluating
+#' nowcast performance against fully observed data. Users may wish to combine
+#' this function with [enw_filter_report_dates()].
 #'
-#' @param ref_window Numeric vector of length 2. Can optionally be used to
-#' restrict the reference date to a window referenced to the maximum available
-#' reference date.
+#' @param earliest_date earliest reference date to include in the data set
 #'
-#' @return A filtered data frame with the same variables as `obs`.
+#' @param include_days if \code{earilest_date} is not given, the number
+#' of reference dates to include, ending with the latest reference
+#' date included once reporting dates have been removed. If specifed
+#' this is indexed to `latest_date` or `remove_days`.
+#' 
+#' @param latest_date Date, the latest reference date to include in the
+#' returned dataset.
+#'
+#' @param remove_days Integer, if \code{latest_date} is not given, the number
+#' of reference dates to remove, starting from the latest date included.
+#'
+#' @inheritParams check_dates
+#' @return A data.table  filtered by report date
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy as.IDate
 #' @examples
-#' # Filter for latest available data
-#' enw_latest_data(germany_covid19_hosp)
+#' # Filter by date
+#' enw_filter_reference_dates(
+#'  germany_covid19_hosp, earliest_date = "2021-09-01",
+#'  latest_date = "2021-10-01"
+#' )
+#
+#' # Filter by days
+#' enw_filter_reference_dates(
+#'  germany_covid19_hosp, include_days = 10, remove_days = 10
+#' )
+enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
+                                       latest_date, remove_days) {
+  filt_obs <- check_dates(obs)
+  if (!missing(remove_days)) {
+    if (!missing(latest_date)) {
+      stop("`remove_days` and `latest_date` can't both be specified.")
+    }
+    latest_date <- max(filt_obs$reference_date) - remove_days
+  }
+  if (!missing(remove_days) || !missing(latest_date)) {
+    filt_obs <- filt_obs[reference_date <= as.Date(latest_date)]
+  }
+  if (!missing(include_days)) {
+    if (!missing(earliest_date)) {
+      stop(
+        "`include_days` and `earliest_date` can't both be specified."
+      )
+    }
+    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
+  }
+  if (!missing(include_days) || !missing(earliest_date)) {
+    filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
+  }
+  return(filt_obs[])
+}
+
+#' Filter observations to the latest available reported
 #'
-#' # Restrict to a window of 40 days ignoring the most recent 10 days
-#' enw_latest_data(germany_covid19_hosp, c(50, 10))
-enw_latest_data <- function(obs, ref_window) {
-  latest_data <- data.table::copy(obs)
-  latest_data[, report_date := as.IDate(report_date)]
-  latest_data[, reference_date := as.IDate(reference_date)]
+#' @description Filter observations to be the latest available reported
+#' data for each reference date. Note this is not the same as filtering 
+#' for the maximum report date in all cases as data may only be updated 
+#' up to some mamimum number of days.
+#'
+#' @return A data.frame of observations filtered for the latest available data
+#' for each reference date.
+#'
+#' @inheritParams check_dates
+#' @family preprocess
+#' @export
+#' @examples
+#' # Filter for latest reported data
+#' enw_latest_data(germany_covid19_hosp)
+enw_latest_data <- function(obs) {
+  latest_data <- check_dates(obs)
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date))],
     by = c("reference_date")
   ]
-
-  latest_data[, report_date := NULL]
-  if (!missing(ref_window)) {
-    latest_data <-
-      latest_data[reference_date >= (max(reference_date) - ref_window[1])]
-    if (length(ref_window) == 2) {
-      latest_data <-
-        latest_data[reference_date <= (max(reference_date) - ref_window[2])]
-    }
-  }
   return(latest_data[])
 }
 
@@ -281,8 +328,8 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 #' @importFrom data.table copy
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
-#' enw_filter_obs(obs, max_delay = 2)
-enw_filter_obs <- function(obs, max_delay) {
+#' enw_delay_filter(obs, max_delay = 2)
+enw_delay_filter <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[, .SD[report_date <= (reference_date + max_delay - 1)],
     by = c("reference_date", "group")
@@ -345,6 +392,49 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' Calculate reporting delay metadata
+#'
+#' Calculate delay metadata based on the supplied maximum delay and independent
+#' of other metadata or date indexing. These data are meant to be used in
+#' conjunction with metadata on the date of reference. Users can build
+#' additional features this `data.frame` or regenerate it using this function
+#' in the output of `enw_preprocess_data()`.
+#'
+#' @param breaks Numeric, defaults to 4. The number of breaks to use when
+#' constructing a categorised version of numeric delays.
+#'
+#' @return A `data.frame` of delay metadata. This includes:
+#'  - `delay`: The numeric delay from reference date to report.
+#'  - `delay_cat`: The categorised delay. This may be useful for model building.
+#'  - `delay_week`: The numeric week since the delay was reported. This again
+#'  may be useful for model building.
+#'  - `delay_tail`: A logical variable defining if the delay is in the upper
+#'  75% of the potential delays. This may be particularly useful when building
+#'  models that assume a parametric distribution in order to increase the weight
+#'  of the tail of the reporting distribution in a pragmatic way.
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' enw_delay_metadata(20, breaks = 4)
+enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
+  delays <- data.table::data.table(delay = 0:(max_delay - 1))
+  even_delay <- max_delay + max_delay %% 2
+  delays <- delays[, `:=`(
+    delay = delay,
+    delay_cat = cut(
+      delay, seq(
+        from = 0, to = ceiling(even_delay / breaks) * breaks,
+        by = ceiling(even_delay / breaks)
+      ),
+      dig.lab = 0, right = FALSE
+    ),
+    delay_week = as.integer(delay / 7),
+    delay_tail = delay > quantile(delay, probs = 0.75)
+  )]
+  return(delays[])
+}
+
 #' Construct preprocessed data
 #'
 #' This function is used internally by [enw_preprocess_data()] to combine
@@ -367,6 +457,9 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param metareference Metadata reference dates derived from observations.
 #'
 #' @param metareport Metadata for report dates.
+#'
+#' @param metadelay Metadata for reporting delays produced using
+#'  [enw_delay_metadata()].
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
@@ -381,10 +474,13 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'   reporting_triangle = pobs$reporting_triangle[[1]],
 #'   metareport = pobs$metareport[[1]],
 #'   metareference = pobs$metareference[[1]],
+#'   metadelay = enw_delay_metadata(max_delay = 20),
+#'   by = c(),
 #'   max_delay = pobs$max_delay[[1]]
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
-                               metareport, metareference, max_delay) {
+                               metareport, metareference, metadelay, by,
+                               max_delay) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
@@ -392,8 +488,10 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
     reporting_triangle = list(reporting_triangle),
     metareference = list(metareference),
     metareport = list(metareport),
+    metadelay = list(metadelay),
     time = nrow(latest[group == 1]),
     snapshots = nrow(unique(obs[, .(group, report_date)])),
+    by = list(by),
     groups = length(unique(obs$group)),
     max_delay = max_delay,
     max_date = max(obs$report_date)
@@ -449,6 +547,8 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' the standard reporting triangle matrix format.
 #' - `metareference`: Metadata reference dates derived from observations.
 #' - `metrareport`: Metadata for report dates.
+#' - `metadelay`: Metadata for reporting delays produced using
+#'  [enw_delay_metadata()].
 #' - `time`: Numeric, number of timepoints in the data.
 #' - `snapshots`: Numeric, number of available data snapshots to use for
 #'  nowcasting.
@@ -492,7 +592,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     max_delay_strat,
     choices = c("exclude", "add_to_max_delay")
   )
-  obs <- data.table::as.data.table(obs)
+  obs <- check_dates(obs)
   obs <- obs[order(reference_date)]
 
   obs <- enw_assign_group(obs, by = by)
@@ -507,7 +607,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     ]
   }
 
-  obs <- enw_filter_obs(obs, max_delay = max_delay)
+  obs <- enw_delay_filter(obs, max_delay = max_delay)
 
   diff_obs <- enw_new_reports(
     obs,
@@ -545,6 +645,9 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_metadata(obs, target_date = "reference_date")
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
+  # extract and add features for delays
+  metadelay <- enw_delay_metadata(max_delay, breaks = 4)
+
   out <- enw_construct_data(
     obs = obs,
     new_confirm = diff_obs,
@@ -552,6 +655,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
     reporting_triangle = reporting_triangle,
     metareference = metareference,
     metareport = metareport,
+    metadelay = metadelay,
+    by = by,
     max_delay = max_delay
   )
 

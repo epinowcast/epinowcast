@@ -1,6 +1,10 @@
 Package: epinowcast
 Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
+<<<<<<< HEAD
 Version: 0.0.7
+=======
+Version: 0.1.0.1000
+>>>>>>> develop
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -11,6 +15,10 @@ Authors@R:
              role = "aut",
              email = "adrian.lison@bsse.ethz.ch",
              comment = c(ORCID = "0000-0002-6822-8437")),
+    person(given = "Sebastian",
+                family = "Funk",
+                role = "aut",
+                email = "sebastian.funk@lshtm.ac.uk"),
     person(given = "Michael",
              family = "DeWitt",
              role = "ctb",
@@ -35,6 +43,7 @@ Imports:
     cmdstanr,
     data.table,
     lubridate,
+    lme4,
     ggplot2,
     posterior,
     purrr,

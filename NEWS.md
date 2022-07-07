@@ -1,3 +1,27 @@
+# epinowcast 0.1.0
+
+This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. For ease, we have stratified changes below into interface, package, and model changes.
+
+## Interface
+
+* A full featured and flexible formula interface has been added that allows the specification of fixed effects, `lme4` random effects, and random walks. See [#27](https://github.com/epiforecasts/epinowcast/pull/27) by [@seabbs](https://github.com/seabbs).
+
+## Package
+
+* A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for [#4](https://github.com/epiforecasts/epinowcast/issues/4) where this data frame with be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See [#80](https://github.com/epiforecasts/epinowcast/pull/80) by [@seabbs](https://github.com/seabbs).
+* Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. See [#82](https://github.com/epiforecasts/epinowcast/pull/82) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+
+## Model
+
+* Added support for parametric exponential delay distributions (note that this is comparable to an intercept only non-parametric hazard model) and potentially no parametric delay (though this will currently error due to the lack of appropriate non-parametric hazard). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
+* Update the expectation random walk model to use a more efficient `cumulative_sum` implementation suggested by [@adrian-lison](https://github.com/adrian-lison) in [#98](https://github.com/epiforecasts/epinowcast/issues/98)]. See [#103](https://github.com/epiforecasts/epinowcast/pull/103/) by [@seabbs](https://github.com/seabbs).
+
+## Internals
+
+* Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on `rstan`) additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74), [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003), and [#93](https://github.com/epiforecasts/epinowcast/pull/93) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* Remove spurious warnings due to missing initial values for optional parameters. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+
+
 # epinowcast 0.0.7
 
 * Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see [#62](https://github.com/epiforecasts/epinowcast/pull/62) by [@seabbs](https://github.com/seabbs)). 

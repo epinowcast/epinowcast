@@ -11,11 +11,11 @@ enw_formula_as_data_list(data, reference_effects, report_effects)
 \code{\link[=enw_obs_as_data_list]{enw_obs_as_data_list()}}.}
 
 \item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reference model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 
 \item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reports model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 }
 \value{
