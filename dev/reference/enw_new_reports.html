@@ -89,7 +89,7 @@
 <dd><p>A data frame containing at least the following variables:
 <code>reference date</code> (index date of interest), <code>report_date</code> (report date for
 observations), <code>confirm</code> (cumulative observations by reference and report
-date), and <code>group</code> (as added by <code><a href="enw_assign_group.html">enw_assign_group()</a></code>).</p></dd>
+date), and <code>.group</code> (as added by <code><a href="enw_assign_group.html">enw_assign_group()</a></code>).</p></dd>
 
 
 <dt>set_negatives_to_zero</dt>
@@ -135,18 +135,18 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 <span class="r-in"><span>  by <span class="op">=</span> <span class="st">"age_group"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        group age_group reference_date location confirm report_date new_confirm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2     00-04     2021-04-06       DE       4  2021-04-06           4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2     00-04     2021-04-06       DE       6  2021-04-07           2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2     00-04     2021-04-06       DE       6  2021-04-08           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2     00-04     2021-04-06       DE       6  2021-04-09           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2     00-04     2021-04-06       DE       6  2021-04-10           0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90401:     7       80+     2021-10-18       DE      42  2021-10-19          25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90402:     7       80+     2021-10-18       DE      50  2021-10-20           8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90403:     7       80+     2021-10-19       DE      70  2021-10-19          70</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90404:     7       80+     2021-10-19       DE     128  2021-10-20          58</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90405:     7       80+     2021-10-20       DE      71  2021-10-20          71</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        .group age_group reference_date location confirm report_date new_confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:      2     00-04     2021-04-06       DE       4  2021-04-06           4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:      2     00-04     2021-04-06       DE       6  2021-04-07           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:      2     00-04     2021-04-06       DE       6  2021-04-08           0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:      2     00-04     2021-04-06       DE       6  2021-04-09           0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:      2     00-04     2021-04-06       DE       6  2021-04-10           0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90401:      7       80+     2021-10-18       DE      42  2021-10-19          25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90402:      7       80+     2021-10-18       DE      50  2021-10-20           8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90403:      7       80+     2021-10-19       DE      70  2021-10-19          70</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90404:      7       80+     2021-10-19       DE     128  2021-10-20          58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90405:      7       80+     2021-10-20       DE      71  2021-10-20          71</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:     1</span>
@@ -163,18 +163,18 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 <span class="r-in"><span><span class="co"># Make use of maximum reported to calculate empirical daily reporting</span></span></span>
 <span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_add_max_reported.html">enw_add_max_reported</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_new_reports</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        group age_group reference_date location confirm report_date max_confirm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2     00-04     2021-04-06       DE       4  2021-04-06          11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2     00-04     2021-04-06       DE       6  2021-04-07          11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2     00-04     2021-04-06       DE       6  2021-04-08          11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2     00-04     2021-04-06       DE       6  2021-04-09          11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2     00-04     2021-04-06       DE       6  2021-04-10          11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90401:     7       80+     2021-10-18       DE      42  2021-10-19          50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90402:     7       80+     2021-10-18       DE      50  2021-10-20          50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90403:     7       80+     2021-10-19       DE      70  2021-10-19         128</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90404:     7       80+     2021-10-19       DE     128  2021-10-20         128</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90405:     7       80+     2021-10-20       DE      71  2021-10-20          71</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        .group age_group reference_date location confirm report_date max_confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:      2     00-04     2021-04-06       DE       4  2021-04-06          11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:      2     00-04     2021-04-06       DE       6  2021-04-07          11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:      2     00-04     2021-04-06       DE       6  2021-04-08          11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:      2     00-04     2021-04-06       DE       6  2021-04-09          11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:      2     00-04     2021-04-06       DE       6  2021-04-10          11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90401:      7       80+     2021-10-18       DE      42  2021-10-19          50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90402:      7       80+     2021-10-18       DE      50  2021-10-20          50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90403:      7       80+     2021-10-19       DE      70  2021-10-19         128</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90404:      7       80+     2021-10-19       DE     128  2021-10-20         128</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90405:      7       80+     2021-10-20       DE      71  2021-10-20          71</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        cum_prop_reported new_confirm delay prop_reported</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:         0.3636364           4     0     0.3636364</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:         0.5454545           2     1     0.1818182</span>

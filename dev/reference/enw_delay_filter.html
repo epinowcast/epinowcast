@@ -89,7 +89,7 @@
 <dd><p>A data frame containing at least the following variables:
 <code>reference date</code> (index date of interest), <code>report_date</code> (report date for
 observations), <code>confirm</code> (cumulative observations by reference and report
-date), and <code>group</code> (as added by <code><a href="enw_assign_group.html">enw_assign_group()</a></code>).</p></dd>
+date), and <code>.group</code> (as added by <code><a href="enw_assign_group.html">enw_assign_group()</a></code>).</p></dd>
 
 
 <dt>max_delay</dt>
@@ -129,89 +129,89 @@ the reference date plus the maximum delay.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span><span class="op">$</span><span class="va">obs</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">enw_delay_filter</span><span class="op">(</span><span class="va">obs</span>, max_delay <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date group report_date location age_group confirm max_confirm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-07-13     1  2021-07-13       DE       00+      21          59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-07-13     1  2021-07-14       DE       00+      33          59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-07-14     1  2021-07-14       DE       00+      22          72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-07-14     1  2021-07-15       DE       00+      34          72</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-07-15     1  2021-07-15       DE       00+      28          69</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-07-15     1  2021-07-16       DE       00+      43          69</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-07-16     1  2021-07-16       DE       00+      19          47</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-07-16     1  2021-07-17       DE       00+      32          47</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-07-17     1  2021-07-17       DE       00+      20          65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-07-17     1  2021-07-18       DE       00+      27          65</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-07-18     1  2021-07-18       DE       00+       9          50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-07-18     1  2021-07-19       DE       00+      15          50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-07-19     1  2021-07-19       DE       00+       3          36</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-07-19     1  2021-07-20       DE       00+      19          36</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-07-20     1  2021-07-20       DE       00+      36          94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-07-20     1  2021-07-21       DE       00+      55          94</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-07-21     1  2021-07-21       DE       00+      28          91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-07-21     1  2021-07-22       DE       00+      46          91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-07-22     1  2021-07-22       DE       00+      34          99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-07-22     1  2021-07-23       DE       00+      53          99</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:     2021-07-23     1  2021-07-23       DE       00+      30          86</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:     2021-07-23     1  2021-07-24       DE       00+      42          86</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:     2021-07-24     1  2021-07-24       DE       00+      31          93</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:     2021-07-24     1  2021-07-25       DE       00+      39          93</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:     2021-07-25     1  2021-07-25       DE       00+       8          74</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:     2021-07-25     1  2021-07-26       DE       00+      12          74</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:     2021-07-26     1  2021-07-26       DE       00+       9          28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:     2021-07-26     1  2021-07-27       DE       00+      15          28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:     2021-07-27     1  2021-07-27       DE       00+      35          78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:     2021-07-27     1  2021-07-28       DE       00+      46          78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:     2021-07-28     1  2021-07-28       DE       00+      51         156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:     2021-07-28     1  2021-07-29       DE       00+      79         156</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:     2021-07-29     1  2021-07-29       DE       00+      47         135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:     2021-07-29     1  2021-07-30       DE       00+      84         135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:     2021-07-30     1  2021-07-30       DE       00+      36         114</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:     2021-07-30     1  2021-07-31       DE       00+      56         114</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:     2021-07-31     1  2021-07-31       DE       00+      38         126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:     2021-07-31     1  2021-08-01       DE       00+      54         126</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:     2021-08-01     1  2021-08-01       DE       00+       7          77</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:     2021-08-01     1  2021-08-02       DE       00+      12          77</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:     2021-08-02     1  2021-08-02       DE       00+      13          59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:     2021-08-02     1  2021-08-03       DE       00+      26          59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43:     2021-08-03     1  2021-08-03       DE       00+      51         149</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44:     2021-08-03     1  2021-08-04       DE       00+      94         149</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45:     2021-08-04     1  2021-08-04       DE       00+      51         166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46:     2021-08-04     1  2021-08-05       DE       00+      94         166</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47:     2021-08-05     1  2021-08-05       DE       00+      45         133</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48:     2021-08-05     1  2021-08-06       DE       00+      66         133</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49:     2021-08-06     1  2021-08-06       DE       00+      47         137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50:     2021-08-06     1  2021-08-07       DE       00+      78         137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51:     2021-08-07     1  2021-08-07       DE       00+      40         139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52:     2021-08-07     1  2021-08-08       DE       00+      55         139</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53:     2021-08-08     1  2021-08-08       DE       00+      13          97</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54:     2021-08-08     1  2021-08-09       DE       00+      27          97</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55:     2021-08-09     1  2021-08-09       DE       00+      14          58</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56:     2021-08-09     1  2021-08-10       DE       00+      37          58</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57:     2021-08-10     1  2021-08-10       DE       00+      78         175</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58:     2021-08-10     1  2021-08-11       DE       00+     121         175</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59:     2021-08-11     1  2021-08-11       DE       00+      80         233</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60:     2021-08-11     1  2021-08-12       DE       00+     133         233</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61:     2021-08-12     1  2021-08-12       DE       00+      89         237</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62:     2021-08-12     1  2021-08-13       DE       00+     137         237</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63:     2021-08-13     1  2021-08-13       DE       00+      86         204</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64:     2021-08-13     1  2021-08-14       DE       00+     130         204</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65:     2021-08-14     1  2021-08-14       DE       00+      79         189</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66:     2021-08-14     1  2021-08-15       DE       00+     115         189</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67:     2021-08-15     1  2021-08-15       DE       00+      22         125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68:     2021-08-15     1  2021-08-16       DE       00+      46         125</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69:     2021-08-16     1  2021-08-16       DE       00+      23          98</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70:     2021-08-16     1  2021-08-17       DE       00+      55          98</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71:     2021-08-17     1  2021-08-17       DE       00+      96         242</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72:     2021-08-17     1  2021-08-18       DE       00+     181         242</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73:     2021-08-18     1  2021-08-18       DE       00+      92         223</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74:     2021-08-18     1  2021-08-19       DE       00+     178         223</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75:     2021-08-19     1  2021-08-19       DE       00+      84         202</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76:     2021-08-19     1  2021-08-20       DE       00+     171         202</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77:     2021-08-20     1  2021-08-20       DE       00+      98         171</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78:     2021-08-20     1  2021-08-21       DE       00+     159         171</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79:     2021-08-21     1  2021-08-21       DE       00+      69         112</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80:     2021-08-21     1  2021-08-22       DE       00+     112         112</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81:     2021-08-22     1  2021-08-22       DE       00+      45          45</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date group report_date location age_group confirm max_confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date .group report_date location age_group confirm max_confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-07-13      1  2021-07-13       DE       00+      21          59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-07-13      1  2021-07-14       DE       00+      33          59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-07-14      1  2021-07-14       DE       00+      22          72</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-07-14      1  2021-07-15       DE       00+      34          72</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-07-15      1  2021-07-15       DE       00+      28          69</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-07-15      1  2021-07-16       DE       00+      43          69</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-07-16      1  2021-07-16       DE       00+      19          47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-07-16      1  2021-07-17       DE       00+      32          47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-07-17      1  2021-07-17       DE       00+      20          65</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-07-17      1  2021-07-18       DE       00+      27          65</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-07-18      1  2021-07-18       DE       00+       9          50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-07-18      1  2021-07-19       DE       00+      15          50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-07-19      1  2021-07-19       DE       00+       3          36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-07-19      1  2021-07-20       DE       00+      19          36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-07-20      1  2021-07-20       DE       00+      36          94</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-07-20      1  2021-07-21       DE       00+      55          94</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-07-21      1  2021-07-21       DE       00+      28          91</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-07-21      1  2021-07-22       DE       00+      46          91</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-07-22      1  2021-07-22       DE       00+      34          99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-07-22      1  2021-07-23       DE       00+      53          99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:     2021-07-23      1  2021-07-23       DE       00+      30          86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:     2021-07-23      1  2021-07-24       DE       00+      42          86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:     2021-07-24      1  2021-07-24       DE       00+      31          93</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:     2021-07-24      1  2021-07-25       DE       00+      39          93</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:     2021-07-25      1  2021-07-25       DE       00+       8          74</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:     2021-07-25      1  2021-07-26       DE       00+      12          74</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:     2021-07-26      1  2021-07-26       DE       00+       9          28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:     2021-07-26      1  2021-07-27       DE       00+      15          28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:     2021-07-27      1  2021-07-27       DE       00+      35          78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:     2021-07-27      1  2021-07-28       DE       00+      46          78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:     2021-07-28      1  2021-07-28       DE       00+      51         156</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:     2021-07-28      1  2021-07-29       DE       00+      79         156</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:     2021-07-29      1  2021-07-29       DE       00+      47         135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:     2021-07-29      1  2021-07-30       DE       00+      84         135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:     2021-07-30      1  2021-07-30       DE       00+      36         114</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:     2021-07-30      1  2021-07-31       DE       00+      56         114</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:     2021-07-31      1  2021-07-31       DE       00+      38         126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:     2021-07-31      1  2021-08-01       DE       00+      54         126</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:     2021-08-01      1  2021-08-01       DE       00+       7          77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:     2021-08-01      1  2021-08-02       DE       00+      12          77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:     2021-08-02      1  2021-08-02       DE       00+      13          59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42:     2021-08-02      1  2021-08-03       DE       00+      26          59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43:     2021-08-03      1  2021-08-03       DE       00+      51         149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44:     2021-08-03      1  2021-08-04       DE       00+      94         149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45:     2021-08-04      1  2021-08-04       DE       00+      51         166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46:     2021-08-04      1  2021-08-05       DE       00+      94         166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47:     2021-08-05      1  2021-08-05       DE       00+      45         133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48:     2021-08-05      1  2021-08-06       DE       00+      66         133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49:     2021-08-06      1  2021-08-06       DE       00+      47         137</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50:     2021-08-06      1  2021-08-07       DE       00+      78         137</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51:     2021-08-07      1  2021-08-07       DE       00+      40         139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52:     2021-08-07      1  2021-08-08       DE       00+      55         139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53:     2021-08-08      1  2021-08-08       DE       00+      13          97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54:     2021-08-08      1  2021-08-09       DE       00+      27          97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55:     2021-08-09      1  2021-08-09       DE       00+      14          58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56:     2021-08-09      1  2021-08-10       DE       00+      37          58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57:     2021-08-10      1  2021-08-10       DE       00+      78         175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58:     2021-08-10      1  2021-08-11       DE       00+     121         175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59:     2021-08-11      1  2021-08-11       DE       00+      80         233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60:     2021-08-11      1  2021-08-12       DE       00+     133         233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61:     2021-08-12      1  2021-08-12       DE       00+      89         237</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62:     2021-08-12      1  2021-08-13       DE       00+     137         237</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63:     2021-08-13      1  2021-08-13       DE       00+      86         204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64:     2021-08-13      1  2021-08-14       DE       00+     130         204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65:     2021-08-14      1  2021-08-14       DE       00+      79         189</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66:     2021-08-14      1  2021-08-15       DE       00+     115         189</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67:     2021-08-15      1  2021-08-15       DE       00+      22         125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68:     2021-08-15      1  2021-08-16       DE       00+      46         125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69:     2021-08-16      1  2021-08-16       DE       00+      23          98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70:     2021-08-16      1  2021-08-17       DE       00+      55          98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71:     2021-08-17      1  2021-08-17       DE       00+      96         242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72:     2021-08-17      1  2021-08-18       DE       00+     181         242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73:     2021-08-18      1  2021-08-18       DE       00+      92         223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74:     2021-08-18      1  2021-08-19       DE       00+     178         223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75:     2021-08-19      1  2021-08-19       DE       00+      84         202</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76:     2021-08-19      1  2021-08-20       DE       00+     171         202</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77:     2021-08-20      1  2021-08-20       DE       00+      98         171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78:     2021-08-20      1  2021-08-21       DE       00+     159         171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79:     2021-08-21      1  2021-08-21       DE       00+      69         112</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80:     2021-08-21      1  2021-08-22       DE       00+     112         112</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81:     2021-08-22      1  2021-08-22       DE       00+      45          45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date .group report_date location age_group confirm max_confirm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cum_prop_reported delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:        0.35593220     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:        0.55932203     1</span>
