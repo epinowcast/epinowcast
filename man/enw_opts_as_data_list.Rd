@@ -17,7 +17,7 @@ enw_opts_as_data_list(
 \item{distribution}{Character string indicating the type of distribution to
 use for reference date effects. The default is to use a lognormal but other
 options available include the exponential and gamma distributions. If "none"
-is specfied then no parametric delay distribution is used.}
+is specified then no parametric delay distribution is used.}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}

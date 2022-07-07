@@ -249,7 +249,7 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
 #' @description Filter observations to be the latest available reported
 #' data for each reference date. Note this is not the same as filtering
 #' for the maximum report date in all cases as data may only be updated
-#' up to some mamimum number of days.
+#' up to some maximum number of days.
 #'
 #' @return A data.frame of observations filtered for the latest available data
 #' for each reference date.
@@ -433,6 +433,7 @@ enw_complete_dates <- function(obs, by = c(), include_missing = TRUE) {
   max_delay <- max(obs$delay, na.rm = TRUE)
   dates <- seq.Date(min_date, max_date, by = 1)
   by_with_group_id <- c(".group", by)
+  by_with_group_id <- intersect(colnames(obs), by_with_group_id)
   groups <- unique(obs[, ..by_with_group_id])
 
   completion <- data.table::CJ(
@@ -525,7 +526,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'
 #' @param missing_reference A data frame of reported observations that are
 #' missing the reference date.
-#' 
+#'
 #' @param reporting_triangle Incident observations by report and reference
 #'  date in the standard reporting triangle matrix format.
 #'
@@ -616,6 +617,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' - `new_confirm`: Incidence of notifications by reference and report date.
 #' Empirical reporting distributions are also added.
 #' - `latest`: The latest available observations.
+#' - `missing_reference`: Observations missing reference dates.
 #' - `reporting_triangle`: Incident observations by report and reference date in
 #' the standard reporting triangle matrix format.
 #' - `metareference`: Metadata reference dates derived from observations.
@@ -660,10 +662,6 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' pobs_all
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
                                 set_negatives_to_zero = TRUE) {
-  max_delay_strat <- match.arg(
-    max_delay_strat,
-    choices = c("exclude", "add_to_max_delay")
-  )
   obs <- check_dates(obs)
   obs <- obs[order(reference_date)]
   check_group(obs)

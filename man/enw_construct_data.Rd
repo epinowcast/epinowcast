@@ -57,6 +57,7 @@ and and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
+\item \code{missing_reference}: Observations missing reference dates.
 \item \code{reporting_triangle}: Incident observations by report and reference date in
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.

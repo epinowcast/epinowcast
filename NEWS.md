@@ -19,7 +19,7 @@ This is a major release and contains multiple breaking changes. If needing the o
 
 ## Documentation
 
-* The model descriptipn has been updated to reflect the currently implemented model and to improve readability. The use use of reference and report date nomenclature has also been standardised across the package. See [#71](https://github.com/epiforecasts/epinowcast/pull/71) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* The model description has been updated to reflect the currently implemented model and to improve readability. The use use of reference and report date nomenclature has also been standardised across the package. See [#71](https://github.com/epiforecasts/epinowcast/pull/71) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 ## Internals
 

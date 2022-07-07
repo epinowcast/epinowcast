@@ -5,7 +5,7 @@ nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
 
 cols <- c(
-  "obs", "new_confirm", "latest", "reporting_triangle",
+  "obs", "new_confirm", "latest", "missing_reference", "reporting_triangle",
   "metareference", "metareport", "metadelay", "time", "snapshots", "by", "groups", "max_delay", "max_date"
 )
 test_that("Preprocessing produces expected output with default settings", {
@@ -29,7 +29,7 @@ test_that("Preprocessing produces expected output when excluding and using a
   maximum delay of 10", {
   pobs <- enw_preprocess_data(
     nat_germany_hosp,
-    max_delay = 10, max_delay_strat = "exclude"
+    max_delay = 10
   )
   expect_data_table(pobs)
   expect_equal(pobs$time[[1]], 198)

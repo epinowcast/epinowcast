@@ -71,7 +71,7 @@ convert_cmdstan_to_rstan <- function(functions) {
 #'
 #' @param ... Arguments to pass to [rstan::expose_stan_functions()]
 #'
-#' @return NULL (invisibily)
+#' @return NULL (indivisibly)
 #' @family utils
 #' @importFrom rstan expose_stan_functions stanc
 expose_stan_fns <- function(files, target_dir, ...) {
@@ -145,6 +145,7 @@ utils::globalVariables(
     "confirm", "effects", "fixed", ".group", "logmean", "logsd",
     ".new_group", "observed", "latest_confirm", "mad", "variable",
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
-    "run_time", "cum_prop_reported"
+    "run_time", "cum_prop_reported", "..by_with_group_id",
+    "reference_missing"
   )
 )
