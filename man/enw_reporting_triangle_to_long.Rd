@@ -36,6 +36,7 @@ Preprocessing functions
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle}()}

@@ -479,6 +479,50 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
   return(obs[])
 }
 
+#' Extract reports with missing reference dates
+#'
+#' Returns reports with missing reference dates as well as calculating
+#' the proportion of reports for a given reference date that were missing.
+#'
+#' @param obs A data frame as produced by [enw_new_reports()]. Must contain the
+#' following variables: `report_date`, `reference_date`, `.group`, and
+#' `confirm`.
+#'
+#' @return A `data.table` missing counts and proportions by report date and
+#' group.
+#'
+#' @export
+#' @importFrom data.table as.data.table
+#' @family preprocess
+#' @examples
+#' obs <- data.frame(
+#'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+#'  confirm = 1
+#' )
+#' obs <- enw_complete_dates(obs)
+#' obs <- enw_assign_group(obs)
+#' enw_missing_reference(obs)
+  enw_missing_reference <- function(obs) {
+    obs <- data.table::as.data.table(obs)
+    ref_available <- obs[!is.na(reference_date)]
+    ref_available <- enw_latest_data(ref_available)
+    ref_available <- ref_available[,
+       .(report_date, .group, .old_group = confirm)
+    ]
+
+    ref_missing <- obs[is.na(reference_date)]
+    cols <- intersect(
+      c("delay", "reference_date", "max_confirm", "cum_prop_reported",
+        "prop_reported"
+      ), colnames(ref_missing)
+    )
+    ref_missing[, (cols) := NULL]
+    ref_missing <- ref_missing[ref_available, on = c(".group", "report_date")]
+    ref_missing[, prop_missing := confirm / (confirm + .old_group)]
+    ref_missing[, .old_group := NULL]
+    return(ref_missing[])
+  }
+
 #' Calculate reporting delay metadata
 #'
 #' Calculate delay metadata based on the supplied maximum delay and independent
@@ -715,7 +759,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
 
   # separate obs with and without missing reference date
   reference_available <- diff_obs[!is.na(reference_date)]
-  reference_missing <- diff_obs[is.na(reference_date)]
+  reference_missing <- enw_missing_reference(obs)
 
   # calculate reporting matrix on obs with available reference date
   reporting_triangle <- enw_reporting_triangle(reference_available)
@@ -724,6 +768,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
   # Note: currently, only the obs with available reference date are used
   # This should to be extended to missing reference dates to avoid bias
   latest <- enw_latest_data(reference_available)
+  latest[, new_confirm := NULL]
 
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(reference_available, target_date = "report_date")
