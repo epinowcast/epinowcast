@@ -502,25 +502,25 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #' obs <- enw_complete_dates(obs)
 #' obs <- enw_assign_group(obs)
 #' enw_missing_reference(obs)
-  enw_missing_reference <- function(obs) {
-    obs <- data.table::as.data.table(obs)
-    ref_available <- obs[!is.na(reference_date)]
-    ref_available <- enw_latest_data(ref_available)
-    ref_available <- ref_available[,
-       .(report_date, .group, .old_group = confirm)
-    ]
+enw_missing_reference <- function(obs) {
+  obs <- data.table::as.data.table(obs)
+  ref_available <- obs[!is.na(reference_date)]
+  ref_available <- enw_latest_data(ref_available)
+  ref_available <- ref_available[,
+    .(report_date, .group, .old_group = confirm)
+  ]
 
-    ref_missing <- obs[is.na(reference_date)]
-    cols <- intersect(
-      c("delay", "reference_date", "max_confirm", "cum_prop_reported",
-        "prop_reported"
-      ), colnames(ref_missing)
-    )
-    ref_missing[, (cols) := NULL]
-    ref_missing <- ref_missing[ref_available, on = c(".group", "report_date")]
-    ref_missing[, prop_missing := confirm / (confirm + .old_group)]
-    ref_missing[, .old_group := NULL]
-    return(ref_missing[])
+  ref_missing <- obs[is.na(reference_date)]
+  cols <- intersect(
+    c("delay", "reference_date", "max_confirm", "cum_prop_reported",
+      "prop_reported"
+    ), colnames(ref_missing)
+  )
+  ref_missing[, (cols) := NULL]
+  ref_missing <- ref_missing[ref_available, on = c(".group", "report_date")]
+  ref_missing[, prop_missing := confirm / (confirm + .old_group)]
+  ref_missing[, .old_group := NULL]
+  return(ref_missing[])
   }
 
 #' Calculate reporting delay metadata
