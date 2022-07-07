@@ -50,8 +50,8 @@ check_dates <- function(obs) {
 
 #' Check Observations for reserved grouping variables
 #'
-#' @param obs An observation data frame that does not contain`.group`,
-#' `.old_group`, or `new_group` as these are reserved variables.
+#' @param obs An observation data frame that does not contain `.group`,
+#' `.old_group`, or `.new_group` as these are reserved variables.
 #'
 #' @return NULL
 #'
@@ -59,17 +59,17 @@ check_dates <- function(obs) {
 check_group <- function(obs) {
   if (!is.null(obs$.group)) {
     stop(
-      ".group is a reserved variables and must not be present in the input
+      ".group is a reserved variable and must not be present in the input
        data"
     )
   } else if (!is.null(obs$.new_group)) {
     stop(
-      ".new_group is a reserved variables and must not be present in the input
+      ".new_group is a reserved variable and must not be present in the input
        data"
     )
   } else if (!is.null(obs$.old_group)) {
     stop(
-      ".old_group is a reserved variables and must not be present in the input
+      ".old_group is a reserved variable and must not be present in the input
        data"
     )
   }
