@@ -186,12 +186,18 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' nowcast performance against fully observed data. Users may wish to combine
 #' this function with [enw_filter_report_dates()].
 #'
-#' @param earliest_date earliest reference date to include in the
-#' retrospective data set
+#' @param earliest_date earliest reference date to include in the data set
 #'
-#' @param include_days if \code{earilest_ref_date} is not given, the number
+#' @param include_days if \code{earilest_date} is not given, the number
 #' of reference dates to include, ending with the latest reference
-#' date included once reporting dates have been removed.
+#' date included once reporting dates have been removed. If specifed
+#' this is indexed to `latest_date` or `remove_days`.
+#'
+#' @param latest_date Date, the latest reference date to include in the
+#' returned dataset.
+#'
+#' @param remove_days Integer, if \code{latest_date} is not given, the number
+#' of reference dates to remove, starting from the latest date included.
 #'
 #' @inheritParams check_dates
 #' @return A data.table  filtered by report date
@@ -200,14 +206,26 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @examples
 #' # Filter by date
 #' enw_filter_reference_dates(
-#'   germany_covid19_hosp,
-#'   earliest_date = "2021-09-01"
+#'  germany_covid19_hosp, earliest_date = "2021-09-01",
+#'  latest_date = "2021-10-01"
 #' )
 #' #
 #' # Filter by days
-#' enw_filter_reference_dates(germany_covid19_hosp, include_days = 10)
-enw_filter_reference_dates <- function(obs, earliest_date, include_days) {
+#' enw_filter_reference_dates(
+#'  germany_covid19_hosp, include_days = 10, remove_days = 10
+#' )
+enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
+                                       latest_date, remove_days) {
   filt_obs <- check_dates(obs)
+  if (!missing(remove_days)) {
+    if (!missing(latest_date)) {
+      stop("`remove_days` and `latest_date` can't both be specified.")
+    }
+    latest_date <- max(filt_obs$reference_date) - remove_days
+  }
+  if (!missing(remove_days) || !missing(latest_date)) {
+    filt_obs <- filt_obs[reference_date <= as.Date(latest_date)]
+  }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
       stop(
@@ -216,7 +234,10 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days) {
     }
     earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
   }
-  filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
+  if (!missing(include_days) || !missing(earliest_date)) {
+    filt_obs <- filt_obs[reference_date >= as.Date(earliest_date)]
+  }
+  return(filt_obs[])
 }
 
 #' Filter observations to the latest available reported

@@ -16,7 +16,7 @@
       [1] 1
       
       $logsd_int
-      [1] 0
+      [1] 1
       
       $leobs_init
       [1] 1
@@ -34,7 +34,7 @@
       [1] 1
       
       $logsd
-      [1] 0
+      [1] 1
       
       $phi
       [1] 1
@@ -81,7 +81,7 @@
     Output
        [1] "logmean_int"  "logsd_int"    "leobs_init"   "eobs_lsd"     "leobs_resids"
        [6] "sqrt_phi"     "logmean"      "logsd"        "phi"          "logmean_eff" 
-      [11] "logmean_sd"   "logsd_sd"     "rd_eff"       "rd_eff_sd"   
+      [11] "logsd_eff"    "logmean_sd"   "logsd_sd"     "rd_eff"       "rd_eff_sd"   
 
 ---
 
@@ -92,7 +92,7 @@
       [1] 1
       
       $logsd_int
-      [1] 0
+      [1] 1
       
       $leobs_init
       [1] 1
@@ -110,12 +110,15 @@
       [1] 1
       
       $logsd
-      [1] 0
+      [1] 1
       
       $phi
       [1] 1
       
       $logmean_eff
+      [1] 2
+      
+      $logsd_eff
       [1] 2
       
       $logmean_sd
