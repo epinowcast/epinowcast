@@ -385,7 +385,7 @@
 <div class="section level3">
 <h3 id="independent-models-for-each-age-group-">Independent models for each age group.<a class="anchor" aria-label="anchor" href="#independent-models-for-each-age-group-"></a>
 </h3>
-<p>The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the occurrence date stratified by age) to each age group independently.</p>
+<p>The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the reference date stratified by age) to each age group independently.</p>
 <p>We could define this model with a single call to <code>epinowcast</code> but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">independent_epinowcast</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span> <span class="op">=</span> <span class="fl">40</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
