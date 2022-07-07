@@ -107,7 +107,7 @@ jobs:
         run: |
           print(list.files("C:/rtools42"))
           cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2)
+          cmdstanr::install_cmdstan(cores = 2, version = "2.29.0")
         shell: Rscript {0}
 
       - name: Session info
