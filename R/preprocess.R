@@ -412,7 +412,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' general all features that you may consider using as grouping variables
 #' or as covariates need to be included in the `by` variable.
 #'
-#' @param include_missing Should entries for cases with missing reference date
+#' @param missing_reference Should entries for cases with missing reference date
 #' be completed as well?, Default: TRUE
 #'
 #' @return A `data.table` with completed entries for all combinations of
@@ -429,7 +429,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' )
 #' enw_complete_dates(obs)
 enw_complete_dates <- function(obs, by = c(), max_delay,
-                               include_missing = TRUE) {
+                               missing_reference = TRUE) {
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
 
@@ -457,7 +457,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
   completion <- completion[, report_date := reference_date + report_date]
   completion <- completion[report_date <= max_date]
 
-  if (include_missing) {
+  if (missing_reference) {
     completion <- rbind(
       completion,
       data.table::CJ(
@@ -662,13 +662,6 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-#'
-#' # Preprocess using exclusion beyond the maximum delay and a max delay of 10
-#' pobs_exclude <- enw_preprocess_data(
-#'   nat_germany_hosp,
-#'   max_delay = 10, max_delay_strat = "exclude"
-#' )
-#' pobs_exclude
 #'
 #' # Preprocess all data
 #' pobs_all <- enw_preprocess_data(

@@ -4,7 +4,7 @@
 \alias{enw_complete_dates}
 \title{Complete missing reference and report dates}
 \usage{
-enw_complete_dates(obs, by = c(), max_delay, include_missing = TRUE)
+enw_complete_dates(obs, by = c(), max_delay, missing_reference = TRUE)
 }
 \arguments{
 \item{obs}{A data frame containing at least the following variables:
@@ -21,7 +21,7 @@ downstream modelling}
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
 
-\item{include_missing}{Should entries for cases with missing reference date
+\item{missing_reference}{Should entries for cases with missing reference date
 be completed as well?, Default: TRUE}
 }
 \value{
