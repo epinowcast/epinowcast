@@ -8,7 +8,6 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
-  max_delay_strat = "add_to_max_delay",
   holidays = c(),
   set_negatives_to_zero = TRUE
 )
@@ -27,12 +26,6 @@ downstream modelling}
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
-
-\item{max_delay_strat}{Character string indicating how to handle
-reported cases beyond the specified maximum delay. Options include:
-excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
-Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
-\code{prop_reported} columns to understand the impact of this assumption.}
 
 \item{holidays}{A vector of dates indicating when holidays occur used by
 \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
@@ -76,7 +69,9 @@ observed empirical probability of a report on a given day, the cumulative
 probability of report, the latest available observations, incidence of
 observations, and metadata about the date of reference and report (used to
 construct models). This function wraps other preprocessing functions that may
-be instead used individually if required.
+be instead used individually if required. Note that internally reports
+beyond the user specified delay are reassigned to the last permissible delay
+for modelling purposes.
 }
 \examples{
 library(data.table)
@@ -109,6 +104,7 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},

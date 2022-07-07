@@ -70,8 +70,6 @@ enw_obs_as_data_list <- function(pobs) {
   # get new confirm for processing
   new_confirm <- data.table::copy(pobs$new_confirm[[1]])
   data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
-  new_confirm_missing <- data.table::copy(pobs$new_confirm_missing[[1]])
-  data.table::setorderv(new_confirm_missing, c(".group", "reference_date"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -98,9 +96,11 @@ enw_obs_as_data_list <- function(pobs) {
   snap_time <- snap_time$t
 
   # obs with missing reference date
-  obs_miss <- as.matrix(
+  missing_reference <- data.table::copy(pobs$missing_reference[[1]])
+  data.table::setorderv(missing_reference, c(".group", "reference_date"))
+  missing_reference <- as.matrix(
     data.table::dcast(
-      new_confirm_missing, group ~ report_date, value.var = "new_confirm",
+      missing_reference, group ~ report_date, value.var = "new_confirm",
       fill = 0
     )[, -1]
   )
@@ -121,7 +121,7 @@ enw_obs_as_data_list <- function(pobs) {
     obs = as.matrix(pobs$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
-    obs_miss = obs_miss
+    missing_ref = missing_reference
   )
   return(data)
 }

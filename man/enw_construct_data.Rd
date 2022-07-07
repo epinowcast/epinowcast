@@ -8,6 +8,7 @@ enw_construct_data(
   obs,
   new_confirm,
   latest,
+  missing_reference,
   reporting_triangle,
   metareport,
   metareference,
@@ -24,6 +25,9 @@ and and restricted to the specified maximum delay).}
 Empirical reporting distributions are also added.}
 
 \item{latest}{The latest available observations.}
+
+\item{missing_reference}{A data frame of reported observations that are
+missing the reference date.}
 
 \item{reporting_triangle}{Incident observations by report and reference
 date in the standard reporting triangle matrix format.}
@@ -81,6 +85,7 @@ enw_construct_data(
   obs = pobs$obs[[1]],
   new_confirm = pobs$new_confirm[[1]],
   latest = pobs$latest[[1]],
+  missing_reference = pobs$missing_reference[[1]],
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
@@ -95,6 +100,7 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},

@@ -141,6 +141,7 @@ enw_add_max_reported <- function(obs) {
     ,
     .(reference_date, .group, max_confirm = confirm)
   ]
+  orig_latest[is.na(reference_date), max_confirm := confirm]
   obs <- obs[orig_latest, on = c("reference_date", ".group")]
   obs[, cum_prop_reported := confirm / max_confirm]
   return(obs[])
@@ -396,36 +397,48 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs A `data.table` with the observations to complete
+#' Complete missing reference and report dates
 #'
-#' @param min_date The first date from which to complete.
-#'
-#' @param max_date The last date until which to complete.
-#'
-#' @param max_delay The maximum reporting delay.
-#'
-#' @param by A character vector describing the stratification of
-#' observations. Defaults to no grouping.
+#' Ensures that all reference and report dates are present for
+#' all groups based on the maximum and minimum dates found in the data.
+#' This function may be of use to users when preprocessing their data but is
+#' also used internally by `enw_preprocess_data()` to ensure the data is in the
+#' format that the model assumes.
 #'
 #' @param include_missing Should entries for cases with missing reference date
-#' be completed as well?, Default: FALSE
+#' be completed as well?, Default: TRUE
 #'
-#' @return A `data.table` with completed entries for all combinations of reference
-#' dates, groups and possible report dates.
+#' @return A `data.table` with completed entries for all combinations of
+#' reference dates, groups and possible report dates.
+#'
+#' @inheritParams check_dates
+#' @inheritParams enw_preprocess_data
+#' @export
+#' @importFrom data.table as.data.table CJ
 #' @family preprocess
-enw_complete_dates <- function(obs, min_date, max_date, max_delay, by = c(),
-                               include_missing = FALSE) {
+#' @examples
+#' obs <- data.frame(
+#'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01"
+#' )
+#' enw_complete_dates(obs)
+enw_complete_dates <- function(obs, by = c(), include_missing = TRUE) {
   obs <- data.table::as.data.table(obs)
+  obs <- check_dates(obs)
+
+  min_date <- min(obs$reference_date, na.rm = TRUE)
+  max_date <- max(obs$report_date, na.rm = TRUE)
+  if (is.null(obs$delay)) {
+    obs <- enw_add_delay(obs)
+  }
+  max_delay <- max(obs$delay, na.rm = TRUE)
   dates <- seq.Date(min_date, max_date, by = 1)
-  by_with_group_id <- c("group", by)
+  by_with_group_id <- c(".group", by)
   groups <- unique(obs[, ..by_with_group_id])
 
-  completion <- CJ(
+  completion <- data.table::CJ(
     reference_date = dates,
     group = groups$group,
-    report_date = 0:(max_delay - 1)
+    report_date = 0:max_delay
   )
   completion <- completion[, report_date := reference_date + report_date]
   completion <- completion[report_date <= max_date]
@@ -433,7 +446,7 @@ enw_complete_dates <- function(obs, min_date, max_date, max_delay, by = c(),
   if (include_missing) {
     completion <- rbind(
       completion,
-      CJ(
+      data.table::CJ(
         reference_date = as.Date(NA),
         .group = groups$.group,
         report_date = dates
@@ -443,11 +456,12 @@ enw_complete_dates <- function(obs, min_date, max_date, max_delay, by = c(),
   # join completion with groups and original obs
   completion <- completion[groups, on = ".group"]
   obs <- obs[completion, on = c("reference_date", "report_date", names(groups))]
-  # impute
-  obs[, confirm := nafill(nafill(confirm, "locf"), fill = 0),
+  # impute missing as zero
+  obs[,
+    confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", ".group")
   ]
-  return(obs)
+  return(obs[])
 }
 
 #' Calculate reporting delay metadata
@@ -509,6 +523,9 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'
 #' @param latest The latest available observations.
 #'
+#' @param missing_reference A data frame of reported observations that are
+#' missing the reference date.
+#' 
 #' @param reporting_triangle Incident observations by report and reference
 #'  date in the standard reporting triangle matrix format.
 #'
@@ -529,6 +546,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   obs = pobs$obs[[1]],
 #'   new_confirm = pobs$new_confirm[[1]],
 #'   latest = pobs$latest[[1]],
+#'   missing_reference = pobs$missing_reference[[1]],
 #'   reporting_triangle = pobs$reporting_triangle[[1]],
 #'   metareport = pobs$metareport[[1]],
 #'   metareference = pobs$metareference[[1]],
@@ -536,13 +554,14 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   by = c(),
 #'   max_delay = pobs$max_delay[[1]]
 #' )
-enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
-                               metareport, metareference, metadelay, by,
-                               max_delay) {
+enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
+                               reporting_triangle, metareport, metareference,
+                               metadelay, by, max_delay) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
     latest = list(latest),
+    missing_reference = list(reference_missing),
     reporting_triangle = list(reporting_triangle),
     metareference = list(metareference),
     metareport = list(metareport),
@@ -568,7 +587,9 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' probability of report, the latest available observations, incidence of
 #' observations, and metadata about the date of reference and report (used to
 #' construct models). This function wraps other preprocessing functions that may
-#' be instead used individually if required.
+#' be instead used individually if required. Note that internally reports
+#' beyond the user specified delay are reassigned to the last permissible delay
+#' for modelling purposes.
 #'
 #' @param obs A data frame containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
@@ -583,12 +604,6 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #' @param max_delay Numeric defaults to 20. The maximum number of days to
 #' include in the delay distribution. Computation scales non-linearly with this
 #' setting so consider what maximum makes sense for your data carefully.
-#'
-#' @param max_delay_strat Character string indicating how to handle
-#' reported cases beyond the specified maximum delay. Options include:
-#' excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
-#' Adding to the maximum delay is the default. Compare `confirm`, `max_confirm`,
-#' `prop_reported` columns to understand the impact of this assumption.
 #'
 #' @param holidays A vector of dates indicating when holidays occur used by
 #' [enw_add_metaobs_features()] to treat holidays as sundays within the
@@ -643,9 +658,8 @@ enw_construct_data <- function(obs, new_confirm, latest, reporting_triangle,
 #'   by = c("location", "age_group")
 #' )
 #' pobs_all
-enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
-                                max_delay_strat = "add_to_max_delay",
-                                holidays = c(), set_negatives_to_zero = TRUE) {
+enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
+                                set_negatives_to_zero = TRUE) {
   max_delay_strat <- match.arg(
     max_delay_strat,
     choices = c("exclude", "add_to_max_delay")
@@ -657,32 +671,18 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)
   obs <- enw_add_delay(obs)
+  obs <- enw_complete_dates(obs, by = by)
 
-  # complete missing report dates
-  # Note: it might be better to get the "now" date as last date instead of
-  # estimating it from data using the max report date
-  obs <- enw_complete_dates(
-    obs,
-    min_date = min(obs$reference_date, na.rm = TRUE),
-    max_date = max(obs$report_date),
-    max_delay = max_delay,
-    by = by,
-    include_missing = any(is.na(obs$reference_date))
-  )
+  obs[
+    report_date == (reference_date + max_delay - 1),
+    confirm := max_confirm,
+    by = ".group"
+  ]
 
-  if (max_delay_strat %in% "add_to_max_delay") {
-    obs[
-      report_date == (reference_date + max_delay - 1),
-      confirm := max_confirm,
-      by = ".group"
-    ]
-  }
-
-  obs <- enw_delay_filter(obs, max_delay = max_delay
+  obs <- enw_delay_filter(obs, max_delay = max_delay)
 
   diff_obs <- enw_new_reports(
-    obs,
-    set_negatives_to_zero = set_negatives_to_zero
+    obs, set_negatives_to_zero = set_negatives_to_zero
   )
 
   # filter obs based on diff constraints
@@ -708,24 +708,26 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   obs[, .old_group := NULL]
 
   # separate obs with and without missing reference date
-  reporting_available <- diff_obs[!is.na(reference_date)]
-  reporting_missing <- diff_obs[is.na(reference_date)]
+  reference_available <- diff_obs[!is.na(reference_date)]
+  reference_missing <- diff_obs[is.na(reference_date)]
 
   # calculate reporting matrix on obs with available reference date
-  reporting_triangle <- enw_reporting_triangle(reporting_available)
+  reporting_triangle <- enw_reporting_triangle(reference_available)
 
   # extract latest data
   # Note: currently, only the obs with available reference date are used
   # This should to be extended to missing reference dates to avoid bias
-  latest <- enw_latest_data(reporting_available)
+  latest <- enw_latest_data(reference_available)
 
   # extract and extend report date meta data to include unobserved reports
-  metareport <- enw_metadata(reporting_available, target_date = "report_date")
+  metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(metareport, max_delay = max_delay)
   metareport <- enw_add_metaobs_features(metareport, holidays = holidays)
 
   # extract and add features for reference date
-  metareference <- enw_metadata(obs, target_date = "reference_date")
+  metareference <- enw_metadata(
+    obs[!is.na(reference_date)], target_date = "reference_date"
+  )
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 
   # extract and add features for delays
@@ -733,8 +735,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   out <- enw_construct_data(
     obs = obs,
-    new_confirm = diff_obs,
-    new_confirm_missing = reporting_missing,
+    new_confirm = reference_available,
+    missing_reference = reference_missing,
     latest = latest,
     reporting_triangle = reporting_triangle,
     metareference = metareference,
