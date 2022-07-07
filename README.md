@@ -354,6 +354,10 @@ enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 
 <img src="man/figures/README-week_nowcast-1.png" width="100%" />
 
+## Learning more
+
+The package has extensive documentation as well as vignettes describing the underlying methodology, and several case studies. Please see [the package site](https://epiforecasts.io/epinowcast) for details. Note that the development version of the package also has supporting documentation which are available [here](https://epiforecasts.io/epinowcast/dev).
+
 ## Citation
 
 If using `epinowcast` in your work please consider citing it using the
@@ -377,34 +381,15 @@ following,
 
 ## How to make a bug report or feature request
 
-Please briefly describe your problem and what output you expect in an
-[issue](https://github.com/epiforecasts/epinowcast/issues). If you have
-a question, please don’t open an issue. Instead, ask on our [Q and A
-page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
+Please briefly describe your problem and what output you expect in an [issue](https://github.com/epiforecasts/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
 ## Contributing
 
-We welcome contributions and new contributors\! We particularly
-appreciate help on priority problems in the
-[issues](https://github.com/epiforecasts/epinowcast/issues). Please
-check and add to the issues, and/or add a [pull
-request](https://github.com/epiforecasts/epinowcast/pulls). See our
-[contributing
-guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
-for more information.
+We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
-If interested in expanding the functionality of the underlying model
-note that `epinowcast` allows users to pass in their own models meaning
-that alternative parameterisations, for example altering the forecast
-model used for inferring expected observations, may be easily tested
-within the package infrastructure. Once this testing has been done
-alterations that increase the flexibility of the package model and
-improves its defaults are very welcome via pull request or other
-communication with the package authors.
+If interested in expanding the functionality of the underlying model note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors. Even if not wanting to add your updated model to the package please do reach out as we would love to hear about your use case.
 
 ## Code of Conduct
+  
+Please note that the `epinowcast` project is released with a [Contributor Code of Conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
 
-Please note that the `epinowcast` project is released with a
-[Contributor Code of
-Conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html). By
-contributing to this project, you agree to abide by its terms.
