@@ -10,14 +10,14 @@ template:
   opengraph:
     image:
       src: man/figures/README-nowcast-1.png
-      alt: An R package for hierarchical nowcasting of right censored epidemiolgical counts
+      alt: An R package for hierarchical nowcasting of right censored epidemiological counts
     twitter: 
       creator: "@seabbs"
       card: summary_large_image
 
 
 development:
-  mode: release
+  mode: auto
 
 authors:
   Sam Abbott:
@@ -32,6 +32,10 @@ reference:
     desc: Functions for preprocessing observations.
     contents:
       - has_concept("preprocess")
+  - title: Formula design tools
+    desc: Functions that assist with interpreting model formulas
+    contents:
+      - has_concept("formulatools")
   - title: Model design tools
     desc: Functions that assist with designing models.
     contents:
@@ -56,14 +60,6 @@ reference:
     desc: Functions for validating model fits.
     contents:
       - has_concept("modelvalidation")
-  - title: Generate data
-    desc: Functions for generating simulated data.
-    contents:
-      - has_concept("generatedata")
-  - title: Define and generate scenarios
-    desc: Functions for defining and generating data scenarios.
-    contents:
-      - has_concept("scenarios")
   - title: Datasets
     desc: Package datasets used in examples and by users to explore the package functionality.
     contents:

@@ -24,6 +24,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
         libssl-dev \
         libxml2-dev \
         libxt-dev \
+        libmagick++-6.q16-8 \
         pandoc \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts \
     && python3 -m pip --no-cache-dir install radian pre-commit \
@@ -47,9 +48,15 @@ RUN Rscript -e 'devtools::install_github("mdlincoln/docthis")'
 RUN Rscript -e 'devtools::install_github("lorenzwalthert/precommit")'
 RUN Rscript -e 'devtools::install_github("milesmcbain/fnmate")'
 
+# add dependencies for logo making
+RUN install2.r --error --skipinstalled --repos ${CRAN} --ncpus -1 \
+        hexSticker \
+        sysfonts \
+    && rm -rf /tmp/downloaded_packages
+
 # install dependencies
 COPY DESCRIPTION /tmp/package/DESCRIPTION
-RUN Rscript -e "devtools::install_deps('/tmp/package', dependencies = TRUE)"
+RUN Rscript -e "devtools::install_deps('/tmp/package', dependencies = c( 'Depends', 'Imports', 'LinkingTo', 'Suggests', 'Config/Needs/website'))"
 
 # install cmdstan
 RUN Rscript -e "cmdstanr::install_cmdstan()"

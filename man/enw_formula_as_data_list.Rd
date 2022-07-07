@@ -11,11 +11,11 @@ enw_formula_as_data_list(data, reference_effects, report_effects)
 \code{\link[=enw_obs_as_data_list]{enw_obs_as_data_list()}}.}
 
 \item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reference model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 
 \item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reports model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 }
 \value{
@@ -29,6 +29,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_opts_as_data_list}()},
 \code{\link{enw_posterior_as_prior}()},
 \code{\link{enw_priors_as_data_list}()},
-\code{\link{remove_profiling}()}
+\code{\link{remove_profiling}()},
+\code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}

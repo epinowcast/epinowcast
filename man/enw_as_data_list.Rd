@@ -6,8 +6,8 @@
 \usage{
 enw_as_data_list(
   pobs,
-  reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
-  report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
+  reference_effects = epinowcast::enw_manual_formula(pobs$metareference[[1]]),
+  report_effects = epinowcast::enw_manual_formula(pobs$metareport[[1]]),
   priors = epinowcast::enw_priors(),
   distribution = "lognormal",
   nowcast = TRUE,
@@ -21,18 +21,19 @@ enw_as_data_list(
 \item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reference model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 
 \item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
+defining the date of reports model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
 which is an intercept only model.}
 
 \item{priors}{DESCRIPTION.}
 
 \item{distribution}{Character string indicating the type of distribution to
 use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+options available include the exponential and gamma distributions. If "none"
+is specfied then no parametric delay distribution is used.}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}

@@ -16,3 +16,6 @@
 ^vignettes/precompile.R$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^codemeta\.json$
+^CONTRIBUTING\.md$
+^inst/make_hexsticker\.R$

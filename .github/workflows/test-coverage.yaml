@@ -2,9 +2,9 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, develop]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, develop]
 
 name: test-coverage
 
@@ -13,7 +13,6 @@ jobs:
     runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      CMDSTAN_VERSION: "2.28.0"
       NOT_CRAN: true
     steps:
       - name: cmdstan env vars
@@ -50,18 +49,11 @@ jobs:
           install.packages("curl")
         shell: Rscript {0}
 
-      - name: Cache cmdstan
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.CMDSTAN_PATH }}
-          key: ${{ runner.os }}-cmdstan-${{ env.CMDSTAN_VERSION }}
-          restore-keys: ${{ runner.os }}-cmdstan-
-
       - name: Install cmdstan
         run: |
-          version <- Sys.getenv("CMDSTAN_VERSION")
-          url <- sprintf("https://github.com/stan-dev/cmdstan/releases/download/v%s/cmdstan-%s.tar.gz", version, version)
-          cmdstanr::install_cmdstan(cores = 2, release_url = url)
+          print(list.files("C:/rtools42"))
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = 2, version = "2.29.0")
         shell: Rscript {0}
 
       - name: Install package

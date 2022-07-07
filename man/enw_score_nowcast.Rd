@@ -2,25 +2,70 @@
 % Please edit documentation in R/model-validation.R
 \name{enw_score_nowcast}
 \alias{enw_score_nowcast}
-\title{FUNCTION_TITLE}
+\title{Evaluate nowcasts using proper scoring rules}
 \usage{
-enw_score_nowcast(nowcast, latest_obs, log = FALSE, round_to = 3, ...)
+enw_score_nowcast(
+  nowcast,
+  latest_obs,
+  log = FALSE,
+  check = FALSE,
+  round_to = 3,
+  ...
+)
 }
 \arguments{
-\item{nowcast}{DESCRIPTION.}
+\item{nowcast}{A posterior nowcast or posterior prediction as returned by
+\code{\link[=summary.epinowcast]{summary.epinowcast()}}, when used on the output of \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{latest_obs}{DESCRIPTION.}
+\item{latest_obs}{A data frame of the latest available observations as
+produced by \code{\link[=enw_latest_data]{enw_latest_data()}} or otherwise.}
 
-\item{log}{DESCRIPTION.}
+\item{log}{Logical, defaults to FALSE. Should scores be calculated on the
+log scale (with a 0.01 shift) for both observations and nowcasts. Scoring in
+this way can be thought of as a relative score vs the more usual absolute
+measure. It may be useful when targets are on very different scales or when
+the forecaster is more interested in good all round performance versus good
+performance for targets with large values.}
 
-\item{round_to}{DESCRIPTION}
+\item{check}{Logical, defaults to FALSE. Should
+\code{\link[scoringutils:check_forecasts]{scoringutils::check_forecasts()}} be used to check input nowcasts.}
 
-\item{...}{Additional arguments passed to \code{\link[scoringutils:eval_forecasts]{scoringutils::eval_forecasts()}}.}
+\item{round_to}{Integer defaults to 3. Number of digits to round scoring
+output to.}
+
+\item{...}{Additional arguments passed to \code{\link[scoringutils:score]{scoringutils::score()}}.}
 }
 \value{
-RETURN_DESCRIPTION
+A \code{data.table} as returned by \code{\link[scoringutils:score]{scoringutils::score()}}.
 }
 \description{
-FUNCTION_DESCRIPTION
+Acts as a wrapper to \code{\link[scoringutils:score]{scoringutils::score()}}. In particular,
+handling filtering nowcast summary output and linking this output to
+observed data. See the documentation for the \code{scoringutils} package for more
+on forecast scoring.
+}
+\examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+library(data.table)
+library(scoringutils)
+
+# Summarise example nowcast
+nowcast <- enw_example("nowcast")
+summarised_nowcast <- summary(nowcast)
+
+# Load latest available observations
+obs <- enw_example("observations")
+
+# Keep the last 7 days of data
+obs <- obs[reference_date > (max(reference_date) - 7)]
+
+# score on the absolute scale
+scores <- enw_score_nowcast(summarised_nowcast, obs)
+summarise_scores(scores, by = "location")
+
+# score overall on a log scale
+log_scores <- enw_score_nowcast(summarised_nowcast, obs, log = TRUE)
+summarise_scores(log_scores, by = "location")
+\dontshow{\}) # examplesIf}
 }
 \concept{modelvalidation}

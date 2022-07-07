@@ -12,3 +12,5 @@ cache
 .DS_Store
 .Rproj.user
 *.Rproj
+!inst/extdata/*.rds
+pkgdown

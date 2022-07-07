@@ -21,10 +21,10 @@
 #' @export
 epinowcast <- function(pobs,
                        reference_effects = epinowcast::enw_formula(
-                         pobs$metareference[[1]]
+                         ~1, pobs$metareference[[1]]
                        ),
                        report_effects = epinowcast::enw_formula(
-                         pobs$metareport[[1]]
+                         ~1, pobs$metareport[[1]]
                        ),
                        priors = epinowcast::enw_priors(),
                        distribution = "lognormal",
@@ -49,6 +49,6 @@ epinowcast <- function(pobs,
   fit <- fit(data = stan_data, model = model, init = inits, ...)
 
   out <- cbind(pobs, fit)
-  class(out) <- c("epinowcast", class(out))
+  class(out) <- c("epinowcast", "enw_preprocess_data", class(out))
   return(out[])
 }

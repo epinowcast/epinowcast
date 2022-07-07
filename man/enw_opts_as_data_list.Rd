@@ -16,7 +16,8 @@ enw_opts_as_data_list(
 \arguments{
 \item{distribution}{Character string indicating the type of distribution to
 use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+options available include the exponential and gamma distributions. If "none"
+is specfied then no parametric delay distribution is used.}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.}
@@ -45,6 +46,7 @@ Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_posterior_as_prior}()},
 \code{\link{enw_priors_as_data_list}()},
-\code{\link{remove_profiling}()}
+\code{\link{remove_profiling}()},
+\code{\link{write_stan_files_no_profile}()}
 }
 \concept{modeltools}

@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Hierarchical Nowcasting of Right Censored Epidemiological Counts
-Version: 0.0.6.2000
+Version: 0.1.0.1000
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -11,6 +11,10 @@ Authors@R:
              role = "aut",
              email = "adrian.lison@bsse.ethz.ch",
              comment = c(ORCID = "0000-0002-6822-8437")),
+    person(given = "Sebastian",
+                family = "Funk",
+                role = "aut",
+                email = "sebastian.funk@lshtm.ac.uk"),
     person(given = "Michael",
              family = "DeWitt",
              role = "ctb",
@@ -30,11 +34,12 @@ URL: https://epiforecasts.io/epinowcast/,
     https://github.com/epiforecasts/epinowcast/
 BugReports: https://github.com/epiforecasts/epinowcast/issues/
 Depends:
-    R (>= 2.10)
+    R (>= 3.5.0)
 Imports:
     cmdstanr,
     data.table,
     lubridate,
+    lme4,
     ggplot2,
     posterior,
     purrr,
@@ -57,10 +62,13 @@ Remotes:
 Config/Needs/website: 
     r-lib/pkgdown,
     amirmasoudabdol/preferably
+Config/Needs/hexsticker: 
+    hexSticker,
+    sysfonts
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-GB
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2.9000
+RoxygenNote: 7.2.0
 SystemRequirements: CmdStan (>=2.29)
