@@ -192,7 +192,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' of reference dates to include, ending with the latest reference
 #' date included once reporting dates have been removed. If specifed
 #' this is indexed to `latest_date` or `remove_days`.
-#'
+#' 
 #' @param latest_date Date, the latest reference date to include in the
 #' returned dataset.
 #'
