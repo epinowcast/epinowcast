@@ -7,7 +7,7 @@ test_that("enw_missing_reference works as expected given correct input data", {
       "2021-10-02", "2021-10-03", "2021-10-04"
     ),
     reference_date = c(
-      rep("2021-10-01", 3), rep("2021-10-02", 3), rep("2021-10-03", 2), 
+      rep("2021-10-01", 3), rep("2021-10-02", 3), rep("2021-10-03", 2),
       "2021-10-04", rep(NA, 4)
     ),
     confirm = c(rep(1, 3), rep(0, 9), 4),

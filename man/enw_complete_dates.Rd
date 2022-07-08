@@ -37,8 +37,8 @@ or as covariates need to be included in the \code{by} variable.
 }
 \examples{
 obs <- data.frame(
- report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
- confirm = 1
+  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+  confirm = 1
 )
 enw_complete_dates(obs)
 }

@@ -5,10 +5,14 @@ test_that("enw_complete_dates works as expected with well behaved data", {
   )
   exp_obs <- data.table::data.table(
     report_date = as.IDate(
-      c("2021-10-01", "2021-10-02", "2021-10-03", "2021-10-02", "2021-10-03",
-        "2021-10-03", "2021-10-01", "2021-10-02", "2021-10-03")),
+      c(
+        "2021-10-01", "2021-10-02", "2021-10-03", "2021-10-02", "2021-10-03",
+        "2021-10-03", "2021-10-01", "2021-10-02", "2021-10-03"
+      )
+    ),
     reference_date = as.IDate(
-      c(rep("2021-10-01", 3), rep("2021-10-02", 2), "2021-10-03", rep(NA, 3))),
+      c(rep("2021-10-01", 3), rep("2021-10-02", 2), "2021-10-03", rep(NA, 3))
+    ),
     confirm = c(rep(1, 3), rep(0, 6))
   )
   expect_equal(enw_complete_dates(obs), exp_obs)

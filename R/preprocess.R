@@ -210,15 +210,17 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @examples
 #' # Filter by date
 #' enw_filter_reference_dates(
-#'  germany_covid19_hosp, earliest_date = "2021-09-01",
-#'  latest_date = "2021-10-01"
+#'   germany_covid19_hosp,
+#'   earliest_date = "2021-09-01",
+#'   latest_date = "2021-10-01"
 #' )
 #' #
 #' # Filter by days
 #' enw_filter_reference_dates(
-#'  germany_covid19_hosp, include_days = 10, remove_days = 10
+#'   germany_covid19_hosp,
+#'   include_days = 10, remove_days = 10
 #' )
-enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
+enw_filter_reference_dates <- function(obs, earliest_date, include_days,
                                        latest_date, remove_days) {
   filt_obs <- check_dates(obs)
   if (!missing(remove_days)) {
@@ -342,8 +344,7 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 enw_delay_filter <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[,
-    .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
-   ],
+    .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)],
     by = c("reference_date", ".group")
   ]
   return(obs[])
@@ -424,8 +425,8 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @family preprocess
 #' @examples
 #' obs <- data.frame(
-#'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
-#'  confirm = 1
+#'   report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+#'   confirm = 1
 #' )
 #' enw_complete_dates(obs)
 enw_complete_dates <- function(obs, by = c(), max_delay,
@@ -497,12 +498,12 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #' @family preprocess
 #' @examples
 #' obs <- data.frame(
-#'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
-#'  confirm = 1
+#'   report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+#'   confirm = 1
 #' )
 #' obs <- rbind(
-#'  obs,
-#'  data.frame(report_date = "2021-10-04", reference_date = NA, confirm = 4)
+#'   obs,
+#'   data.frame(report_date = "2021-10-04", reference_date = NA, confirm = 4)
 #' )
 #' obs <- enw_complete_dates(obs)
 #' obs <- enw_assign_group(obs)
@@ -512,12 +513,14 @@ enw_missing_reference <- function(obs) {
   obs <- check_dates(obs)
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
-   .(.old_group = sum(new_confirm)), by = c("report_date", ".group")
+    .(.old_group = sum(new_confirm)),
+    by = c("report_date", ".group")
   ]
 
   ref_missing <- obs[is.na(reference_date)]
   cols <- intersect(
-    c("delay", "reference_date", "max_confirm", "cum_prop_reported",
+    c(
+      "delay", "reference_date", "max_confirm", "cum_prop_reported",
       "prop_reported", "new_confirm"
     ), colnames(ref_missing)
   )
@@ -526,7 +529,7 @@ enw_missing_reference <- function(obs) {
   ref_missing[, prop_missing := confirm / (confirm + .old_group)]
   ref_missing[, .old_group := NULL]
   return(ref_missing[])
-  }
+}
 
 #' Calculate reporting delay metadata
 #'
@@ -653,7 +656,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' construct models). This function wraps other preprocessing functions that may
 #' be instead used individually if required. Note that internally reports
 #' beyond the user specified delay are reassigned to the last permissible delay
-#' for modelling purposes. Also note that if missing reference or report dates 
+#' for modelling purposes. Also note that if missing reference or report dates
 #' are suspected to occur in your data then these need to be completed with
 #' [enw_complete_dates()].
 #'
@@ -737,7 +740,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
   obs <- enw_delay_filter(obs, max_delay = max_delay)
 
   diff_obs <- enw_new_reports(
-    obs, set_negatives_to_zero = set_negatives_to_zero
+    obs,
+    set_negatives_to_zero = set_negatives_to_zero
   )
 
   # filter obs based on diff constraints
@@ -780,7 +784,8 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
 
   # extract and add features for reference date
   metareference <- enw_metadata(
-    obs[!is.na(reference_date)], target_date = "reference_date"
+    obs[!is.na(reference_date)],
+    target_date = "reference_date"
   )
   metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
 

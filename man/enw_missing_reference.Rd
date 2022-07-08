@@ -21,12 +21,12 @@ the proportion of reports for a given reference date that were missing.
 }
 \examples{
 obs <- data.frame(
- report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
- confirm = 1
+  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
+  confirm = 1
 )
 obs <- rbind(
- obs,
- data.frame(report_date = "2021-10-04", reference_date = NA, confirm = 4)
+  obs,
+  data.frame(report_date = "2021-10-04", reference_date = NA, confirm = 4)
 )
 obs <- enw_complete_dates(obs)
 obs <- enw_assign_group(obs)
