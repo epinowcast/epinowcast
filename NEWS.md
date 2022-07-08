@@ -9,8 +9,10 @@ This is a major release and contains multiple breaking changes. If needing the o
 ## Package
 
 * A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for [#4](https://github.com/epiforecasts/epinowcast/issues/4) where this data frame will be combined with the reference metadata in order to build non-parametric hazard reference and delay based models. In addition to adding this function, it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See [#80](https://github.com/epiforecasts/epinowcast/pull/80) by [@seabbs](https://github.com/seabbs).
-* Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. See [#82](https://github.com/epiforecasts/epinowcast/pull/82) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. Note that by definition it is assumed that a report date for a given reference date must be the equal or greater (i.e a report cannot happen before the event being reported occurs). See [#82](https://github.com/epiforecasts/epinowcast/pull/82) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 * The internal grouping variables have been refactored to reduce the chance of clashes with columns in the data frames supplied by the user. There will also be an error thrown in case of a variable clash, making preprocessing safer. See [#102](https://github.com/epiforecasts/epinowcast/pull/102) by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs), which solves [#99](https://github.com/epiforecasts/epinowcast/issues/99).
+* Support for preprocessing observations with missing reference dates has been added along with a new data object returned by `enw_preprocess_data()` that highlights this information to the user (alternatively can be accessed by users using `enw_missing_reference()`). In addition, these missing observations have been setup to be passed to stan in order to allow their use in modelling. This feature is in preparation of adding full support for missing observations (see [#43](https://github.com/epiforecasts/epinowcast/issues/43)). See 
+[#106](https://github.com/epiforecasts/epinowcast/pull/106) by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs).
 
 ## Model
 
@@ -19,7 +21,7 @@ This is a major release and contains multiple breaking changes. If needing the o
 
 ## Documentation
 
-* The model descriptipn has been updated to reflect the currently implemented model and to improve readability. The use use of reference and report date nomenclature has also been standardised across the package. See [#71](https://github.com/epiforecasts/epinowcast/pull/71) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* The model description has been updated to reflect the currently implemented model and to improve readability. The use use of reference and report date nomenclature has also been standardised across the package. See [#71](https://github.com/epiforecasts/epinowcast/pull/71) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 ## Internals
 

@@ -19,7 +19,9 @@ enw_priors <- function() {
       "logmean_sd",
       "logsd_sd",
       "rd_eff_sd",
-      "sqrt_phi"
+      "sqrt_phi",
+      "alpha_int",
+      "alpha_sd"
     ),
     description = c(
       "Standard deviation for expected final observations",
@@ -28,7 +30,10 @@ enw_priors <- function() {
       "Standard deviation of scaled pooled logmean effects",
       "Standard deviation of scaled pooled logsd effects",
       "Standard deviation of scaled pooled report date effects",
-      "One over the square of the reporting overdispersion"
+      "One over the square of the reporting overdispersion",
+      "Logit start value for share of cases with known reference date",
+      "Standard deviation of random walk for share of cases with known
+       reference date"
     ),
     distribution = c(
       "Zero truncated normal",
@@ -37,10 +42,12 @@ enw_priors <- function() {
       "Zero truncated normal",
       "Zero truncated normal",
       "Zero truncated normal",
+      "Zero truncated normal",
+      "Normal",
       "Zero truncated normal"
     ),
-    mean = c(0, 1, 0.5, rep(0, 4)),
-    sd = rep(1, 7)
+    mean = c(0, 1, 0.5, rep(0, 4), 0, 0),
+    sd = c(rep(1, 7), 1, 0.1)
   )
 }
 
@@ -105,6 +112,19 @@ enw_obs_as_data_list <- function(pobs) {
     flat_obs = flat_obs,
     latest_obs = latest_matrix
   )
+  if (nrow(pobs$missing_reference[[1]]) > 0) {
+    # obs with missing reference date
+    missing_reference <- data.table::copy(pobs$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    missing_reference <- as.matrix(
+      data.table::dcast(
+        missing_reference, .group ~ report_date,
+        value.var = "confirm",
+        fill = 0
+      )[, -1]
+    )
+    data$missing_ref <- missing_reference
+  }
   return(data)
 }
 

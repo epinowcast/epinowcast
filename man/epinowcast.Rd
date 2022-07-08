@@ -38,7 +38,7 @@ which is an intercept only model.}
 \item{distribution}{Character string indicating the type of distribution to
 use for reference date effects. The default is to use a lognormal but other
 options available include the exponential and gamma distributions. If "none"
-is specfied then no parametric delay distribution is used.}
+is specified then no parametric delay distribution is used.}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
 

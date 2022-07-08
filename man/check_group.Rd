@@ -7,8 +7,8 @@
 check_group(obs)
 }
 \arguments{
-\item{obs}{An observation data frame that does not contain\code{.group},
-\code{.old_group}, or \code{new_group} as these are reserved variables.}
+\item{obs}{An observation data frame that does not contain \code{.group},
+\code{.old_group}, or \code{.new_group} as these are reserved variables.}
 }
 \description{
 Check Observations for reserved grouping variables
