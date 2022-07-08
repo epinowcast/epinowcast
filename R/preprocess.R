@@ -445,7 +445,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 
   dates <- seq.Date(min_date, max_date, by = 1)
   dates <- as.IDate(dates)
-  
+
   obs <- enw_assign_group(obs, by = by)
   by_with_group_id <- c(".group", by)
   groups <- unique(obs[, ..by_with_group_id])
@@ -509,7 +509,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #' obs <- enw_new_reports(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
-  obs <- check_date(obs)
+  obs <- check_dates(obs)
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
    .(.old_group = sum(new_confirm)), by = c("report_date", ".group")
