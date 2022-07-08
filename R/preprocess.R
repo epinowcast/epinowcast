@@ -192,7 +192,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' of reference dates to include, ending with the latest reference
 #' date included once reporting dates have been removed. If specifed
 #' this is indexed to `latest_date` or `remove_days`.
-#' 
+#'
 #' @param latest_date Date, the latest reference date to include in the
 #' returned dataset.
 #'
@@ -206,15 +206,17 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @examples
 #' # Filter by date
 #' enw_filter_reference_dates(
-#'  germany_covid19_hosp, earliest_date = "2021-09-01",
-#'  latest_date = "2021-10-01"
+#'   germany_covid19_hosp,
+#'   earliest_date = "2021-09-01",
+#'   latest_date = "2021-10-01"
 #' )
 #' #
 #' # Filter by days
 #' enw_filter_reference_dates(
-#'  germany_covid19_hosp, include_days = 10, remove_days = 10
+#'   germany_covid19_hosp,
+#'   include_days = 10, remove_days = 10
 #' )
-enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
+enw_filter_reference_dates <- function(obs, earliest_date, include_days,
                                        latest_date, remove_days) {
   filt_obs <- check_dates(obs)
   if (!missing(remove_days)) {
@@ -665,4 +667,38 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   )
 
   return(out[])
+}
+
+
+#' Calculate categorised version of new_confirm
+#'
+#' Calculate categorised version of new_confirm for different categories of
+#' reporting delays. These data are meant to be used in plotting.
+#'
+#' @param pobs Pre-processed observations as resulting from
+#' [enw_preprocess_data()]
+#'
+#' @return A `data.table` of delay notification incidence by reference date and
+#' delay group. Empirical reporting distributions are also added.
+#' @family preprocess
+#' @inheritParams plot.enw_preprocess_data
+#' @export
+enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
+  nc <- data.table::copy(pobs$new_confirm[[1]])
+  grouping_vars <- unique(nc[, c(".group", (unlist(pobs$by))), with = FALSE])
+  nc[, delay_group := cut(delay, delay_group_thresh, right = FALSE)]
+
+  nc_group <- nc[, .(
+    confirm = max(confirm, na.rm = TRUE),
+    new_confirm = sum(new_confirm, na.rm = TRUE),
+    max_confirm = unique(max_confirm)
+  ),
+  by = .(reference_date, .group, delay_group)
+  ]
+  nc_group <- merge(grouping_vars, nc_group, by = ".group")
+
+  nc_group[, prop_reported := new_confirm / max_confirm]
+  nc_group[, cum_prop_reported := confirm / max_confirm]
+
+  return(nc_group[])
 }

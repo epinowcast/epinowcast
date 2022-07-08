@@ -145,3 +145,43 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
     labs(y = "Notifications", x = "Report date")
   return(plot)
 }
+
+#' Plot cumulative empirical reporting delay over time
+#'
+#' @param pobs Pre-processed observations as produced by
+#' [enw_preprocess_data()].
+#'
+#' @param ... Additional arguments passed to [enw_plot_emprep_cum()].
+#'
+#' @return A `ggplot2` plot.
+#'
+#' @inheritParams plot.enw_preprocess_data
+#' @family plot
+#' @export
+enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
+  nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
+  nc_group
+  nc_group[, delay_group :=
+    factor(delay_group,
+      levels = rev(levels(delay_group)),
+      labels = gsub(
+        ")", "",
+        sapply(
+          rev(levels(nc_group$delay_group)),
+          function(s) strsplit(s, ",")[[1]][2]
+        )
+      )
+    )]
+  plot <- ggplot(nc_group) +
+    geom_ribbon(aes(reference_date,
+      ymin = 0, ymax = cum_prop_reported,
+      fill = delay_group
+    )) +
+    geom_line(aes(reference_date, cum_prop_reported, group = delay_group)) +
+    guides(fill = guide_legend("d")) +
+    labs(
+      y = expression(paste("Cumulative fraction reported delay", "" < d)),
+      x = "Reference date"
+    )
+  return(plot)
+}
