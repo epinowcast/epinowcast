@@ -112,7 +112,7 @@ enw_obs_as_data_list <- function(pobs) {
     flat_obs = flat_obs,
     latest_obs = latest_matrix
   )
-  if (nrow(pobs$missing_reference[[1]]) > 0 ) {
+  if (nrow(pobs$missing_reference[[1]]) > 0) {
     # obs with missing reference date
     missing_reference <- data.table::copy(pobs$missing_reference[[1]])
     data.table::setorderv(missing_reference, c(".group", "report_date"))
