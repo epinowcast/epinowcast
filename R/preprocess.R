@@ -248,20 +248,6 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
   return(filt_obs[])
 }
 
-#' Filter observations to the latest available reported (internal)
-#'
-#' @inheritParams enw_latest_data
-#' @family preprocess
-  enw_latest_data_inner <- function(obs) {
-    latest_data <- check_dates(obs)
-
-    latest_data <- latest_data[,
-      .SD[report_date == (max(report_date)) | is.na(reference_date)],
-      by = c("reference_date")
-    ]
-    return(latest_data[])
-  }
-
 #' Filter observations to the latest available reported
 #'
 #' @description Filter observations to be the latest available reported
@@ -279,7 +265,12 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
 #' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
 enw_latest_data <- function(obs) {
-  obs <- enw_latest_data_inner(obs)
+  latest_data <- check_dates(obs)
+
+  latest_data <- latest_data[,
+    .SD[report_date == (max(report_date)) | is.na(reference_date)],
+    by = c("reference_date")
+  ]
   latest_data <- latest_data[!is.na(reference_date)]
   return(latest_data[])
 }
