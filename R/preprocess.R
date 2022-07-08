@@ -188,7 +188,11 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @description This is a helper function which allows users to filter
 #' datasets by reference date. This is useful, for example, when evaluating
 #' nowcast performance against fully observed data. Users may wish to combine
-#' this function with [enw_filter_report_dates()].
+#' this function with [enw_filter_report_dates()]. Note that by definition it
+#' is assumed that a report date for a given reference date must be the equal
+#' or greater (i.e a report cannot happen before the event being reported
+#' occurs). This means that this function will also filter report dates earlier
+#' than the target reference dates.
 #'
 #' @param earliest_date earliest reference date to include in the data set
 #'
@@ -529,7 +533,7 @@ enw_missing_reference <- function(obs) {
     ), colnames(ref_missing)
   )
   ref_missing[, (cols) := NULL]
-  ref_missing <- ref_missing[ref_avail, on = c(".group", "report_date")]
+  ref_missing <- ref_avail[ref_missing, on = c(".group", "report_date")]
   ref_missing[, prop_missing := confirm / (confirm + .old_group)]
   ref_missing[, .old_group := NULL]
   return(ref_missing[])

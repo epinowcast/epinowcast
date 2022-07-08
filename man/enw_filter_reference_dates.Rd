@@ -36,7 +36,11 @@ A data.table  filtered by report date
 This is a helper function which allows users to filter
 datasets by reference date. This is useful, for example, when evaluating
 nowcast performance against fully observed data. Users may wish to combine
-this function with \code{\link[=enw_filter_report_dates]{enw_filter_report_dates()}}.
+this function with \code{\link[=enw_filter_report_dates]{enw_filter_report_dates()}}. Note that by definition it
+is assumed that a report date for a given reference date must be the equal
+or greater (i.e a report cannot happen before the event being reported
+occurs). This means that this function will also filter report dates earlier
+than the target reference dates.
 }
 \examples{
 # Filter by date

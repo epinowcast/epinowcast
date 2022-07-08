@@ -95,17 +95,6 @@ enw_obs_as_data_list <- function(pobs) {
   snap_time[, t := 1:.N, by = ".group"]
   snap_time <- snap_time$t
 
-  # obs with missing reference date
-  missing_reference <- data.table::copy(pobs$missing_reference[[1]])
-  data.table::setorderv(missing_reference, c(".group", "report_date"))
-  missing_reference <- as.matrix(
-    data.table::dcast(
-      missing_reference, .group ~ report_date,
-      value.var = "confirm",
-      fill = 0
-    )[, -1]
-  )
-
   # Format indexing and observed data
   # See stan code for docs on what all of these are
   data <- list(
@@ -121,9 +110,21 @@ enw_obs_as_data_list <- function(pobs) {
     dmax = pobs$max_delay[[1]],
     obs = as.matrix(pobs$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
-    latest_obs = latest_matrix,
-    missing_ref = missing_reference
+    latest_obs = latest_matrix
   )
+  if (nrow(pobs$missing_reference[[1]]) > 0 ) {
+    # obs with missing reference date
+    missing_reference <- data.table::copy(pobs$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    missing_reference <- as.matrix(
+      data.table::dcast(
+        missing_reference, .group ~ report_date,
+        value.var = "confirm",
+        fill = 0
+      )[, -1]
+    )
+    data$missing_ref <- missing_reference
+  }
   return(data)
 }
 

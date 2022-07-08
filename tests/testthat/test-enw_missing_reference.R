@@ -22,3 +22,21 @@ test_that("enw_missing_reference works as expected given correct input data", {
   )
   expect_equal(enw_missing_reference(obs), exp_obs)
 })
+
+test_that("enw_missing_reference works as expected when no missingness is
+           present", {
+  obs <- data.frame(
+    .group = rep(1, 9),
+    location = rep("DE", 9),
+    report_date = c(
+      "2021-10-01", "2021-10-02", "2021-10-03", "2021-10-02", "2021-10-03", "2021-10-04", "2021-10-03", "2021-10-04", "2021-10-04"
+    ),
+    reference_date = c(
+      rep("2021-10-01", 3), rep("2021-10-02", 3), rep("2021-10-03", 2),
+      "2021-10-04"
+    ),
+    confirm = c(rep(1, 3), rep(0, 6)),
+    new_confirm = c(1, rep(0, 8))
+  )
+  expect_equal(nrow(enw_missing_reference(obs)), 0)
+})
