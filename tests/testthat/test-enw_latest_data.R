@@ -23,5 +23,3 @@ test_that("enw_latest_data works as expected with poorly behaved data", {
   obs$reference_date <- NULL
   expect_error(enw_latest_data(obs))
 })
-
-

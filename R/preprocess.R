@@ -444,7 +444,8 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
   }
 
   dates <- seq.Date(min_date, max_date, by = 1)
-
+  dates <- as.IDate(dates)
+  
   obs <- enw_assign_group(obs, by = by)
   by_with_group_id <- c(".group", by)
   groups <- unique(obs[, ..by_with_group_id])
@@ -461,7 +462,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
     completion <- rbind(
       completion,
       data.table::CJ(
-        reference_date = as.Date(NA),
+        reference_date = as.IDate(NA),
         .group = groups$.group,
         report_date = dates
       )
