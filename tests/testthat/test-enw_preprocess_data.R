@@ -15,6 +15,7 @@ test_that("Preprocessing produces expected output with default settings", {
   expect_data_table(pobs$obs[[1]])
   expect_data_table(pobs$new_confirm[[1]])
   expect_data_table(pobs$latest[[1]])
+  expect_data_table(pobs$missing_reference[[1]])
   expect_data_table(pobs$reporting_triangle[[1]])
   expect_data_table(pobs$metareference[[1]])
   expect_data_table(pobs$metareport[[1]])

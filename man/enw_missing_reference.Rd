@@ -9,10 +9,10 @@ enw_missing_reference(obs)
 \arguments{
 \item{obs}{A data frame as produced by \code{\link[=enw_new_reports]{enw_new_reports()}}. Must contain the
 following variables: \code{report_date}, \code{reference_date}, \code{.group}, and
-\code{confirm}.}
+\code{confirm}, and \code{new_confirm}.}
 }
 \value{
-A \code{data.table} missing counts and proportions by report date and
+A \code{data.table} of missing counts and proportions by report date and
 group.
 }
 \description{
@@ -24,8 +24,13 @@ obs <- data.frame(
  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
  confirm = 1
 )
+obs <- rbind(
+ obs,
+ data.frame(report_date = "2021-10-04", reference_date = NA, confirm = 4)
+)
 obs <- enw_complete_dates(obs)
 obs <- enw_assign_group(obs)
+obs <- enw_new_reports(obs)
 enw_missing_reference(obs)
 }
 \seealso{
@@ -41,6 +46,7 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_latest_data_inner}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_new_reports}()},

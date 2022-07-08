@@ -248,6 +248,20 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
   return(filt_obs[])
 }
 
+#' Filter observations to the latest available reported (internal)
+#'
+#' @inheritParams enw_latest_data
+#' @family preprocess
+  enw_latest_data_inner <- function(obs) {
+    latest_data <- check_dates(obs)
+
+    latest_data <- latest_data[,
+      .SD[report_date == (max(report_date)) | is.na(reference_date)],
+      by = c("reference_date")
+    ]
+    return(latest_data[])
+  }
+
 #' Filter observations to the latest available reported
 #'
 #' @description Filter observations to be the latest available reported
@@ -265,12 +279,7 @@ enw_filter_reference_dates <- function(obs,  earliest_date, include_days,
 #' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
 enw_latest_data <- function(obs) {
-  latest_data <- check_dates(obs)
-
-  latest_data <- latest_data[,
-    .SD[report_date == (max(report_date))],
-    by = c("reference_date")
-  ]
+  obs <- enw_latest_data_inner(obs)
   latest_data <- latest_data[!is.na(reference_date)]
   return(latest_data[])
 }
@@ -486,9 +495,9 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #'
 #' @param obs A data frame as produced by [enw_new_reports()]. Must contain the
 #' following variables: `report_date`, `reference_date`, `.group`, and
-#' `confirm`.
+#' `confirm`, and `new_confirm`.
 #'
-#' @return A `data.table` missing counts and proportions by report date and
+#' @return A `data.table` of missing counts and proportions by report date and
 #' group.
 #'
 #' @export
@@ -499,25 +508,29 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #'  report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
 #'  confirm = 1
 #' )
+#' obs <- rbind(
+#'  obs,
+#'  data.frame(report_date = "2021-10-04", reference_date = NA, confirm = 4)
+#' )
 #' obs <- enw_complete_dates(obs)
 #' obs <- enw_assign_group(obs)
+#' obs <- enw_new_reports(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
-  obs <- data.table::as.data.table(obs)
-  ref_available <- obs[!is.na(reference_date)]
-  ref_available <- enw_latest_data(ref_available)
-  ref_available <- ref_available[,
-    .(report_date, .group, .old_group = confirm)
+  obs <- check_date(obs)
+  ref_avail <- obs[!is.na(reference_date)]
+  ref_avail <- ref_avail[,
+   .(.old_group = sum(new_confirm)), by = c("report_date", ".group")
   ]
 
   ref_missing <- obs[is.na(reference_date)]
   cols <- intersect(
     c("delay", "reference_date", "max_confirm", "cum_prop_reported",
-      "prop_reported"
+      "prop_reported", "new_confirm"
     ), colnames(ref_missing)
   )
   ref_missing[, (cols) := NULL]
-  ref_missing <- ref_missing[ref_available, on = c(".group", "report_date")]
+  ref_missing <- ref_missing[ref_avail, on = c(".group", "report_date")]
   ref_missing[, prop_missing := confirm / (confirm + .old_group)]
   ref_missing[, .old_group := NULL]
   return(ref_missing[])
@@ -759,14 +772,12 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
 
   # separate obs with and without missing reference date
   reference_available <- diff_obs[!is.na(reference_date)]
-  reference_missing <- enw_missing_reference(obs)
+  reference_missing <- enw_missing_reference(diff_obs)
 
   # calculate reporting matrix on obs with available reference date
   reporting_triangle <- enw_reporting_triangle(reference_available)
 
   # extract latest data
-  # Note: currently, only the obs with available reference date are used
-  # This should to be extended to missing reference dates to avoid bias
   latest <- enw_latest_data(reference_available)
   latest[, new_confirm := NULL]
 
