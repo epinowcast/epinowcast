@@ -14,10 +14,10 @@ test_that("enw_missing_reference works as expected given correct input data", {
     new_confirm = c(1, rep(0, 11), 4)
   )
   exp_obs <- data.table::data.table(
-    .group = 1, location = "DE",
     report_date = as.IDate(
-      seq.Date(as.Date("2021-10-01"), as.Date("2021-10-04"), by = "day")
-    ),
+        seq.Date(as.Date("2021-10-01"), as.Date("2021-10-04"), by = "day")
+      ),
+    .group = 1, location = "DE",
     confirm = c(rep(0, 3), 4), prop_missing = c(0, NaN, NaN, 1)
   )
   expect_equal(enw_missing_reference(obs), exp_obs)

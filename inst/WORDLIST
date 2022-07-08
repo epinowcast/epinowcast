@@ -5,6 +5,7 @@ CmdStan
 CmdStanR
 CmdStanR's
 CmdStanR’s
+Cmdstan
 Codecov
 Höhle
 ImperialCollegeLondon
@@ -13,13 +14,16 @@ Lifecycle
 LogNormal
 Nowcast
 Nowcasting
+ORCID
 PARAM
 Poisson
+Rstan
 aem
 com
 discretised
 enw
 epidemia
+fns
 formulatools
 frac
 geq
@@ -38,7 +42,6 @@ nowcast
 nowcasting
 nowcasts
 overprediction
-parallisation
 parameterisations
 postprocess
 postprocessing
@@ -52,5 +55,4 @@ startsWith
 sundays
 th
 tradeoffs
-treatss
 underprediction

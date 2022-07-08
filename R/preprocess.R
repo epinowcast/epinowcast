@@ -198,7 +198,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @param include_days if \code{earilest_date} is not given, the number
 #' of reference dates to include, ending with the latest reference
-#' date included once reporting dates have been removed. If specifed
+#' date included once reporting dates have been removed. If specified
 #' this is indexed to `latest_date` or `remove_days`.
 #'
 #' @param latest_date Date, the latest reference date to include in the
@@ -591,7 +591,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #' of [enw_preprocess_data()] for more on the expected inputs.
 #'
 #' @param obs Observations with the addition of empirical reporting proportions
-#'  and and restricted to the specified maximum dela.
+#'  and and restricted to the specified maximum delay.
 #'
 #' @param new_confirm Incidence of notifications by reference and report date.
 #' Empirical reporting distributions are also added.

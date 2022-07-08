@@ -20,7 +20,7 @@ enw_filter_reference_dates(
 
 \item{include_days}{if \code{earilest_date} is not given, the number
 of reference dates to include, ending with the latest reference
-date included once reporting dates have been removed. If specifed
+date included once reporting dates have been removed. If specified
 this is indexed to \code{latest_date} or \code{remove_days}.}
 
 \item{latest_date}{Date, the latest reference date to include in the
