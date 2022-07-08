@@ -702,3 +702,33 @@ enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
 
   return(nc_group[])
 }
+
+#' Calculate quantiles of empirical delay distribution by reference date
+#'
+#' Calculate empirical quantiles of  delay distribution by reference date.
+#' These data are meant to be used in plotting.
+#'
+#' @param pobs Pre-processed observations as resulting from
+#' [enw_preprocess_data()]
+#'
+#' @return A `data.table` of delay notification incidence by reference date and
+#' delay group. Empirical reporting distributions are also added.
+#' @family preprocess
+#' @inheritParams plot.enw_preprocess_data
+#' @export
+enw_emp_quant_by_reference <- function(pobs, quantiles) {
+  nc <- data.table::copy(pobs$new_confirm[[1]])
+  grouping_vars <- unique(nc[, c(".group", (unlist(pobs$by))), with = FALSE])
+
+  nc_quant <- nc[, as.list(quantile(
+    x = rep(delay, times = new_confirm),
+    probs = quantiles,
+    type = 1, names = FALSE
+  )),
+  by = .(reference_date, .group)
+  ]
+  colnames(nc_quant)[3:(3 + length(quantiles) - 1)] <- paste0(quantiles)
+  nc_quant <- merge(grouping_vars, nc_quant, by = ".group")
+
+  return(nc_quant[])
+}

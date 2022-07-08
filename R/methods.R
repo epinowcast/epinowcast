@@ -139,11 +139,20 @@ plot.enw_preprocess_data <- function(x, type = "emp_rep_cum",
       ...
     )
   } else if (type %in% "emp_rep_frac") {
-    plot <- NULL
+    plot <- enw_plot_emprep_frac(x,
+      delay_group_thresh = delay_group_thresh,
+      ...
+    )
   } else if (type %in% "emp_rep_quant") {
-    plot <- NULL
+    plot <- enw_plot_emprep_quant(x,
+      quantiles = quantiles,
+      ...
+    )
   } else if (type %in% "emp_ts_del") {
-    plot <- NULL
+    plot <- enw_plot_emp_ts_del(x,
+      delay_group_thresh = delay_group_thresh,
+      ...
+    )
   }
   return(plot)
 }

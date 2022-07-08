@@ -160,7 +160,6 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @export
 enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
-  nc_group
   nc_group[, delay_group :=
     factor(delay_group,
       levels = rev(levels(delay_group)),
@@ -181,6 +180,89 @@ enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
     guides(fill = guide_legend("d")) +
     labs(
       y = expression(paste("Cumulative fraction reported delay", "" < d)),
+      x = "Reference date"
+    )
+  return(plot)
+}
+
+#' Plot empirical reporting delay over time
+#'
+#' @param pobs Pre-processed observations as produced by
+#' [enw_preprocess_data()].
+#'
+#' @param ... Additional arguments passed to [enw_plot_emprep_cum()].
+#'
+#' @return A `ggplot2` plot.
+#'
+#' @inheritParams plot.enw_preprocess_data
+#' @family plot
+#' @export
+enw_plot_emprep_frac <- function(pobs, delay_group_thresh, ...) {
+  nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
+  plot <- ggplot(nc_group) +
+    geom_tile(aes(reference_date, delay_group,
+      fill = prop_reported
+    )) +
+    guides(fill = guide_legend("Fraction")) +
+    labs(
+      y = "Delay",
+      x = "Reference date"
+    )
+  return(plot)
+}
+
+#' Plot quantiles of empirical reporting delay by reference date over time
+#' #'
+#' @param pobs Pre-processed observations as produced by
+#' [enw_preprocess_data()].
+#'
+#' @param ... Additional arguments passed to [enw_plot_emprep_cum()].
+#'
+#' @return A `ggplot2` plot.
+#'
+#' @inheritParams plot.enw_preprocess_data
+#' @family plot
+#' @export
+enw_plot_emprep_quant <- function(pobs, quantiles, ...) {
+  emp_quant <- enw_emp_quant_by_reference(pobs, quantiles)
+  emp_quant <- melt(emp_quant, measure.vars = paste0(quantiles))
+  plot <- ggplot(emp_quant) +
+    geom_line(aes(reference_date, value,
+      lty = variable
+    )) +
+    guides(lty = guide_legend("Quantile")) +
+    labs(
+      y = "Delay",
+      x = "Reference date"
+    )
+  return(plot)
+}
+
+#' Stacked barplot of reported cases by reference date depending on delay
+#'
+#' @param pobs Pre-processed observations as produced by
+#' [enw_preprocess_data()].
+#'
+#' @param ... Additional arguments passed to [enw_plot_emprep_cum()].
+#'
+#' @return A `ggplot2` plot.
+#'
+#' @inheritParams plot.enw_preprocess_data
+#' @family plot
+#' @export
+enw_plot_emp_ts_del <- function(pobs, delay_group_thresh, ...) {
+  nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
+  nc_group[, delay_group :=
+    factor(delay_group,
+      levels = rev(levels(delay_group))
+    )]
+  plot <- ggplot(nc_group) +
+    geom_col(aes(reference_date, new_confirm,
+      fill = delay_group
+    ), col = "black") +
+    guides(fill = guide_legend("Delay")) +
+    labs(
+      y = "Notifications",
       x = "Reference date"
     )
   return(plot)
