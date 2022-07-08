@@ -76,6 +76,9 @@
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_assign_group.html</loc>
   </url>
   <url>
+    <loc>epiforecasts.io/epinowcast/dev/reference/enw_complete_dates.html</loc>
+  </url>
+  <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_construct_data.html</loc>
   </url>
   <url>
@@ -122,6 +125,9 @@
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_metadata.html</loc>
+  </url>
+  <url>
+    <loc>epiforecasts.io/epinowcast/dev/reference/enw_missing_reference.html</loc>
   </url>
   <url>
     <loc>epiforecasts.io/epinowcast/dev/reference/enw_model.html</loc>
