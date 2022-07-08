@@ -245,6 +245,8 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   if (!missing(include_days) || !missing(earliest_date)) {
     filt_obs <- filt_obs[
       reference_date >= as.Date(earliest_date) | is.na(reference_date)
+    ][
+      report_date >= as.Date(earliest_date)
     ]
   }
   return(filt_obs[])
@@ -344,7 +346,9 @@ enw_new_reports <- function(obs, set_negatives_to_zero = TRUE) {
 enw_delay_filter <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[,
-    .SD[report_date <= (reference_date + max_delay - 1) | is.na(reference_date)],
+    .SD[
+      report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
+    ],
     by = c("reference_date", ".group")
   ]
   return(obs[])
