@@ -74,6 +74,7 @@ As well as `epinowcast` this quick start makes use of `data.table` and `ggplot2`
 library(epinowcast)
 library(data.table)
 library(ggplot2)
+set_cmdstan_path(path = '/home/vscode/.cmdstan/cmdstan-2.29.0')
 ```
 
 ### Data

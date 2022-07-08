@@ -97,11 +97,11 @@ enw_obs_as_data_list <- function(pobs) {
 
   # obs with missing reference date
   missing_reference <- data.table::copy(pobs$missing_reference[[1]])
-  data.table::setorderv(missing_reference, c(".group", "reference_date"))
+  data.table::setorderv(missing_reference, c(".group", "report_date"))
   missing_reference <- as.matrix(
     data.table::dcast(
-      missing_reference, group ~ report_date,
-      value.var = "new_confirm",
+      missing_reference, .group ~ report_date,
+      value.var = "confirm",
       fill = 0
     )[, -1]
   )
