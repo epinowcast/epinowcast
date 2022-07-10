@@ -372,7 +372,7 @@ following,
     #> 
     #> To cite epinowcast in publications use:
     #> 
-    #>   Sam Abbott, Adrian Lison, Sebastian Funk (2021). epinowcast: Flexible
+    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast: Flexible
     #>   hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
     #> 
     #> A BibTeX entry for LaTeX users is
