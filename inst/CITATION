@@ -1,7 +1,7 @@
 citHeader("To cite epinowcast in publications use:")
 
 citEntry(entry = "Article",
-  title        = "epinowcast: Fleible hierarchical nowcasting", # nolint
+  title        = "epinowcast: Flexible hierarchical nowcasting", # nolint
   author       = personList(as.person("Sam Abbott"), as.person("Adrian Lison"),
                  as.person("Sebastian Funk")),
   journal      = "Zenodo",
@@ -13,6 +13,6 @@ citEntry(entry = "Article",
 
   textVersion  =
   paste("Sam Abbott, Adrian Lison, Sebastian Funk (2021).",
-        "epinowcast: Fleible hierarchical nowcasting, ", # nolint
+        "epinowcast: Flexible hierarchical nowcasting, ", # nolint
         "DOI: 10.5281/zenodo.5637165")
 )
