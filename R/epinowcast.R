@@ -1,4 +1,4 @@
-#' @title Nowcast right censored data
+#' @title Nowcast using partially observed data
 #'
 #' @description Provides a user friendly interface around package functionality
 #' to produce a nowcast from observed preprocessed data, a reference model, and

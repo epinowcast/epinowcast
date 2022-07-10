@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Hierarchical nowcasting of right censored epidemiological counts <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# Flexible hierarchical nowcasting <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -17,17 +17,16 @@ contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
-This package contains tools to enable flexible and efficient
-hierarchical nowcasting of right censored epidemiological counts using a
-semi-mechanistic Bayesian method with support for both day of reference
-and day of report effects. Nowcasting in this context is the estimation
-of the total notifications (for example hospitalisations or deaths) that
-will be reported for a given date based on those currently reported and
-the pattern of reporting for previous days. This can be useful when
-tracking the spread of infectious disease in real-time as otherwise
-changes in trends can be obfuscated by partial reporting or their
-detection may be delayed due to the use of simpler methods like
-truncation.
+Tools to enable flexible and efficient hierarchical nowcasting of right truncated
+epidemiological time-series using a semi-mechanistic Bayesian method with support
+for a range of reporting and generative processes. Nowcasting, in this context, is
+gaining situational awareness using currently available observations and the
+reporting patterns of historical observations. This can be useful when tracking
+the spread of infectious disease in real-time as otherwise changes in trends can
+be obfuscated by partial reporting or their detection may be delayed due to the
+use of simpler methods like truncation. While the package has been designed with 
+the epidemiological application in mind, it could be applied to any set of
+right-truncated time-series count data.
 
 ## Installation
 

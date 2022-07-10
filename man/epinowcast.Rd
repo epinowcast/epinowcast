@@ -2,7 +2,7 @@
 % Please edit documentation in R/epinowcast.R
 \name{epinowcast}
 \alias{epinowcast}
-\title{Nowcast right censored data}
+\title{Nowcast using partially observed data}
 \usage{
 epinowcast(
   pobs,
