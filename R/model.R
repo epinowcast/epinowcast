@@ -55,6 +55,10 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
                           non_parametric = ~ 0, data) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
+    parametric <- "~1"
+  }
+  if (!as_string_formula(non_parametric) %in% "~0") {
+    stop("The non-parametric reference model has not yet been implemented")
   }
   distribution <- match.arg(
     distribution, c("none", "exponential", "lognormal", "gamma")
@@ -72,24 +76,17 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
     distribution %in% "gamma", 3
   )
 
-  if (!as_string_formula(non_parametric) %in% "~0") {
-    stop("The non-parametric reference model has not yet been implemented")
-  }
-
-  if (!as_string_formula(parametric) %in% "~0") {
-    pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
-    p_data_list <- enw_formula_as_data_list(
-      pform, prefix = "ref", drop_intercept = TRUE
-    )
-  }else {
-    p_data_list <- enw_empty_formula(prefix = "ref", drop_intercept = TRUE)
-  }
-
-  out <- list(
-    as_data_list = p_data_list,
-    priors = priors
+  pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
+  pdata <- enw_formula_as_data_list(
+    pform, prefix = "refp", drop_intercept = TRUE
   )
 
+  out <- list(
+    data = pdata,
+    priors = priors,
+    init
+  )
+  return(out)
 }
 
 enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
