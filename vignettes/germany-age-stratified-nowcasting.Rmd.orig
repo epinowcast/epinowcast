@@ -468,7 +468,7 @@ score <- enw_score_nowcast(
 )
 
 overall_score <- score |>
-  summarise_score(by = "model") |>
+  summarise_scores(by = "model") |>
   kable()
 ```
 
@@ -476,7 +476,7 @@ Stratifying by age group we see that trends in performance are fairly consistent
 
 ```{r}
 age_score <- score |>
-  summarise_score(by = c("model", "age_group")) |>
+  summarise_scores(by = c("model", "age_group")) |>
   kable()
 ```
 
@@ -484,7 +484,7 @@ Stratifying by date we find that interestingly the more complex models appear to
 
 ```{r}
 date_score <- score |>
-  summarise_score(by = c("model", "reference_date")) |>
+  summarise_scores(by = c("model", "reference_date")) |>
   kable()
 ```
 
