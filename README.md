@@ -17,16 +17,16 @@ contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
-Tools to enable flexible and efficient hierarchical nowcasting of right
-truncated epidemiological time-series using a semi-mechanistic Bayesian
-method with support for a range of reporting and generative processes.
+Tools to enable flexible and efficient hierarchical nowcasting of
+right-truncated epidemiological time-series using a semi-mechanistic Bayesian
+model with support for a range of reporting and generative processes.
 Nowcasting, in this context, is gaining situational awareness using
 currently available observations and the reporting patterns of
 historical observations. This can be useful when tracking the spread of
-infectious disease in real-time as otherwise changes in trends can be
+infectious disease in real-time: without nowcasting, changes in trends can be
 obfuscated by partial reporting or their detection may be delayed due to
 the use of simpler methods like truncation. While the package has been
-designed with the epidemiological application in mind, it could be
+designed with epidemiological applications in mind, it could be
 applied to any set of right-truncated time-series count data.
 
 ## Installation
