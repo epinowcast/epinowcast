@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Hierarchical nowcasting of right censored epidemiological counts <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# Flexible hierarchical nowcasting <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -17,17 +17,17 @@ contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
-This package contains tools to enable flexible and efficient
-hierarchical nowcasting of right censored epidemiological counts using a
-semi-mechanistic Bayesian method with support for both day of reference
-and day of report effects. Nowcasting in this context is the estimation
-of the total notifications (for example hospitalisations or deaths) that
-will be reported for a given date based on those currently reported and
-the pattern of reporting for previous days. This can be useful when
-tracking the spread of infectious disease in real-time as otherwise
-changes in trends can be obfuscated by partial reporting or their
-detection may be delayed due to the use of simpler methods like
-truncation.
+Tools to enable flexible and efficient hierarchical nowcasting of
+right-truncated epidemiological time-series using a semi-mechanistic Bayesian
+model with support for a range of reporting and generative processes.
+Nowcasting, in this context, is gaining situational awareness using
+currently available observations and the reporting patterns of
+historical observations. This can be useful when tracking the spread of
+infectious disease in real-time: without nowcasting, changes in trends can be
+obfuscated by partial reporting or their detection may be delayed due to
+the use of simpler methods like truncation. While the package has been
+designed with epidemiological applications in mind, it could be
+applied to any set of right-truncated time-series count data.
 
 ## Installation
 
@@ -215,12 +215,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 71.8 seconds.
-#> Chain 2 finished in 92.8 seconds.
+#> Chain 2 finished in 50.2 seconds.
+#> Chain 1 finished in 51.8 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 82.3 seconds.
-#> Total execution time: 92.9 seconds.
+#> Mean chain execution time: 51.0 seconds.
+#> Total execution time: 52.0 seconds.
 ```
 
 ### Results
@@ -237,11 +237,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[32]> <list[41]> <list[8]>    1000     1.03
+#> 1: <CmdStanMCMC[32]> <list[41]> <list[8]>    1000     1.02
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 271                0.271     92.9
+#> 1:                  10                 0.01       52
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -263,26 +263,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.044     69 0.2147326 0.0000 69
-#>  3:                 1    37             0  47.081     47 0.3074631 0.0000 47
-#>  4:                 1    36             0  65.194     65 0.4388127 0.0000 65
-#>  5:                 1    35             0  50.272     50 0.5350722 0.0000 50
-#>  6:                 1    34             0  36.220     36 0.4731002 0.0000 36
-#>  7:                 1    33             0  94.457     94 0.6990276 0.0000 94
-#>  8:                 1    32             0  91.705     91 0.9158678 0.0000 91
-#>  9:                 1    31             0 100.101    100 1.1207386 1.4826 99
-#> 10:                 1    30             0  87.198     87 1.1866778 1.4826 86
-#>        q95      rhat  ess_bulk  ess_tail
-#>  1:  72.00        NA        NA        NA
-#>  2:  69.00 1.0001418  975.6787  970.3968
-#>  3:  48.00 0.9990071  900.4571  882.7382
-#>  4:  66.00 0.9994697  900.4178  758.2049
-#>  5:  51.00 1.0017612  707.0578  679.5653
-#>  6:  37.00 0.9997234  969.2497  963.5052
-#>  7:  96.00 0.9982308  950.4162  859.6649
-#>  8:  93.05 1.0002517 1004.3908 1008.6991
-#>  9: 102.00 1.0020085  948.5313  936.2672
-#> 10:  89.00 1.0000114 1041.1571  858.5731
+#>  2:                 1    38             0  69.046     69 0.2189336 0.0000 69
+#>  3:                 1    37             0  47.096     47 0.3144565 0.0000 47
+#>  4:                 1    36             0  65.176     65 0.4552266 0.0000 65
+#>  5:                 1    35             0  50.271     50 0.5251998 0.0000 50
+#>  6:                 1    34             0  36.242     36 0.5096035 0.0000 36
+#>  7:                 1    33             0  94.457     94 0.6637707 0.0000 94
+#>  8:                 1    32             0  91.738     92 0.8945145 1.4826 91
+#>  9:                 1    31             0 100.032    100 1.0545559 1.4826 99
+#> 10:                 1    30             0  87.159     87 1.1344629 1.4826 86
+#>     q95      rhat  ess_bulk  ess_tail
+#>  1:  72        NA        NA        NA
+#>  2:  69 1.0007765 1006.9282 1002.6983
+#>  3:  48 1.0000955  786.6752  783.7836
+#>  4:  66 0.9993755  940.8320  855.6696
+#>  5:  51 1.0023047 1000.5282  955.8951
+#>  6:  37 1.0006436  989.9089  867.0135
+#>  7:  96 0.9982502 1042.2918  882.8528
+#>  8:  94 1.0013474  919.6210  759.2589
+#>  9: 102 0.9993403  983.8782  930.9138
+#> 10:  89 1.0013534  861.8767  886.7324
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -331,17 +331,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    433
-#>     2:                 1    33             0      1          2     2    433
-#>     3:                 1    33             0      1          3     3    433
-#>     4:                 1    33             0      1          4     4    435
-#>     5:                 1    33             0      1          5     5    437
+#>     1:                 1    33             0      1          1     1    435
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    438
+#>     4:                 1    33             0      1          4     4    436
+#>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2233
-#> 33997:                 1     0             1      2        497   997   2024
-#> 33998:                 1     0             1      2        498   998   2283
-#> 33999:                 1     0             1      2        499   999   2109
-#> 34000:                 1     0             1      2        500  1000   1806
+#> 33996:                 1     0             1      2        496   996   2107
+#> 33997:                 1     0             1      2        497   997   2374
+#> 33998:                 1     0             1      2        498   998   2089
+#> 33999:                 1     0             1      2        499   999   1975
+#> 34000:                 1     0             1      2        500  1000   2044
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -372,14 +372,14 @@ following,
     #> 
     #> To cite epinowcast in publications use:
     #> 
-    #>   Sam Abbott (2021). epinowcast: Hierarchical nowcasting of right
-    #>   censored epidemiological counts, DOI: 10.5281/zenodo.5637165
+    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast: Flexible
+    #>   hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 
     #>   @Article{,
-    #>     title = {epinowcast: Hierarchical nowcasting of right censored epidemiological counts},
-    #>     author = {Sam Abbott},
+    #>     title = {epinowcast: Flexible hierarchical nowcasting},
+    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk},
     #>     journal = {Zenodo},
     #>     year = {2021},
     #>     doi = {10.5281/zenodo.5637165},

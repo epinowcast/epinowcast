@@ -10,7 +10,7 @@ template:
   opengraph:
     image:
       src: man/figures/README-nowcast-1.png
-      alt: An R package for hierarchical nowcasting of right censored epidemiological counts
+      alt: An R package for flexible hierarchical nowcasting
     twitter: 
       creator: "@seabbs"
       card: summary_large_image
