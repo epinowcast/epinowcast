@@ -2,28 +2,34 @@
 % Please edit documentation in R/model-tools.R
 \name{enw_priors_as_data_list}
 \alias{enw_priors_as_data_list}
-\title{FUNCTION_TITLE}
+\title{Convert prior data.frame to list}
 \usage{
 enw_priors_as_data_list(priors)
 }
 \arguments{
-\item{priors}{DESCRIPTION.}
+\item{priors}{A data.frame with the following variables:
+\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
+appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
+other similar model specification functions.}
 }
 \value{
-RETURN_DESCRIPTION
+A named list with each entry specifying a prior as a length
+two vector (specifying the mean and standard deviation of the prior).
 }
 \description{
-FUNCTION_DESCRIPTION
+Converts priors defined in a \code{data.frame} into a list
+format for use by stan. In addition it adds "_p" to all
+variable names in order too allow them to be distinguished from
+their standard usage within modelling code.
 }
 \examples{
-priors <- enw_priors()
+priors <- data.frame(variable = "x", mean = 1, sd = 2)
 enw_priors_as_data_list(priors)
 }
 \seealso{
 Functions used to help convert models into the format required for stan
 \code{\link{enw_fit_opts}()},
 \code{\link{enw_formula_as_data_list}()},
-\code{\link{enw_posterior_as_prior}()},
 \code{\link{enw_replace_priors}()},
 \code{\link{remove_profiling}()},
 \code{\link{write_stan_files_no_profile}()}

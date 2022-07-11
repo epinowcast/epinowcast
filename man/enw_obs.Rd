@@ -16,7 +16,7 @@ A list as required by stan.
 Setup observation model and data
 }
 \examples{
-enw_obs(data = enw_example("preprocessed")[[1]])
+enw_obs(data = enw_example("preprocessed"))
 }
 \seealso{
 Functions used for modelling

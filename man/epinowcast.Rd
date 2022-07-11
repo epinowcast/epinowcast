@@ -6,7 +6,6 @@
 \usage{
 epinowcast(
   data,
-  model = epinowcast::enw_model(),
   reference = epinowcast::enw_reference(parametric = ~1, distribution = "lognormal",
     non_parametric = ~0, data = data),
   report = epinowcast::enw_report(formula = ~0, structural = ~0, data),
@@ -15,16 +14,56 @@ epinowcast(
   missing = epinowcast::enw_missing(formula = ~0, data = data),
   observation = epinowcast::enw_obs(family = "negbin"),
   fit = enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp = FALSE,
-    likelihood = TRUE, debug = FALSE, output_loglik = FALSE)
+    likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
+  model = epinowcast::enw_model(),
+  priors
 )
 }
+\arguments{
+\item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+
+\item{reference}{The reference time indexed reporting process model
+specification as defined using \code{\link[=enw_reference]{enw_reference()}}.}
+
+\item{report}{The report time indexed reporting process model
+specification as defined using \code{\link[=enw_report]{enw_report()}}.}
+
+\item{expectation}{The expectation model specification as defined using
+\code{\link[=enw_expectation]{enw_expectation()}}. By default this is set to be highly flexible and thus
+weakly informed.}
+
+\item{missing}{The missing data model for observations without a linked
+reference time specified using \code{\link[=enw_missing]{enw_missing()}}. By default this is not used.}
+
+\item{observation}{The observation model as defined by \code{\link[=enw_obs]{enw_obs()}}.
+Observations are also processed within this function for use in modelling.}
+
+\item{fit}{Model fit options as defined using \code{\link[=enw_fit_opts]{enw_fit_opts()}}. This includes
+the sampler function to use (with the package default being \code{\link[=enw_sample]{enw_sample()}}),
+whether or now a nowcast should be used, etc. See \code{\link[=enw_fit_opts]{enw_fit_opts()}} for
+further details.}
+
+\item{model}{The model to usee witin \code{fit}. By default this uses
+\code{\link[=enw_model]{enw_model()}}.}
+
+\item{priors}{A data.frame with the following variables:
+\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
+appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
+other similar model specification functions. Priors in this data.frame
+replace the default priors specified by each model component.}
+}
 \value{
-OUTPUT_DESCRIPTION
+A object of the class "epinowcast" which inherits from
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and \code{data.table}, and combines the output from
+the sampler specified in \code{enw_fit_opts()}.
 }
 \description{
 Provides a user friendly interface around package functionality
 to produce a nowcast from observed preprocessed data, and a series of user
-defined models.
+defined models. By default a model that assumes a fixed parametric reporting
+distributin with a flexible expectation model is used. Explored the
+individual model components for additional documentation and see the package
+case studies for example model specifications for different tasks..
 }
 \seealso{
 Other epinowcast: 

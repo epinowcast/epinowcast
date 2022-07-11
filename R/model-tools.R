@@ -48,6 +48,7 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' @param sampler A function that creates an object that be used to extract
 #' posterior samples from the specfied model. By default this is [enw_sample()]
 #' which makes use of [cmdstanr::sample()].
+#' 
 #' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
 #' posterior predictions of the unobserved future reported notifications.
 #'
@@ -94,19 +95,22 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
   return(out)
 }
 
-#' FUNCTION_TITLE
+#' Convert prior data.frame to list
 #'
-#' FUNCTION_DESCRIPTION
+#' Converts priors defined in a `data.frame` into a list
+#' format for use by stan. In addition it adds "_p" to all
+#' variable names in order too allow them to be distinguished from
+#' their standard usage within modelling code.
 #'
-#' @param priors DESCRIPTION.
-#'
-#' @return RETURN_DESCRIPTION
+#' @return A named list with each entry specifying a prior as a length
+#' two vector (specifying the mean and standard deviation of the prior).
 #' @family modeltools
+#' @inheritParams enw_replace_priors
 #' @importFrom data.table copy
 #' @importFrom purrr map
 #' @export
 #' @examples
-#' priors <- enw_priors()
+#' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
   priors <- data.table::copy(priors)

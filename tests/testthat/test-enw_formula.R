@@ -42,3 +42,8 @@ test_that("enw_formula can handle random effects that are not factors", {
   test_data <- test_data[, d_week := as.integer(d / 7)]
   expect_snapshot(enw_formula(~ 1 + (1 | d_week), test_data))
 })
+
+test_that("enw_formula can handle formulas that do not have sparse fixed
+           effects". {
+  expect_snapshot(enw_formula(~ 1, data[1:20, ]))
+})

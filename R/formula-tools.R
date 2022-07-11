@@ -453,7 +453,10 @@ construct_re <- function(re, data) {
 #'
 #' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
-#
+#' 
+#' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects desig
+#' matrix be sparely defined. 
+#' 
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
@@ -488,7 +491,10 @@ construct_re <- function(re, data) {
 #'
 #' # Model with a random effect for age group and a random walk
 #' enw_formula(~ 1 + (1 | age_group) + rw(week), data)
-enw_formula <- function(formula, data) {
+#'
+#' # Model defined without a sparse fixed effects design matrix
+#' enw_formula(~ 1, data[1:20, ])
+enw_formula <- function(formula, data, sparse = TRUE) {
   data <- data.table::as.data.table(data)
 
   # Parse formula
@@ -548,7 +554,7 @@ enw_formula <- function(formula, data) {
     formula = expanded_formula,
     no_contrasts = random_terms,
     data = data,
-    sparse = TRUE
+    sparse = sparse
   )
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)
