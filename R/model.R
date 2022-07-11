@@ -53,7 +53,7 @@ enw_priors <- function() {
 
 enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
                           non_parametric = ~ 0, data) {
-  if (formula_as_string(parametric) %in% "~ 0") {
+  if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
   }
   distribution <- match.arg(
@@ -72,11 +72,11 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
     distribution %in% "gamma", 3
   )
 
-  if (!formula_as_string(non_parametric) %in% "~ 0") {
+  if (!as_string_formula(non_parametric) %in% "~0") {
     stop("The non-parametric reference model has not yet been implemented")
   }
 
-  if (!formula_as_string(parametric) %in% "~ 0") {
+  if (!as_string_formula(parametric) %in% "~0") {
     pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
     p_data_list <- enw_formula_as_data_list(
       pform, prefix = "ref", drop_intercept = TRUE
@@ -87,18 +87,18 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
 
   out <- list(
     as_data_list = p_data_list,
-    priors = data.frame()
+    priors = priors
   )
 
 }
 
 enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
 
-  if (formula_as_string(formula) %in% "~ 0") {
-    formula <- ~ 1
+  if (as_string_formula(formula) %in% "~0") {
+    formula <- ~1
   }
 
-  if (!formula_as_string(structural) %in% "~ 0") {
+  if (!as_string_formula(structural) %in% "~0") {
     stop("The structural reporting model has not yet been implemented")
   }
 
@@ -108,21 +108,58 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
   )
 
   # map report date effects to groups and times
-  data_list$rep_findex <- matrix(
-    report_effects$fixed$index,
-    ncol = data$groups[[1]],
-    nrow = data$time[[1]] + data$max_delay[[1]] - 1
+  data_list$rep_findex <- t(
+    matrix(
+      data_list$rep_findex,
+      ncol = data$groups[[1]],
+      nrow = data$time[[1]] + data$max_delay[[1]] - 1
+    )
   )
+
+  out <- list()
+  out$formula <- form$formula
+  out$data <- data_list
+  out$priors <- data.table::data.table(
+    variable = c("rep_sd"),
+    description = c("Standard deviation of scaled pooled report date effects"),
+    distribution = c("Zero truncated normal"),
+    mean = 0,
+    sd = 1
+  )
+  out$inits <- function(data, priors) {
+    priors <- enw_priors_as_data_list(priors)
+    fn <- function() {
+      init <- list()
+      if (data$rep_rncol > 0) {
+        init$rep_beta <- rnorm(data$rep_rncol, 0, 0.01)
+      } else {
+        init$rep_beta <- numeric(0)
+      }
+      if (data$rep_rncol > 0) {
+        init$rep_sd <- abs(rnorm(
+              data$rep_rncol, priors$rep_sd_p[1], priors$rep_sd_p[2] / 10
+            ))
+      } else {
+        init$rep_sd <- numeric(0)
+      }
+      return(init)
+    }
+    return(fn)
+  }
+  return(out)
 }
 
 enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
-  if (formula_as_string(formula) %in% "~ 0") {
+  if (as_string_formula(formula) %in% "~0") {
     stop("An expectation model formula must be specified")
+  }
+  if (!as_string_formula(formula) %in% "~rw(day, .group)") {
+    stop("A flexible expectation model has not yet been implemented")
   }
 }
 
 enw_missing <- function(formula = ~ 0, data) {
-  if (!formula_as_string(formula) %in% "~ 0") {
+  if (!as_string_formula(formula) %in% "~ 0") {
     stop("The missing data model has not yet been implemented")
   }
 
@@ -206,7 +243,11 @@ enw_obs <- function(family = "negbin", data) {
     flat_obs = flat_obs,
     latest_obs = latest_matrix
   )
-  return(data)
+  out <- list(
+    family = family,
+    data = data
+  )
+  return(out)
 }
 
 #' Set up initial conditions for model

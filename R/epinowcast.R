@@ -76,12 +76,12 @@ epinowcast <- function(
     priors
 ) {
   data_as_list <- c(
-    reference$data_as_list,
-    report$data_as_list,
-    expectation$data_as_list,
-    missing$data_as_list,
-    observation$data_as_list,
-    fit$data_as_list
+    reference$data,
+    report$data,
+    expectation$data,
+    missing$datat,
+    observation$data,
+    fit$data
   )
 
   default_priors <- data.table::rbindlist(
