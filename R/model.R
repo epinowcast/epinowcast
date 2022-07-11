@@ -98,14 +98,21 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
     formula <- ~ 1
   }
 
-  form <- enw_formula(formula, data$metareport[[1]], sparse = FALSE)
+  if (!formula_as_string(structural) %in% "~ 0") {
+    stop("The structural reporting model has not yet been implemented")
+  }
+
+  form <- enw_formula(formula, data$metareport[[1]], sparse = TRUE)
   data_list <- enw_formula_as_data_list(
     form, prefix = "rep", drop_intercept = TRUE
   )
 
-  if (!formula_as_string(structural) %in% "~ 0") {
-    stop("The structural reporting model has not yet been implemented")
-  }
+  # map report date effects to groups and times
+  data_list$rep_findex <- matrix(
+    report_effects$fixed$index,
+    ncol = data$groups[[1]],
+    nrow = data$time[[1]] + data$max_delay[[1]] - 1
+  )
 }
 
 enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
