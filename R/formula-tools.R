@@ -453,10 +453,10 @@ construct_re <- function(re, data) {
 #'
 #' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
-#' 
+#'
 #' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects desig
-#' matrix be sparely defined. 
-#' 
+#' matrix be sparely defined.
+#'
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]

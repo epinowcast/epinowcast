@@ -48,7 +48,7 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' @param sampler A function that creates an object that be used to extract
 #' posterior samples from the specfied model. By default this is [enw_sample()]
 #' which makes use of [cmdstanr::sample()].
-#' 
+#'
 #' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
 #' posterior predictions of the unobserved future reported notifications.
 #'

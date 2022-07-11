@@ -51,28 +51,72 @@ enw_priors <- function() {
   )
 }
 
-enw_reference <- function(parametric = ~ 1, distribution = "lognormal", 
+enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
                           non_parametric = ~ 0, data) {
+  if (formula_as_string(parametric) %in% "~ 0") {
+    distribution <- "none"
+  }
+  distribution <- match.arg(
+    distribution, c("none", "exponential", "lognormal", "gamma")
+  )
+  if (distribution %in% "none") {
+    warning(
+      "As non-parametric hazards have yet to be implemented a parametric hazard
+       is likely required for all real-world use cases"
+    )
+  }
+  distribution <- data.table::fcase(
+    distribution %in% "none", 0,
+    distribution %in% "exponential", 1,
+    distribution %in% "lognormal", 2,
+    distribution %in% "gamma", 3
+  )
+
+  if (!formula_as_string(non_parametric) %in% "~ 0") {
+    stop("The non-parametric reference model has not yet been implemented")
+  }
+
+  if (!formula_as_string(parametric) %in% "~ 0") {
+    pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
+    p_data_list <- enw_formula_as_data_list(
+      pform, prefix = "ref", drop_intercept = TRUE
+    )
+  }else {
+    p_data_list <- enw_empty_formula(prefix = "ref", drop_intercept = TRUE)
+  }
+
+  out <- list(
+    as_data_list = p_data_list,
+    priors = data.frame()
+  )
 
 }
 
 enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
 
+  if (formula_as_string(formula) %in% "~ 0") {
+    formula <- ~ 1
+  }
+
+  form <- enw_formula(formula, data$metareport[[1]], sparse = FALSE)
+  data_list <- enw_formula_as_data_list(
+    form, prefix = "rep", drop_intercept = TRUE
+  )
+
+  if (!formula_as_string(structural) %in% "~ 0") {
+    stop("The structural reporting model has not yet been implemented")
+  }
 }
 
 enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
+  if (formula_as_string(formula) %in% "~ 0") {
+    stop("An expectation model formula must be specified")
+  }
 }
 
 enw_missing <- function(formula = ~ 0, data) {
-  if (formula_as_string(formula) %in% "~ 0") {
-
-  } else {
-    missing_form <- enw_formula(
-      formula, data = data$metareference[[1]], sparse = FALSE
-    )
-    missing$data_as_list <- enw_formula_as_data_list(
-      missing_form, prefix = "missing"
-    )
+  if (!formula_as_string(formula) %in% "~ 0") {
+    stop("The missing data model has not yet been implemented")
   }
 
   if (nrow(data$missing_reference[[1]]) > 0) {
