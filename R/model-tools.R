@@ -126,12 +126,12 @@ enw_priors_as_data_list <- function(priors) {
 #' run (using `summary(nowcast, type = fit)`) and using this a prior.
 #'
 #' @param priors A data.frame with the following variables:
-#'  `variable`, `mean`, `sd` describing normal priors. Priors in the 
+#'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions.
 #'
 #' @param custom_priors A data.frame with the following variables:
-#'  `variable`, `mean`, `sd` describing normal priors. Priors in the 
+#'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
 #' replace the default priors.
@@ -150,33 +150,6 @@ enw_replace_priors <- function(priors, custom_priors) {
   custom_priors <- data.table::as.data.table(custom_priors)[,
    .(variable, mean, sd)
   ]
-  priors <- rbind(priors, posteriors, fill = TRUE)
-  return(priors[])
-}
-
-#' FUNCTION_TITLE
-#'
-#' FUNCTION_DESCRIPTION
-#'
-#' @param nowcast DESCRIPTION
-#'
-#' @param priors DESCRIPTION.
-#'
-#' @param variables A character vector of variables both in the
-#' posterior and in the default priors.
-#'
-#' @param scale DESCRIPTION
-#'
-#' @return RETURN_DESCRIPTION
-#' @family modeltools
-#' @importFrom data.table setDT
-#' @export
-enw_posterior_as_prior <- function(nowcast, priors = epinowcast::enw_priors(),
-                                   variables = c(), scale = 5) {
-  posteriors <- nowcast$fit[[1]]$summary(variables)
-  posteriors <- setDT(posteriors)[, sd := sd * scale]
-  posteriors <- posteriors[, .(variable, mean, sd)]
-  priors <- priors[!(variable %in% variables)]
   priors <- rbind(priors, posteriors, fill = TRUE)
   return(priors[])
 }

@@ -90,7 +90,6 @@ enw_missing <- function(formula = ~ 0, data) {
     }
 }
 
-
 #' Setup observation model and data
 #'
 #' @param data Output from [enw_preprocess_data()].
@@ -99,7 +98,7 @@ enw_missing <- function(formula = ~ 0, data) {
 #' @family model
 #' @export
 #' @examples
-#' enw_obs(data = enw_example("preprocessed")[[1]])
+#' enw_obs(data = enw_example("preprocessed"))
 enw_obs <- function(family = "negbin", data) {
   family <- match.arg(family, "negbin")
 
