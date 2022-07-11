@@ -83,7 +83,7 @@ All ($\alpha_{i}$) and random ($\beta_{i}$) coefficients have standard normal pr
 
 # Observation model and nowcast
 
-Expected notifications by date of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We then assume a negative binomial observation model with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion) and produce a nowcast of final observed notifications at each date of reference by summing posterior estimates for each observed notification for that date of reference.
+Expected notifications by date of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We then assume a negative binomial observation model with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each date of reference by summing posterior estimates for each observed notification for that date of reference.
 
 \begin{align}
   n_{gtd} \mid \lambda_{gt},p_{gtd}  &\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
