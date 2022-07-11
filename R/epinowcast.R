@@ -6,17 +6,14 @@
 #'
 #' @return OUTPUT_DESCRIPTION
 #'
-#' @inheritParams enw_as_data_list
-#' @inheritParams enw_sample
-#' @inheritParams enw_nowcast_summary
 #' @family epinowcast
 #' @export
 epinowcast <- function(
     data,
     model = epinowcast::enw_model(),
     reference = epinowcast::enw_reference(
-      parametric = ~ 1
-      distribution = "log-normal",
+      parametric = ~ 1,
+      distribution = "lognormal",
       non_parametric = ~ 0,
       data = data
     ),
@@ -31,11 +28,11 @@ epinowcast <- function(
       data = data
     ),
     missing = epinowcast::enw_missing(
-      formula = ~ 1,
+      formula = ~ 0,
       data = data
-    )
+    ),
     observation = epinowcast::enw_obs(family = "negbin"),
-    fit = enw_fit(
+    fit = enw_fit_opts(
       fit = epinowcast::enw_sample,
       nowcast = TRUE, pp = FALSE,
       likelihood = TRUE, debug = FALSE,
@@ -50,6 +47,22 @@ epinowcast <- function(
     observation$data_as_list,
     fit$data_as_list
   )
+
+  priors <- data.table::rbindlist(
+    list(
+      reference$priors,
+      report$priors,
+      expectation$priors,
+      missing$priors,
+      observation$priors,
+      fit$priors
+    ),
+    fill = TRUE,
+    use.names = TRUE 
+  )
+  if (!missing(custom_priors)) {
+
+  }
   inits <- c(
     reference$inits,
     report$inits,
@@ -57,7 +70,19 @@ epinowcast <- function(
     missing$inits,
     observation$inits
   )
-  fit <- fit(data = data_as_list, model = model, init = inits, ...)
+
+  inits <- inits(data_as_list)
+
+  fit <- do.call(
+    fit$sampler, c(
+      list(
+        data = data_as_list,
+        model = model,
+        init = inits
+      ),
+      fit$args
+    )
+  )
 
   out <- cbind(pobs, fit)
   class(out) <- c("epinowcast", "enw_preprocess_data", class(out))

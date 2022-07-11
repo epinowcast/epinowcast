@@ -5,74 +5,26 @@
 \title{Nowcast using partially observed data}
 \usage{
 epinowcast(
-  pobs,
-  reference_effects = epinowcast::enw_formula(~1, pobs$metareference[[1]]),
-  report_effects = epinowcast::enw_formula(~1, pobs$metareport[[1]]),
-  priors = epinowcast::enw_priors(),
-  distribution = "lognormal",
+  data,
   model = epinowcast::enw_model(),
-  as_data_list = epinowcast::enw_as_data_list,
-  inits = epinowcast::enw_inits,
-  fit = epinowcast::enw_sample,
-  nowcast = TRUE,
-  pp = FALSE,
-  likelihood = TRUE,
-  debug = FALSE,
-  output_loglik = FALSE,
-  ...
+  reference = epinowcast::enw_reference(parametric = ~1, distribution = "lognormal",
+    non_parametric = ~0, data = data),
+  report = epinowcast::enw_report(formula = ~0, structural = ~0, data),
+  expectation = epinowcast::enw_expectation(formula = ~rw(day, .group), order = 1, data
+    = data),
+  missing = epinowcast::enw_missing(formula = ~0, data = data),
+  observation = epinowcast::enw_obs(family = "negbin"),
+  fit = enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp = FALSE,
+    likelihood = TRUE, debug = FALSE, output_loglik = FALSE)
 )
-}
-\arguments{
-\item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
-
-\item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
-which is an intercept only model.}
-
-\item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
-which is an intercept only model.}
-
-\item{priors}{DESCRIPTION.}
-
-\item{distribution}{Character string indicating the type of distribution to
-use for reference date effects. The default is to use a lognormal but other
-options available include the exponential and gamma distributions. If "none"
-is specified then no parametric delay distribution is used.}
-
-\item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
-
-\item{as_data_list}{PARAM_DESCRIPTION}
-
-\item{inits}{PARAM DESCRIPTION}
-
-\item{fit}{PARAM DESCRIPTION}
-
-\item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
-posterior predictions of the unobserved future reported notifications.}
-
-\item{pp}{Logical, defaults to \code{FALSE}. Should posterior predictions be made
-for observed data. Useful for evaluating the performance of the model.}
-
-\item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
-included in the model}
-
-\item{debug}{Logical, defaults to \code{FALSE}. Should within model debug
-information be returned.}
-
-\item{output_loglik}{Logical, defaults to \code{FALSE}. Should the
-log-likelihood be output. Disabling this will speed up fitting
-if evaluating the model fit is not required.}
-
-\item{...}{Additional arguments passed to \code{\link[=enw_sample]{enw_sample()}}.}
 }
 \value{
 OUTPUT_DESCRIPTION
 }
 \description{
 Provides a user friendly interface around package functionality
-to produce a nowcast from observed preprocessed data, a reference model, and
-a report model.
+to produce a nowcast from observed preprocessed data, and a series of user
+defined models.
 }
 \seealso{
 Other epinowcast: 

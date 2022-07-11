@@ -51,16 +51,60 @@ enw_priors <- function() {
   )
 }
 
-#' Format observed data for use with stan
+enw_reference <- function(parametric = ~ 1, distribution = "lognormal", 
+                          non_parametric = ~ 0, data) {
+
+}
+
+enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
+
+}
+
+enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
+}
+
+enw_missing <- function(formula = ~ 0, data) {
+  if (formula_as_string(formula) %in% "~ 0") {
+
+  } else {
+    missing_form <- enw_formula(
+      formula, data = data$metareference[[1]], sparse = FALSE
+    )
+    missing$data_as_list <- enw_formula_as_data_list(
+      missing_form, prefix = "missing"
+    )
+  }
+
+  if (nrow(data$missing_reference[[1]]) > 0) {
+      # obs with missing reference date
+      missing_reference <- data.table::copy(data$missing_reference[[1]])
+      data.table::setorderv(missing_reference, c(".group", "report_date"))
+      missing_reference <- as.matrix(
+        data.table::dcast(
+          missing_reference, .group ~ report_date,
+          value.var = "confirm",
+          fill = 0
+        )[, -1]
+      )
+      data$missing_ref <- missing_reference
+    }
+}
+
+
+#' Setup observation model and data
 #'
-#' @param pobs Output from [enw_preprocess_data()].
+#' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
 #' @family model
 #' @export
-enw_obs_as_data_list <- function(pobs) {
+#' @examples
+#' enw_obs(data = enw_example("preprocessed")[[1]])
+enw_obs <- function(family = "negbin", data) {
+  family <- match.arg(family, "negbin")
+
   # format latest matrix
-  latest_matrix <- pobs$latest[[1]]
+  latest_matrix <- data$latest[[1]]
   latest_matrix <- data.table::dcast(
     latest_matrix, reference_date ~ .group,
     value.var = "confirm"
@@ -68,7 +112,7 @@ enw_obs_as_data_list <- function(pobs) {
   latest_matrix <- as.matrix(latest_matrix[, -1])
 
   # get new confirm for processing
-  new_confirm <- data.table::copy(pobs$new_confirm[[1]])
+  new_confirm <- data.table::copy(data$new_confirm[[1]])
   data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
 
   # get flat observations
@@ -99,85 +143,18 @@ enw_obs_as_data_list <- function(pobs) {
   # See stan code for docs on what all of these are
   data <- list(
     n = length(flat_obs),
-    t = pobs$time[[1]],
-    s = pobs$snapshots[[1]],
-    g = pobs$groups[[1]],
+    t = data$time[[1]],
+    s = data$snapshots[[1]],
+    g = data$groups[[1]],
     st = snap_time,
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
     sg = unique(new_confirm[, .(reference_date, .group)])$.group,
-    dmax = pobs$max_delay[[1]],
-    obs = as.matrix(pobs$reporting_triangle[[1]][, -c(1:2)]),
+    dmax = data$max_delay[[1]],
+    obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix
-  )
-  if (nrow(pobs$missing_reference[[1]]) > 0) {
-    # obs with missing reference date
-    missing_reference <- data.table::copy(pobs$missing_reference[[1]])
-    data.table::setorderv(missing_reference, c(".group", "report_date"))
-    missing_reference <- as.matrix(
-      data.table::dcast(
-        missing_reference, .group ~ report_date,
-        value.var = "confirm",
-        fill = 0
-      )[, -1]
-    )
-    data$missing_ref <- missing_reference
-  }
-  return(data)
-}
-
-#' Format data for use with stan
-#'
-#' @return A list as required by stan.
-#' @inheritParams enw_obs_as_data_list
-#' @inheritParams enw_opts_as_data_list
-#' @inheritParams enw_formula_as_data_list
-#' @inheritParams enw_priors_as_data_list
-#' @family model
-#' @export
-enw_as_data_list <- function(pobs,
-                             reference_effects = epinowcast::enw_manual_formula(
-                               pobs$metareference[[1]]
-                             ),
-                             report_effects = epinowcast::enw_manual_formula(
-                               pobs$metareport[[1]]
-                             ),
-                             priors = epinowcast::enw_priors(),
-                             distribution = "lognormal",
-                             nowcast = TRUE, pp = FALSE,
-                             likelihood = TRUE, debug = FALSE,
-                             output_loglik = FALSE) {
-  data <- enw_obs_as_data_list(pobs)
-
-  # Add model formula data
-  data <- c(
-    data,
-    enw_formula_as_data_list(
-      data,
-      reference_effects = reference_effects,
-      report_effects = report_effects
-    )
-  )
-
-  # Add model options
-  data <- c(
-    data,
-    enw_opts_as_data_list(
-      distribution = distribution,
-      debug = debug,
-      likelihood = likelihood,
-      pp = pp,
-      nowcast = nowcast,
-      output_loglik = output_loglik
-    )
-  )
-
-  # Add  priors
-  data <- c(
-    data,
-    enw_priors_as_data_list(priors)
   )
   return(data)
 }
