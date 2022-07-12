@@ -20,13 +20,6 @@ data {
   array[s] int csl; // cumulative version of the above
   array[s] int sg; // how snapshots are related
   int dmax; // maximum possible report date
-<<<<<<< HEAD
-=======
-  // Observations
-  array[s, dmax] int obs; // obs for each primary date (row) and report date (column)
-  array[n] int flat_obs; // obs stored as a flat vector
-  array[t, g] int latest_obs; // latest obs for each snapshot group
->>>>>>> develop
   // Reference day model
   int npmfs; // how many unique pmfs there are
   array[s] int dpmfs; // how each date links to a pmf
@@ -44,10 +37,10 @@ data {
   int nrd_eff_sds; // number of standard deviations to use for pooling for rds
   matrix[nrd_effs, nrd_eff_sds + 1] rd_random; // Pooling pmf design matrix 
   // Observations
-  int obs[s, dmax]; // obs for each primary date (row) and report date (column)
-  int flat_obs[n]; // obs stored as a flat vector
-  int obs_miss[g, t]; // obs with missing primary date (group first)
-  int latest_obs[t, g]; // latest obs for each snapshot group
+  array[s, dmax] int obs; // obs for each primary date (row) and report date (column)
+  array[n] int flat_obs; // obs stored as a flat vector
+  array[g, t] int obs_miss; // obs with missing primary date (group first)
+  array[t, g] int latest_obs; // latest obs for each snapshot group
   // Control parameters
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
@@ -55,25 +48,15 @@ data {
   int cast; // should a nowcast be produced
   int ologlik; // Should the pointwise log likelihood be calculated
   // Priors (1st index = mean, 2nd index = standard deviation)
-<<<<<<< HEAD
-  real eobs_lsd_p[2]; // Standard deviation for expected final observations
-  real alpha_start_p[2]; // starting value for alpha random walk (logit scale)
-  real alpha_sd_p[2]; // standard deviation for alpha random walk increments
-  real logmean_int_p[2]; // log mean intercept for reference date delay
-  real logsd_int_p[2]; // log standard deviation for the reference date delay
-  real logmean_sd_p[2]; // standard deviation of scaled pooled logmean effects
-  real logsd_sd_p[2]; // standard deviation of scaled pooled logsd effects
-  real rd_eff_sd_p[2]; //standard deviation of scaled pooled report date effects
-  real sqrt_phi_p[2]; // 1/sqrt(overdispersion)
-=======
   array[2] real eobs_lsd_p; // Standard deviation for expected final observations
+  array[2] real alpha_start_p; // starting value for alpha random walk (logit scale)
+  array[2] real alpha_sd_p; // standard deviation for alpha random walk increments
   array[2] real logmean_int_p; // log mean intercept for reference date delay
   array[2] real logsd_int_p; // log standard deviation for the reference date delay
   array[2] real logmean_sd_p; // standard deviation of scaled pooled logmean effects
   array[2] real logsd_sd_p; // standard deviation of scaled pooled logsd effects
   array[2] real rd_eff_sd_p; //standard deviation of scaled pooled report date effects
   array[2] real sqrt_phi_p; // 1/sqrt(overdispersion)
->>>>>>> develop
 }
 
 transformed data{
@@ -97,7 +80,7 @@ parameters {
   vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
   vector<lower=0>[dist ? neff_sds : 0] logsd_sd; // pooled modifiers to logsd
   vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
-  real alpha_start[g]; // starting value for alpha
+  array[g] real alpha_start; // starting value for alpha
   real<lower=0> alpha_sd; // standard deviation of the random walk increments
   vector<offset=0, multiplier=alpha_sd>[t] alpha_epsilon[g]; // random walk increments, non-centered
   real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
@@ -109,12 +92,8 @@ transformed parameters{
   matrix[dmax, npmfs] pmfs; // sparse report distributions
   matrix[dmax, npmfs] ref_lh; // sparse report logit hazards
   vector[urds] srdlh; // sparse report day logit hazards
-<<<<<<< HEAD
-  vector[t] imp_obs[g]; // Expected final observations
-  vector<lower=0,upper=1>[t] alpha[g]; // share of cases with known reference date
-=======
   array[g] vector[t] imp_obs; // Expected final observations
->>>>>>> develop
+  array[g] vector<lower=0,upper=1>[t] alpha; // share of cases with known reference date
   real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
@@ -234,22 +213,22 @@ model {
 
 generated quantities {
 <<<<<<< HEAD
-  int pp_obs[pp ? sum(sl) : 0];
-  int pp_obs_miss[pp ? sum(sl) : 0];
+  array[pp ? sum(sl) : 0] int pp_obs;
+  array[pp ? sum(sl) : 0] int pp_obs_miss;
   vector[ologlik ? s : 0] log_lik;
   vector[ologlik ? (t-dmax) : 0] log_lik_miss;
-  int pp_inf_obs[cast ? dmax : 0, cast ? g : 0];
-  int pp_inf_obs_miss[cast ? t : 0, cast ? g : 0];
-  int pp_inf_obs_miss_rep[cast ? (t-dmax) : 0, cast ? g : 0];
+  array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast ? t : 0, cast ? g : 0] int pp_inf_obs_miss;
+  array[cast ? (t-dmax) : 0, cast ? g : 0] int pp_inf_obs_miss_rep;
   profile("generated_total") {
   if (cast) {
     int i_group, i_time;
     real tar_obs, tar_alpha;
     vector[dmax] rdlh;
-    vector[dmax] exp_obs;
-    vector[ologlik ? t : 0] exp_obs_miss_rep[ologlik ? g : 0];
-    int pp_obs_tmp[s, dmax];
-    int pp_obs_tmp_miss[s, dmax];
+    vector[dmax] lexp_obs;
+    array[ologlik ? g : 0] vector[ologlik ? t : 0] exp_obs_miss_rep;
+    array[s, dmax] int pp_obs_tmp;
+    array[s, dmax] int pp_obs_tmp_miss;
     exp_obs_miss_rep = rep_array(rep_vector(0, t), g);
     pp_inf_obs_miss_rep = rep_array(0, (t-dmax), g);
     // Posterior predictions for observations
@@ -264,28 +243,14 @@ generated quantities {
       // reference date delay hazard
       rdlh = srdlh[rdlurd[i_time:(i_time + dmax - 1), i_group]];
       // expected observations with delay 0:(dmax-1)
-      exp_obs = expected_obs(tar_obs, ref_lh[1:dmax, dpmfs[i]], rdlh, ref_p);
-      // realized observations with known reference date
-      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_rng(exp_obs * tar_alpha, phi);
-      // realized observations with unknown reference date
-      pp_obs_tmp_miss[i, 1:dmax] = neg_binomial_2_rng(exp_obs * (1 - tar_alpha), phi);
-=======
-  array[pp ? sum(sl) : 0] int pp_obs;
-  vector[ologlik ? s : 0] log_lik;
-  array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
-  profile("generated_total") {
-  if (cast) {
-    vector[dmax] lexp_obs;
-    array[s, dmax] int pp_obs_tmp;
-    // Posterior predictions for observations
-    for (i in 1:s) {
-      profile("generated_obs") {
       lexp_obs = expected_obs_from_index(
         i, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, dist, nrd_effs, ref_as_p,
         sg[i], st[i], dmax
       );
-      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
->>>>>>> develop
+      // realized observations with known reference date
+      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs + tar_alpha, phi);
+      // realized observations with unknown reference date
+      pp_obs_tmp_miss[i, 1:dmax] = neg_binomial_2_rng(exp_obs * (1 - tar_alpha), phi);
       }
       profile("generated_loglik") {
       if (ologlik) {
@@ -296,12 +261,8 @@ generated quantities {
         }
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
-<<<<<<< HEAD
           // log-likelihood for observations with known reference date
-          log_lik[i] += neg_binomial_2_lpmf(obs[i, j] | exp_obs[j] * tar_alpha, phi);
-=======
-          log_lik[i] += neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi);
->>>>>>> develop
+          log_lik[i] += neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j] + tar_alpha, phi);
         }
       }
       }
