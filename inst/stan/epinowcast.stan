@@ -308,9 +308,9 @@ generated quantities {
     }
     profile("generated_loglik") {
     if (ologlik) {
-      for (i in (dmax+1):t) {
-        log_lik_miss[i - dmax] = 0;
-        for (k in 1:g) {
+      log_lik_miss[1:(t-dmax)] = rep_vector(0, t-dmax);
+      for (k in 1:g) {
+        for (i in (dmax+1):t) {
           // log-likelihood for observations with missing reference date
           log_lik_miss[i - dmax] += neg_binomial_2_lpmf(
             obs_miss[k, i] | exp_obs_miss_rep[k][i], phi);
