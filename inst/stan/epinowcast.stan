@@ -30,13 +30,13 @@ data {
   int refp_fncol; // number of effects to apply
   matrix[refp_nrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
   int refp_rncol; // number of standard deviations to use for pooling
-  matrix[refp_fncol, refp_rncol + 1] d_random; // Pooling pmf design matrix 
+  matrix[refp_fncol, refp_rncol + 1] refp_rdesign; // Pooling pmf design matrix 
   int model_refp; // parametric distribution (0 = none, 1 = exp. 2 = lognormal, 2 = gamma)
   // Reporting day model
-  int model_rep // Reporting day model in use
+  int model_rep; // Reporting day model in use
   int rep_t; // how many reporting days are there (t + dmax - 1)
   int rep_frows; // how many unique reporting days are there
-  array[g, ref_t] int rep_findex; // how each report date links to a sparse report effect
+  array[g, rep_t] int rep_findex; // how each report date links to a sparse report effect
   int rep_fncol; // number of report day effects to apply
   matrix[rep_frows, rep_fncol + 1] rep_fdesign; // design matrix for report dates
   int rep_rncol; // number of standard deviations to use for pooling for rds
@@ -53,7 +53,7 @@ data {
   array[2] real refp_sd_int_p; // log standard deviation for the reference date delay
   array[2] real refp_mean_beta_sd_p; // standard deviation of scaled pooled logmean effects
   array[2] real refp_sd_beta_sd_p; // standard deviation of scaled pooled logsd effects
-  array[2] real rd_eff_sd_p; //standard deviation of scaled pooled report date effects
+  array[2] real rep_beta_sd_p; //standard deviation of scaled pooled report date effects
   array[2] real sqrt_phi_p; // 1/sqrt(overdispersion)
 }
 
@@ -159,14 +159,15 @@ model {
     // priors and scaling for date of reference effects
     if (refp_fncol) {
       refp_mean_beta ~ std_normal();
-      if (ref_ > 1) {
+      if (refp_rncol > 1) {
         refp_sd_beta ~ std_normal();
       }
       if (refp_rncol) {
         refp_mean_beta_sd ~ 
-          zero_truncated_normal(logmean_sd_p[1], logmean_sd_p[2]);
+          zero_truncated_normal(refp_mean_beta_sd_p[1], refp_mean_beta_sd_p[2]);
         if (model_refp > 1) {
-          refp_sd_beta_sd ~ zero_truncated_normal(logsd_sd_p[1], logsd_sd_p[2]);
+          refp_sd_beta_sd ~ 
+            zero_truncated_normal(refp_sd_beta_sd_p[1], refp_sd_beta_sd_p[2]);
         }
       }
     }
@@ -204,8 +205,8 @@ generated quantities {
     for (i in 1:s) {
       profile("generated_obs") {
       lexp_obs = expected_obs_from_index(
-        i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, dist, rep_fncol,
-        ref_as_p, sg[i], st[i], dmax
+        i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
+        rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
       pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
       }

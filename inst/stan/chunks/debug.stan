@@ -1,4 +1,4 @@
-    for (i in 1:npmfs) {
+    for (i in 1:refp_nrow) {
       int j = 0;
       for (k in 1:dmax) {
         j += is_nan(fabs(pmfs[k, i])) ? 1 : 0;
@@ -11,14 +11,14 @@
         print("Truncation  distribution estimate");
         print(pmfs[, i]);
         print("Logmean and Logsd intercept");
-        print(logmean_int);
-        if (dist) {
-          print(logsd_int);
+        print(refp_mean_int);
+        if (model_refp > 1) {
+          print(refp_sd_int);
         }
         print("Logmean and Logsd for pmf");
-        print(logmean[i]);
-        if (dist) {
-          print(logsd[i]);
+        print(refp_mean[i]);
+        if (model_refp > 1) {
+          print(refp_sd[i]);
         }
         print("Unique report day hazards");
         print(srdlh);
@@ -27,7 +27,7 @@
       }
     }
     int j = 0;
-    for (k in 1:urds) {
+    for (k in 1:rep_frows) {
       j += is_nan(fabs(srdlh[k])) ? 1 : 0;
       j += is_inf(fabs(srdlh[k])) ? 1 : 0;
     }
