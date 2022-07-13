@@ -75,3 +75,20 @@ check_group <- function(obs) {
   }
   return(invisible(NULL))
 }
+
+#' Check a model module contains the required components
+#'
+#' @param module A model module. For example [enw_expectation()].
+#'
+#' @return NULL
+#'
+#' @family check
+check_module <- function(module) {
+  if (!"data" %in% names(module)) {
+    stop(
+      "Must contain a list component specifying the data requirements for
+       further modelling as a list"
+    )
+  }
+  return(invisible(NULL))
+}

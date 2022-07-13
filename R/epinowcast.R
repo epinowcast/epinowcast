@@ -42,7 +42,7 @@
 #' [enw_preprocess_data()] and `data.table`, and combines the output from
 #' the sampler specified in `enw_fit_opts()`.
 #' @inheritParams enw_obs
-#' @importFrom purrr map transpose flatten
+#' @importFrom purrr map transpose flatten walk
 #' @family epinowcast
 #' @export
 epinowcast <- function(
@@ -78,6 +78,7 @@ epinowcast <- function(
   modules <- list(
     reference, report, expectation, observation, ...
   )
+  purrr::walk(modules, check_module)
 
   modules <- purrr::tranpose(modules)
   data_as_list <- purrr::flatten(modules$data)
