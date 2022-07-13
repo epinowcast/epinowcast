@@ -83,8 +83,7 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     nowcast <- TRUE
   }
   out <- list(sampler = sampler)
-
-  out$data_as_list <- list(
+  out$data <- list(
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
     pp = as.numeric(pp),

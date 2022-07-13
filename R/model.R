@@ -202,9 +202,6 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("An expectation model formula must be specified")
   }
-  if (!as_string_formula(formula) %in% "~rw(day, .group)") {
-    stop("A flexible expectation model has not yet been implemented")
-  }
   form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
   data <- enw_formula_as_data_list(
     form, prefix = "exp", drop_intercept = TRUE
@@ -233,8 +230,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 }
 
 enw_missing <- function(formula = ~ 0, data) {
-  if (!as_string_formula(formula) %in% "~0") {
-    stop("The missing data model has not yet been implemented")
+  if (as_string_formula(formula) %in% "~0") {
+    model_missing <- FALSE
   }else{
     model_missing <- TRUE
   }
@@ -260,21 +257,20 @@ enw_missing <- function(formula = ~ 0, data) {
       )[, -1]
     )
     data$missing_ref <- missing_reference
-    data$model_missing <- model_missing
+    data$model_missing <- as.numeric(nmodel_missing)
   }else{
     data <- list(
-      model_missing = model_missing
+      model_missing = as.numeric(model_missing)
     )
   }
 
-
   out <- list()
-  out$formula <- form$formula
+  out$formula <- as_string_formula(formula)
   out$data <- data
   out$priors <- data.table::data.table(
     variable = c(
     ),
-    description = 
+    description = ,
     distribution = ,
     mean = ,
     sd =
@@ -284,6 +280,14 @@ enw_missing <- function(formula = ~ 0, data) {
     fn <- function() {
       init <- list(
       )
+      if(data$model_missing == 1) {
+        if (data$miss_fncol > 0) {
+
+        }
+        if (data$miss_rncol > 0) {
+
+        }
+      }
     return(init)
     }
     return(fn)
@@ -301,6 +305,10 @@ enw_missing <- function(formula = ~ 0, data) {
 #' enw_obs(data = enw_example("preprocessed"))
 enw_obs <- function(family = "negbin", data) {
   family <- match.arg(family, "negbin")
+
+  obs_type <- data.table::fcase(
+    family %in% "negbin", 1
+  )
 
   # format latest matrix
   latest_matrix <- data$latest[[1]]
@@ -353,7 +361,8 @@ enw_obs <- function(family = "negbin", data) {
     dmax = data$max_delay[[1]],
     obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
-    latest_obs = latest_matrix
+    latest_obs = latest_matrix,
+    obs_type = obs_type
   )
 
   out <- list()
