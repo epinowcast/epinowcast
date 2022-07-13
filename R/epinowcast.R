@@ -3,9 +3,9 @@
 #' @description Provides a user friendly interface around package functionality
 #' to produce a nowcast from observed preprocessed data, and a series of user
 #' defined models. By default a model that assumes a fixed parametric reporting
-#' distributin with a flexible expectation model is used. Explored the
+#' distributin with a flexible expectation model is used. Explore the
 #' individual model components for additional documentation and see the package
-#' case studies for example model specifications for different tasks..
+#' case studies for example model specifications for different tasks.
 #'
 #' @param reference The reference time indexed reporting process model
 #' specification as defined using [enw_reference()].

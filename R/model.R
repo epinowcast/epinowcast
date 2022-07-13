@@ -14,10 +14,7 @@ enw_priors <- function() {
   data.table::data.table(
     variable = c(
       "eobs_lsd",
-      "rd_eff_sd",
       "sqrt_phi",
-      "alpha_int",
-      "alpha_sd"
     ),
     description = c(
       "Standard deviation for expected final observations",
@@ -202,9 +199,12 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("An expectation model formula must be specified")
   }
+  if (order != 1) {
+    stop("Only first order expectation models are currently supported")
+  }
   form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
   data <- enw_formula_as_data_list(
-    form, prefix = "exp", drop_intercept = TRUE
+    form, prefix = "exp", drop_intercept = order == 1
   )
 
   out <- list()
@@ -245,7 +245,7 @@ enw_missing <- function(formula = ~ 0, data) {
   if (model_missing) {
     form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
     data <- enw_formula_as_data_list(
-      form, prefix = "exp", drop_intercept = FALSE
+      form, prefix = "miss", drop_intercept = FALSE
     )
     missing_reference <- data.table::copy(data$missing_reference[[1]])
     data.table::setorderv(missing_reference, c(".group", "report_date"))
@@ -267,28 +267,31 @@ enw_missing <- function(formula = ~ 0, data) {
   out <- list()
   out$formula <- as_string_formula(formula)
   out$data <- data
-  out$priors <- data.table::data.table(
-    variable = c(
-    ),
-    description = ,
-    distribution = ,
-    mean = ,
-    sd =
+out$priors <- data.table::data.table(
+    variable = c("miss_beta_sd"),
+    description = c("Standard deviation of scaled pooled logit missing
+       reference date effects"),
+    distribution = c("Zero truncated normal"),
+    mean = 0,
+    sd = 1
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
+        miss_beta = numeric(0),
+        miss_beta_sd = numeric(0)
       )
-      if(data$model_missing == 1) {
-        if (data$miss_fncol > 0) {
-
-        }
-        if (data$miss_rncol > 0) {
-
-        }
+      if (data$miss_fncol > 0) {
+        init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
       }
-    return(init)
+      if (data$miss_rncol > 0) {
+        init$miss_beta_sd <- abs(rnorm(
+              data$miss_rncol, priors$miss_beta_sd_p[1],
+              priors$miss_beta_sd_p[2] / 10
+            ))
+      }
+      return(init)
     }
     return(fn)
   }
@@ -369,18 +372,25 @@ enw_obs <- function(family = "negbin", data) {
   out$family <- family
   out$data <- data
   out$priors <- data.table::data.table(
-    variable = c(
-    ),
-    description = 
-    distribution = ,
-    mean = ,
-    sd =
+    variable = c("sqrt_phi"),
+    description = c("One over the square root of the reporting overdispersion"),
+    distribution = c("Zero truncated normal"),
+    mean = 0,
+    sd = 1
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
+        sqrt_phi = numeric(0),
+        phi = numeric(0)
       )
+      if (data$obs_type == 1) {
+        init$sqrt_phi <- abs(rnorm(
+          1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10
+        ))
+        init$phi <- 1 / sqrt(init$sqrt_phi)
+      }
     return(init)
     }
     return(fn)
