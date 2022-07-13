@@ -17,7 +17,7 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   }
   // allocate report day effects
   if (ref_p) {
-    rdlh = srdlh[rdlurd[t:(t + l - 1), g]];
+    rdlh = srdlh[rdlurd[g, t:(t + l - 1)]];
   }else{
     rdlh = rep_vector(0, l);
   }

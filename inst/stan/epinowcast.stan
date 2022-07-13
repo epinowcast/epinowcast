@@ -173,7 +173,7 @@ model {
     }
   }
   // priors and scaling for date of report effects
-  if (rep_fncol) {
+  if (rep_fncol) { 
     rep_beta ~ std_normal();
     if (rep_rncol) {
       rep_beta_sd ~ zero_truncated_normal(rep_beta_sd_p[1], rep_beta_sd_p[2]);

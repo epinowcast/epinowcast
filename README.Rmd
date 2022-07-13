@@ -139,7 +139,8 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
-    iter_sampling = 500, iter_warmup = 500
+    iter_sampling = 500, iter_warmup = 500,
+    show_messages = FALSE, refresh = 0
   ),
   model = model
 )
@@ -155,7 +156,7 @@ nowcast
 
 Summarise the nowcast for the latest snapshot of data.
 
-```{r, eval = FALSE}
+```{r}
 nowcast |>
   summary(probs = c(0.05, 0.95)) |>
   head(n = 10)
@@ -163,21 +164,21 @@ nowcast |>
 
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
 
-```{r nowcast, eval = FALSE}
+```{r nowcast}
 plot(nowcast, latest_obs = latest_germany_hosp)
 ```
 
 Plot posterior predictions for observed notifications by date of
 report as a check of how well the model reproduces the observed data.
 
-```{r pp, fig.width = 16, fig.height = 16, message = FALSE, eval = FALSE}
+```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
 plot(nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
 
 Rather than using the methods supplied for `epinowcast` directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.
 
-```{r week_nowcast, eval = FALSE}
+```{r week_nowcast}
 # extract samples
 samples <- summary(nowcast, type = "nowcast_samples")
 
