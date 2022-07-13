@@ -8,20 +8,26 @@ enw_construct_data(
   obs,
   new_confirm,
   latest,
+  missing_reference,
   reporting_triangle,
   metareport,
   metareference,
+  metadelay,
+  by,
   max_delay
 )
 }
 \arguments{
 \item{obs}{Observations with the addition of empirical reporting proportions
-and and restricted to the specified maximum delay).}
+and and restricted to the specified maximum delay.}
 
 \item{new_confirm}{Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.}
 
 \item{latest}{The latest available observations.}
+
+\item{missing_reference}{A data frame of reported observations that are
+missing the reference date.}
 
 \item{reporting_triangle}{Incident observations by report and reference
 date in the standard reporting triangle matrix format.}
@@ -29,6 +35,14 @@ date in the standard reporting triangle matrix format.}
 \item{metareport}{Metadata for report dates.}
 
 \item{metareference}{Metadata reference dates derived from observations.}
+
+\item{metadelay}{Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.}
+
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
@@ -43,10 +57,13 @@ and and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
+\item \code{missing_reference}: Observations missing reference dates.
 \item \code{reporting_triangle}: Incident observations by report and reference date in
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
+\item \code{metadelay}: Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
@@ -69,9 +86,12 @@ enw_construct_data(
   obs = pobs$obs[[1]],
   new_confirm = pobs$new_confirm[[1]],
   latest = pobs$latest[[1]],
+  missing_reference = pobs$missing_reference[[1]],
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
+  metadelay = enw_delay_metadata(max_delay = 20),
+  by = c(),
   max_delay = pobs$max_delay[[1]]
 )
 }
@@ -81,14 +101,18 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
+\code{\link{enw_delay_filter}()},
+\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
-\code{\link{enw_filter_obs}()},
+\code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_retrospective_data}()}
+\code{\link{enw_reporting_triangle}()}
 }
 \concept{preprocess}

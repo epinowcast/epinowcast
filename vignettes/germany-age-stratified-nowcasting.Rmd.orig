@@ -38,15 +38,16 @@ library(scoringutils)
 library(knitr)
 ```
 
-This vignette includes several models that take upwards of 10 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
+This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
 
 ```{r, eval  = TRUE}
 threads <- 2
+options(mc.cores = 2)
 ```
 
 # Data
 
-Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations and typically this means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in `epinowcast`).
+Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations, which typically means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in `epinowcast`).
 
 Here we use COVID-19 hospitalisations by date of positive test in Germany stratified by age group available from up to the 1st of September 2020 (with 40 days of data included prior to this) as an example of data available in real-time and hospitalisations by date of positive test available up to 20th of October to represent hospitalisations as finally reported. These data are sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence) where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted.
 
@@ -55,29 +56,24 @@ We first filter out the data that would have been available on the 1st of Septem
 ```{r}
 nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
 
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_date = as.Date("2021-09-01"), ref_date = as.Date("2021-09-01") - 40
-)
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(latest_date = "2021-09-01") |>
+  enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 ```
 
-Similarly we then find the data that were available on the 20th of October for these dates which will serve as the target "true" data.
+Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target "true" data.
 
 ```{r}
-latest_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_date = as.Date("2021-10-20"), ref_date = as.Date("2021-09-01") - 40
-)
-latest_nat_germany <- latest_nat_germany[
-  reference_date <= as.Date("2021-09-01")
-]
-latest_nat_germany <- enw_latest_data(latest_nat_germany)
+latest_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(latest_date ="2021-10-20") |>
+  enw_latest_data() |>
+  enw_filter_reference_dates(latest_date = "2021-09-01", include_days = 40)
 ```
 
 # Data preprocessing
 
-`epinowcast` works by assuming data has been preprocessed into the reporting format it requires coupled with meta data for both reference and report dates. `enw_preprocess_data()` can be used for this though users can also use the internal functions to produce their own custom preprocessing steps. It is at this stage that arbitrary groupings of observations can be defined which will then be propagated throughout all subsequent modelling steps. Here we have data stratified by age and so grouped by age group but in principle this could be any grouping or combination of groups independent of the reference and report date models. Here we also assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data but note that in most cases the majority of right censoring occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e a 20 day delay will be much faster to fit a model for than a 40 day delay). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.
+`epinowcast` works by assuming data has been preprocessed into the reporting format it requires, coupled with meta data for both reference and report dates. `enw_preprocess_data()` can be used for this, although users can also use the internal functions to produce their own custom preprocessing steps. It is at this stage that arbitrary groupings of observations can be defined, which will then be propagated throughout all subsequent modelling steps. Here we have data stratified by age, and hence grouped by age group, but in principle this could be any grouping or combination of groups independent of the reference and report date models. We furthermore assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data. However, note that in most cases the majority of right truncation occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e. a model with a maximum delay of 20 days will be much faster to fit than with 40 days). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.
 
 Another key modelling choice we make at this stage is to model overall hospitalisations jointly with age groups rather than as an aggregation of age group estimates. This implicitly assumes that aggregated and non-aggregated data are not comparable (which may or may not be the case) but that the reporting process shares some of the same mechanisms. Another way to approach this would be to only model age stratified hospitalisations and then to aggregate the nowcast estimates into total counts after fitting the model.
 
@@ -94,19 +90,23 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for within-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
-```{r, message = FALSE}
+```{r, include = FALSE, message = FALSE}
 multithread_model <- enw_model(threads = TRUE)
 ```
 
-Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
+```{r, message = FALSE, eval = FALSE}
+multithread_model <- enw_model(threads = TRUE)
+```
+
+Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
 ```{r}
-options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
   model = multithread_model,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -130,8 +130,7 @@ plot(nowcast, type = "posterior") +
 As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
-dow_report_effects <- enw_formula(pobs$metareport, random = "day_of_week")
-dow_report_effects
+dow_report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport)
 ```
 
 To speed up model fitting we make use of posterior information from the previous model (with inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
@@ -146,7 +145,6 @@ priors
 We now repeat the nowcasting step with the day of the week reporting model included.
 
 ```{r}
-options(mc.cores = 2)
 dow_nowcast <- epinowcast(pobs,
   model = multithread_model,
   report_effects = dow_report_effects,
@@ -154,6 +152,7 @@ dow_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -170,17 +169,12 @@ plot(dow_nowcast, latest_obs = latest_nat_germany) +
 It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).
 
 ```{r}
-age_reference_effects <- enw_formula(
-  pobs$metareference,
-  random = "age_group"
-)
-age_reference_effects
+age_reference_effects <- enw_formula(~ 1 + (1 | age_group), pobs$metareference)
 ```
 
 We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.
 
 ```{r}
-options(mc.cores = 2)
 age_nowcast <- epinowcast(pobs,
   model = multithread_model,
   reference_effects = age_reference_effects,
@@ -189,6 +183,7 @@ age_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -204,24 +199,10 @@ plot(age_nowcast, latest_obs = latest_nat_germany) +
 
 It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.
 
-To define this reference date model we first need to create new features in the metadata that capture the order weeks occur in.
-
-```{r}
-metareference <- enw_add_cumulative_membership(
-  pobs$metareference[[1]],
-  feature = "week"
-)
-metareference
-```
-
-We can now define the model formula as previously but this time making use of the `custom_random` argument which also creates a random effect but this time using partial matching and without creating new features automatically.
-
 ```{r}
 week_age_reference_effects <- enw_formula(
-  metareference,
-  random = "age_group", custom_random = "cweek"
+  ~ 1 + (1 | age_group) + rw(week), pobs$metareference[[1]]
 )
-week_age_reference_effects
 ```
 
 As before we fit the nowcasting model,
@@ -236,6 +217,7 @@ week_nowcast <- epinowcast(pobs,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -251,74 +233,25 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 
 As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
 
-Models with this level of flexibility are not currently supported by `enw_formula()` (a PR improving this interface would be very welcome) so we need to interact with lower level package functionality to specify it. We first define the fixed effects formula followed by the design matrix (note we have only printed the first 10 columns and rows of the sparse design matrix to save space).
-
 ```{r}
-fixed_form <- as.formula(paste0(
-  "~ 1 + age_group + ",
-  paste(paste0(
-    "age_group:",
-    grep("cweek", colnames(metareference), value = TRUE),
-        collapse = " + ")),
-  " + ",
-  paste(grep("cweek", colnames(metareference), value = TRUE),
-        collapse = " + ")
-))
-fixed <- enw_design(fixed_form, metareference, no_contrasts = TRUE,
-                    sparse = TRUE)
-fixed$formula
-fixed$design[1:10, 1:10]
-```
-
-We now need to design the random effects which interact with this design matrix. The first step is to extract all fixed effects.
-
-```{r}
-effects <- enw_effects_metadata(fixed$design)
-effects
-```
-
-We can then start building shared pooling standard deviations for parameters with a global random walk for all age groups and then a random walk in the residuals for each age group.
-
-```{r}
-effects <- enw_add_pooling_effect(effects, "cweek", "cweek")
-effects <- enw_add_pooling_effect(effects, "age_group", "age_group")
-for (i in  unique(metareference$age_group)) {
-  effects <- enw_add_pooling_effect(
-    effects, c("cweek", paste0("age_group", i)), paste0( i, "_walk"),
-      finder_fn = function(effect, pattern) {
-        grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-    })
-}
-effects[grepl(":", effects), age_group := 0]
-effects
-```
-
-Now we can create the pooling standard deviation design matrix and create the list describing the model.
-
-```{r}
-form <- as.formula(
-  paste0("~ 0 + fixed + cweek + age_group + ",
-         paste(paste0("`", unique(metareference$age_group), "_walk`"),
-               collapse = " + ")
-))
-random <- enw_design(form, effects, sparse = FALSE)
-random
-custom_reference_effects <- list(fixed = fixed, random = random)
+week_by_age_reference_effects <- enw_formula(
+  ~ 1 + (1 | age_group) + rw(week, age_group), pobs$metareference[[1]]
+)
 ```
 
 We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.95 here to mitigate divergent transitions).
 
 ```{r}
-options(mc.cores = 2)
 age_week_nowcast <- epinowcast(pobs,
   model = multithread_model,
-  reference_effects = custom_reference_effects,
+  reference_effects = week_by_age_reference_effects,
   report_effects = dow_report_effects,
   priors = priors,
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
   adapt_delta = 0.95,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -333,7 +266,7 @@ plot(age_week_nowcast, latest_obs = latest_nat_germany) +
 
 ## Independent models  for each age group.
 
-The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the occurrence date stratified by age) to each age group independently.
+The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the reference date stratified by age) to each age group independently.
 
 We could define this model with a single call to `epinowcast` but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.
 
@@ -341,19 +274,12 @@ We could define this model with a single call to `epinowcast` but fitting each d
 independent_epinowcast <- function(obs, max_delay = 40, ...) {
   pobs_ind <- enw_preprocess_data(obs, max_delay = max_delay)
 
-  metareference <- enw_add_cumulative_membership(
-    pobs_ind$metareference[[1]],
-    feature = "week"
-  )
-
-  reference_effects <- enw_formula(metareference, custom_random = "cweek")
-  report_effects <- enw_formula(pobs_ind$metareport, random = "day_of_week")
-
   nowcast <- epinowcast(
     pobs_ind,
-    reference_effects = reference_effects,
-    report_effects = report_effects,
-     ...)
+    reference_effects = enw_formula(~ rw(week), pobs_ind$metareference[[1]]),
+    report_effects = enw_formula(~ (1 | day_of_week), pobs_ind$metareport[[1]]),
+     ...
+  )
 
   nowcast_summary <- summary(
     nowcast,
@@ -376,6 +302,7 @@ independent_nowcast <- map(
   save_warmup = FALSE,
   output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads,
+  iter_sampling = 500, iter_warmup = 250,
   show_messages = FALSE, refresh = 0
 )
 independent_nowcast <- rbindlist(independent_nowcast)
@@ -488,16 +415,22 @@ date_score <- score |>
   kable()
 ```
 
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treatss age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
 ```{r performance, fig.width = 9, fig.height = 9}
-fixed_score <- score[model %in% "Reference: Fixed, Report: Fixed",
-                     .(reference_date, age_group, fixed_is = interval_score)]
-score <- merge(score, fixed_score, by = c("reference_date", "age_group"))
+age_date_score <- score |>
+  summarise_scores(by = c("model", "reference_date", "age_group"))
+fixed_score <- age_date_score[
+  model %in% "Reference: Fixed, Report: Fixed",
+  .(reference_date, age_group, fixed_is = interval_score)
+]
+age_date_score <- merge(
+  age_date_score, fixed_score, by = c("reference_date", "age_group")
+)
 
-score <- score[, interval_score := interval_score / fixed_is]
-score <- score[!model %in% "Reference: Fixed, Report: Fixed"]
-plot <- ggplot(score) +
+age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
+age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
+plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
   geom_hline(yintercept = 1, linetype = 2, size = 1.2, alpha = 0.5) +
   geom_line(size = 1.1, alpha = 0.6) +

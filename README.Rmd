@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Hierarchical nowcasting of right censored epidemiological counts <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# Flexible hierarchical nowcasting <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -28,7 +28,7 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
-This package contains tools to enable flexible and efficient hierarchical nowcasting of right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. Nowcasting in this context is the estimation of the total notifications (for example hospitalisations or deaths) that will be reported for a given date based on those currently reported and the pattern of reporting for previous days. This can be useful when tracking the spread of infectious disease in real-time as otherwise changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation.
+Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.
 
 ## Installation
 
@@ -83,19 +83,21 @@ Nowcasting is effectively the estimation of reporting patterns for recently repo
 Below we first filter for a snapshot of retrospective data available 40 days before the 1st of October that contains 40 days of data and then produce the nowcast target based on the latest available hospitalisations by date of positive test.
 
 ```{r}
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
-nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
+nat_germany_hosp <-
+  germany_covid19_hosp[location == "DE"][age_group %in% "00+"] |>
+  enw_filter_report_dates(latest_date = "2021-10-01")
 
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_days = 40, ref_days = 40
-)
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 ```
 
 ```{r}
-latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
-latest_germany_hosp
+latest_germany_hosp <- nat_germany_hosp |>
+  enw_latest_data() |>
+  enw_filter_reference_dates(remove_days = 40, include_days = 40)
+head(latest_germany_hosp, n = 10)
 ```
 
 ### Data preprocessing and model specification
@@ -110,15 +112,13 @@ pobs
 Construct an intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
-reference_effects <- enw_formula(pobs$metareference[[1]])
-reference_effects
+reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
 ```
 
 Construct a model with a random effect for the day of report using the metadata produced by `enw_preprocess_data()`.
 
 ```{r}
-report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
-report_effects
+report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
 ```
 
 ### Model fitting
@@ -129,7 +129,7 @@ First compile the model. This step can be left to `epinowcast` but here we want 
 model <- enw_model(threads = TRUE)
 ```
 
-We now fit the model and produce a nowcast using this fit. Note that here we use two chains each using two threads as a demonstration but in general using 4 chains is recommended. Also note that here we have silenced fitting progress and potential warning messages for the purposes of keeping this quick start short but in general this should not be done.
+We now fit the model and produce a nowcast using this fit. Note that here we use two chains each using two threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages for the purposes of keeping this quick start short but in general this should not be done.
 
 ```{r}
 options(mc.cores = 2)
@@ -139,6 +139,7 @@ nowcast <- epinowcast(pobs,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
   chains = 2, threads_per_chain = 2,
+  iter_sampling = 500, iter_warmup = 500,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -154,7 +155,9 @@ nowcast
 Summarise the nowcast for the latest snapshot of data.
 
 ```{r}
-head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
+nowcast |>
+  summary(probs = c(0.05, 0.95)) |>
+  head(n = 10)
 ```
 
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
@@ -194,6 +197,10 @@ sum_across_last_7_days <- enw_summarise_samples(samples)
 enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 ```
 
+## Learning more
+
+The package has extensive documentation as well as vignettes describing the underlying methodology, and several case studies. Please see [the package site](https://epiforecasts.io/epinowcast) for details. Note that the development version of the package also has supporting documentation which are available [here](https://epiforecasts.io/epinowcast/dev).
+
 ## Citation
 
 If using `epinowcast` in your work please consider citing it using the following,
@@ -204,13 +211,13 @@ citation("epinowcast")
 
 ## How to make a bug report or feature request
 
-Please briefly describe your problem and what output you expect in an [issue](https://github.com/epiforecasts/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
+Please briefly describe your problem and what output you expect in an [issue](https://github.com/epiforecasts/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
 ## Contributing
 
 We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
-If interested in expanding the functionality of the underlying model note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors.
+If interested in expanding the functionality of the underlying model note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors. Even if not wanting to add your updated model to the package please do reach out as we would love to hear about your use case.
 
 ## Code of Conduct
   

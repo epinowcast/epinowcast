@@ -8,7 +8,7 @@ enw_reporting_triangle(obs)
 }
 \arguments{
 \item{obs}{A data frame as produced by \code{\link[=enw_new_reports]{enw_new_reports()}}. Must contain the
-following variables: \code{reference_date}, \code{group}, \code{delay}.}
+following variables: \code{reference_date}, \code{.group}, \code{delay}.}
 }
 \value{
 A data frame with each row being a reference date, and columns being
@@ -28,14 +28,18 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_delay_filter}()},
+\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
-\code{\link{enw_filter_obs}()},
+\code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_retrospective_data}()}
+\code{\link{enw_reporting_triangle_to_long}()}
 }
 \concept{preprocess}

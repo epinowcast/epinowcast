@@ -1,29 +1,39 @@
-
 # Load epinowcast and data.table
 library(epinowcast)
 library(data.table)
 
 # Load and filter germany hospitalisations
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
-nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
+nat_germany_hosp <- enw_filter_report_dates(
+  nat_germany_hosp, latest_date = "2021-10-01"
+)
 
+# Make sure observations are complete
+nat_germany_hosp <- enw_complete_dates(
+  nat_germany_hosp, by = c("location", "age_group")
+)
 # Make a retrospective dataset
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_days = 40, ref_days = 40
+retro_nat_germany <- enw_filter_report_dates(
+  nat_germany_hosp, remove_days = 40
+)
+retro_nat_germany <- enw_filter_reference_dates(
+  retro_nat_germany, include_days = 40
 )
 
 # Get latest observations for the same time period
-latest_obs <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
+latest_obs <- enw_latest_data(nat_germany_hosp)
+latest_obs <- enw_filter_reference_dates(
+  latest_obs, remove_days = 40, include_days = 20
+)
 
 # Preprocess observations
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Reference date model
-reference_effects <- enw_formula(pobs$metareference[[1]])
+reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
 
 # Report date model
-report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
+report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
 
 # Compile nowcasting model
 model <- enw_model(threads = TRUE)

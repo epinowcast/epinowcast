@@ -19,7 +19,9 @@ enw_priors <- function() {
       "logmean_sd",
       "logsd_sd",
       "rd_eff_sd",
-      "sqrt_phi"
+      "sqrt_phi",
+      "alpha_int",
+      "alpha_sd"
     ),
     description = c(
       "Standard deviation for expected final observations",
@@ -28,7 +30,10 @@ enw_priors <- function() {
       "Standard deviation of scaled pooled logmean effects",
       "Standard deviation of scaled pooled logsd effects",
       "Standard deviation of scaled pooled report date effects",
-      "One over the square of the reporting overdispersion"
+      "One over the square of the reporting overdispersion",
+      "Logit start value for share of cases with known reference date",
+      "Standard deviation of random walk for share of cases with known
+       reference date"
     ),
     distribution = c(
       "Zero truncated normal",
@@ -37,10 +42,12 @@ enw_priors <- function() {
       "Zero truncated normal",
       "Zero truncated normal",
       "Zero truncated normal",
+      "Zero truncated normal",
+      "Normal",
       "Zero truncated normal"
     ),
-    mean = c(0, 1, 0.5, rep(0, 4)),
-    sd = rep(1, 7)
+    mean = c(0, 1, 0.5, rep(0, 4), 0, 0),
+    sd = c(rep(1, 7), 1, 0.1)
   )
 }
 
@@ -55,14 +62,14 @@ enw_obs_as_data_list <- function(pobs) {
   # format latest matrix
   latest_matrix <- pobs$latest[[1]]
   latest_matrix <- data.table::dcast(
-    latest_matrix, reference_date ~ group,
+    latest_matrix, reference_date ~ .group,
     value.var = "confirm"
   )
   latest_matrix <- as.matrix(latest_matrix[, -1])
 
   # get new confirm for processing
   new_confirm <- data.table::copy(pobs$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", "group", "delay"))
+  data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -70,22 +77,22 @@ enw_obs_as_data_list <- function(pobs) {
   # format vector of snapshot lengths
   snap_length <- new_confirm
   snap_length <- snap_length[, .SD[delay == max(delay)],
-    by = c("reference_date", "group")
+    by = c("reference_date", ".group")
   ]
   snap_length <- snap_length$delay + 1
 
   # snap lookup
-  snap_lookup <- unique(new_confirm[, .(reference_date, group)])
+  snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
   snap_lookup[, s := 1:.N]
   snap_lookup <- data.table::dcast(
-    snap_lookup, reference_date ~ group,
+    snap_lookup, reference_date ~ .group,
     value.var = "s"
   )
   snap_lookup <- as.matrix(snap_lookup[, -1])
 
   # snap time
-  snap_time <- unique(new_confirm[, .(reference_date, group)])
-  snap_time[, t := 1:.N, by = "group"]
+  snap_time <- unique(new_confirm[, .(reference_date, .group)])
+  snap_time[, t := 1:.N, by = ".group"]
   snap_time <- snap_time$t
 
   # Format indexing and observed data
@@ -99,12 +106,25 @@ enw_obs_as_data_list <- function(pobs) {
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
-    sg = unique(new_confirm[, .(reference_date, group)])$group,
+    sg = unique(new_confirm[, .(reference_date, .group)])$.group,
     dmax = pobs$max_delay[[1]],
     obs = as.matrix(pobs$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix
   )
+  if (nrow(pobs$missing_reference[[1]]) > 0) {
+    # obs with missing reference date
+    missing_reference <- data.table::copy(pobs$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    missing_reference <- as.matrix(
+      data.table::dcast(
+        missing_reference, .group ~ report_date,
+        value.var = "confirm",
+        fill = 0
+      )[, -1]
+    )
+    data$missing_ref <- missing_reference
+  }
   return(data)
 }
 
@@ -118,10 +138,10 @@ enw_obs_as_data_list <- function(pobs) {
 #' @family model
 #' @export
 enw_as_data_list <- function(pobs,
-                             reference_effects = epinowcast::enw_formula(
+                             reference_effects = epinowcast::enw_manual_formula(
                                pobs$metareference[[1]]
                              ),
-                             report_effects = epinowcast::enw_formula(
+                             report_effects = epinowcast::enw_manual_formula(
                                pobs$metareport[[1]]
                              ),
                              priors = epinowcast::enw_priors(),
@@ -164,7 +184,8 @@ enw_as_data_list <- function(pobs,
 
 #' Set up initial conditions for model
 #'
-#' @param data A list of data as produced by [enw_as_data_list()].
+#' @param data A list of data as produced by [enw_as_data_list()] and output as
+#' `data` by [epinowcast()].
 #'
 #' @return A function that when called returns a list of initial conditions
 #' for the package stan models.
@@ -172,11 +193,23 @@ enw_as_data_list <- function(pobs,
 #' @family model
 #' @importFrom purrr map_dbl
 #' @export
+#' @examples
+#' stan_data <- enw_example("nowcast")$data
+#' enw_inits(stan_data)
 enw_inits <- function(data) {
   init_fn <- function() {
     init <- list(
-      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10),
-      logsd_int = abs(rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)),
+      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10)
+    )
+    if (data$dist > 1) {
+      init$logsd_int <- abs(
+        rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)
+      )
+    } else {
+      init$logsd_int <- numeric(0)
+    }
+
+    init <- c(init, list(
       leobs_init = array(purrr::map_dbl(
         data$latest_obs[1, ] + 1,
         ~ rnorm(1, log(.), 1)
@@ -189,14 +222,19 @@ enw_inits <- function(data) {
         dim = c(data$t - 1, data$g)
       ),
       sqrt_phi = abs(rnorm(1, data$sqrt_phi_p[1], data$sqrt_phi_p[2] / 10))
-    )
+    ))
     init$logmean <- rep(init$logmean_int, data$npmfs)
     init$logsd <- rep(init$logsd_int, data$npmfs)
     init$phi <- 1 / (init$sqrt_phi^2)
     # initialise reference date effects
     if (data$neffs > 0) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
-      init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+      if (data$dist > 1) {
+        init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
+      }
+    } else {
+      init$logmean_eff <- numeric(0)
+      init$logsd_eff <- numeric(0)
     }
     if (data$neff_sds > 0) {
       init$logmean_sd <- abs(rnorm(
@@ -205,15 +243,22 @@ enw_inits <- function(data) {
       init$logsd_sd <- abs(rnorm(
         data$neff_sds, data$logsd_sd_p[1], data$logsd_sd_p[2] / 10
       ))
+    } else {
+      init$logmean_sd <- numeric(0)
+      init$logsd_sd <- numeric(0)
     }
     # initialise report date effects
     if (data$nrd_effs > 0) {
       init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
+    } else {
+      init$rd_eff <- numeric(0)
     }
     if (data$nrd_eff_sds > 0) {
       init$rd_eff_sd <- abs(rnorm(
         data$nrd_eff_sds, data$rd_eff_sd_p[1], data$rd_eff_sd_p[2] / 10
       ))
+    } else {
+      init$rd_eff_sd <- numeric(0)
     }
     return(init)
   }

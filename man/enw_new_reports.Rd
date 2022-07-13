@@ -10,7 +10,7 @@ enw_new_reports(obs, set_negatives_to_zero = TRUE)
 \item{obs}{A data frame containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
-date), and \code{group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).}
+date), and \code{.group} (as added by \code{\link[=enw_assign_group]{enw_assign_group()}}).}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
@@ -43,14 +43,18 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_delay_filter}()},
+\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
-\code{\link{enw_filter_obs}()},
+\code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_retrospective_data}()}
+\code{\link{enw_reporting_triangle}()}
 }
 \concept{preprocess}

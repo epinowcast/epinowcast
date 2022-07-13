@@ -8,7 +8,6 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
-  max_delay_strat = "add_to_max_delay",
   holidays = c(),
   set_negatives_to_zero = TRUE
 )
@@ -28,12 +27,6 @@ downstream modelling}
 include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully.}
 
-\item{max_delay_strat}{Character string indicating how to handle
-reported cases beyond the specified maximum delay. Options include:
-excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
-Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
-\code{prop_reported} columns to understand the impact of this assumption.}
-
 \item{holidays}{A vector of dates indicating when holidays occur used by
 \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
 \code{day_of_week} variable it creates internally.}
@@ -52,10 +45,13 @@ and and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
+\item \code{missing_reference}: Observations missing reference dates.
 \item \code{reporting_triangle}: Incident observations by report and reference date in
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
+\item \code{metadelay}: Metadata for reporting delays produced using
+\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
@@ -74,7 +70,11 @@ observed empirical probability of a report on a given day, the cumulative
 probability of report, the latest available observations, incidence of
 observations, and metadata about the date of reference and report (used to
 construct models). This function wraps other preprocessing functions that may
-be instead used individually if required.
+be instead used individually if required. Note that internally reports
+beyond the user specified delay are reassigned to the last permissible delay
+for modelling purposes. Also note that if missing reference or report dates
+are suspected to occur in your data then these need to be completed with
+\code{\link[=enw_complete_dates]{enw_complete_dates()}}.
 }
 \examples{
 library(data.table)
@@ -86,13 +86,6 @@ nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
 pobs
-
-# Preprocess using exclusion beyond the maximum delay and a max delay of 10
-pobs_exclude <- enw_preprocess_data(
-  nat_germany_hosp,
-  max_delay = 10, max_delay_strat = "exclude"
-)
-pobs_exclude
 
 # Preprocess all data
 pobs_all <- enw_preprocess_data(
@@ -107,14 +100,18 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_delay_filter}()},
+\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
-\code{\link{enw_filter_obs}()},
+\code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_retrospective_data}()}
+\code{\link{enw_reporting_triangle}()}
 }
 \concept{preprocess}

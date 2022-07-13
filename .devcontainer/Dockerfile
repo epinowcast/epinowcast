@@ -47,6 +47,7 @@ RUN apt-get update \
 RUN Rscript -e 'devtools::install_github("mdlincoln/docthis")'
 RUN Rscript -e 'devtools::install_github("lorenzwalthert/precommit")'
 RUN Rscript -e 'devtools::install_github("milesmcbain/fnmate")'
+RUN Rscript -e 'devtools::install_github("milesmcbain/datapasta")'
 
 # add dependencies for logo making
 RUN install2.r --error --skipinstalled --repos ${CRAN} --ncpus -1 \

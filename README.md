@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Hierarchical nowcasting of right censored epidemiological counts <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# Flexible hierarchical nowcasting <a href='https://epiforecasts.io/epinowcast'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -17,17 +17,17 @@ contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
-This package contains tools to enable flexible and efficient
-hierarchical nowcasting of right censored epidemiological counts using a
-semi-mechanistic Bayesian method with support for both day of reference
-and day of report effects. Nowcasting in this context is the estimation
-of the total notifications (for example hospitalisations or deaths) that
-will be reported for a given date based on those currently reported and
-the pattern of reporting for previous days. This can be useful when
-tracking the spread of infectious disease in real-time as otherwise
-changes in trends can be obfuscated by partial reporting or their
-detection may be delayed due to the use of simpler methods like
-truncation.
+Tools to enable flexible and efficient hierarchical nowcasting of
+right-truncated epidemiological time-series using a semi-mechanistic Bayesian
+model with support for a range of reporting and generative processes.
+Nowcasting, in this context, is gaining situational awareness using
+currently available observations and the reporting patterns of
+historical observations. This can be useful when tracking the spread of
+infectious disease in real-time: without nowcasting, changes in trends can be
+obfuscated by partial reporting or their detection may be delayed due to
+the use of simpler methods like truncation. While the package has been
+designed with epidemiological applications in mind, it could be
+applied to any set of right-truncated time-series count data.
 
 ## Installation
 
@@ -108,13 +108,13 @@ produce the nowcast target based on the latest available
 hospitalisations by date of positive test.
 
 ``` r
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
-nat_germany_hosp <- nat_germany_hosp[report_date <= as.Date("2021-10-01")]
+nat_germany_hosp <-
+  germany_covid19_hosp[location == "DE"][age_group %in% "00+"] |>
+  enw_filter_report_dates(latest_date = "2021-10-01")
 
-retro_nat_germany <- enw_retrospective_data(
-  nat_germany_hosp,
-  rep_days = 40, ref_days = 40
-)
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 #>      reference_date location age_group confirm report_date
 #>   1:     2021-07-13       DE       00+      21  2021-07-13
@@ -131,51 +131,21 @@ retro_nat_germany
 ```
 
 ``` r
-latest_germany_hosp <- enw_latest_data(nat_germany_hosp, ref_window = c(80, 40))
-latest_germany_hosp
-#>     reference_date location age_group confirm
-#>  1:     2021-07-13       DE       00+      60
-#>  2:     2021-07-14       DE       00+      74
-#>  3:     2021-07-15       DE       00+      69
-#>  4:     2021-07-16       DE       00+      49
-#>  5:     2021-07-17       DE       00+      67
-#>  6:     2021-07-18       DE       00+      51
-#>  7:     2021-07-19       DE       00+      36
-#>  8:     2021-07-20       DE       00+      96
-#>  9:     2021-07-21       DE       00+      94
-#> 10:     2021-07-22       DE       00+      99
-#> 11:     2021-07-23       DE       00+      88
-#> 12:     2021-07-24       DE       00+      95
-#> 13:     2021-07-25       DE       00+      75
-#> 14:     2021-07-26       DE       00+      29
-#> 15:     2021-07-27       DE       00+      81
-#> 16:     2021-07-28       DE       00+     159
-#> 17:     2021-07-29       DE       00+     143
-#> 18:     2021-07-30       DE       00+     117
-#> 19:     2021-07-31       DE       00+     132
-#> 20:     2021-08-01       DE       00+      80
-#> 21:     2021-08-02       DE       00+      59
-#> 22:     2021-08-03       DE       00+     156
-#> 23:     2021-08-04       DE       00+     183
-#> 24:     2021-08-05       DE       00+     147
-#> 25:     2021-08-06       DE       00+     155
-#> 26:     2021-08-07       DE       00+     159
-#> 27:     2021-08-08       DE       00+     119
-#> 28:     2021-08-09       DE       00+      65
-#> 29:     2021-08-10       DE       00+     204
-#> 30:     2021-08-11       DE       00+     275
-#> 31:     2021-08-12       DE       00+     273
-#> 32:     2021-08-13       DE       00+     270
-#> 33:     2021-08-14       DE       00+     262
-#> 34:     2021-08-15       DE       00+     192
-#> 35:     2021-08-16       DE       00+     140
-#> 36:     2021-08-17       DE       00+     323
-#> 37:     2021-08-18       DE       00+     409
-#> 38:     2021-08-19       DE       00+     370
-#> 39:     2021-08-20       DE       00+     361
-#> 40:     2021-08-21       DE       00+     339
-#> 41:     2021-08-22       DE       00+     258
-#>     reference_date location age_group confirm
+latest_germany_hosp <- nat_germany_hosp |>
+  enw_latest_data() |>
+  enw_filter_reference_dates(remove_days = 40, include_days = 40)
+head(latest_germany_hosp, n = 10)
+#>     reference_date location age_group confirm report_date
+#>  1:     2021-07-13       DE       00+      60  2021-10-01
+#>  2:     2021-07-14       DE       00+      74  2021-10-01
+#>  3:     2021-07-15       DE       00+      69  2021-10-01
+#>  4:     2021-07-16       DE       00+      49  2021-10-01
+#>  5:     2021-07-17       DE       00+      67  2021-10-01
+#>  6:     2021-07-18       DE       00+      51  2021-10-01
+#>  7:     2021-07-19       DE       00+      36  2021-10-01
+#>  8:     2021-07-20       DE       00+      96  2021-10-01
+#>  9:     2021-07-21       DE       00+      94  2021-10-01
+#> 10:     2021-07-22       DE       00+      99  2021-10-01
 ```
 
 ### Data preprocessing and model specification
@@ -188,12 +158,12 @@ make sure everything is as expected.
 ``` r
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
-#>                    obs          new_confirm             latest
-#> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x8]>
-#>     reporting_triangle       metareference          metareport time snapshots
-#> 1: <data.table[41x42]> <data.table[41x10]> <data.table[80x11]>   41        41
-#>    groups max_delay   max_date
-#> 1:      1        40 2021-08-22
+#>                    obs          new_confirm              latest
+#> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
+#>    missing_reference  reporting_triangle      metareference          metareport
+#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x8]> <data.table[80x11]>
+#>             metadelay time snapshots by groups max_delay   max_date
+#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 ```
 
 Construct an intercept only model for the date of reference using the
@@ -203,90 +173,14 @@ shows only unique rows with `index` containing the mapping to the full
 design matrix.
 
 ``` r
-reference_effects <- enw_formula(pobs$metareference[[1]])
-reference_effects
-#> $fixed
-#> $fixed$formula
-#> ~1
-#> <environment: 0x55b140f4ed60>
-#> 
-#> $fixed$design
-#>   (Intercept)
-#> 1           1
-#> 
-#> $fixed$index
-#>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-#> [39] 1 1 1
-#> 
-#> 
-#> $random
-#> $random$formula
-#> ~1
-#> <environment: 0x55b140f4ed60>
-#> 
-#> $random$design
-#>      (Intercept)
-#> attr(,"assign")
-#> [1] 0
-#> 
-#> $random$index
-#> integer(0)
+reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
 ```
 
 Construct a model with a random effect for the day of report using the
 metadata produced by `enw_preprocess_data()`.
 
 ``` r
-report_effects <- enw_formula(pobs$metareport[[1]], random = "day_of_week")
-report_effects
-#> $fixed
-#> $fixed$formula
-#> ~1 + day_of_week
-#> <environment: 0x55b141442b58>
-#> 
-#> $fixed$design
-#>   (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
-#> 1           1                 0                 0                   0
-#> 2           1                 0                 0                   0
-#> 3           1                 0                 0                   0
-#> 4           1                 1                 0                   0
-#> 5           1                 0                 0                   1
-#> 6           1                 0                 0                   0
-#> 7           1                 0                 1                   0
-#>   day_of_weekSunday day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
-#> 1                 0                   0                  1                    0
-#> 2                 0                   0                  0                    1
-#> 3                 0                   1                  0                    0
-#> 4                 0                   0                  0                    0
-#> 5                 0                   0                  0                    0
-#> 6                 1                   0                  0                    0
-#> 7                 0                   0                  0                    0
-#> 
-#> $fixed$index
-#>  [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3
-#> [39] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6
-#> [77] 7 1 2 3
-#> 
-#> 
-#> $random
-#> $random$formula
-#> ~0 + fixed + day_of_week
-#> <environment: 0x55b141442b58>
-#> 
-#> $random$design
-#>   fixed day_of_week
-#> 1     0           1
-#> 2     0           1
-#> 3     0           1
-#> 4     0           1
-#> 5     0           1
-#> 6     0           1
-#> 7     0           1
-#> attr(,"assign")
-#> [1] 1 2
-#> 
-#> $random$index
-#> [1] 1 2 3 4 5 6 7
+report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
 ```
 
 ### Model fitting
@@ -301,10 +195,12 @@ model <- enw_model(threads = TRUE)
 
 We now fit the model and produce a nowcast using this fit. Note that
 here we use two chains each using two threads as a demonstration but in
-general using 4 chains is recommended. Also note that here we have
-silenced fitting progress and potential warning messages for the
-purposes of keeping this quick start short but in general this should
-not be done.
+general using 4 chains is recommended. Also note that warm-up and
+sampling iterations have been set below default values to reduce compute
+requirements but this may not be sufficient for many real world use
+cases. Finally, note that here we have silenced fitting progress and
+potential warning messages for the purposes of keeping this quick start
+short but in general this should not be done.
 
 ``` r
 options(mc.cores = 2)
@@ -314,16 +210,17 @@ nowcast <- epinowcast(pobs,
   reference_effects = reference_effects,
   save_warmup = FALSE, pp = TRUE,
   chains = 2, threads_per_chain = 2,
+  iter_sampling = 500, iter_warmup = 500,
   show_messages = FALSE, refresh = 0
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 97.1 seconds.
-#> Chain 2 finished in 102.3 seconds.
+#> Chain 2 finished in 50.2 seconds.
+#> Chain 1 finished in 51.8 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 99.7 seconds.
-#> Total execution time: 102.4 seconds.
+#> Mean chain execution time: 51.0 seconds.
+#> Total execution time: 52.0 seconds.
 ```
 
 ### Results
@@ -333,55 +230,59 @@ information, the data used for fitting, and the `cmdstanr` object.
 
 ``` r
 nowcast
-#>                    obs          new_confirm             latest
-#> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x8]>
-#>     reporting_triangle       metareference          metareport time snapshots
-#> 1: <data.table[41x42]> <data.table[41x10]> <data.table[80x11]>   41        41
-#>    groups max_delay   max_date               fit       data  fit_args samples
-#> 1:      1        40 2021-08-22 <CmdStanMCMC[32]> <list[39]> <list[6]>    2000
-#>    max_rhat divergent_transitions per_divergent_transitions max_treedepth
-#> 1:     1.01                     0                         0             8
+#>                    obs          new_confirm              latest
+#> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
+#>    missing_reference  reporting_triangle      metareference          metareport
+#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x8]> <data.table[80x11]>
+#>             metadelay time snapshots by groups max_delay   max_date
+#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
+#>                  fit       data  fit_args samples max_rhat
+#> 1: <CmdStanMCMC[32]> <list[41]> <list[8]>    1000     1.02
+#>    divergent_transitions per_divergent_transitions max_treedepth
+#> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  20                 0.01    102.4
+#> 1:                  10                 0.01       52
 ```
 
 Summarise the nowcast for the latest snapshot of data.
 
 ``` r
-head(summary(nowcast, probs = c(0.05, 0.95)), n = 10)
-#>     reference_date location age_group confirm max_confirm cum_prop_reported
-#>  1:     2021-07-14       DE       00+      72          72                 1
-#>  2:     2021-07-15       DE       00+      69          69                 1
-#>  3:     2021-07-16       DE       00+      47          47                 1
-#>  4:     2021-07-17       DE       00+      65          65                 1
-#>  5:     2021-07-18       DE       00+      50          50                 1
-#>  6:     2021-07-19       DE       00+      36          36                 1
-#>  7:     2021-07-20       DE       00+      94          94                 1
-#>  8:     2021-07-21       DE       00+      91          91                 1
-#>  9:     2021-07-22       DE       00+      99          99                 1
-#> 10:     2021-07-23       DE       00+      86          86                 1
-#>     delay group     mean median        sd    mad q5 q95      rhat ess_bulk
-#>  1:    39     1  72.0000     72 0.0000000 0.0000 72  72        NA       NA
-#>  2:    38     1  69.0455     69 0.2108364 0.0000 69  69 1.0003614 1941.517
-#>  3:    37     1  47.0800     47 0.2839724 0.0000 47  48 1.0021833 1791.432
-#>  4:    36     1  65.1820     65 0.4312412 0.0000 65  66 0.9993637 1871.230
-#>  5:    35     1  50.2620     50 0.5248750 0.0000 50  51 0.9998088 1737.610
-#>  6:    34     1  36.2370     36 0.4959375 0.0000 36  37 0.9994943 2076.506
-#>  7:    33     1  94.4490     94 0.7208737 0.0000 94  96 1.0005755 1951.560
-#>  8:    32     1  91.7340     92 0.9009161 1.4826 91  93 1.0005936 1797.432
-#>  9:    31     1 100.0515    100 1.0809403 1.4826 99 102 1.0006480 1904.151
-#> 10:    30     1  87.1765     87 1.1623353 1.4826 86  89 1.0028604 1757.715
-#>     ess_tail
-#>  1:       NA
-#>  2: 1930.799
-#>  3: 1787.071
-#>  4: 1879.172
-#>  5: 1722.039
-#>  6: 1919.275
-#>  7: 1948.554
-#>  8: 1952.647
-#>  9: 2002.516
-#> 10: 1863.939
+nowcast |>
+  summary(probs = c(0.05, 0.95)) |>
+  head(n = 10)
+#>     reference_date report_date .group max_confirm location age_group confirm
+#>  1:     2021-07-14  2021-08-22      1          72       DE       00+      72
+#>  2:     2021-07-15  2021-08-22      1          69       DE       00+      69
+#>  3:     2021-07-16  2021-08-22      1          47       DE       00+      47
+#>  4:     2021-07-17  2021-08-22      1          65       DE       00+      65
+#>  5:     2021-07-18  2021-08-22      1          50       DE       00+      50
+#>  6:     2021-07-19  2021-08-22      1          36       DE       00+      36
+#>  7:     2021-07-20  2021-08-22      1          94       DE       00+      94
+#>  8:     2021-07-21  2021-08-22      1          91       DE       00+      91
+#>  9:     2021-07-22  2021-08-22      1          99       DE       00+      99
+#> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
+#>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
+#>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
+#>  2:                 1    38             0  69.046     69 0.2189336 0.0000 69
+#>  3:                 1    37             0  47.096     47 0.3144565 0.0000 47
+#>  4:                 1    36             0  65.176     65 0.4552266 0.0000 65
+#>  5:                 1    35             0  50.271     50 0.5251998 0.0000 50
+#>  6:                 1    34             0  36.242     36 0.5096035 0.0000 36
+#>  7:                 1    33             0  94.457     94 0.6637707 0.0000 94
+#>  8:                 1    32             0  91.738     92 0.8945145 1.4826 91
+#>  9:                 1    31             0 100.032    100 1.0545559 1.4826 99
+#> 10:                 1    30             0  87.159     87 1.1344629 1.4826 86
+#>     q95      rhat  ess_bulk  ess_tail
+#>  1:  72        NA        NA        NA
+#>  2:  69 1.0007765 1006.9282 1002.6983
+#>  3:  48 1.0000955  786.6752  783.7836
+#>  4:  66 0.9993755  940.8320  855.6696
+#>  5:  51 1.0023047 1000.5282  955.8951
+#>  6:  37 1.0006436  989.9089  867.0135
+#>  7:  96 0.9982502 1042.2918  882.8528
+#>  8:  94 1.0013474  919.6210  759.2589
+#>  9: 102 0.9993403  983.8782  930.9138
+#> 10:  89 1.0013534  861.8767  886.7324
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -417,30 +318,30 @@ cols <- c("confirm", "sample")
 samples[, (cols) := lapply(.SD, frollsum, n = 7),
   .SDcols = cols, by = ".draw"
 ][!is.na(sample)]
-#>        reference_date location age_group confirm max_confirm cum_prop_reported
-#>     1:     2021-07-20       DE       00+     433          94                 1
-#>     2:     2021-07-20       DE       00+     433          94                 1
-#>     3:     2021-07-20       DE       00+     433          94                 1
-#>     4:     2021-07-20       DE       00+     433          94                 1
-#>     5:     2021-07-20       DE       00+     433          94                 1
-#>    ---                                                                        
-#> 67996:     2021-08-22       DE       00+    1093          45                 1
-#> 67997:     2021-08-22       DE       00+    1093          45                 1
-#> 67998:     2021-08-22       DE       00+    1093          45                 1
-#> 67999:     2021-08-22       DE       00+    1093          45                 1
-#> 68000:     2021-08-22       DE       00+    1093          45                 1
-#>        delay group .chain .iteration .draw sample
-#>     1:    33     1      1          1     1    434
-#>     2:    33     1      1          2     2    433
-#>     3:    33     1      1          3     3    434
-#>     4:    33     1      1          4     4    435
-#>     5:    33     1      1          5     5    435
-#>    ---                                           
-#> 67996:     0     1      2        996  1996   2357
-#> 67997:     0     1      2        997  1997   1846
-#> 67998:     0     1      2        998  1998   2372
-#> 67999:     0     1      2        999  1999   2101
-#> 68000:     0     1      2       1000  2000   2077
+#>        reference_date report_date .group max_confirm location age_group confirm
+#>     1:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     2:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     3:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     4:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     5:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>    ---                                                                         
+#> 33996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 33997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
+#>     1:                 1    33             0      1          1     1    435
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    438
+#>     4:                 1    33             0      1          4     4    436
+#>     5:                 1    33             0      1          5     5    433
+#>    ---                                                                     
+#> 33996:                 1     0             1      2        496   996   2107
+#> 33997:                 1     0             1      2        497   997   2374
+#> 33998:                 1     0             1      2        498   998   2089
+#> 33999:                 1     0             1      2        499   999   1975
+#> 34000:                 1     0             1      2        500  1000   2044
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -455,6 +356,14 @@ enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 
 <img src="man/figures/README-week_nowcast-1.png" width="100%" />
 
+## Learning more
+
+The package has extensive documentation as well as vignettes describing
+the underlying methodology, and several case studies. Please see [the
+package site](https://epiforecasts.io/epinowcast) for details. Note that
+the development version of the package also has supporting documentation
+which are available [here](https://epiforecasts.io/epinowcast/dev).
+
 ## Citation
 
 If using `epinowcast` in your work please consider citing it using the
@@ -463,14 +372,14 @@ following,
     #> 
     #> To cite epinowcast in publications use:
     #> 
-    #>   Sam Abbott (2021). epinowcast: Hierarchical nowcasting of right
-    #>   censored epidemiological counts, DOI: 10.5281/zenodo.5637165
+    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast: Flexible
+    #>   hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 
     #>   @Article{,
-    #>     title = {epinowcast: Hierarchical nowcasting of right censored epidemiological counts},
-    #>     author = {Sam Abbott},
+    #>     title = {epinowcast: Flexible hierarchical nowcasting},
+    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk},
     #>     journal = {Zenodo},
     #>     year = {2021},
     #>     doi = {10.5281/zenodo.5637165},
@@ -482,6 +391,9 @@ Please briefly describe your problem and what output you expect in an
 [issue](https://github.com/epiforecasts/epinowcast/issues). If you have
 a question, please don’t open an issue. Instead, ask on our [Q and A
 page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
+See our [contributing
+guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
+for more information.
 
 ## Contributing
 
@@ -501,7 +413,9 @@ model used for inferring expected observations, may be easily tested
 within the package infrastructure. Once this testing has been done
 alterations that increase the flexibility of the package model and
 improves its defaults are very welcome via pull request or other
-communication with the package authors.
+communication with the package authors. Even if not wanting to add your
+updated model to the package please do reach out as we would love to
+hear about your use case.
 
 ## Code of Conduct
 
