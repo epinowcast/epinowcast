@@ -30,10 +30,10 @@ latest_obs <- enw_filter_reference_dates(
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Reference date model
-reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
+reference_module <- enw_reference(~ 1, data = pobs)
 
 # Report date model
-report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
+report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 
 # Compile nowcasting model
 model <- enw_model(threads = TRUE)
@@ -41,10 +41,12 @@ model <- enw_model(threads = TRUE)
 # Fit nowcast model and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
+  reference = reference_module,
+  report = report_module,
+  fit = enw_fit_opts(
+    save_warmup = FALSE, pp = TRUE,
+    chains = 2, threads_per_chain = 1,
+    iter_warmup = 500, iter_sampling = 500
+  ),
   model = model,
-  report_effects = report_effects,
-  reference_effects = reference_effects,
-  save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 1,
-  iter_warmup = 500, iter_sampling = 500
 )
