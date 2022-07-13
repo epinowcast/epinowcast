@@ -37,7 +37,7 @@ An alternative approach, not explored here, would be to consider each $n_{gtd}$ 
 
 # Expected final notifications
 
-Here we follow the approach of Günther et al.[@gunther2021] and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.
+Here we follow the approach of Günther et al.[@gunther2021] and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a Gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.
 
 \begin{align}
   \log (\lambda_{gt}) &\sim \text{Normal}\left(\log (\lambda_{gt-1}) , \sigma^{\lambda}_{g} \right) \\
@@ -48,7 +48,7 @@ where $N_{g0}$, the first time point for expected observations in dataset $d$, i
 
 # Delay distribution
 
-Again following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{gtd}$) using a discrete time logistic hazard model
+Again following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{gtd}$) using a discrete-time logistic hazard model
 $$
 h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)
 $$
@@ -91,11 +91,11 @@ All ($\alpha_{i}$) and random ($\beta_{i}$) coefficients have standard normal pr
 
 # Observation model and nowcast
 
-Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We assume a negative binomial observation model with a joint overdispersion parameter (with a 1 over square root standard half normal prior) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.
+Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We assume a negative binomial observation model with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.
 
 \begin{align}
   n_{gtd} \mid \lambda_{gt},p_{gtd}  &\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
-  \frac{1}{\phi^2} &\sim \text{Half-Normal}(0, 1) \\
+    \frac{1}{\sqrt{\phi}} &\sim \text{Half-Normal}(0, 1) \\
   N_{gt} &= \sum_{d=0}^{D} n_{gtd}
 \end{align}
 
