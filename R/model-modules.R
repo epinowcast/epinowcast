@@ -69,12 +69,12 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
         refp_mean_beta_sd = numeric(0),
         refp_sd_beta_sd = numeric(0)
       )
-      if (data$dist > 0) {
+      if (data$model_refp > 0) {
         init$refp_mean_int <- rnorm(
           1, priors$refp_mean_int[1], priors$refp_mean_int[2] / 10
         )
       }
-      if (data$dist > 1) {
+      if (data$model_refp > 1) {
         init$refp_sd_int <- abs(
           rnorm(1, priors$refp_sd_int[1], priors$refp_sd_int[2] / 10)
         )
@@ -83,7 +83,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
       init$refp_sd <- rep(init$logsd_int, data$refp_frows)
       if (data$refp_fncol > 0) {
         init$refp_mean_beta <- rnorm(data$refp_fncol, 0, 0.01)
-        if (data$dist > 1) {
+        if (data$model_refp > 1) {
           init$refp_sd_beta <- rnorm(data$refp_fncol, 0, 0.01)
         }
       }
@@ -92,7 +92,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
           data$refp_rncol, priors$refp_mean_beta_sd_p[1],
            priors$refp_mean_beta_sd_p[2] / 10
         ))
-        if (data$dist > 1) {
+        if (data$model_refp > 1) {
           init$refp_sd_beta_sd <- abs(rnorm(
             data$refp_rncol, priors$refp_sd_beta_sd_p[1],
             priors$refp_sd_beta_sd_p[2] / 10
@@ -107,7 +107,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
 }
 
 #' Report date logit hazard reporting  model module
-#' 
+#'
 #' @return A list as required by stan.
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
@@ -120,7 +120,7 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
   if (!as_string_formula(structural) %in% "~0") {
     stop("The structural reporting model has not yet been implemented")
   }
-  
+
   if (as_string_formula(formula) %in% "~0") {
     formula <- ~1
   }

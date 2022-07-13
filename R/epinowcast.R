@@ -33,11 +33,11 @@
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
 #' replace the default priors specified by each model component.
-#' 
+#'
 #' @param ... Additional model modules to pass to `model`. Examples of supported
 #' options are [enw_missing()] for modelling data with missing reference dates.
 #' User modules may also be used after adapting the supplied `model`.
-#' 
+#'
 #' @return A object of the class "epinowcast" which inherits from
 #' [enw_preprocess_data()] and `data.table`, and combines the output from
 #' the sampler specified in `enw_fit_opts()`.
@@ -90,7 +90,7 @@ epinowcast <- function(
 
   if (!missing(priors)) {
     priors <- enw_replace_priors(default_priors, priors)
-  }else{
+  }else {
     priors <- default_priors
   }
 
@@ -98,17 +98,17 @@ epinowcast <- function(
     data_as_list,
     enw_priors_as_data_list(priors)
   )
-  
+
   if (is.null(data_as_list$model_missing)) {
     model_missing <- 0
-  }else{
+  }else {
     stop("The missingness model has not yet been implemented")
   }
 
   if (!expectation$formula %in% "~rw(day, .group)") {
     stop("A flexible expectation model has not yet been implemented")
   }
-  
+
   if (expectation$data$exp_order != 1) {
     stop("Only first order expectation models are currently supported")
   }
@@ -118,7 +118,7 @@ epinowcast <- function(
 
   init_fn <- function(init_fns = init_fns) {
     init_inner_fn <- function() {
-        inits <- purrr::map(init_fns, do.call) 
+        inits <- purrr::map(init_fns, do.call, args = list())
         inits <- purrr::flatten(inits)
         return(inits)
     }

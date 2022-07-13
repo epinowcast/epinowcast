@@ -137,8 +137,8 @@ nowcast <- epinowcast(pobs,
   reference = reference_module,
   report = report_module,
   fit = enw_fit_opts(
-    sampler = function(init, ...){
-      return(data.table::data.table(init = list(init)))
+    sampler = function(init, data, ...) {
+      return(data.table::data.table(init = list(init), data = list(data)))
     },
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
