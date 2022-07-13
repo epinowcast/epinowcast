@@ -76,7 +76,7 @@ epinowcast <- function(
 ) {
 
   modules <- list(
-    reference, report, expectation, observation, ...)
+    reference, report, expectation, observation, ...
   )
 
   modules <- purrr::tranpose(modules)
@@ -103,17 +103,22 @@ epinowcast <- function(
     stop("The missingness model has not yet been implemented")
   }
 
-  (!as_string_formula(expectation$formula) %in% "~rw(day, .group)") {
+  if (!as_string_formula(expectation$formula) %in% "~rw(day, .group)") {
     stop("A flexible expectation model has not yet been implemented")
-  })
+  }
+  
+  if (expectation$order != 1) {
+    stop("Only first order expectation models are currently supported")
+  }
 
   inits <- purrr::compact(modules$inits)
-  init_fns <- purrr::map(names(inits), inits[[.]](data_as_list, priors)))
+  init_fns <- purrr::map(names(inits), inits[[.]](data_as_list, priors))
 
-  init_fn <- function()
-    init_fn <- function(init_fns = init_fns)) {
+  init_fn <- function() {
+    init_fn <- function(init_fns = init_fns) {
         inits <- purrr::map(init_fns, do.call) 
         inits <- purrr::flatten(inits)
+        return(inits)
     }
     return(init_fn)
   }

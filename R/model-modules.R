@@ -1,49 +1,3 @@
-#' FUNCTION_TITLE
-#'
-#' FUNCTION_DESCRIPTION
-#'
-#'
-#' @return RETURN_DESCRIPTION
-#'
-#' @importFrom data.table data.table
-#' @family model
-#' @export
-#' @examples
-#' enw_priors()
-enw_priors <- function() {
-  data.table::data.table(
-    variable = c(
-      "eobs_lsd",
-      "sqrt_phi",
-    ),
-    description = c(
-      "Standard deviation for expected final observations",
-      "Log mean intercept for reference date delay",
-      "Log standard deviation for the reference date delay",
-      "Standard deviation of scaled pooled logmean effects",
-      "Standard deviation of scaled pooled logsd effects",
-      "Standard deviation of scaled pooled report date effects",
-      "One over the square of the reporting overdispersion",
-      "Logit start value for share of cases with known reference date",
-      "Standard deviation of random walk for share of cases with known
-       reference date"
-    ),
-    distribution = c(
-      "Zero truncated normal",
-      "Normal",
-      "Zero truncated normal",
-      "Zero truncated normal",
-      "Zero truncated normal",
-      "Zero truncated normal",
-      "Zero truncated normal",
-      "Normal",
-      "Zero truncated normal"
-    ),
-    mean = c(0, 1, 0.5, rep(0, 4), 0, 0),
-    sd = c(rep(1, 7), 1, 0.1)
-  )
-}
-
 enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
                           non_parametric = ~ 0, data) {
   if (as_string_formula(parametric) %in% "~0") {
@@ -199,31 +153,55 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("An expectation model formula must be specified")
   }
-  if (order != 1) {
-    stop("Only first order expectation models are currently supported")
-  }
+  order <- match.arg(as.character(order), choices = c("1", "2"))
+  order <- as.integer(order)
+
   form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
   data <- enw_formula_as_data_list(
     form, prefix = "exp", drop_intercept = order == 1
   )
+  data$exp_order <- order
 
   out <- list()
   out$formula <- form$formula
   out$data <- data
   out$priors <- data.table::data.table(
-    variable = c(
-    ),
-    description = 
-    distribution = ,
-    mean = ,
-    sd =
+    variable = c("exp_beta_sd", "eobs_lsd"),
+    description = c(
+      "Standard deviation of scaled pooled expectation effects",
+      "Standard deviation for expected final observations"),
+    distribution = c("Zero truncated normal", "Zero truncated normal"),
+    mean = rep(0, 2),
+    sd = rep(1, 2)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
+        exp_beta = numeric(0),
+        exp_beta_sd = numeric(0),
+        leobs_init = array(purrr::map_dbl(
+          data$latest_obs[1, ] + 1,
+          ~ rnorm(1, log(.), 1)
+        )),
+        eobs_lsd = array(abs(rnorm(
+          data$g, data$eobs_lsd_p[1], data$eobs_lsd_p[2] / 10
+        ))),
+        leobs_resids = array(
+          rnorm((data$t - 1) * data$g, 0, 0.01),
+          dim = c(data$t - 1, data$g)
+        )
       )
-    return(init)
+      if (data$exp_fncol > 0) {
+        init$exp_beta <- rnorm(data$exp_fncol, 0, 0.01)
+      }
+      if (data$exp_rncol > 0) {
+        init$exp_beta_sd <- abs(rnorm(
+              data$exp_rncol, priors$exp_beta_sd_p[1],
+              priors$exp_beta_sd_p[2] / 10
+            ))
+      }
+      return(init)
     }
     return(fn)
   }
@@ -267,14 +245,14 @@ enw_missing <- function(formula = ~ 0, data) {
   out <- list()
   out$formula <- as_string_formula(formula)
   out$data <- data
-out$priors <- data.table::data.table(
-    variable = c("miss_beta_sd"),
-    description = c("Standard deviation of scaled pooled logit missing
-       reference date effects"),
-    distribution = c("Zero truncated normal"),
-    mean = 0,
-    sd = 1
-  )
+  out$priors <- data.table::data.table(
+      variable = c("miss_beta_sd"),
+      description = c("Standard deviation of scaled pooled logit missing
+        reference date effects"),
+      distribution = c("Zero truncated normal"),
+      mean = 0,
+      sd = 1
+    )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
@@ -295,6 +273,7 @@ out$priors <- data.table::data.table(
     }
     return(fn)
   }
+  return(out)
 }
 
 #' Setup observation model and data
@@ -398,215 +377,53 @@ enw_obs <- function(family = "negbin", data) {
   return(out)
 }
 
-#' Set up initial conditions for model
+#' Format model fitting options for use with stan
 #'
-#' @param data A list of data as produced by [enw_as_data_list()] and output as
-#' `data` by [epinowcast()].
+#' @param sampler A function that creates an object that be used to extract
+#' posterior samples from the specfied model. By default this is [enw_sample()]
+#' which makes use of [cmdstanr::sample()].
 #'
-#' @return A function that when called returns a list of initial conditions
-#' for the package stan models.
+#' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
+#' posterior predictions of the unobserved future reported notifications.
 #'
-#' @family model
-#' @importFrom purrr map_dbl
+#' @param pp Logical, defaults to `FALSE`. Should posterior predictions be made
+#' for observed data. Useful for evaluating the performance of the model.
+#'
+#' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
+#' included in the model
+#'
+#' @param output_loglik Logical, defaults to `FALSE`. Should the
+#' log-likelihood be output. Disabling this will speed up fitting
+#' if evaluating the model fit is not required.
+#'
+#' @param debug Logical, defaults to `FALSE`. Should within model debug
+#' information be returned.
+#'
+#' @param ... Additional arguments to pass to the fitting function being used
+#' by [epinowcast()]. By default this will be [enw_sample()] and so `cmdstanr`
+#' options should be used.
+#'
+#' @return A list as required by stan.
+#' @importFrom data.table fcase
+#' @family modelmodules
 #' @export
 #' @examples
-#' stan_data <- enw_example("nowcast")$data
-#' enw_inits(stan_data)
-enw_inits <- function(data) {
-  init_fn <- function() {
-    init <- list(
-      logmean_int = rnorm(1, data$logmean_int_p[1], data$logmean_int_p[2] / 10)
-    )
-    if (data$dist > 1) {
-      init$logsd_int <- abs(
-        rnorm(1, data$logsd_int_p[1], data$logsd_int_p[2] / 10)
-      )
-    } else {
-      init$logsd_int <- numeric(0)
-    }
-
-    init <- c(init, list(
-      leobs_init = array(purrr::map_dbl(
-        data$latest_obs[1, ] + 1,
-        ~ rnorm(1, log(.), 1)
-      )),
-      eobs_lsd = array(abs(rnorm(
-        data$g, data$eobs_lsd_p[1], data$eobs_lsd_p[2] / 10
-      ))),
-      leobs_resids = array(
-        rnorm((data$t - 1) * data$g, 0, 0.01),
-        dim = c(data$t - 1, data$g)
-      ),
-      sqrt_phi = abs(rnorm(1, data$sqrt_phi_p[1], data$sqrt_phi_p[2] / 10))
-    ))
-    init$logmean <- rep(init$logmean_int, data$npmfs)
-    init$logsd <- rep(init$logsd_int, data$npmfs)
-    init$phi <- 1 / sqrt(init$sqrt_phi)
-    # initialise reference date effects
-    if (data$neffs > 0) {
-      init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
-      if (data$dist > 1) {
-        init$logsd_eff <- rnorm(data$neffs, 0, 0.01)
-      }
-    } else {
-      init$logmean_eff <- numeric(0)
-      init$logsd_eff <- numeric(0)
-    }
-    if (data$neff_sds > 0) {
-      init$logmean_sd <- abs(rnorm(
-        data$neff_sds, data$logmean_sd_p[1], data$logmean_sd_p[2] / 10
-      ))
-      init$logsd_sd <- abs(rnorm(
-        data$neff_sds, data$logsd_sd_p[1], data$logsd_sd_p[2] / 10
-      ))
-    } else {
-      init$logmean_sd <- numeric(0)
-      init$logsd_sd <- numeric(0)
-    }
-    # initialise report date effects
-    if (data$nrd_effs > 0) {
-      init$rd_eff <- rnorm(data$nrd_effs, 0, 0.01)
-    } else {
-      init$rd_eff <- numeric(0)
-    }
-    if (data$nrd_eff_sds > 0) {
-      init$rd_eff_sd <- abs(rnorm(
-        data$nrd_eff_sds, data$rd_eff_sd_p[1], data$rd_eff_sd_p[2] / 10
-      ))
-    } else {
-      init$rd_eff_sd <- numeric(0)
-    }
-    return(init)
+#' # Default options along with settings to pass to enw_sample
+#' enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
+enw_fit_opts <- function(sampler = epinowcast::enw_sample,
+                         nowcast = TRUE, pp = FALSE, likelihood = TRUE,
+                         debug = FALSE, output_loglik = FALSE, ...) {
+  if (pp) {
+    nowcast <- TRUE
   }
-  return(init_fn)
-}
-
-#' Load and compile the nowcasting model
-#'
-#' @param model A character string indicating the path to the model.
-#' If not supplied the package default model is used.
-#'
-#' @param include A character string specifying the path to any stan
-#' files to include in the model. If missing the package default is used.
-#'
-#' @param compile Logical, defaults to `TRUE`. Should the model
-#' be loaded and compiled using [cmdstanr::cmdstan_model()].
-#'
-#' @param threads Logical, defaults to `FALSE`. Should the model compile with
-#' support for multi-thread support in chain. Note that this requires the use of
-#' the `threads_per_chain` argument when model fitting using [enw_sample()],
-#' and [epinowcast()].
-#'
-#' @param verbose Logical, defaults to `TRUE`. Should verbose
-#' messages be shown.
-#'
-#' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
-#' For more on profiling see the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
-#'
-#' @param stanc_options A list of options to pass to the `stanc_options` of
-#' [cmdstanr::cmdstan_model()]. By default "01" is passed which specifies simple
-#' optimisations should be done by the prior to compilation.
-#'
-#' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
-#'
-#' @return A `cmdstanr` model.
-#'
-#' @family model
-#' @export
-#' @importFrom cmdstanr cmdstan_model
-#' @examplesIf interactive()
-#' mod <- enw_model()
-enw_model <- function(model, include, compile = TRUE,
-                      threads = FALSE, profile = FALSE,
-                      stanc_options = list("O1"), verbose = TRUE, ...) {
-  if (missing(model)) {
-    model <- "stan/epinowcast.stan"
-    model <- system.file(model, package = "epinowcast")
-  }
-  if (missing(include)) {
-    include <- system.file("stan", package = "epinowcast")
-  }
-
-  if (!profile) {
-    stan_no_profile <- write_stan_files_no_profile(model, include)
-    model <- stan_no_profile$model
-    include <- stan_no_profile$include_paths
-  }
-
-  if (compile) {
-    if (verbose) {
-      model <- cmdstanr::cmdstan_model(model,
-        include_paths = include,
-        stanc_options = stanc_options,
-        cpp_options = list(
-          stan_threads = threads
-        ),
-        ...
-      )
-    } else {
-      suppressMessages(
-        model <- cmdstanr::cmdstan_model(model,
-          include_paths = include,
-          stanc_options = stanc_options,
-          cpp_options = list(
-            stan_threads = threads
-          ), ...
-        )
-      )
-    }
-  }
-  return(model)
-}
-
-#' Fit a CmdStan model using NUTS
-#'
-#' @param data A list of data as produced by [enw_as_data_list()].
-#'
-#' @param model A `cmdstanr` model object as loaded by [enw_model()].
-#'
-#' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
-#' be returned as a `data.frame`.
-#'
-#' @param ... Additional parameters passed to the `sample` method of `cmdstanr`.
-#'
-#' @return A `data.frame` containing the `cmdstanr` fit, the input data, the
-#' fitting arguments, and optionally summary diagnostics.
-#'
-#' @family model
-#' @export
-#' @importFrom cmdstanr cmdstan_model
-#' @importFrom posterior rhat
-enw_sample <- function(data, model = epinowcast::enw_model(),
-                       diagnostics = TRUE, ...) {
-  fit <- model$sample(data = data, ...)
-
-  out <- data.table(
-    fit = list(fit),
-    data = list(data),
-    fit_args = list(list(...))
+  out <- list(sampler = sampler)
+  out$data <- list(
+    debug = as.numeric(debug),
+    likelihood = as.numeric(likelihood),
+    pp = as.numeric(pp),
+    cast = as.numeric(nowcast),
+    ologlik = as.numeric(output_loglik)
   )
-
-  if (diagnostics) {
-    diag <- fit$sampler_diagnostics(format = "df")
-    diagnostics <- data.table(
-      samples = nrow(diag),
-      max_rhat = round(max(
-        fit$summary(
-          variables = NULL, posterior::rhat,
-          .args = list(na.rm = TRUE)
-        )$`posterior::rhat`,
-        na.rm = TRUE
-      ), 2),
-      divergent_transitions = sum(diag$divergent__),
-      per_divergent_transitions = sum(diag$divergent__) / nrow(diag),
-      max_treedepth = max(diag$treedepth__)
-    )
-    diagnostics[, no_at_max_treedepth := sum(diag$treedepth__ == max_treedepth)]
-    diagnostics[, per_at_max_treedepth := no_at_max_treedepth / nrow(diag)]
-    out <- cbind(out, diagnostics)
-
-    timing <- round(fit$time()$total, 1)
-    out[, run_time := timing]
-  }
-  return(out[])
+  out$args <- list(...)
+  return(out)
 }

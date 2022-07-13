@@ -11,12 +11,12 @@ epinowcast(
   report = epinowcast::enw_report(formula = ~0, structural = ~0, data),
   expectation = epinowcast::enw_expectation(formula = ~rw(day, .group), order = 1, data
     = data),
-  missing = epinowcast::enw_missing(formula = ~0, data = data),
-  observation = epinowcast::enw_obs(family = "negbin"),
+  obs = epinowcast::enw_obs(family = "negbin"),
   fit = enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp = FALSE,
     likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
   model = epinowcast::enw_model(),
-  priors
+  priors,
+  ...
 )
 }
 \arguments{
@@ -32,10 +32,7 @@ specification as defined using \code{\link[=enw_report]{enw_report()}}.}
 \code{\link[=enw_expectation]{enw_expectation()}}. By default this is set to be highly flexible and thus
 weakly informed.}
 
-\item{missing}{The missing data model for observations without a linked
-reference time specified using \code{\link[=enw_missing]{enw_missing()}}. By default this is not used.}
-
-\item{observation}{The observation model as defined by \code{\link[=enw_obs]{enw_obs()}}.
+\item{obs}{The observation model as defined by \code{\link[=enw_obs]{enw_obs()}}.
 Observations are also processed within this function for use in modelling.}
 
 \item{fit}{Model fit options as defined using \code{\link[=enw_fit_opts]{enw_fit_opts()}}. This includes
@@ -51,6 +48,10 @@ further details.}
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions. Priors in this data.frame
 replace the default priors specified by each model component.}
+
+\item{...}{Additional model modules to pass to \code{model}. Examples of supported
+options are \code{\link[=enw_missing]{enw_missing()}} for modelling data with missing reference dates.
+User modules may also be used after adapting the supplied \code{model}.}
 }
 \value{
 A object of the class "epinowcast" which inherits from
@@ -61,9 +62,9 @@ the sampler specified in \code{enw_fit_opts()}.
 Provides a user friendly interface around package functionality
 to produce a nowcast from observed preprocessed data, and a series of user
 defined models. By default a model that assumes a fixed parametric reporting
-distributin with a flexible expectation model is used. Explored the
+distributin with a flexible expectation model is used. Explore the
 individual model components for additional documentation and see the package
-case studies for example model specifications for different tasks..
+case studies for example model specifications for different tasks.
 }
 \seealso{
 Other epinowcast: 

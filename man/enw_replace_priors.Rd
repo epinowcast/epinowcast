@@ -35,9 +35,9 @@ enw_replace_priors(priors, custom_priors)
 }
 \seealso{
 Functions used to help convert models into the format required for stan
-\code{\link{enw_fit_opts}()},
 \code{\link{enw_formula_as_data_list}()},
 \code{\link{enw_priors_as_data_list}()},
+\code{\link{enw_sample}()},
 \code{\link{remove_profiling}()},
 \code{\link{write_stan_files_no_profile}()}
 }
