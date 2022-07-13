@@ -205,26 +205,89 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   if (!as_string_formula(formula) %in% "~rw(day, .group)") {
     stop("A flexible expectation model has not yet been implemented")
   }
+  form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
+  data <- enw_formula_as_data_list(
+    form, prefix = "exp", drop_intercept = TRUE
+  )
+
+  out <- list()
+  out$formula <- form$formula
+  out$data <- data
+  out$priors <- data.table::data.table(
+    variable = c(
+    ),
+    description = 
+    distribution = ,
+    mean = ,
+    sd =
+  )
+  out$inits <- function(data, priors) {
+    priors <- enw_priors_as_data_list(priors)
+    fn <- function() {
+      init <- list(
+      )
+    return(init)
+    }
+    return(fn)
+  }
 }
 
 enw_missing <- function(formula = ~ 0, data) {
-  if (!as_string_formula(formula) %in% "~ 0") {
+  if (!as_string_formula(formula) %in% "~0") {
     stop("The missing data model has not yet been implemented")
+  }else{
+    model_missing <- TRUE
   }
 
-  if (nrow(data$missing_reference[[1]]) > 0) {
-      # obs with missing reference date
-      missing_reference <- data.table::copy(data$missing_reference[[1]])
-      data.table::setorderv(missing_reference, c(".group", "report_date"))
-      missing_reference <- as.matrix(
-        data.table::dcast(
-          missing_reference, .group ~ report_date,
-          value.var = "confirm",
-          fill = 0
-        )[, -1]
+  if (nrow(data$missing_reference[[1]]) == 0) {
+    stop("A missingness model has been specified but data on  the proportion of
+          observations without reference dates is not available."
+        )
+  }
+
+  if (model_missing) {
+    form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
+    data <- enw_formula_as_data_list(
+      form, prefix = "exp", drop_intercept = FALSE
+    )
+    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    missing_reference <- as.matrix(
+      data.table::dcast(
+        missing_reference, .group ~ report_date,
+        value.var = "confirm",
+        fill = 0
+      )[, -1]
+    )
+    data$missing_ref <- missing_reference
+    data$model_missing <- model_missing
+  }else{
+    data <- list(
+      model_missing = model_missing
+    )
+  }
+
+
+  out <- list()
+  out$formula <- form$formula
+  out$data <- data
+  out$priors <- data.table::data.table(
+    variable = c(
+    ),
+    description = 
+    distribution = ,
+    mean = ,
+    sd =
+  )
+  out$inits <- function(data, priors) {
+    priors <- enw_priors_as_data_list(priors)
+    fn <- function() {
+      init <- list(
       )
-      data$missing_ref <- missing_reference
+    return(init)
     }
+    return(fn)
+  }
 }
 
 #' Setup observation model and data
@@ -292,10 +355,27 @@ enw_obs <- function(family = "negbin", data) {
     flat_obs = flat_obs,
     latest_obs = latest_matrix
   )
-  out <- list(
-    family = family,
-    data = data
+
+  out <- list()
+  out$family <- family
+  out$data <- data
+  out$priors <- data.table::data.table(
+    variable = c(
+    ),
+    description = 
+    distribution = ,
+    mean = ,
+    sd =
   )
+  out$inits <- function(data, priors) {
+    priors <- enw_priors_as_data_list(priors)
+    fn <- function() {
+      init <- list(
+      )
+    return(init)
+    }
+    return(fn)
+  }
   return(out)
 }
 
