@@ -14,10 +14,6 @@ enw_priors <- function() {
   data.table::data.table(
     variable = c(
       "eobs_lsd",
-      "logmean_int",
-      "logsd_int",
-      "logmean_sd",
-      "logsd_sd",
       "rd_eff_sd",
       "sqrt_phi",
       "alpha_int",
@@ -80,12 +76,68 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
   pdata <- enw_formula_as_data_list(
     pform, prefix = "refp", drop_intercept = TRUE
   )
+  pdata$dist <- distribution
 
-  out <- list(
-    data = pdata,
-    priors = priors,
-    init
+  out <- list()
+  out$formula$parametric <- pform$formula
+  out$data <- pdata
+  out$priors <- data.table::data.table(
+    variable = c(
+      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd"
+    ),
+    description = c("Log mean intercept for parametric reference date delay",
+      "Log standard deviation for the parametric reference date delay",
+      "Standard deviation of scaled pooled parametric mean effects",
+      "Standard deviation of scaled pooled parametric sd effects"),
+    distribution = c("Normal", rep("Zero truncated normal", 3)),
+    mean = c(1, 0.5, 0, 0),
+    sd = 1
   )
+  out$inits <- function(data, priors) {
+    priors <- enw_priors_as_data_list(priors)
+    fn <- function() {
+      init <- list(
+        refp_mean_int = numeric(0),
+        refp_sd_int = numeric(0),
+        refp_mean_beta = numeric(0),
+        refp_sd_beta = numeric(0),
+        refp_mean_beta_sd = numeric(0),
+        refp_sd_beta_sd = numeric(0)
+      )
+      if (data$dist > 0) {
+        init$refp_mean_int <- rnorm(
+          1, priors$refp_mean_int[1], priors$refp_mean_int[2] / 10
+        )
+      }
+      if (data$dist > 1) {
+        init$refp_sd_int <- abs(
+          rnorm(1, priors$refp_sd_int[1], priors$refp_sd_int[2] / 10)
+        )
+      }
+      init$refp_mean <- rep(init$refp_mean_int, data$refp_frows)
+      init$refp_sd <- rep(init$logsd_int, data$refp_frows)
+      if (data$refp_fncol > 0) {
+        init$refp_mean_beta <- rnorm(data$refp_fncol, 0, 0.01)
+        if (data$dist > 1) {
+          init$refp_sd_beta <- rnorm(data$refp_fncol, 0, 0.01)
+        }
+      }
+      if (data$refp_rncol > 0) {
+        init$refp_mean_beta_sd <- abs(rnorm(
+          data$refp_rncol, priors$refp_mean_beta_sd_p[1],
+           priors$refp_mean_beta_sd_p[2] / 10
+        ))
+        if (data$dist > 1) {
+          init$refp_sd_beta_sd <- abs(rnorm(
+            data$refp_rncol, priors$refp_sd_beta_sd_p[1],
+            priors$refp_sd_beta_sd_p[2] / 10
+          ))
+        }
+      }
+    return(init)
+    }
+    return(fn)
+  }
   return(out)
 }
 
@@ -117,7 +169,7 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
   out$formula <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = c("rep_sd"),
+    variable = c("rep_beta_sd"),
     description = c("Standard deviation of scaled pooled report date effects"),
     distribution = c("Zero truncated normal"),
     mean = 0,
@@ -126,18 +178,18 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
-      init <- list()
-      if (data$rep_rncol > 0) {
-        init$rep_beta <- rnorm(data$rep_rncol, 0, 0.01)
-      } else {
-        init$rep_beta <- numeric(0)
+      init <- list(
+        rep_beta = numeric(0),
+        rep_beta_sd = numeric(0)
+      )
+      if (data$rep_fncol > 0) {
+        init$rep_beta <- rnorm(data$rep_fncol, 0, 0.01)
       }
       if (data$rep_rncol > 0) {
-        init$rep_sd <- abs(rnorm(
-              data$rep_rncol, priors$rep_sd_p[1], priors$rep_sd_p[2] / 10
+        init$rep_beta_sd <- abs(rnorm(
+              data$rep_rncol, priors$rep_beta_sd_p[1],
+              priors$rep_beta_sd_p[2] / 10
             ))
-      } else {
-        init$rep_sd <- numeric(0)
       }
       return(init)
     }

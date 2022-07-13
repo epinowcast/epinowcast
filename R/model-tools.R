@@ -36,7 +36,7 @@ enw_formula_as_data_list <- function(formula, prefix,
   data[[paste_lab("frows")]] <- nrow(formula$fixed$design)
   data[[paste_lab("findex")]] <- formula$fixed$index
   data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
-  data[[paste_lab("fncol")]] <
+  data[[paste_lab("fncol")]] <-
       ncol(formula$random$design) - as.numeric(drop_intercept)
   data[[paste_lab("rdesign")]] <- formula$random$design
   data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
