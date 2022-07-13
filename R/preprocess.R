@@ -45,6 +45,10 @@ enw_add_metaobs_features <- function(metaobs, holidays = c(),
   # make day of week a factor
   metaobs[, day_of_week := factor(day_of_week)]
 
+  # add day feature
+  metaobs[, day := as.numeric(date)]
+  metaobs[, day := day - min(day)]
+
   # add week feature
   metaobs[, week := lubridate::week(date)]
   metaobs[, week := week - min(week)]

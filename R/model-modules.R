@@ -27,7 +27,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
   pdata <- enw_formula_as_data_list(
     pform, prefix = "refp", drop_intercept = TRUE
   )
-  pdata$dist <- distribution
+  pdata$model_refp <- distribution
 
   out <- list()
   out$formula$parametric <- pform$formula
@@ -94,12 +94,12 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
 
 enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
 
-  if (as_string_formula(formula) %in% "~0") {
-    formula <- ~1
-  }
-
   if (!as_string_formula(structural) %in% "~0") {
     stop("The structural reporting model has not yet been implemented")
+  }
+  
+  if (as_string_formula(formula) %in% "~0") {
+    formula <- ~1
   }
 
   form <- enw_formula(formula, data$metareport[[1]], sparse = TRUE)
@@ -115,6 +115,7 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
       nrow = data$time[[1]] + data$max_delay[[1]] - 1
     )
   )
+  data_list$model_rep <- as.numeric(!as_string_formula(formula) %in% "1")
 
   out <- list()
   out$formula <- form$formula
@@ -156,7 +157,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   order <- match.arg(as.character(order), choices = c("1", "2"))
   order <- as.integer(order)
 
-  form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
+  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
   data <- enw_formula_as_data_list(
     form, prefix = "exp", drop_intercept = order == 1
   )
@@ -205,46 +206,38 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
     }
     return(fn)
   }
+  return(out)
 }
 
-enw_missing <- function(formula = ~ 0, data) {
+enw_missing <- function(formula = ~ 1, data) {
   if (as_string_formula(formula) %in% "~0") {
-    model_missing <- FALSE
-  }else{
-    model_missing <- TRUE
+    stop("At least an intercept must be used if this module is in use.")
   }
-
   if (nrow(data$missing_reference[[1]]) == 0) {
     stop("A missingness model has been specified but data on  the proportion of
           observations without reference dates is not available."
         )
   }
 
-  if (model_missing) {
-    form <- enw_formula(parametric, data$metareference[[1]], sparse = FALSE)
-    data <- enw_formula_as_data_list(
-      form, prefix = "miss", drop_intercept = FALSE
-    )
-    missing_reference <- data.table::copy(data$missing_reference[[1]])
-    data.table::setorderv(missing_reference, c(".group", "report_date"))
-    missing_reference <- as.matrix(
-      data.table::dcast(
-        missing_reference, .group ~ report_date,
-        value.var = "confirm",
-        fill = 0
-      )[, -1]
-    )
-    data$missing_ref <- missing_reference
-    data$model_missing <- as.numeric(nmodel_missing)
-  }else{
-    data <- list(
-      model_missing = as.numeric(model_missing)
-    )
-  }
+  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
+  data_list <- enw_formula_as_data_list(
+    form, prefix = "miss", drop_intercept = FALSE
+  )
+  missing_reference <- data.table::copy(data$missing_reference[[1]])
+  data.table::setorderv(missing_reference, c(".group", "report_date"))
+  missing_reference <- as.matrix(
+    data.table::dcast(
+      missing_reference, .group ~ report_date,
+      value.var = "confirm",
+      fill = 0
+    )[, -1]
+  )
+  data_list$missing_ref <- missing_reference
+  data_list$model_missing <- 1
 
   out <- list()
   out$formula <- as_string_formula(formula)
-  out$data <- data
+  out$data <- data_list
   out$priors <- data.table::data.table(
       variable = c("miss_beta_sd"),
       description = c("Standard deviation of scaled pooled logit missing
@@ -281,7 +274,7 @@ enw_missing <- function(formula = ~ 0, data) {
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
-#' @family model
+#' @family modelmodules
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))

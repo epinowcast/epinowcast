@@ -49,4 +49,8 @@ Format model fitting options for use with stan
 # Default options along with settings to pass to enw_sample
 enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 }
+\seealso{
+Model modules
+\code{\link{enw_obs}()}
+}
 \concept{modelmodules}

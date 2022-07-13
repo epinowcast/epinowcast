@@ -174,7 +174,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (is.null(metaobs[[feature]])) {
       stop(
-        "Requested variable ", metaobs[[feature]],
+        "Requested variable ", feature,
         " is not present in the supplied data frame."
       )
     }

@@ -19,7 +19,7 @@ Setup observation model and data
 enw_obs(data = enw_example("preprocessed"))
 }
 \seealso{
-Other model: 
-\code{\link{enw_model}()}
+Model modules
+\code{\link{enw_fit_opts}()}
 }
-\concept{model}
+\concept{modelmodules}

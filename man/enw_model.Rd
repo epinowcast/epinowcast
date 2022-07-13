@@ -53,8 +53,4 @@ Load and compile the nowcasting model
 mod <- enw_model()
 \dontshow{\}) # examplesIf}
 }
-\seealso{
-Other model: 
-\code{\link{enw_obs}()}
-}
 \concept{model}

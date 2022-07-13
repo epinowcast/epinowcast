@@ -308,15 +308,16 @@ construct_rw <- function(rw, data) {
         "Requested grouping variable",
         rw$by, " is not present in the supplied data"
       )
-    } else {
-      if (length(unique(fdata[[rw$by]])) < 2) {
-        stop(
-          "A grouped random walk using ", rw$by,
-          " is not possible as this variable has fewer than 2 unique values."
-        )
-      }
+    } 
+    if (length(unique(fdata[[rw$by]])) < 2) {
+      message(
+        "A grouped random walk using ", rw$by,
+        " is not possible as this variable has fewer than 2 unique values."
+      )
+      rw$by <- NULL
+    }else{
+      terms <- paste0(rw$by, ":", terms)
     }
-    terms <- paste0(rw$by, ":", terms)
   }
 
   # make a fixed effects design matrix
