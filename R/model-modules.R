@@ -1,11 +1,11 @@
 #' Reference date logit hazard reporting  model module
-#' 
+#'
 #' @param parametric DESCRIPTION
-#' 
+#'
 #' @param distribution DESCRIPTION
-#' 
+#'
 #' @param non_parametric DESCRIPTION
-#' 
+#'
 #' @return A list as required by stan.
 #' @inheritParams enw_obs
 #' @family modelmodules
@@ -138,6 +138,7 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
       nrow = data$time[[1]] + data$max_delay[[1]] - 1
     )
   )
+  data_list$rep_t <- data$time[[1]] + data$max_delay[[1]] - 1
   data_list$model_rep <- as.numeric(!as_string_formula(formula) %in% "1")
 
   out <- list()
@@ -174,7 +175,7 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
 }
 
 #' Expectation model module
-#' 
+#'
 #' @return A list as required by stan.
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
@@ -242,7 +243,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 }
 
 #' Missing reference data model module
-#' 
+#'
 #' @return A list as required by stan.
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
