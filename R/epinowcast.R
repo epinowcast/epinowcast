@@ -96,6 +96,16 @@ epinowcast <- function(
     data_as_list,
     enw_priors_as_data_list(priors)
   )
+  
+  if (is.null(data_as_list$model_missing)) {
+    model_missing <- 0
+  }else{
+    stop("The missingness model has not yet been implemented")
+  }
+
+  (!as_string_formula(expectation$formula) %in% "~rw(day, .group)") {
+    stop("A flexible expectation model has not yet been implemented")
+  })
 
   inits <- purrr::compact(modules$inits)
   init_fns <- purrr::map(names(inits), inits[[.]](data_as_list, priors)))
