@@ -1,3 +1,17 @@
+#' Reference date logit hazard reporting  model module
+#' 
+#' @param parametric DESCRIPTION
+#' 
+#' @param distribution DESCRIPTION
+#' 
+#' @param non_parametric DESCRIPTION
+#' 
+#' @return A list as required by stan.
+#' @inheritParams enw_obs
+#' @family modelmodules
+#' @export
+#' @examples
+#' enw_reference(data = enw_example("preprocessed"))
 enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
                           non_parametric = ~ 0, data) {
   if (as_string_formula(parametric) %in% "~0") {
@@ -92,6 +106,15 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
   return(out)
 }
 
+#' Report date logit hazard reporting  model module
+#' 
+#' @return A list as required by stan.
+#' @inheritParams enw_obs
+#' @inheritParams enw_formula
+#' @family modelmodules
+#' @export
+#' @examples
+#' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
 
   if (!as_string_formula(structural) %in% "~0") {
@@ -150,6 +173,15 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
   return(out)
 }
 
+#' Expectation model module
+#' 
+#' @return A list as required by stan.
+#' @inheritParams enw_obs
+#' @inheritParams enw_formula
+#' @family modelmodules
+#' @export
+#' @examples
+#' enw_expectation(data = enw_example("preprocessed"))
 enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("An expectation model formula must be specified")
@@ -209,6 +241,15 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   return(out)
 }
 
+#' Missing reference data model module
+#' 
+#' @return A list as required by stan.
+#' @inheritParams enw_obs
+#' @inheritParams enw_formula
+#' @family modelmodules
+#' @export
+#' @examples
+#' enw_missing(data = enw_example("preprocessed"))
 enw_missing <- function(formula = ~ 1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("At least an intercept must be used if this module is in use.")

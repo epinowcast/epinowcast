@@ -63,7 +63,7 @@ epinowcast <- function(
       order = 1,
       data = data
     ),
-    obs = epinowcast::enw_obs(family = "negbin"),
+    obs = epinowcast::enw_obs(family = "negbin", data = data),
     fit = enw_fit_opts(
       fit = epinowcast::enw_sample,
       nowcast = TRUE, pp = FALSE,
@@ -76,11 +76,12 @@ epinowcast <- function(
 ) {
 
   modules <- list(
-    reference, report, expectation, observation, ...
+    reference, report, expectation, obs, ...
   )
+  names(modules) <- as.character(seq_len(length(modules)))
   purrr::walk(modules, check_module)
 
-  modules <- purrr::tranpose(modules)
+  modules <- purrr::transpose(modules)
   data_as_list <- purrr::flatten(modules$data)
 
   default_priors <- data.table::rbindlist(
@@ -104,24 +105,24 @@ epinowcast <- function(
     stop("The missingness model has not yet been implemented")
   }
 
-  if (!as_string_formula(expectation$formula) %in% "~rw(day, .group)") {
+  if (!expectation$formula %in% "~rw(day, .group)") {
     stop("A flexible expectation model has not yet been implemented")
   }
   
-  if (expectation$order != 1) {
+  if (expectation$data$exp_order != 1) {
     stop("Only first order expectation models are currently supported")
   }
 
   inits <- purrr::compact(modules$inits)
-  init_fns <- purrr::map(names(inits), inits[[.]](data_as_list, priors))
+  init_fns <- purrr::map(names(inits), ~ inits[[.]](data_as_list, priors))
 
-  init_fn <- function() {
-    init_fn <- function(init_fns = init_fns) {
+  init_fn <- function(init_fns = init_fns) {
+    init_inner_fn <- function() {
         inits <- purrr::map(init_fns, do.call) 
         inits <- purrr::flatten(inits)
         return(inits)
     }
-    return(init_fn)
+    return(init_inner_fn)
   }
 
   fit <- do.call(
@@ -129,7 +130,7 @@ epinowcast <- function(
       list(
         data = data_as_list,
         model = model,
-        init = init_fn()
+        init = init_fn(init_fns)
       ),
       fit$args
     )

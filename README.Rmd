@@ -109,23 +109,23 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 ```
 
-Construct an intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
+Construct a parameric lognormal intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix for parametric delay distributions to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
-reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
+reference_module <- enw_reference(~ 1, distribution = "lognormal", data = pobs)
 ```
 
 Construct a model with a random effect for the day of report using the metadata produced by `enw_preprocess_data()`.
 
 ```{r}
-report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
+report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
 ### Model fitting
 
 First compile the model. This step can be left to `epinowcast` but here we want to use multiple cores per chain to speed up model fitting and so need to compile the model with this feature turned on.
 
-```{r}
+```{r, eval = FALSE}
 model <- enw_model(threads = TRUE)
 ```
 
@@ -134,13 +134,18 @@ We now fit the model and produce a nowcast using this fit. Note that here we use
 ```{r}
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
-  model = model,
-  report_effects = report_effects,
-  reference_effects = reference_effects,
-  save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 2,
-  iter_sampling = 500, iter_warmup = 500,
-  show_messages = FALSE, refresh = 0
+  reference = reference_module,
+  report = report_module,
+  fit = enw_fit_opts(
+    sampler = function(init, ...){
+      return(data.table::data.table(init = list(init)))
+    },
+    save_warmup = FALSE, pp = TRUE,
+    chains = 2, threads_per_chain = 2,
+    iter_sampling = 500, iter_warmup = 500,
+    show_messages = FALSE, refresh = 0
+  ),
+  model = NULL
 )
 ```
 
@@ -154,7 +159,7 @@ nowcast
 
 Summarise the nowcast for the latest snapshot of data.
 
-```{r}
+```{r, eval = FALSE}
 nowcast |>
   summary(probs = c(0.05, 0.95)) |>
   head(n = 10)
@@ -162,21 +167,21 @@ nowcast |>
 
 Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).
 
-```{r nowcast}
+```{r nowcast, eval = FALSE}
 plot(nowcast, latest_obs = latest_germany_hosp)
 ```
 
 Plot posterior predictions for observed notifications by date of
 report as a check of how well the model reproduces the observed data.
 
-```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
+```{r pp, fig.width = 16, fig.height = 16, message = FALSE, eval = FALSE}
 plot(nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
 
 Rather than using the methods supplied for `epinowcast` directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.
 
-```{r week_nowcast}
+```{r week_nowcast, eval = FALSE}
 # extract samples
 samples <- summary(nowcast, type = "nowcast_samples")
 

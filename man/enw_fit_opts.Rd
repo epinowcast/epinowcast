@@ -51,6 +51,10 @@ enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 }
 \seealso{
 Model modules
-\code{\link{enw_obs}()}
+\code{\link{enw_expectation}()},
+\code{\link{enw_missing}()},
+\code{\link{enw_obs}()},
+\code{\link{enw_reference}()},
+\code{\link{enw_report}()}
 }
 \concept{modelmodules}
