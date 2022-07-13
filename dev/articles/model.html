@@ -136,7 +136,7 @@
 <div class="section level2">
 <h2 id="expected-final-notifications">Expected final notifications<a class="anchor" aria-label="anchor" href="#expected-final-notifications"></a>
 </h2>
-<p>Here we follow the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.</p>
+<p>Here we follow the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a Gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.</p>
 <p><span class="math display">\[\begin{align}
   \log (\lambda_{gt}) &amp;\sim \text{Normal}\left(\log (\lambda_{gt-1}) , \sigma^{\lambda}_{g} \right) \\
   \log (\lambda_{g0}) &amp;\sim \text{Normal}\left(\log (N_{g0} + 1), 1 \right) \\ \sigma^{\lambda}_{g} &amp;\sim \text{Half-Normal}\left(0, 1\right)
@@ -146,7 +146,7 @@
 <div class="section level2">
 <h2 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
 </h2>
-<p>Again following the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> we estimate the delay distribution (<span class="math inline">\(p_{gtd}\)</span>) using a discrete time logistic hazard model <span class="math display">\[
+<p>Again following the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> we estimate the delay distribution (<span class="math inline">\(p_{gtd}\)</span>) using a discrete-time logistic hazard model <span class="math display">\[
 h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)
 \]</span> but we extend this model to decompose <span class="math inline">\(W_{gtd}\)</span> into 3 components: hazard derived from a parametric delay distribution (<span class="math inline">\(\gamma_{gtd}\)</span>) dependent on covariates at the time of reference, hazard not derived from a parametric distribution (<span class="math inline">\(\delta_{gtd}\)</span>) dependent on covariates at the time of reference, and hazard dependent on covariates referenced to the time of report (<span class="math inline">\(\epsilon_{gtd}\)</span>).</p>
 <p>The first component (<span class="math inline">\(\gamma_{gtd}\)</span>) we estimate what would be the probability of reporting <span class="math inline">\(p^{\prime}_{gtd}\)</span> at a given time if it followed a parametric distribution, here implemented using a discretised log normal (with other distributions being available) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed (<span class="math inline">\(\alpha_{i}\)</span>) and random (<span class="math inline">\(\beta_{i}\)</span>) coefficients (note these can include auto-regressive terms),</p>
@@ -177,17 +177,17 @@ h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)
 <div class="section level2">
 <h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h2>
-<p>Expected notifications by time of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{gtd}\)</span>). We assume a negative binomial observation model with a joint overdispersion parameter (with a 1 over square root standard half normal prior) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.</p>
+<p>Expected notifications by time of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{gtd}\)</span>). We assume a negative binomial observation model with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[7]</sup></span>) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.</p>
 <p><span class="math display">\[\begin{align}
   n_{gtd} \mid \lambda_{gt},p_{gtd}  &amp;\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
-  \frac{1}{\phi^2} &amp;\sim \text{Half-Normal}(0, 1) \\
+    \frac{1}{\sqrt{\phi}} &amp;\sim \text{Half-Normal}(0, 1) \\
   N_{gt} &amp;= \sum_{d=0}^{D} n_{gtd}
 \end{align}\]</span></p>
 </div>
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in <code>stan</code> using <code>cmdstanr</code> with no defaults altered<span class="citation"><sup>[4,5]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[7]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[8]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
+<p>The model is implemented in <code>stan</code> using <code>cmdstanr</code> with no defaults altered<span class="citation"><sup>[4,5]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[8]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[9]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -211,11 +211,14 @@ h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)
 <div id="ref-bastos">
 <p>6. Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T. (2019). A modelling approach for correcting reporting delays in disease surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22), 4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a></p>
 </div>
+<div id="ref-stan_prior_wiki">
+<p>7. Team, S. D. (2020). <em>Prior choice recommendations</em>.</p>
+</div>
 <div id="ref-R">
-<p>7. R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a></p>
+<p>8. R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a></p>
 </div>
 <div id="ref-scoringutils">
-<p>8. Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a></p>
+<p>9. Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a></p>
 </div>
 </div>
 </div>
