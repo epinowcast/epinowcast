@@ -17,10 +17,7 @@
 #' [enw_expectation()]. By default this is set to be highly flexible and thus
 #' weakly informed.
 #'
-#' @param missing The missing data model for observations without a linked
-#' reference time specified using [enw_missing()]. By default this is not used. 
-#'
-#' @param observation The observation model as defined by [enw_obs()].
+#' @param obs The observation model as defined by [enw_obs()].
 #' Observations are also processed within this function for use in modelling.
 #'
 #' @param fit Model fit options as defined using [enw_fit_opts()]. This includes
@@ -36,11 +33,16 @@
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
 #' replace the default priors specified by each model component.
-#'
+#' 
+#' @param ... Additional model modules to pass to `model`. Examples of supported
+#' options are [enw_missing()] for modelling data with missing reference dates.
+#' User modules may also be used after adapting the supplied `model`.
+#' 
 #' @return A object of the class "epinowcast" which inherits from
 #' [enw_preprocess_data()] and `data.table`, and combines the output from
 #' the sampler specified in `enw_fit_opts()`.
 #' @inheritParams enw_obs
+#' @importFrom purrr map transpose flatten
 #' @family epinowcast
 #' @export
 epinowcast <- function(
@@ -61,11 +63,7 @@ epinowcast <- function(
       order = 1,
       data = data
     ),
-    missing = epinowcast::enw_missing(
-      formula = ~ 0,
-      data = data
-    ),
-    observation = epinowcast::enw_obs(family = "negbin"),
+    obs = epinowcast::enw_obs(family = "negbin"),
     fit = enw_fit_opts(
       fit = epinowcast::enw_sample,
       nowcast = TRUE, pp = FALSE,
@@ -73,28 +71,19 @@ epinowcast <- function(
       output_loglik = FALSE
     ),
     model = epinowcast::enw_model(),
-    priors
+    priors,
+    ...
 ) {
-  data_as_list <- c(
-    reference$data,
-    report$data,
-    expectation$data,
-    missing$datat,
-    observation$data,
-    fit$data
+
+  modules <- list(
+    reference, report, expectation, observation, ...)
   )
 
+  modules <- purrr::tranpose(modules)
+  data_as_list <- purrr::flatten(modules$data)
+
   default_priors <- data.table::rbindlist(
-    list(
-      reference$priors,
-      report$priors,
-      expectation$priors,
-      missing$priors,
-      observation$priors,
-      fit$priors
-    ),
-    fill = TRUE,
-    use.names = TRUE
+    modules$priors, fill = TRUE, use.names = TRUE
   )
 
   if (!missing(priors)) {
@@ -108,22 +97,23 @@ epinowcast <- function(
     enw_priors_as_data_list(priors)
   )
 
-  inits <- c(
-    reference$inits,
-    report$inits,
-    expectation$inits,
-    missing$inits,
-    observation$inits
-  )
+  inits <- purrr::compact(modules$inits)
+  init_fns <- purrr::map(names(inits), inits[[.]](data_as_list, priors)))
 
-  inits <- inits(data_as_list)
+  init_fn <- function()
+    init_fn <- function(init_fns = init_fns)) {
+        inits <- purrr::map(init_fns, do.call) 
+        inits <- purrr::flatten(inits)
+    }
+    return(init_fn)
+  }
 
   fit <- do.call(
     fit$sampler, c(
       list(
         data = data_as_list,
         model = model,
-        init = inits
+        init = init_fn()
       ),
       fit$args
     )
