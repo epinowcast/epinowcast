@@ -7,7 +7,7 @@
 #'
 #' @return A list defining the model formula. This includes:
 #'  - `prefix_fdesign`: The fixed effects design matrix
-#'  - `prefix_frows`: The number of rows of the fixed design matrix
+#'  - `prefix_fnrow`: The number of rows of the fixed design matrix
 #'  - `prefix_findex`: The index linking design matrix rows to  observations
 #'  - `prefix_fnindex`: The length of the index
 #'  - `prefix_fncol`: The number of columns (i.e effects) in the fixed effect
@@ -33,11 +33,11 @@ enw_formula_as_data_list <- function(formula, prefix,
   }
   data <- list()
   data[[paste_lab("fdesign")]] <- formula$fixed$design
-  data[[paste_lab("frows")]] <- nrow(formula$fixed$design)
+  data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
   data[[paste_lab("findex")]] <- formula$fixed$index
   data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
   data[[paste_lab("fncol")]] <-
-      ncol(formula$random$design) - as.numeric(drop_intercept)
+      ncol(formula$fixed$design) - as.numeric(drop_intercept)
   data[[paste_lab("rdesign")]] <- formula$random$design
   data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
   return(data)

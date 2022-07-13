@@ -25,20 +25,20 @@ data {
   array[n] int flat_obs; // obs stored as a flat vector
   array[t, g] int latest_obs; // latest obs for each snapshot group
   // Reference day model
-  int refp_nrow; // how many unique pmfs there are
+  int refp_fnrow; // how many unique pmfs there are
   array[s] int refp_findex; // how each date links to a pmf
   int refp_fncol; // number of effects to apply
-  matrix[refp_nrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
+  matrix[refp_fnrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
   int refp_rncol; // number of standard deviations to use for pooling
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; // Pooling pmf design matrix 
   int model_refp; // parametric distribution (0 = none, 1 = exp. 2 = lognormal, 2 = gamma)
   // Reporting day model
   int model_rep; // Reporting day model in use
   int rep_t; // how many reporting days are there (t + dmax - 1)
-  int rep_frows; // how many unique reporting days are there
+  int rep_fnrow; // how many unique reporting days are there
   array[g, rep_t] int rep_findex; // how each report date links to a sparse report effect
   int rep_fncol; // number of report day effects to apply
-  matrix[rep_frows, rep_fncol + 1] rep_fdesign; // design matrix for report dates
+  matrix[rep_fnrow, rep_fncol + 1] rep_fdesign; // design matrix for report dates
   int rep_rncol; // number of standard deviations to use for pooling for rds
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; // Pooling pmf design matrix 
   // Control parameters
@@ -82,11 +82,11 @@ parameters {
 }
 
 transformed parameters{
-  vector[refp_nrow] refp_mean;
-  vector[refp_nrow] refp_sd;
-  matrix[dmax, refp_nrow] pmfs; // sparse report distributions
-  matrix[dmax, refp_nrow] ref_lh; // sparse report logit hazards
-  vector[rep_frows] srdlh; // sparse report day logit hazards
+  vector[refp_fnrow] refp_mean;
+  vector[refp_fnrow] refp_sd;
+  matrix[dmax, refp_fnrow] pmfs; // sparse report distributions
+  matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  vector[rep_fnrow] srdlh; // sparse report day logit hazards
   array[g] vector[t] imp_obs; // Expected final observations
   real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
@@ -103,12 +103,12 @@ transformed parameters{
     }
     // calculate pmfs
     profile("transformed_delay_reference_date_pmfs") {
-    for (i in 1:refp_nrow) {
+    for (i in 1:refp_fnrow) {
       pmfs[, i] =
          discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp);
     }
     if (ref_as_p == 0) {
-      for (i in 1:refp_nrow) {
+      for (i in 1:refp_fnrow) {
         ref_lh[, i] = prob_to_hazard(pmfs[, i]);
         ref_lh[, i] = logit(ref_lh[, i]);
       }

@@ -1,4 +1,4 @@
-    for (i in 1:refp_nrow) {
+    for (i in 1:refp_fnrow) {
       int j = 0;
       for (k in 1:dmax) {
         j += is_nan(fabs(pmfs[k, i])) ? 1 : 0;
@@ -27,7 +27,7 @@
       }
     }
     int j = 0;
-    for (k in 1:rep_frows) {
+    for (k in 1:rep_fnrow) {
       j += is_nan(fabs(srdlh[k])) ? 1 : 0;
       j += is_inf(fabs(srdlh[k])) ? 1 : 0;
     }

@@ -16,7 +16,7 @@ label to use as a prefix.}
 A list defining the model formula. This includes:
 \itemize{
 \item \code{prefix_fdesign}: The fixed effects design matrix
-\item \code{prefix_frows}: The number of rows of the fixed design matrix
+\item \code{prefix_fnrow}: The number of rows of the fixed design matrix
 \item \code{prefix_findex}: The index linking design matrix rows to  observations
 \item \code{prefix_fnindex}: The length of the index
 \item \code{prefix_fncol}: The number of columns (i.e effects) in the fixed effect
