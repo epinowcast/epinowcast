@@ -78,7 +78,7 @@ parameters {
   vector<lower=0>[refp_rncol] refp_mean_beta_sd; // pooled modifiers to logmean
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; // pooled modifiers to logsd
   vector<lower=0>[rep_rncol] rep_beta_sd; // pooled modifiers to report date
-  real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
+  real<lower=0> sqrt_phi; // Overall dispersion by group
 }
 
 transformed parameters{
@@ -105,7 +105,8 @@ transformed parameters{
     profile("transformed_delay_reference_date_pmfs") {
     for (i in 1:refp_fnrow) {
       pmfs[, i] =
-         discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp);
+         discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
+         1);
     }
     if (ref_as_p == 0) {
       for (i in 1:refp_fnrow) {
@@ -135,7 +136,7 @@ transformed parameters{
   }
   }
   // transform phi to overdispersion scale
-  phi = inv_sqrt(sqrt_phi);
+  phi = inv_square(sqrt_phi);
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan

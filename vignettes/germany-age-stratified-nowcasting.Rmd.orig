@@ -88,7 +88,7 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 ## Shared reporting delay distribution 
 
-We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for in-chain parallisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
+We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for within-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
 
 ```{r, include = FALSE, message = FALSE}
 multithread_model <- enw_model(threads = TRUE)
