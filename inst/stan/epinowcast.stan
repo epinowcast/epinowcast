@@ -77,7 +77,7 @@ parameters {
   vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
   vector<lower=0>[dist ? neff_sds : 0] logsd_sd; // pooled modifiers to logsd
   vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
-  real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
+  real<lower=0> sqrt_phi; // Overall dispersion by group
 }
 
 transformed parameters{
@@ -132,7 +132,7 @@ transformed parameters{
   }
   }
   // transform phi to overdispersion scale
-  phi = inv_sqrt(sqrt_phi);
+  phi = inv_square(sqrt_phi);
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan

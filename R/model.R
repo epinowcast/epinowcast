@@ -225,7 +225,7 @@ enw_inits <- function(data) {
     ))
     init$logmean <- rep(init$logmean_int, data$npmfs)
     init$logsd <- rep(init$logsd_int, data$npmfs)
-    init$phi <- 1 / sqrt(init$sqrt_phi)
+    init$phi <- 1 / (init$sqrt_phi^2)
     # initialise reference date effects
     if (data$neffs > 0) {
       init$logmean_eff <- rnorm(data$neffs, 0, 0.01)
