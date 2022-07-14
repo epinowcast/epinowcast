@@ -44,6 +44,6 @@ test_that("enw_formula can handle random effects that are not factors", {
 })
 
 test_that("enw_formula can handle formulas that do not have sparse fixed
-           effects" {
+           effects", {
   expect_snapshot(enw_formula(~ 1, data[1:20, ], sparse = FALSE))
 })

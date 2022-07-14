@@ -19,3 +19,4 @@
 ^codemeta\.json$
 ^CONTRIBUTING\.md$
 ^inst/make_hexsticker\.R$
+^inst/scripts$

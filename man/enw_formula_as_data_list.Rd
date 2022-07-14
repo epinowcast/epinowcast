@@ -11,6 +11,10 @@ enw_formula_as_data_list(formula, prefix, drop_intercept = FALSE)
 
 \item{prefix}{A character string indicating variable
 label to use as a prefix.}
+
+\item{drop_intercept}{Logical, defaults to \code{FALSE}. Should the
+intercept be included as a fixed effect or excluded. This is used internally
+in model modules where an intercept must be present/absent.}
 }
 \value{
 A list defining the model formula. This includes:

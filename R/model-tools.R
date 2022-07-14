@@ -5,6 +5,10 @@
 #' @param prefix A character string indicating variable
 #' label to use as a prefix.
 #'
+#' @param drop_intercept Logical, defaults to `FALSE`. Should the
+#' intercept be included as a fixed effect or excluded. This is used internally
+#' in model modules where an intercept must be present/absent.
+#'
 #' @return A list defining the model formula. This includes:
 #'  - `prefix_fdesign`: The fixed effects design matrix
 #'  - `prefix_fnrow`: The number of rows of the fixed design matrix
@@ -103,7 +107,7 @@ enw_replace_priors <- function(priors, custom_priors) {
     ,
     .(variable, mean, sd)
   ]
-  priors <- rbind(priors, posteriors, fill = TRUE)
+  priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])
 }
 
