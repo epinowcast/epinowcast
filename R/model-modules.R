@@ -12,8 +12,8 @@
 #' @export
 #' @examples
 #' enw_reference(data = enw_example("preprocessed"))
-enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
-                          non_parametric = ~ 0, data) {
+enw_reference <- function(parametric = ~1, distribution = "lognormal",
+                          non_parametric = ~0, data) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
     parametric <- "~1"
@@ -39,7 +39,8 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
 
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
   pdata <- enw_formula_as_data_list(
-    pform, prefix = "refp", drop_intercept = TRUE
+    pform,
+    prefix = "refp", drop_intercept = TRUE
   )
   pdata$model_refp <- distribution
 
@@ -50,10 +51,12 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd"
     ),
-    description = c("Log mean intercept for parametric reference date delay",
+    description = c(
+      "Log mean intercept for parametric reference date delay",
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
-      "Standard deviation of scaled pooled parametric sd effects"),
+      "Standard deviation of scaled pooled parametric sd effects"
+    ),
     distribution = c("Normal", rep("Zero truncated normal", 3)),
     mean = c(1, 0.5, 0, 0),
     sd = 1
@@ -90,7 +93,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
       if (data$refp_rncol > 0) {
         init$refp_mean_beta_sd <- abs(rnorm(
           data$refp_rncol, priors$refp_mean_beta_sd_p[1],
-           priors$refp_mean_beta_sd_p[2] / 10
+          priors$refp_mean_beta_sd_p[2] / 10
         ))
         if (data$model_refp > 1) {
           init$refp_sd_beta_sd <- abs(rnorm(
@@ -99,7 +102,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
           ))
         }
       }
-    return(init)
+      return(init)
     }
     return(fn)
   }
@@ -115,8 +118,7 @@ enw_reference <- function(parametric = ~ 1, distribution = "lognormal",
 #' @export
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
-enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
-
+enw_report <- function(formula = ~0, structural = ~0, data) {
   if (!as_string_formula(structural) %in% "~0") {
     stop("The structural reporting model has not yet been implemented")
   }
@@ -127,7 +129,8 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
 
   form <- enw_formula(formula, data$metareport[[1]], sparse = TRUE)
   data_list <- enw_formula_as_data_list(
-    form, prefix = "rep", drop_intercept = TRUE
+    form,
+    prefix = "rep", drop_intercept = TRUE
   )
 
   # map report date effects to groups and times
@@ -163,9 +166,9 @@ enw_report <- function(formula = ~ 0, structural = ~ 0, data) {
       }
       if (data$rep_rncol > 0) {
         init$rep_beta_sd <- abs(rnorm(
-              data$rep_rncol, priors$rep_beta_sd_p[1],
-              priors$rep_beta_sd_p[2] / 10
-            ))
+          data$rep_rncol, priors$rep_beta_sd_p[1],
+          priors$rep_beta_sd_p[2] / 10
+        ))
       }
       return(init)
     }
@@ -192,7 +195,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 
   form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
   data <- enw_formula_as_data_list(
-    form, prefix = "exp", drop_intercept = order == 1
+    form,
+    prefix = "exp", drop_intercept = order == 1
   )
   data$exp_order <- order
 
@@ -203,7 +207,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
     variable = c("exp_beta_sd", "eobs_lsd"),
     description = c(
       "Standard deviation of scaled pooled expectation effects",
-      "Standard deviation for expected final observations"),
+      "Standard deviation for expected final observations"
+    ),
     distribution = c("Zero truncated normal", "Zero truncated normal"),
     mean = rep(0, 2),
     sd = rep(1, 2)
@@ -231,9 +236,9 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
       }
       if (data$exp_rncol > 0) {
         init$exp_beta_sd <- abs(rnorm(
-              data$exp_rncol, priors$exp_beta_sd_p[1],
-              priors$exp_beta_sd_p[2] / 10
-            ))
+          data$exp_rncol, priors$exp_beta_sd_p[1],
+          priors$exp_beta_sd_p[2] / 10
+        ))
       }
       return(init)
     }
@@ -251,19 +256,19 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @export
 #' @examples
 #' enw_missing(data = enw_example("preprocessed"))
-enw_missing <- function(formula = ~ 1, data) {
+enw_missing <- function(formula = ~1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("At least an intercept must be used if this module is in use.")
   }
   if (nrow(data$missing_reference[[1]]) == 0) {
     stop("A missingness model has been specified but data on  the proportion of
-          observations without reference dates is not available."
-        )
+          observations without reference dates is not available.")
   }
 
   form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
   data_list <- enw_formula_as_data_list(
-    form, prefix = "miss", drop_intercept = FALSE
+    form,
+    prefix = "miss", drop_intercept = FALSE
   )
   missing_reference <- data.table::copy(data$missing_reference[[1]])
   data.table::setorderv(missing_reference, c(".group", "report_date"))
@@ -281,13 +286,13 @@ enw_missing <- function(formula = ~ 1, data) {
   out$formula <- as_string_formula(formula)
   out$data <- data_list
   out$priors <- data.table::data.table(
-      variable = c("miss_beta_sd"),
-      description = c("Standard deviation of scaled pooled logit missing
+    variable = c("miss_beta_sd"),
+    description = c("Standard deviation of scaled pooled logit missing
         reference date effects"),
-      distribution = c("Zero truncated normal"),
-      mean = 0,
-      sd = 1
-    )
+    distribution = c("Zero truncated normal"),
+    mean = 0,
+    sd = 1
+  )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
@@ -300,9 +305,9 @@ enw_missing <- function(formula = ~ 1, data) {
       }
       if (data$miss_rncol > 0) {
         init$miss_beta_sd <- abs(rnorm(
-              data$miss_rncol, priors$miss_beta_sd_p[1],
-              priors$miss_beta_sd_p[2] / 10
-            ))
+          data$miss_rncol, priors$miss_beta_sd_p[1],
+          priors$miss_beta_sd_p[2] / 10
+        ))
       }
       return(init)
     }
@@ -405,7 +410,7 @@ enw_obs <- function(family = "negbin", data) {
         ))
         init$phi <- 1 / sqrt(init$sqrt_phi)
       }
-    return(init)
+      return(init)
     }
     return(fn)
   }

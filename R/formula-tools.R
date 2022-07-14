@@ -308,14 +308,14 @@ construct_rw <- function(rw, data) {
         "Requested grouping variable",
         rw$by, " is not present in the supplied data"
       )
-    } 
+    }
     if (length(unique(fdata[[rw$by]])) < 2) {
       message(
         "A grouped random walk using ", rw$by,
         " is not possible as this variable has fewer than 2 unique values."
       )
       rw$by <- NULL
-    }else{
+    } else {
       terms <- paste0(rw$by, ":", terms)
     }
   }
@@ -494,7 +494,7 @@ construct_re <- function(re, data) {
 #' enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 #'
 #' # Model defined without a sparse fixed effects design matrix
-#' enw_formula(~ 1, data[1:20, ])
+#' enw_formula(~1, data[1:20, ])
 enw_formula <- function(formula, data, sparse = TRUE) {
   data <- data.table::as.data.table(data)
 

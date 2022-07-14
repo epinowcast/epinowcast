@@ -26,7 +26,7 @@ enw_formula_as_data_list <- function(formula, prefix,
     stop(
       "formula must be an object of class enw_formula as produced using
        enw_formula"
-        )
+    )
   }
   paste_lab <- function(string, lab = prefix) {
     paste0(lab, "_", string)
@@ -37,7 +37,7 @@ enw_formula_as_data_list <- function(formula, prefix,
   data[[paste_lab("findex")]] <- formula$fixed$index
   data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
   data[[paste_lab("fncol")]] <-
-      ncol(formula$fixed$design) - as.numeric(drop_intercept)
+    ncol(formula$fixed$design) - as.numeric(drop_intercept)
   data[[paste_lab("rdesign")]] <- formula$random$design
   data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
   return(data)
@@ -99,8 +99,9 @@ enw_priors_as_data_list <- function(priors) {
 enw_replace_priors <- function(priors, custom_priors) {
   variables <- custom_priors$variable
   priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
-  custom_priors <- data.table::as.data.table(custom_priors)[,
-   .(variable, mean, sd)
+  custom_priors <- data.table::as.data.table(custom_priors)[
+    ,
+    .(variable, mean, sd)
   ]
   priors <- rbind(priors, posteriors, fill = TRUE)
   return(priors[])

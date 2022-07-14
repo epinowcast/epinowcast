@@ -45,36 +45,35 @@
 #' @importFrom purrr map transpose flatten walk
 #' @family epinowcast
 #' @export
-epinowcast <- function(
-    data,
-    reference = epinowcast::enw_reference(
-      parametric = ~ 1,
-      distribution = "lognormal",
-      non_parametric = ~ 0,
-      data = data
-    ),
-    report = epinowcast::enw_report(
-      formula = ~ 0,
-      structural = ~ 0,
-      data
-    ),
-    expectation = epinowcast::enw_expectation(
-      formula = ~ rw(day, .group),
-      order = 1,
-      data = data
-    ),
-    obs = epinowcast::enw_obs(family = "negbin", data = data),
-    fit = enw_fit_opts(
-      fit = epinowcast::enw_sample,
-      nowcast = TRUE, pp = FALSE,
-      likelihood = TRUE, debug = FALSE,
-      output_loglik = FALSE
-    ),
-    model = epinowcast::enw_model(),
-    priors,
-    ...
-) {
-
+epinowcast <- function(data,
+                       reference = epinowcast::enw_reference(
+                         parametric = ~1,
+                         distribution = "lognormal",
+                         non_parametric = ~0,
+                         data = data
+                       ),
+                       report = epinowcast::enw_report(
+                         formula = ~0,
+                         structural = ~0,
+                         data
+                       ),
+                       expectation = epinowcast::enw_expectation(
+                         formula = ~ rw(day, .group),
+                         order = 1,
+                         data = data
+                       ),
+                       obs = epinowcast::enw_obs(
+                        family = "negbin", data = data
+                       ),
+                       fit = enw_fit_opts(
+                         fit = epinowcast::enw_sample,
+                         nowcast = TRUE, pp = FALSE,
+                         likelihood = TRUE, debug = FALSE,
+                         output_loglik = FALSE
+                       ),
+                       model = epinowcast::enw_model(),
+                       priors,
+                       ...) {
   modules <- list(
     reference, report, expectation, obs, fit, ...
   )
@@ -85,12 +84,13 @@ epinowcast <- function(
   data_as_list <- purrr::flatten(modules$data)
 
   default_priors <- data.table::rbindlist(
-    modules$priors, fill = TRUE, use.names = TRUE
+    modules$priors,
+    fill = TRUE, use.names = TRUE
   )
 
   if (!missing(priors)) {
     priors <- enw_replace_priors(default_priors, priors)
-  }else {
+  } else {
     priors <- default_priors
   }
 
@@ -101,7 +101,7 @@ epinowcast <- function(
 
   if (is.null(data_as_list$model_missing)) {
     model_missing <- 0
-  }else {
+  } else {
     stop("The missingness model has not yet been implemented")
   }
 
@@ -118,9 +118,9 @@ epinowcast <- function(
 
   init_fn <- function(init_fns = init_fns) {
     init_inner_fn <- function() {
-        inits <- purrr::map(init_fns, do.call, args = list())
-        inits <- purrr::flatten(inits)
-        return(inits)
+      inits <- purrr::map(init_fns, do.call, args = list())
+      inits <- purrr::flatten(inits)
+      return(inits)
     }
     return(init_inner_fn)
   }
