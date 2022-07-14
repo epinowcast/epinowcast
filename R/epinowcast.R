@@ -15,7 +15,7 @@
 #'
 #' @param expectation The expectation model specification as defined using
 #' [enw_expectation()]. By default this is set to be highly flexible and thus
-#' weakly informed.
+#' weakly informed. Other options are not yet supported.
 #'
 #' @param obs The observation model as defined by [enw_obs()].
 #' Observations are also processed within this function for use in modelling.
@@ -105,7 +105,7 @@ epinowcast <- function(data,
     stop("The missingness model has not yet been implemented")
   }
 
-  if (!expectation$formula %in% "~rw(day, .group)") {
+  if (!expectation$formula$expectation %in% "~rw(day, .group)") {
     stop("A flexible expectation model has not yet been implemented")
   }
 

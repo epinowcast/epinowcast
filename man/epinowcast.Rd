@@ -30,7 +30,7 @@ specification as defined using \code{\link[=enw_report]{enw_report()}}.}
 
 \item{expectation}{The expectation model specification as defined using
 \code{\link[=enw_expectation]{enw_expectation()}}. By default this is set to be highly flexible and thus
-weakly informed.}
+weakly informed. Other options are not yet supported.}
 
 \item{obs}{The observation model as defined by \code{\link[=enw_obs]{enw_obs()}}.
 Observations are also processed within this function for use in modelling.}

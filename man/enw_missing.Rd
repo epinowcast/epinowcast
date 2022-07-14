@@ -7,14 +7,18 @@
 enw_missing(formula = ~1, data)
 }
 \arguments{
-\item{formula}{A model formula that may use standard fixed
-effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), and random walks
-defined using the \code{\link[=rw]{rw()}} helper function.}
+\item{formula}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
+the missing data proportion on the logit scale by reference date. This can
+use features defined by reference date as defined in \code{metareference} as
+produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
 \value{
-A list as required by stan.
+A list containing the supplied formulas, data passed into a list
+describing the models, a \code{data.frame} describing the priors used, and a
+function that takes the output data and priors and returns a function that
+can be used to sample from a tightened version of the prior distribution.
 }
 \description{
 Missing reference data model module

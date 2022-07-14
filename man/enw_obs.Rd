@@ -7,6 +7,10 @@
 enw_obs(family = "negbin", data)
 }
 \arguments{
+\item{family}{A character string describing the observation model to
+use in the likelihood. By default this is a negative binomial ("negbin")
+with support for additional observation models being planned.}
+
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
 \value{

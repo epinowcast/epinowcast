@@ -12,16 +12,33 @@ enw_reference(
 )
 }
 \arguments{
-\item{parametric}{DESCRIPTION}
+\item{parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
+the parametric reference date delay model. This can use features
+defined by report date as defined in \code{metareference} as produced by
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that this formula will be applied to all
+summary statistics of the chosen parametric distribution but each summary
+parameter will have separate effects. Use \code{~ 0} to not use a parametric
+model (note not recommended until the \code{non_parametric} model is implemented).}
 
-\item{distribution}{DESCRIPTION}
+\item{distribution}{A character vector describing the parametric delay
+distribution to use. Current options are: "none", "lognormal", "gamma",
+and "exponential" with the default being "lognormal".}
 
-\item{non_parametric}{DESCRIPTION}
+\item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
+describing the non-parametric logit hazard model. This can use features
+defined by reference date and by delay. It draws on a linked \code{data.frame}
+using \code{metareference} and \code{metadelay} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
+When an effect per delay is specified this approximates the cox proportional
+hazard model in discrete time with a single strata. Note that this model is
+currently not available for users.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
 \value{
-A list as required by stan.
+A list containing the supplied formulas, data passed into a list
+describing the models, a \code{data.frame} describing the priors used, and a
+function that takes the output data and priors and returns a function that
+can be used to sample from a tightened version of the prior distribution.
 }
 \description{
 Reference date logit hazard reporting  model module

@@ -40,7 +40,9 @@ by \code{\link[=epinowcast]{epinowcast()}}. By default this will be \code{\link[
 options should be used.}
 }
 \value{
-A list as required by stan.
+A list contaning the specified sampler function, data as a list
+specifying the fitting options to use, and additional arguments to pass
+to the sampler function when it is called.
 }
 \description{
 Format model fitting options for use with stan

@@ -1,12 +1,30 @@
 #' Reference date logit hazard reporting  model module
 #'
-#' @param parametric DESCRIPTION
+#' @param parametric A formula (as implemented in [enw_formula()]) describing
+#' the parametric reference date delay model. This can use features
+#' defined by report date as defined in `metareference` as produced by
+#' [enw_preprocess_data()]. Note that this formula will be applied to all
+#' summary statistics of the chosen parametric distribution but each summary
+#' parameter will have separate effects. Use `~ 0` to not use a parametric
+#' model (note not recommended until the `non_parametric` model is implemented).
 #'
-#' @param distribution DESCRIPTION
+#' @param distribution A character vector describing the parametric delay
+#' distribution to use. Current options are: "none", "lognormal", "gamma",
+#' and "exponential" with the default being "lognormal".
 #'
-#' @param non_parametric DESCRIPTION
+#' @param non_parametric A formula (as implemented in [enw_formula()])
+#' describing the non-parametric logit hazard model. This can use features
+#' defined by reference date and by delay. It draws on a linked `data.frame`
+#' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
+#' When an effect per delay is specified this approximates the cox proportional
+#' hazard model in discrete time with a single strata. Note that this model is
+#' currently not available for users.
 #'
-#' @return A list as required by stan.
+#' @return A list containing the supplied formulas, data passed into a list
+#' describing the models, a `data.frame` describing the priors used, and a
+#' function that takes the output data and priors and returns a function that
+#' can be used to sample from a tightened version of the prior distribution.
+#'
 #' @inheritParams enw_obs
 #' @family modelmodules
 #' @export
@@ -111,23 +129,42 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
 
 #' Report date logit hazard reporting  model module
 #'
-#' @return A list as required by stan.
+#' @param non_parametric A formula (as implemented in [enw_formula()])
+#' describing the non-parametric logit hazard model. This can use features
+#' defined by report date as defined in `metareport` as produced by
+#' [enw_preprocess_data()]. Note that the intercept for this model is set to 0
+#' as it should be used for specifying report date related hazards vs time
+#' invariant hazards which should instead be modelled using the
+#' `non_parametric` argument of [enw_reference()]
+#'
+#' @param structural A formula with fixed effects and using only binary
+#' variables, and factors describing the known reporting structure (i.e weekday
+#' only reporting). The base case (i.e the first factor entry) should describe
+#' the dates for which reporting is possible. Internally dates with a non-zero
+#' element in the design matrix have their hazard set to 0. This can use
+#' features defined by report date as defined in `metareport` as produced by
+#' [enw_preprocess_data()]. Note that the intercept for this model is set to 0
+#' in order to allow all dates without other structural reasons to not be
+#' reported to be reported. Note that this feature is not yet available to
+#' users.
+#'
+#' @inherit enw_reference return
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
 #' @export
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
-enw_report <- function(formula = ~0, structural = ~0, data) {
+enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   if (!as_string_formula(structural) %in% "~0") {
     stop("The structural reporting model has not yet been implemented")
   }
 
-  if (as_string_formula(formula) %in% "~0") {
-    formula <- ~1
+  if (as_string_formula(non_parametric) %in% "~0") {
+    non_parametric <- ~1
   }
 
-  form <- enw_formula(formula, data$metareport[[1]], sparse = TRUE)
+  form <- enw_formula(non_parametric, data$metareport[[1]], sparse = TRUE)
   data_list <- enw_formula_as_data_list(
     form,
     prefix = "rep", drop_intercept = TRUE
@@ -145,7 +182,7 @@ enw_report <- function(formula = ~0, structural = ~0, data) {
   data_list$model_rep <- as.numeric(!as_string_formula(formula) %in% "1")
 
   out <- list()
-  out$formula <- form$formula
+  out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
     variable = c("rep_beta_sd"),
@@ -179,9 +216,20 @@ enw_report <- function(formula = ~0, structural = ~0, data) {
 
 #' Expectation model module
 #'
-#' @return A list as required by stan.
+#' @param formula A formula (as implemented in [enw_formula()]) describing
+#' the generative process used for expected incidence. This can use features
+#' defined by reference date as defined in `metareference` as produced by
+#' [enw_preprocess_data()]. By default this is set to use a daily group
+#' specific random walk. Note that the daily group specific random walk is
+#' currently the only option supported by [epinowcast()].
+#'
+#' @param order Integer, defaults to 1. The order of the expectation process
+#' with 1 being a simple log scale generative process, 2 being a log scale
+#' generative process where each time point is offset by the log count from
+#' previous time points.
+#'
+#' @inherit enw_report return
 #' @inheritParams enw_obs
-#' @inheritParams enw_formula
 #' @family modelmodules
 #' @export
 #' @examples
@@ -201,7 +249,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
   data$exp_order <- order
 
   out <- list()
-  out$formula <- form$formula
+  out$formula$expectation <- form$formula
   out$data <- data
   out$priors <- data.table::data.table(
     variable = c("exp_beta_sd", "eobs_lsd"),
@@ -249,7 +297,12 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 
 #' Missing reference data model module
 #'
-#' @return A list as required by stan.
+#' @param formula A formula (as implemented in [enw_formula()]) describing
+#' the missing data proportion on the logit scale by reference date. This can
+#' use features defined by reference date as defined in `metareference` as
+#' produced by [enw_preprocess_data()].
+#'
+#' @inherit enw_reference return
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
@@ -318,6 +371,10 @@ enw_missing <- function(formula = ~1, data) {
 
 #' Setup observation model and data
 #'
+#' @param family A character string describing the observation model to 
+#' use in the likelihood. By default this is a negative binomial ("negbin")
+#' with support for additional observation models being planned.
+#' 
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -443,7 +500,10 @@ enw_obs <- function(family = "negbin", data) {
 #' by [epinowcast()]. By default this will be [enw_sample()] and so `cmdstanr`
 #' options should be used.
 #'
-#' @return A list as required by stan.
+#' @return A list contaning the specified sampler function, data as a list
+#' specifying the fitting options to use, and additional arguments to pass
+#' to the sampler function when it is called.
+#'
 #' @importFrom data.table fcase
 #' @family modelmodules
 #' @export

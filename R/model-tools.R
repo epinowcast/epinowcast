@@ -61,7 +61,7 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- data.table::copy(priors)
+  priors <- data.table::as.data.table(priors)
   priors[, variable := paste0(variable, "_p")]
   priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
@@ -189,9 +189,12 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 
 #' Fit a CmdStan model using NUTS
 #'
-#' @param data A list of data as produced by [enw_as_data_list()].
+#' @param data A list of data as produced by model modules (for example
+#' [enw_expectation()], [enw_obs()], etc.) and as required for use the
+#' `model` being used.
 #'
-#' @param model A `cmdstanr` model object as loaded by [enw_model()].
+#' @param model A `cmdstanr` model object as loaded by [enw_model()] or as
+#' supplied by the user.
 #'
 #' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
 #' be returned as a `data.frame`.

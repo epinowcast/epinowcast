@@ -7,9 +7,12 @@
 enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 }
 \arguments{
-\item{data}{A list of data as produced by \code{\link[=enw_as_data_list]{enw_as_data_list()}}.}
+\item{data}{A list of data as produced by model modules (for example
+\code{\link[=enw_expectation]{enw_expectation()}}, \code{\link[=enw_obs]{enw_obs()}}, etc.) and as required for use the
+\code{model} being used.}
 
-\item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
+\item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}} or as
+supplied by the user.}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
 be returned as a \code{data.frame}.}
