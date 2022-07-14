@@ -10,13 +10,13 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   // Find final observed/imputed expected observation
   tar_obs = imp_obs[g][t];
   // allocate reference day effects
-  if (rep_h) {
+  if (ref_p) {
     ref_lh_i = ref_lh[1:l, dpmfs[i]];
   }else{
     ref_lh_i = rep_vector(0, l);
   }
   // allocate report day effects
-  if (ref_p) {
+  if (rep_h) {
     rdlh = srdlh[rdlurd[g, t:(t + l - 1)]];
   }else{
     rdlh = rep_vector(0, l);

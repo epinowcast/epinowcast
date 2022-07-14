@@ -63,7 +63,7 @@ transformed data{
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
   // effects
-  int ref_as_p = (model_rep > 0 || model_refp) ? 0 : 1; 
+  int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
 }
 
 parameters {
