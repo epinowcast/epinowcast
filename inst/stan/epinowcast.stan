@@ -103,7 +103,7 @@ transformed parameters{
     // calculate pmfs
     profile("transformed_delay_reference_date_pmfs") {
     for (i in 1:npmfs) {
-      pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist);
+      pmfs[, i] = discretised_reporting_prob(logmean[i], logsd[i], dmax, dist, 1);
     }
     if (ref_as_p == 0) {
       for (i in 1:npmfs) {
