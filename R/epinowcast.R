@@ -73,7 +73,7 @@
 #'   latest_obs, remove_days = 40, include_days = 20
 #' )
 #' # Preprocess observations (note this maximum delay is likely too short)
-#' pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
+#' pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 10)
 #' # Fit the default nowcast model and produce a nowcast
 #' # Note that we have reduced samples for this example to reduce runtimes
 #' nowcast <- epinowcast(pobs,
