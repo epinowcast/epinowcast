@@ -726,13 +726,6 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-#'
-#' # Preprocess all data
-#' pobs_all <- enw_preprocess_data(
-#'   germany_covid19_hosp,
-#'   by = c("location", "age_group")
-#' )
-#' pobs_all
 enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
                                 set_negatives_to_zero = TRUE) {
   obs <- check_dates(obs)

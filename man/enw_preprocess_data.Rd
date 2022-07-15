@@ -86,13 +86,6 @@ nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
 pobs
-
-# Preprocess all data
-pobs_all <- enw_preprocess_data(
-  germany_covid19_hosp,
-  by = c("location", "age_group")
-)
-pobs_all
 }
 \seealso{
 Preprocessing functions
