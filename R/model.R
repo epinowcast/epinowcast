@@ -287,6 +287,11 @@ enw_inits <- function(data) {
 #' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
 #' For more on profiling see the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
 #'
+#' @param stanc_options A list of options to pass to the `stanc_options` of
+#' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
+#' users may wish to pass optimisation flags for example.See the documentation
+#' for [cmdstanr::cmdstan_model()] for further details.
+#'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
 #' @return A `cmdstanr` model.
