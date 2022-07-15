@@ -68,8 +68,10 @@ case studies for example model specifications for different tasks.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# Load epinowcast and data.table
+# Load data.table and ggplot2
 library(data.table)
+library(ggplot2)
+
 # Use 2 cores
 options(mc.cores = 2)
 # Load and filter germany hospitalisations
@@ -107,6 +109,10 @@ nowcast <- epinowcast(pobs,
 nowcast
 # plot the nowcast vs latest available observations
 plot(nowcast, latest_obs = latest_obs)
+
+# plot posterior predictions for the delay distribution by date
+plot(nowcast, type = "posterior") +
+ facet_wrap(vars(reference_date), scale = "free")
 \dontshow{\}) # examplesIf}
 }
 \seealso{

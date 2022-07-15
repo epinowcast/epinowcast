@@ -1,6 +1,7 @@
-# Load epinowcast and data.table
+# Load packages
 library(epinowcast)
 library(data.table)
+library(ggplot2)
 
 # Use 2 cores
 options(mc.cores = 2)
@@ -45,3 +46,7 @@ nowcast
 
 # plot the nowcast vs latest available observations
 plot(nowcast, latest_obs = latest_obs)
+
+# posterior predictions
+plot(nowcast, type = "posterior") +
+  facet_wrap(vars(reference_date), scale = "free")

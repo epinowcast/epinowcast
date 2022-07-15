@@ -47,3 +47,9 @@ test_that("enw_formula can handle formulas that do not have sparse fixed
            effects", {
   expect_snapshot(enw_formula(~ 1, data[1:20, ], sparse = FALSE))
 })
+
+test_that("enw_formula can handle complex combined formulas", {
+  expect_snapshot(
+    enw_formula(~ 1 + disp +  (1 + gear | cyl) + (0 + wt | am), mtcars)
+   )
+})

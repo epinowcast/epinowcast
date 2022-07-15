@@ -46,8 +46,10 @@
 #' @family epinowcast
 #' @export
 #' @examplesIf interactive()
-#' # Load epinowcast and data.table
+#' # Load data.table and ggplot2
 #' library(data.table)
+#' library(ggplot2)
+#' 
 #' # Use 2 cores
 #' options(mc.cores = 2)
 #' # Load and filter germany hospitalisations
@@ -85,6 +87,10 @@
 #' nowcast
 #' # plot the nowcast vs latest available observations
 #' plot(nowcast, latest_obs = latest_obs)
+#' 
+#' # plot posterior predictions for the delay distribution by date
+#' plot(nowcast, type = "posterior") +
+#'  facet_wrap(vars(reference_date), scale = "free")
 epinowcast <- function(data,
                        reference = epinowcast::enw_reference(
                          parametric = ~1,
