@@ -15,6 +15,7 @@ This is a major release and contains multiple breaking changes. If needing the o
 * Support for preprocessing observations with missing reference dates has been added along with a new data object returned by `enw_preprocess_data()` that highlights this information to the user (alternatively can be accessed by users using `enw_missing_reference()`). In addition, these missing observations have been setup to be passed to stan in order to allow their use in modelling. This feature is in preparation of adding full support for missing observations (see [#43](https://github.com/epiforecasts/epinowcast/issues/43)). See 
 [#106](https://github.com/epiforecasts/epinowcast/pull/106) by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs).
 * The discretised reporting probability function has been extended to handle delays beyond the maximum delay in three different ways: ignore, add to maximum, or normalize. The nowcasting model now uses "add to maximum" instead of "normalize". See [#113](https://github.com/epiforecasts/epinowcast/pull/113) by [@adrian-lison](https://github.com/adrian-lison).
+* Fixed an issue (#105) with `cmdstan 2.30.0` where passing optimisation flags to `stanc_options` by default was causing a compilation error by not passing these flags by default. See #117 by @sbfnk and @seabbs.
 
 ## Model
 

@@ -191,60 +191,82 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
   return(list(model = main_model, include_paths = include_paths_no_profile))
 }
 
-#' Fit a CmdStan model using NUTS
+#' Load and compile the nowcasting model
 #'
-#' @param data A list of data as produced by model modules (for example
-#' [enw_expectation()], [enw_obs()], etc.) and as required for use the
-#' `model` being used.
+#' @param model A character string indicating the path to the model.
+#' If not supplied the package default model is used.
 #'
-#' @param model A `cmdstanr` model object as loaded by [enw_model()] or as
-#' supplied by the user.
+#' @param include A character string specifying the path to any stan
+#' files to include in the model. If missing the package default is used.
 #'
-#' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
-#' be returned as a `data.frame`.
+#' @param compile Logical, defaults to `TRUE`. Should the model
+#' be loaded and compiled using [cmdstanr::cmdstan_model()].
 #'
-#' @param ... Additional parameters passed to the `sample` method of `cmdstanr`.
+#' @param threads Logical, defaults to `FALSE`. Should the model compile with
+#' support for multi-thread support in chain. Note that this requires the use of
+#' the `threads_per_chain` argument when model fitting using [enw_sample()],
+#' and [epinowcast()].
 #'
-#' @return A `data.frame` containing the `cmdstanr` fit, the input data, the
-#' fitting arguments, and optionally summary diagnostics.
+#' @param verbose Logical, defaults to `TRUE`. Should verbose
+#' messages be shown.
+#'
+#' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
+#' For more on profiling see the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
+#'
+#' @param stanc_options A list of options to pass to the `stanc_options` of
+#' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
+#' users may wish to pass optimisation flags for example.See the documentation
+#' for [cmdstanr::cmdstan_model()] for further details.
+#'
+#' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
+#'
+#' @return A `cmdstanr` model.
 #'
 #' @family modeltools
 #' @export
 #' @importFrom cmdstanr cmdstan_model
-#' @importFrom posterior rhat
-enw_sample <- function(data, model = epinowcast::enw_model(),
-                       diagnostics = TRUE, ...) {
-  fit <- model$sample(data = data, ...)
-
-  out <- data.table(
-    fit = list(fit),
-    data = list(data),
-    fit_args = list(list(...))
-  )
-
-  if (diagnostics) {
-    diag <- fit$sampler_diagnostics(format = "df")
-    diagnostics <- data.table(
-      samples = nrow(diag),
-      max_rhat = round(max(
-        fit$summary(
-          variables = NULL, posterior::rhat,
-          .args = list(na.rm = TRUE)
-        )$`posterior::rhat`,
-        na.rm = TRUE
-      ), 2),
-      divergent_transitions = sum(diag$divergent__),
-      per_divergent_transitions = sum(diag$divergent__) / nrow(diag),
-      max_treedepth = max(diag$treedepth__)
-    )
-    diagnostics[, no_at_max_treedepth := sum(diag$treedepth__ == max_treedepth)]
-    diagnostics[, per_at_max_treedepth := no_at_max_treedepth / nrow(diag)]
-    out <- cbind(out, diagnostics)
-
-    timing <- round(fit$time()$total, 1)
-    out[, run_time := timing]
+#' @examplesIf interactive()
+#' mod <- enw_model()
+enw_model <- function(model, include, compile = TRUE,
+                      threads = FALSE, profile = FALSE,
+                      stanc_options = list(), verbose = TRUE, ...) {
+  if (missing(model)) {
+    model <- "stan/epinowcast.stan"
+    model <- system.file(model, package = "epinowcast")
   }
-  return(out[])
+  if (missing(include)) {
+    include <- system.file("stan", package = "epinowcast")
+  }
+
+  if (!profile) {
+    stan_no_profile <- write_stan_files_no_profile(model, include)
+    model <- stan_no_profile$model
+    include <- stan_no_profile$include_paths
+  }
+
+  if (compile) {
+    if (verbose) {
+      model <- cmdstanr::cmdstan_model(model,
+        include_paths = include,
+        stanc_options = stanc_options,
+        cpp_options = list(
+          stan_threads = threads
+        ),
+        ...
+      )
+    } else {
+      suppressMessages(
+        model <- cmdstanr::cmdstan_model(model,
+          include_paths = include,
+          stanc_options = stanc_options,
+          cpp_options = list(
+            stan_threads = threads
+          ), ...
+        )
+      )
+    }
+  }
+  return(model)
 }
 
 #' Load and compile the nowcasting model

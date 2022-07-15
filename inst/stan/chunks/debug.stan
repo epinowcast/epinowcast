@@ -1,8 +1,8 @@
     for (i in 1:refp_fnrow) {
       int j = 0;
       for (k in 1:dmax) {
-        j += is_nan(fabs(pmfs[k, i])) ? 1 : 0;
-        j += is_inf(fabs(pmfs[k, i])) ? 1 : 0;
+        j += is_nan(abs(pmfs[k, i])) ? 1 : 0;
+        j += is_inf(abs(pmfs[k, i])) ? 1 : 0;
       }
       j += phi <= 1e-3 ? 1 : 0;
       if (j) {
@@ -27,9 +27,15 @@
       }
     }
     int j = 0;
+<<<<<<< HEAD
     for (k in 1:rep_fnrow) {
       j += is_nan(fabs(srdlh[k])) ? 1 : 0;
       j += is_inf(fabs(srdlh[k])) ? 1 : 0;
+=======
+    for (k in 1:urds) {
+      j += is_nan(abs(srdlh[k])) ? 1 : 0;
+      j += is_inf(abs(srdlh[k])) ? 1 : 0;
+>>>>>>> develop
     }
     if (j) {
       print("Hazard effects on report date");
