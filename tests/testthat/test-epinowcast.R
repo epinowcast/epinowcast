@@ -97,7 +97,7 @@ test_that("epinowcast can fit a reporting model with a random walk for the week
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
     model = model
