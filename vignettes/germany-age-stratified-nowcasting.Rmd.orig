@@ -101,13 +101,15 @@ multithread_model <- enw_model(threads = TRUE)
 Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
 ```{r}
+fit <- enw_fit_opts(
+  save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
+  chains = 2, threads_per_chain = threads, iter_sampling = 500,
+  iter_warmup = 250, show_messages = FALSE, refresh = 0
+)
+
 nowcast <- epinowcast(pobs,
+  fit = fit
   model = multithread_model,
-  save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
 )
 ```
 
@@ -130,14 +132,15 @@ plot(nowcast, type = "posterior") +
 As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
-dow_report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport)
+report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
-To speed up model fitting we make use of posterior information from the previous model (with inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
+To speed up model fitting we make use of posterior information from the previous model for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
 
 ```{r}
-priors <- enw_posterior_as_prior(
-  nowcast, variables = c("logmean_int", "logsd_int", "sqrt_phi"), scale = 5
+priors <- summary(
+  nowcast, type = "fit",
+  variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
 priors
 ```
@@ -146,14 +149,10 @@ We now repeat the nowcasting step with the day of the week reporting model inclu
 
 ```{r}
 dow_nowcast <- epinowcast(pobs,
+  report = report_module_dow,
+  fit = fit
   model = multithread_model,
-  report_effects = dow_report_effects,
-  priors = priors,
-  save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  priors = priors
 )
 ```
 
@@ -169,22 +168,18 @@ plot(dow_nowcast, latest_obs = latest_nat_germany) +
 It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).
 
 ```{r}
-age_reference_effects <- enw_formula(~ 1 + (1 | age_group), pobs$metareference)
+reference_module_age <- enw_reference(~ 1 + (1 | age_group), data = pobs)
 ```
 
 We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.
 
 ```{r}
 age_nowcast <- epinowcast(pobs,
+  reference = reference_module_age,
+  report = report_module_dow,
+  fit = fit
   model = multithread_model,
-  reference_effects = age_reference_effects,
-  report_effects = dow_report_effects,
-  priors = priors,
-  save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  priors = priors
 )
 ```
 
@@ -200,25 +195,20 @@ plot(age_nowcast, latest_obs = latest_nat_germany) +
 It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.
 
 ```{r}
-week_age_reference_effects <- enw_formula(
-  ~ 1 + (1 | age_group) + rw(week), pobs$metareference[[1]]
+reference_module_age_week <- enw_reference(
+  ~ 1 + (1 | age_group) + rw(week), data = pobs
 )
 ```
 
 As before we fit the nowcasting model,
 
 ```{r}
-options(mc.cores = 2)
 week_nowcast <- epinowcast(pobs,
+  reference = reference_module_age_week,
+  report = report_module_dow,
+  fit = fit
   model = multithread_model,
-  reference_effects = week_age_reference_effects,
-  report_effects = dow_report_effects,
-  priors = priors,
-  save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  priors = priors
 )
 ```
 
@@ -234,8 +224,8 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 As a final hierarchical model it makes sense to explore whether there is  evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.
 
 ```{r}
-week_by_age_reference_effects <- enw_formula(
-  ~ 1 + (1 | age_group) + rw(week, age_group), pobs$metareference[[1]]
+reference_module_week_by_age <- enw_reference(
+  ~ 1 + (1 | age_group) + rw(week, by = age_group), data = pobs
 )
 ```
 
@@ -243,16 +233,11 @@ We can now fit this model as before (note that this model is quite complex and s
 
 ```{r}
 age_week_nowcast <- epinowcast(pobs,
+  reference = reference_module_week_by_age,
+  report = report_module_dow,
+  fit = fit
   model = multithread_model,
-  reference_effects = week_by_age_reference_effects,
-  report_effects = dow_report_effects,
-  priors = priors,
-  save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  adapt_delta = 0.95,
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  priors = priors
 )
 ```
 
@@ -275,9 +260,9 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
   pobs_ind <- enw_preprocess_data(obs, max_delay = max_delay)
 
   nowcast <- epinowcast(
-    pobs_ind,
-    reference_effects = enw_formula(~ rw(week), pobs_ind$metareference[[1]]),
-    report_effects = enw_formula(~ (1 | day_of_week), pobs_ind$metareport[[1]]),
+    data = pobs_ind,
+    reference = enw_reference(~ rw(week), data = pobs_ind),
+    report = enw_report(~ (1 | day_of_week), data = pobs_ind),
      ...
   )
 
@@ -297,13 +282,9 @@ options(mc.cores = 2)
 independent_nowcast <- map(
   split(retro_nat_germany, by = "age_group"),
   independent_epinowcast,
-  model = multithread_model,
-  priors = priors,
-  save_warmup = FALSE,
-  output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  fit = fit,
+  model = multithread_model
+  priors = priors
 )
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
