@@ -27,15 +27,9 @@
       }
     }
     int j = 0;
-<<<<<<< HEAD
-    for (k in 1:rep_fnrow) {
-      j += is_nan(fabs(srdlh[k])) ? 1 : 0;
-      j += is_inf(fabs(srdlh[k])) ? 1 : 0;
-=======
     for (k in 1:urds) {
       j += is_nan(abs(srdlh[k])) ? 1 : 0;
       j += is_inf(abs(srdlh[k])) ? 1 : 0;
->>>>>>> develop
     }
     if (j) {
       print("Hazard effects on report date");
