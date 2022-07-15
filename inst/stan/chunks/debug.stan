@@ -27,7 +27,7 @@
       }
     }
     int j = 0;
-    for (k in 1:urds) {
+    for (k in 1:rep_fnrow) {
       j += is_nan(abs(srdlh[k])) ? 1 : 0;
       j += is_inf(abs(srdlh[k])) ? 1 : 0;
     }

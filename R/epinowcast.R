@@ -104,7 +104,7 @@ epinowcast <- function(data,
                          data = data
                        ),
                        report = epinowcast::enw_report(
-                         formula = ~0,
+                         non_parametric = ~0,
                          structural = ~0,
                          data
                        ),
