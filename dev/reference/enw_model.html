@@ -86,7 +86,7 @@
 <span>  compile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  threads <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  profile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  stanc_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"O1"</span><span class="op">)</span>,</span>
+<span>  stanc_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -123,8 +123,9 @@ For more on profiling see the <a href="https://mc-stan.org/cmdstanr/articles/pro
 
 <dt>stanc_options</dt>
 <dd><p>A list of options to pass to the <code>stanc_options</code> of
-<code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code>. By default "01" is passed which specifies simple
-optimisations should be done by the prior to compilation.</p></dd>
+<code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code>. By default nothing is passed but potentially
+users may wish to pass optimisation flags for example.See the documentation
+for <code><a href="https://mc-stan.org/cmdstanr/reference/cmdstan_model.html" class="external-link">cmdstanr::cmdstan_model()</a></code> for further details.</p></dd>
 
 
 <dt>verbose</dt>
