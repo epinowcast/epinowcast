@@ -371,10 +371,10 @@ enw_missing <- function(formula = ~1, data) {
 
 #' Setup observation model and data
 #'
-#' @param family A character string describing the observation model to 
+#' @param family A character string describing the observation model to
 #' use in the likelihood. By default this is a negative binomial ("negbin")
 #' with support for additional observation models being planned.
-#' 
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -477,7 +477,7 @@ enw_obs <- function(family = "negbin", data) {
 #' Format model fitting options for use with stan
 #'
 #' @param sampler A function that creates an object that be used to extract
-#' posterior samples from the specfied model. By default this is [enw_sample()]
+#' posterior samples from the specified model. By default this is [enw_sample()]
 #' which makes use of [cmdstanr::sample()].
 #'
 #' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
@@ -500,7 +500,7 @@ enw_obs <- function(family = "negbin", data) {
 #' by [epinowcast()]. By default this will be [enw_sample()] and so `cmdstanr`
 #' options should be used.
 #'
-#' @return A list contaning the specified sampler function, data as a list
+#' @return A list containing the specified sampler function, data as a list
 #' specifying the fitting options to use, and additional arguments to pass
 #' to the sampler function when it is called.
 #'

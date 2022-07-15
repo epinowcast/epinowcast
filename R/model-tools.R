@@ -73,7 +73,7 @@ enw_priors_as_data_list <- function(priors) {
   return(priors)
 }
 
-#' Replace default priors with user specfied priors
+#' Replace default priors with user specified priors
 #'
 #' This function is used internally by [epinowcast]() to replace
 #' default model priors with users specified ones (restricted to

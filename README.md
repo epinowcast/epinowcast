@@ -166,7 +166,7 @@ pobs
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 ```
 
-Construct a parameric lognormal intercept only model for the date of
+Construct a parametric lognormal intercept only model for the date of
 reference using the metadata produced by `enw_preprocess_data()`. Note
 that `epinowcast` uses a sparse design matrix for parametric delay
 distributions to reduce runtimes so the design matrix shows only unique

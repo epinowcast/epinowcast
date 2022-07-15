@@ -90,15 +90,14 @@ test_that("epinowcast can fit a reporting model with a day of the week random
 })
 
 test_that("epinowcast can fit a reporting model with a random walk for the week
-          of date of reference and a day of week random effect", {
+          of date of reference", {
   skip_on_cran()
   nowcast <- suppressMessages(epinowcast(pobs,
     reference = enw_reference(~ rw(week), data = pobs),
-    report = enw_report(~ (1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 250, iter_sampling = 500,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
     model = model
@@ -113,5 +112,5 @@ test_that("epinowcast can fit a reporting model with a random walk for the week
     nowcast$fit[[1]]$summary(c("refp_mean_int", "refp_sd_int", "sqrt_phi")), NA
   )
   expect_error(nowcast$fit[[1]]$summary(c("refp_beta", "refp_beta_sd")), NA)
-  expect_error(nowcast$fit[[1]]$summary(c("rep_beta", "rep_beta_sd")), NA)
+  expect_error(nowcast$fit[[1]]$summary(c("rep_beta", "rep_beta_sd")))
 })

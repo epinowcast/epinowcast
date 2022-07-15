@@ -14,7 +14,7 @@ defined using the \code{\link[=rw]{rw()}} helper function.}
 \item{data}{A \code{data.frame} of observations. It must include all
 variables used in the supplied formula.}
 
-\item{sparse}{Logical, defaults to  \code{TRUE}. Should the fixed effects desig
+\item{sparse}{Logical, defaults to  \code{TRUE}. Should the fixed effects design
 matrix be sparely defined.}
 }
 \value{

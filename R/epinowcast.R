@@ -3,7 +3,7 @@
 #' @description Provides a user friendly interface around package functionality
 #' to produce a nowcast from observed preprocessed data, and a series of user
 #' defined models. By default a model that assumes a fixed parametric reporting
-#' distributin with a flexible expectation model is used. Explore the
+#' distribution with a flexible expectation model is used. Explore the
 #' individual model components for additional documentation and see the package
 #' case studies for example model specifications for different tasks.
 #'
@@ -25,7 +25,7 @@
 #' whether or now a nowcast should be used, etc. See [enw_fit_opts()] for
 #' further details.
 #'
-#' @param model The model to usee witin `fit`. By default this uses
+#' @param model The model to use within `fit`. By default this uses
 #' [enw_model()].
 #'
 #' @param priors A data.frame with the following variables:

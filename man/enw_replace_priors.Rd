@@ -2,7 +2,7 @@
 % Please edit documentation in R/model-tools.R
 \name{enw_replace_priors}
 \alias{enw_replace_priors}
-\title{Replace default priors with user specfied priors}
+\title{Replace default priors with user specified priors}
 \usage{
 enw_replace_priors(priors, custom_priors)
 }
@@ -36,6 +36,7 @@ enw_replace_priors(priors, custom_priors)
 \seealso{
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
+\code{\link{enw_model}()},
 \code{\link{enw_priors_as_data_list}()},
 \code{\link{enw_sample}()},
 \code{\link{remove_profiling}()},

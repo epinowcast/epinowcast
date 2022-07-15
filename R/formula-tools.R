@@ -22,7 +22,7 @@
 #' @param no_contrasts Logical, defaults to `FALSE`. `TRUE` means that no
 #' variable uses contrast. Alternatively a character vector of variables can be
 #' supplied indicating which variables should  not have contrasts.
-#' 
+#'
 #' @param add_intercept Logical, defaults to `FALSE`. Should an intercept be
 #' added to the fixed effects.
 #'
@@ -43,7 +43,7 @@ enw_manual_formula <- function(data, fixed = c(), random = c(),
   data <- data.table::copy(data)
   if (add_intercept) {
     form <- c("1")
-  }else {
+  } else {
     form <- c()
   }
 
@@ -406,7 +406,7 @@ re <- function(formula) {
 #'
 #' # A more complex example
 #' form <- epinowcast:::parse_formula(
-#'  ~ 1 + disp +  (1 + gear | cyl) + (0 + wt | am)
+#'   ~ 1 + disp + (1 + gear | cyl) + (0 + wt | am)
 #' )
 #' random_effect <- re(form$random[[1]])
 #' epinowcast:::construct_re(random_effect, mtcars)
@@ -481,7 +481,7 @@ construct_re <- function(re, data) {
 #' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
 #'
-#' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects desig
+#' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design
 #' matrix be sparely defined.
 #'
 #' @return A list containing the following:

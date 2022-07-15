@@ -16,7 +16,7 @@ enw_fit_opts(
 }
 \arguments{
 \item{sampler}{A function that creates an object that be used to extract
-posterior samples from the specfied model. By default this is \code{\link[=enw_sample]{enw_sample()}}
+posterior samples from the specified model. By default this is \code{\link[=enw_sample]{enw_sample()}}
 which makes use of \code{\link[cmdstanr:model-method-sample]{cmdstanr::sample()}}.}
 
 \item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
@@ -40,7 +40,7 @@ by \code{\link[=epinowcast]{epinowcast()}}. By default this will be \code{\link[
 options should be used.}
 }
 \value{
-A list contaning the specified sampler function, data as a list
+A list containing the specified sampler function, data as a list
 specifying the fitting options to use, and additional arguments to pass
 to the sampler function when it is called.
 }
