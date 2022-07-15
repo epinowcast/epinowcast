@@ -33,7 +33,7 @@ epinowcast:::construct_re(random_effect, data)
 
 # A more complex example
 form <- epinowcast:::parse_formula(
- ~ 1 + disp +  (1 + gear | cyl) + (0 + wt | am)
+  ~ 1 + disp + (1 + gear | cyl) + (0 + wt | am)
 )
 random_effect <- re(form$random[[1]])
 epinowcast:::construct_re(random_effect, mtcars)

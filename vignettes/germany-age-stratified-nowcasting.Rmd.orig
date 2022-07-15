@@ -103,12 +103,13 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 ```{r}
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads, iter_sampling = 500,
-  iter_warmup = 250, show_messages = FALSE, refresh = 0
+  chains = 2, threads_per_chain = threads, 
+  show_messages = FALSE, refresh = 0,
+  iter_sampling = 500, iter_warmup = 500
 )
 
 nowcast <- epinowcast(pobs,
-  fit = fit
+  fit = fit,
   model = multithread_model,
 )
 ```
@@ -150,7 +151,7 @@ We now repeat the nowcasting step with the day of the week reporting model inclu
 ```{r}
 dow_nowcast <- epinowcast(pobs,
   report = report_module_dow,
-  fit = fit
+  fit = fit,
   model = multithread_model,
   priors = priors
 )
@@ -177,7 +178,7 @@ We again nowcast this time using both the age adjusted reference date model and 
 age_nowcast <- epinowcast(pobs,
   reference = reference_module_age,
   report = report_module_dow,
-  fit = fit
+  fit = fit,
   model = multithread_model,
   priors = priors
 )
@@ -206,7 +207,7 @@ As before we fit the nowcasting model,
 week_nowcast <- epinowcast(pobs,
   reference = reference_module_age_week,
   report = report_module_dow,
-  fit = fit
+  fit = fit,
   model = multithread_model,
   priors = priors
 )
@@ -235,7 +236,7 @@ We can now fit this model as before (note that this model is quite complex and s
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
-  fit = fit
+  fit = fit,
   model = multithread_model,
   priors = priors
 )

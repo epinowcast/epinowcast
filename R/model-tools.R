@@ -90,7 +90,8 @@ enw_priors_as_data_list <- function(priors) {
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
-#' replace the default priors.
+#' replace the default priors. Note that currently vectorised prior names
+#' (i.e those of the form `variable[n]` will be treated as `variable`).
 #'
 #' @return A data.table of prior definitions (variable, mean and sd).
 #' @family modeltools
@@ -98,15 +99,19 @@ enw_priors_as_data_list <- function(priors) {
 #' @importFrom data.table as.data.table
 #' @examples
 #' priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
-#' custom_priors <- data.frame(variable = "x", mean = 10, sd = 2)
+#' custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
 #' enw_replace_priors(priors, custom_priors)
 enw_replace_priors <- function(priors, custom_priors) {
-  variables <- custom_priors$variable
-  priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
   custom_priors <- data.table::as.data.table(custom_priors)[
     ,
     .(variable, mean, sd)
   ]
+  custom_priors <- custom_priors[
+    ,
+    variable := gsub("\\[([^]]*)\\]", "", variable)
+  ]
+  variables <- custom_priors$variable
+  priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])
 }

@@ -16,7 +16,8 @@ other similar model specification functions.}
 \code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions. Priors in this data.frame
-replace the default priors.}
+replace the default priors. Note that currently vectorised prior names
+(i.e those of the form \code{variable[n]} will be treated as \code{variable}).}
 }
 \value{
 A data.table of prior definitions (variable, mean and sd).
@@ -30,7 +31,7 @@ run (using \code{summary(nowcast, type = fit)}) and using this a prior.
 }
 \examples{
 priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
-custom_priors <- data.frame(variable = "x", mean = 10, sd = 2)
+custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
 enw_replace_priors(priors, custom_priors)
 }
 \seealso{
