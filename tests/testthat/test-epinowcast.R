@@ -34,7 +34,7 @@ test_that("epinowcast can fit a simple reporting model", {
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
     model = model
@@ -62,7 +62,7 @@ test_that("epinowcast can fit a simple reporting model", {
 })
 
 test_that("epinowcast can fit a reporting model with a day of the week random
-           effect", {
+           effect for the date of report", {
   skip_on_cran()
   regression_nowcast <- enw_example("nowcast")
   nowcast <- suppressMessages(epinowcast(pobs,
@@ -70,7 +70,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
     model = model
@@ -87,4 +87,31 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     posterior$variable,
     regression_posterior$variable
   )
+})
+
+test_that("epinowcast can fit a reporting model with a random walk for the week
+          of date of reference and a day of week random effect", {
+  skip_on_cran()
+  nowcast <- suppressMessages(epinowcast(pobs,
+    reference = enw_reference(~ rw(week), data = pobs),
+    report = enw_report(~ (1 | day_of_week), data = pobs),
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      save_warmup = FALSE, pp = TRUE,
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
+      refresh = 0, show_messages = FALSE
+    ),
+    model = model
+  ))
+  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_type(nowcast$fit_args[[1]], "list")
+  expect_type(nowcast$data[[1]], "list")
+  expect_lt(nowcast$per_divergent_transitions, 0.05)
+  expect_lt(nowcast$max_treedepth, 10)
+  expect_lt(nowcast$max_rhat, 1.05)
+  expect_error(
+    nowcast$fit[[1]]$summary(c("refp_mean_int", "refp_sd_int", "sqrt_phi")), NA
+  )
+  expect_error(nowcast$fit[[1]]$summary(c("refp_beta", "refp_beta_sd")), NA)
+  expect_error(nowcast$fit[[1]]$summary(c("rep_beta", "rep_beta_sd")), NA)
 })
