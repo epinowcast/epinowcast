@@ -71,10 +71,12 @@ probability of report, the latest available observations, incidence of
 observations, and metadata about the date of reference and report (used to
 construct models). This function wraps other preprocessing functions that may
 be instead used individually if required. Note that internally reports
-beyond the user specified delay are reassigned to the last permissible delay
-for modelling purposes. Also note that if missing reference or report dates
-are suspected to occur in your data then these need to be completed with
-\code{\link[=enw_complete_dates]{enw_complete_dates()}}.
+beyond the user specified delay are dropped for modelling purposes with the
+\code{cum_prop_reported} and \code{max_confirm} variables allowing the user to check
+the impact this may have (if \code{cum_prop_reported} is significantly below 1 a
+longer \code{max_delay} may be appropriate). Also note that if missing reference
+or report dates are suspected to occur in your data then these need to be
+completed with \code{\link[=enw_complete_dates]{enw_complete_dates()}}.
 }
 \examples{
 library(data.table)
