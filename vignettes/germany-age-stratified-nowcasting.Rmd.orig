@@ -135,13 +135,14 @@ As noted using the posterior predictions from the simple model fit above there a
 report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
-To speed up model fitting we make use of posterior information from the previous model for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
+To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
 
 ```{r}
 priors <- summary(
   nowcast, type = "fit",
   variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
+priors[, sd := sd * 5]
 priors
 ```
 
@@ -235,7 +236,12 @@ We can now fit this model as before (note that this model is quite complex and s
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
-  fit = fit,
+  fit = enw_fit_opts(
+    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
+    chains = 2, threads_per_chain = threads, 
+    iter_sampling = 500, iter_warmup = 500,
+    adapt_delta = 0.95
+  ),
   model = multithread_model,
   priors = priors
 )
