@@ -41,6 +41,8 @@ data {
   matrix[rep_fnrow, rep_fncol + 1] rep_fdesign; // design matrix for report dates
   int rep_rncol; // number of standard deviations to use for pooling for rds
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; // Pooling pmf design matrix 
+  // Observation model
+  int obs_type; // Control parameter for the observation model (0 = Poisson, 1 = Negbin)
   // Control parameters
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
@@ -78,7 +80,7 @@ parameters {
   vector<lower=0>[refp_rncol] refp_mean_beta_sd; // pooled modifiers to logmean
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; // pooled modifiers to logsd
   vector<lower=0>[rep_rncol] rep_beta_sd; // pooled modifiers to report date
-  real<lower=0> sqrt_phi; // Overall dispersion by group
+  array[obs_type > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion by group
 }
 
 transformed parameters{
@@ -88,7 +90,7 @@ transformed parameters{
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
   array[g] vector[t] imp_obs; // Expected final observations
-  real phi; // Transformed overdispersion (joint across all observations)
+  array[obs_type > 0 ? 1 : 0] real phi; // Transformed overdispersion (joint across all observations)
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
@@ -136,7 +138,9 @@ transformed parameters{
   }
   }
   // transform phi to overdispersion scale
-  phi = inv_square(sqrt_phi);
+  if (obs_type) {
+    phi = inv_square(sqrt_phi);
+  }
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan
@@ -181,14 +185,16 @@ model {
     } 
   }
   // reporting overdispersion (1/sqrt)
-  sqrt_phi ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
+  if (obs_type) {
+    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
+  }
   }
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
     target += reduce_sum(
       obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
-      ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi
+      ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, obs_type
     );
     }
   }
@@ -209,13 +215,24 @@ generated quantities {
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi);
+      if (obs_type) {
+        pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi[1]);
+      } else {
+        pp_obs_tmp[i, 1:dmax] = poisson_log_rng(lexp_obs);
+      }
       }
       profile("generated_loglik") {
       if (ologlik) {
         log_lik[i] = 0;
-        for (j in 1:sl[i]) {
-          log_lik[i] += neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi);
+        if (obs_type) {
+          for (j in 1:sl[i]) {
+            log_lik[i] += 
+              neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi[1]);
+          }
+        }else{
+          for (j in 1:sl[i]) {
+            log_lik[i] += poisson_log_lpmf(obs[i, j] | lexp_obs[j]);
+          }
         }
       }
       }
