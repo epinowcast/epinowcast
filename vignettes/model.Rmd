@@ -62,7 +62,7 @@ The first component ($\gamma_{gtd}$) we estimate what would be the probability o
   \upsilon_{gt} &= \text{exp} \left( \upsilon_0 + \alpha_{\upsilon} X_{\gamma} + \beta_{\upsilon} Z_{\gamma} \right)
 \end{align}
 
-Note we normalise this distribution but assuming that all of the probability mass after the maximum delay is shifted to the last permissible delay. The parametric logit hazard (i.e. the probability of report at a given time conditional on not already having reported) for this component of the model is then,
+Note we normalise this distribution so that it sums to 1. The parametric logit hazard (i.e. the probability of report at a given time conditional on not already having reported) for this component of the model is then,
 
 \begin{equation}
   \gamma_{gtd} = \text{logit} \left(\frac{p^{\prime}_{gtd}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{gtd^{\prime}} \right)} \right)

@@ -108,7 +108,7 @@ transformed parameters{
     for (i in 1:refp_fnrow) {
       pmfs[, i] =
          discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
-         1);
+         2);
     }
     if (ref_as_p == 0) {
       for (i in 1:refp_fnrow) {

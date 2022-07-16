@@ -667,10 +667,12 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' observations, and metadata about the date of reference and report (used to
 #' construct models). This function wraps other preprocessing functions that may
 #' be instead used individually if required. Note that internally reports
-#' beyond the user specified delay are reassigned to the last permissible delay
-#' for modelling purposes. Also note that if missing reference or report dates
-#' are suspected to occur in your data then these need to be completed with
-#' [enw_complete_dates()].
+#' beyond the user specified delay are dropped for modelling purposes with the
+#' `cum_prop_reported` and `max_confirm` variables allowing the user to check
+#' the impact this may have (if `cum_prop_reported` is significantly below 1 a
+#' longer `max_delay` may be appropriate). Also note that if missing reference
+#' or report dates are suspected to occur in your data then these need to be
+#' completed with [enw_complete_dates()].
 #'
 #' @param obs A data frame containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
@@ -735,12 +737,6 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)
   obs <- enw_add_delay(obs)
-
-  obs[
-    report_date == (reference_date + max_delay - 1),
-    confirm := max_confirm,
-    by = ".group"
-  ]
 
   obs <- enw_delay_filter(obs, max_delay = max_delay)
 
