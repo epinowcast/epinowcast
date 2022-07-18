@@ -17,12 +17,12 @@ This is a major release and contains multiple breaking changes. If needing the o
 [#106](https://github.com/epiforecasts/epinowcast/pull/106) by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs).
 * The discretised reporting probability function has been extended to handle delays beyond the maximum delay in three different ways: ignore, add to maximum, or normalize. The nowcasting model uses "normalise" though work on this is ongoing. See [#113](https://github.com/epiforecasts/epinowcast/pull/113) by [@adrian-lison](https://github.com/adrian-lison) and #121 by @seabbs.
 * Fixed an issue (#105) with `cmdstan 2.30.0` where passing optimisation flags to `stanc_options` by default was causing a compilation error by not passing these flags by default. See #117 by @sbfnk and @seabbs.
-* Addition of regression/integration tests against example data for [epinowcast]() and [enw_preprocess_data()] with convergence checking for several example nowcasting models. Lower level tests for model tools and and model modules have also been added. See #112 by @seabbs.
+* Addition of regression/integration tests against example data for `epinowcast()` and `enw_preprocess_data()` with convergence checking for several example nowcasting models. Lower level tests for model tools and and model modules have also been added. See #112 by @seabbs.
 
 ## Model
 
 * Added support for parametric exponential delay distributions (note that this is comparable to an intercept-only non-parametric hazard model) and potentially no parametric delay (though this will currently throw an error due to the lack of appropriate non-parametric hazard). See [#84](https://github.com/epiforecasts/epinowcast/pull/84) by [@seabbs](https://github.com/seabbs).
-* Added support for a Poisson observation model though it is recommended that most users make use of the default negative bionomial model. See #120 by @seabbs.
+* Added support for a Poisson observation model though it is recommended that most users make use of the default negative binomial model. See #120 by @seabbs.
 * Updated the expectation random walk model to use a more efficient `cumulative_sum` implementation suggested by [@adrian-lison](https://github.com/adrian-lison) in [#98](https://github.com/epiforecasts/epinowcast/issues/98)]. See [#103](https://github.com/epiforecasts/epinowcast/pull/103/) by [@seabbs](https://github.com/seabbs).
 * Aligned the implementation of the overdispersion prior with the prior choice recommendations from the [stan wiki](https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations). See [#111](https://github.com/epiforecasts/epinowcast/pull/111) by [@adrian-lison](https://github.com/adrian-lison).
 

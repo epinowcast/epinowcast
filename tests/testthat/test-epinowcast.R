@@ -37,7 +37,7 @@ test_that("epinowcast can fit a simple reporting model", {
       chains = 2, iter_warmup = 250, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
-    enw_obs(family = "poisson", data = pobs),
+    obs = enw_obs(family = "poisson", data = pobs),
     model = model
   ))
 

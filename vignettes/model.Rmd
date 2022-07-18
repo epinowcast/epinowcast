@@ -99,7 +99,7 @@ Expected notifications by time of reference ($t$) and reporting delay can now be
   N_{gt} &= \sum_{d=0}^{D} n_{gtd}
 \end{align}
 
-Other observation models such as the Poisson distribution are also supported. See the documentaiton `enw_obs()` for details.
+Other observation models such as the Poisson distribution are also supported. See the documentation `enw_obs()` for details.
 
 # Implementation
 

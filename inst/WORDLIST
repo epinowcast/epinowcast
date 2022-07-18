@@ -18,7 +18,7 @@ ORCID
 PARAM
 Poisson
 Rstan
-aem
+ae
 com
 discretised
 enw
@@ -46,6 +46,7 @@ nowcasting
 nowcasts
 overprediction
 parameterisations
+poisson
 postprocess
 postprocessing
 runtimes
