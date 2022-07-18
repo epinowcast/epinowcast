@@ -2,76 +2,123 @@
 % Please edit documentation in R/epinowcast.R
 \name{epinowcast}
 \alias{epinowcast}
-\title{Nowcast right censored data}
+\title{Nowcast using partially observed data}
 \usage{
 epinowcast(
-  pobs,
-  reference_effects = epinowcast::enw_formula(pobs$metareference[[1]]),
-  report_effects = epinowcast::enw_formula(pobs$metareport[[1]]),
-  priors = epinowcast::enw_priors(),
-  distribution = "lognormal",
+  data,
+  reference = epinowcast::enw_reference(parametric = ~1, distribution = "lognormal",
+    non_parametric = ~0, data = data),
+  report = epinowcast::enw_report(non_parametric = ~0, structural = ~0, data),
+  expectation = epinowcast::enw_expectation(formula = ~rw(day, .group), order = 1, data
+    = data),
+  obs = epinowcast::enw_obs(family = "negbin", data = data),
+  fit = epinowcast::enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp =
+    FALSE, likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
   model = epinowcast::enw_model(),
-  as_data_list = epinowcast::enw_as_data_list,
-  inits = epinowcast::enw_inits,
-  fit = epinowcast::enw_sample,
-  nowcast = TRUE,
-  pp = FALSE,
-  likelihood = TRUE,
-  debug = FALSE,
-  output_loglik = FALSE,
+  priors,
   ...
 )
 }
 \arguments{
-\item{pobs}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+\item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
-which is an intercept only model.}
+\item{reference}{The reference time indexed reporting process model
+specification as defined using \code{\link[=enw_reference]{enw_reference()}}.}
 
-\item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_formula]{enw_formula()}}
-which is an intercept only model.}
+\item{report}{The report time indexed reporting process model
+specification as defined using \code{\link[=enw_report]{enw_report()}}.}
 
-\item{priors}{DESCRIPTION.}
+\item{expectation}{The expectation model specification as defined using
+\code{\link[=enw_expectation]{enw_expectation()}}. By default this is set to be highly flexible and thus
+weakly informed. Other options are not yet supported.}
 
-\item{distribution}{Character string indicating the type of distribution to
-use for reference date effects. The default is to use a lognormal but other
-options available include: gamma distributed ("gamma").}
+\item{obs}{The observation model as defined by \code{\link[=enw_obs]{enw_obs()}}.
+Observations are also processed within this function for use in modelling.}
 
-\item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}}.}
+\item{fit}{Model fit options as defined using \code{\link[=enw_fit_opts]{enw_fit_opts()}}. This includes
+the sampler function to use (with the package default being \code{\link[=enw_sample]{enw_sample()}}),
+whether or now a nowcast should be used, etc. See \code{\link[=enw_fit_opts]{enw_fit_opts()}} for
+further details.}
 
-\item{as_data_list}{PARAM_DESCRIPTION}
+\item{model}{The model to use within \code{fit}. By default this uses
+\code{\link[=enw_model]{enw_model()}}.}
 
-\item{inits}{PARAM DESCRIPTION}
+\item{priors}{A data.frame with the following variables:
+\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
+appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
+other similar model specification functions. Priors in this data.frame
+replace the default priors specified by each model component.}
 
-\item{fit}{PARAM DESCRIPTION}
-
-\item{nowcast}{Logical, defaults to \code{TRUE}. Should a nowcast be made using
-posterior predictions of the unobserved future reported notifications.}
-
-\item{pp}{Logical, defaults to \code{FALSE}. Should posterior predictions be made
-for observed data. Useful for evaluating the performance of the model.}
-
-\item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
-included in the model}
-
-\item{debug}{Logical, defaults to \code{FALSE}. Should within model debug
-information be returned.}
-
-\item{output_loglik}{Logical, defaults to \code{FALSE}. Should the
-log-likelihood be output. Disabling this will speed up fitting
-if evaluating the model fit is not required.}
-
-\item{...}{Additional arguments passed to \code{\link[=enw_sample]{enw_sample()}}.}
+\item{...}{Additional model modules to pass to \code{model}. Examples of supported
+options are \code{\link[=enw_missing]{enw_missing()}} for modelling data with missing reference dates.
+User modules may also be used after adapting the supplied \code{model}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A object of the class "epinowcast" which inherits from
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and \code{data.table}, and combines the output from
+the sampler specified in \code{enw_fit_opts()}.
 }
 \description{
 Provides a user friendly interface around package functionality
-to produce a nowcast from observed preprocessed data, a reference model, and
-a report model.
+to produce a nowcast from observed preprocessed data, and a series of user
+defined models. By default a model that assumes a fixed parametric reporting
+distribution with a flexible expectation model is used. Explore the
+individual model components for additional documentation and see the package
+case studies for example model specifications for different tasks.
+}
+\examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+# Load data.table and ggplot2
+library(data.table)
+library(ggplot2)
+
+# Use 2 cores
+options(mc.cores = 2)
+# Load and filter germany hospitalisations
+nat_germany_hosp <-
+  germany_covid19_hosp[location == "DE"][age_group \%in\% "00+"]
+nat_germany_hosp <- enw_filter_report_dates(
+  nat_germany_hosp,
+  latest_date = "2021-10-01"
+)
+# Make sure observations are complete
+nat_germany_hosp <- enw_complete_dates(
+  nat_germany_hosp,
+  by = c("location", "age_group")
+)
+# Make a retrospective dataset
+retro_nat_germany <- enw_filter_report_dates(
+  nat_germany_hosp,
+  remove_days = 40
+)
+retro_nat_germany <- enw_filter_reference_dates(
+  retro_nat_germany,
+  include_days = 40
+)
+# Get latest observations for the same time period
+latest_obs <- enw_latest_data(nat_germany_hosp)
+latest_obs <- enw_filter_reference_dates(
+  latest_obs,
+  remove_days = 40, include_days = 20
+)
+# Preprocess observations (note this maximum delay is likely too short)
+pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
+# Fit the default nowcast model and produce a nowcast
+# Note that we have reduced samples for this example to reduce runtimes
+nowcast <- epinowcast(pobs,
+  fit = enw_fit_opts(
+    save_warmup = FALSE, pp = TRUE,
+    chains = 2, iter_warmup = 500, iter_sampling = 500
+  )
+)
+nowcast
+# plot the nowcast vs latest available observations
+plot(nowcast, latest_obs = latest_obs)
+
+# plot posterior predictions for the delay distribution by date
+plot(nowcast, type = "posterior") +
+  facet_wrap(vars(reference_date), scale = "free")
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other epinowcast: 

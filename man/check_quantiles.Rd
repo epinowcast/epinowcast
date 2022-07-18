@@ -16,4 +16,10 @@ c(0.5, 0.95, 0.2, 0.8).}
 \description{
 Check Quantiles Required are Present
 }
+\seealso{
+Functions used for checking inputs
+\code{\link{check_dates}()},
+\code{\link{check_group}()},
+\code{\link{check_module}()}
+}
 \concept{check}

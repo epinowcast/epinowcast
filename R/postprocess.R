@@ -76,16 +76,16 @@ enw_nowcast_summary <- function(fit, obs,
     probs = probs
   )
 
-  max_delay <- nrow(nowcast) / max(obs$group)
+  max_delay <- nrow(nowcast) / max(obs$.group)
 
   ord_obs <- data.table::copy(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
-  data.table::setorderv(ord_obs, c("group", "reference_date"))
+  data.table::setorderv(ord_obs, c(".group", "reference_date"))
   nowcast <- cbind(
     ord_obs,
     nowcast
   )
-  data.table::setorderv(nowcast, c("group", "reference_date"))
+  data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL]
   return(nowcast[])
 }
@@ -111,21 +111,21 @@ enw_nowcast_samples <- function(fit, obs) {
     value.name = "sample", variable.name = "variable",
     id.vars = c(".chain", ".iteration", ".draw")
   )
-  max_delay <- nrow(nowcast) / (max(obs$group) * max(nowcast$.draw))
+  max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
 
   ord_obs <- data.table::copy(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
-  data.table::setorderv(ord_obs, c("group", "reference_date"))
+  data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
     .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
   )
   ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
-  ord_obs <- ord_obs[order(group, reference_date)]
+  ord_obs <- ord_obs[order(.group, reference_date)]
   nowcast <- cbind(
     ord_obs,
     nowcast
   )
-  data.table::setorderv(nowcast, c("group", "reference_date"))
+  data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL][, .draws := NULL]
   return(nowcast[])
 }
@@ -148,7 +148,7 @@ enw_summarise_samples <- function(samples, probs = c(
                                     0.05, 0.2, 0.35, 0.5,
                                     0.65, 0.8, 0.95
                                   ),
-                                  by = c("reference_date", "group")) {
+                                  by = c("reference_date", ".group")) {
   obs <- samples[.draw == 1]
   obs[, c(".draw", ".iteration", "sample", ".chain") := NULL]
 
@@ -186,14 +186,14 @@ enw_summarise_samples <- function(samples, probs = c(
 #' @importFrom data.table as.data.table setcolorder
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
   obs <- data.table::as.data.table(obs)
-  obs <- obs[, .(reference_date, group, latest_confirm = confirm)]
+  obs <- obs[, .(reference_date, .group, latest_confirm = confirm)]
   out <- merge(
     nowcast, obs,
-    by = c("reference_date", "group"), all.x = TRUE
+    by = c("reference_date", ".group"), all.x = TRUE
   )
   data.table::setcolorder(
     out,
-    neworder = c("reference_date", "group", "latest_confirm", "confirm")
+    neworder = c("reference_date", ".group", "latest_confirm", "confirm")
   )
   return(out[])
 }
@@ -219,12 +219,12 @@ enw_pp_summary <- function(fit, diff_obs,
   )
 
   ord_obs <- data.table::copy(diff_obs)
-  data.table::setorderv(ord_obs, c("reference_date", "group"))
+  data.table::setorderv(ord_obs, c("reference_date", ".group"))
   pp <- cbind(
     ord_obs,
     pp
   )
-  data.table::setorderv(pp, c("group", "reference_date"))
+  data.table::setorderv(pp, c(".group", "reference_date"))
   pp[, variable := NULL]
   return(pp[])
 }

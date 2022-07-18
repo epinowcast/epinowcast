@@ -57,8 +57,12 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     stop("scoringutils is required for this function to work")
   }
   long_nowcast <- enw_quantiles_to_long(nowcast)
+  if (!is.null(long_nowcast[["mad"]])) {
+    long_nowcast[, c("mad") := NULL]
+  }
   latest_obs <- data.table::copy(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
+  latest_obs[, report_date := NULL]
   cols <- intersect(colnames(nowcast), colnames(latest_obs))
   long_nowcast <- merge(long_nowcast, latest_obs, by = cols)
 
