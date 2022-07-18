@@ -4,7 +4,7 @@
         j += is_nan(abs(pmfs[k, i])) ? 1 : 0;
         j += is_inf(abs(pmfs[k, i])) ? 1 : 0;
       }
-      if (obs_type) {
+      if (model_obs) {
         j += phi[1] <= 1e-3 ? 1 : 0;
       }
       if (j) {
@@ -24,7 +24,7 @@
         }
         print("Unique report day hazards");
         print(srdlh);
-        if (obs_type) {
+        if (model_obs) {
           print("Overdispersion");
           print(sqrt_phi[1]);
         }

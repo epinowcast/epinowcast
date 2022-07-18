@@ -82,7 +82,7 @@
       [10,] 112
       [11,]  45
       
-      $data$obs_type
+      $data$model_obs
       [1] 1
       
       

@@ -37,5 +37,6 @@ test_that("enw_obs produces the expected output", {
     obs$init(obs$data, obs$priors)(),
     c("sqrt_phi", "phi")
   )
+  expect_equal(enw_obs(family = "poisson", data = pobs)$data$model_obs, 0)
   expect_error(enw_obs(family = "wefgweefw", data = pobs))
 })
