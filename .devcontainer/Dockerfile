@@ -57,7 +57,7 @@ RUN install2.r --error --skipinstalled --repos ${CRAN} --ncpus -1 \
 
 # install dependencies
 COPY DESCRIPTION /tmp/package/DESCRIPTION
-RUN Rscript -e "devtools::install_deps('/tmp/package', dependencies = c( 'Depends', 'Imports', 'LinkingTo', 'Suggests', 'Config/Needs/website'))"
+RUN Rscript -e "devtools::install_deps('/tmp/package', dependencies = c( 'Depends', 'Imports', 'LinkingTo', 'Suggests'))"
 
 # install cmdstan
 RUN Rscript -e "cmdstanr::install_cmdstan()"
