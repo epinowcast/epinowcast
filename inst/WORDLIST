@@ -23,6 +23,7 @@ com
 discretised
 enw
 epidemia
+etc
 fns
 formulatools
 frac
@@ -35,8 +36,10 @@ heirarchical
 lme
 mathbb
 modeldesign
+modelmodules
 modeltools
 modelvalidation
+negbin
 nolint
 nowcast
 nowcasting

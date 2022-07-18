@@ -32,22 +32,14 @@ reference:
     desc: Functions for preprocessing observations.
     contents:
       - has_concept("preprocess")
-  - title: Formula design tools
-    desc: Functions that assist with interpreting model formulas
-    contents:
-      - has_concept("formulatools")
-  - title: Model design tools
-    desc: Functions that assist with designing models.
-    contents:
-      - has_concept("modeldesign")
-  - title: Model tools
-    desc: Functions that assist with interpreting models for stan.
-    contents:
-      - has_concept("modeltools")
-  - title: Model
-    desc: Functions for fitting the nowcasting model.
+  - title: Model modules
+    desc: Modular model components.
     contents:
       - has_concept("model")
+  - title: Model tools
+    desc: Functions that assist with combining and using modular models.
+    contents:
+      - has_concept("modeltools")
   - title: Postprocess
     desc: Functions for postprocessing model output.
     contents:
@@ -60,6 +52,14 @@ reference:
     desc: Functions for validating model fits.
     contents:
       - has_concept("modelvalidation")
+  - title: Formula design tools
+    desc: Functions that assist with interpreting model formulas
+    contents:
+      - has_concept("formulatools")
+  - title: Model design tools
+    desc: Functions that assist with designing models.
+    contents:
+      - has_concept("modeldesign")
   - title: Datasets
     desc: Package datasets used in examples and by users to explore the package functionality.
     contents:

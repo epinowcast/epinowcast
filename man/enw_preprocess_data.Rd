@@ -25,7 +25,9 @@ downstream modelling}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully.}
+setting so consider what maximum makes sense for your data carefully. Note
+that this is zero indexed and so includes the reference date and
+\code{max_delay - 1} other days.}
 
 \item{holidays}{A vector of dates indicating when holidays occur used by
 \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
@@ -88,13 +90,6 @@ nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
 pobs
-
-# Preprocess all data
-pobs_all <- enw_preprocess_data(
-  germany_covid19_hosp,
-  by = c("location", "age_group")
-)
-pobs_all
 }
 \seealso{
 Preprocessing functions

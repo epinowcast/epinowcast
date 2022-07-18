@@ -19,7 +19,9 @@ downstream modelling}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully.}
+setting so consider what maximum makes sense for your data carefully. Note
+that this is zero indexed and so includes the reference date and
+\code{max_delay - 1} other days.}
 
 \item{missing_reference}{Should entries for cases with missing reference date
 be completed as well?, Default: TRUE}

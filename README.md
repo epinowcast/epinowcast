@@ -18,15 +18,15 @@ contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
 Tools to enable flexible and efficient hierarchical nowcasting of
-right-truncated epidemiological time-series using a semi-mechanistic Bayesian
-model with support for a range of reporting and generative processes.
-Nowcasting, in this context, is gaining situational awareness using
-currently available observations and the reporting patterns of
+right-truncated epidemiological time-series using a semi-mechanistic
+Bayesian model with support for a range of reporting and generative
+processes. Nowcasting, in this context, is gaining situational awareness
+using currently available observations and the reporting patterns of
 historical observations. This can be useful when tracking the spread of
-infectious disease in real-time: without nowcasting, changes in trends can be
-obfuscated by partial reporting or their detection may be delayed due to
-the use of simpler methods like truncation. While the package has been
-designed with epidemiological applications in mind, it could be
+infectious disease in real-time: without nowcasting, changes in trends
+can be obfuscated by partial reporting or their detection may be delayed
+due to the use of simpler methods like truncation. While the package has
+been designed with epidemiological applications in mind, it could be
 applied to any set of right-truncated time-series count data.
 
 ## Installation
@@ -161,26 +161,26 @@ pobs
 #>                    obs          new_confirm              latest
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
 #>    missing_reference  reporting_triangle      metareference          metareport
-#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x8]> <data.table[80x11]>
+#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 ```
 
-Construct an intercept only model for the date of reference using the
-metadata produced by `enw_preprocess_data()`. Note that `epinowcast`
-uses a sparse design matrix to reduce runtimes so the design matrix
-shows only unique rows with `index` containing the mapping to the full
-design matrix.
+Construct a parametric lognormal intercept only model for the date of
+reference using the metadata produced by `enw_preprocess_data()`. Note
+that `epinowcast` uses a sparse design matrix for parametric delay
+distributions to reduce runtimes so the design matrix shows only unique
+rows with `index` containing the mapping to the full design matrix.
 
 ``` r
-reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
+reference_module <- enw_reference(~ 1, distribution = "lognormal", data = pobs)
 ```
 
 Construct a model with a random effect for the day of report using the
 metadata produced by `enw_preprocess_data()`.
 
 ``` r
-report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
+report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
 ### Model fitting
@@ -205,22 +205,24 @@ short but in general this should not be done.
 ``` r
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
-  model = model,
-  report_effects = report_effects,
-  reference_effects = reference_effects,
-  save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 2,
-  iter_sampling = 500, iter_warmup = 500,
-  show_messages = FALSE, refresh = 0
+  reference = reference_module,
+  report = report_module,
+  fit = enw_fit_opts(,
+    save_warmup = FALSE, pp = TRUE,
+    chains = 2, threads_per_chain = 2,
+    iter_sampling = 500, iter_warmup = 500,
+    show_messages = FALSE, refresh = 0
+  ),
+  model = model
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 50.2 seconds.
-#> Chain 1 finished in 51.8 seconds.
+#> Chain 1 finished in 64.4 seconds.
+#> Chain 2 finished in 65.2 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 51.0 seconds.
-#> Total execution time: 52.0 seconds.
+#> Mean chain execution time: 64.8 seconds.
+#> Total execution time: 65.3 seconds.
 ```
 
 ### Results
@@ -233,15 +235,15 @@ nowcast
 #>                    obs          new_confirm              latest
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
 #>    missing_reference  reporting_triangle      metareference          metareport
-#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x8]> <data.table[80x11]>
+#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[32]> <list[41]> <list[8]>    1000     1.02
+#> 1: <CmdStanMCMC[32]> <list[52]> <list[8]>    1000     1.03
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  10                 0.01       52
+#> 1:                  28                0.028     65.3
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -263,26 +265,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.046     69 0.2189336 0.0000 69
-#>  3:                 1    37             0  47.096     47 0.3144565 0.0000 47
-#>  4:                 1    36             0  65.176     65 0.4552266 0.0000 65
-#>  5:                 1    35             0  50.271     50 0.5251998 0.0000 50
-#>  6:                 1    34             0  36.242     36 0.5096035 0.0000 36
-#>  7:                 1    33             0  94.457     94 0.6637707 0.0000 94
-#>  8:                 1    32             0  91.738     92 0.8945145 1.4826 91
-#>  9:                 1    31             0 100.032    100 1.0545559 1.4826 99
-#> 10:                 1    30             0  87.159     87 1.1344629 1.4826 86
+#>  2:                 1    38             0  69.038     69 0.1964551 0.0000 69
+#>  3:                 1    37             0  47.086     47 0.2944328 0.0000 47
+#>  4:                 1    36             0  65.190     65 0.4450821 0.0000 65
+#>  5:                 1    35             0  50.236     50 0.4924901 0.0000 50
+#>  6:                 1    34             0  36.234     36 0.4994932 0.0000 36
+#>  7:                 1    33             0  94.463     94 0.7079069 0.0000 94
+#>  8:                 1    32             0  91.683     91 0.8655982 0.0000 91
+#>  9:                 1    31             0 100.001    100 1.0593022 1.4826 99
+#> 10:                 1    30             0  87.106     87 1.1054347 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 1.0007765 1006.9282 1002.6983
-#>  3:  48 1.0000955  786.6752  783.7836
-#>  4:  66 0.9993755  940.8320  855.6696
-#>  5:  51 1.0023047 1000.5282  955.8951
-#>  6:  37 1.0006436  989.9089  867.0135
-#>  7:  96 0.9982502 1042.2918  882.8528
-#>  8:  94 1.0013474  919.6210  759.2589
-#>  9: 102 0.9993403  983.8782  930.9138
-#> 10:  89 1.0013534  861.8767  886.7324
+#>  2:  69 0.9993587 1014.0799 1007.5271
+#>  3:  48 1.0000956 1017.8177 1014.9685
+#>  4:  66 0.9998332  933.7795  928.0418
+#>  5:  51 1.0049275  693.4863  681.7778
+#>  6:  37 0.9989918  904.0019  911.2342
+#>  7:  96 0.9988480  952.1678  929.5734
+#>  8:  93 1.0000538  909.8948  922.8232
+#>  9: 102 1.0032721 1058.3973  990.9293
+#> 10:  89 1.0004409  856.4617  917.7191
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -332,16 +334,16 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>     1:                 1    33             0      1          1     1    435
-#>     2:                 1    33             0      1          2     2    435
-#>     3:                 1    33             0      1          3     3    438
-#>     4:                 1    33             0      1          4     4    436
-#>     5:                 1    33             0      1          5     5    433
+#>     2:                 1    33             0      1          2     2    433
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    433
+#>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2107
-#> 33997:                 1     0             1      2        497   997   2374
-#> 33998:                 1     0             1      2        498   998   2089
-#> 33999:                 1     0             1      2        499   999   1975
-#> 34000:                 1     0             1      2        500  1000   2044
+#> 33996:                 1     0             1      2        496   996   2058
+#> 33997:                 1     0             1      2        497   997   2150
+#> 33998:                 1     0             1      2        498   998   2067
+#> 33999:                 1     0             1      2        499   999   2018
+#> 34000:                 1     0             1      2        500  1000   2109
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -372,8 +374,8 @@ following,
     #> 
     #> To cite epinowcast in publications use:
     #> 
-    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast: Flexible
-    #>   hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
+    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast:
+    #>   Flexible hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 

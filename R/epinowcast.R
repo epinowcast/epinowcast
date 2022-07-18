@@ -1,54 +1,193 @@
 #' @title Nowcast using partially observed data
 #'
 #' @description Provides a user friendly interface around package functionality
-#' to produce a nowcast from observed preprocessed data, a reference model, and
-#' a report model.
+#' to produce a nowcast from observed preprocessed data, and a series of user
+#' defined models. By default a model that assumes a fixed parametric reporting
+#' distribution with a flexible expectation model is used. Explore the
+#' individual model components for additional documentation and see the package
+#' case studies for example model specifications for different tasks.
 #'
-#' @param as_data_list PARAM_DESCRIPTION
+#' @param reference The reference time indexed reporting process model
+#' specification as defined using [enw_reference()].
 #'
-#' @param inits PARAM DESCRIPTION
+#' @param report The report time indexed reporting process model
+#' specification as defined using [enw_report()].
 #'
-#' @param fit PARAM DESCRIPTION
+#' @param expectation The expectation model specification as defined using
+#' [enw_expectation()]. By default this is set to be highly flexible and thus
+#' weakly informed. Other options are not yet supported.
 #'
-#' @param ... Additional arguments passed to [enw_sample()].
+#' @param obs The observation model as defined by [enw_obs()].
+#' Observations are also processed within this function for use in modelling.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @param fit Model fit options as defined using [enw_fit_opts()]. This includes
+#' the sampler function to use (with the package default being [enw_sample()]),
+#' whether or now a nowcast should be used, etc. See [enw_fit_opts()] for
+#' further details.
 #'
-#' @inheritParams enw_as_data_list
-#' @inheritParams enw_sample
-#' @inheritParams enw_nowcast_summary
+#' @param model The model to use within `fit`. By default this uses
+#' [enw_model()].
+#'
+#' @param priors A data.frame with the following variables:
+#' `variable`, `mean`, `sd` describing normal priors. Priors in the
+#' appropriate format are returned by [enw_reference()] as well as by
+#' other similar model specification functions. Priors in this data.frame
+#' replace the default priors specified by each model component.
+#'
+#' @param ... Additional model modules to pass to `model`. Examples of supported
+#' options are [enw_missing()] for modelling data with missing reference dates.
+#' User modules may also be used after adapting the supplied `model`.
+#'
+#' @return A object of the class "epinowcast" which inherits from
+#' [enw_preprocess_data()] and `data.table`, and combines the output from
+#' the sampler specified in `enw_fit_opts()`.
+#' @inheritParams enw_obs
+#' @importFrom purrr map transpose flatten walk
 #' @family epinowcast
 #' @export
-epinowcast <- function(pobs,
-                       reference_effects = epinowcast::enw_formula(
-                         ~1, pobs$metareference[[1]]
+#' @examplesIf interactive()
+#' # Load data.table and ggplot2
+#' library(data.table)
+#' library(ggplot2)
+#'
+#' # Use 2 cores
+#' options(mc.cores = 2)
+#' # Load and filter germany hospitalisations
+#' nat_germany_hosp <-
+#'   germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+#' nat_germany_hosp <- enw_filter_report_dates(
+#'   nat_germany_hosp,
+#'   latest_date = "2021-10-01"
+#' )
+#' # Make sure observations are complete
+#' nat_germany_hosp <- enw_complete_dates(
+#'   nat_germany_hosp,
+#'   by = c("location", "age_group")
+#' )
+#' # Make a retrospective dataset
+#' retro_nat_germany <- enw_filter_report_dates(
+#'   nat_germany_hosp,
+#'   remove_days = 40
+#' )
+#' retro_nat_germany <- enw_filter_reference_dates(
+#'   retro_nat_germany,
+#'   include_days = 40
+#' )
+#' # Get latest observations for the same time period
+#' latest_obs <- enw_latest_data(nat_germany_hosp)
+#' latest_obs <- enw_filter_reference_dates(
+#'   latest_obs,
+#'   remove_days = 40, include_days = 20
+#' )
+#' # Preprocess observations (note this maximum delay is likely too short)
+#' pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
+#' # Fit the default nowcast model and produce a nowcast
+#' # Note that we have reduced samples for this example to reduce runtimes
+#' nowcast <- epinowcast(pobs,
+#'   fit = enw_fit_opts(
+#'     save_warmup = FALSE, pp = TRUE,
+#'     chains = 2, iter_warmup = 500, iter_sampling = 500
+#'   )
+#' )
+#' nowcast
+#' # plot the nowcast vs latest available observations
+#' plot(nowcast, latest_obs = latest_obs)
+#'
+#' # plot posterior predictions for the delay distribution by date
+#' plot(nowcast, type = "posterior") +
+#'   facet_wrap(vars(reference_date), scale = "free")
+epinowcast <- function(data,
+                       reference = epinowcast::enw_reference(
+                         parametric = ~1,
+                         distribution = "lognormal",
+                         non_parametric = ~0,
+                         data = data
                        ),
-                       report_effects = epinowcast::enw_formula(
-                         ~1, pobs$metareport[[1]]
+                       report = epinowcast::enw_report(
+                         non_parametric = ~0,
+                         structural = ~0,
+                         data
                        ),
-                       priors = epinowcast::enw_priors(),
-                       distribution = "lognormal",
+                       expectation = epinowcast::enw_expectation(
+                         formula = ~ rw(day, .group),
+                         order = 1,
+                         data = data
+                       ),
+                       obs = epinowcast::enw_obs(
+                         family = "negbin", data = data
+                       ),
+                       fit = epinowcast::enw_fit_opts(
+                         fit = epinowcast::enw_sample,
+                         nowcast = TRUE, pp = FALSE,
+                         likelihood = TRUE, debug = FALSE,
+                         output_loglik = FALSE
+                       ),
                        model = epinowcast::enw_model(),
-                       as_data_list = epinowcast::enw_as_data_list,
-                       inits = epinowcast::enw_inits,
-                       fit = epinowcast::enw_sample,
-                       nowcast = TRUE, pp = FALSE,
-                       likelihood = TRUE, debug = FALSE,
-                       output_loglik = FALSE, ...) {
-  stan_data <- as_data_list(pobs,
-    reference_effects = reference_effects,
-    report_effects = report_effects,
-    priors = priors,
-    distribution = distribution, nowcast = nowcast,
-    likelihood = likelihood, debug = debug, pp = pp,
-    output_loglik = output_loglik
+                       priors,
+                       ...) {
+  modules <- list(
+    reference, report, expectation, obs, fit, ...
+  )
+  names(modules) <- as.character(seq_len(length(modules)))
+  purrr::walk(modules, check_module)
+
+  modules <- purrr::transpose(modules)
+  data_as_list <- purrr::flatten(modules$data)
+
+  default_priors <- data.table::rbindlist(
+    modules$priors,
+    fill = TRUE, use.names = TRUE
   )
 
-  inits <- inits(stan_data)
+  if (!missing(priors)) {
+    priors <- enw_replace_priors(default_priors, priors)
+  } else {
+    priors <- default_priors
+  }
 
-  fit <- fit(data = stan_data, model = model, init = inits, ...)
+  data_as_list <- c(
+    data_as_list,
+    enw_priors_as_data_list(priors)
+  )
 
-  out <- cbind(pobs, fit)
+  if (is.null(data_as_list$model_missing)) {
+    model_missing <- 0
+  } else {
+    stop("The missingness model has not yet been implemented")
+  }
+
+  if (!expectation$formula$expectation %in% "~rw(day, .group)") {
+    stop("A flexible expectation model has not yet been implemented")
+  }
+
+  if (expectation$data$exp_order != 1) {
+    stop("Only first order expectation models are currently supported")
+  }
+
+  inits <- purrr::compact(modules$inits)
+  init_fns <- purrr::map(names(inits), ~ inits[[.]](data_as_list, priors))
+
+  init_fn <- function(init_fns = init_fns) {
+    init_inner_fn <- function() {
+      inits <- purrr::map(init_fns, do.call, args = list())
+      inits <- purrr::flatten(inits)
+      return(inits)
+    }
+    return(init_inner_fn)
+  }
+
+  fit <- do.call(
+    fit$sampler, c(
+      list(
+        data = data_as_list,
+        model = model,
+        init = init_fn(init_fns)
+      ),
+      fit$args
+    )
+  )
+
+  out <- cbind(data, fit)
   class(out) <- c("epinowcast", "enw_preprocess_data", class(out))
   return(out[])
 }

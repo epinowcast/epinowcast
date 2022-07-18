@@ -45,9 +45,10 @@ test_that("enw_filter_reference_dates filters as expected", {
 test_that("enw_filter_reference_dates filters as expected when data is present
            with missing reference dates", {
   nat_germany_hosp <-
-   germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+    germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
   nat_germany_hosp <- enw_complete_dates(
-    nat_germany_hosp, by = c("location", "age_group")
+    nat_germany_hosp,
+    by = c("location", "age_group")
   )
   filt_days <- enw_filter_reference_dates(
     nat_germany_hosp,

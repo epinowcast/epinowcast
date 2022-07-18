@@ -1,125 +1,71 @@
 #' Format formula data for use with stan
 #'
-#' @param data A list of stan observation data as produced by
-#' [enw_obs_as_data_list()].
+#' @param formula The output of [enw_formula()].
 #'
-#' @param reference_effects A list of fixed and random design matrices
-#' defining the date of reference model. Defaults to [enw_manual_formula()]
-#' which is an intercept only model.
+#' @param prefix A character string indicating variable
+#' label to use as a prefix.
 #'
-#' @param report_effects A list of fixed and random design matrices
-#' defining the date of reports model. Defaults to [enw_manual_formula()]
-#' which is an intercept only model.
+#' @param drop_intercept Logical, defaults to `FALSE`. Should the
+#' intercept be included as a fixed effect or excluded. This is used internally
+#' in model modules where an intercept must be present/absent.
 #'
-#' @return A list as required by stan.
+#' @return A list defining the model formula. This includes:
+#'  - `prefix_fdesign`: The fixed effects design matrix
+#'  - `prefix_fnrow`: The number of rows of the fixed design matrix
+#'  - `prefix_findex`: The index linking design matrix rows to  observations
+#'  - `prefix_fnindex`: The length of the index
+#'  - `prefix_fncol`: The number of columns (i.e effects) in the fixed effect
+#'  design matrix (minus 1 if `drop_intercept = TRUE`).
+#'  - `prefix_rdesign`: The random effects design matrix
+#'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
+#'  effect design matrix (minus 1 as the intercept is dropped).
 #' @family modeltools
 #' @export
-enw_formula_as_data_list <- function(data, reference_effects, report_effects) {
-  fdata <- list(
-    npmfs = nrow(reference_effects$fixed$design),
-    dpmfs = reference_effects$fixed$index,
-    neffs = ncol(reference_effects$fixed$design) - 1,
-    d_fixed = reference_effects$fixed$design,
-    neff_sds = ncol(reference_effects$random$design) - 1,
-    d_random = reference_effects$random$design
-  )
-
-  # map report date effects to groups and days
-  report_date_eff_ind <- matrix(
-    report_effects$fixed$index,
-    ncol = data$g, nrow = data$t + data$dmax - 1
-  )
-
-  # Add report date data
-  fdata <- c(fdata, list(
-    rd = data$t + data$dmax - 1,
-    urds = nrow(report_effects$fixed$design),
-    rdlurd = report_date_eff_ind,
-    nrd_effs = ncol(report_effects$fixed$design) - 1,
-    rd_fixed = report_effects$fixed$design,
-    nrd_eff_sds = ncol(report_effects$random$design) - 1,
-    rd_random = report_effects$random$design
-  ))
-  return(fdata)
-}
-
-#' Format model options for use with stan
-#'
-#' @param distribution Character string indicating the type of distribution to
-#' use for reference date effects. The default is to use a lognormal but other
-#' options available include the exponential and gamma distributions. If "none"
-#' is specified then no parametric delay distribution is used.
-#'
-#' @param nowcast Logical, defaults to `TRUE`. Should a nowcast be made using
-#' posterior predictions of the unobserved future reported notifications.
-#'
-#' @param pp Logical, defaults to `FALSE`. Should posterior predictions be made
-#' for observed data. Useful for evaluating the performance of the model.
-#'
-#' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
-#' included in the model
-#'
-#' @param output_loglik Logical, defaults to `FALSE`. Should the
-#' log-likelihood be output. Disabling this will speed up fitting
-#' if evaluating the model fit is not required.
-#'
-#' @param debug Logical, defaults to `FALSE`. Should within model debug
-#' information be returned.
-#'
-#' @return A list as required by stan.
-#' @importFrom data.table fcase
-#' @family modeltools
-#' @export
-enw_opts_as_data_list <- function(distribution = "lognormal", nowcast = TRUE,
-                                  pp = FALSE, likelihood = TRUE, debug = FALSE,
-                                  output_loglik = FALSE) {
-  if (pp) {
-    nowcast <- TRUE
-  }
-  # check distribution type is supported and change to numeric
-  distribution <- match.arg(
-    distribution, c("none", "exponential", "lognormal", "gamma")
-  )
-  if (distribution %in% "none") {
-    warning(
-      "As non-parametric hazards have yet to be implemented a parametric hazard
-       is likely required for all real-world use cases"
+#' @examples
+#' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
+#' enw_formula_as_data_list(f, "mtcars")
+enw_formula_as_data_list <- function(formula, prefix,
+                                     drop_intercept = FALSE) {
+  if (!("enw_formula" %in% class(formula))) {
+    stop(
+      "formula must be an object of class enw_formula as produced using
+       enw_formula"
     )
   }
-  distribution <- data.table::fcase(
-    distribution %in% "none", 0,
-    distribution %in% "exponential", 1,
-    distribution %in% "lognormal", 2,
-    distribution %in% "gamma", 3
-  )
-
-  data <- list(
-    dist = distribution,
-    debug = as.numeric(debug),
-    likelihood = as.numeric(likelihood),
-    pp = as.numeric(pp),
-    cast = as.numeric(nowcast),
-    ologlik = as.numeric(output_loglik)
-  )
+  paste_lab <- function(string, lab = prefix) {
+    paste0(lab, "_", string)
+  }
+  data <- list()
+  data[[paste_lab("fdesign")]] <- formula$fixed$design
+  data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
+  data[[paste_lab("findex")]] <- formula$fixed$index
+  data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
+  data[[paste_lab("fncol")]] <-
+    ncol(formula$fixed$design) - as.numeric(drop_intercept)
+  data[[paste_lab("rdesign")]] <- formula$random$design
+  data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
   return(data)
 }
 
-#' FUNCTION_TITLE
+#' Convert prior data.frame to list
 #'
-#' FUNCTION_DESCRIPTION
+#' Converts priors defined in a `data.frame` into a list
+#' format for use by stan. In addition it adds "_p" to all
+#' variable names in order too allow them to be distinguished from
+#' their standard usage within modelling code.
 #'
-#' @param priors DESCRIPTION.
-#'
-#' @return RETURN_DESCRIPTION
+#' @return A named list with each entry specifying a prior as a length
+#' two vector (specifying the mean and standard deviation of the prior).
 #' @family modeltools
+#' @inheritParams enw_replace_priors
 #' @importFrom data.table copy
 #' @importFrom purrr map
 #' @export
 #' @examples
-#' priors <- enw_priors()
+#' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- data.table::copy(priors)
+  priors <- data.table::as.data.table(priors)
   priors[, variable := paste0(variable, "_p")]
   priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
@@ -127,30 +73,46 @@ enw_priors_as_data_list <- function(priors) {
   return(priors)
 }
 
-#' FUNCTION_TITLE
+#' Replace default priors with user specified priors
 #'
-#' FUNCTION_DESCRIPTION
+#' This function is used internally by [epinowcast]() to replace
+#' default model priors with users specified ones (restricted to
+#' normal priors with specified mean and standard deviations). A common
+#' use would be extracting the posterior from a previous [epinowcast()]
+#' run (using `summary(nowcast, type = fit)`) and using this a prior.
 #'
-#' @param nowcast DESCRIPTION
+#' @param priors A data.frame with the following variables:
+#'  `variable`, `mean`, `sd` describing normal priors. Priors in the
+#' appropriate format are returned by [enw_reference()] as well as by
+#' other similar model specification functions.
 #'
-#' @param priors DESCRIPTION.
+#' @param custom_priors A data.frame with the following variables:
+#'  `variable`, `mean`, `sd` describing normal priors. Priors in the
+#' appropriate format are returned by [enw_reference()] as well as by
+#' other similar model specification functions. Priors in this data.frame
+#' replace the default priors. Note that currently vectorised prior names
+#' (i.e those of the form `variable[n]` will be treated as `variable`).
 #'
-#' @param variables A character vector of variables both in the
-#' posterior and in the default priors.
-#'
-#' @param scale DESCRIPTION
-#'
-#' @return RETURN_DESCRIPTION
+#' @return A data.table of prior definitions (variable, mean and sd).
 #' @family modeltools
-#' @importFrom data.table setDT
 #' @export
-enw_posterior_as_prior <- function(nowcast, priors = epinowcast::enw_priors(),
-                                   variables = c(), scale = 5) {
-  posteriors <- nowcast$fit[[1]]$summary(variables)
-  posteriors <- setDT(posteriors)[, sd := sd * scale]
-  posteriors <- posteriors[, .(variable, mean, sd)]
-  priors <- priors[!(variable %in% variables)]
-  priors <- rbind(priors, posteriors, fill = TRUE)
+#' @importFrom data.table as.data.table
+#' @examples
+#' priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
+#' custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
+#' enw_replace_priors(priors, custom_priors)
+enw_replace_priors <- function(priors, custom_priors) {
+  custom_priors <- data.table::as.data.table(custom_priors)[
+    ,
+    .(variable, mean, sd)
+  ]
+  custom_priors <- custom_priors[
+    ,
+    variable := gsub("\\[([^]]*)\\]", "", variable)
+  ]
+  variables <- custom_priors$variable
+  priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
+  priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])
 }
 
@@ -232,4 +194,138 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
     }
   }
   return(list(model = main_model, include_paths = include_paths_no_profile))
+}
+
+#' Fit a CmdStan model using NUTS
+#'
+#' @param data A list of data as produced by model modules (for example
+#' [enw_expectation()], [enw_obs()], etc.) and as required for use the
+#' `model` being used.
+#'
+#' @param model A `cmdstanr` model object as loaded by [enw_model()] or as
+#' supplied by the user.
+#'
+#' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
+#' be returned as a `data.frame`.
+#'
+#' @param ... Additional parameters passed to the `sample` method of `cmdstanr`.
+#'
+#' @return A `data.frame` containing the `cmdstanr` fit, the input data, the
+#' fitting arguments, and optionally summary diagnostics.
+#'
+#' @family modeltools
+#' @export
+#' @importFrom cmdstanr cmdstan_model
+#' @importFrom posterior rhat
+enw_sample <- function(data, model = epinowcast::enw_model(),
+                       diagnostics = TRUE, ...) {
+  fit <- model$sample(data = data, ...)
+
+  out <- data.table(
+    fit = list(fit),
+    data = list(data),
+    fit_args = list(list(...))
+  )
+
+  if (diagnostics) {
+    diag <- fit$sampler_diagnostics(format = "df")
+    diagnostics <- data.table(
+      samples = nrow(diag),
+      max_rhat = round(max(
+        fit$summary(
+          variables = NULL, posterior::rhat,
+          .args = list(na.rm = TRUE)
+        )$`posterior::rhat`,
+        na.rm = TRUE
+      ), 2),
+      divergent_transitions = sum(diag$divergent__),
+      per_divergent_transitions = sum(diag$divergent__) / nrow(diag),
+      max_treedepth = max(diag$treedepth__)
+    )
+    diagnostics[, no_at_max_treedepth := sum(diag$treedepth__ == max_treedepth)]
+    diagnostics[, per_at_max_treedepth := no_at_max_treedepth / nrow(diag)]
+    out <- cbind(out, diagnostics)
+
+    timing <- round(fit$time()$total, 1)
+    out[, run_time := timing]
+  }
+  return(out[])
+}
+
+#' Load and compile the nowcasting model
+#'
+#' @param model A character string indicating the path to the model.
+#' If not supplied the package default model is used.
+#'
+#' @param include A character string specifying the path to any stan
+#' files to include in the model. If missing the package default is used.
+#'
+#' @param compile Logical, defaults to `TRUE`. Should the model
+#' be loaded and compiled using [cmdstanr::cmdstan_model()].
+#'
+#' @param threads Logical, defaults to `FALSE`. Should the model compile with
+#' support for multi-thread support in chain. Note that this requires the use of
+#' the `threads_per_chain` argument when model fitting using [enw_sample()],
+#' and [epinowcast()].
+#'
+#' @param verbose Logical, defaults to `TRUE`. Should verbose
+#' messages be shown.
+#'
+#' @param profile Logical, defaults to `FALSE`. Should the model be profiled?
+#' For more on profiling see the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
+#'
+#' @param stanc_options A list of options to pass to the `stanc_options` of
+#' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
+#' users may wish to pass optimisation flags for example.See the documentation
+#' for [cmdstanr::cmdstan_model()] for further details.
+#'
+#' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
+#'
+#' @return A `cmdstanr` model.
+#'
+#' @family modeltools
+#' @export
+#' @importFrom cmdstanr cmdstan_model
+#' @examplesIf interactive()
+#' mod <- enw_model()
+enw_model <- function(model, include, compile = TRUE,
+                      threads = FALSE, profile = FALSE,
+                      stanc_options = list(), verbose = TRUE, ...) {
+  if (missing(model)) {
+    model <- "stan/epinowcast.stan"
+    model <- system.file(model, package = "epinowcast")
+  }
+  if (missing(include)) {
+    include <- system.file("stan", package = "epinowcast")
+  }
+
+  if (!profile) {
+    stan_no_profile <- write_stan_files_no_profile(model, include)
+    model <- stan_no_profile$model
+    include <- stan_no_profile$include_paths
+  }
+
+  if (compile) {
+    if (verbose) {
+      model <- cmdstanr::cmdstan_model(model,
+        include_paths = include,
+        stanc_options = stanc_options,
+        cpp_options = list(
+          stan_threads = threads
+        ),
+        ...
+      )
+    } else {
+      suppressMessages(
+        model <- cmdstanr::cmdstan_model(model,
+          include_paths = include,
+          stanc_options = stanc_options,
+          cpp_options = list(
+            stan_threads = threads
+          ), ...
+        )
+      )
+    }
+  }
+  return(model)
 }

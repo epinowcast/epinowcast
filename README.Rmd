@@ -109,16 +109,16 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 ```
 
-Construct an intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
+Construct a parametric lognormal intercept only model for the date of reference using the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix for parametric delay distributions to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
-reference_effects <- enw_formula(~ 1, pobs$metareference[[1]])
+reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
 Construct a model with a random effect for the day of report using the metadata produced by `enw_preprocess_data()`.
 
 ```{r}
-report_effects <- enw_formula(~ (1 | day_of_week), pobs$metareport[[1]])
+report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
 ### Model fitting
@@ -134,13 +134,15 @@ We now fit the model and produce a nowcast using this fit. Note that here we use
 ```{r}
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
-  model = model,
-  report_effects = report_effects,
-  reference_effects = reference_effects,
-  save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 2,
-  iter_sampling = 500, iter_warmup = 500,
-  show_messages = FALSE, refresh = 0
+  reference = reference_module,
+  report = report_module,
+  fit = enw_fit_opts(,
+    save_warmup = FALSE, pp = TRUE,
+    chains = 2, threads_per_chain = 2,
+    iter_sampling = 500, iter_warmup = 500,
+    show_messages = FALSE, refresh = 0
+  ),
+  model = model
 )
 ```
 
