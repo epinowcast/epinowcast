@@ -200,9 +200,9 @@
         </dt>
         <dd>Recast the reporting triangle from wide to long format</dd>
       </dl></div><div class="section level2">
-      <h2 id="formula-design-tools">Formula design tools<a class="anchor" aria-label="anchor" href="#formula-design-tools"></a></h2>
+      <h2 id="model-modules">Model modules<a class="anchor" aria-label="anchor" href="#model-modules"></a></h2>
       
-      <p class="section-desc"></p><p>Functions that assist with interpreting model formulas</p>
+      <p class="section-desc"></p><p>Modular model components.</p>
 
       
     </div><div id="" class="section level2">
@@ -212,99 +212,38 @@
 
       <dl><dt>
           
-          <code><a href="as_string_formula.html">as_string_formula()</a></code> 
+          <code><a href="enw_expectation.html">enw_expectation()</a></code> 
         </dt>
-        <dd>Converts formulas to strings</dd>
+        <dd>Expectation model module</dd>
       </dl><dl><dt>
           
-          <code><a href="construct_re.html">construct_re()</a></code> 
+          <code><a href="enw_fit_opts.html">enw_fit_opts()</a></code> 
         </dt>
-        <dd>Constructs random effect terms</dd>
+        <dd>Format model fitting options for use with stan</dd>
       </dl><dl><dt>
           
-          <code><a href="construct_rw.html">construct_rw()</a></code> 
+          <code><a href="enw_missing.html">enw_missing()</a></code> 
         </dt>
-        <dd>Constructs random walk terms</dd>
+        <dd>Missing reference data model module</dd>
       </dl><dl><dt>
           
-          <code><a href="enw_formula.html">enw_formula()</a></code> 
+          <code><a href="enw_obs.html">enw_obs()</a></code> 
         </dt>
-        <dd>Define a model using a formula interface</dd>
+        <dd>Setup observation model and data</dd>
       </dl><dl><dt>
           
-          <code><a href="enw_manual_formula.html">enw_manual_formula()</a></code> 
+          <code><a href="enw_reference.html">enw_reference()</a></code> 
         </dt>
-        <dd>Define a model manually using fixed and random effects</dd>
+        <dd>Reference date logit hazard reporting  model module</dd>
       </dl><dl><dt>
           
-          <code><a href="parse_formula.html">parse_formula()</a></code> 
+          <code><a href="enw_report.html">enw_report()</a></code> 
         </dt>
-        <dd>Parse a formula into components</dd>
-      </dl><dl><dt>
-          
-          <code><a href="re.html">re()</a></code> 
-        </dt>
-        <dd>Defines random effect terms using the lme4 syntax</dd>
-      </dl><dl><dt>
-          
-          <code><a href="remove_rw_terms.html">remove_rw_terms()</a></code> 
-        </dt>
-        <dd>Remove random walk terms from a formula object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="rw.html">rw()</a></code> 
-        </dt>
-        <dd>Adds random walks with Gaussian steps to the model.</dd>
-      </dl><dl><dt>
-          
-          <code><a href="rw_terms.html">rw_terms()</a></code> 
-        </dt>
-        <dd>Finds random walk terms in a formula object</dd>
-      </dl><dl><dt>
-          
-          <code><a href="split_formula_to_terms.html">split_formula_to_terms()</a></code> 
-        </dt>
-        <dd>Split formula into individual terms</dd>
-      </dl></div><div class="section level2">
-      <h2 id="model-design-tools">Model design tools<a class="anchor" aria-label="anchor" href="#model-design-tools"></a></h2>
-      
-      <p class="section-desc"></p><p>Functions that assist with designing models.</p>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="enw_add_cumulative_membership.html">enw_add_cumulative_membership()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_add_pooling_effect.html">enw_add_pooling_effect()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_dates_to_factors.html">enw_dates_to_factors()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_design.html">enw_design()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_effects_metadata.html">enw_effects_metadata()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
+        <dd>Report date logit hazard reporting  model module</dd>
       </dl></div><div class="section level2">
       <h2 id="model-tools">Model tools<a class="anchor" aria-label="anchor" href="#model-tools"></a></h2>
       
-      <p class="section-desc"></p><p>Functions that assist with interpreting models for stan.</p>
+      <p class="section-desc"></p><p>Functions that assist with combining and using modular models.</p>
 
       
     </div><div id="" class="section level2">
@@ -319,19 +258,24 @@
         <dd>Format formula data for use with stan</dd>
       </dl><dl><dt>
           
-          <code><a href="enw_opts_as_data_list.html">enw_opts_as_data_list()</a></code> 
+          <code><a href="enw_model.html">enw_model()</a></code> 
         </dt>
-        <dd>Format model options for use with stan</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_posterior_as_prior.html">enw_posterior_as_prior()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
+        <dd>Load and compile the nowcasting model</dd>
       </dl><dl><dt>
           
           <code><a href="enw_priors_as_data_list.html">enw_priors_as_data_list()</a></code> 
         </dt>
-        <dd>FUNCTION_TITLE</dd>
+        <dd>Convert prior data.frame to list</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_replace_priors.html">enw_replace_priors()</a></code> 
+        </dt>
+        <dd>Replace default priors with user specified priors</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_sample.html">enw_sample()</a></code> 
+        </dt>
+        <dd>Fit a CmdStan model using NUTS</dd>
       </dl><dl><dt>
           
           <code><a href="remove_profiling.html">remove_profiling()</a></code> 
@@ -343,47 +287,6 @@
         </dt>
         <dd>Write copies of the .stan files of a Stan model and its #include files
 with all profiling statements removed.</dd>
-      </dl></div><div class="section level2">
-      <h2 id="model">Model<a class="anchor" aria-label="anchor" href="#model"></a></h2>
-      
-      <p class="section-desc"></p><p>Functions for fitting the nowcasting model.</p>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="enw_as_data_list.html">enw_as_data_list()</a></code> 
-        </dt>
-        <dd>Format data for use with stan</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_inits.html">enw_inits()</a></code> 
-        </dt>
-        <dd>Set up initial conditions for model</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_model.html">enw_model()</a></code> 
-        </dt>
-        <dd>Load and compile the nowcasting model</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_obs_as_data_list.html">enw_obs_as_data_list()</a></code> 
-        </dt>
-        <dd>Format observed data for use with stan</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_priors.html">enw_priors()</a></code> 
-        </dt>
-        <dd>FUNCTION_TITLE</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_sample.html">enw_sample()</a></code> 
-        </dt>
-        <dd>Fit a CmdStan model using NUTS</dd>
       </dl></div><div class="section level2">
       <h2 id="postprocess">Postprocess<a class="anchor" aria-label="anchor" href="#postprocess"></a></h2>
       
@@ -488,6 +391,108 @@ with all profiling statements removed.</dd>
         </dt>
         <dd>Evaluate nowcasts using proper scoring rules</dd>
       </dl></div><div class="section level2">
+      <h2 id="formula-design-tools">Formula design tools<a class="anchor" aria-label="anchor" href="#formula-design-tools"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions that assist with interpreting model formulas</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="as_string_formula.html">as_string_formula()</a></code> 
+        </dt>
+        <dd>Converts formulas to strings</dd>
+      </dl><dl><dt>
+          
+          <code><a href="construct_re.html">construct_re()</a></code> 
+        </dt>
+        <dd>Constructs random effect terms</dd>
+      </dl><dl><dt>
+          
+          <code><a href="construct_rw.html">construct_rw()</a></code> 
+        </dt>
+        <dd>Constructs random walk terms</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_formula.html">enw_formula()</a></code> 
+        </dt>
+        <dd>Define a model using a formula interface</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_manual_formula.html">enw_manual_formula()</a></code> 
+        </dt>
+        <dd>Define a model manually using fixed and random effects</dd>
+      </dl><dl><dt>
+          
+          <code><a href="parse_formula.html">parse_formula()</a></code> 
+        </dt>
+        <dd>Parse a formula into components</dd>
+      </dl><dl><dt>
+          
+          <code><a href="re.html">re()</a></code> 
+        </dt>
+        <dd>Defines random effect terms using the lme4 syntax</dd>
+      </dl><dl><dt>
+          
+          <code><a href="remove_rw_terms.html">remove_rw_terms()</a></code> 
+        </dt>
+        <dd>Remove random walk terms from a formula object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="rw.html">rw()</a></code> 
+        </dt>
+        <dd>Adds random walks with Gaussian steps to the model.</dd>
+      </dl><dl><dt>
+          
+          <code><a href="rw_terms.html">rw_terms()</a></code> 
+        </dt>
+        <dd>Finds random walk terms in a formula object</dd>
+      </dl><dl><dt>
+          
+          <code><a href="split_formula_to_terms.html">split_formula_to_terms()</a></code> 
+        </dt>
+        <dd>Split formula into individual terms</dd>
+      </dl></div><div class="section level2">
+      <h2 id="model-design-tools">Model design tools<a class="anchor" aria-label="anchor" href="#model-design-tools"></a></h2>
+      
+      <p class="section-desc"></p><p>Functions that assist with designing models.</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="enw_add_cumulative_membership.html">enw_add_cumulative_membership()</a></code> 
+        </dt>
+        <dd>FUNCTION_TITLE</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_add_pooling_effect.html">enw_add_pooling_effect()</a></code> 
+        </dt>
+        <dd>FUNCTION_TITLE</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_dates_to_factors.html">enw_dates_to_factors()</a></code> 
+        </dt>
+        <dd>FUNCTION_TITLE</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_design.html">enw_design()</a></code> 
+        </dt>
+        <dd>FUNCTION_TITLE</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_effects_metadata.html">enw_effects_metadata()</a></code> 
+        </dt>
+        <dd>FUNCTION_TITLE</dd>
+      </dl></div><div class="section level2">
       <h2 id="datasets">Datasets<a class="anchor" aria-label="anchor" href="#datasets"></a></h2>
       
       <p class="section-desc"></p><p>Package datasets used in examples and by users to explore the package functionality.</p>
@@ -529,6 +534,11 @@ with all profiling statements removed.</dd>
           <code><a href="check_group.html">check_group()</a></code> 
         </dt>
         <dd>Check Observations for reserved grouping variables</dd>
+      </dl><dl><dt>
+          
+          <code><a href="check_module.html">check_module()</a></code> 
+        </dt>
+        <dd>Check a model module contains the required components</dd>
       </dl><dl><dt>
           
           <code><a href="check_quantiles.html">check_quantiles()</a></code> 

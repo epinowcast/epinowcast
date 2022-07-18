@@ -106,7 +106,8 @@ handle some parts of the model specification process.</p>
 <span>  fixed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  custom_random <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  no_contrasts <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  no_contrasts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  add_intercept <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -133,9 +134,14 @@ effects for fixed effects that only have a partial name match.</p></dd>
 
 
 <dt>no_contrasts</dt>
-<dd><p>Defaults to <code>FALSE</code>. <code>TRUE</code> means that no variable uses
-contrast. Alternatively a character vector of variables can be supplied
-indicating which variables should  not have contrasts.</p></dd>
+<dd><p>Logical, defaults to <code>FALSE</code>. <code>TRUE</code> means that no
+variable uses contrast. Alternatively a character vector of variables can be
+supplied indicating which variables should  not have contrasts.</p></dd>
+
+
+<dt>add_intercept</dt>
+<dd><p>Logical, defaults to <code>FALSE</code>. Should an intercept be
+added to the fixed effects.</p></dd>
 
 </dl></div>
     <div class="section level2">

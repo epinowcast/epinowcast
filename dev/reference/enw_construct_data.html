@@ -155,7 +155,9 @@ downstream modelling</p></dd>
 <dt>max_delay</dt>
 <dd><p>Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully.</p></dd>
+setting so consider what maximum makes sense for your data carefully. Note
+that this is zero indexed and so includes the reference date and
+<code>max_delay - 1</code> other days.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -223,9 +225,9 @@ nowcasting.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm              latest</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[671x9]&gt; &lt;data.table[630x11]&gt; &lt;data.table[41x10]&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     missing_reference  reporting_triangle      metareference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x6]&gt; &lt;data.table[41x22]&gt; &lt;data.table[41x8]&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[41x6]&gt; &lt;data.table[41x22]&gt; &lt;data.table[41x9]&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             metareport          metadelay time snapshots by groups max_delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[60x11]&gt; &lt;data.table[20x4]&gt;   41        41         1        20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[60x12]&gt; &lt;data.table[20x4]&gt;   41        41         1        20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      max_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-08-22</span>
 </code></pre></div>

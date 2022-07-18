@@ -70,7 +70,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Fit a CmdStan model using NUTS</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epiforecasts/epinowcast/blob/HEAD/R/model.R" class="external-link"><code>R/model.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epiforecasts/epinowcast/blob/HEAD/R/model-tools.R" class="external-link"><code>R/model-tools.R</code></a></small>
       <div class="d-none name"><code>enw_sample.Rd</code></div>
     </div>
 
@@ -86,11 +86,14 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>data</dt>
-<dd><p>A list of data as produced by <code><a href="enw_as_data_list.html">enw_as_data_list()</a></code>.</p></dd>
+<dd><p>A list of data as produced by model modules (for example
+<code><a href="enw_expectation.html">enw_expectation()</a></code>, <code><a href="enw_obs.html">enw_obs()</a></code>, etc.) and as required for use the
+<code>model</code> being used.</p></dd>
 
 
 <dt>model</dt>
-<dd><p>A <code>cmdstanr</code> model object as loaded by <code><a href="enw_model.html">enw_model()</a></code>.</p></dd>
+<dd><p>A <code>cmdstanr</code> model object as loaded by <code><a href="enw_model.html">enw_model()</a></code> or as
+supplied by the user.</p></dd>
 
 
 <dt>diagnostics</dt>
@@ -111,12 +114,13 @@ fitting arguments, and optionally summary diagnostics.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>Functions used for modelling
-<code><a href="enw_as_data_list.html">enw_as_data_list</a>()</code>,
-<code><a href="enw_inits.html">enw_inits</a>()</code>,
+    <div class="dont-index"><p>Functions used to help convert models into the format required for stan
+<code><a href="enw_formula_as_data_list.html">enw_formula_as_data_list</a>()</code>,
 <code><a href="enw_model.html">enw_model</a>()</code>,
-<code><a href="enw_obs_as_data_list.html">enw_obs_as_data_list</a>()</code>,
-<code><a href="enw_priors.html">enw_priors</a>()</code></p></div>
+<code><a href="enw_priors_as_data_list.html">enw_priors_as_data_list</a>()</code>,
+<code><a href="enw_replace_priors.html">enw_replace_priors</a>()</code>,
+<code><a href="remove_profiling.html">remove_profiling</a>()</code>,
+<code><a href="write_stan_files_no_profile.html">write_stan_files_no_profile</a>()</code></p></div>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
