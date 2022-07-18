@@ -20,3 +20,7 @@
 ^CONTRIBUTING\.md$
 ^inst/make_hexsticker\.R$
 ^inst/scripts$
+^vignettes/precompile\.R$
+^vignettes/germany-age-stratified-nowcasting\.Rmd\.orig$
+^doc$
+^Meta$
