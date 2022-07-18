@@ -139,7 +139,8 @@ To speed up model fitting we make use of posterior information from the previous
 
 ```{r}
 priors <- summary(
-  nowcast, type = "fit",
+  nowcast,
+  type = "fit",
   variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
 priors[, sd := sd * 5]
