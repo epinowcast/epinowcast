@@ -290,9 +290,14 @@ options(mc.cores = 2)
 independent_nowcast <- map(
   split(retro_nat_germany, by = "age_group"),
   independent_epinowcast,
-  fit = fit,
+  fit = enw_fit_opts(
+    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
+    chains = 2, threads_per_chain = threads, 
+    iter_sampling = 500, iter_warmup = 500,
+    show_messages = FALSE, refresh = 0,
+    adapt_delta = 0.98, max_treedepth = 12
+  ),
   model = multithread_model
-  priors = priors
 )
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
@@ -301,7 +306,8 @@ As we now have the summarised nowcasts rather than an object of class `epinowcas
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
-  independent_nowcast, latest_obs = latest_nat_germany) +
+  independent_nowcast, latest_obs = latest_nat_germany
+) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
@@ -360,7 +366,8 @@ This allows us to plot nowcasts for each model and age group compared to the lat
 
 ```{r, fig.width = 24, fig.height = 16}
 enw_plot_nowcast_quantiles(
-  summarised_nowcasts, latest_obs = latest_nat_germany) +
+  summarised_nowcasts, latest_obs = latest_nat_germany
+) +
   facet_grid(vars(age_group), vars(model), scales = "free_y")
 ```
 
