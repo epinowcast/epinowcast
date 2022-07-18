@@ -35,7 +35,7 @@ reference:
   - title: Model modules
     desc: Modular model components.
     contents:
-      - has_concept("model")
+      - has_concept("modelmodules")
   - title: Model tools
     desc: Functions that assist with combining and using modular models.
     contents:
