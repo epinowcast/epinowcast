@@ -1,21 +1,22 @@
 # epinowcast 0.1.0
 
-This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious
-disease questions to be better answered. These extensions include:
+This is major release focussing on improving the user experience, and preparing for future package extensions, with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious disease questions to be better answered. These extensions include:
 
 * Modelling missing data (#43).
 * Non-parametric modelling of delay and reference day logit hazard (#4).
 * Flexible expectation modelling (#5).
 * Forecasting beyond the horizon of the data (#3).
 * Known reporting structures (#33).
-* Renewal equation based reproduction number estimaton (potentially part of #5)..
-* Latent infections.
+* Renewal equation based reproduction number estimaton (potentially part of #5).
+* Latent infections (i.e as implemented in other packages such as `EpiNow2`, `epidemia`, etc.).
 * Convolution based delay models (i.e hospitalisations and deaths) with partially reported data.
 * Additional observation models.
 
-If interested in contributing to these features or other aspects of package development (for example improving post-processing, the coverage of documentation, or contibuting case studies) please see our [contributing guide](https://epiforecasts.io/epinowcast/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
+If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contibuting case studies) please see our [contributing guide](https://epiforecasts.io/epinowcast/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
 
- For ease, we have stratified changes below into interface, package, documentation, and model changes.
+This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epiforecasts/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
+
+@adrian-lison, @sbfnk, and @seabbs contributed to this release. 
 
 ## Interface
 
@@ -47,14 +48,14 @@ If interested in contributing to these features or other aspects of package deve
 
 ## Internals
 
-* Array declarations in the stan model have been updated. To maintain compatibility with [expose_stan_fns()] (which itself depends on `rstan`), additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74), [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003), and [#93](https://github.com/epiforecasts/epinowcast/pull/93) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
+* Array declarations in the stan model have been updated. To maintain compatibility with `expose_stan_fns()` (which itself depends on `rstan`), additional functionality has been added to parse stan code in this function. See [#74](https://github.com/epiforecasts/epinowcast/issues/74), [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003), and [#93](https://github.com/epiforecasts/epinowcast/pull/93) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 * Remove spurious warnings due to missing initial values for optional parameters. See [#76](https://github.com/epiforecasts/epinowcast/issues/75) by [@sbfnk](https://github.com/sbfnk) and [@seabbs](https://github.com/seabbs).
 
 
 # epinowcast 0.0.7
 
 * Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see [#62](https://github.com/epiforecasts/epinowcast/pull/62) by [@seabbs](https://github.com/seabbs)). 
-* The default approach to handling reported notifications beyond the maximum delay has been changed. In `0.0.6` and previous versions notifications beyond the maximum delay were silently dropped. In `0.0.7` this is now optional behaviour (set using `max_delay_strat` in [enw_preprocess_data()]) and the default is instead to add these notifications to the last included delay were present. This should produce more accurate long-term nowcasts when data is available but means that reported notifications for the maximum delay need to be interpreted with this in mind. See [#62](https://github.com/epiforecasts/epinowcast/pull/62)by [@seabbs](https://github.com/seabbs).
+* The default approach to handling reported notifications beyond the maximum delay has been changed. In `0.0.6` and previous versions notifications beyond the maximum delay were silently dropped. In `0.0.7` this is now optional behaviour (set using `max_delay_strat` in `enw_preprocess_data()`) and the default is instead to add these notifications to the last included delay were present. This should produce more accurate long-term nowcasts when data is available but means that reported notifications for the maximum delay need to be interpreted with this in mind. See [#62](https://github.com/epiforecasts/epinowcast/pull/62)by [@seabbs](https://github.com/seabbs).
 * Adds some basic testing and documentation for preprocessing functions. See [#62](https://github.com/epiforecasts/epinowcast/pull/62)by [@seabbs](https://github.com/seabbs).
 * Stabilises calculation of expected observations by increasing the proportion of the calculation performed on the log scale. This results in reduced computation time with the majority of this coming from switching to using the `neg_binomial_2_log` family of functions (over their natural scale counterparts). See [#65](https://github.com/epiforecasts/epinowcast/pull/65)by [@seabbs](https://github.com/seabbs)
 
