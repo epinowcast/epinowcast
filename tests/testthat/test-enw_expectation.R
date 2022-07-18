@@ -23,5 +23,5 @@ test_that("enw_expectation supports custom expectation models", {
     expectation$inits <- NULL
     expectation
   })
-  expect_error(ewn_expectation(~0, data = pobs))
+  expect_error(enw_expectation(~0, data = pobs))
 })
