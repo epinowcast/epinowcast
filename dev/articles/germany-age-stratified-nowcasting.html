@@ -236,7 +236,8 @@
 <p>To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
-<span>  <span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"fit"</span>,</span>
+<span>  <span class="va">nowcast</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"fit"</span>,</span>
 <span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">5</span><span class="op">]</span></span>
