@@ -57,7 +57,7 @@ test_that("epinowcast can fit a simple reporting model", {
   expect_lt(nowcast$max_rhat, 1.05)
   expect_error(
     nowcast$fit[[1]]$summary(
-      c("refp_mean_int", "refp_sd_int", "sqrt_phi[1]")
+      c("refp_mean_int", "refp_sd_int")
     ), NA
   )
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
