@@ -101,7 +101,7 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
         )
       }
       init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
-      init$refp_sd <- rep(init$logsd_int, data$refp_fnrow)
+      init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
       if (data$refp_fncol > 0) {
         init$refp_mean_beta <- rnorm(data$refp_fncol, 0, 0.01)
         if (data$model_refp > 1) {
