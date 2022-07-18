@@ -90,5 +90,10 @@ check_module <- function(module) {
        further modelling as a list"
     )
   }
+  if (!is.list(module[["data"]])) {
+    stop(
+      "data must be a list of required data"
+    )
+  }
   return(invisible(NULL))
 }
