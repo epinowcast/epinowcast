@@ -13,7 +13,7 @@ test_that("enw_expectation produces the expected default model", {
     exp$init(c(exp$data, obs$data), exp$priors)(),
     c("exp_beta", "exp_beta_sd", "leobs_init", "eobs_lsd", "leobs_resids")
   )
-  expect_equal(enw_expectation(order = 2, data = pobs)$data$exp_order, "2")
+  expect_equal(enw_expectation(order = 2, data = pobs)$data$exp_order, 2)
   expect_error(enw_expectation(order = 3, data = pobs))
 })
 

@@ -293,11 +293,12 @@ independent_nowcast <- map(
   fit = enw_fit_opts(
     save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
     chains = 2, threads_per_chain = threads, 
-    iter_sampling = 500, iter_warmup = 500,
+    iter_sampling = 500, iter_warmup = 250,
     show_messages = FALSE, refresh = 0,
-    adapt_delta = 0.98, max_treedepth = 12
+    adapt_delta = 0.98, max_treedepth = 15
   ),
-  model = multithread_model
+  model = multithread_model,
+  priors = priors
 )
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
@@ -390,7 +391,7 @@ score <- enw_score_nowcast(
  latest_nat_germany[reference_date > (max(reference_date) - 7)]
 )
 
-overall_score <- score |>
+score |>
   summarise_scores(by = "model") |>
   kable()
 ```
@@ -398,7 +399,7 @@ overall_score <- score |>
 Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
 
 ```{r}
-age_score <- score |>
+score |>
   summarise_scores(by = c("model", "age_group")) |>
   kable()
 ```
@@ -406,7 +407,7 @@ age_score <- score |>
 Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend). 
 
 ```{r}
-date_score <- score |>
+score |>
   summarise_scores(by = c("model", "reference_date")) |>
   kable()
 ```

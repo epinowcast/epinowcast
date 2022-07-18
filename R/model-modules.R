@@ -272,7 +272,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
           ~ rnorm(1, log(.), 1)
         )),
         eobs_lsd = array(abs(rnorm(
-          data$g, data$eobs_lsd_p[1], data$eobs_lsd_p[2] / 10
+          data$g, priors$eobs_lsd_p[1], priors$eobs_lsd_p[2] / 10
         ))),
         leobs_resids = array(
           rnorm((data$t - 1) * data$g, 0, 0.01),
