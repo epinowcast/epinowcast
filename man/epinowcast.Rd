@@ -12,8 +12,8 @@ epinowcast(
   expectation = epinowcast::enw_expectation(formula = ~rw(day, .group), order = 1, data
     = data),
   obs = epinowcast::enw_obs(family = "negbin", data = data),
-  fit = enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp = FALSE,
-    likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
+  fit = epinowcast::enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp =
+    FALSE, likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
   model = epinowcast::enw_model(),
   priors,
   ...

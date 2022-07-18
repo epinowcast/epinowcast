@@ -101,7 +101,7 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
         )
       }
       init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
-      init$refp_sd <- rep(init$logsd_int, data$refp_fnrow)
+      init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
       if (data$refp_fncol > 0) {
         init$refp_mean_beta <- rnorm(data$refp_fncol, 0, 0.01)
         if (data$model_refp > 1) {
@@ -246,7 +246,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
     form,
     prefix = "exp", drop_intercept = order == 1
   )
-  data$exp_order <- order
+  data$exp_order <- as.numeric(order)
 
   out <- list()
   out$formula$expectation <- form$formula
@@ -272,7 +272,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
           ~ rnorm(1, log(.), 1)
         )),
         eobs_lsd = array(abs(rnorm(
-          data$g, data$eobs_lsd_p[1], data$eobs_lsd_p[2] / 10
+          data$g, priors$eobs_lsd_p[1], priors$eobs_lsd_p[2] / 10
         ))),
         leobs_resids = array(
           rnorm((data$t - 1) * data$g, 0, 0.01),

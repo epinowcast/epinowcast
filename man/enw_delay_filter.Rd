@@ -14,7 +14,9 @@ date), and \code{.group} (as added by \code{\link[=enw_assign_group]{enw_assign_
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully.}
+setting so consider what maximum makes sense for your data carefully. Note
+that this is zero indexed and so includes the reference date and
+\code{max_delay - 1} other days.}
 }
 \value{
 A data frame filtered so that dates by report are less than or equal

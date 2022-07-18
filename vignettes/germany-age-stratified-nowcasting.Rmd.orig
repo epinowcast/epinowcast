@@ -100,13 +100,13 @@ multithread_model <- enw_model(threads = TRUE)
 
 Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
-```{r}
+```{r simple-nowcast}
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads, 
-  iter_sampling = 500, iter_warmup = 500
+  iter_sampling = 500, iter_warmup = 250,
+  show_messages = FALSE, refresh = 0
 )
-
 nowcast <- epinowcast(pobs,
   fit = fit,
   model = multithread_model,
@@ -135,13 +135,14 @@ As noted using the posterior predictions from the simple model fit above there a
 report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
-To speed up model fitting we make use of posterior information from the previous model for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
+To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
 
 ```{r}
 priors <- summary(
   nowcast, type = "fit",
   variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
+priors[, sd := sd * 5]
 priors
 ```
 
@@ -229,13 +230,19 @@ reference_module_week_by_age <- enw_reference(
 )
 ```
 
-We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.95 here to mitigate divergent transitions).
+We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.98 here to mitigate divergent transitions).
 
 ```{r}
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
-  fit = fit,
+  fit = enw_fit_opts(
+    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
+    chains = 2, threads_per_chain = threads, 
+    iter_sampling = 500, iter_warmup = 500,
+    show_messages = FALSE, refresh = 0,
+    adapt_delta = 0.98
+  ),
   model = multithread_model,
   priors = priors
 )
@@ -282,8 +289,14 @@ options(mc.cores = 2)
 independent_nowcast <- map(
   split(retro_nat_germany, by = "age_group"),
   independent_epinowcast,
-  fit = fit,
-  model = multithread_model
+  fit = enw_fit_opts(
+    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
+    chains = 2, threads_per_chain = threads, 
+    iter_sampling = 500, iter_warmup = 250,
+    show_messages = FALSE, refresh = 0,
+    adapt_delta = 0.95, max_treedepth = 12
+  ),
+  model = multithread_model,
   priors = priors
 )
 independent_nowcast <- rbindlist(independent_nowcast)
@@ -293,7 +306,8 @@ As we now have the summarised nowcasts rather than an object of class `epinowcas
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
-  independent_nowcast, latest_obs = latest_nat_germany) +
+  independent_nowcast, latest_obs = latest_nat_germany
+) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
@@ -352,7 +366,8 @@ This allows us to plot nowcasts for each model and age group compared to the lat
 
 ```{r, fig.width = 24, fig.height = 16}
 enw_plot_nowcast_quantiles(
-  summarised_nowcasts, latest_obs = latest_nat_germany) +
+  summarised_nowcasts, latest_obs = latest_nat_germany
+) +
   facet_grid(vars(age_group), vars(model), scales = "free_y")
 ```
 
@@ -375,7 +390,7 @@ score <- enw_score_nowcast(
  latest_nat_germany[reference_date > (max(reference_date) - 7)]
 )
 
-overall_score <- score |>
+score |>
   summarise_scores(by = "model") |>
   kable()
 ```
@@ -383,7 +398,7 @@ overall_score <- score |>
 Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
 
 ```{r}
-age_score <- score |>
+score |>
   summarise_scores(by = c("model", "age_group")) |>
   kable()
 ```
@@ -391,7 +406,7 @@ age_score <- score |>
 Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend). 
 
 ```{r}
-date_score <- score |>
+score |>
   summarise_scores(by = c("model", "reference_date")) |>
   kable()
 ```
