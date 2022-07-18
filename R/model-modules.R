@@ -246,7 +246,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
     form,
     prefix = "exp", drop_intercept = order == 1
   )
-  data$exp_order <- order
+  data$exp_order <- as.numeric(order)
 
   out <- list()
   out$formula$expectation <- form$formula

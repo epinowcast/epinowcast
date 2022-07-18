@@ -1,8 +1,10 @@
 # enw_reference supports parametric models
 
     Code
-      enw_reference(~ 1 + (1 | day_of_week) + rw(week), distribution = "lognormal",
+      ref <- enw_reference(~ 1 + (1 | day_of_week) + rw(week), distribution = "lognormal",
       data = pobs)
+      ref$inits <- NULL
+      ref
     Output
       $formula
       $formula$parametric
@@ -192,52 +194,4 @@
       2: Zero truncated normal  0.5  1
       3: Zero truncated normal  0.0  1
       4: Zero truncated normal  0.0  1
-      
-      $inits
-      function(data, priors) {
-          priors <- enw_priors_as_data_list(priors)
-          fn <- function() {
-            init <- list(
-              refp_mean_int = numeric(0),
-              refp_sd_int = numeric(0),
-              refp_mean_beta = numeric(0),
-              refp_sd_beta = numeric(0),
-              refp_mean_beta_sd = numeric(0),
-              refp_sd_beta_sd = numeric(0)
-            )
-            if (data$model_refp > 0) {
-              init$refp_mean_int <- rnorm(
-                1, priors$refp_mean_int[1], priors$refp_mean_int[2] / 10
-              )
-            }
-            if (data$model_refp > 1) {
-              init$refp_sd_int <- abs(
-                rnorm(1, priors$refp_sd_int[1], priors$refp_sd_int[2] / 10)
-              )
-            }
-            init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
-            init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
-            if (data$refp_fncol > 0) {
-              init$refp_mean_beta <- rnorm(data$refp_fncol, 0, 0.01)
-              if (data$model_refp > 1) {
-                init$refp_sd_beta <- rnorm(data$refp_fncol, 0, 0.01)
-              }
-            }
-            if (data$refp_rncol > 0) {
-              init$refp_mean_beta_sd <- abs(rnorm(
-                data$refp_rncol, priors$refp_mean_beta_sd_p[1],
-                priors$refp_mean_beta_sd_p[2] / 10
-              ))
-              if (data$model_refp > 1) {
-                init$refp_sd_beta_sd <- abs(rnorm(
-                  data$refp_rncol, priors$refp_sd_beta_sd_p[1],
-                  priors$refp_sd_beta_sd_p[2] / 10
-                ))
-              }
-            }
-            return(init)
-          }
-          return(fn)
-        }
-      <environment: 0x55a44f6f65f0>
       

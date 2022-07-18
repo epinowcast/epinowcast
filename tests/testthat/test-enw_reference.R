@@ -2,13 +2,15 @@
 pobs <- enw_example("preprocessed")
 
 test_that("enw_reference supports parametric models", {
-  expect_snapshot(
-    enw_reference(
+  expect_snapshot({
+    ref <- enw_reference(
       ~ 1 + (1 | day_of_week) + rw(week),
       distribution = "lognormal",
       data = pobs
     )
-  )
+    ref$inits <- NULL
+    ref
+  })
   ref <- enw_reference(
     ~ 1 + (1 | day_of_week) + rw(week),
     distribution = "lognormal", data = pobs
