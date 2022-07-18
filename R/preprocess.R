@@ -686,7 +686,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #'
 #' @param max_delay Numeric defaults to 20. The maximum number of days to
 #' include in the delay distribution. Computation scales non-linearly with this
-#' setting so consider what maximum makes sense for your data carefully.
+#' setting so consider what maximum makes sense for your data carefully. Note
+#' that this is zero indexed and so includes the reference date and
+#' `max_delay -1` other days.
 #'
 #' @param holidays A vector of dates indicating when holidays occur used by
 #' [enw_add_metaobs_features()] to treat holidays as sundays within the
