@@ -37,6 +37,7 @@ test_that("epinowcast can fit a simple reporting model", {
       chains = 2, iter_warmup = 250, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
+    obs = enw_obs(family = "poisson", data = pobs),
     model = model
   ))
 
@@ -55,7 +56,9 @@ test_that("epinowcast can fit a simple reporting model", {
   expect_lt(nowcast$max_treedepth, 10)
   expect_lt(nowcast$max_rhat, 1.05)
   expect_error(
-    nowcast$fit[[1]]$summary(c("refp_mean_int", "refp_sd_int", "sqrt_phi")), NA
+    nowcast$fit[[1]]$summary(
+      c("refp_mean_int", "refp_sd_int")
+    ), NA
   )
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))

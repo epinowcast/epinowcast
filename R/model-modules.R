@@ -373,7 +373,8 @@ enw_missing <- function(formula = ~1, data) {
 #'
 #' @param family A character string describing the observation model to
 #' use in the likelihood. By default this is a negative binomial ("negbin")
-#' with support for additional observation models being planned.
+#' with Poisson ("poisson") also being available. Support for additional
+#' observation models is planned, please open an issue with suggestions.
 #'
 #' @param data Output from [enw_preprocess_data()].
 #'
@@ -383,9 +384,10 @@ enw_missing <- function(formula = ~1, data) {
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
 enw_obs <- function(family = "negbin", data) {
-  family <- match.arg(family, "negbin")
+  family <- match.arg(family, c("negbin", "poisson"))
 
-  obs_type <- data.table::fcase(
+  model_obs <- data.table::fcase(
+    family %in% "poisson", 0,
     family %in% "negbin", 1
   )
 
@@ -441,7 +443,7 @@ enw_obs <- function(family = "negbin", data) {
     obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
-    obs_type = obs_type
+    model_obs = model_obs
   )
 
   out <- list()
@@ -461,11 +463,11 @@ enw_obs <- function(family = "negbin", data) {
         sqrt_phi = numeric(0),
         phi = numeric(0)
       )
-      if (data$obs_type == 1) {
-        init$sqrt_phi <- abs(rnorm(
+      if (data$model_obs == 1) {
+        init$sqrt_phi <- array(abs(rnorm(
           1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10
-        ))
-        init$phi <- 1 / sqrt(init$sqrt_phi)
+        )))
+        init$phi <- 1 / (init$sqrt_phi^2)
       }
       return(init)
     }

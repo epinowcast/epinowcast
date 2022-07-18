@@ -173,7 +173,7 @@ distributions to reduce runtimes so the design matrix shows only unique
 rows with `index` containing the mapping to the full design matrix.
 
 ``` r
-reference_module <- enw_reference(~ 1, distribution = "lognormal", data = pobs)
+reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
 Construct a model with a random effect for the day of report using the
@@ -217,12 +217,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 64.4 seconds.
-#> Chain 2 finished in 65.2 seconds.
+#> Chain 2 finished in 65.5 seconds.
+#> Chain 1 finished in 77.3 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 64.8 seconds.
-#> Total execution time: 65.3 seconds.
+#> Mean chain execution time: 71.4 seconds.
+#> Total execution time: 77.3 seconds.
 ```
 
 ### Results
@@ -239,11 +239,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[32]> <list[52]> <list[8]>    1000     1.03
+#> 1: <CmdStanMCMC[32]> <list[52]> <list[8]>    1000     1.02
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  28                0.028     65.3
+#> 1:                   5                0.005     77.3
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -265,26 +265,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.038     69 0.1964551 0.0000 69
-#>  3:                 1    37             0  47.086     47 0.2944328 0.0000 47
-#>  4:                 1    36             0  65.190     65 0.4450821 0.0000 65
-#>  5:                 1    35             0  50.236     50 0.4924901 0.0000 50
-#>  6:                 1    34             0  36.234     36 0.4994932 0.0000 36
-#>  7:                 1    33             0  94.463     94 0.7079069 0.0000 94
-#>  8:                 1    32             0  91.683     91 0.8655982 0.0000 91
-#>  9:                 1    31             0 100.001    100 1.0593022 1.4826 99
-#> 10:                 1    30             0  87.106     87 1.1054347 1.4826 86
+#>  2:                 1    38             0  69.032     69 0.1816838 0.0000 69
+#>  3:                 1    37             0  47.083     47 0.2796233 0.0000 47
+#>  4:                 1    36             0  65.218     65 0.4865313 0.0000 65
+#>  5:                 1    35             0  50.264     50 0.5163047 0.0000 50
+#>  6:                 1    34             0  36.246     36 0.4957113 0.0000 36
+#>  7:                 1    33             0  94.462     94 0.6833908 0.0000 94
+#>  8:                 1    32             0  91.706     91 0.8845034 0.0000 91
+#>  9:                 1    31             0 100.074    100 1.1035134 1.4826 99
+#> 10:                 1    30             0  87.203     87 1.1493964 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 0.9993587 1014.0799 1007.5271
-#>  3:  48 1.0000956 1017.8177 1014.9685
-#>  4:  66 0.9998332  933.7795  928.0418
-#>  5:  51 1.0049275  693.4863  681.7778
-#>  6:  37 0.9989918  904.0019  911.2342
-#>  7:  96 0.9988480  952.1678  929.5734
-#>  8:  93 1.0000538  909.8948  922.8232
-#>  9: 102 1.0032721 1058.3973  990.9293
-#> 10:  89 1.0004409  856.4617  917.7191
+#>  2:  69 1.0036652 1002.1341 1000.1203
+#>  3:  48 0.9982150  955.3026  949.0821
+#>  4:  66 0.9984208  956.4874  936.4123
+#>  5:  51 1.0012658  959.6633  845.4600
+#>  6:  37 0.9990564  893.7362  875.3805
+#>  7:  96 0.9993801  587.1606  617.8809
+#>  8:  93 1.0017126 1049.6453 1010.8469
+#>  9: 102 0.9991004 1013.5419  884.5519
+#> 10:  89 0.9994546  849.4900  744.0604
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -335,15 +335,15 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>     1:                 1    33             0      1          1     1    435
 #>     2:                 1    33             0      1          2     2    433
-#>     3:                 1    33             0      1          3     3    434
+#>     3:                 1    33             0      1          3     3    436
 #>     4:                 1    33             0      1          4     4    433
-#>     5:                 1    33             0      1          5     5    434
+#>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2058
-#> 33997:                 1     0             1      2        497   997   2150
-#> 33998:                 1     0             1      2        498   998   2067
-#> 33999:                 1     0             1      2        499   999   2018
-#> 34000:                 1     0             1      2        500  1000   2109
+#> 33996:                 1     0             1      2        496   996   1960
+#> 33997:                 1     0             1      2        497   997   2253
+#> 33998:                 1     0             1      2        498   998   1992
+#> 33999:                 1     0             1      2        499   999   2014
+#> 34000:                 1     0             1      2        500  1000   2069
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)

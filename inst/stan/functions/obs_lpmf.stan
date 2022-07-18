@@ -2,7 +2,7 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
               array[] int sl, array[] int csl, array[] vector imp_obs,
               array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh,
               matrix ref_lh, array[] int dpmfs, int ref_p, int rep_h,
-              int ref_as_p, real phi) {
+              int ref_as_p, array[] real phi, int model_obs) {
   real tar = 0;
   int start_n = csl[start] - sl[start];
   int end_n = csl[end];
@@ -32,7 +32,11 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
   }
   // observation error model (across all reference times and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = neg_binomial_2_log_lupmf(snap_obs | log_exp_obs, phi);
+  if (model_obs) {
+    tar = neg_binomial_2_log_lupmf(snap_obs | log_exp_obs, phi[1]);
+  }else{
+    tar = poisson_log_lupmf(snap_obs | log_exp_obs);
+  }
   }
   return(tar);
 }

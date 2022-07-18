@@ -91,13 +91,15 @@ All ($\alpha_{i}$) and random ($\beta_{i}$) coefficients have standard normal pr
 
 # Observation model and nowcast
 
-Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We assume a negative binomial observation model with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.
+Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{gtd}$). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.
 
 \begin{align}
   n_{gtd} \mid \lambda_{gt},p_{gtd}  &\sim \text{NB}(\lambda_{gt} \times p_{gtd}, \phi),\ t=1,...,T. \\
     \frac{1}{\sqrt{\phi}} &\sim \text{Half-Normal}(0, 1) \\
   N_{gt} &= \sum_{d=0}^{D} n_{gtd}
 \end{align}
+
+Other observation models such as the Poisson distribution are also supported. See the documentation `enw_obs()` for details.
 
 # Implementation
 
