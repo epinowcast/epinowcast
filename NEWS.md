@@ -1,11 +1,26 @@
 # epinowcast 0.1.0
 
-This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. For ease, we have stratified changes below into interface, package, documentation, and model changes.
+This is a major release and contains multiple breaking changes. If needing the old interface please install `0.0.7` from GitHub. A major focus of this release has been improving the user experience with an increase in modularity, development of a flexible and full featured formula interface, and hopefully future proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious
+disease questions to be better answered. These extensions include:
+
+* Modelling missing data (#43).
+* Non-parametric modelling of delay and reference day logit hazard (#4).
+* Flexible expectation modelling (#5).
+* Forecasting beyond the horizon of the data (#3).
+* Known reporting structures (#33).
+* Renewal equation based reproduction number estimaton (potentially part of #5)..
+* Latent infections.
+* Convolution based delay models (i.e hospitalisations and deaths) with partially reported data.
+* Additional observation models.
+
+If interested in contributing to these features or other aspects of package development (for example improving post-processing, the coverage of documentation, or contibuting case studies) please see our [contributing guide](https://epiforecasts.io/epinowcast/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
+
+ For ease, we have stratified changes below into interface, package, documentation, and model changes.
 
 ## Interface
 
 * A fully featured and flexible formula interface has been added that allows the specification of fixed effects, `lme4` random effects, and random walks. See [#27](https://github.com/epiforecasts/epinowcast/pull/27) by [@seabbs](https://github.com/seabbs).
-* A major overhaul, as described in #57, to the interface of [epinowcast()] with a particular focus on improving the modularity of the model components (described as modules in the documentation). All of the package documentation and vignettes have been updated to reflect this new interface. See #112 by @seabbs.
+* A major overhaul, as described in #57, to the interface of `epinowcast()` with a particular focus on improving the modularity of the model components (described as modules in the documentation). All of the package documentation and vignettes have been updated to reflect this new interface. See #112 by @seabbs.
 
 ## Package
 
