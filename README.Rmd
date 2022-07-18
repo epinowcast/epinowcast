@@ -136,7 +136,6 @@ options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
   reference = reference_module,
   report = report_module,
-  obs = enw_obs(family = "poisson", data = pobs),
   fit = enw_fit_opts(,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
