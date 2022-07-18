@@ -381,72 +381,78 @@ options(mc.cores = 2)
 independent_nowcast <- map(
   split(retro_nat_germany, by = "age_group"),
   independent_epinowcast,
-  fit = fit,
+  fit = enw_fit_opts(
+    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
+    chains = 2, threads_per_chain = threads, 
+    iter_sampling = 500, iter_warmup = 250,
+    show_messages = FALSE, refresh = 0,
+    adapt_delta = 0.95, max_treedepth = 12
+  ),
   model = multithread_model,
   priors = priors
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 221.9 seconds.
-#> Chain 1 finished in 227.1 seconds.
+#> Chain 1 finished in 373.2 seconds.
+#> Chain 2 finished in 477.8 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 224.5 seconds.
-#> Total execution time: 227.1 seconds.
+#> Mean chain execution time: 425.5 seconds.
+#> Total execution time: 477.7 seconds.
 #> 
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 69.9 seconds.
-#> Chain 2 finished in 117.2 seconds.
+#> Chain 1 finished in 265.1 seconds.
+#> Chain 2 finished in 322.5 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 93.5 seconds.
-#> Total execution time: 117.4 seconds.
+#> Mean chain execution time: 293.8 seconds.
+#> Total execution time: 368.4 seconds.
 #> 
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 62.2 seconds.
-#> Chain 1 finished in 65.7 seconds.
+#> Chain 1 finished in 197.0 seconds.
+#> Chain 2 finished in 207.0 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 64.0 seconds.
-#> Total execution time: 65.8 seconds.
+#> Mean chain execution time: 202.0 seconds.
+#> Total execution time: 207.1 seconds.
 #> 
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 144.5 seconds.
-#> Chain 2 finished in 150.0 seconds.
+#> Chain 1 finished in 523.5 seconds.
+#> Chain 2 finished in 656.2 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 147.3 seconds.
-#> Total execution time: 150.2 seconds.
+#> Mean chain execution time: 589.9 seconds.
+#> Total execution time: 656.0 seconds.
 #> 
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 195.2 seconds.
-#> Chain 2 finished in 208.6 seconds.
+#> Chain 2 finished in 477.0 seconds.
+#> Chain 1 finished in 513.7 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 201.9 seconds.
-#> Total execution time: 208.7 seconds.
+#> Mean chain execution time: 495.4 seconds.
+#> Total execution time: 513.6 seconds.
 #> 
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 2 finished in 126.3 seconds.
-#> Chain 1 finished in 172.3 seconds.
+#> Chain 2 finished in 318.7 seconds.
+#> Chain 1 finished in 392.0 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 149.3 seconds.
-#> Total execution time: 172.3 seconds.
+#> Mean chain execution time: 355.4 seconds.
+#> Total execution time: 391.9 seconds.
 #> 
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 159.4 seconds.
-#> Chain 2 finished in 194.7 seconds.
+#> Chain 2 finished in 287.9 seconds.
+#> Chain 1 finished in 329.7 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 177.0 seconds.
-#> Total execution time: 194.8 seconds.
+#> Mean chain execution time: 308.8 seconds.
+#> Total execution time: 329.6 seconds.
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
@@ -455,7 +461,8 @@ As we now have the summarised nowcasts rather than an object of class `epinowcas
 
 ```r
 enw_plot_nowcast_quantiles(
-  independent_nowcast, latest_obs = latest_nat_germany) +
+  independent_nowcast, latest_obs = latest_nat_germany
+) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
@@ -519,7 +526,8 @@ This allows us to plot nowcasts for each model and age group compared to the lat
 
 ```r
 enw_plot_nowcast_quantiles(
-  summarised_nowcasts, latest_obs = latest_nat_germany) +
+  summarised_nowcasts, latest_obs = latest_nat_germany
+) +
   facet_grid(vars(age_group), vars(model), scales = "free_y")
 ```
 
@@ -552,28 +560,133 @@ score <- enw_score_nowcast(
  latest_nat_germany[reference_date > (max(reference_date) - 7)]
 )
 
-overall_score <- score |>
+score |>
   summarise_scores(by = "model") |>
   kable()
 ```
+
+
+
+|model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
+|:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
+|Reference: Fixed, Report: Fixed                          |       13.59748|   3.742910|        8.624898|      1.2290424|         -0.1072214| -0.2357143|  23.58163|
+|Reference: Fixed, Report: Day of week                    |       17.03306|   2.465567|       13.823407|      0.7472527|         -0.1715856| -0.3326531|  25.03061|
+|Reference: Age, Report: Day of week                      |       14.08898|   2.814904|       10.263265|      1.0163265|         -0.1040816| -0.1959184|  21.79592|
+|Reference: Age and week, Report: Day of week             |       13.46729|   2.990330|        9.387520|      1.0909890|         -0.0821036| -0.1704082|  21.16327|
+|Reference: Age and week by age, Report: Day of week      |       14.68425|   3.063155|       10.799152|      0.8200942|         -0.0993721| -0.2244898|  23.08163|
+|Independent by age, Reference: Week, Report: Day of week |       11.10881|   3.573224|        6.482575|      1.0540031|         -0.0161695| -0.2744898|  18.35714|
 
 Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
 
 
 ```r
-age_score <- score |>
+score |>
   summarise_scores(by = c("model", "age_group")) |>
   kable()
 ```
+
+
+
+|model                                                    |age_group | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
+|:--------------------------------------------------------|:---------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
+|Reference: Fixed, Report: Fixed                          |00+       |      40.395824| 12.8872527|      23.9703297|      3.5274725|         -0.1967033| -0.4428571| 75.928571|
+|Reference: Fixed, Report: Day of week                    |00+       |      52.469451|  7.4687912|      43.4962637|      1.5274725|         -0.3725275| -0.6642857| 81.928571|
+|Reference: Age, Report: Day of week                      |00+       |      40.295385|  8.7615385|      29.3164835|      2.2549451|         -0.1967033| -0.5285714| 67.428571|
+|Reference: Age and week, Report: Day of week             |00+       |      38.648791|  9.2751648|      26.9780220|      2.4175824|         -0.1527473| -0.4285714| 64.714286|
+|Reference: Age and week by age, Report: Day of week      |00+       |      41.927253|  9.7698901|      30.5951648|      1.5494505|         -0.1747253| -0.5428571| 71.857143|
+|Independent by age, Reference: Week, Report: Day of week |00+       |      34.670769| 11.0435165|      20.1868132|      3.4483516|         -0.0428571| -0.3214286| 57.142857|
+|Reference: Fixed, Report: Fixed                          |00-04     |       1.733539|  0.6566154|       0.0000000|      1.0769231|         -0.0538462|  0.5785714|  2.571429|
+|Reference: Fixed, Report: Day of week                    |00-04     |       2.061868|  0.6225275|       0.0329670|      1.4065934|         -0.1417582|  0.5357143|  3.000000|
+|Reference: Age, Report: Day of week                      |00-04     |       2.325495|  0.6332967|       0.0109890|      1.6813187|         -0.1857143|  0.6142857|  3.428571|
+|Reference: Age and week, Report: Day of week             |00-04     |       2.357253|  0.6980440|       0.0109890|      1.6483516|         -0.1747253|  0.6285714|  3.571429|
+|Reference: Age and week by age, Report: Day of week      |00-04     |       2.177846|  0.6393846|       0.0109890|      1.5274725|         -0.1637363|  0.6214286|  3.142857|
+|Independent by age, Reference: Week, Report: Day of week |00-04     |       1.005407|  0.4779341|       0.2857143|      0.2417582|          0.0560440|  0.0285714|  1.714286|
+|Reference: Fixed, Report: Fixed                          |05-14     |       1.206593|  0.5032967|       0.5604396|      0.1428571|          0.0890110| -0.2214286|  2.000000|
+|Reference: Fixed, Report: Day of week                    |05-14     |       1.321451|  0.4758681|       0.6917582|      0.1538462|          0.0340659| -0.2142857|  2.142857|
+|Reference: Age, Report: Day of week                      |05-14     |       1.277143|  0.5298901|       0.5274725|      0.2197802|          0.0670330| -0.0928571|  2.000000|
+|Reference: Age and week, Report: Day of week             |05-14     |       1.293451|  0.5253626|       0.5483516|      0.2197802|          0.0670330| -0.0928571|  2.000000|
+|Reference: Age and week by age, Report: Day of week      |05-14     |       1.318154|  0.4829890|       0.6153846|      0.2197802|          0.0670330| -0.0928571|  2.000000|
+|Independent by age, Reference: Week, Report: Day of week |05-14     |       1.557099|  0.4800659|       0.9670330|      0.1098901|         -0.0318681| -0.3571429|  2.285714|
+|Reference: Fixed, Report: Fixed                          |15-34     |       7.396484|  2.8349451|       2.2109890|      2.3505495|         -0.0868132| -0.1571429| 13.142857|
+|Reference: Fixed, Report: Day of week                    |15-34     |       6.199231|  2.1223077|       2.6813187|      1.3956044|         -0.1087912| -0.3000000| 11.000000|
+|Reference: Age, Report: Day of week                      |15-34     |       5.712242|  2.3825934|       1.5494505|      1.7802198|         -0.0428571| -0.0571429| 10.428571|
+|Reference: Age and week, Report: Day of week             |15-34     |       5.824505|  2.5293407|       1.3296703|      1.9665934|         -0.0208791| -0.0285714| 10.571429|
+|Reference: Age and week by age, Report: Day of week      |15-34     |       6.134637|  2.5632088|       2.0285714|      1.5428571|         -0.0648352| -0.1428571| 11.142857|
+|Independent by age, Reference: Week, Report: Day of week |15-34     |       6.215275|  3.2262637|       1.0329670|      1.9560440|          0.0230769| -0.0857143| 10.285714|
+|Reference: Fixed, Report: Fixed                          |35-59     |      31.341758|  4.7378022|      26.5116484|      0.0989011|         -0.3505495| -0.7071429| 47.142857|
+|Reference: Fixed, Report: Day of week                    |35-59     |      41.807473|  3.0267253|      38.7802198|      0.0000000|         -0.4384615| -0.8785714| 53.000000|
+|Reference: Age, Report: Day of week                      |35-59     |      35.731868|  3.5010989|      32.2197802|      0.0109890|         -0.4164835| -0.8142857| 48.285714|
+|Reference: Age and week, Report: Day of week             |35-59     |      33.608352|  3.7272527|      29.8236264|      0.0439560|         -0.3945055| -0.8000000| 47.285714|
+|Reference: Age and week by age, Report: Day of week      |35-59     |      37.469451|  3.7674725|      33.7021978|      0.0000000|         -0.3835165| -0.8285714| 51.000000|
+|Independent by age, Reference: Week, Report: Day of week |35-59     |      19.760659|  5.3021978|      13.5956044|      0.8637363|         -0.0648352| -0.4285714| 32.642857|
+|Reference: Fixed, Report: Fixed                          |60-79     |       7.776703|  2.6556044|       4.1648352|      0.9560440|         -0.0868132| -0.3071429| 14.571429|
+|Reference: Fixed, Report: Day of week                    |60-79     |       9.655055|  2.0280220|       7.1538462|      0.4725275|         -0.0648352| -0.3357143| 14.285714|
+|Reference: Age, Report: Day of week                      |60-79     |       8.608198|  2.2440220|       5.5934066|      0.7714286|          0.0010989| -0.1857143| 12.857143|
+|Reference: Age and week, Report: Day of week             |60-79     |       7.991429|  2.3859341|       4.7604396|      0.8461538|          0.0560440| -0.1571429| 12.142857|
+|Reference: Age and week by age, Report: Day of week      |60-79     |       8.719473|  2.4207912|       5.6945055|      0.6043956|          0.0010989| -0.2428571| 13.428571|
+|Independent by age, Reference: Week, Report: Day of week |60-79     |       7.854088|  2.7017802|       4.4802198|      0.6703297|          0.0560440| -0.1642857| 12.142857|
+|Reference: Fixed, Report: Fixed                          |80+       |       5.331450|  1.9248571|       2.9560440|      0.4505495|         -0.0648352| -0.3928571|  9.714286|
+|Reference: Fixed, Report: Day of week                    |80+       |       5.716923|  1.5147253|       3.9274725|      0.2747253|         -0.1087912| -0.4714286|  9.857143|
+|Reference: Age, Report: Day of week                      |80+       |       4.672549|  1.6518901|       2.6252747|      0.3956044|          0.0450549| -0.3071429|  8.142857|
+|Reference: Age and week, Report: Day of week             |80+       |       4.547253|  1.7912088|       2.2615385|      0.4945055|          0.0450549| -0.3142857|  7.857143|
+|Reference: Age and week by age, Report: Day of week      |80+       |       5.042967|  1.7983516|       2.9472527|      0.2967033|          0.0230769| -0.3428571|  9.000000|
+|Independent by age, Reference: Week, Report: Day of week |80+       |       6.698396|  1.7808132|       4.8296703|      0.0879121|         -0.1087912| -0.5928571| 12.285714|
 
 Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend). 
 
 
 ```r
-date_score <- score |>
+score |>
   summarise_scores(by = c("model", "reference_date")) |>
   kable()
 ```
+
+
+
+|model                                                    |reference_date | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
+|:--------------------------------------------------------|:--------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
+|Reference: Fixed, Report: Fixed                          |2021-08-26     |      12.322637|   2.084396|      10.2285714|      0.0109890|         -0.1087912| -0.6071429| 19.714286|
+|Reference: Fixed, Report: Day of week                    |2021-08-26     |      14.433516|   1.647055|      12.7516484|      0.0329670|         -0.1747253| -0.5928571| 19.714286|
+|Reference: Age, Report: Day of week                      |2021-08-26     |       8.592374|   1.961385|       6.4571429|      0.1758242|         -0.0428571| -0.3285714| 14.285714|
+|Reference: Age and week, Report: Day of week             |2021-08-26     |       7.974615|   2.113736|       5.6725275|      0.1868132|          0.0010989| -0.2857143| 13.428571|
+|Reference: Age and week by age, Report: Day of week      |2021-08-26     |       8.186835|   2.429692|       5.6153846|      0.1428571|          0.0010989| -0.2857143| 14.000000|
+|Independent by age, Reference: Week, Report: Day of week |2021-08-26     |       5.986945|   2.299912|       3.6879121|      0.0000000|         -0.0648352| -0.7000000| 11.428571|
+|Reference: Fixed, Report: Fixed                          |2021-08-27     |      11.093846|   2.269890|       8.7142857|      0.1098901|         -0.2186813| -0.5428571| 18.571429|
+|Reference: Fixed, Report: Day of week                    |2021-08-27     |      11.722857|   1.764308|       9.8056044|      0.1538462|         -0.2626374| -0.5000000| 17.571429|
+|Reference: Age, Report: Day of week                      |2021-08-27     |       7.732791|   2.151033|       5.3054945|      0.2769231|         -0.1527473| -0.3500000| 13.285714|
+|Reference: Age and week, Report: Day of week             |2021-08-27     |       7.578352|   2.202352|       5.1890110|      0.1868132|         -0.1307692| -0.4071429| 12.500000|
+|Reference: Age and week by age, Report: Day of week      |2021-08-27     |       8.913429|   2.343758|       6.4164835|      0.1538462|         -0.1527473| -0.4357143| 14.214286|
+|Independent by age, Reference: Week, Report: Day of week |2021-08-27     |       5.456484|   2.713516|       2.6769231|      0.0659341|         -0.0098901| -0.4428571| 10.285714|
+|Reference: Fixed, Report: Fixed                          |2021-08-28     |      12.629451|   2.540000|       9.7281319|      0.3626374|         -0.2406593| -0.5142857| 22.642857|
+|Reference: Fixed, Report: Day of week                    |2021-08-28     |      10.471319|   2.174725|       7.8131868|      0.4835165|         -0.1637363| -0.4142857| 17.571429|
+|Reference: Age, Report: Day of week                      |2021-08-28     |       7.749451|   2.456044|       4.7208791|      0.5714286|         -0.0758242| -0.3142857| 13.571429|
+|Reference: Age and week, Report: Day of week             |2021-08-28     |       8.477143|   2.543736|       5.4060440|      0.5274725|         -0.0758242| -0.3142857| 15.142857|
+|Reference: Age and week by age, Report: Day of week      |2021-08-28     |      10.191231|   2.267055|       7.4406593|      0.4835165|         -0.1637363| -0.4142857| 17.428571|
+|Independent by age, Reference: Week, Report: Day of week |2021-08-28     |       4.538506|   3.169714|       1.2571429|      0.1098901|          0.0890110| -0.2857143|  7.428571|
+|Reference: Fixed, Report: Fixed                          |2021-08-29     |      13.520242|   2.703319|      10.5758242|      0.2417582|         -0.0978022| -0.4000000| 22.428571|
+|Reference: Fixed, Report: Day of week                    |2021-08-29     |      13.445714|   2.190659|      10.8373626|      0.4175824|         -0.1527473| -0.3357143| 20.642857|
+|Reference: Age, Report: Day of week                      |2021-08-29     |      10.712418|   2.492747|       7.7692308|      0.4505495|         -0.0868132| -0.2142857| 17.714286|
+|Reference: Age and week, Report: Day of week             |2021-08-29     |      10.977582|   2.611978|       7.8956044|      0.4725275|         -0.0868132| -0.2142857| 17.928571|
+|Reference: Age and week by age, Report: Day of week      |2021-08-29     |      12.220110|   2.623846|       9.1582418|      0.4395604|         -0.1087912| -0.2428571| 20.285714|
+|Independent by age, Reference: Week, Report: Day of week |2021-08-29     |       6.071451|   3.212110|       2.7934066|      0.0659341|          0.1000000| -0.3142857| 11.285714|
+|Reference: Fixed, Report: Fixed                          |2021-08-30     |       9.853407|   3.294066|       0.0000000|      6.5593407|         -0.2406593|  0.8214286| 17.000000|
+|Reference: Fixed, Report: Day of week                    |2021-08-30     |       6.316615|   2.239692|       0.0329670|      4.0439560|         -0.1747253|  0.7071429| 11.000000|
+|Reference: Age, Report: Day of week                      |2021-08-30     |       7.882220|   2.483780|       0.0000000|      5.3978022|         -0.2626374|  0.8142857| 13.142857|
+|Reference: Age and week, Report: Day of week             |2021-08-30     |       8.512198|   2.567824|       0.0000000|      5.9446154|         -0.2626374|  0.8142857| 14.428571|
+|Reference: Age and week by age, Report: Day of week      |2021-08-30     |       7.042747|   2.702088|       0.0000000|      4.3406593|         -0.2076923|  0.7642857| 11.285714|
+|Independent by age, Reference: Week, Report: Day of week |2021-08-30     |       9.866857|   3.202681|       0.0000000|      6.6637363|         -0.1527473|  0.7571429| 17.285714|
+|Reference: Fixed, Report: Fixed                          |2021-08-31     |       6.657275|   5.074857|       0.2747253|      1.3076923|          0.1659341|  0.1142857|  9.714286|
+|Reference: Fixed, Report: Day of week                    |2021-08-31     |       6.528571|   2.795604|       3.6329670|      0.0989011|          0.0010989| -0.4642857| 11.571429|
+|Reference: Age, Report: Day of week                      |2021-08-31     |       5.409670|   3.200000|       1.9670330|      0.2417582|          0.1109890| -0.3000000|  8.571429|
+|Reference: Age and week, Report: Day of week             |2021-08-31     |       5.206418|   3.558945|       1.3395604|      0.3076923|          0.1659341| -0.1714286|  5.785714|
+|Reference: Age and week by age, Report: Day of week      |2021-08-31     |       6.042308|   3.647802|       2.2142857|      0.1802198|          0.1329670| -0.2857143| 10.071429|
+|Independent by age, Reference: Week, Report: Day of week |2021-08-31     |       5.577275|   4.341011|       0.7637363|      0.4725275|          0.1000000| -0.2428571|  5.500000|
+|Reference: Fixed, Report: Fixed                          |2021-09-01     |      29.105494|   8.233846|      20.8527473|      0.0109890|         -0.0098901| -0.5214286| 55.000000|
+|Reference: Fixed, Report: Day of week                    |2021-09-01     |      56.312857|   4.446923|      51.8901099|      0.0000000|         -0.2736264| -0.7285714| 77.142857|
+|Reference: Age, Report: Day of week                      |2021-09-01     |      50.543956|   4.959341|      45.6230769|      0.0000000|         -0.2186813| -0.6785714| 72.000000|
+|Reference: Age and week, Report: Day of week             |2021-09-01     |      45.544725|   5.333736|      40.2098901|      0.0109890|         -0.1857143| -0.6142857| 68.928571|
+|Reference: Age and week by age, Report: Day of week      |2021-09-01     |      50.193121|   5.427846|      44.7490110|      0.0000000|         -0.1967033| -0.6714286| 74.285714|
+|Independent by age, Reference: Week, Report: Day of week |2021-09-01     |      40.264176|   6.073626|      34.1989011|      0.0000000|         -0.1747253| -0.6928571| 65.285714|
 
 Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
