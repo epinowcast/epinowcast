@@ -1,3 +1,8 @@
+# epinowcast 0.2.0
+
+## Model
+- Added support for parametric log-logistic delay distributions. See [#128](https://github.com/epiforecasts/epinowcast/pull/128) by [@adrian-lison](https://github.com/adrian-lison).
+
 # epinowcast 0.1.0
 
 This is a major release focusing on improving the user experience, and preparing for future package extensions, with an increase in modularity, development of a flexible and full-featured formula interface, and hopefully future-proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious disease questions to be better answered. These extensions include:
