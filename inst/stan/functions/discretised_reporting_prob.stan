@@ -17,6 +17,12 @@ vector discretised_reporting_prob(real mu, real sigma, int n, int dist, int max_
     for (i in 1:n) {
       upper_cdf[i] = gamma_cdf(i | emu, sigma);
     }
+  } else if (dist == 4) {
+    real emu = exp(mu);
+    real esigma = exp(sigma);
+    for (i in 1:n) {
+      upper_cdf[i] = loglogistic_cdf(i | emu, esigma);
+    }
   } else {
     reject("Unknown distribution function provided.");
   }

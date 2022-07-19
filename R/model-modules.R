@@ -10,7 +10,7 @@
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
-#' and "exponential" with the default being "lognormal".
+#' "exponential", and "loglogistic", with the default being "lognormal".
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
 #' describing the non-parametric logit hazard model. This can use features
@@ -40,7 +40,7 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
     stop("The non-parametric reference model has not yet been implemented")
   }
   distribution <- match.arg(
-    distribution, c("none", "exponential", "lognormal", "gamma")
+    distribution, c("none", "exponential", "lognormal", "gamma", "loglogistic")
   )
   if (distribution %in% "none") {
     warning(
@@ -52,7 +52,8 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
     distribution %in% "none", 0,
     distribution %in% "exponential", 1,
     distribution %in% "lognormal", 2,
-    distribution %in% "gamma", 3
+    distribution %in% "gamma", 3,
+    distribution %in% "loglogistic", 4
   )
 
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
