@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +109,8 @@
 
 
 
-<script src="model_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+
+<div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Model definition and implementation</h1>
                         <h4 data-toc-skip class="author">Sam Abbott, Sebastian Funk</h4>
@@ -191,35 +192,35 @@ h_{gtd} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{gtd}\right)
 <p>The model is implemented in <code>stan</code> using <code>cmdstanr</code> with no defaults altered<span class="citation"><sup>[4,5]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[8]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[9]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
 </div>
 <div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references">
-<div id="ref-gunther2021">
-<p>1. Günther, F., Bender, A., Katz, K., Küchenhoff, H., &amp; Höhle, M. (2021). Nowcasting the COVID-19 pandemic in Bavaria. <em>Biometrical Journal</em>, <em>63</em>(3), 490–502. <a href="https://doi.org/10.1002/bimj.202000112" class="external-link">https://doi.org/10.1002/bimj.202000112</a></p>
+<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="ref-gunther2021" class="csl-entry">
+1. Günther, F., Bender, A., Katz, K., Küchenhoff, H., &amp; Höhle, M. (2021). Nowcasting the <span>COVID</span>-19 pandemic in <span>Bavaria</span>. <em>Biometrical Journal</em>, <em>63</em>(3), 490–502. <a href="https://doi.org/10.1002/bimj.202000112" class="external-link">https://doi.org/10.1002/bimj.202000112</a>
 </div>
-<div id="ref-hohle">
-<p>2. Höhle, M., &amp; Heiden, M. an der. (2014). Bayesian nowcasting during the STEC O104:H4 outbreak in Germany, 2011. <em>Biometrics</em>, <em>70</em>(4), 993–1002. <a href="https://doi.org/10.1111/biom.12194" class="external-link">https://doi.org/10.1111/biom.12194</a></p>
+<div id="ref-hohle" class="csl-entry">
+2. Höhle, M., &amp; Heiden, M. an der. (2014). Bayesian nowcasting during the <span>STEC O104</span>:H4 outbreak in <span>Germany</span>, 2011. <em>Biometrics</em>, <em>70</em>(4), 993–1002. <a href="https://doi.org/10.1111/biom.12194" class="external-link">https://doi.org/10.1111/biom.12194</a>
 </div>
-<div id="ref-surveillance">
-<p>3. Meyer, S., Held, L., &amp; Höhle, M. (2017). Spatio-temporal analysis of epidemic phenomena using the R package surveillance. <em>Journal of Statistical Software</em>, <em>77</em>(11), 1–55. <a href="https://doi.org/10.18637/jss.v077.i11" class="external-link">https://doi.org/10.18637/jss.v077.i11</a></p>
+<div id="ref-surveillance" class="csl-entry">
+3. Meyer, S., Held, L., &amp; Höhle, M. (2017). Spatio-temporal analysis of epidemic phenomena using the <span>R</span> package <span class="nocase">surveillance</span>. <em>Journal of Statistical Software</em>, <em>77</em>(11), 1–55. <a href="https://doi.org/10.18637/jss.v077.i11" class="external-link">https://doi.org/10.18637/jss.v077.i11</a>
 </div>
-<div id="ref-stan">
-<p>4. Team, S. D. (2021). <em>Stan modeling language users guide and reference manual, 2.28.1</em>.</p>
+<div id="ref-stan" class="csl-entry">
+4. Team, S. D. (2021). <em>Stan modeling language users guide and reference manual, 2.28.1</em>.
 </div>
-<div id="ref-cmdstanr">
-<p>5. Gabry, J., &amp; Češnovar, R. (2021). <em>Cmdstanr: R interface to ’cmdstan’</em>.</p>
+<div id="ref-cmdstanr" class="csl-entry">
+5. Gabry, J., &amp; Češnovar, R. (2021). <em>Cmdstanr: R interface to ’CmdStan’</em>.
 </div>
-<div id="ref-bastos">
-<p>6. Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T. (2019). A modelling approach for correcting reporting delays in disease surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22), 4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a></p>
+<div id="ref-bastos" class="csl-entry">
+6. Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T. (2019). A modelling approach for correcting reporting delays in disease surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22), 4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a>
 </div>
-<div id="ref-stan_prior_wiki">
-<p>7. Team, S. D. (2020). <em>Prior choice recommendations</em>.</p>
+<div id="ref-stan_prior_wiki" class="csl-entry">
+7. Team, S. D. (2020). <em>Prior choice recommendations</em>.
 </div>
-<div id="ref-R">
-<p>8. R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a></p>
+<div id="ref-R" class="csl-entry">
+8. R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>
 </div>
-<div id="ref-scoringutils">
-<p>9. Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a></p>
+<div id="ref-scoringutils" class="csl-entry">
+9. Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a>
 </div>
 </div>
 </div>
