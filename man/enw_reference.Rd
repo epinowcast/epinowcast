@@ -22,7 +22,7 @@ model (note not recommended until the \code{non_parametric} model is implemented
 
 \item{distribution}{A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
-and "exponential" with the default being "lognormal".}
+"exponential", and "loglogistic", with the default being "lognormal".}
 
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
 describing the non-parametric logit hazard model. This can use features

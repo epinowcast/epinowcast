@@ -31,7 +31,7 @@ data {
   matrix[refp_fnrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
   int refp_rncol; // number of standard deviations to use for pooling
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; // Pooling pmf design matrix 
-  int model_refp; // parametric distribution (0 = none, 1 = exp. 2 = lognormal, 2 = gamma)
+  int model_refp; // parametric distribution (0 = none, 1 = exp, 2 = lognormal, 3 = gamma, 4 = loglogistic)
   // Reporting day model
   int model_rep; // Reporting day model in use
   int rep_t; // how many reporting days are there (t + dmax - 1)
