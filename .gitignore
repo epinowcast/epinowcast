@@ -16,3 +16,4 @@ cache
 pkgdown
 /doc/
 /Meta/
+*.Rhistory
