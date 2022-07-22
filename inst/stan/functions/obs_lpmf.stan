@@ -33,9 +33,9 @@ real obs_lpmf(array[] int dummy, int start, int end, array[] int obs,
   // observation error model (across all reference times and groups)
   profile("model_likelihood_neg_binomial") {
   if (model_obs) {
-    tar = neg_binomial_2_log_lupmf(snap_obs | log_exp_obs, phi[1]);
+    tar = neg_binomial_2_log_lpmf(snap_obs | log_exp_obs, phi[1]);
   }else{
-    tar = poisson_log_lupmf(snap_obs | log_exp_obs);
+    tar = poisson_log_lpmf(snap_obs | log_exp_obs);
   }
   }
   return(tar);
