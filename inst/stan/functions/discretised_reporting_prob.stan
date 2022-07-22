@@ -57,3 +57,19 @@ vector discretised_reporting_prob(real mu, real sigma, int n, int dist, int max_
   pmf[2:n] = cdf[2:n] - cdf[1:(n-1)];
   return(pmf);
 }
+
+// Calculate the daily hazard of reporting using parametric
+// distributions up to the maximum observed delay
+vector discretised_reporting_hazard(real mu, real sigma, int n, int dist, int max_strat) {
+  vector[n] haz; 
+  vector[n] cdf;
+  vector[n] ccdf;
+  cdf = upper_cdf_discrete(mu, sigma, n, dist);
+  cdf = adjust_cdf_discrete(cdf, n, max_strat);
+  ccdf = 1 - cdf;
+  // compute discretised hazard
+  haz[1] = cdf[1];
+  haz[2:(n-1)] = 1 - ccdf[2:(n-1)]./ccdf[1:(n-2)];
+  haz[n] = 1;
+  return(haz);
+}
