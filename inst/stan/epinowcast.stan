@@ -64,7 +64,7 @@ transformed data{
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
-  // effects
+  // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
 }
 
@@ -93,6 +93,7 @@ transformed parameters{
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
+    // calculate sparse reference date effects
     profile("transformed_delay_reference_date_effects") {
     refp_mean = combine_effects(refp_mean_int[1], refp_mean_beta, refp_fdesign,
                                 refp_mean_beta_sd, refp_rdesign, 1);
@@ -102,6 +103,7 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     }
     }
+    // calculate reference date logit hazards (unless no reporting effects)
     profile("transformed_delay_reference_date_hazards") {
     if (ref_as_p) {
       for (i in 1:refp_fnrow) {
