@@ -2,12 +2,13 @@
 
 ## Package
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
+- Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
 
 ## Documentation
-- Removed explicit links to authors and issues in the NEWS file. See #132 by @choi-hannah.
+- Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
 
 # epinowcast 0.1.0
 
