@@ -1,7 +1,13 @@
 # epinowcast 0.2.0
 
+## Package
+- Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
+
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
+
+## Documentation
+- Removed explicit links to authors and issues in the NEWS file. See #132 by @choi-hannah.
 
 # epinowcast 0.1.0
 
