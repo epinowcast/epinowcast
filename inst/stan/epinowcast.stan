@@ -86,7 +86,6 @@ parameters {
 transformed parameters{
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
-  matrix[dmax, refp_fnrow] pmfs; // sparse report distributions
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
   array[g] vector[t] imp_obs; // Expected final observations
@@ -103,20 +102,19 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     }
     }
-    // calculate pmfs
-    profile("transformed_delay_reference_date_pmfs") {
-    for (i in 1:refp_fnrow) {
-      pmfs[, i] =
-         discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
-         2);
-    }
-    if (ref_as_p == 0) {
+    profile("transformed_delay_reference_date_hazards") {
+    if (ref_as_p) {
       for (i in 1:refp_fnrow) {
-        ref_lh[, i] = prob_to_hazard(pmfs[, i]);
-        ref_lh[, i] = logit(ref_lh[, i]);
+        ref_lh[, i] =
+           discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
+           2);
       }
     }else{
-      ref_lh = pmfs;
+      for (i in 1:refp_fnrow) {
+        ref_lh[, i] = logit(
+           discretised_reporting_hazard(refp_mean[i], refp_sd[i], dmax, model_refp,
+           2));
+      }
     }
     }
   }
