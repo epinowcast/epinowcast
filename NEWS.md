@@ -6,6 +6,7 @@
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
+- Implemented direct specification of parametric baseline hazards. See #134 by @adrian-lison.
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
