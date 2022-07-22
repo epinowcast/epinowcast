@@ -42,3 +42,18 @@ test_that("enw_formula can handle random effects that are not factors", {
   test_data <- test_data[, d_week := as.integer(d / 7)]
   expect_snapshot(enw_formula(~ 1 + (1 | d_week), test_data))
 })
+
+test_that("enw_formula can handle formulas that do not have sparse fixed
+           effects", {
+  expect_snapshot(enw_formula(~1, data[1:20, ], sparse = FALSE))
+})
+
+test_that("enw_formula can handle complex combined formulas", {
+  expect_snapshot(
+    enw_formula(~ 1 + disp + (1 + gear | cyl) + (0 + wt | am), mtcars)
+  )
+})
+
+test_that("enw_formula fails when incorrect random walks are defined", {
+  expect_error(enw_formula(~ 1 + rw(day), data = mtcars))
+})

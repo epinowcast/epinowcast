@@ -4,31 +4,45 @@
 \alias{enw_formula_as_data_list}
 \title{Format formula data for use with stan}
 \usage{
-enw_formula_as_data_list(data, reference_effects, report_effects)
+enw_formula_as_data_list(formula, prefix, drop_intercept = FALSE)
 }
 \arguments{
-\item{data}{A list of stan observation data as produced by
-\code{\link[=enw_obs_as_data_list]{enw_obs_as_data_list()}}.}
+\item{formula}{The output of \code{\link[=enw_formula]{enw_formula()}}.}
 
-\item{reference_effects}{A list of fixed and random design matrices
-defining the date of reference model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
-which is an intercept only model.}
+\item{prefix}{A character string indicating variable
+label to use as a prefix.}
 
-\item{report_effects}{A list of fixed and random design matrices
-defining the date of reports model. Defaults to \code{\link[=enw_manual_formula]{enw_manual_formula()}}
-which is an intercept only model.}
+\item{drop_intercept}{Logical, defaults to \code{FALSE}. Should the
+intercept be included as a fixed effect or excluded. This is used internally
+in model modules where an intercept must be present/absent.}
 }
 \value{
-A list as required by stan.
+A list defining the model formula. This includes:
+\itemize{
+\item \code{prefix_fdesign}: The fixed effects design matrix
+\item \code{prefix_fnrow}: The number of rows of the fixed design matrix
+\item \code{prefix_findex}: The index linking design matrix rows to  observations
+\item \code{prefix_fnindex}: The length of the index
+\item \code{prefix_fncol}: The number of columns (i.e effects) in the fixed effect
+design matrix (minus 1 if \code{drop_intercept = TRUE}).
+\item \code{prefix_rdesign}: The random effects design matrix
+\item \code{prefix_rncol}: The number of columns (i.e random effects) in the random
+effect design matrix (minus 1 as the intercept is dropped).
+}
 }
 \description{
 Format formula data for use with stan
 }
+\examples{
+f <- enw_formula(~ 1 + (1 | cyl), mtcars)
+enw_formula_as_data_list(f, "mtcars")
+}
 \seealso{
 Functions used to help convert models into the format required for stan
-\code{\link{enw_opts_as_data_list}()},
-\code{\link{enw_posterior_as_prior}()},
+\code{\link{enw_model}()},
 \code{\link{enw_priors_as_data_list}()},
+\code{\link{enw_replace_priors}()},
+\code{\link{enw_sample}()},
 \code{\link{remove_profiling}()},
 \code{\link{write_stan_files_no_profile}()}
 }
