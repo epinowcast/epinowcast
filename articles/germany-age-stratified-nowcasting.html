@@ -55,7 +55,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -470,7 +470,7 @@
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
 <span><span class="co">#&gt; Mean chain execution time: 308.8 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 329.6 seconds.</span></span>
-<span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
 <p>As we now have the summarised nowcasts rather than an object of class <code>epinowcast</code> we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
@@ -508,7 +508,7 @@
 <span><span class="op">)</span></span>
 <span><span class="va">summarised_nowcasts</span><span class="op">$</span><span class="va">`Independent by age, Reference: Week, Report: Day of week`</span> <span class="op">&lt;-</span> <span class="va">independent_nowcast</span> <span class="co"># nolint</span></span>
 <span></span>
-<span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span>,</span>
+<span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span>,</span>
 <span>                                 use.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">summarised_nowcasts</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
