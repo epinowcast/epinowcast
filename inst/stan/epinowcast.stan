@@ -93,30 +93,20 @@ parameters {
   array[g] real leobs_init; // First time point for expected observations
   vector<lower=0>[g] eobs_lsd; // standard deviation of rw for primary obs
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
-<<<<<<< HEAD
-  array[dist ? 1 : 0] real<lower=-10, upper=logdmax> logmean_int; // logmean intercept
-  array[dist > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> logsd_int; // logsd intercept
-  vector[dist ? neffs : 0] logmean_eff; // unscaled modifiers to log mean
-  vector[dist > 1 ? neffs : 0] logsd_eff; // unscaled modifiers to log sd
-  vector[nrd_effs] rd_eff; // unscaled modifiers to report date hazard
-  vector<lower=0>[neff_sds] logmean_sd; // pooled modifiers to logmean
-  vector<lower=0>[dist ? neff_sds : 0] logsd_sd; // pooled modifiers to logsd
-  vector<lower=0>[nrd_eff_sds] rd_eff_sd; // pooled modifiers to report date
-  array[g] real alpha_start; // starting value for alpha
-  real<lower=0> alpha_sd; // standard deviation of the random walk increments
-  vector<offset=0, multiplier=alpha_sd>[t] alpha_epsilon[g]; // random walk increments, non-centered
-  real<lower=0, upper=1e4> sqrt_phi; // Overall dispersion by group
-=======
-  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int; // logmean intercept
-  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; // logsd intercept
-  vector[model_refp ? refp_fncol : 0] refp_mean_beta; // unscaled modifiers to log mean
-  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; // unscaled modifiers to log sd
+  // logmean intercept
+  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
+  // logsd intercept
+  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int;
+  // unscaled modifiers to log mean
+  vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
+  // unscaled modifiers to log sd
+  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta;
   vector[rep_fncol] rep_beta; // unscaled modifiers to report date hazard
   vector<lower=0>[refp_rncol] refp_mean_beta_sd; // pooled modifiers to logmean
-  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; // pooled modifiers to logsd
+  // pooled modifiers to logsd
+  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd;
   vector<lower=0>[rep_rncol] rep_beta_sd; // pooled modifiers to report date
   array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion by group
->>>>>>> develop
 }
 
 transformed parameters{
@@ -126,12 +116,9 @@ transformed parameters{
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
   array[g] vector[t] imp_obs; // Expected final observations
-<<<<<<< HEAD
-  array[g] vector<lower=0,upper=1>[t] alpha; // share of cases with known reference date
-  real phi; // Transformed overdispersion (joint across all observations)
-=======
-  array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion (joint across all observations)
->>>>>>> develop
+  // Transformed overdispersion (joint across all observations)
+  array[model_obs > 0 ? 1 : 0] real phi;
+
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
@@ -178,11 +165,7 @@ transformed parameters{
       leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
   }
   }
-  // estimate share of cases with eventually known reference date, modeled as
-  // a first order random walk for each group on the logit scale
-  for (k in 1:g) {
-    alpha[k] = inv_logit(alpha_start[k] + cumulative_sum(alpha_epsilon[k]));
-  }
+  // estimate share of cases with eventually known reference date
   // transform phi to overdispersion scale
   if (model_obs) {
     phi = inv_square(sqrt_phi);
@@ -231,11 +214,6 @@ model {
     } 
   }
   // share of cases with eventually known reference date
-  alpha_sd ~ normal(alpha_sd_p[1], alpha_sd_p[2]) T[0, ];
-  for (k in 1:g){
-    alpha_start[k] ~ normal(alpha_start_p[1], alpha_start_p[2]);
-    alpha_epsilon[k] ~ normal(0, alpha_sd);
-  }
   // reporting overdispersion (1/sqrt)
   if (model_obs) {
     sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
@@ -244,15 +222,10 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-<<<<<<< HEAD
-    target += obs_lupmf(flat_obs | obs_miss, dmax, sl, csl, g, imp_obs, sg, st,
-                         rdlurd, srdlh, ref_lh, dpmfs, ref_p, alpha, phi);
-=======
     target += reduce_sum(
-      obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
-      ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
+      obs_delay_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
+      imodel_obs
     );
->>>>>>> develop
     }
   }
 }
@@ -280,31 +253,16 @@ generated quantities {
     // Posterior predictions for observations
     for (i in 1:s) {
       profile("generated_obs") {
-      i_group = sg[i];
-      i_time = st[i];
-      // estimated expected cases
-      tar_obs = imp_obs[i_group][i_time];
-      // estimated share of known reference dates
-      tar_alpha = alpha[i_group][i_time];
-      // reference date delay hazard
-      rdlh = srdlh[rdlurd[i_time:(i_time + dmax - 1), i_group]];
       // expected observations with delay 0:(dmax-1)
       lexp_obs = expected_obs_from_index(
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-<<<<<<< HEAD
-      // realized observations with known reference date
-      pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs + tar_alpha, phi);
-      // realized observations with unknown reference date
-      pp_obs_tmp_miss[i, 1:dmax] = neg_binomial_2_rng(exp_obs * (1 - tar_alpha), phi);
-=======
       if (model_obs) {
         pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi[1]);
       } else {
         pp_obs_tmp[i, 1:dmax] = poisson_log_rng(lexp_obs);
       }
->>>>>>> develop
       }
       profile("generated_loglik") {
       if (ologlik) {
@@ -314,11 +272,7 @@ generated quantities {
             += (exp_obs * (1 - tar_alpha))[1:min(dmax, t - i_time + 1)];
         }
         log_lik[i] = 0;
-<<<<<<< HEAD
-        for (j in 1:sl[i]) {
-          // log-likelihood for observations with known reference date
-          log_lik[i] += neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j] + tar_alpha, phi);
-=======
+
         if (model_obs) {
           for (j in 1:sl[i]) {
             log_lik[i] += 
@@ -328,7 +282,6 @@ generated quantities {
           for (j in 1:sl[i]) {
             log_lik[i] += poisson_log_lpmf(obs[i, j] | lexp_obs[j]);
           }
->>>>>>> develop
         }
       }
       }
