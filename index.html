@@ -364,9 +364,9 @@
 <span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1992</span></span>
 <span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2014</span></span>
 <span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2069</span></span>
-<span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
+<span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
-<span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
+<span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
 <span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Summarise samples</span></span>
