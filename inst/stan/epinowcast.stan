@@ -113,14 +113,32 @@ parameters {
 }
 
 transformed parameters{
+  // Expectation model
+  array[g] vector[t] imp_obs; // Expected final observations
+  // Reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
   matrix[dmax, refp_fnrow] pmfs; // sparse report distributions
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  // Report model
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
-  array[g] vector[t] imp_obs; // Expected final observations
+  // Missing model
+  vector[miss_fnindex] miss_ref_prop;
+
+  // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion (joint across all observations)
-  // calculate log mean and sd parameters for each dataset from design matrices
+
+  // Expectation model
+  profile("transformed_expected_final_observations") {
+  for (k in 1:g) {
+    real llast_obs;
+    imp_obs[k][1] = leobs_init[k];
+    imp_obs[k][2:t] = 
+      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
+  }
+  }
+
+  // Reference model
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
     profile("transformed_delay_reference_date_effects") {
@@ -150,23 +168,15 @@ transformed parameters{
     }
   }
   }
-  // calculate sparse report date effects with forced 0 intercept
+
+  // Report model
   profile("transformed_delay_reporting_date_effects") {
   srdlh =
     combine_effects(0, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
   }
-  // estimate unobserved expected final reported cases for each group
-  // this could be any forecasting model but here its a 
-  // first order random walk for each group on the log scale.
-  profile("transformed_expected_final_observations") {
-  for (k in 1:g) {
-    real llast_obs;
-    imp_obs[k][1] = leobs_init[k];
-    imp_obs[k][2:t] = 
-      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
-  }
-  }
-  // transform phi to overdispersion scale
+  // Missing reference model
+  
+  // Observation model
   if (model_obs) {
     phi = inv_square(sqrt_phi);
   }
@@ -234,6 +244,7 @@ generated quantities {
   if (cast) {
     vector[dmax] lexp_obs;
     array[s, dmax] int pp_obs_tmp;
+    array[s, dmax] int lexp_tmp; 
     // Posterior predictions for observations
     for (i in 1:s) {
       profile("generated_obs") {
@@ -241,7 +252,8 @@ generated quantities {
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-      pp_obs_tmp[i, 1:dmax] = obs_rng(lexp_obs, phi, model_obs);
+      lexp_tmp[i] = lexp_obs;
+      pp_obs_tmp[i] = obs_rng(lexp_obs, phi, model_obs);
       }
       profile("generated_loglik") {
       if (ologlik) {
