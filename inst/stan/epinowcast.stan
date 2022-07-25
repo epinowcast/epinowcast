@@ -79,12 +79,16 @@ data {
 }
 
 transformed data{
+  array[g] int groups;
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
   // effects
   int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
+  for (i in 1:g) {
+    groups[i] = i;
+  }
 }
 
 parameters {
@@ -241,7 +245,7 @@ model {
     profile("model_likelihood") {
     if (model_miss) {
       target += reduce_sum(
-        delay_group_lupmf, g, 1, flat_obs, sl, csl, imp_obs, t, ts, st,
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, ts, st,
         rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss
       );
     }else {

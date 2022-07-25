@@ -37,7 +37,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   return(tar);
 }
 
-real delay_group_lpmf(array[] int dummy, int start, int end, array[] int obs,
+real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int sl, array[] int csl, array[] vector imp_obs,
                       int t, array[,] int ts, array[] int st,
                       array[,] int rdlurd, vector srdlh, matrix ref_lh,
