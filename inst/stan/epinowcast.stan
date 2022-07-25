@@ -175,10 +175,16 @@ transformed parameters{
     combine_effects(0, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
   }
   // Missing reference model
-  
+  if (model_miss) {
+    miss_ref_prop = inv_logit(
+      combine_effects(0, miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 0)
+    );
+  }
   // Observation model
   if (model_obs) {
+    profile("transformed_delay_missing_effects") {
     phi = inv_square(sqrt_phi);
+    }
   }
   // debug issues in truncated data if/when they appear
   if (debug) {
