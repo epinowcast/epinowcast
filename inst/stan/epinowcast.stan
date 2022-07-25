@@ -1,8 +1,8 @@
 functions {
+#include functions/zero_truncated_normal.stan
 #include functions/regression.stan
 #include functions/discretised_reporting_prob.stan
 #include functions/hazard.stan
-#include functions/zero_truncated_normal.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
 #include functions/expected_obs_from_index.stan
@@ -164,19 +164,19 @@ model {
     if (model_refp > 1) {
       refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
     }
-    effect_priors(
+    effect_priors_lp(
       refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_fncol,
        refp_rncol
     );
     if (model_refp > 1) {
-      effect_priors(
+      effect_priors_lp(
         refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
         refp_rncol
       );
     }
   }
   // priors and scaling for date of report effects
-  effect_priors(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
 
   // reporting overdispersion (1/sqrt)
   if (model_obs) {
