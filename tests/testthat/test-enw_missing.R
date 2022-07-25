@@ -15,7 +15,14 @@ test_that("enw_missing produces the expected model components", {
 })
 
 test_that("enw_missing fails when insupported options are used", {
-  expect_error(enw_missing(~0, data = pobs))
   pobs$missing_reference[[1]] <- data.table::data.table()
   expect_error(enw_missing(data = pobs))
+})
+
+test_that("enw_missing returns an empty model when required", {
+  expect_snapshot({
+    miss <- enw_missing(formula = ~0, data = pobs)
+    miss$inits <- NULL
+    miss
+  })
 })
