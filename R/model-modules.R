@@ -357,7 +357,7 @@ enw_missing <- function(formula = ~1, data) {
       "Standard deviation of scaled pooled logit missing reference date
        effects"
     ),
-    distribution = c("Norma", "Zero truncated normal"),
+    distribution = c("Normal", "Zero truncated normal"),
     mean = c(0, 0),
     sd = c(1, 1)
   )

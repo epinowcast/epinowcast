@@ -110,7 +110,7 @@
       1:          Intercept on the logit scale for the proportion missing reference dates
       2: Standard deviation of scaled pooled logit missing reference date\n       effects
                   distribution mean sd
-      1:                 Norma    0  1
+      1:                Normal    0  1
       2: Zero truncated normal    0  1
       
 
@@ -161,6 +161,7 @@
       1:          Intercept on the logit scale for the proportion missing reference dates
       2: Standard deviation of scaled pooled logit missing reference date\n       effects
                   distribution mean sd
-      1:                 Norma    0  1
+      1:                Normal    0  1
       2: Zero truncated normal    0  1
       
+
