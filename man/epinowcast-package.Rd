@@ -30,6 +30,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Michael DeWitt \email{me.dewitt.jr@gmail.com} (\href{https://orcid.org/0000-0001-8940-1967}{ORCID}) [contributor]
+  \item Hannah Choi \email{hannah.choi1@lshtm.ac.uk} [contributor]
 }
 
 }
