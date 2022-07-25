@@ -250,7 +250,6 @@ generated quantities {
   if (cast) {
     vector[dmax] lexp_obs;
     array[s, dmax] int pp_obs_tmp;
-    array[s, dmax] int lexp_tmp; 
     // Posterior predictions for observations
     for (i in 1:s) {
       profile("generated_obs") {
@@ -258,7 +257,6 @@ generated quantities {
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-      lexp_tmp[i] = lexp_obs;
       pp_obs_tmp[i] = obs_rng(lexp_obs, phi, model_obs);
       }
       profile("generated_loglik") {
