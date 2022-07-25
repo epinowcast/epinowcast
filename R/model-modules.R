@@ -334,7 +334,7 @@ enw_missing <- function(formula = ~1, data) {
     )[, -1]
   )
   data_list$missing_ref <- missing_reference
-  data_list$model_missing <- 1
+  data_list$model_miss <- 1
 
   out <- list()
   out$formula <- as_string_formula(formula)

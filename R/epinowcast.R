@@ -150,8 +150,11 @@ epinowcast <- function(data,
     enw_priors_as_data_list(priors)
   )
 
-  if (is.null(data_as_list$model_missing)) {
-    model_missing <- 0
+  if (is.null(data_as_list$model_miss)) {
+    data_as_list$model_miss <- 0
+    data_as_list$miss_fncol <- 0
+    data_as_list$miss_rncol <- 0
+    data_as_list$miss_fnindex <- 0
   } else {
     stop("The missingness model has not yet been implemented")
   }
