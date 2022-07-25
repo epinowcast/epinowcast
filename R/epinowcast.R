@@ -116,7 +116,7 @@ epinowcast <- function(data,
                          data = data
                        ),
                        missing = epinowcast::enw_missing(
-                         formula = "~0",
+                         formula = ~0,
                          data = data
                        ),
                        obs = epinowcast::enw_obs(
@@ -132,7 +132,7 @@ epinowcast <- function(data,
                        priors,
                        ...) {
   modules <- list(
-    reference, report, expectation, obs, fit, ...
+    expectation, reference, report, missing, obs, fit, ...
   )
   names(modules) <- as.character(seq_len(length(modules)))
   purrr::walk(modules, check_module)

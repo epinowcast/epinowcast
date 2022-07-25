@@ -63,8 +63,8 @@ data {
   matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
   array[model_miss ? g : 0, miss_fnindex] int missing_ref;
-  array[model_miss ? 2 : 0] real miss_int_p;
-  array[model_miss ? 2 : 0] real miss_beta_sd_p;
+  array[2] real miss_int_p;
+  array[2] real miss_beta_sd_p;
 
   // Observation model
   int model_obs; // Control parameter for the observation model (0 = Poisson, 1 = Negbin)
@@ -239,10 +239,18 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    target += reduce_sum(
-      delay_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
-      ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
-    );
+    if (model_miss) {
+      target += reduce_sum(
+        delay_group_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
+      );
+    }else {
+      target += reduce_sum(
+        delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
+        srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
+        model_obs
+      );
+    }
     }
   }
 }

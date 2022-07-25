@@ -66,7 +66,7 @@
       [1] 41
       
       $data$miss_fncol
-      [1] 7
+      [1] 6
       
       $data$miss_rdesign
         fixed week
@@ -98,16 +98,69 @@
            2021-08-18 2021-08-19 2021-08-20 2021-08-21 2021-08-22
       [1,]          0          0          0          0          0
       
-      $data$model_missing
+      $data$model_miss
       [1] 1
       
       
       $priors
              variable
-      1: miss_beta_sd
-                                                                               description
-      1: Standard deviation of scaled pooled logit missing\n        reference date effects
+      1:     miss_int
+      2: miss_beta_sd
+                                                                              description
+      1:          Intercept on the logit scale for the proportion missing reference dates
+      2: Standard deviation of scaled pooled logit missing reference date\n       effects
                   distribution mean sd
-      1: Zero truncated normal    0  1
+      1:                 Norma    0  1
+      2: Zero truncated normal    0  1
       
 
+# enw_missing returns an empty model when required
+
+    Code
+      miss <- enw_missing(formula = ~0, data = pobs)
+      miss$inits <- NULL
+      miss
+    Output
+      $formula
+      [1] "~0"
+      
+      $data
+      $data$miss_fdesign
+      numeric(0)
+      
+      $data$miss_fnrow
+      [1] 0
+      
+      $data$miss_findex
+      numeric(0)
+      
+      $data$miss_fnindex
+      [1] 0
+      
+      $data$miss_fncol
+      [1] 0
+      
+      $data$miss_rdesign
+      numeric(0)
+      
+      $data$miss_rncol
+      [1] 0
+      
+      $data$model_miss
+      [1] 0
+      
+      $data$missing_ref
+      numeric(0)
+      
+      
+      $priors
+             variable
+      1:     miss_int
+      2: miss_beta_sd
+                                                                              description
+      1:          Intercept on the logit scale for the proportion missing reference dates
+      2: Standard deviation of scaled pooled logit missing reference date\n       effects
+                  distribution mean sd
+      1:                 Norma    0  1
+      2: Zero truncated normal    0  1
+      
