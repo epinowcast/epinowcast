@@ -60,9 +60,10 @@ data {
   int miss_fnindex;
   int miss_fncol;
   int miss_rncol;
-  matrix[miss_fnindex, miss_fncol] miss_fdesign;
+  matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
-  array[miss_fnindex] int missing_ref;
+  array[model_miss ? g : 0, miss_fnindex] int missing_ref;
+  array[model_miss ? 2 : 0] real miss_int_p;
   array[model_miss ? 2 : 0] real miss_beta_sd_p;
 
   // Observation model
@@ -105,6 +106,7 @@ parameters {
   vector<lower=0>[rep_rncol] rep_beta_sd; // pooled modifiers to report date
 
   // Missing reference date model
+  array[model_miss] real miss_int;
   vector[miss_fncol] miss_beta; 
   vector<lower=0>[miss_rncol] miss_beta_sd; 
 
@@ -177,7 +179,7 @@ transformed parameters{
   // Missing reference model
   if (model_miss) {
     miss_ref_prop = inv_logit(
-      combine_effects(0, miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 0)
+      combine_effects(miss_int[1], miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1)
     );
   }
   // Observation model
@@ -222,9 +224,12 @@ model {
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
   // priors for missing reference date effects
-  effect_priors_lp(
-    miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
-  );
+  if (model_miss) {
+    miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
+    effect_priors_lp(
+      miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
+    );
+  }
 
   // reporting overdispersion (1/sqrt)
   if (model_obs) {

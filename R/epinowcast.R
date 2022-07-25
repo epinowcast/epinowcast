@@ -157,6 +157,7 @@ epinowcast <- function(data,
     )
     data_as_list$model_miss <- 0
     data_as_list$missing_ref <- numeric(0)
+    data_as_list$miss_int_p <- numeric(0)
     data_as_list$miss_beta_sd_p <- numeric(0)
   }
 

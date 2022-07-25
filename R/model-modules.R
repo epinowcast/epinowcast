@@ -322,7 +322,7 @@ enw_missing <- function(formula = ~1, data) {
   form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
   data_list <- enw_formula_as_data_list(
     form,
-    prefix = "miss", drop_intercept = FALSE
+    prefix = "miss", drop_intercept = TRUE
   )
   missing_reference <- data.table::copy(data$missing_reference[[1]])
   data.table::setorderv(missing_reference, c(".group", "report_date"))
@@ -340,28 +340,35 @@ enw_missing <- function(formula = ~1, data) {
   out$formula <- as_string_formula(formula)
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = c("miss_beta_sd"),
-    description = c("Standard deviation of scaled pooled logit missing
-        reference date effects"),
-    distribution = c("Zero truncated normal"),
-    mean = 0,
-    sd = 1
+    variable = c("miss_int", "miss_beta_sd"),
+    description = c(
+      "Intercept on the logit scale for the proportion missing reference dates",
+      "Standard deviation of scaled pooled logit missing reference date
+       effects"
+    ),
+    distribution = c("Norma", "Zero truncated normal"),
+    mean = c(0, 0),
+    sd = c(1, 1)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
+        miss_int = numeric(0),
         miss_beta = numeric(0),
         miss_beta_sd = numeric(0)
       )
-      if (data$miss_fncol > 0) {
-        init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
-      }
-      if (data$miss_rncol > 0) {
-        init$miss_beta_sd <- abs(rnorm(
-          data$miss_rncol, priors$miss_beta_sd_p[1],
-          priors$miss_beta_sd_p[2] / 10
-        ))
+      if (data$model_miss) {
+        init$miss_int <- rnorm(1, priors$miss_int_p[1], priors$miss_int_p[2])
+        if (data$miss_fncol > 0) {
+          init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
+        }
+        if (data$miss_rncol > 0) {
+          init$miss_beta_sd <- abs(rnorm(
+            data$miss_rncol, priors$miss_beta_sd_p[1],
+            priors$miss_beta_sd_p[2] / 10
+          ))
+        }
       }
       return(init)
     }
