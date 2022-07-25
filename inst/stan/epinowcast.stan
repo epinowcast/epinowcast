@@ -32,28 +32,28 @@ data {
   array[2] real eobs_lsd_p; // Standard deviation for expected final observations
 
   // Reference day model
-  int refp_fnrow; // how many unique pmfs there are
-  array[s] int refp_findex; // how each date links to a pmf
-  int refp_fncol; // number of effects to apply
-  matrix[refp_fnrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
-  int refp_rncol; // number of standard deviations to use for pooling
-  matrix[refp_fncol, refp_rncol + 1] refp_rdesign; // Pooling pmf design matrix 
-  int model_refp; // parametric distribution (0 = none, 1 = exp, 2 = lognormal, 3 = gamma, 4 = loglogistic)
-  array[2] real refp_mean_int_p; // log mean intercept for reference date delay
-  array[2] real refp_sd_int_p; // log standard deviation for the reference date delay
-  array[2] real refp_mean_beta_sd_p; // standard deviation of scaled pooled logmean effects
-  array[2] real refp_sd_beta_sd_p; // standard deviation of scaled pooled logsd effects
+  int model_refp;
+  int refp_fnrow;
+  array[s] int refp_findex;
+  int refp_fncol;
+  matrix[refp_fnrow, refp_fncol + 1] refp_fdesign;
+  int refp_rncol;
+  matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
+  array[2] real refp_mean_int_p;
+  array[2] real refp_sd_int_p;
+  array[2] real refp_mean_beta_sd_p;
+  array[2] real refp_sd_beta_sd_p; 
 
   // Reporting day model
-  int model_rep; // Reporting day model in use
+  int model_rep;
   int rep_t; // how many reporting days are there (t + dmax - 1)
-  int rep_fnrow; // how many unique reporting days are there
-  array[g, rep_t] int rep_findex; // how each report date links to a sparse report effect
-  int rep_fncol; // number of report day effects to apply
-  matrix[rep_fnrow, rep_fncol + 1] rep_fdesign; // design matrix for report dates
-  int rep_rncol; // number of standard deviations to use for pooling for rds
-  matrix[rep_fncol, rep_rncol + 1] rep_rdesign; // Pooling pmf design matrix 
-  array[2] real rep_beta_sd_p; //standard deviation of scaled pooled report date effects
+  int rep_fnrow; 
+  array[g, rep_t] int rep_findex; 
+  int rep_fncol;
+  matrix[rep_fnrow, rep_fncol + 1] rep_fdesign;
+  int rep_rncol; 
+  matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
+  array[2] real rep_beta_sd_p;
 
   // Missing reference date model
   int model_miss;
@@ -67,7 +67,7 @@ data {
   array[2] real miss_beta_sd_p;
 
   // Observation model
-  int model_obs; // Control parameter for the observation model (0 = Poisson, 1 = Negbin)
+  int model_obs; // Control parameter for the observation model
   array[2] real sqrt_phi_p; // 1/sqrt(overdispersion)
 
   // Control parameters
@@ -83,8 +83,7 @@ transformed data{
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
-  // if no reporting day effects use native probability for reference day
-  // effects
+  // if no reporting day effects use probability for reference day effects
   int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
   for (i in 1:g) {
     groups[i] = i;
@@ -98,16 +97,16 @@ parameters {
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
 
   // Reference model
-  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int; // logmean intercept
-  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; // logsd intercept
-  vector[model_refp ? refp_fncol : 0] refp_mean_beta; // unscaled modifiers to log mean
-  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; // unscaled modifiers to log sd
-  vector<lower=0>[refp_rncol] refp_mean_beta_sd; // pooled modifiers to logmean
-  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; // pooled modifiers to logsd
+  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
+  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
+  vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
+  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
+  vector<lower=0>[refp_rncol] refp_mean_beta_sd;
+  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
 
   // Report model
-  vector[rep_fncol] rep_beta; // unscaled modifiers to report date hazard
-  vector<lower=0>[rep_rncol] rep_beta_sd; // pooled modifiers to report date
+  vector[rep_fncol] rep_beta;
+  vector<lower=0>[rep_rncol] rep_beta_sd; 
 
   // Missing reference date model
   array[model_miss] real miss_int;
@@ -115,7 +114,7 @@ parameters {
   vector<lower=0>[miss_rncol] miss_beta_sd; 
 
   // Observation model
-  array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion by group
+  array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion
 }
 
 transformed parameters{
@@ -132,7 +131,7 @@ transformed parameters{
   vector[miss_fnindex] miss_ref_prop;
 
   // Observation model
-  array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion (joint across all observations)
+  array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
 
   // Expectation model
   profile("transformed_expected_final_observations") {
