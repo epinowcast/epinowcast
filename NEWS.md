@@ -7,9 +7,11 @@
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
 - Refactored the observation model, the combination of logit hazards, and the effects priors to be contained in generic functions to make extending package functionality easier. See #137 by @seabbs.
+- Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. #138 by @seabbs.
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
+- Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs.
 
 # epinowcast 0.1.0
 

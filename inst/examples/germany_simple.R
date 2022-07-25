@@ -41,6 +41,7 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 # Fit the default nowcast model and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
+  mising = enw_missing(~1, data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500

@@ -62,7 +62,7 @@ data {
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
-  array[miss_fnindex] int missing_reference;
+  array[miss_fnindex] int missing_ref;
   array[model_miss ? 2 : 0] real miss_beta_sd_p;
 
   // Observation model

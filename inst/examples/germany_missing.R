@@ -20,7 +20,7 @@ nat_germany_hosp <- enw_complete_dates(
   missing_reference = FALSE
 )
 
-# Prototypes for simulating missing data
+# Prototypes for simulating missing data - likely to be implemented in 0.2.0
 enw_incidence_to_cumulative <- function(obs, by = c()) {
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)

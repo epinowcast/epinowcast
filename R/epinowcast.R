@@ -156,7 +156,7 @@ epinowcast <- function(data,
       enw_formula_as_data_list(prefix = "miss", drop_intercept = FALSE)
     )
     data_as_list$model_miss <- 0
-    data_as_list$missing_reference <- numeric(0)
+    data_as_list$missing_ref <- numeric(0)
     data_as_list$miss_beta_sd_p <- numeric(0)
   }
 
