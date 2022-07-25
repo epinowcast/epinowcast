@@ -11,7 +11,7 @@ epinowcast(
   report = epinowcast::enw_report(non_parametric = ~0, structural = ~0, data = data),
   expectation = epinowcast::enw_expectation(formula = ~rw(day, .group), order = 1, data
     = data),
-  missing = epinowcast::enw_missing(formula = "~0", data = data),
+  missing = epinowcast::enw_missing(formula = ~0, data = data),
   obs = epinowcast::enw_obs(family = "negbin", data = data),
   fit = epinowcast::enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp =
     FALSE, likelihood = TRUE, debug = FALSE, output_loglik = FALSE),

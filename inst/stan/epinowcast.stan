@@ -241,8 +241,8 @@ model {
     profile("model_likelihood") {
     if (model_miss) {
       target += reduce_sum(
-        delay_group_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
+        delay_group_lupmf, g, 1, flat_obs, sl, csl, imp_obs, t, ts, st,
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss
       );
     }else {
       target += reduce_sum(
