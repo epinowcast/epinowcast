@@ -17,6 +17,9 @@
 #' [enw_expectation()]. By default this is set to be highly flexible and thus
 #' weakly informed. Other options are not yet supported.
 #'
+#' @param missing The missing reference date model specification as defined
+#' using [enw_missing()]. By default this is set to not be used.
+#'
 #' @param obs The observation model as defined by [enw_obs()].
 #' Observations are also processed within this function for use in modelling.
 #'
@@ -34,9 +37,8 @@
 #' other similar model specification functions. Priors in this data.frame
 #' replace the default priors specified by each model component.
 #'
-#' @param ... Additional model modules to pass to `model`. Examples of supported
-#' options are [enw_missing()] for modelling data with missing reference dates.
-#' User modules may also be used after adapting the supplied `model`.
+#' @param ... Additional model modules to pass to `model`. User modules may
+#' be used but currently require the supplied `model` to be adapted.
 #'
 #' @return A object of the class "epinowcast" which inherits from
 #' [enw_preprocess_data()] and `data.table`, and combines the output from
@@ -106,11 +108,15 @@ epinowcast <- function(data,
                        report = epinowcast::enw_report(
                          non_parametric = ~0,
                          structural = ~0,
-                         data
+                         data = data
                        ),
                        expectation = epinowcast::enw_expectation(
                          formula = ~ rw(day, .group),
                          order = 1,
+                         data = data
+                       ),
+                       missing = epinowcast::enw_missing(
+                         formula = "~0",
                          data = data
                        ),
                        obs = epinowcast::enw_obs(
@@ -149,17 +155,6 @@ epinowcast <- function(data,
     data_as_list,
     enw_priors_as_data_list(priors)
   )
-
-  if (is.null(data_as_list$model_miss)) {
-    data_as_list <- c(
-      data_as_list,
-      enw_formula_as_data_list(prefix = "miss", drop_intercept = FALSE)
-    )
-    data_as_list$model_miss <- 0
-    data_as_list$missing_ref <- numeric(0)
-    data_as_list$miss_int_p <- numeric(0)
-    data_as_list$miss_beta_sd_p <- numeric(0)
-  }
 
   if (!expectation$formula$expectation %in% "~rw(day, .group)") {
     stop("A flexible expectation model has not yet been implemented")

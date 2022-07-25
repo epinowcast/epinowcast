@@ -36,6 +36,9 @@ Format formula data for use with stan
 \examples{
 f <- enw_formula(~ 1 + (1 | cyl), mtcars)
 enw_formula_as_data_list(f, "mtcars")
+
+# A missing formula produces the default list
+enw_formula_as_data_list(prefix = "missing")
 }
 \seealso{
 Functions used to help convert models into the format required for stan

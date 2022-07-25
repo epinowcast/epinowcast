@@ -301,7 +301,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @param formula A formula (as implemented in [enw_formula()]) describing
 #' the missing data proportion on the logit scale by reference date. This can
 #' use features defined by reference date as defined in `metareference` as
-#' produced by [enw_preprocess_data()].
+#' produced by [enw_preprocess_data()]. "~0" implies no model is required.
+#' Otherwise an intercept is always needed
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
@@ -309,32 +310,42 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @family modelmodules
 #' @export
 #' @examples
+#' # Missing model with a fixed intercept only
 #' enw_missing(data = enw_example("preprocessed"))
+#'
+#' # No missingness model specified
+#' enw_missing(~0, data = enw_example("preprocessed"))
 enw_missing <- function(formula = ~1, data) {
-  if (as_string_formula(formula) %in% "~0") {
-    stop("At least an intercept must be used if this module is in use.")
-  }
-  if (nrow(data$missing_reference[[1]]) == 0) {
+  if (nrow(data$missing_reference[[1]]) == 0 &&
+    !(as_string_formula(formula) %in% "~0")) {
     stop("A missingness model has been specified but data on  the proportion of
           observations without reference dates is not available.")
   }
 
-  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
-  data_list <- enw_formula_as_data_list(
-    form,
-    prefix = "miss", drop_intercept = TRUE
-  )
-  missing_reference <- data.table::copy(data$missing_reference[[1]])
-  data.table::setorderv(missing_reference, c(".group", "report_date"))
-  missing_reference <- as.matrix(
-    data.table::dcast(
-      missing_reference, .group ~ report_date,
-      value.var = "confirm",
-      fill = 0
-    )[, -1]
-  )
-  data_list$missing_ref <- missing_reference
-  data_list$model_miss <- 1
+  if (as_string_formula(formula) %in% "~0") {
+    data_list <- enw_formula_as_data_list(
+      prefix = "miss", drop_intercept = FALSE
+    )
+    data_list$model_miss <- 0
+    data_list$missing_ref <- numeric(0)
+  } else {
+    form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
+    data_list <- enw_formula_as_data_list(
+      form,
+      prefix = "miss", drop_intercept = TRUE
+    )
+    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    missing_reference <- as.matrix(
+      data.table::dcast(
+        missing_reference, .group ~ report_date,
+        value.var = "confirm",
+        fill = 0
+      )[, -1]
+    )
+    data_list$missing_ref <- missing_reference
+    data_list$model_miss <- 1
+  }
 
   out <- list()
   out$formula <- as_string_formula(formula)
