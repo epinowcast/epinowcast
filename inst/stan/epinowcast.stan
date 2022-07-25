@@ -4,8 +4,10 @@ functions {
 #include functions/hazard.stan
 #include functions/zero_truncated_normal.stan
 #include functions/expected_obs.stan
+#include functions/combine_logit_hazards.stan
 #include functions/expected_obs_from_index.stan
 #include functions/obs_lpmf.stan
+#include functions/delay_lpmf.stan
 }
 
 data {
@@ -193,7 +195,7 @@ model {
   if (likelihood) {
     profile("model_likelihood") {
     target += reduce_sum(
-      obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
+      delay_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
       ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
     );
     }
@@ -215,24 +217,13 @@ generated quantities {
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-      if (model_obs) {
-        pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi[1]);
-      } else {
-        pp_obs_tmp[i, 1:dmax] = poisson_log_rng(lexp_obs);
-      }
+      pp_obs_tmp[i, 1:dmax] = obs_rng(lexp_obs, phi, model_obs);
       }
       profile("generated_loglik") {
       if (ologlik) {
         log_lik[i] = 0;
-        if (model_obs) {
-          for (j in 1:sl[i]) {
-            log_lik[i] += 
-              neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi[1]);
-          }
-        }else{
-          for (j in 1:sl[i]) {
-            log_lik[i] += poisson_log_lpmf(obs[i, j] | lexp_obs[j]);
-          }
+        for (j in 1:sl[i]) {
+          log_lik[i] += obs_lpmf(obs[i, j]  | lexp_obs[j], phi, model_obs);
         }
       }
       }
