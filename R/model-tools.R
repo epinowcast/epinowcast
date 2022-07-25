@@ -24,26 +24,40 @@
 #' @examples
 #' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
 #' enw_formula_as_data_list(f, "mtcars")
+#'
+#' # A missing formula produces the default list
+#' enw_formula_as_data_list(prefix = "missing")
 enw_formula_as_data_list <- function(formula, prefix,
                                      drop_intercept = FALSE) {
-  if (!("enw_formula" %in% class(formula))) {
-    stop(
-      "formula must be an object of class enw_formula as produced using
-       enw_formula"
-    )
-  }
   paste_lab <- function(string, lab = prefix) {
     paste0(lab, "_", string)
   }
-  data <- list()
-  data[[paste_lab("fdesign")]] <- formula$fixed$design
-  data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
-  data[[paste_lab("findex")]] <- formula$fixed$index
-  data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
-  data[[paste_lab("fncol")]] <-
-    ncol(formula$fixed$design) - as.numeric(drop_intercept)
-  data[[paste_lab("rdesign")]] <- formula$random$design
-  data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
+  if (!missing(formula)) {
+    if (!("enw_formula" %in% class(formula))) {
+      stop(
+        "formula must be an object of class enw_formula as produced using
+        enw_formula"
+      )
+    }
+    data <- list()
+    data[[paste_lab("fdesign")]] <- formula$fixed$design
+    data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
+    data[[paste_lab("findex")]] <- formula$fixed$index
+    data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
+    data[[paste_lab("fncol")]] <-
+      ncol(formula$fixed$design) - as.numeric(drop_intercept)
+    data[[paste_lab("rdesign")]] <- formula$random$design
+    data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
+  } else {
+    data <- list()
+    data[[paste_lab("fdesign")]] <- numeric(0)
+    data[[paste_lab("fnrow")]] <- 0
+    data[[paste_lab("findex")]] <- numeric(0)
+    data[[paste_lab("fnindex")]] <- 0
+    data[[paste_lab("fncol")]] <- 0
+    data[[paste_lab("rdesign")]] <- numeric(0)
+    data[[paste_lab("rncol")]] <- 0
+  }
   return(data)
 }
 

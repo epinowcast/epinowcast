@@ -151,12 +151,13 @@ epinowcast <- function(data,
   )
 
   if (is.null(data_as_list$model_miss)) {
+    data_as_list <- c(
+      data_as_list,
+      enw_formula_as_data_list(prefix = "miss", drop_intercept = FALSE)
+    )
     data_as_list$model_miss <- 0
-    data_as_list$miss_fncol <- 0
-    data_as_list$miss_rncol <- 0
-    data_as_list$miss_fnindex <- 0
-  } else {
-    stop("The missingness model has not yet been implemented")
+    data_as_list$missing_reference <- numeric(0)
+    data_as_list$miss_beta_sd_p <- numeric(0)
   }
 
   if (!expectation$formula$expectation %in% "~rw(day, .group)") {
