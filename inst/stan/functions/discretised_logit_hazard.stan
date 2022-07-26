@@ -65,10 +65,8 @@ vector lcdf_to_logit_hazard(vector lcdf, int n) {
   lccdf = log1m_exp(lcdf);
   lhaz[1] = lcdf[1];
   lhaz[2:(n-1)] = log1m_exp(lccdf[2:(n-1)] - lccdf[1:(n-2)]);
-  lhaz[n] = 0;
-  lhaz = logit(exp(lhaz));
-  //lhaz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
-  //lhaz[n] = positive_infinity();
+  lhaz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
+  lhaz[n] = positive_infinity();
   return(lhaz);
 }
 

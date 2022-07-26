@@ -112,8 +112,12 @@ transformed parameters{
         refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
       );
     }
+    print("Logit hazards");
+    print(ref_lh[, 1]);
+    print("Probablities");
+    print(exp(hazard_to_log_prob(inv_logit(ref_lh[, 1]))));
     }
-  }
+  } 
   }
   // calculate sparse report date effects with forced 0 intercept
   profile("transformed_delay_reporting_date_effects") {
@@ -129,6 +133,8 @@ transformed parameters{
     imp_obs[k][1] = leobs_init[k];
     imp_obs[k][2:t] = 
       leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
+    print("Expectation cases");
+    print(imp_obs[k]);
   }
   } 
   // transform phi to overdispersion scale
