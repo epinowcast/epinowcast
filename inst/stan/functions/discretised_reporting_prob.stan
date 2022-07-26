@@ -1,5 +1,5 @@
 // Compute the cdf of a parametric distribution at values 1:n
-vector upper_cdf_discrete(real mu, real sigma, int n, int dist) {
+vector upper_lcdf_discrete(real mu, real sigma, int n, int dist) {
   vector[n] upper_cdf;
   if (dist == 1) {
     real emu = exp(-mu);
@@ -27,7 +27,7 @@ vector upper_cdf_discrete(real mu, real sigma, int n, int dist) {
 }
 
 // Adjust a vector of cdf evaluations for probability mass beyond maximum value
-vector adjust_cdf_discrete(vector cdf, int n, int max_strat) {
+vector adjust_lcdf_discrete(vector lcdf, int n, int max_strat) {
   vector[n] adjusted_cdf;
   if (max_strat == 0) {
     // ignore
@@ -47,29 +47,33 @@ vector adjust_cdf_discrete(vector cdf, int n, int max_strat) {
 
 // Calculate the daily probability of reporting using parametric
 // distributions up to the maximum observed delay
-vector discretised_reporting_prob(real mu, real sigma, int n, int dist, int max_strat) {
-  vector[n] pmf; 
-  vector[n] cdf;
-  cdf = upper_cdf_discrete(mu, sigma, n, dist);
-  cdf = adjust_cdf_discrete(cdf, n, max_strat);
+vector discretised_reporting_log_prob(real mu, real sigma, int n, int dist, int max_strat) {
+  vector[n] lpmf; 
+  vector[n] lcdf;
+  lcdf = upper_lcdf_discrete(mu, sigma, n, dist);
+  lcdf = adjust_lcdf_discrete(cdf, n, max_strat);
   // compute discretised pmf
-  pmf[1] = cdf[1];
-  pmf[2:n] = cdf[2:n] - cdf[1:(n-1)];
-  return(pmf);
+  lpmf[1] = lcdf[1];
+  lpmf[2:n] = log_diff_exp(lcdf[2:n], lcdf[1:(n-1)]);
+  return(lpmf);
 }
 
 // Calculate the daily hazard of reporting using parametric
 // distributions up to the maximum observed delay
-vector discretised_reporting_hazard(real mu, real sigma, int n, int dist, int max_strat) {
-  vector[n] haz; 
-  vector[n] cdf;
-  vector[n] ccdf;
-  cdf = upper_cdf_discrete(mu, sigma, n, dist);
-  cdf = adjust_cdf_discrete(cdf, n, max_strat);
-  ccdf = 1 - cdf;
+vector discretised_reporting_logit_hazard(real mu, real sigma, int n, int dist,
+                                          int max_strat) {
+  vector[n] lhaz; 
+  vector[n] lcdf;
+  vector[n] lccdf;
+  cdf = upper_lcdf_discrete(mu, sigma, n, dist);
+  cdf = adjust_lcdf_discrete(cdf, n, max_strat);
+  ccdf = log1m_exp(lcdf);
   // compute discretised hazard
-  haz[1] = cdf[1];
-  haz[2:(n-1)] = 1 - ccdf[2:(n-1)]./ccdf[1:(n-2)];
-  haz[n] = 1;
-  return(haz);
+  lhaz[1] = lcdf[1];
+  lhaz[2:(n-1)] = log1m_exp(lccdf[2:(n-1)] - lccdf[1:(n-2)]);
+  lhaz[n] = 0;
+  lhaz = lhaz - log1m_exp(lhaz);
+  return(lhaz);
 }
+
+vector discer
