@@ -84,10 +84,8 @@ vector discretised_logit_hazard(real mu, real sigma, int n, int dist,
   lcdf = adjust_lcdf_discrete(lcdf, n, max_strat);
   if (ref_as_p == 1) {
     lhaz = lcdf_to_log_prob(lcdf, n);
-    print("probability");
   }else{
     lhaz = lcdf_to_logit_hazard(lcdf, n);
-    print("hazard");
   }
   return(lhaz);
 }
