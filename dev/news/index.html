@@ -89,6 +89,9 @@
 <div class="section level3">
 <h3 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h3>
 <ul><li>Removed explicit links to authors and issues in the <code>NEWS.md</code> file. See <a href="https://github.com/epiforecasts/epinowcast/issues/132" class="external-link">#132</a> by <a href="https://github.com/choi-hannah" class="external-link">@choi-hannah</a>.</li></ul></div>
+<div class="section level3">
+<h3 id="bugs-0-2-0">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-0"></a></h3>
+<ul><li>The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying <code>ref_as_p</code> in the stan code. There was an additional issue in that the <code><a href="../reference/enw_report.html">enw_report()</a></code> module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in <a href="https://github.com/epiforecasts/epinowcast/issues/142" class="external-link">#142</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="epinowcast-010">epinowcast 0.1.0<a class="anchor" aria-label="anchor" href="#epinowcast-010"></a></h2>
