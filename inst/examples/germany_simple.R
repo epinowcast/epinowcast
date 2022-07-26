@@ -43,7 +43,7 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 2, iter_warmup = 500, iter_sampling = 500
+    chains = 2, iter_warmup = 500, iter_sampling = 500, debug = TRUE
   ),
   obs = enw_obs(family = "poisson", data = pobs)
 )

@@ -1,6 +1,11 @@
+real loglogistic_lcdf (real y, real alpha, real beta) {
+  return -log1p((y / alpha) ^-beta);
+}
+  
+
 // Compute the cdf of a parametric distribution at values 1:n
 vector upper_lcdf_discrete(real mu, real sigma, int n, int dist) {
-  vector[n] upper_cdf;
+  vector[n] upper_lcdf;
   if (dist == 1) {
     real emu = exp(-mu);
     for (i in 1:n) {
@@ -57,20 +62,20 @@ vector lcdf_to_log_prob(vector lcdf, int n) {
 vector lcdf_to_logit_hazard(vector lcdf, int n) {
   vector[n] lhaz;
   vector[n] lccdf;
-  ccdf = log1m_exp(lcdf)
+  lccdf = log1m_exp(lcdf);
   lhaz[1] = lcdf[1];
   lhaz[2:(n-1)] = log1m_exp(lccdf[2:(n-1)] - lccdf[1:(n-2)]);
   lhaz[n] = 0;
   lhaz = lhaz - log1m_exp(lhaz);
   return(lhaz);
-})
+}
 
 // Calculate discreteised logit hazard or log probability
 // up to a maximum oberved delay with a range of normalisation strategies
 // Calculate the daily hazard of reporting using parametric
 // distributions up to the maximum observed delay
-vector discretised_reporting_logit_hazard(real mu, real sigma, int n, int dist,
-                                          int max_strat, int ref_as_p) {
+vector discretised_logit_hazard(real mu, real sigma, int n, int dist, 
+                                int max_strat, int ref_as_p) {
   vector[n] lcdf;
   vector[n] lhaz; 
   lcdf = upper_lcdf_discrete(mu, sigma, n, dist);
