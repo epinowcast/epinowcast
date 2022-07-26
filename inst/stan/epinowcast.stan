@@ -1,11 +1,13 @@
 functions {
+#include functions/zero_truncated_normal.stan
 #include functions/regression.stan
 #include functions/discretised_reporting_prob.stan
 #include functions/hazard.stan
-#include functions/zero_truncated_normal.stan
 #include functions/expected_obs.stan
+#include functions/combine_logit_hazards.stan
 #include functions/expected_obs_from_index.stan
 #include functions/obs_lpmf.stan
+#include functions/delay_lpmf.stan
 }
 
 data {
@@ -155,35 +157,27 @@ model {
   for (i in 1:g) {
     leobs_resids[i] ~ std_normal();
   }
+
   // priors for the intercept of the log mean truncation distribution
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
       refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
     }
-    // priors and scaling for date of reference effects
-    if (refp_fncol) {
-      refp_mean_beta ~ std_normal();
-      if (refp_rncol > 1) {
-        refp_sd_beta ~ std_normal();
-      }
-      if (refp_rncol) {
-        refp_mean_beta_sd ~ 
-          zero_truncated_normal(refp_mean_beta_sd_p[1], refp_mean_beta_sd_p[2]);
-        if (model_refp > 1) {
-          refp_sd_beta_sd ~ 
-            zero_truncated_normal(refp_sd_beta_sd_p[1], refp_sd_beta_sd_p[2]);
-        }
-      }
+    effect_priors_lp(
+      refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_fncol,
+       refp_rncol
+    );
+    if (model_refp > 1) {
+      effect_priors_lp(
+        refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
+        refp_rncol
+      );
     }
   }
   // priors and scaling for date of report effects
-  if (rep_fncol) { 
-    rep_beta ~ std_normal();
-    if (rep_rncol) {
-      rep_beta_sd ~ zero_truncated_normal(rep_beta_sd_p[1], rep_beta_sd_p[2]);
-    } 
-  }
+  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+
   // reporting overdispersion (1/sqrt)
   if (model_obs) {
     sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
@@ -193,7 +187,7 @@ model {
   if (likelihood) {
     profile("model_likelihood") {
     target += reduce_sum(
-      obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
+      delay_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
       ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
     );
     }
@@ -215,24 +209,13 @@ generated quantities {
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-      if (model_obs) {
-        pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi[1]);
-      } else {
-        pp_obs_tmp[i, 1:dmax] = poisson_log_rng(lexp_obs);
-      }
+      pp_obs_tmp[i, 1:dmax] = obs_rng(lexp_obs, phi, model_obs);
       }
       profile("generated_loglik") {
       if (ologlik) {
         log_lik[i] = 0;
-        if (model_obs) {
-          for (j in 1:sl[i]) {
-            log_lik[i] += 
-              neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi[1]);
-          }
-        }else{
-          for (j in 1:sl[i]) {
-            log_lik[i] += poisson_log_lpmf(obs[i, j] | lexp_obs[j]);
-          }
+        for (j in 1:sl[i]) {
+          log_lik[i] += obs_lpmf(obs[i, j]  | lexp_obs[j], phi, model_obs);
         }
       }
       }
