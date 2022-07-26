@@ -9,9 +9,12 @@
 - Implemented direct specification of parametric baseline hazards. See #134 by @adrian-lison.
 - Refactored the observation model, the combination of logit hazards, and the effects priors to be contained in generic functions to make extending package functionality easier. See #137 by @seabbs.
 
-
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
+
+## Bugs
+
+- The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying `ref_as_p` in the stan code. There was an additional issue in that the `enw_report()` module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in #142 by @seabbs.
 
 # epinowcast 0.1.0
 
