@@ -66,7 +66,7 @@ transformed data{
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
-  // effects
+  // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
 }
 
@@ -88,7 +88,6 @@ parameters {
 transformed parameters{
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
-  matrix[dmax, refp_fnrow] pmfs; // sparse report distributions
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
   array[g] vector[t] imp_obs; // Expected final observations
@@ -96,6 +95,7 @@ transformed parameters{
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
+    // calculate sparse reference date effects
     profile("transformed_delay_reference_date_effects") {
     refp_mean = combine_effects(refp_mean_int[1], refp_mean_beta, refp_fdesign,
                                 refp_mean_beta_sd, refp_rdesign, 1);
@@ -105,20 +105,20 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     }
     }
-    // calculate pmfs
-    profile("transformed_delay_reference_date_pmfs") {
-    for (i in 1:refp_fnrow) {
-      pmfs[, i] =
-         discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
-         2);
-    }
-    if (ref_as_p == 0) {
+    // calculate reference date logit hazards (unless no reporting effects)
+    profile("transformed_delay_reference_date_hazards") {
+    if (ref_as_p) {
       for (i in 1:refp_fnrow) {
-        ref_lh[, i] = prob_to_hazard(pmfs[, i]);
-        ref_lh[, i] = logit(ref_lh[, i]);
+        ref_lh[, i] =
+           discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
+           2);
       }
     }else{
-      ref_lh = pmfs;
+      for (i in 1:refp_fnrow) {
+        ref_lh[, i] = logit(
+           discretised_reporting_hazard(refp_mean[i], refp_sd[i], dmax, model_refp,
+           2));
+      }
     }
     }
   }

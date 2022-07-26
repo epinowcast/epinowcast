@@ -6,7 +6,9 @@
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
+- Implemented direct specification of parametric baseline hazards. See #134 by @adrian-lison.
 - Refactored the observation model, the combination of logit hazards, and the effects priors to be contained in generic functions to make extending package functionality easier. See #137 by @seabbs.
+
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
