@@ -1,7 +1,7 @@
 functions {
 #include functions/zero_truncated_normal.stan
 #include functions/regression.stan
-#include functions/discretised_reporting_prob.stan
+#include functions/discretised_reporting_logit_hazard.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
@@ -107,18 +107,10 @@ transformed parameters{
     }
     // calculate reference date logit hazards (unless no reporting effects)
     profile("transformed_delay_reference_date_hazards") {
-    if (ref_as_p) {
-      for (i in 1:refp_fnrow) {
-        ref_lh[, i] =
-           discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
-           2);
-      }
-    }else{
-      for (i in 1:refp_fnrow) {
-        ref_lh[, i] = logit(
-           discretised_reporting_hazard(refp_mean[i], refp_sd[i], dmax, model_refp,
-           2));
-      }
+    for (i in 1:refp_fnrow) {
+      ref_lh[, i] = discretised_reporting_logit_hazard(
+        refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
+      );
     }
     }
   }

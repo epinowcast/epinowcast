@@ -7,7 +7,7 @@
 // @param tar_obs The log of final expected observations that will be reported
 // for a given date on the log scale.
 // 
-// @param lh A vector of conditional probabilities a report occurs on a
+// @param lh A vector of conditional log probabilities a report occurs on a
 // given day. Optionally when ref_as_p = 0 this should be transformed first
 // into the logit hazard.
 // 
@@ -22,7 +22,9 @@
 //                 "inst/stan/functions")
 //
 // tar_obs <- log(1)
-// date_p <- (plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
+// date_p <- log(
+//  plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
+// )
 // rep_lh <- rep(0, 30)
 //
 // Example with no reporting day effect
@@ -65,7 +67,7 @@ vector expected_obs(real tar_obs, vector lh, int ref_as_p) {
   vector[t] exp_obs;
   if (ref_as_p == 1) {
     profile("model_likelihood_expected_obs_prod_p") {
-    exp_obs = tar_obs + log(lh);
+    exp_obs = tar_obs + lh;
     }
   }else{
     vector[t] p;
