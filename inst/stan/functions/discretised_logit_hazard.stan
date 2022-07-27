@@ -64,10 +64,8 @@ vector lcdf_to_logit_hazard(vector lcdf, int n) {
   lccdf = log1m_exp(lcdf[1:(n-1)]);
   lhaz[1] = lcdf[1];
   lhaz[2:(n-1)] = log1m_exp(lccdf[2:(n-1)] - lccdf[1:(n-2)]);
-  lhaz[1:(n-1)] = exp(lhaz[1:(n-1)]);
-  lhaz[n] = 1;
-  //lhaz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
-  //lhaz[n] = positive_infinity();
+  lhaz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
+  lhaz[n] = positive_infinity();
   return(lhaz);
 }
 
@@ -85,14 +83,6 @@ vector discretised_logit_hazard(real mu, real sigma, int n, int dist,
     lhaz = lcdf_to_log_prob(lcdf, n);
   }else{
     lhaz = lcdf_to_logit_hazard(lcdf, n);
-    //vector[n] cdf;
-    //vector[n-1] ccdf;
-    //cdf = exp(lcdf);
-    //ccdf = exp(log1m_exp(lcdf[1:(n-1)]));
-    // compute discretised hazard
-    //lhaz[1] = cdf[1];
-    //lhaz[2:(n-1)] = 1 - ccdf[2:(n-1)]./ccdf[1:(n-2)];
-    //lhaz[n] = 1;
   }
   return(lhaz);
 }
