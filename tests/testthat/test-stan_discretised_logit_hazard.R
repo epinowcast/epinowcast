@@ -1,9 +1,8 @@
-if (not_on_cran()) {
-  expose_stan_fns(
-    c("discretised_logit_hazard.stan", "hazard.stan"),
-    system.file("/stan/functions", package = "epinowcast")
-  )
-}
+skip_on_cran()
+expose_stan_fns(
+  c("discretised_logit_hazard.stan", "hazard.stan"),
+  system.file("stan/functions", package = "epinowcast")
+)
 
 
 discretised_logit_hazard(1, 0.5, 10, 2, 2, 1)
