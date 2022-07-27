@@ -1,7 +1,7 @@
 functions {
 #include functions/zero_truncated_normal.stan
 #include functions/regression.stan
-#include functions/discretised_reporting_prob.stan
+#include functions/discretised_logit_hazard.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
@@ -107,21 +107,13 @@ transformed parameters{
     }
     // calculate reference date logit hazards (unless no reporting effects)
     profile("transformed_delay_reference_date_hazards") {
-    if (ref_as_p) {
-      for (i in 1:refp_fnrow) {
-        ref_lh[, i] =
-           discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
-           2);
-      }
-    }else{
-      for (i in 1:refp_fnrow) {
-        ref_lh[, i] = logit(
-           discretised_reporting_hazard(refp_mean[i], refp_sd[i], dmax, model_refp,
-           2));
-      }
+    for (i in 1:refp_fnrow) {
+      ref_lh[, i] = discretised_logit_hazard(
+        refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
+      );
     }
     }
-  }
+  }  
   }
   // calculate sparse report date effects with forced 0 intercept
   profile("transformed_delay_reporting_date_effects") {
@@ -138,11 +130,11 @@ transformed parameters{
     imp_obs[k][2:t] = 
       leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
   }
-  }
+  } 
   // transform phi to overdispersion scale
   if (model_obs) {
     phi = inv_square(sqrt_phi);
-  }
+  } 
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan
