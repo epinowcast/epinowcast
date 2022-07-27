@@ -79,15 +79,12 @@ data {
 }
 
 transformed data{
-  array[g] int groups;
+  array[g] int groups = linspaced_int_array(g, 1, g);
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use probability for reference day effects
   int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
-  for (i in 1:g) {
-    groups[i] = i;
-  }
 }
 
 parameters {
