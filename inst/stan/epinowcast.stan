@@ -111,13 +111,16 @@ transformed parameters{
       ref_lh[, i] = discretised_logit_hazard(
         refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
       );
+      if (ref_as_p == 0) {
+        ref_lh[, i] = logit(ref_lh[, i]);
+      }
     }
     print("Logit hazards");
     print(ref_lh[, 1]);
     print("Probablities");
     print(exp(hazard_to_log_prob(inv_logit(ref_lh[, 1]))));
     }
-  } 
+  }  
   }
   // calculate sparse report date effects with forced 0 intercept
   profile("transformed_delay_reporting_date_effects") {

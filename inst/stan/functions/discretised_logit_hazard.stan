@@ -83,7 +83,15 @@ vector discretised_logit_hazard(real mu, real sigma, int n, int dist,
   if (ref_as_p == 1) {
     lhaz = lcdf_to_log_prob(lcdf, n);
   }else{
-    lhaz = lcdf_to_logit_hazard(lcdf, n);
+    //lhaz = lcdf_to_logit_hazard(lcdf, n);
+    vector[n] cdf;
+    vector[n] ccdf;
+    cdf = exp(lcdf);
+    ccdf = 1 - cdf;
+    // compute discretised hazard
+    lhaz[1] = cdf[1];
+    lhaz[2:(n-1)] = 1 - ccdf[2:(n-1)]./ccdf[1:(n-2)];
+    lhaz[n] = 1;
   }
   return(lhaz);
 }
