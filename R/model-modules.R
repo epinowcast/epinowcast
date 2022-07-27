@@ -318,7 +318,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     !(as_string_formula(formula) %in% "~0")) {
-    stop("A missingness model has been specified but data on  the proportion of
+    stop("A missingness model has been specified but data on the proportion of
           observations without reference dates is not available.")
   }
 

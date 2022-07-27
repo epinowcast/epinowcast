@@ -244,7 +244,7 @@ model {
         delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, ts, st,
         rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss
       );
-    }else {
+    } else {
       target += reduce_sum(
         delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
         srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
