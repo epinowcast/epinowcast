@@ -34,14 +34,16 @@ vector upper_lcdf_discrete(real mu, real sigma, int n, int dist) {
 vector adjust_lcdf_discrete(vector lcdf, int n, int max_strat) {
   vector[n] adjusted_lcdf;
   if (max_strat == 0) {
-    // ignore
+    // ignore (i.e sum of probability does not add to 1)
+    // NOTE: This cannot be used when using lcdf_to_logit_hazard as
+    // it will return the same result as using strategy 2.
     adjusted_lcdf = lcdf;
   } else if (max_strat == 1) {
-    // add to maximum value
+    // add to maximum value: cdf_n = 1
     adjusted_lcdf = lcdf;
     adjusted_lcdf[n] = 0;
   } else if (max_strat == 2) {
-    // normalize
+    // normalize: cdf = cdf / cdf[n]
     adjusted_lcdf = lcdf - lcdf[n];
   } else {
     reject("Unknown strategy to handle probability mass beyond the maximum value.");
@@ -53,6 +55,7 @@ vector adjust_lcdf_discrete(vector lcdf, int n, int max_strat) {
 vector lcdf_to_log_prob(vector lcdf, int n) {
   vector[n] lpmf; 
   lpmf[1] = lcdf[1];
+  // p = cdf_n - cdf_n-1
   lpmf[2:n] = log_diff_exp(lcdf[2:n], lcdf[1:(n-1)]);
   return(lpmf);
 }
@@ -61,10 +64,14 @@ vector lcdf_to_log_prob(vector lcdf, int n) {
 vector lcdf_to_logit_hazard(vector lcdf, int n) {
   vector[n] lhaz;
   vector[n-1] lccdf;
+  // cccdf = 1 - cdf
   lccdf = log1m_exp(lcdf[1:(n-1)]);
   lhaz[1] = lcdf[1];
+  // h = 1 - CCDF_n / CCDF_n-1
   lhaz[2:(n-1)] = log1m_exp(lccdf[2:(n-1)] - lccdf[1:(n-2)]);
+  // Logit transformation
   lhaz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
+  // Set last logit transformed hazard to Inf (i.e h[n] = 1)
   lhaz[n] = positive_infinity();
   return(lhaz);
 }

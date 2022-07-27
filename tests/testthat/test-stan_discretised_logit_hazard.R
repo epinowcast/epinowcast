@@ -1,11 +1,10 @@
 skip_on_cran()
-expose_stan_fns(
+skip_on_os("windows")
+skip_on_os("mac")
+epinowcast:::expose_stan_fns(
   c("discretised_logit_hazard.stan", "hazard.stan"),
   system.file("stan/functions", package = "epinowcast")
 )
-
-
-discretised_logit_hazard(1, 0.5, 10, 2, 2, 1)
 
 test_that("discretised_logit_hazard returns log probabilities that sum to 1", {
   expect_equal_to_1 <- function(lp) {
