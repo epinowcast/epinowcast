@@ -1,7 +1,6 @@
 real loglogistic_lcdf (real y, real alpha, real beta) {
   return -log1p((y / alpha) ^-beta);
 }
-  
 
 // Compute the cdf of a parametric distribution at values 1:n
 vector upper_lcdf_discrete(real mu, real sigma, int n, int dist) {
@@ -85,9 +84,9 @@ vector discretised_logit_hazard(real mu, real sigma, int n, int dist,
   }else{
     //lhaz = lcdf_to_logit_hazard(lcdf, n);
     vector[n] cdf;
-    vector[n] ccdf;
+    vector[n-1] ccdf;
     cdf = exp(lcdf);
-    ccdf = 1 - cdf;
+    ccdf = exp(log1m_exp(lcdf[1:(n-1)]));
     // compute discretised hazard
     lhaz[1] = cdf[1];
     lhaz[2:(n-1)] = 1 - ccdf[2:(n-1)]./ccdf[1:(n-2)];
