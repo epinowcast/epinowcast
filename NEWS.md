@@ -6,12 +6,18 @@
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
+- Implemented direct specification of parametric baseline hazards. See #134 by @adrian-lison.
 - Refactored the observation model, the combination of logit hazards, and the effects priors to be contained in generic functions to make extending package functionality easier. See #137 by @seabbs.
+- Implemented specification of the parametric baseline hazards and probabilities on the log scale to increse robustness and efficiency. Also includes refactoring of these functions and reorganisation of `inst/stan/epinowcast.stan` to increase modularity and clarity. See #140 by @seabbs.
 - Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. #138 by @seabbs.
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
 - Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs.
+
+## Bugs
+
+- The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying `ref_as_p` in the stan code. There was an additional issue in that the `enw_report()` module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in #142 by @seabbs.
 
 # epinowcast 0.1.0
 

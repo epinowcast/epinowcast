@@ -50,6 +50,14 @@ convert_cmdstan_to_rstan <- function(functions) {
     "array\\[([^]]*)\\]\\s+([a-z_]+)\\[([^]]*)\\]\\s+([a-z_]+)",
     "\\2[\\3] \\4[\\1]", functions
   )
+
+  # Custom replacement of log_diff_exp usage
+  functions <- gsub(
+    "lpmf[2:n] = log_diff_exp(lcdf[2:n], lcdf[1:(n-1)])",
+    "for (i in 2:n) lpmf[i] = log_diff_exp(lcdf[i], lcdf[i-1]);",
+    functions,
+    fixed = TRUE
+  )
   # remove profiling code
   functions <- remove_profiling(functions)
   return(functions)
