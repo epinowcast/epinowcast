@@ -14,6 +14,7 @@ nat_germany_hosp <- enw_complete_dates(
   nat_germany_hosp,
   by = c("location", "age_group")
 )
+
 # Make a retrospective dataset
 retro_nat_germany <- enw_filter_report_dates(
   nat_germany_hosp,
@@ -51,7 +52,7 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 1,
-    iter_warmup = 500, iter_sampling = 500, debug = TRUE
+    iter_warmup = 500, iter_sampling = 500
   ),
-  model = enw_model(force = TRUE),
+  model = model,
 )

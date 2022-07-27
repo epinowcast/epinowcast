@@ -1,7 +1,7 @@
 if (not_on_cran()) {
   expose_stan_fns(
     c("discretised_logit_hazard.stan", "hazard.stan"),
-    "inst/stan/functions"
+    system.file("/stan/functions", package = "epinowcast")
   )
 }
 
