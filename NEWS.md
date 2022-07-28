@@ -3,7 +3,7 @@
 ## Package
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
-- Reverts the changes made to `stanc_options` defaults in `enw_model()` as part of #117 in light of the new [`cmdstan 2.30.1` release](https://blog.mc-stan.org/2022/07/27/release-of-cmdstan-2-30-1/) which fixed upstream compilation bugs introduced by optimisation. This change means `epinowcast` again takes advantage of simple optimisations to speed up model fitting. More extreme optimisations are available but have not been tested. See the [`cmdstanr`](https://mc-stan.org/cmdstanr/) documentation for details. See # by @seabbs
+- Reverts the changes made to `stanc_options` defaults in `enw_model()` as part of #117 in light of the new [`cmdstan 2.30.1` release](https://blog.mc-stan.org/2022/07/27/release-of-cmdstan-2-30-1/) which fixed upstream compilation bugs introduced by optimisation. This change means `epinowcast` again takes advantage of simple optimisations to speed up model fitting. More extreme optimisations are available but have not been tested. See the [`cmdstanr`](https://mc-stan.org/cmdstanr/) documentation for details. See #146 by @seabbs
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
