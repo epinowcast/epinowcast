@@ -10,7 +10,7 @@ enw_model(
   compile = TRUE,
   threads = FALSE,
   profile = FALSE,
-  stanc_options = list(),
+  stanc_options = list("O1"),
   verbose = TRUE,
   ...
 )
@@ -34,8 +34,8 @@ and \code{\link[=epinowcast]{epinowcast()}}.}
 For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{\code{cmdstanr} documentation}. # nolint}
 
 \item{stanc_options}{A list of options to pass to the \code{stanc_options} of
-\code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default nothing is passed but potentially
-users may wish to pass optimisation flags for example.See the documentation
+\code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default "O1" is passed which specifies simple
+optimisations should be done prior to compilation. See the documentation
 for \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}} for further details.}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose

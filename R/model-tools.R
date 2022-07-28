@@ -275,8 +275,8 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' For more on profiling see the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/articles/profiling.html). # nolint
 #'
 #' @param stanc_options A list of options to pass to the `stanc_options` of
-#' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
-#' users may wish to pass optimisation flags for example.See the documentation
+#' [cmdstanr::cmdstan_model()]. By default "O1" is passed which specifies simple
+#' optimisations should be done prior to compilation. See the documentation
 #' for [cmdstanr::cmdstan_model()] for further details.
 #'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
@@ -290,7 +290,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' mod <- enw_model()
 enw_model <- function(model, include, compile = TRUE,
                       threads = FALSE, profile = FALSE,
-                      stanc_options = list(), verbose = TRUE, ...) {
+                      stanc_options = list("O1"), verbose = TRUE, ...) {
   if (missing(model)) {
     model <- "stan/epinowcast.stan"
     model <- system.file(model, package = "epinowcast")
