@@ -1,13 +1,20 @@
+array[] int filter_obs(array[] int obs, int start, int end,
+                       array[] int csl, array[] int sl) {
+  int start_n = csl[start] - sl[start];
+  int end_n = csl[end];
+  int n = end_n - start_n;
+  array[n] filt_obs = obs[(start_n + 1):end_n];
+  return(filt_obs);
+}
+
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sl, array[] int csl, array[] vector imp_obs,
                      array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh,
                      matrix ref_lh, array[] int dpmfs, int ref_p, int rep_h,
                      int ref_as_p, array[] real phi, int model_obs) {
   real tar = 0;
-  int start_n = csl[start] - sl[start];
-  int end_n = csl[end];
-  int n = end_n - start_n;
-  array[n] int snap_obs = obs[(start_n + 1):end_n];
+  array[n] int snap_obs = filt_obs(obs, start, end, csl, sl);
+  int n = num_elements(snap_obs);
   vector[n] log_exp_obs;
   int g;
   int t;
@@ -44,12 +51,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int dpmfs, int ref_p, int rep_h, int ref_as_p,
                       array[] real phi, int model_obs, int model_miss) {
   real tar = 0;
-  int obs_start = ts[1, start];
-  int obs_end = ts[t, end];
-  int start_n = csl[obs_start] - sl[obs_start];
-  int end_n = csl[obs_end];
-  int n = end_n - start_n;
-  array[n] int snap_obs = obs[(start_n + 1):end_n];
+  array[n] int snap_obs = filt_obs(obs, ts[1, start], ts[t, end], csl, sl);
+  int n = num_elements(snap_obs);
   vector[n] log_exp_obs;
   int i;
   int l;
