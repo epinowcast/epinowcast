@@ -17,7 +17,7 @@ data {
   int t; // time range over which data is available 
   int s; // number of snapshots there are
   int g; // number of data groups
-  array[s] int groups; // array of group ids
+  array[g] int groups; // array of group ids
   array[s] int st; // when in this time snapshots are from
   array[t, g] int ts; // snapshot related to time and group
   array[s] int sl; // how many days of reported data does each snapshot have
@@ -265,8 +265,8 @@ generated quantities {
     // Posterior predictions for observations
     profile("generated_obs") {
     log_exp_obs = expected_obs_from_snaps(
-      1, n, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
-      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, n
+      1, s, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
+      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
     );
     pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
     } 
@@ -275,11 +275,12 @@ generated quantities {
     for (i in 1:s) {
       profile("generated_loglik") {
       if (ologlik) {
-        array[3] int l = filt_obs_indexes(i, i, csdmax, csdmax);
+        array[3] int l = filt_obs_indexes(i, i, csl, sl);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
           log_lik[i] += obs_lpmf(
-            flat_obs[l[1] + j]  | log_exp_obs[l[1] + j], phi, model_obs
+            flat_obs[l[1] + j]  | log_exp_obs[f[1] + j], phi, model_obs
           );
         }
       }
@@ -292,8 +293,7 @@ generated quantities {
       int start_t = t - dmax;
       for (i in 1:dmax) {
         int i_start = ts[start_t + i, k];
-        int i_end = ts[t, k];
-        array[3] int l = filt_obs_indexes(i_start, i_end, csl, sl);
+        array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
         array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
         pp_inf_obs[i, k] = sum(flat_obs[(l[1] + 1):l[2]]);
         if (sl[i_start] < dmax) {
@@ -308,7 +308,7 @@ generated quantities {
       for (i in 1:s) {
         array[3] int l = filt_obs_indexes(i, i, csl, sl);
         array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
-        pp_obs[(l[1] + 1):l[2]] = pp_obs_tmp[(f[1] + 1):(f[1] + sl[s])];
+        pp_obs[(l[1] + 1):l[2]] = pp_obs_tmp[(f[1] + 1):(f[1] + sl[i])];
       }
     }
     }
