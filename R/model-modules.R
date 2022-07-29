@@ -324,6 +324,14 @@ enw_missing <- function(formula = ~1, data) {
           observations without reference dates is not available.")
   }
 
+  if (!(as_string_formula(formula) %in% "~0")) {
+    warning(
+      "A missingness model has been specified. Note that this is not yet fully
+       supported and unless you are a developer you likely want to keep this
+       turned off."
+    )
+  }
+
   if (as_string_formula(formula) %in% "~0") {
     data_list <- enw_formula_as_data_list(
       prefix = "miss", drop_intercept = FALSE
