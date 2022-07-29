@@ -8,7 +8,6 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
-  max_delay_strat = "add_to_max_delay",
   holidays = c(),
   set_negatives_to_zero = TRUE
 )
@@ -26,13 +25,9 @@ downstream modelling}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully.}
-
-\item{max_delay_strat}{Character string indicating how to handle
-reported cases beyond the specified maximum delay. Options include:
-excluding ("exclude") and adding to the maximum delay ("add_to_max_delay").
-Adding to the maximum delay is the default. Compare \code{confirm}, \code{max_confirm},
-\code{prop_reported} columns to understand the impact of this assumption.}
+setting so consider what maximum makes sense for your data carefully. Note
+that this is zero indexed and so includes the reference date and
+\code{max_delay - 1} other days.}
 
 \item{holidays}{A vector of dates indicating when holidays occur used by
 \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
@@ -52,6 +47,7 @@ and and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
+\item \code{missing_reference}: Observations missing reference dates.
 \item \code{reporting_triangle}: Incident observations by report and reference date in
 the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
@@ -76,7 +72,13 @@ observed empirical probability of a report on a given day, the cumulative
 probability of report, the latest available observations, incidence of
 observations, and metadata about the date of reference and report (used to
 construct models). This function wraps other preprocessing functions that may
-be instead used individually if required.
+be instead used individually if required. Note that internally reports
+beyond the user specified delay are dropped for modelling purposes with the
+\code{cum_prop_reported} and \code{max_confirm} variables allowing the user to check
+the impact this may have (if \code{cum_prop_reported} is significantly below 1 a
+longer \code{max_delay} may be appropriate). Also note that if missing reference
+or report dates are suspected to occur in your data then these need to be
+completed with \code{\link[=enw_complete_dates]{enw_complete_dates()}}.
 }
 \examples{
 library(data.table)
@@ -88,20 +90,6 @@ nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
 pobs
-
-# Preprocess using exclusion beyond the maximum delay and a max delay of 10
-pobs_exclude <- enw_preprocess_data(
-  nat_germany_hosp,
-  max_delay = 10, max_delay_strat = "exclude"
-)
-pobs_exclude
-
-# Preprocess all data
-pobs_all <- enw_preprocess_data(
-  germany_covid19_hosp,
-  by = c("location", "age_group")
-)
-pobs_all
 }
 \seealso{
 Preprocessing functions
@@ -109,6 +97,7 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
@@ -117,6 +106,7 @@ Preprocessing functions
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_reporting_triangle_to_long}()},
 \code{\link{enw_reporting_triangle}()}

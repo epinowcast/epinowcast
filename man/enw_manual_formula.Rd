@@ -9,7 +9,8 @@ enw_manual_formula(
   fixed = c(),
   random = c(),
   custom_random = c(),
-  no_contrasts = FALSE
+  no_contrasts = FALSE,
+  add_intercept = TRUE
 )
 }
 \arguments{
@@ -25,9 +26,12 @@ specified here will be added to the fixed effects.}
 will not be added to the vector of fixed effects. This can be used to random
 effects for fixed effects that only have a partial name match.}
 
-\item{no_contrasts}{Defaults to \code{FALSE}. \code{TRUE} means that no variable uses
-contrast. Alternatively a character vector of variables can be supplied
-indicating which variables should  not have contrasts.}
+\item{no_contrasts}{Logical, defaults to \code{FALSE}. \code{TRUE} means that no
+variable uses contrast. Alternatively a character vector of variables can be
+supplied indicating which variables should  not have contrasts.}
+
+\item{add_intercept}{Logical, defaults to \code{FALSE}. Should an intercept be
+added to the fixed effects.}
 }
 \value{
 A list specifying the fixed effects (formula, design matrix, and

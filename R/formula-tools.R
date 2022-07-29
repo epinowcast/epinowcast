@@ -19,9 +19,12 @@
 #' will not be added to the vector of fixed effects. This can be used to random
 #' effects for fixed effects that only have a partial name match.
 #'
-#' @param no_contrasts Defaults to `FALSE`. `TRUE` means that no variable uses
-#' contrast. Alternatively a character vector of variables can be supplied
-#' indicating which variables should  not have contrasts.
+#' @param no_contrasts Logical, defaults to `FALSE`. `TRUE` means that no
+#' variable uses contrast. Alternatively a character vector of variables can be
+#' supplied indicating which variables should  not have contrasts.
+#'
+#' @param add_intercept Logical, defaults to `FALSE`. Should an intercept be
+#' added to the fixed effects.
 #'
 #' @return A list specifying the fixed effects (formula, design matrix, and
 #' design matrix index), and random effects (formula and design matrix).
@@ -35,9 +38,14 @@
 #' data <- enw_example("prep")$metareference[[1]]
 #' enw_manual_formula(data, fixed = "week", random = "day_of_week")
 enw_manual_formula <- function(data, fixed = c(), random = c(),
-                               custom_random = c(), no_contrasts = FALSE) {
+                               custom_random = c(), no_contrasts = FALSE,
+                               add_intercept = TRUE) {
   data <- data.table::copy(data)
-  form <- c("1")
+  if (add_intercept) {
+    form <- c("1")
+  } else {
+    form <- c()
+  }
 
   cr_in_dt <- purrr::map(
     custom_random, ~ colnames(data)[startsWith(colnames(data), .)]
@@ -308,15 +316,16 @@ construct_rw <- function(rw, data) {
         "Requested grouping variable",
         rw$by, " is not present in the supplied data"
       )
-    } else {
-      if (length(unique(fdata[[rw$by]])) < 2) {
-        stop(
-          "A grouped random walk using ", rw$by,
-          " is not possible as this variable has fewer than 2 unique values."
-        )
-      }
     }
-    terms <- paste0(rw$by, ":", terms)
+    if (length(unique(fdata[[rw$by]])) < 2) {
+      message(
+        "A grouped random walk using ", rw$by,
+        " is not possible as this variable has fewer than 2 unique values."
+      )
+      rw$by <- NULL
+    } else {
+      terms <- paste0(rw$by, ":", terms)
+    }
   }
 
   # make a fixed effects design matrix
@@ -387,17 +396,28 @@ re <- function(formula) {
 #' converted into one.
 #'
 #' @family formulatools
-#' @importFrom data.table copy
+#' @importFrom data.table as.data.table
 #' @examples
+#' # Simple examples
 #' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
 #' data <- enw_example("prepr")$metareference[[1]]
 #' random_effect <- re(form$random[[1]])
 #' epinowcast:::construct_re(random_effect, data)
+#'
+#' # A more complex example
+#' form <- epinowcast:::parse_formula(
+#'   ~ 1 + disp + (1 + gear | cyl) + (0 + wt | am)
+#' )
+#' random_effect <- re(form$random[[1]])
+#' epinowcast:::construct_re(random_effect, mtcars)
+#'
+#' random_effect2 <- re(form$random[[2]])
+#' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!(class(re) %in% "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
-  data <- data.table::copy(data)
+  data <- data.table::as.data.table(data)
 
   # extract random and fixed effects
   fixed <- strsplit(re$fixed, " \\+ ")[[1]]
@@ -409,6 +429,7 @@ construct_re <- function(re, data) {
     terms <- c(terms, paste0(fixed, ":", i))
   }
   terms <- gsub("1:", "", terms)
+  terms <- terms[!startsWith(terms, "0:")]
 
   # make all right hand side random effects factors
   data <- data[, (random) := lapply(.SD, as.factor), .SDcols = random]
@@ -416,7 +437,8 @@ construct_re <- function(re, data) {
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
     data,
-    fixed = terms, no_contrasts = TRUE
+    fixed = terms, no_contrasts = TRUE,
+    add_intercept = FALSE
   )$fixed$design
 
   # extract effects metadata
@@ -426,12 +448,17 @@ construct_re <- function(re, data) {
   for (i in terms) {
     loc_terms <- strsplit(i, ":")[[1]]
     if (length(loc_terms) == 1) {
-      effects <- enw_add_pooling_effect(effects, i, i)
+      effects <- enw_add_pooling_effect(
+        effects, i, i,
+        finder_fn = function(effect, pattern) {
+          grepl(pattern, effect) & !grepl(":", effect)
+        }
+      )
     } else {
       effects <- enw_add_pooling_effect(
         effects, rev(loc_terms), paste(loc_terms, collapse = "__"),
         finder_fn = function(effect, pattern) {
-          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
+          grepl(pattern[1], effect) & grepl(pattern[2], effect)
         }
       )
     }
@@ -453,7 +480,10 @@ construct_re <- function(re, data) {
 #'
 #' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
-#
+#'
+#' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design
+#' matrix be sparely defined.
+#'
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
@@ -488,7 +518,10 @@ construct_re <- function(re, data) {
 #'
 #' # Model with a random effect for age group and a random walk
 #' enw_formula(~ 1 + (1 | age_group) + rw(week), data)
-enw_formula <- function(formula, data) {
+#'
+#' # Model defined without a sparse fixed effects design matrix
+#' enw_formula(~1, data[1:20, ])
+enw_formula <- function(formula, data, sparse = TRUE) {
   data <- data.table::as.data.table(data)
 
   # Parse formula
@@ -548,7 +581,7 @@ enw_formula <- function(formula, data) {
     formula = expanded_formula,
     no_contrasts = random_terms,
     data = data,
-    sparse = TRUE
+    sparse = sparse
   )
   # Extract fixed effects metadata
   metadata <- enw_effects_metadata(fixed$design)

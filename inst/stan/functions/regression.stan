@@ -20,6 +20,9 @@
 // deviations (columns). The first column is used to indicate no scaling. In
 // general each effect should only be scaled with a single standard deviation.
 // 
+// @param add_intercept Binary. Should the intercept be added to the supplied
+// beta vector. 
+//
 // @return A vector of linear predictions without error.
 // 
 //  @examples
@@ -42,19 +45,32 @@
 // combine_effects(intercept, as.double(c()), design, beta_sd, sd_design)
 // # 1 1 1 1
 vector combine_effects(real intercept, vector beta, matrix design,
-                       vector beta_sd, matrix sd_design) {
+                       vector beta_sd, matrix sd_design, int add_intercept) {
   int nobs = rows(design);
   int neffs = num_elements(beta);
   int sds = num_elements(beta_sd);
-  vector[neffs + 1] scaled_beta;
+  vector[neffs + add_intercept] scaled_beta;
   vector[sds + 1] ext_beta_sd;
   ext_beta_sd[1] =  1.0;
   if (neffs) {
     ext_beta_sd[2:(sds+1)] = beta_sd;
-    scaled_beta[1] = intercept;
-    scaled_beta[2:(neffs+1)] = beta .* (sd_design * ext_beta_sd);
+      if (add_intercept) {
+        scaled_beta[1] = intercept;
+      }
+    scaled_beta[(1+add_intercept):(neffs+add_intercept)] =
+      beta .* (sd_design * ext_beta_sd);
     return(design * scaled_beta);
   }else{
     return(rep_vector(intercept, nobs));
+  }
+}
+
+void effect_priors_lp(vector beta, vector beta_sd, array[] real beta_sd_p,
+                    int fixed, int random) {
+  if (fixed) {
+    beta ~ std_normal();
+    if (random) {
+      beta_sd ~ zero_truncated_normal(beta_sd_p[1], beta_sd_p[2]);
+    }
   }
 }

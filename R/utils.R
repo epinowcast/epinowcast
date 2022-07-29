@@ -50,6 +50,14 @@ convert_cmdstan_to_rstan <- function(functions) {
     "array\\[([^]]*)\\]\\s+([a-z_]+)\\[([^]]*)\\]\\s+([a-z_]+)",
     "\\2[\\3] \\4[\\1]", functions
   )
+
+  # Custom replacement of log_diff_exp usage
+  functions <- gsub(
+    "lpmf[2:n] = log_diff_exp(lcdf[2:n], lcdf[1:(n-1)])",
+    "for (i in 2:n) lpmf[i] = log_diff_exp(lcdf[i], lcdf[i-1]);",
+    functions,
+    fixed = TRUE
+  )
   # remove profiling code
   functions <- remove_profiling(functions)
   return(functions)
@@ -71,7 +79,7 @@ convert_cmdstan_to_rstan <- function(functions) {
 #'
 #' @param ... Arguments to pass to [rstan::expose_stan_functions()]
 #'
-#' @return NULL (invisibily)
+#' @return NULL (indivisibly)
 #' @family utils
 #' @importFrom rstan expose_stan_functions stanc
 expose_stan_fns <- function(files, target_dir, ...) {
@@ -145,6 +153,8 @@ utils::globalVariables(
     "confirm", "effects", "fixed", ".group", "logmean", "logsd",
     ".new_group", "observed", "latest_confirm", "mad", "variable",
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
-    "run_time", "cum_prop_reported"
+    "run_time", "cum_prop_reported", "..by_with_group_id",
+    "reference_missing", "prop_missing", "day", "posteriors",
+    "formula"
   )
 )

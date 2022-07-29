@@ -495,3 +495,170 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
+# enw_formula can handle formulas that do not have sparse fixed
+           effects
+
+    Code
+      enw_formula(~1, data[1:20, ], sparse = FALSE)
+    Output
+      $formula
+      [1] "~1"
+      
+      $parsed_formula
+      $parsed_formula$fixed
+      [1] "1"
+      
+      $parsed_formula$random
+      NULL
+      
+      $parsed_formula$rw
+      character(0)
+      
+      
+      $expanded_formula
+      [1] "~1"
+      
+      $fixed
+      $fixed$formula
+      [1] "~1"
+      
+      $fixed$design
+         (Intercept)
+      1            1
+      2            1
+      3            1
+      4            1
+      5            1
+      6            1
+      7            1
+      8            1
+      9            1
+      10           1
+      11           1
+      12           1
+      13           1
+      14           1
+      15           1
+      16           1
+      17           1
+      18           1
+      19           1
+      20           1
+      attr(,"assign")
+      [1] 0
+      
+      $fixed$index
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+      
+      
+      $random
+      $random$formula
+      [1] "~1"
+      
+      $random$design
+           (Intercept)
+      attr(,"assign")
+      [1] 0
+      
+      $random$index
+      integer(0)
+      
+      
+      attr(,"class")
+      [1] "enw_formula" "list"       
+
+# enw_formula can handle complex combined formulas
+
+    Code
+      enw_formula(~ 1 + disp + (1 + gear | cyl) + (0 + wt | am), mtcars)
+    Output
+      $formula
+      [1] "~1 + disp + (1 + gear | cyl) + (0 + wt | am)"
+      
+      $parsed_formula
+      $parsed_formula$fixed
+      [1] "1"    "disp"
+      
+      $parsed_formula$random
+      $parsed_formula$random[[1]]
+      1 + gear | cyl
+      
+      $parsed_formula$random[[2]]
+      0 + wt | am
+      
+      
+      $parsed_formula$rw
+      character(0)
+      
+      
+      $expanded_formula
+      [1] "~1 + disp + cyl + gear:cyl + wt:am"
+      
+      $fixed
+      $fixed$formula
+      [1] "~1 + disp + cyl + gear:cyl + wt:am"
+      
+      $fixed$design
+         (Intercept)  disp cyl4 cyl6 cyl8 cyl4:gear cyl6:gear cyl8:gear wt:am0 wt:am1
+      1            1 160.0    0    1    0         0         4         0  0.000  2.620
+      2            1 160.0    0    1    0         0         4         0  0.000  2.875
+      3            1 108.0    1    0    0         4         0         0  0.000  2.320
+      4            1 258.0    0    1    0         0         3         0  3.215  0.000
+      5            1 360.0    0    0    1         0         0         3  3.440  0.000
+      6            1 225.0    0    1    0         0         3         0  3.460  0.000
+      7            1 360.0    0    0    1         0         0         3  3.570  0.000
+      8            1 146.7    1    0    0         4         0         0  3.190  0.000
+      9            1 140.8    1    0    0         4         0         0  3.150  0.000
+      10           1 167.6    0    1    0         0         4         0  3.440  0.000
+      12           1 275.8    0    0    1         0         0         3  4.070  0.000
+      13           1 275.8    0    0    1         0         0         3  3.730  0.000
+      14           1 275.8    0    0    1         0         0         3  3.780  0.000
+      15           1 472.0    0    0    1         0         0         3  5.250  0.000
+      16           1 460.0    0    0    1         0         0         3  5.424  0.000
+      17           1 440.0    0    0    1         0         0         3  5.345  0.000
+      18           1  78.7    1    0    0         4         0         0  0.000  2.200
+      19           1  75.7    1    0    0         4         0         0  0.000  1.615
+      20           1  71.1    1    0    0         4         0         0  0.000  1.835
+      21           1 120.1    1    0    0         3         0         0  2.465  0.000
+      22           1 318.0    0    0    1         0         0         3  3.520  0.000
+      23           1 304.0    0    0    1         0         0         3  3.435  0.000
+      24           1 350.0    0    0    1         0         0         3  3.840  0.000
+      25           1 400.0    0    0    1         0         0         3  3.845  0.000
+      26           1  79.0    1    0    0         4         0         0  0.000  1.935
+      27           1 120.3    1    0    0         5         0         0  0.000  2.140
+      28           1  95.1    1    0    0         5         0         0  0.000  1.513
+      29           1 351.0    0    0    1         0         0         5  0.000  3.170
+      30           1 145.0    0    1    0         0         5         0  0.000  2.770
+      31           1 301.0    0    0    1         0         0         5  0.000  3.570
+      32           1 121.0    1    0    0         4         0         0  0.000  2.780
+      
+      $fixed$index
+       [1]  1  2  3  4  5  6  7  8  9 10 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+      [26] 25 26 27 28 29 30 31
+      
+      
+      $random
+      $random$formula
+      [1] "~0 + fixed + cyl + gear__cyl + wt__am"
+      
+      $random$design
+        fixed cyl gear__cyl wt__am
+      1     1   0         0      0
+      2     0   1         0      0
+      3     0   1         0      0
+      4     0   1         0      0
+      5     0   0         1      0
+      6     0   0         1      0
+      7     0   0         1      0
+      8     0   0         0      1
+      9     0   0         0      1
+      attr(,"assign")
+      [1] 1 2 3 4
+      
+      $random$index
+      [1] 1 2 3 4 5 6 7 8 9
+      
+      
+      attr(,"class")
+      [1] "enw_formula" "list"       
+

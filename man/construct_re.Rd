@@ -25,10 +25,21 @@ converted into one.
 Constructs random effect terms
 }
 \examples{
+# Simple examples
 form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
 data <- enw_example("prepr")$metareference[[1]]
 random_effect <- re(form$random[[1]])
 epinowcast:::construct_re(random_effect, data)
+
+# A more complex example
+form <- epinowcast:::parse_formula(
+  ~ 1 + disp + (1 + gear | cyl) + (0 + wt | am)
+)
+random_effect <- re(form$random[[1]])
+epinowcast:::construct_re(random_effect, mtcars)
+
+random_effect2 <- re(form$random[[2]])
+epinowcast:::construct_re(random_effect2, mtcars)
 }
 \seealso{
 Functions used to help convert formulas into model designs

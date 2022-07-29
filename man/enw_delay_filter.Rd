@@ -14,7 +14,9 @@ date), and \code{.group} (as added by \code{\link[=enw_assign_group]{enw_assign_
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
 include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully.}
+setting so consider what maximum makes sense for your data carefully. Note
+that this is zero indexed and so includes the reference date and
+\code{max_delay - 1} other days.}
 }
 \value{
 A data frame filtered so that dates by report are less than or equal
@@ -33,6 +35,7 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
@@ -40,6 +43,7 @@ Preprocessing functions
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
 \code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},

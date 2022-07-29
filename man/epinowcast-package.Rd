@@ -3,11 +3,11 @@
 \docType{package}
 \name{epinowcast-package}
 \alias{epinowcast-package}
-\title{epinowcast: Hierarchical Nowcasting of Right Censored Epidemiological Counts}
+\title{epinowcast: Flexible Hierarchical Nowcasting}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Tools to enable flexible and efficient hierarchical nowcasting of right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. Nowcasting in this context is the estimation of the total notifications (for example hospitalisations or deaths) that will be reported for a given date based on those currently reported and the pattern of reporting for previous days. This can be useful when tracking the spread of infectious disease in real-time as otherwise changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation.
+Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.
 }
 \seealso{
 Useful links:
@@ -30,6 +30,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Michael DeWitt \email{me.dewitt.jr@gmail.com} (\href{https://orcid.org/0000-0001-8940-1967}{ORCID}) [contributor]
+  \item Hannah Choi \email{hannah.choi1@lshtm.ac.uk} [contributor]
 }
 
 }

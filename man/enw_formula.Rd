@@ -4,7 +4,7 @@
 \alias{enw_formula}
 \title{Define a model using a formula interface}
 \usage{
-enw_formula(formula, data)
+enw_formula(formula, data, sparse = TRUE)
 }
 \arguments{
 \item{formula}{A model formula that may use standard fixed
@@ -13,6 +13,9 @@ defined using the \code{\link[=rw]{rw()}} helper function.}
 
 \item{data}{A \code{data.frame} of observations. It must include all
 variables used in the supplied formula.}
+
+\item{sparse}{Logical, defaults to  \code{TRUE}. Should the fixed effects design
+matrix be sparely defined.}
 }
 \value{
 A list containing the following:
@@ -54,6 +57,9 @@ enw_formula(~ 1 + (1 | age_group), data)
 
 # Model with a random effect for age group and a random walk
 enw_formula(~ 1 + (1 | age_group) + rw(week), data)
+
+# Model defined without a sparse fixed effects design matrix
+enw_formula(~1, data[1:20, ])
 }
 \seealso{
 Functions used to help convert formulas into model designs
