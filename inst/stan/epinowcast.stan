@@ -17,12 +17,15 @@ data {
   int t; // time range over which data is available 
   int s; // number of snapshots there are
   int g; // number of data groups
+  array[s] groups; // array of group ids
   array[s] int st; // when in this time snapshots are from
   array[t, g] int ts; // snapshot related to time and group
   array[s] int sl; // how many days of reported data does each snapshot have
   array[s] int csl; // cumulative version of the above
   array[s] int sg; // how snapshots are related
   int dmax; // maximum possible report date
+  array[s] sdmax; // Array of maximum reported dates
+  array[s] csdmax; // Arraay of maximum cumulative reported dates
 
   // Observations
   array[s, dmax] int obs; // obs for each primary date (row) and report date (column)
@@ -81,6 +84,11 @@ data {
 
 transformed data{
   array[g] int groups = linspaced_int_array(g, 1, g);
+  array[s] int sdmax = rep_array(dmax, s);
+  array[s] inst scdmax;
+  for (g in 1:s) {
+    scdmax[g] = sdmax[1:g];
+  }
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
@@ -257,22 +265,25 @@ generated quantities {
   array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
-    vector[dmax] lexp_obs;
-    array[s, dmax] int pp_obs_tmp;
+    vector[scdmax[s]] log_exp_obs;
+    array[scdmax[s]] int pp_obs_tmp;
+    profile("generated_obs") {
     // Posterior predictions for observations
+    log_exp_obs = expected_obs_from_snaps(
+      1, n, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p,
+      sdmax, csdmax, sg, st, n
+    );
+    pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
+    } 
     for (i in 1:s) {
-      profile("generated_obs") {
-      lexp_obs = expected_obs_from_index(
-        i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
-        rep_fncol, ref_as_p, sg[i], st[i], dmax
-      );
-      pp_obs_tmp[i] = obs_rng(lexp_obs, phi, model_obs);
-      }
       profile("generated_loglik") {
       if (ologlik) {
+        array[3] int n = filt_obs_indexes(i, i, csdmax, sl);
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
-          log_lik[i] += obs_lpmf(obs[i, j]  | lexp_obs[j], phi, model_obs);
+          log_lik[i] += obs_lpmf(
+            flat_obs[n[1] + j]  | log_exp_obs[n[1] + j], phi, model_obs
+          );
         }
       }
       }

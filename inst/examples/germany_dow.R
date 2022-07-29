@@ -54,5 +54,5 @@ nowcast <- epinowcast(pobs,
     chains = 2, threads_per_chain = 2,
     iter_warmup = 500, iter_sampling = 500
   ),
-  model = model,
+  model = model
 )
