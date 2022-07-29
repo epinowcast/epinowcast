@@ -5,7 +5,8 @@ functions {
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
-#include functions/expected_obs_from_index.stan
+#include functions/expected_obs_from.stan
+#include functions/filt_obs_indexes.stan
 #include functions/obs_lpmf.stan
 #include functions/delay_lpmf.stan
 }
@@ -236,7 +237,7 @@ model {
     profile("model_likelihood") {
     if (model_miss) {
       target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, ts, st,
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
         rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss
       );
     } else {
