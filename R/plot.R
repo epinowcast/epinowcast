@@ -203,7 +203,7 @@ enw_plot_emprep_frac <- function(pobs, delay_group_thresh, ...) {
     geom_tile(aes(reference_date, delay_group,
       fill = prop_reported
     )) +
-    guides(fill = guide_legend("Fraction")) +
+    guides(fill = guide_colorbar("Fraction")) +
     labs(
       y = "Delay",
       x = "Reference date"
