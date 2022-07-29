@@ -267,18 +267,21 @@ generated quantities {
   if (cast) {
     vector[scdmax[s]] log_exp_obs;
     array[scdmax[s]] int pp_obs_tmp;
-    profile("generated_obs") {
+
     // Posterior predictions for observations
+    profile("generated_obs") {
     log_exp_obs = expected_obs_from_snaps(
       1, n, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p,
       sdmax, csdmax, sg, st, n
     );
     pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
     } 
+    
+    // Likelihood by snapshot (rather than by observation)
     for (i in 1:s) {
       profile("generated_loglik") {
       if (ologlik) {
-        array[3] int n = filt_obs_indexes(i, i, csdmax, sl);
+        array[3] int n = filt_obs_indexes(i, i, csdmax, csdmax);
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
           log_lik[i] += obs_lpmf(
@@ -289,25 +292,29 @@ generated quantities {
       }
     }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
+    // Organise into a grouped and time structured array
     profile("generated_obs") {
     for (k in 1:g) {
       int start_t = t - dmax;
       for (i in 1:dmax) {
-        int snap = ts[start_t + i, k];
-        pp_inf_obs[i, k] = sum(obs[snap, 1:sl[snap]]);
-        if (sl[snap] < dmax) {
-          pp_inf_obs[i, k] += sum(pp_obs_tmp[snap, (sl[snap]+1):dmax]);
+        int i_start = ts[start_t + i, k];
+        int i_end = ts[t, k];
+        array[3] int n = filt_obs_indexes(i_start, i_end, csl, sl);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
+        pp_inf_obs[i, k] = sum(obs[(n[1] + 1):n[2]]);
+        if (sl[i_start] < dmax) {
+          pp_inf_obs[i, k] += sum(pp_obs_tmp[(f[1] + sl[i_start] + 1):f[2]);
         }
       }
     }
     // If posterior predictions for all observations are needed copy
     // from a temporary object to a permanent one
-    // store in a flat vector to make observation linking easier
+    // drop predictions without linked observations
     if (pp) {
-      int start_t = 0;
       for (i in 1:s) {
-        pp_obs[(start_t + 1):(start_t + sl[i])] = pp_obs_tmp[i, 1:sl[i]];
-        start_t += sl[i];
+        array[3] int n = filt_obs_indexes(i, i, csl, sl);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
+        pp_obs[(n[1] + 1):n[2]] = pp_obs_tmp[(f[1] + 1):(f[1] + sl[s])];
       }
     }
     }
