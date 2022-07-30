@@ -102,19 +102,22 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     regression_posterior[variable %like% "pp_obs", median],
     150
   )
-  # Day of the week effects are equal to 1 significant figure
-  expect_equal(
-    posterior[variable %like% "rep_beta", signif(median, 1)],
-    regression_posterior[variable %like% "rep_beta", signif(median, 1)]
+  # Day of the week effects are equal to within 10%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "rep_beta", median],
+    regression_posterior[variable %like% "rep_beta", median],
+    0.1
   )
-  # Reporting distribution mean is equal to 1 significant figure
-  expect_equal(
-    posterior[variable %like% "refp_mean", signif(median, 1)],
-    regression_posterior[variable %like% "refp_mean", signif(median, 1)]
+  # Reporting distribution mean is equal to within 10%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "refp_mean", median],
+    regression_posterior[variable %like% "refp_mean", median],
+    0.1
   )
-  # Reporting distribution sd is equal to 1 significant figure
-  expect_equal(
-    posterior[variable %like% "refp_sd", signif(median, 1)],
-    regression_posterior[variable %like% "refp_sd", signif(median, 1)]
+  # Reporting distribution sd is equal to within 10%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "refp_sd", median],
+    regression_posterior[variable %like% "refp_sd", median],
+    0.1
   )
 })

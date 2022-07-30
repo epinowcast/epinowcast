@@ -10,6 +10,14 @@ expect_ggplot <- function(p) {
   expect_s3_class(p, "ggplot")
 }
 
-expect_diff_lt <- function(x, y, diff) {
+expect_diff_abs_lt_per <- function(x, y, diff) {
+  for (i in seq_along(x)) {
+    expect_lt(
+      abs(x[i] - y[i]) / abs(y[i]), diff
+    )
+  }
+}
+
+expect_diff_sum_abs_lt <- function(x, y, diff) {
   expect_lt(sum(abs(x - y)), diff)
 }
