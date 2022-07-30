@@ -15,7 +15,7 @@ expect_diff_abs_lt_per <- function(x, y, diff, tol = 0.1) {
     actual_diff <- abs(x[i] - y[i])
     if (actual_diff > tol) {
       expect_lt(
-        abs(x[i] - y[i]) / abs(y[i]), diff
+        actual_diff / abs(y[i]), diff
       )
     }
   }
