@@ -128,7 +128,7 @@ transformed parameters{
   // Report model
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
   // Missing model
-  vector[miss_fnindex] miss_ref_prop;
+  vector[miss_fnindex] miss_ref_lprop;
 
   // Observation model
   array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
@@ -175,7 +175,7 @@ transformed parameters{
 
   // Missing reference model
   if (model_miss) {
-    miss_ref_prop = inv_logit(
+    miss_ref_lprop = log_inv_logit(
       combine_effects(miss_int[1], miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1)
     );
   }
@@ -240,7 +240,7 @@ model {
     if (model_miss) {
       target += reduce_sum(
         delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_ref_lprop
       );
     } else {
       target += reduce_sum(

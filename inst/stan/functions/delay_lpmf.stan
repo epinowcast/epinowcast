@@ -26,7 +26,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       int t, array[] int sg, array[,] int ts, array[] int st,
                       array[,] int rdlurd, vector srdlh, matrix ref_lh,
                       array[] int dpmfs, int ref_p, int rep_h, int ref_as_p,
-                      array[] real phi, int model_obs, int model_miss) {
+                      array[] real phi, int model_obs, int model_miss,
+                      vector miss_ref_lprop) {
   // For missing model
   // Passing in missing prop
   // Pass in missing obs
@@ -36,7 +37,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   // sum by this look-up to get cases by report date and group (can also make
   // this a matrix)
   // scale all data by missing proportion or 1 minus missing proportion
-  
+
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
