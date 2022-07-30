@@ -9,3 +9,7 @@ expect_dates_unique <- function(dt) {
 expect_ggplot <- function(p) {
   expect_s3_class(p, "ggplot")
 }
+
+expect_diff_lt <- function(x, y, diff) {
+  expect_lt(sum(abs(x - y)), diff)
+}
