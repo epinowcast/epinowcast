@@ -276,7 +276,7 @@ generated quantities {
       profile("generated_loglik") {
       if (ologlik) {
         array[3] int l = filt_obs_indexes(i, i, csl, sl);
-        array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
           log_lik[i] += obs_lpmf(
@@ -294,7 +294,7 @@ generated quantities {
       for (i in 1:dmax) {
         int i_start = ts[start_t + i, k];
         array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
-        array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
+        array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
         pp_inf_obs[i, k] = sum(flat_obs[(l[1] + 1):l[2]]);
         if (sl[i_start] < dmax) {
           pp_inf_obs[i, k] += sum(pp_obs_tmp[(f[1] + sl[i_start] + 1):f[2]]);
@@ -307,7 +307,7 @@ generated quantities {
     if (pp) {
       for (i in 1:s) {
         array[3] int l = filt_obs_indexes(i, i, csl, sl);
-        array[3] int f = filt_obs_indexes(i, i, csdmax, csdmax);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         pp_obs[(l[1] + 1):l[2]] = pp_obs_tmp[(f[1] + 1):(f[1] + sl[i])];
       }
     }

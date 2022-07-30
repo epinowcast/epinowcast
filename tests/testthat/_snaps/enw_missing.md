@@ -2,6 +2,11 @@
 
     Code
       miss <- enw_missing(formula = ~ 1 + rw(week), data = pobs)
+    Warning <simpleWarning>
+      A missingness model has been specified. Note that this is not yet fully
+             supported and unless you are a developer you likely want to keep this
+             turned off.
+    Code
       miss$inits <- NULL
       miss
     Output
@@ -164,4 +169,3 @@
       1:                Normal    0  1
       2: Zero truncated normal    0  1
       
-
