@@ -523,6 +523,15 @@ enw_obs <- function(family = "negbin", data) {
 #' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
 #' included in the model
 #'
+#' @param likelihood_aggregation Logical, defaults to "snapshot". The
+#'  aggregation over which to stratify the likelihood when `threads = TRUE`.
+#'  Options include "snapshots" which aggregates over report dates and groups (
+#' i.e the lowest level that observations are reported at), and "groups" which
+#' aggregates across user defined groups. Note that some model modules override
+#' this setting depending on model requirements. For example. when in use the
+#' [enw_missing()] module model forces the use of the "groups" option. In
+#' general the user should not need to change this setting from the default.
+#'
 #' @param output_loglik Logical, defaults to `FALSE`. Should the
 #' log-likelihood be output. Disabling this will speed up fitting
 #' if evaluating the model fit is not required.
@@ -546,14 +555,22 @@ enw_obs <- function(family = "negbin", data) {
 #' enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE, likelihood = TRUE,
+                         likelihood_aggregation = "snapshots",
                          debug = FALSE, output_loglik = FALSE, ...) {
   if (pp) {
     nowcast <- TRUE
   }
+  likelihood_aggregation <- match.arg(
+    likelihood_aggregation, choices = c("snapshots", "groups")
+  )
   out <- list(sampler = sampler)
   out$data <- list(
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
+    likelihood_aggregation = fcase(
+      likelihood_aggregation %in% "snapshots", 0,
+      likelihood_aggregation %in% "groups", 1
+    ),
     pp = as.numeric(pp),
     cast = as.numeric(nowcast),
     ologlik = as.numeric(output_loglik)

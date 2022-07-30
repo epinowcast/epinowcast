@@ -13,6 +13,9 @@
       $data$likelihood
       [1] 1
       
+      $data$likelihood_aggregation
+      [1] 0
+      
       $data$pp
       [1] 0
       

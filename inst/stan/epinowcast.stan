@@ -77,6 +77,8 @@ data {
   // Control parameters
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
+  // type of aggregation scheme (0 = snaps, 1 = groups)
+  int likelihood_aggregation;
   int pp; // should posterior predictions be produced
   int cast; // should a nowcast be produced
   int ologlik; // Should the pointwise log likelihood be calculated
@@ -89,6 +91,8 @@ transformed data{
   // if no reporting day effects use native probability for reference day
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
+  // Type of likelihood aggregation to use
+  int ll_aggregation = likelihood_aggregation + model_miss;
 }
 
 parameters {
@@ -237,16 +241,16 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    if (model_miss) {
-      target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_ref_lprop
-      );
-    } else {
+    if (ll_aggregation) {
       target += reduce_sum(
         delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
         srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
         model_obs
+      );
+    } else {
+      target += reduce_sum(
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_ref_lprop
       );
     }
     }
