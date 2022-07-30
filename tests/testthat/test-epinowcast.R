@@ -73,7 +73,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 250, iter_sampling = 500,
+      chains = 2, iter_warmup = 250, iter_sampling = 1000,
       refresh = 0, show_messages = FALSE
     ),
     model = model
@@ -94,7 +94,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_inf_obs", median],
     regression_posterior[variable %like% "pp_inf_obs", median],
-    10
+    20
   )
   # Posterior predictions have not changed by more than in total
   expect_diff_sum_abs_lt(
@@ -102,22 +102,22 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     regression_posterior[variable %like% "pp_obs", median],
     150
   )
-  # Day of the week effects are equal to within 10%
+  # Day of the week effects are equal to within 25%
   expect_diff_abs_lt_per(
     posterior[variable %like% "rep_beta", median],
     regression_posterior[variable %like% "rep_beta", median],
-    0.1
+    0.25
   )
-  # Reporting distribution mean is equal to within 10%
+  # Reporting distribution mean is equal to within 25%
   expect_diff_abs_lt_per(
     posterior[variable %like% "refp_mean", median],
     regression_posterior[variable %like% "refp_mean", median],
-    0.1
+    0.25
   )
-  # Reporting distribution sd is equal to within 10%
+  # Reporting distribution sd is equal to within 25%
   expect_diff_abs_lt_per(
     posterior[variable %like% "refp_sd", median],
     regression_posterior[variable %like% "refp_sd", median],
-    0.1
+    0.25
   )
 })
