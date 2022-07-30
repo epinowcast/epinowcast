@@ -1,6 +1,7 @@
 # Load packages
 library(epinowcast)
 library(data.table)
+library(purrr)
 library(ggplot2)
 
 # Use 2 cores
@@ -39,7 +40,9 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.4, by = c()) {
   by_with_group_id <- c(".group", by)
   obs <- enw_new_reports(obs)
 
-  obs[, missing := floor(new_confirm * proportion)]
+  obs[, missing := purrr::map2_dbl(
+    new_confirm, proportion, ~ rbinom(1, .x, .y)
+  )]
   obs[, new_confirm := new_confirm - missing]
 
   complete_ref <- enw_incidence_to_cumulative(obs, by = by)
