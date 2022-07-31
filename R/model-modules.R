@@ -591,7 +591,6 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
   if (pp) {
     nowcast <- TRUE
   }
-
   likelihood_aggregation <- match.arg(likelihood_aggregation)
   likelihood_aggregation <- fcase(
     likelihood_aggregation %in% "snapshots", 0,
