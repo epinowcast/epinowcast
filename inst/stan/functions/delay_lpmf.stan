@@ -27,16 +27,18 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[,] int rdlurd, vector srdlh, matrix ref_lh,
                       array[] int dpmfs, int ref_p, int rep_h, int ref_as_p,
                       array[] real phi, int model_obs, int model_miss,
-                      array[] int missing_reference, vector miss_ref_lprop,
-                      array[] int sdmax, array[] int csdmax,
-                      array[] obs_by_reort) {
+                      int miss_obs, array[] int missing_reference,
+                      array[,] int obs_by_report, vector miss_ref_lprop,
+                      array[] int sdmax, array[] int csdmax) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
   int i_end = ts[t, end];
   array[3] int n = filt_obs_indexes(i_start, i_end, csl, sl);
   array[n[3]] int filt_obs = obs[(n[1] + 1):n[2]];
+  // What is going to be used for storage
   vector[n[3]] log_exp_obs;
+  vector[model_miss ? num_elements(missing_reference) : 0]  log_exp_miss_ref;
 
   // Combine expected final obs and date effects to get expected obs
   // If missing reference module in place calculated all expected obs vs 
@@ -47,7 +49,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
 
     // Calculate all expected observations
     log_exp_complete = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, cdmax, sg, st, f[3]
+      i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3]
     );
 
     // Allocate to just those actually observed
@@ -59,12 +61,14 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     );
 
     // Allocate expected cases by report date
-    log_exp_complete = apply_missing_reference_effects(
-      i_start, i_end, log_exp_complete, sdmax, csdmax, miss_ref_lprop
-    );
-    log_exp_miss_ref = log_expected_by_report(
-      log_exp_complete, obs_by_report
-    );
+    if (miss_obs) {
+      log_exp_complete = apply_missing_reference_effects(
+        i_start, i_end, log_exp_complete, sdmax, csdmax, miss_ref_lprop
+      );
+      log_exp_miss_ref = log_expected_by_report(
+        log_exp_complete, obs_by_report
+      );
+    }
   }else{
     log_exp_obs = expected_obs_from_snaps(
       i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3]
@@ -73,8 +77,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   // Observation error model (across all reference times and groups)
   profile("model_likelihood_neg_binomial") {
   tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
-  if (model_miss) {
-    tar += obs_lmpf(missing_reference, log_exp_miss_ref, phi, model_obs);
+  if (model_miss && miss_obs) {
+    tar += obs_lpmf(missing_reference | log_exp_miss_ref, phi, model_obs);
   }
   }
   return(tar);

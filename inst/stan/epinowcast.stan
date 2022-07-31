@@ -10,6 +10,7 @@ functions {
 #include functions/obs_lpmf.stan
 #include functions/allocate_observed_obs.stan
 #include functions/apply_missing_reference_effects.stan
+#include functions/log_expected_by_report.stan
 #include functions/delay_lpmf.stan
 }
 
@@ -63,12 +64,16 @@ data {
 
   // Missing reference date model
   int model_miss;
+  int miss_obs;
   int miss_fnindex;
   int miss_fncol;
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
-  array[miss_fnindex] int missing_ref;
+  // Observations reported without a reference date
+  array[miss_obs] int missing_reference;
+  // Linkage between expected observations by report and reference and by report
+  array[miss_obs, dmax] int obs_by_report;
   array[2] real miss_int_p;
   array[2] real miss_beta_sd_p;
 
@@ -252,7 +257,8 @@ model {
     } else {
       target += reduce_sum(
         delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_ref_lprop
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        obs_by_report, miss_ref_lprop, sdmax, csdmax
       );
     }
     }
