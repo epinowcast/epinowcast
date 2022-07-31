@@ -346,6 +346,14 @@ enw_missing <- function(formula = ~1, data) {
     )
     missing_reference <- data.table::copy(data$missing_reference[[1]])
     data.table::setorderv(missing_reference, c(".group", "report_date"))
+
+    miss_lk <- unique(missing_reference[, .(report_date, .group, .id = 1:.N)])
+    miss_lk[, delay := list(max_delay:1)]
+    miss_lk <- miss_lk[,
+      .(delay = unlist(delay)), ,
+      by = c("report_date", ".group")
+    ]
+
     missing_reference <- as.matrix(
       data.table::dcast(
         missing_reference, .group ~ report_date,
@@ -353,7 +361,7 @@ enw_missing <- function(formula = ~1, data) {
         fill = 0
       )[, -1]
     )
-    data_list$missing_ref <- missing_reference
+    data_list$missing_ref <- missing_reference$confirm
     data_list$model_miss <- 1
   }
 
@@ -561,7 +569,8 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     nowcast <- TRUE
   }
   likelihood_aggregation <- match.arg(
-    likelihood_aggregation, choices = c("snapshots", "groups")
+    likelihood_aggregation,
+    choices = c("snapshots", "groups")
   )
   out <- list(sampler = sampler)
   out$data <- list(

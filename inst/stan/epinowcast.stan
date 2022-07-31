@@ -8,6 +8,8 @@ functions {
 #include functions/expected_obs_from.stan
 #include functions/filt_obs_indexes.stan
 #include functions/obs_lpmf.stan
+#include functions/allocate_observed_obs.stan
+#include functions/apply_missing_reference_effects.stan
 #include functions/delay_lpmf.stan
 }
 
@@ -66,7 +68,7 @@ data {
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
-  array[model_miss ? g : 0, miss_fnindex] int missing_ref;
+  array[miss_fnindex] int missing_ref;
   array[2] real miss_int_p;
   array[2] real miss_beta_sd_p;
 
@@ -309,13 +311,9 @@ generated quantities {
     // from a temporary object to a permanent one
     // drop predictions without linked observations
     if (pp) {
-      for (i in 1:s) {
-        array[3] int l = filt_obs_indexes(i, i, csl, sl);
-        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
-        pp_obs[(l[1] + 1):l[2]] = pp_obs_tmp[(f[1] + 1):(f[1] + sl[i])];
-      }
+      pp_obs = allocate_observed_obs(1, s, pp_obs_tmp, sl, csl, sdmax, csdmax);
     }
     }
   }
-}
+  }
 }
