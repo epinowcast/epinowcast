@@ -38,7 +38,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   array[n[3]] int filt_obs = obs[(n[1] + 1):n[2]];
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
-  vector[model_miss ? num_elements(missing_reference) : 0]  log_exp_miss_ref;
+  vector[model_miss ? miss_obs : 0]  log_exp_miss_ref;
 
   // Combine expected final obs and date effects to get expected obs
   // If missing reference module in place calculated all expected obs vs 

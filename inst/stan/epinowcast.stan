@@ -267,12 +267,15 @@ model {
 
 generated quantities {
   array[pp ? sum(sl) : 0] int pp_obs;
+  array[pp ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
   array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs;
     array[csdmax[s]] int pp_obs_tmp;
+    vector[miss_obs]  log_exp_miss_ref;
+    vector[miss_obs ? csdmax[s] : 0] log_exp_miss_by_ref;
 
     // Posterior predictions for observations
     profile("generated_obs") {
@@ -280,13 +283,27 @@ generated quantities {
       1, s, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
     );
+    
+    if (model_miss) {
+      // Allocate proportion that are not reported
+      log_exp_miss_by_ref = apply_missing_reference_effects(
+        1, s, log_exp_obs, sdmax, csdmax, miss_ref_lprop
+      );
+      log_exp_miss_ref = log_expected_by_report(
+        log_exp_miss_by_ref, obs_by_report
+      );
+      // Allocate proportion that are reported
+      log_exp_obs = apply_missing_reference_effects(
+        1, s, log_exp_obs, sdmax, csdmax, log1m(miss_ref_lprop)
+      );
+    }
     pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
     } 
     
     // Likelihood by snapshot (rather than by observation)
-    for (i in 1:s) {
-      profile("generated_loglik") {
-      if (ologlik) {
+    profile("generated_loglik") {
+    if (ologlik) {
+      for (i in 1:s) {
         array[3] int l = filt_obs_indexes(i, i, csl, sl);
         array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         log_lik[i] = 0;
@@ -296,7 +313,15 @@ generated quantities {
           );
         }
       }
+      // Add log lik component for missing reference model
+      if (miss_obs) {
+        for (i in 1:miss_obs) {
+          log_lik[dmax + i - 1] += obs_lpmf(
+            missing_reference[i] | log_exp_miss_ref[i], phi, model_obs
+          );
+        }
       }
+    }
     }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
     // Organise into a grouped and time structured array
@@ -313,11 +338,15 @@ generated quantities {
         }
       }
     }
-    // If posterior predictions for all observations are needed copy
-    // from a temporary object to a permanent one
-    // drop predictions without linked observations
     if (pp) {
+      // If posterior predictions for all observations are needed copy
+      // from a temporary object to a permanent one
+      // drop predictions without linked observations
       pp_obs = allocate_observed_obs(1, s, pp_obs_tmp, sl, csl, sdmax, csdmax);
+      // Posterior predictions for observations missing reference dates
+      if (miss_obs) {
+        pp_miss_ref = obs_rng(log_exp_miss_ref, phi, model_obs);
+      }
     }
     }
   }
