@@ -340,11 +340,6 @@ enw_missing <- function(formula = ~1, data) {
       form,
       prefix = "miss", drop_intercept = TRUE
     )
-    # Get (and order) reported cases with a missing reference date
-    missing_reference <- data.table::copy(data$missing_reference[[1]])
-    data.table::setorderv(missing_reference, c(".group", "report_date"))
-    data_list$missing_reference <- missing_reference$confirm
-
     # Get report dates by group that cover all reference dates up to the max
     # delay
     rep_with_complete_ref <- data.table::copy(data$new_confirm[[1]])
@@ -353,6 +348,15 @@ enw_missing <- function(formula = ~1, data) {
       by = c("report_date", ".group")
     ][n == data$max_delay[[1]]]
     rep_with_complete_ref[, n := NULL]
+
+    # Get (and order) reported cases with a missing reference date
+    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    data_list$missing_reference <- data.table::copy(missing_reference)[
+      rep_with_complete_ref,
+      on = c("report_date", ".group")
+    ][, confirm]
+
 
     # Make a data.frame of all possible reference and report dates
     # Use this to construct a look-up between report and reference dates
@@ -372,11 +376,11 @@ enw_missing <- function(formula = ~1, data) {
       miss_lk[, .(report_date, .id, delay)], report_date ~ delay,
       value.var = ".id"
     )
-    data_list$obs_by_report <- obs_by_report[, -1]
+    data_list$obs_by_report <- as.matrix(obs_by_report[, -1])
 
     # Add indicator and length/shape variables
     data_list$model_miss <- 1
-    data_list$miss_obs <- nrow(missing_reference)
+    data_list$miss_obs <- length(data_list$missing_reference)
   }
 
   out <- list()
