@@ -310,7 +310,7 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
-#' @importFrom data.table setorderv copy
+#' @importFrom data.table setorderv copy dcast
 #' @importFrom purrr map
 #' @export
 #' @examples
@@ -368,8 +368,11 @@ enw_missing <- function(formula = ~1, data) {
     miss_lk[, .id := 1:.N]
     miss_lk <- miss_lk[rep_with_complete_ref, on = c("report_date", ".group")]
     data.table::setorderv(miss_lk, c(".group", "report_date"))
-    data_list$obs_by_report <- split(miss_lk, by = "report_date")
-    data_list$obs_by_report <- purrr::map(data_list$obs_by_report, ~ .[[".id"]])
+    obs_by_report <- data.table::dcast(
+      miss_lk[, .(report_date, .id, delay)], report_date ~ delay,
+      value.var = ".id"
+    )
+    data_list$obs_by_report <- obs_by_report[, -1]
 
     # Add indicator and length/shape variables
     data_list$model_miss <- 1
