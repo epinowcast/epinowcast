@@ -832,10 +832,12 @@ enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
 
   nc_group <- nc[, .(
     confirm = max(confirm, na.rm = TRUE),
-    new_confirm = sum(new_confirm, na.rm = TRUE),
-    max_confirm = unique(max_confirm)
+    new_confirm = sum(new_confirm, na.rm = TRUE)
   ),
   by = .(reference_date, .group, delay_group)
+  ]
+  nc_group[, max_confirm := max(confirm),
+    by = .(reference_date, .group)
   ]
   nc_group <- merge(grouping_vars, nc_group, by = ".group")
 
