@@ -310,6 +310,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
+#' @importFrom data.table setorderv copy
+#' @importFrom purrr map
 #' @export
 #' @examples
 #' # Missing model with a fixed intercept only
@@ -324,45 +326,54 @@ enw_missing <- function(formula = ~1, data) {
           observations without reference dates is not available.")
   }
 
-  if (!(as_string_formula(formula) %in% "~0")) {
-    warning(
-      "A missingness model has been specified. Note that this is not yet fully
-       supported and unless you are a developer you likely want to keep this
-       turned off."
-    )
-  }
-
   if (as_string_formula(formula) %in% "~0") {
     data_list <- enw_formula_as_data_list(
       prefix = "miss", drop_intercept = FALSE
     )
-    data_list$model_miss <- 0
     data_list$missing_ref <- numeric(0)
+    data_list$obs_by_rep <- numeric(0)
+    data_list$model_miss <- 0
+    data_list$miss_obs <- 0
   } else {
     form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
     data_list <- enw_formula_as_data_list(
       form,
       prefix = "miss", drop_intercept = TRUE
     )
+    # Get (and order) reported cases with a missing reference date
     missing_reference <- data.table::copy(data$missing_reference[[1]])
     data.table::setorderv(missing_reference, c(".group", "report_date"))
+    data_list$missing_reference <- missing_reference$confirm
 
-    miss_lk <- unique(missing_reference[, .(report_date, .group, .id = 1:.N)])
-    miss_lk[, delay := list(max_delay:1)]
+    # Get report dates by group that cover all reference dates up to the max
+    # delay
+    rep_with_complete_ref <- data.table::copy(data$new_confirm[[1]])
+    rep_with_complete_ref <- rep_with_complete_ref[,
+      .(n = .N),
+      by = c("report_date", ".group")
+    ][n == data$max_delay[[1]]]
+    rep_with_complete_ref[, n := NULL]
+
+    # Make a data.frame of all possible reference and report dates
+    # Use this to construct a look-up between report and reference dates
+    # Make sure it is in the same order as new_confirm and missing_reference
+    miss_lk <- unique(missing_reference[, .(report_date, .group)])
+    miss_lk[, delay := list((data$max_delay[[1]] - 1):0)]
     miss_lk <- miss_lk[,
-      .(delay = unlist(delay)), ,
+      .(delay = unlist(delay)),
       by = c("report_date", ".group")
     ]
+    miss_lk[, reference_date := report_date - delay]
+    data.table::setorderv(miss_lk, c("reference_date", ".group", "delay"))
+    miss_lk[, .id := 1:.N]
+    miss_lk <- miss_lk[rep_with_complete_ref, on = c("report_date", ".group")]
+    data.table::setorderv(miss_lk, c(".group", "report_date"))
+    data_list$obs_by_report <- split(miss_lk, by = "report_date")
+    data_list$obs_by_report <- purrr::map(data_list$obs_by_report, ~ .[[".id"]])
 
-    missing_reference <- as.matrix(
-      data.table::dcast(
-        missing_reference, .group ~ report_date,
-        value.var = "confirm",
-        fill = 0
-      )[, -1]
-    )
-    data_list$missing_ref <- missing_reference$confirm
+    # Add indicator and length/shape variables
     data_list$model_miss <- 1
+    data_list$miss_obs <- nrow(missing_reference)
   }
 
   out <- list()
