@@ -33,7 +33,7 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
   return(obs[])
 }
 
-enw_simulate_missing_reference <- function(obs, proportion = 0.4, by = c()) {
+enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
   obs <- enw_assign_group(obs, by = by)
@@ -60,7 +60,7 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.4, by = c()) {
 
 nat_germany_hosp <- enw_simulate_missing_reference(
   nat_germany_hosp,
-  proportion = 0.4, by = c("location", "age_group")
+  proportion = 0.2, by = c("location", "age_group")
 )
 
 # Make a retrospective dataset
@@ -83,13 +83,22 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
-# Fit the default nowcast model and produce a nowcast
+# Fit the nowcast model with support for observations with missing reference
+# dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
   missing = enw_missing(~1, data = pobs),
+  report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500
   ),
-  obs = enw_obs(family = "poisson", data = pobs)
+  obs = enw_obs(family = "negbin", data = pobs)
 )
+
+# Plot nowcast of observed values
+plot(nowcast, latest_obs)
+
+# Check posterior predictions for missing reference date proportions
+# Target value is log(0.2) = -1.6
+enw_posterior(nowcast$fit[[1]], variables = "miss_ref_lprop")
