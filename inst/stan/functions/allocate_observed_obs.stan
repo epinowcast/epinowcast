@@ -6,7 +6,7 @@ vector allocate_observed_obs(int start, int end, vector obs,
   for (i in start:end) {
     array[3] int l = filt_obs_indexes(i, i, csl, sl);
     array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
-    alloc_obs[(l[1] + 1):l[2]] = obs[(f[1] + 1):(f[1] + sl[i])];
+    alloc_obs[(l[1] + 1):l[2]] = segment(obs, f[1] + 1, sl[i]);
   }
   return(alloc_obs);
 }
@@ -19,7 +19,7 @@ array[] int allocate_observed_obs(int start, int end, array[] int obs,
   for (i in start:end) {
     array[3] int l = filt_obs_indexes(i, i, csl, sl);
     array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
-    alloc_obs[(l[1] + 1):l[2]] = obs[(f[1] + 1):(f[1] + sl[i])];
+    alloc_obs[(l[1] + 1):l[2]] = segment(obs, f[1] + 1, sl[i]);
   }
   return(alloc_obs);
 }

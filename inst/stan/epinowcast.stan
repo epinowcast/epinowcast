@@ -297,6 +297,7 @@ generated quantities {
         1, s, log_exp_obs, sdmax, csdmax, log1m(miss_ref_lprop)
       );
     }
+    // Draw from observation model for observed counts with report and reference
     pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
     } 
     
@@ -332,9 +333,11 @@ generated quantities {
         int i_start = ts[start_t + i, k];
         array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
-        pp_inf_obs[i, k] = sum(flat_obs[(l[1] + 1):l[2]]);
+        pp_inf_obs[i, k] = sum(segment(flat_obs, l[1] + 1, l[3]));
         if (sl[i_start] < dmax) {
-          pp_inf_obs[i, k] += sum(pp_obs_tmp[(f[1] + sl[i_start] + 1):f[2]]);
+          pp_inf_obs[i, k] += sum(
+            segment(pp_obs_tmp, f[1] + sl[i_start] + 1, f[3] - sl[i_start])
+          );
         }
       }
     }
