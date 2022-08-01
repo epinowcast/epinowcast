@@ -300,7 +300,7 @@ generated quantities {
     // Draw from observation model for observed counts with report and reference
     pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
     } 
-    
+
     // Likelihood by snapshot (rather than by observation)
     profile("generated_loglik") {
     if (ologlik) {

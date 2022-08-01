@@ -330,8 +330,8 @@ enw_missing <- function(formula = ~1, data) {
     data_list <- enw_formula_as_data_list(
       prefix = "miss", drop_intercept = FALSE
     )
-    data_list$missing_ref <- numeric(0)
-    data_list$obs_by_rep <- numeric(0)
+    data_list$missing_reference <- numeric(0)
+    data_list$obs_by_report <- numeric(0)
     data_list$model_miss <- 0
     data_list$miss_obs <- 0
   } else {
