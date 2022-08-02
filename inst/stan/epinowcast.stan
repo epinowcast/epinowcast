@@ -250,15 +250,15 @@ model {
     profile("model_likelihood") {
     if (ll_aggregation) {
       target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
-        srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
-        model_obs
-      );
-    } else {
-      target += reduce_sum(
         delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
         rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax
+      );
+    } else {
+      target += reduce_sum(
+        delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
+        srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
+        model_obs
       );
     }
     }
