@@ -83,6 +83,9 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
+# Compile nowcasting model using multi-threading
+model <- enw_model(threads = TRUE)
+
 # Fit the nowcast model with support for observations with missing reference
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
@@ -91,9 +94,11 @@ nowcast <- epinowcast(pobs,
   report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 2, iter_warmup = 500, iter_sampling = 500
+    chains = 2, threads_per_chain = 2,
+    iter_warmup = 500, iter_sampling = 500
   ),
-  obs = enw_obs(family = "negbin", data = pobs)
+  obs = enw_obs(family = "negbin", data = pobs),
+  model = model
 )
 
 # Plot nowcast of observed values
