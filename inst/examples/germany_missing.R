@@ -100,9 +100,25 @@ nowcast <- epinowcast(pobs,
 plot(nowcast, latest_obs)
 
 # Check posterior predictions for missing reference date proportions
-# Target value is log(0.2) = -1.6
-enw_posterior(nowcast$fit[[1]], variables = "miss_ref_lprop")
+miss_prop <- enw_posterior(nowcast$fit[[1]], variables = "miss_ref_lprop")
+cols <- c("mean", "median", "q5", "q20", "q80", "q95")
+miss_prop[, (cols) := lapply(.SD, exp), .SDcols = cols]
+miss_prop <- cbind(
+  pobs$latest[[1]][, .(reference_date, confirm = NA)], miss_prop
+)
 
+ggplot(miss_prop) +
+  aes(x = reference_date) +
+  geom_line(aes(y = median), size = 1, alpha = 0.6) +
+  geom_line(aes(y = mean), linetype = 2) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+  geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
+  theme_bw() +
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  labs(
+    x = "Reference date",
+    y = "Proportion of cases reported with a reference date"
+  )
 
 # Plot observed and estimated missing data by report
 pp_miss_obs <- enw_posterior(nowcast$fit[[1]], variables = "pp_miss_ref")
