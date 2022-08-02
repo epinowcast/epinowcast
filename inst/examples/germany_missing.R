@@ -102,3 +102,16 @@ plot(nowcast, latest_obs)
 # Check posterior predictions for missing reference date proportions
 # Target value is log(0.2) = -1.6
 enw_posterior(nowcast$fit[[1]], variables = "miss_ref_lprop")
+
+
+# Plot observed and estimated missing data by report
+pp_miss_obs <- enw_posterior(nowcast$fit[[1]], variables = "pp_miss_ref")
+
+miss_obs <- pobs$missing_reference[[1]]
+miss_obs <- cbind(
+  miss_obs[(nrow(miss_obs) - nrow(pp_miss_obs) + 1):nrow(miss_obs)],
+  pp_miss_obs
+)
+
+enw_plot_quantiles(miss_obs, x = report_date) +
+  labs(x = "Report date", y = "Notificatiosn with a missing reference date")
