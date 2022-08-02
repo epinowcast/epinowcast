@@ -294,7 +294,7 @@ generated quantities {
       );
       // Allocate proportion that are reported
       log_exp_obs = apply_missing_reference_effects(
-        1, s, log_exp_obs, sdmax, csdmax, log1m(miss_ref_lprop)
+        1, s, log_exp_obs, sdmax, csdmax, log1m_exp(miss_ref_lprop)
       );
     }
     // Draw from observation model for observed counts with report and reference

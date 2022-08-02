@@ -60,7 +60,7 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
 
 nat_germany_hosp <- enw_simulate_missing_reference(
   nat_germany_hosp,
-  proportion = 0.2, by = c("location", "age_group")
+  proportion = 0.1, by = c("location", "age_group")
 )
 
 # Make a retrospective dataset
@@ -97,7 +97,7 @@ nowcast <- epinowcast(pobs,
     chains = 2, threads_per_chain = 2,
     iter_warmup = 500, iter_sampling = 500
   ),
-  obs = enw_obs(family = "negbin", data = pobs),
+  obs = enw_obs(family = "poisson", data = pobs),
   model = model
 )
 

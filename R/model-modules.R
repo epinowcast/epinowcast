@@ -345,7 +345,7 @@ enw_missing <- function(formula = ~1, data) {
     rep_with_complete_ref <- data.table::copy(data$new_confirm[[1]])
     rep_with_complete_ref <- rep_with_complete_ref[,
       .(n = .N),
-      by = c("report_date", ".group")
+      by = c(".group", "report_date")
     ][n == data$max_delay[[1]]]
     rep_with_complete_ref[, n := NULL]
 

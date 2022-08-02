@@ -57,7 +57,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
       i_start, i_end, log_exp_complete, sl, csl, sdmax, csdmax
     );
     log_exp_obs = apply_missing_reference_effects(
-      i_start, i_end, log_exp_obs, sl, csl, log1m(miss_ref_lprop)
+      i_start, i_end, log_exp_obs, sl, csl, log1m_exp(miss_ref_lprop)
     );
 
     // Allocate expected cases by report date
