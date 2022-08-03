@@ -49,10 +49,11 @@ data {
   int expr_rncol;
   matrix[expr_fnindex, expr_fncol + 1] expr_fdesign;
   matrix[expr_fncol,  expr_rncol + 1] expr_rdesign;
-  array[g] int expr_r_g; // Where does each group start for growth?
-  array[2, g * expr_r_seed] real expr_leobs_int_p; // Mean of initial log cases
-  array[2] real expr_r_int_p;
-  array[2] real expr_beta_sd_p;
+  array[g] int expr_g; // Where does each group start for growth?
+  // Mean of initial log cases
+  array[2, g * expr_r_seed] real expr_leobs_int_p; 
+  array[2, 1] real expr_r_int_p;
+ array[2, 1] real expr_beta_sd_p;
 
   // Reference day model
   int model_refp;
@@ -62,10 +63,10 @@ data {
   matrix[refp_fnrow, refp_fncol + 1] refp_fdesign;
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
-  array[2] real refp_mean_int_p;
-  array[2] real refp_sd_int_p;
-  array[2] real refp_mean_beta_sd_p;
-  array[2] real refp_sd_beta_sd_p; 
+ array[2, 1] real refp_mean_int_p;
+ array[2, 1] real refp_sd_int_p;
+ array[2, 1] real refp_mean_beta_sd_p;
+ array[2, 1] real refp_sd_beta_sd_p; 
 
   // Reporting time model
   int model_rep;
@@ -76,7 +77,7 @@ data {
   matrix[rep_fnrow, rep_fncol + 1] rep_fdesign;
   int rep_rncol; 
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
-  array[2] real rep_beta_sd_p;
+ array[2, 1] real rep_beta_sd_p;
 
   // Missing reference time model
   int model_miss;
@@ -95,6 +96,7 @@ data {
   // of d, their index in the flat vector of obs by reference time (e.g. flat_obs)
   // would be: obs_by_report[i, d] 
   array[miss_obs, dmax] int obs_by_report;
+<<<<<<< HEAD
   // observations by group (and cumulative) for missing_reference and
   // obs_by_report
   array[miss_obs ? g : 0] int miss_st;
@@ -105,6 +107,14 @@ data {
   // Observation model
   int model_obs; // control parameter for the observation model
   array[2] real sqrt_phi_p; // 1/sqrt (overdispersion)
+=======
+  array[2, 1] real miss_int_p;
+  array[2, 1] real miss_beta_sd_p;
+
+  // Observation model
+  int model_obs; // Control parameter for the observation model
+  array[2, 1] real sqrt_phi_p; // 1/sqrt(overdispersion)
+>>>>>>> test simple example
 
   // Control parameters
   int debug; // should debug information be shown
@@ -156,7 +166,7 @@ parameters {
 
 transformed parameters{
   // Expectation model
-  vector[expr_r_t] r; // Log growth rate of observations
+  vector[expr_t] r; // Log growth rate of observations
   array[g] vector[t]  exp_lobs; // Expected final observations
   // Reference model
   vector[refp_fnrow] refp_mean;
@@ -176,7 +186,7 @@ transformed parameters{
     expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 1
   );
   exp_lobs = log_expected_obs_from_r(
-    expr_leobs_int, r, expr_r_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt, t, g
+    expr_leobs_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt, t, g
   );
   }
 
@@ -191,7 +201,7 @@ transformed parameters{
       refp_sd = combine_effects(log(refp_sd_int[1]), refp_sd_beta, refp_fdesign,
                                 refp_sd_beta_sd, refp_rdesign, 1); 
       refp_sd = exp(refp_sd);
-    }
+    } 
     }
     // calculate reference time logit hazards (unless no reporting effects)
     profile("transformed_delay_reference_time_hazards") {

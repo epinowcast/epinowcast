@@ -247,15 +247,20 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
     stop("The generation time must sum to 1")
   }
 
-  features <- data$metareference[[1]][-length(generation_time), ]
+  features <- data$metareference[[1]]
+  features <- features[
+    date >= (min(date) + length(generation_time))
+  ]
 
   r_list <- list(
     r_seed = length(generation_time),
     gt_n = length(generation_time),
     lrgt = log(rev(generation_time)),
-    t = nrow(features) - length(generation_time),
+    t = nrow(features),
     obs = 0
   )
+
+  r_list$g <- cumsum(rep(r_list$t, data$groups[[1]])) - r_list$t
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
@@ -276,7 +281,7 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
-      rep("expr_leobs_int_p", length(seed_obs))
+      rep("expr_leobs_int", length(seed_obs))
     ),
     dimension = c(1, 1, seq_along(seed_obs)),
     description = c(
@@ -289,7 +294,7 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs))
     ),
     mean = c(0, 0, seed_obs),
-    sd = c(0.2, 1, rep(1, length(seed_obs)))
+    sd = c(0.2, 0.1, rep(1, length(seed_obs)))
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
