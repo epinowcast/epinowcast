@@ -83,7 +83,7 @@ enw_priors_as_data_list <- function(priors) {
   priors[, variable := paste0(variable, "_p")]
   priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
-  priors <- purrr::map(priors, ~ as.vector(t(.)))
+  priors <- purrr::map(priors, ~ as.array(t(.)))
   return(priors)
 }
 

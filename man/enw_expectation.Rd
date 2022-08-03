@@ -4,7 +4,7 @@
 \alias{enw_expectation}
 \title{Expectation model module}
 \usage{
-enw_expectation(formula = ~rw(day, .group), order = 1, data)
+enw_expectation(formula = ~rw(day, by = .group), generation_time = 1, data)
 }
 \arguments{
 \item{formula}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
@@ -14,10 +14,10 @@ defined by reference date as defined in \code{metareference} as produced by
 specific random walk. Note that the daily group specific random walk is
 currently the only option supported by \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{order}{Integer, defaults to 1. The order of the expectation process
-with 1 being a simple log scale generative process, 2 being a log scale
-generative process where each time point is offset by the log count from
-previous time points.}
+\item{generation_time}{A numeric vector that sums to 1 and defaults to 1.
+Describes the weighting to apply to previous generations (i.e as part of a
+renewal equation). When set to 1 (the default) this corresponds to modelling
+the daily growth rate.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
