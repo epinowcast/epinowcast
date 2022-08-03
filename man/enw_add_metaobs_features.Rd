@@ -2,23 +2,30 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_metaobs_features}
 \alias{enw_add_metaobs_features}
-\title{FUNCTION_TITLE}
+\title{add common metadata variables}
 \usage{
-enw_add_metaobs_features(metaobs, holidays = c(), holidays_to = "Sunday")
+enw_add_metaobs_features(metaobs, holidays_to = "Sunday", holidays, ...)
 }
 \arguments{
-\item{metaobs}{PARAM_DESCRIPTION}
-
-\item{holidays}{PARAM_DESCRIPTION}
+\item{metaobs}{raw meta data for observations, coerceable via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
+must have a \code{date} column}
 
 \item{holidays_to}{A character string to assign to holidays when present.
 Replaces the day of the week and defaults to Sunday.}
+
+\item{holidays}{an optional vector of items coerceable via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}}
 }
 \value{
-OUTPUT_DESCRIPTION
+a copy of the \code{metaobs} input, with additional columns:
+\itemize{
+\item \code{day_of_week}, a factor of values as output from \code{\link[=weekday]{weekday()}} and possibly as \code{holiday_to} if distinct from weekdays values
+\item \code{day}, numeric, 0 based from start of time series
+\item \code{week}, numeric, 0 based from start of time series
+\item \code{month}, numeric, 0 based from start of time series
+}
 }
 \description{
-FUNCTION_DESCRIPTION
+annotates time series data with commonly required data
 }
 \seealso{
 Preprocessing functions
