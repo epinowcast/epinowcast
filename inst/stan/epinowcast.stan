@@ -1,6 +1,7 @@
 functions {
 #include functions/zero_truncated_normal.stan
 #include functions/regression.stan
+#include functions/log_expected_obs_from_r.stan
 #include functions/discretised_logit_hazard.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
@@ -36,9 +37,26 @@ data {
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
-  array[2] real eobs_lsd_p; // standard deviation for expected final obs
- 
-  // Reference time model
+  int expr_r_t; // How many time points does each group have?
+  int expr_r_seed; // How many seeding initial intercepts to use?
+  int expr_gt_n; // Length of the generation time
+  int expr_t; // Time span for r
+  // PMF describing the generation time (reversed and logged)
+  vector[expr_gt_n] expr_lrgt; 
+  // Observation model to use for the latent process. Currently 0 = none
+  int expr_obs;
+  int expr_fnindex;
+  int expr_fncol;
+  int expr_rncol;
+  matrix[expr_fnindex, expr_fncol + 1] expr_fdesign;
+  matrix[expr_fncol,  expr_rncol + 1] expr_rdesign;
+  array[g] int expr_r_g; // Where does each group start for growth?
+  array[g * expr_r_seed] real expr_leobs_int_mean; // Mean of initial log cases
+  array[g * expr_r_seed] real expr_leobs_int_sd; // SD of initial log cases
+  array[2] real expr_r_int_p;
+  array[2] real expr_beta_sd_p;
+
+  // Reference day model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -102,9 +120,7 @@ data {
 
 transformed data{
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
-  // prior mean of cases based on thoose observed
-  vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
-  // if no reporting time effects use native probability for reference time
+  // if no reporting day effects use native probability for reference day
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
   // Type of likelihood aggregation to use
@@ -113,9 +129,11 @@ transformed data{
 
 parameters {
   // Expectation model
-  array[g] real leobs_init; // First time point for expected obs
-  vector<lower=0>[g] eobs_lsd; // standard deviation of rw for primary obs
-  array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
+  // Initial log observations by group
+  matrix[expr_r_seed, g] expr_leobs_int; 
+  real expr_r_int; 
+  vector[expr_fncol] expr_beta;
+  vector<lower=0>[expr_rncol] expr_beta_sd;
 
   // Reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
@@ -140,7 +158,8 @@ parameters {
 
 transformed parameters{
   // Expectation model
-  array[g] vector[t] imp_obs; // Expected final observations
+  vector[expr_r_t] r; // Log growth rate of observations
+  array[g] vector[t]  exp_lobs; // Expected final observations
   // Reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
@@ -155,12 +174,12 @@ transformed parameters{
 
   // Expectation model
   profile("transformed_expected_final_observations") {
-  for (k in 1:g) {
-    real llast_obs;
-    imp_obs[k][1] = leobs_init[k];
-    imp_obs[k][2:t] = 
-      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
-  }
+  r = combine_effects(
+    expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 1
+  );
+  exp_lobs = log_expected_obs_from_r(
+    expr_leobs_int, r, expr_r_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt, t, g
+  );
   }
 
   // Reference model
@@ -214,14 +233,17 @@ transformed parameters{
   
 model {
   profile("model_priors") {
-  // priors for unobserved expected reported cases
-  leobs_init ~ normal(eobs_init, 1);
-  eobs_lsd ~ zero_truncated_normal(eobs_lsd_p[1], eobs_lsd_p[2]);
-  for (i in 1:g) {
-    leobs_resids[i] ~ std_normal();
-  }
-
-  // priors for the intercept of the log mean truncation distribution
+  // Expectation model
+  // Initial intercept of log observations 
+  to_vector(expr_leobs_int) ~ normal(expr_leobs_int_mean, expr_leobs_int_sd);
+  // Intercept of growth rate
+  expr_r_int  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
+  // Growth rate effect priors
+  effect_priors_lp(
+    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
+  );
+  
+  // Reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
@@ -238,10 +260,10 @@ model {
       );
     }
   }
-  // priors and scaling for time of report effects
+  // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
-  // priors for missing reference time effects
+  // Missing reference model
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
@@ -249,12 +271,12 @@ model {
     );
   }
 
-  // reporting overdispersion (1/sqrt)
-  if (model_obs) {
-    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
+  // Observation model
+  if (model_obs) {   // reporting overdispersion (1/sqrt)
+    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
   }
   }
-  // log density: observed vs model
+  // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
     profile("model_likelihood") {
     if (ll_aggregation) {
@@ -265,9 +287,9 @@ model {
       );
     } else {
       target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
-        srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
-        model_obs
+        delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs
       );
     }
     }
@@ -289,7 +311,7 @@ generated quantities {
     // Posterior predictions for observations
     profile("generated_obs") {
     log_exp_obs = expected_obs_from_snaps(
-      1, s, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
+      1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
     );
     

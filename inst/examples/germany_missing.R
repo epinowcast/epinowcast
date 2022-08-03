@@ -86,6 +86,7 @@ ggplot(miss_prop) +
   geom_hline(yintercept = prop_miss, linetype = 2) +
   geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
+  geom_hline(yintercept = prop_miss, linetype = 2) +
   theme_bw() +
   scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
   labs(
@@ -103,4 +104,4 @@ miss_obs <- cbind(
 )
 
 enw_plot_quantiles(miss_obs, x = report_date) +
-  labs(x = "Report date", y = "Notificatiosn with a missing reference date")
+  labs(x = "Report date", y = "Notifications with a missing reference date")
