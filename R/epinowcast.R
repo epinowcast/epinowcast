@@ -15,7 +15,7 @@
 #'
 #' @param expectation The expectation model specification as defined using
 #' [enw_expectation()]. By default this is set to be highly flexible and thus
-#' weakly informed. Other options are not yet supported.
+#' weakly informed.
 #'
 #' @param missing The missing reference date model specification as defined
 #' using [enw_missing()]. By default this is set to not be used.
@@ -156,14 +156,6 @@ epinowcast <- function(data,
     data_as_list,
     enw_priors_as_data_list(priors)
   )
-
-  if (!expectation$formula$expectation %in% "~rw(day, .group)") {
-    stop("A flexible expectation model has not yet been implemented")
-  }
-
-  if (expectation$data$exp_order != 1) {
-    stop("Only first order expectation models are currently supported")
-  }
 
   if (!missing$formula %in% "~0") {
     warning("The missing data model is highly experimental. There is a

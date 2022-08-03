@@ -226,10 +226,10 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' specific random walk. Note that the daily group specific random walk is
 #' currently the only option supported by [epinowcast()].
 #'
-#' @param order Integer, defaults to 1. The order of the expectation process
-#' with 1 being a simple log scale generative process, 2 being a log scale
-#' generative process where each time point is offset by the log count from
-#' previous time points.
+#' @param generation_time A numeric vector that sums to 1 and defaults to 1.
+#' Describes the weighting to apply to previous generations (i.e as part of a
+#' renewal equation). When set to 1 (the default) this corresponds to modelling
+#' the daily growth rate.
 #'
 #' @inherit enw_report return
 #' @inheritParams enw_obs
@@ -237,58 +237,85 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
+enw_expectation <- function(formula = ~ rw(day, by = .group),
+                            generation_time = 1, data) {
   if (as_string_formula(formula) %in% "~0") {
     stop("An expectation model formula must be specified")
   }
-  order <- match.arg(as.character(order), choices = c("1", "2"))
-  order <- as.integer(order)
 
-  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
+  if (sum(generation_time) != 1) {
+    stop("The generation time must sum to 1")
+  }
+
+  features <- data$metareference[[1]][-length(generation_time), ]
+
+  r_list <- list(
+    r_seed = length(generation_time),
+    gt_n = length(generation_time),
+    lrgt = log(rev(generation_time)),
+    t = nrow(features) - length(generation_time),
+    obs = 0
+  )
+
+  # Initial prior for seeding observations
+  latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
+  seed_obs <- latest_matrix[1, ] + 1
+  seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
+  seed_obs <- round(unlist(seed_obs), 1)
+
+  form <- enw_formula(formula, features, sparse = FALSE)
   data <- enw_formula_as_data_list(
     form,
-    prefix = "exp", drop_intercept = order == 1
+    prefix = "expr", drop_intercept = TRUE
   )
-  data$exp_order <- as.numeric(order)
 
   out <- list()
   out$formula$expectation <- form$formula
-  out$data <- data
+  names(r_list) <- paste0("expr_", names(r_list))
+  out$data <- c(r_list, data)
   out$priors <- data.table::data.table(
-    variable = c("exp_beta_sd", "eobs_lsd"),
-    description = c(
-      "Standard deviation of scaled pooled expectation effects",
-      "Standard deviation for expected final observations"
+    variable = c(
+      "expr_r_int", "expr_beta_sd",
+      rep("expr_leobs_int_p", length(seed_obs))
     ),
-    distribution = c("Zero truncated normal", "Zero truncated normal"),
-    mean = rep(0, 2),
-    sd = rep(1, 2)
+    dimension = c(1, 1, seq_along(seed_obs)),
+    description = c(
+      "Intercept of the log growth rate",
+      "Standard deviation of scaled pooled expectation effects",
+      rep("Intercept for initial log observations (ordered by group and then
+          time)", length(seed_obs))
+    ),
+    distribution = c(
+      "Normal", "Zero truncated normal", rep("Normal", length(seed_obs))
+    ),
+    mean = c(0, 0, seed_obs),
+    sd = c(0.2, 1, rep(1, length(seed_obs)))
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
-        exp_beta = numeric(0),
-        exp_beta_sd = numeric(0),
-        leobs_init = array(purrr::map_dbl(
-          data$latest_obs[1, ] + 1,
-          ~ rnorm(1, log(.), 1)
+        expr_beta = numeric(0),
+        expr_beta_sd = numeric(0),
+        expr_leobs_int = array(matrix(
+          rnorm(
+            1,
+            as.vector(priors$expr_leobs_int_p[1]),
+            as.vector(priors$expr_leobs_int_p[2]) * 0.1
+          ),
+          nrow = data$expr_gt_n
         )),
-        eobs_lsd = array(abs(rnorm(
-          data$g, priors$eobs_lsd_p[1], priors$eobs_lsd_p[2] / 10
-        ))),
-        leobs_resids = array(
-          rnorm((data$t - 1) * data$g, 0, 0.01),
-          dim = c(data$t - 1, data$g)
+        expr_r_int = rnorm(
+          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
         )
       )
-      if (data$exp_fncol > 0) {
-        init$exp_beta <- rnorm(data$exp_fncol, 0, 0.01)
+      if (data$expr_fncol > 0) {
+        init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
       }
-      if (data$exp_rncol > 0) {
-        init$exp_beta_sd <- abs(rnorm(
-          data$exp_rncol, priors$exp_beta_sd_p[1],
-          priors$exp_beta_sd_p[2] / 10
+      if (data$ expr_rncol > 0) {
+        init$expr_beta_sd <- abs(rnorm(
+          data$expr_rncol, priors$expr_beta_sd_p[1],
+          priors$expr_beta_sd_p[2] / 10
         ))
       }
       return(init)
@@ -449,12 +476,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
   )
 
   # format latest matrix
-  latest_matrix <- data$latest[[1]]
-  latest_matrix <- data.table::dcast(
-    latest_matrix, reference_date ~ .group,
-    value.var = "confirm"
-  )
-  latest_matrix <- as.matrix(latest_matrix[, -1])
+  latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
 
   # get new confirm for processing
   new_confirm <- data.table::copy(data$new_confirm[[1]])

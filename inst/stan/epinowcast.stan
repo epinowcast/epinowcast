@@ -37,7 +37,6 @@ data {
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
-  int expr_r_t; // How many time points does each group have?
   int expr_r_seed; // How many seeding initial intercepts to use?
   int expr_gt_n; // Length of the generation time
   int expr_t; // Time span for r
@@ -51,8 +50,7 @@ data {
   matrix[expr_fnindex, expr_fncol + 1] expr_fdesign;
   matrix[expr_fncol,  expr_rncol + 1] expr_rdesign;
   array[g] int expr_r_g; // Where does each group start for growth?
-  array[g * expr_r_seed] real expr_leobs_int_mean; // Mean of initial log cases
-  array[g * expr_r_seed] real expr_leobs_int_sd; // SD of initial log cases
+  array[2, g * expr_r_seed] real expr_leobs_int_p; // Mean of initial log cases
   array[2] real expr_r_int_p;
   array[2] real expr_beta_sd_p;
 
@@ -235,7 +233,7 @@ model {
   profile("model_priors") {
   // Expectation model
   // Initial intercept of log observations 
-  to_vector(expr_leobs_int) ~ normal(expr_leobs_int_mean, expr_leobs_int_sd);
+  to_vector(expr_leobs_int) ~ normal(expr_leobs_int_p[1], expr_leobs_int_p[2]);
   // Intercept of growth rate
   expr_r_int  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
   // Growth rate effect priors
