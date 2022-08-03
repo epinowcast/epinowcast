@@ -58,9 +58,12 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
   return(obs[])
 }
 
+# Simulated proportion missing
+prop_miss <- 0.6
+
 nat_germany_hosp <- enw_simulate_missing_reference(
   nat_germany_hosp,
-  proportion = 0.1, by = c("location", "age_group")
+  proportion = prop_miss, by = c("location", "age_group")
 )
 
 # Make a retrospective dataset
@@ -90,7 +93,7 @@ model <- enw_model(threads = TRUE)
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
-  missing = enw_missing(~1, data = pobs),
+  missing = enw_missing(~ 1 + (1 | day), data = pobs),
   report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
@@ -118,6 +121,7 @@ ggplot(miss_prop) +
   geom_line(aes(y = mean), linetype = 2) +
   geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
+  geom_hline(yintercept = prop_miss, linetype = 2) +
   theme_bw() +
   scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
   labs(
@@ -135,4 +139,4 @@ miss_obs <- cbind(
 )
 
 enw_plot_quantiles(miss_obs, x = report_date) +
-  labs(x = "Report date", y = "Notificatiosn with a missing reference date")
+  labs(x = "Report date", y = "Notifications with a missing reference date")

@@ -3,6 +3,8 @@
 ## Package
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
+- Removed the warning for `enw_missing()` being used as this module is now supported. Updated `enw_missing()` to return a flat vector of observations with a missing reference date and a look-up matrix that maps between report dates and reference dates in `flat_obs` returned by `enw_obs()`. See #147 by @seabbs.
+
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
@@ -12,10 +14,11 @@
 - Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these function rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
 - Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. See #138 by @seabbs and @adrian-lison.
 - Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
+- Added additional functionality to `delay_group_lmpf` to support modelling observations missing reference dates. Also updated the generated quantities to support this mode. See #147 by @seabbs based on #64 by @adrian-lison.
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
-- Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
+- Added a new example using simulated data and the `enw_missing()` model module including a demonstration of extracting summarised posterior values for parameters of interest. See #138 and #147 by @seabbs.
 
 ## Bugs
 
