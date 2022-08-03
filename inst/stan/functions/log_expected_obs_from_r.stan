@@ -5,20 +5,17 @@
     array[g] vector[t] exp_lobs;
     for (k in 1:g) {
       vector[r_t] local_r = segment(r, r_g[k], r_t);
-      vector[t] local_lobs;
-      local_lobs[1:r_seed] = lexp_obs_int[1:r_seed, k];
-
+      exp_lobs[k][1:r_seed] = lexp_obs_int[1:r_seed, k];
       if (gt_n == 1) {
-      local_lobs[(r_seed + 1):t] = local_lobs[1] + cumulative_sum(local_r);
+        exp_lobs[k][(r_seed + 1):t] = exp_lobs[k][1] + cumulative_sum(local_r);
       }else{
         for (i in 1:r_t){
-          local_lobs[r_seed + i] = local_r[i] +
+          exp_lobs[k][r_seed + i] = local_r[i] +
             log_sum_exp(
-              segment(local_lobs, i - gt_n, gt_n) + lrgt
+              segment(exp_lobs[k], i - gt_n, gt_n) + lrgt
             );
         }
       }
-      exp_lobs[g] = local_lobs; 
     }
     return(exp_lobs);
   }
