@@ -65,12 +65,12 @@ vector combine_effects(real intercept, vector beta, matrix design,
   }
 }
 
-void effect_priors_lp(vector beta, vector beta_sd, array[] real beta_sd_p,
+void effect_priors_lp(vector beta, vector beta_sd, array[,] real beta_sd_p,
                     int fixed, int random) {
   if (fixed) {
     beta ~ std_normal();
     if (random) {
-      beta_sd ~ zero_truncated_normal(beta_sd_p[1], beta_sd_p[2]);
+      beta_sd ~ zero_truncated_normal(beta_sd_p[1, 1], beta_sd_p[2, 1]);
     }
   }
 }

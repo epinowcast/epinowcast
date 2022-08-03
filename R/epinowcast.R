@@ -112,7 +112,7 @@ epinowcast <- function(data,
                        ),
                        expectation = epinowcast::enw_expectation(
                          formula = ~ rw(day, .group),
-                         order = 1,
+                         generation_time = 1,
                          data = data
                        ),
                        missing = epinowcast::enw_missing(
