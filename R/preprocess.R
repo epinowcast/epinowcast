@@ -21,15 +21,18 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   return(metaobs[])
 }
 
-#' @title add common metadata variables
+#' @title Add common metadata variables
 #'
-#' @description annotates time series data with commonly required data
+#' @description If not already present, annotates time series data with metadata commonly used
+#' in models: day of week, and days, weeks, and months since start of time series.
 #'
-#' @param metaobs raw meta data for observations, coerceable via [data.table::as.data.table()].
-#'  must have a `date` column
-#' @param holidays_to A character string to assign to holidays when present.
-#' Replaces the day of the week and defaults to Sunday.
-#' @param holidays an optional vector of items coerceable via [data.table::as.IDate()]
+#' @param metaobs Raw data, coerceable via [data.table::as.data.table()].
+#'  Coerced object must have a `date` column.
+#'
+#' @param holidays_to A character string to assign to holidays, when `holidays` argument present.
+#'  Replaces the day of the week with a "Sunday"
+#'
+#' @param holidays Optionally, a vector of [Date]s or elements coerceable to [Date]s via [data.table::as.IDate()]
 #'
 #' @return a copy of the `metaobs` input, with additional columns:
 #'  * `day_of_week`, a factor of values as output from [weekday()] and possibly as `holiday_to` if distinct from weekdays values
@@ -40,6 +43,7 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table
+#' @importFrom lubridate week month
 enw_add_metaobs_features <- function(
   metaobs,
   holidays_to = "Sunday",
@@ -49,8 +53,10 @@ enw_add_metaobs_features <- function(
   metaobs <- data.table::copy(metaobs)
   if (is.null(metaobs$date)) stop("`metaobs` does not have a column `date`.")
 
-  # add days of week
-  metaobs[, day_of_week := weekdays(date) ]
+  # if not present, add day_of_week
+  if (is.null(metaobs$day_of_week)) {
+    metaobs[, day_of_week := weekdays(date)]
+  }
 
   # set holidays to associated day_of_week
   if (!missing(holidays) && (length(holidays) > 0)) {
@@ -59,17 +65,25 @@ enw_add_metaobs_features <- function(
     metaobs[date %in% holidays, day_of_week := holidays_to ]
   }
 
-  # make day of week a factor
-  metaobs[, day_of_week := factor(day_of_week) ]
+  # make day_of_week a factor
+  metaobs[, day_of_week := factor(day_of_week)]
 
-  zerobase <- function(x) x - min(x)
+  # function for transforming numbers to be referenced from 0
+  zerobase <- function(x) { return(x - min(x)) }
 
-  # add day / week / month features
+  # only compute columns not already present
+  tarcols <- setdiff(c("day", "week", "month"), colnames(metaobs))
+  # transforms associated with those columns
+  xforms <- list(
+    day = as.numeric, week = lubridate::week, month = lubridate::month
+  )[tarcols]
+
+  # add tarcol features
   metaobs[,
-    c("day", "week", "month") :=
+    c(tarcols) :=
     lapply(
       lapply(
-        .(as.numeric, lubridate::week, lubridate::month),
+        xforms,
         do.call, .(date)
       ),
       zerobase
@@ -709,8 +723,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' that this is zero indexed and so includes the reference date and
 #' `max_delay - 1` other days.
 #'
-#' @param ... other arguments to [enw_add_metaobs_features()],
-#'   e.g. `holidays`
+#' @param ... Other arguments to [enw_add_metaobs_features()],
+#'   e.g. `holidays`, which sets commonly used metadata
+#'   (e.g. day of week, days since start of time series)
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data frames as well as variables containing metadata. These are:
