@@ -1,11 +1,13 @@
 functions {
-#include functions/regression.stan
-#include functions/discretised_reporting_prob.stan
-#include functions/hazard.stan
 #include functions/zero_truncated_normal.stan
+#include functions/regression.stan
+#include functions/discretised_logit_hazard.stan
+#include functions/hazard.stan
 #include functions/expected_obs.stan
+#include functions/combine_logit_hazards.stan
 #include functions/expected_obs_from_index.stan
 #include functions/obs_lpmf.stan
+#include functions/delay_lpmf.stan
 }
 
 data {
@@ -31,7 +33,7 @@ data {
   matrix[refp_fnrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
   int refp_rncol; // number of standard deviations to use for pooling
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; // Pooling pmf design matrix 
-  int model_refp; // parametric distribution (0 = none, 1 = exp. 2 = lognormal, 2 = gamma)
+  int model_refp; // parametric distribution (0 = none, 1 = exp, 2 = lognormal, 3 = gamma, 4 = loglogistic)
   // Reporting day model
   int model_rep; // Reporting day model in use
   int rep_t; // how many reporting days are there (t + dmax - 1)
@@ -64,8 +66,8 @@ transformed data{
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
   // if no reporting day effects use native probability for reference day
-  // effects
-  int ref_as_p = (model_rep > 0 || model_refp > 0) ? 0 : 1; 
+  // effects, i.e. do not convert to logit hazard
+  int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
 }
 
 parameters {
@@ -86,7 +88,6 @@ parameters {
 transformed parameters{
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
-  matrix[dmax, refp_fnrow] pmfs; // sparse report distributions
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
   array[g] vector[t] imp_obs; // Expected final observations
@@ -94,6 +95,7 @@ transformed parameters{
   // calculate log mean and sd parameters for each dataset from design matrices
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
+    // calculate sparse reference date effects
     profile("transformed_delay_reference_date_effects") {
     refp_mean = combine_effects(refp_mean_int[1], refp_mean_beta, refp_fdesign,
                                 refp_mean_beta_sd, refp_rdesign, 1);
@@ -103,23 +105,15 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     }
     }
-    // calculate pmfs
-    profile("transformed_delay_reference_date_pmfs") {
+    // calculate reference date logit hazards (unless no reporting effects)
+    profile("transformed_delay_reference_date_hazards") {
     for (i in 1:refp_fnrow) {
-      pmfs[, i] =
-         discretised_reporting_prob(refp_mean[i], refp_sd[i], dmax, model_refp,
-         2);
-    }
-    if (ref_as_p == 0) {
-      for (i in 1:refp_fnrow) {
-        ref_lh[, i] = prob_to_hazard(pmfs[, i]);
-        ref_lh[, i] = logit(ref_lh[, i]);
-      }
-    }else{
-      ref_lh = pmfs;
+      ref_lh[, i] = discretised_logit_hazard(
+        refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
+      );
     }
     }
-  }
+  }  
   }
   // calculate sparse report date effects with forced 0 intercept
   profile("transformed_delay_reporting_date_effects") {
@@ -136,11 +130,11 @@ transformed parameters{
     imp_obs[k][2:t] = 
       leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
   }
-  }
+  } 
   // transform phi to overdispersion scale
   if (model_obs) {
     phi = inv_square(sqrt_phi);
-  }
+  } 
   // debug issues in truncated data if/when they appear
   if (debug) {
 #include /chunks/debug.stan
@@ -155,35 +149,27 @@ model {
   for (i in 1:g) {
     leobs_resids[i] ~ std_normal();
   }
+
   // priors for the intercept of the log mean truncation distribution
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
       refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
     }
-    // priors and scaling for date of reference effects
-    if (refp_fncol) {
-      refp_mean_beta ~ std_normal();
-      if (refp_rncol > 1) {
-        refp_sd_beta ~ std_normal();
-      }
-      if (refp_rncol) {
-        refp_mean_beta_sd ~ 
-          zero_truncated_normal(refp_mean_beta_sd_p[1], refp_mean_beta_sd_p[2]);
-        if (model_refp > 1) {
-          refp_sd_beta_sd ~ 
-            zero_truncated_normal(refp_sd_beta_sd_p[1], refp_sd_beta_sd_p[2]);
-        }
-      }
+    effect_priors_lp(
+      refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_fncol,
+       refp_rncol
+    );
+    if (model_refp > 1) {
+      effect_priors_lp(
+        refp_sd_beta, refp_sd_beta_sd, refp_sd_beta_sd_p, refp_fncol,
+        refp_rncol
+      );
     }
   }
   // priors and scaling for date of report effects
-  if (rep_fncol) { 
-    rep_beta ~ std_normal();
-    if (rep_rncol) {
-      rep_beta_sd ~ zero_truncated_normal(rep_beta_sd_p[1], rep_beta_sd_p[2]);
-    } 
-  }
+  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+
   // reporting overdispersion (1/sqrt)
   if (model_obs) {
     sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
@@ -193,7 +179,7 @@ model {
   if (likelihood) {
     profile("model_likelihood") {
     target += reduce_sum(
-      obs_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
+      delay_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
       ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
     );
     }
@@ -215,24 +201,13 @@ generated quantities {
         i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
         rep_fncol, ref_as_p, sg[i], st[i], dmax
       );
-      if (model_obs) {
-        pp_obs_tmp[i, 1:dmax] = neg_binomial_2_log_rng(lexp_obs, phi[1]);
-      } else {
-        pp_obs_tmp[i, 1:dmax] = poisson_log_rng(lexp_obs);
-      }
+      pp_obs_tmp[i, 1:dmax] = obs_rng(lexp_obs, phi, model_obs);
       }
       profile("generated_loglik") {
       if (ologlik) {
         log_lik[i] = 0;
-        if (model_obs) {
-          for (j in 1:sl[i]) {
-            log_lik[i] += 
-              neg_binomial_2_log_lpmf(obs[i, j] | lexp_obs[j], phi[1]);
-          }
-        }else{
-          for (j in 1:sl[i]) {
-            log_lik[i] += poisson_log_lpmf(obs[i, j] | lexp_obs[j]);
-          }
+        for (j in 1:sl[i]) {
+          log_lik[i] += obs_lpmf(obs[i, j]  | lexp_obs[j], phi, model_obs);
         }
       }
       }
