@@ -294,7 +294,7 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs))
     ),
     mean = c(0, 0, seed_obs),
-    sd = c(0.2, 0.1, rep(1, length(seed_obs)))
+    sd = c(0.2, 1, rep(1, length(seed_obs)))
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)

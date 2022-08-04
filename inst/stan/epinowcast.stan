@@ -37,6 +37,7 @@ data {
   array[t, g] int latest_obs; // latest obs for each snapshot group
 
   // Expectation model
+    // Growth rate submodule
   int expr_r_seed; // How many seeding initial intercepts to use?
   int expr_gt_n; // Length of the generation time
   int expr_t; // Time span for r
@@ -53,7 +54,19 @@ data {
   // Mean of initial log cases
   array[2, g * expr_r_seed] real expr_leobs_int_p; 
   array[2, 1] real expr_r_int_p;
- array[2, 1] real expr_beta_sd_p;
+  array[2, 1] real expr_beta_sd_p;
+    // Observation sub-module
+  int expo_rd_n; // Length of the generation time
+  // Parrtial PMF describing the reporting delay (reversed and logged)
+  vector[expo_rd_n] expo_lrrd; 
+  // Observation model to use for the latent process. Currently 0 = none
+  int expo_obs;
+  int expo_fnindex;
+  int expo_fncol;
+  int expo_rncol;
+  matrix[expo_fnindex, expo_fncol + 1] expo_fdesign;
+  matrix[expo_fncol,  expo_rncol + 1] expo_rdesign;
+  array[2, 1] real expo_beta_sd_p;
 
   // Reference day model
   int model_refp;
