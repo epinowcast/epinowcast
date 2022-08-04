@@ -34,6 +34,9 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #'
 #' @param holidays Optionally, a vector of [Date]s or elements coerceable to [Date]s via [data.table::as.IDate()]
 #'
+#' @param ... Other named arguments that may be ignored; enables calling `enw_add_metaobs_features(someobs, ...)`
+#' from other functions without having to trim `...` to matching arguments.
+#'
 #' @return a copy of the `metaobs` input, with additional columns:
 #'  * `day_of_week`, a factor of values as output from [weekday()] and possibly as `holiday_to` if distinct from weekdays values
 #'  * `day`, numeric, 0 based from start of time series
@@ -51,7 +54,7 @@ enw_add_metaobs_features <- function(
   ...
 ) {
   metaobs <- data.table::copy(metaobs)
-  if (is.null(metaobs$date)) stop("`metaobs` does not have a column `date`.")
+  stopifnot("`metaobs` does not have a column `date`." = !is.null(metaobs$date))
 
   # if not present, add day_of_week
   if (is.null(metaobs$day_of_week)) {
@@ -73,22 +76,20 @@ enw_add_metaobs_features <- function(
 
   # only compute columns not already present
   tarcols <- setdiff(c("day", "week", "month"), colnames(metaobs))
-  # transforms associated with those columns
-  xforms <- list(
-    day = as.numeric, week = lubridate::week, month = lubridate::month
-  )[tarcols]
+  if (length(tarcols)) {
+    # transforms associated with those columns
+    xforms <- list(
+      day = as.numeric, week = lubridate::week, month = lubridate::month
+    )[tarcols]
 
-  # add tarcol features
-  metaobs[,
-    c(tarcols) :=
-    lapply(
+    # add tarcol features
+    metaobs[, c(tarcols) :=
       lapply(
-        xforms,
-        do.call, .(date)
-      ),
-      zerobase
-    )
-  ]
+        lapply(xforms, do.call, .(date)),
+        zerobase
+      )
+    ]
+  }
 
   return(metaobs[])
 }
