@@ -67,9 +67,13 @@ enw_add_metaobs_features <- function(
   # add day / week / month features
   metaobs[,
     c("day", "week", "month") :=
-    .(as.numeric, lubridate::week, lubridate::month) |>
-    lapply(do.call, .(date)) |>
-    lapply(zerobase)
+    lapply(
+      lapply(
+        .(as.numeric, lubridate::week, lubridate::month),
+        do.call, .(date)
+      ),
+      zerobase
+    )
   ]
 
   return(metaobs[])
