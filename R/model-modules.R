@@ -307,7 +307,9 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
     lrlrd = log(rev(latent_reporting_delay))
   )
   obs_list$obs <- ifelse(
-    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1, 0, 1
+    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
+      as_string_formula(observation) %in% "~1",
+    0, 1
   )
   # Observation formula
   obs_form <- enw_formula(osbervation, data$metareference[[1]], sparse = FALSE)
@@ -360,7 +362,9 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
         )),
         expr_r_int = rnorm(
           1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
-        )
+        ),
+        expo_beta = numeric(0),
+        expo_beta_sd = numeric(0),
       )
       if (data$expr_fncol > 0) {
         init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
@@ -369,6 +373,15 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
         init$expr_beta_sd <- abs(rnorm(
           data$expr_rncol, priors$expr_beta_sd_p[1],
           priors$expr_beta_sd_p[2] / 10
+        ))
+      }
+      if (data$expo_fncol > 0) {
+        init$expo_beta <- rnorm(data$expo_fncol, 0, 0.01)
+      }
+      if (data$expo_rncol > 0) {
+        init$expo_beta_sd <- abs(rnorm(
+          data$expo_rncol, priors$expo_beta_sd_p[1],
+          priors$expo_beta_sd_p[2] / 10
         ))
       }
       return(init)
