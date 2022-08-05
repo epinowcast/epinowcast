@@ -244,6 +244,8 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' multiplying a probability mass function by some fraction) to account
 #' ascertainment etc.
 #'
+#' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
+#' same arguments as passed to `enw_preprocess_data()` should be used here.
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
@@ -312,7 +314,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
     0, 1
   )
   # Observation formula
-  obs_form <- enw_formula(osbervation, data$metareference[[1]], sparse = FALSE)
+  obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
   obs_data <- enw_formula_as_data_list(
     obs_form,
     prefix = "expo", drop_intercept = TRUE
@@ -324,7 +326,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
 
   names(r_list) <- paste0("expr_", names(r_list))
   names(obs_list) <- paste0("expo_", names(obs_list))
-  out$data <- c(r_list, r_data, obs_data)
+  out$data <- c(r_list, r_data, obs_list, obs_data)
 
   out$priors <- data.table::data.table(
     variable = c(
@@ -364,7 +366,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
           1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
         ),
         expo_beta = numeric(0),
-        expo_beta_sd = numeric(0),
+        expo_beta_sd = numeric(0)
       )
       if (data$expr_fncol > 0) {
         init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)

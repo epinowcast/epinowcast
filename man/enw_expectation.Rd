@@ -40,6 +40,9 @@ multiplying a probability mass function by some fraction) to account
 ascertainment etc.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+
+\item{...}{Additional parameters passed to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}}. The
+same arguments as passed to \code{enw_preprocess_data()} should be used here.}
 }
 \value{
 A list containing the supplied formulas, data passed into a list
