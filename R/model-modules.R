@@ -265,10 +265,10 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
 
   # Set up growth rate features
   r_features <- data$metareference[[1]]
-  if (length(reporting_delay) > 1) {
+  if (length(latent_reporting_delay) > 1) {
     r_features <- enw_extend_date(
       r_features,
-      days = length(reporting_delay) - 1, direction = "start"
+      days = length(latent_reporting_delay) - 1, direction = "start"
     )
     enw_add_metaobs_features(r_features, ...)
   }
