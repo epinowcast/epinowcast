@@ -2,30 +2,80 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_metaobs_features}
 \alias{enw_add_metaobs_features}
-\title{add common metadata variables}
+\title{Add common metadata variables}
 \usage{
-enw_add_metaobs_features(metaobs, holidays_to = "Sunday", holidays, ...)
+enw_add_metaobs_features(
+  metaobs,
+  holidays_to = "Sunday",
+  holidays,
+  datecol = "date"
+)
 }
 \arguments{
-\item{metaobs}{raw meta data for observations, coerceable via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
-must have a \code{date} column}
+\item{metaobs}{Raw data, coerceable via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
+Coerced object must have \link{Dates} column corresponding to \code{datecol} name.}
 
-\item{holidays_to}{A character string to assign to holidays when present.
-Replaces the day of the week and defaults to Sunday.}
+\item{holidays_to}{A character string to assign to holidays, when \code{holidays}
+argument present. Replaces the \code{day_of_week} column value}
 
-\item{holidays}{an optional vector of items coerceable via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}}
+\item{holidays}{Optionally, a vector of \link{Date}s or elements coerceable to
+\link{Date}s via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}. The \code{day_of_week} column will be set
+to \code{holidays_to} for these dates.}
+
+\item{datecol}{The column in \code{metaobs} corresponding to pertinent dates.}
 }
 \value{
 a copy of the \code{metaobs} input, with additional columns:
 \itemize{
-\item \code{day_of_week}, a factor of values as output from \code{\link[=weekday]{weekday()}} and possibly as \code{holiday_to} if distinct from weekdays values
+\item \code{day_of_week}, a factor of values as output from \code{\link[=weekday]{weekday()}} and
+possibly as \code{holiday_to} if distinct from weekdays values
 \item \code{day}, numeric, 0 based from start of time series
 \item \code{week}, numeric, 0 based from start of time series
 \item \code{month}, numeric, 0 based from start of time series
 }
 }
 \description{
-annotates time series data with commonly required data
+If not already present, annotates time series data with metadata
+commonly used in models: day of week, and days, weeks, and months since start
+of time series.
+}
+\details{
+Effects models often need to include covariates for time-based
+features, such as day of the week (e.g. to reflect different care-seeking
+and/or reporting behavior).
+
+This function is called from within \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} to systematically
+annotate \code{metaobs} with these commonly used metadata, if not already present.
+
+However, it can also be used directly on other data.
+}
+\examples{
+
+# make some example date
+nat_germany_hosp <- subset(
+  epinowcast::germany_covid19_hosp,
+  location == "DE" & age_group == "80+"
+)[1:40]
+
+basemeta <- epinowcast::enw_add_metaobs_features(
+  nat_germany_hosp,
+  datecol = "report_date"
+)
+basemeta
+
+# with holidays - n.b.: holidays not found are silently ignored
+holidaymeta <- epinowcast::enw_add_metaobs_features(
+  nat_germany_hosp,
+  datecol = "report_date",
+  holidays_to = "Holiday",
+  holidays = c(
+    "2021-04-04", "2021-04-05",
+    "2021-05-01", "2021-05-13",
+    "2021-05-24"
+  )
+)
+holidaymeta
+subset(holidaymeta, day_of_week == "Holiday")
 }
 \seealso{
 Preprocessing functions

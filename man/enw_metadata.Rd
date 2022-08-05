@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_metadata}
 \alias{enw_metadata}
-\title{standard format for holiday input}
+\title{FUNCTION_TITLE}
 \usage{
 enw_metadata(obs, target_date = "reference_date")
 }
@@ -10,38 +10,14 @@ enw_metadata(obs, target_date = "reference_date")
 \item{obs}{PARAM_DESCRIPTION}
 
 \item{target_date}{PARAM_DESCRIPTION, Default: 'reference_date'}
-
-\item{holidays}{one of
-\itemize{
-\item{\code{list}}{with each element a single or pair of items coerceable to date, corresponding to single dates or date ranges}
-\item{\code{vector}}{with each element coerceable to date, corresponding to single dates}
-\item{\code{data.frame}}{at least two columns, the first two interpretted as pairs of dates setting date ranges, with the second entry optional for single dates}
-}}
 }
 \value{
-a \code{data.table}, each row corresponding to a holiday date, with columns
-\itemize{
-\item{\code{date}}{class \code{IDate}}
-\item{\code{holiday}}{class \code{logical}}
-}
-
 OUTPUT_DESCRIPTION
 }
 \description{
-standardize typical date information about holidays to ENW
-format
-
 FUNCTION_DESCRIPTION
 }
-\examples{
-holidays <- c("2020-12-25", "2021-01-01")
-holi.dt <- standardize_holidays(holidays)
-holi.dt
-holidays <- data.frame(start = , end = )
-}
 \seealso{
-\code{\link[data.table:IDateTime]{data.table::as.IDate()}}
-
 Preprocessing functions
 \code{\link{enw_add_delay}()},
 \code{\link{enw_add_max_reported}()},

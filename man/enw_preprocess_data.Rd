@@ -34,8 +34,9 @@ counts (for calculated incidence of observations) be set to zero. Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{...}{other arguments to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}},
-e.g. \code{holidays}}
+\item{...}{Other arguments to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}},
+e.g. \code{holidays}, which sets commonly used metadata
+(e.g. day of week, days since start of time series)}
 }
 \value{
 A data.table containing processed observations as a series of nested
