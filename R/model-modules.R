@@ -219,17 +219,30 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 
 #' Expectation model module
 #'
-#' @param formula A formula (as implemented in [enw_formula()]) describing
+#' @param r A formula (as implemented in [enw_formula()]) describing
 #' the generative process used for expected incidence. This can use features
 #' defined by reference date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. By default this is set to use a daily group
-#' specific random walk. Note that the daily group specific random walk is
-#' currently the only option supported by [epinowcast()].
+#' specific random walk.
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
 #' renewal equation). When set to 1 (the default) this corresponds to modelling
 #' the daily growth rate.
+#'
+#' @param observation A formula (as implemented in [enw_formula()]) describing
+#' the modifiers used to adjust expected observations. This can use features
+#' defined by reference date as defined in `metareference` as produced by
+#' [enw_preprocess_data()]. By default no modifiers are used but a common choice
+#' might be to adjust for the day of the week. Note as the baseline is no
+#' modification an intercept is always used and it is set to 0.
+#'
+#' @param latent_reporting_delay A numeric vector that defaults to 1.
+#' Describes the weighting to apply to past and current latent expected
+#' observations (from most recent to least). This can be used both to convolve
+#' based on some assumed reporting delay and to rescale obserations (by
+#' multiplying a probability mass function by some fraction) to account
+#' ascertainment etc.
 #'
 #' @inherit enw_report return
 #' @inheritParams enw_obs
@@ -237,8 +250,8 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
-                            generation_time = 1, reporting_delay = 1,
+enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
+                            observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
     stop("An expectation model formula for r must be specified")
@@ -250,6 +263,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
     stop("The generation time must sum to 1")
   }
 
+  # Set up growth rate features
   r_features <- data$metareference[[1]]
   if (length(reporting_delay) > 1) {
     r_features <- enw_extend_date(
@@ -262,6 +276,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
     date >= (min(date) + length(generation_time))
   ]
 
+  # Growth rate indicator variables
   r_list <- list(
     r_seed = length(generation_time),
     gt_n = length(generation_time),
@@ -271,6 +286,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
   )
 
   r_list$g <- cumsum(rep(r_list$t, data$groups[[1]])) - r_list$t
+  r_list$ft <- r_list$t + r_list$r_seed
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
@@ -285,6 +301,13 @@ enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
     prefix = "expr", drop_intercept = TRUE
   )
 
+  # Observation indicator variables
+  obs_list <- list(
+    lrd_n = length(latent_reporting_delay),
+    lrlrd = log(rev(latent_reporting_delay)),
+    obs = 0
+  )
+
   # Observation formula
   obs_form <- enw_formula(osbervation, data$metareference[[1]], sparse = FALSE)
   obs_data <- enw_formula_as_data_list(
@@ -295,19 +318,24 @@ enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
   out <- list()
   out$formula$r <- r_form$formula
   out$formula$observation <- obs_form$formula
+
   names(r_list) <- paste0("expr_", names(r_list))
+  names(obs_list) <- paste0("expo_", names(obs_list))
   out$data <- c(r_list, r_data, obs_data)
+
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
-      rep("expr_leobs_int", length(seed_obs))
+      rep("expr_leobs_int", length(seed_obs)),
+      "expo_beta_sd"
     ),
     dimension = c(1, 1, seq_along(seed_obs)),
     description = c(
       "Intercept of the log growth rate",
-      "Standard deviation of scaled pooled expectation effects",
+      "Standard deviation of scaled pooled log growth rate effects",
       rep("Intercept for initial log observations (ordered by group and then
-          time)", length(seed_obs))
+          time)", length(seed_obs)),
+      "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(
       "Normal", "Zero truncated normal", rep("Normal", length(seed_obs))
