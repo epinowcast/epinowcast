@@ -237,18 +237,28 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(formula = ~ rw(day, by = .group),
-                            generation_time = 1, data) {
-  if (as_string_formula(formula) %in% "~0") {
-    stop("An expectation model formula must be specified")
+enw_expectation <- function(r = ~ rw(day, by = .group), observation = ~1,
+                            generation_time = 1, reporting_delay = 1,
+                            data, ...) {
+  if (as_string_formula(r) %in% "~0") {
+    stop("An expectation model formula for r must be specified")
   }
-
+  if (as_string_formula(observation) %in% "~0") {
+    observation <- ~1
+  }
   if (sum(generation_time) != 1) {
     stop("The generation time must sum to 1")
   }
 
-  features <- data$metareference[[1]]
-  features <- features[
+  r_features <- data$metareference[[1]]
+  if (length(reporting_delay) > 1) {
+    r_features <- enw_extend_date(
+      r_features,
+      days = length(reporting_delay) - 1, direction = "start"
+    )
+    enw_add_metaobs_features(r_features, ...)
+  }
+  r_features <- r_features[
     date >= (min(date) + length(generation_time))
   ]
 
@@ -256,7 +266,7 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
     r_seed = length(generation_time),
     gt_n = length(generation_time),
     lrgt = log(rev(generation_time)),
-    t = nrow(features),
+    t = nrow(r_features),
     obs = 0
   )
 
@@ -268,16 +278,25 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
   seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
-  form <- enw_formula(formula, features, sparse = FALSE)
-  data <- enw_formula_as_data_list(
-    form,
+  # Growth rate model formula
+  r_form <- enw_formula(r, r_features, sparse = FALSE)
+  r_data <- enw_formula_as_data_list(
+    r_form,
     prefix = "expr", drop_intercept = TRUE
   )
 
+  # Observation formula
+  obs_form <- enw_formula(osbervation, data$metareference[[1]], sparse = FALSE)
+  obs_data <- enw_formula_as_data_list(
+    obs_form,
+    prefix = "expo", drop_intercept = TRUE
+  )
+
   out <- list()
-  out$formula$expectation <- form$formula
+  out$formula$r <- r_form$formula
+  out$formula$observation <- obs_form$formula
   names(r_list) <- paste0("expr_", names(r_list))
-  out$data <- c(r_list, data)
+  out$data <- c(r_list, r_data, obs_data)
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
@@ -317,7 +336,7 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
       if (data$expr_fncol > 0) {
         init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
       }
-      if (data$ expr_rncol > 0) {
+      if (data$expr_rncol > 0) {
         init$expr_beta_sd <- abs(rnorm(
           data$expr_rncol, priors$expr_beta_sd_p[1],
           priors$expr_beta_sd_p[2] / 10
