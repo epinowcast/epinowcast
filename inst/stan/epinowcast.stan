@@ -169,7 +169,7 @@ transformed parameters{
   // Expectation model
   vector[expr_t] r; // Log growth rate of observations
   array[g] vector[expr_ft]  exp_latent_lobs; // Expected final observations
-  vector[expo_fnindex] expo_modifier; // Reporting modifier
+  vector[expo_obs ? expo_fnindex : 0] expo_modifier; // Reporting modifier
   array[g] vector[t]  exp_lobs; // Expected final observations
   // Reference model
   vector[refp_fnrow] refp_mean;
@@ -195,12 +195,17 @@ transformed parameters{
   );
   // Get reporting modifiers and map latent expected observations to expected
   // observations
-  expo_modifier = combine_effects(
-    0, expo_beta, expo_fdesign, expo_beta_sd, expo_rdesign, 1
-  );
-  exp_lobs = log_expected_obs_from_latent_obs(
-    exp_latent_lobs, expo_lrd_n, expo_lrlrd, t, g, expo_modifier
-  );
+  if (expo_obs) {
+    expo_modifier = combine_effects(
+      0, expo_beta, expo_fdesign, expo_beta_sd, expo_rdesign, 1
+    );
+    exp_lobs = log_expected_obs_from_latent_obs(
+      exp_latent_lobs, expo_lrd_n, expo_lrlrd, t, g, expo_modifier
+    );
+  }else{
+    exp_lobs = exp_latent_lobs;
+  }
+
   }
 
   // Reference model

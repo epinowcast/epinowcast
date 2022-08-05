@@ -304,10 +304,11 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
   # Observation indicator variables
   obs_list <- list(
     lrd_n = length(latent_reporting_delay),
-    lrlrd = log(rev(latent_reporting_delay)),
-    obs = 0
+    lrlrd = log(rev(latent_reporting_delay))
   )
-
+  obs_list$obs <- ifelse(
+    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1, 0, 1
+  )
   # Observation formula
   obs_form <- enw_formula(osbervation, data$metareference[[1]], sparse = FALSE)
   obs_data <- enw_formula_as_data_list(
