@@ -328,7 +328,7 @@ enw_missing <- function(formula = ~1, data) {
     warning(
       "A missingness model has been specified. Note that this is not yet fully
        supported and unless you are a developer you likely want to keep this
-       turned off."
+       turned off.", immediate. = T
     )
   }
 
