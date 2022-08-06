@@ -303,7 +303,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @param formula A formula (as implemented in [enw_formula()]) describing
 #' the missing data proportion on the logit scale by reference date. This can
 #' use features defined by reference date as defined in `metareference` as
-#' produced by [enw_preprocess_data()].
+#' produced by [enw_preprocess_data()]. "~0" implies no model is required.
+#' Otherwise an intercept is always needed
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
@@ -311,59 +312,84 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @family modelmodules
 #' @export
 #' @examples
+#' # Missing model with a fixed intercept only
 #' enw_missing(data = enw_example("preprocessed"))
+#'
+#' # No missingness model specified
+#' enw_missing(~0, data = enw_example("preprocessed"))
 enw_missing <- function(formula = ~1, data) {
-  if (as_string_formula(formula) %in% "~0") {
-    stop("At least an intercept must be used if this module is in use.")
-  }
-  if (nrow(data$missing_reference[[1]]) == 0) {
-    stop("A missingness model has been specified but data on  the proportion of
+  if (nrow(data$missing_reference[[1]]) == 0 &&
+    !(as_string_formula(formula) %in% "~0")) {
+    stop("A missingness model has been specified but data on the proportion of
           observations without reference dates is not available.")
   }
 
-  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
-  data_list <- enw_formula_as_data_list(
-    form,
-    prefix = "miss", drop_intercept = FALSE
-  )
-  missing_reference <- data.table::copy(data$missing_reference[[1]])
-  data.table::setorderv(missing_reference, c(".group", "report_date"))
-  missing_reference <- as.matrix(
-    data.table::dcast(
-      missing_reference, .group ~ report_date,
-      value.var = "confirm",
-      fill = 0
-    )[, -1]
-  )
-  data_list$missing_ref <- missing_reference
-  data_list$model_missing <- 1
+  if (!(as_string_formula(formula) %in% "~0")) {
+    warning(
+      "A missingness model has been specified. Note that this is not yet fully
+       supported and unless you are a developer you likely want to keep this
+       turned off.", immediate. = T
+    )
+  }
+
+  if (as_string_formula(formula) %in% "~0") {
+    data_list <- enw_formula_as_data_list(
+      prefix = "miss", drop_intercept = FALSE
+    )
+    data_list$model_miss <- 0
+    data_list$missing_ref <- numeric(0)
+  } else {
+    form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
+    data_list <- enw_formula_as_data_list(
+      form,
+      prefix = "miss", drop_intercept = TRUE
+    )
+    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    missing_reference <- as.matrix(
+      data.table::dcast(
+        missing_reference, .group ~ report_date,
+        value.var = "confirm",
+        fill = 0
+      )[, -1]
+    )
+    data_list$missing_ref <- missing_reference
+    data_list$model_miss <- 1
+  }
 
   out <- list()
   out$formula <- as_string_formula(formula)
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = c("miss_beta_sd"),
-    description = c("Standard deviation of scaled pooled logit missing
-        reference date effects"),
-    distribution = c("Zero truncated normal"),
-    mean = 0,
-    sd = 1
+    variable = c("miss_int", "miss_beta_sd"),
+    description = c(
+      "Intercept on the logit scale for the proportion missing reference dates",
+      "Standard deviation of scaled pooled logit missing reference date
+       effects"
+    ),
+    distribution = c("Normal", "Zero truncated normal"),
+    mean = c(0, 0),
+    sd = c(1, 1)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
+        miss_int = numeric(0),
         miss_beta = numeric(0),
         miss_beta_sd = numeric(0)
       )
-      if (data$miss_fncol > 0) {
-        init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
-      }
-      if (data$miss_rncol > 0) {
-        init$miss_beta_sd <- abs(rnorm(
-          data$miss_rncol, priors$miss_beta_sd_p[1],
-          priors$miss_beta_sd_p[2] / 10
-        ))
+      if (data$model_miss) {
+        init$miss_int <- rnorm(1, priors$miss_int_p[1], priors$miss_int_p[2])
+        if (data$miss_fncol > 0) {
+          init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
+        }
+        if (data$miss_rncol > 0) {
+          init$miss_beta_sd <- abs(rnorm(
+            data$miss_rncol, priors$miss_beta_sd_p[1],
+            priors$miss_beta_sd_p[2] / 10
+          ))
+        }
       }
       return(init)
     }
@@ -437,12 +463,15 @@ enw_obs <- function(family = "negbin", data) {
     t = data$time[[1]],
     s = data$snapshots[[1]],
     g = data$groups[[1]],
+    groups = 1:data$groups[[1]],
     st = snap_time,
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
     sg = unique(new_confirm[, .(reference_date, .group)])$.group,
     dmax = data$max_delay[[1]],
+    sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
+    csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
     obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
@@ -494,6 +523,15 @@ enw_obs <- function(family = "negbin", data) {
 #' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
 #' included in the model
 #'
+#' @param likelihood_aggregation Logical, defaults to "snapshot". The
+#'  aggregation over which to stratify the likelihood when `threads = TRUE`.
+#'  Options include "snapshots" which aggregates over report dates and groups (
+#' i.e the lowest level that observations are reported at), and "groups" which
+#' aggregates across user defined groups. Note that some model modules override
+#' this setting depending on model requirements. For example. when in use the
+#' [enw_missing()] module model forces the use of the "groups" option. In
+#' general the user should not need to change this setting from the default.
+#'
 #' @param output_loglik Logical, defaults to `FALSE`. Should the
 #' log-likelihood be output. Disabling this will speed up fitting
 #' if evaluating the model fit is not required.
@@ -517,14 +555,22 @@ enw_obs <- function(family = "negbin", data) {
 #' enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE, likelihood = TRUE,
+                         likelihood_aggregation = "snapshots",
                          debug = FALSE, output_loglik = FALSE, ...) {
   if (pp) {
     nowcast <- TRUE
   }
+  likelihood_aggregation <- match.arg(
+    likelihood_aggregation, choices = c("snapshots", "groups")
+  )
   out <- list(sampler = sampler)
   out$data <- list(
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
+    likelihood_aggregation = fcase(
+      likelihood_aggregation %in% "snapshots", 0,
+      likelihood_aggregation %in% "groups", 1
+    ),
     pp = as.numeric(pp),
     cast = as.numeric(nowcast),
     ologlik = as.numeric(output_loglik)

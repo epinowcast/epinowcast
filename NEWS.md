@@ -8,10 +8,14 @@
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
 - Implemented direct specification of parametric baseline hazards. See #134 by @adrian-lison.
 - Refactored the observation model, the combination of logit hazards, and the effects priors to be contained in generic functions to make extending package functionality easier. See #137 by @seabbs.
-- Implemented specification of the parametric baseline hazards and probabilities on the log scale to increse robustness and efficiency. Also includes refactoring of these functions and reorganisation of `inst/stan/epinowcast.stan` to increase modularity and clarity. See #140 by @seabbs.
+- Implemented specification of the parametric baseline hazards and probabilities on the log scale to increase robustness and efficiency. Also includes refactoring of these functions and reorganisation of `inst/stan/epinowcast.stan` to increase modularity and clarity. See #140 by @seabbs.
+- Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these functions rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
+- Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. See #138 by @seabbs and @adrian-lison.
+- Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
+- Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
 
 ## Bugs
 

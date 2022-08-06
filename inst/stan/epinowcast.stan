@@ -5,7 +5,8 @@ functions {
 #include functions/hazard.stan
 #include functions/expected_obs.stan
 #include functions/combine_logit_hazards.stan
-#include functions/expected_obs_from_index.stan
+#include functions/expected_obs_from.stan
+#include functions/filt_obs_indexes.stan
 #include functions/obs_lpmf.stan
 #include functions/delay_lpmf.stan
 }
@@ -16,49 +17,71 @@ data {
   int t; // time range over which data is available 
   int s; // number of snapshots there are
   int g; // number of data groups
+  array[g] int groups; // array of group ids
   array[s] int st; // when in this time snapshots are from
   array[t, g] int ts; // snapshot related to time and group
   array[s] int sl; // how many days of reported data does each snapshot have
   array[s] int csl; // cumulative version of the above
   array[s] int sg; // how snapshots are related
   int dmax; // maximum possible report date
+  array[s] int sdmax; // Array of maximum reported dates
+  array[s] int csdmax; // Arraay of maximum cumulative reported dates
+
   // Observations
   array[s, dmax] int obs; // obs for each primary date (row) and report date (column)
   array[n] int flat_obs; // obs stored as a flat vector
   array[t, g] int latest_obs; // latest obs for each snapshot group
+
+  // Expectation model
+  array[2] real eobs_lsd_p; // Standard deviation for expected final observations
+
   // Reference day model
-  int refp_fnrow; // how many unique pmfs there are
-  array[s] int refp_findex; // how each date links to a pmf
-  int refp_fncol; // number of effects to apply
-  matrix[refp_fnrow, refp_fncol + 1] refp_fdesign; // design matrix for pmfs
-  int refp_rncol; // number of standard deviations to use for pooling
-  matrix[refp_fncol, refp_rncol + 1] refp_rdesign; // Pooling pmf design matrix 
-  int model_refp; // parametric distribution (0 = none, 1 = exp, 2 = lognormal, 3 = gamma, 4 = loglogistic)
+  int model_refp;
+  int refp_fnrow;
+  array[s] int refp_findex;
+  int refp_fncol;
+  matrix[refp_fnrow, refp_fncol + 1] refp_fdesign;
+  int refp_rncol;
+  matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
+  array[2] real refp_mean_int_p;
+  array[2] real refp_sd_int_p;
+  array[2] real refp_mean_beta_sd_p;
+  array[2] real refp_sd_beta_sd_p; 
+
   // Reporting day model
-  int model_rep; // Reporting day model in use
+  int model_rep;
   int rep_t; // how many reporting days are there (t + dmax - 1)
-  int rep_fnrow; // how many unique reporting days are there
-  array[g, rep_t] int rep_findex; // how each report date links to a sparse report effect
-  int rep_fncol; // number of report day effects to apply
-  matrix[rep_fnrow, rep_fncol + 1] rep_fdesign; // design matrix for report dates
-  int rep_rncol; // number of standard deviations to use for pooling for rds
-  matrix[rep_fncol, rep_rncol + 1] rep_rdesign; // Pooling pmf design matrix 
+  int rep_fnrow; 
+  array[g, rep_t] int rep_findex; 
+  int rep_fncol;
+  matrix[rep_fnrow, rep_fncol + 1] rep_fdesign;
+  int rep_rncol; 
+  matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
+  array[2] real rep_beta_sd_p;
+
+  // Missing reference date model
+  int model_miss;
+  int miss_fnindex;
+  int miss_fncol;
+  int miss_rncol;
+  matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
+  matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
+  array[model_miss ? g : 0, miss_fnindex] int missing_ref;
+  array[2] real miss_int_p;
+  array[2] real miss_beta_sd_p;
+
   // Observation model
-  int model_obs; // Control parameter for the observation model (0 = Poisson, 1 = Negbin)
+  int model_obs; // Control parameter for the observation model
+  array[2] real sqrt_phi_p; // 1/sqrt(overdispersion)
+
   // Control parameters
   int debug; // should debug information be shown
   int likelihood; // should the likelihood be included
+  // type of aggregation scheme (0 = snaps, 1 = groups)
+  int likelihood_aggregation;
   int pp; // should posterior predictions be produced
   int cast; // should a nowcast be produced
   int ologlik; // Should the pointwise log likelihood be calculated
-  // Priors (1st index = mean, 2nd index = standard deviation)
-  array[2] real eobs_lsd_p; // Standard deviation for expected final observations
-  array[2] real refp_mean_int_p; // log mean intercept for reference date delay
-  array[2] real refp_sd_int_p; // log standard deviation for the reference date delay
-  array[2] real refp_mean_beta_sd_p; // standard deviation of scaled pooled logmean effects
-  array[2] real refp_sd_beta_sd_p; // standard deviation of scaled pooled logsd effects
-  array[2] real rep_beta_sd_p; //standard deviation of scaled pooled report date effects
-  array[2] real sqrt_phi_p; // 1/sqrt(overdispersion)
 }
 
 transformed data{
@@ -68,31 +91,63 @@ transformed data{
   // if no reporting day effects use native probability for reference day
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
+  // Type of likelihood aggregation to use
+  int ll_aggregation = likelihood_aggregation + model_miss;
 }
 
 parameters {
+  // Expectation model
   array[g] real leobs_init; // First time point for expected observations
   vector<lower=0>[g] eobs_lsd; // standard deviation of rw for primary obs
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
-  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int; // logmean intercept
-  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; // logsd intercept
-  vector[model_refp ? refp_fncol : 0] refp_mean_beta; // unscaled modifiers to log mean
-  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; // unscaled modifiers to log sd
-  vector[rep_fncol] rep_beta; // unscaled modifiers to report date hazard
-  vector<lower=0>[refp_rncol] refp_mean_beta_sd; // pooled modifiers to logmean
-  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; // pooled modifiers to logsd
-  vector<lower=0>[rep_rncol] rep_beta_sd; // pooled modifiers to report date
-  array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion by group
+
+  // Reference model
+  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
+  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
+  vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
+  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
+  vector<lower=0>[refp_rncol] refp_mean_beta_sd;
+  vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
+
+  // Report model
+  vector[rep_fncol] rep_beta;
+  vector<lower=0>[rep_rncol] rep_beta_sd; 
+
+  // Missing reference date model
+  array[model_miss] real miss_int;
+  vector[miss_fncol] miss_beta; 
+  vector<lower=0>[miss_rncol] miss_beta_sd; 
+
+  // Observation model
+  array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion
 }
 
 transformed parameters{
+  // Expectation model
+  array[g] vector[t] imp_obs; // Expected final observations
+  // Reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  // Report model
   vector[rep_fnrow] srdlh; // sparse report day logit hazards
-  array[g] vector[t] imp_obs; // Expected final observations
-  array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion (joint across all observations)
-  // calculate log mean and sd parameters for each dataset from design matrices
+  // Missing model
+  vector[miss_fnindex] miss_ref_lprop;
+
+  // Observation model
+  array[model_obs > 0 ? 1 : 0] real phi; // Transformed overdispersion
+
+  // Expectation model
+  profile("transformed_expected_final_observations") {
+  for (k in 1:g) {
+    real llast_obs;
+    imp_obs[k][1] = leobs_init[k];
+    imp_obs[k][2:t] = 
+      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
+  }
+  }
+
+  // Reference model
   profile("transformed_delay_reference_date_total") {
   if (model_refp) {
     // calculate sparse reference date effects
@@ -115,25 +170,25 @@ transformed parameters{
     }
   }  
   }
-  // calculate sparse report date effects with forced 0 intercept
+
+  // Report model
   profile("transformed_delay_reporting_date_effects") {
   srdlh =
     combine_effects(0, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
   }
-  // estimate unobserved expected final reported cases for each group
-  // this could be any forecasting model but here its a 
-  // first order random walk for each group on the log scale.
-  profile("transformed_expected_final_observations") {
-  for (k in 1:g) {
-    real llast_obs;
-    imp_obs[k][1] = leobs_init[k];
-    imp_obs[k][2:t] = 
-      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
+
+  // Missing reference model
+  if (model_miss) {
+    miss_ref_lprop = log_inv_logit(
+      combine_effects(miss_int[1], miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1)
+    );
   }
-  } 
-  // transform phi to overdispersion scale
+  
+  // Observation model
   if (model_obs) {
+    profile("transformed_delay_missing_effects") {
     phi = inv_square(sqrt_phi);
+  }
   } 
   // debug issues in truncated data if/when they appear
   if (debug) {
@@ -169,6 +224,14 @@ model {
   }
   // priors and scaling for date of report effects
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+  
+  // priors for missing reference date effects
+  if (model_miss) {
+    miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
+    effect_priors_lp(
+      miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
+    );
+  }
 
   // reporting overdispersion (1/sqrt)
   if (model_obs) {
@@ -178,10 +241,18 @@ model {
   // log density: observed vs model
   if (likelihood) {
     profile("model_likelihood") {
-    target += reduce_sum(
-      delay_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex, srdlh,
-      ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs
-    );
+    if (ll_aggregation) {
+      target += reduce_sum(
+        delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
+        srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
+        model_obs
+      );
+    } else {
+      target += reduce_sum(
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_ref_lprop
+      );
+    }
     }
   }
 }
@@ -192,46 +263,56 @@ generated quantities {
   array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
-    vector[dmax] lexp_obs;
-    array[s, dmax] int pp_obs_tmp;
+    vector[csdmax[s]] log_exp_obs;
+    array[csdmax[s]] int pp_obs_tmp;
+
     // Posterior predictions for observations
+    profile("generated_obs") {
+    log_exp_obs = expected_obs_from_snaps(
+      1, s, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
+      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
+    );
+    pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
+    } 
+    
+    // Likelihood by snapshot (rather than by observation)
     for (i in 1:s) {
-      profile("generated_obs") {
-      lexp_obs = expected_obs_from_index(
-        i, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
-        rep_fncol, ref_as_p, sg[i], st[i], dmax
-      );
-      pp_obs_tmp[i, 1:dmax] = obs_rng(lexp_obs, phi, model_obs);
-      }
       profile("generated_loglik") {
       if (ologlik) {
+        array[3] int l = filt_obs_indexes(i, i, csl, sl);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
-          log_lik[i] += obs_lpmf(obs[i, j]  | lexp_obs[j], phi, model_obs);
+          log_lik[i] += obs_lpmf(
+            flat_obs[l[1] + j]  | log_exp_obs[f[1] + j], phi, model_obs
+          );
         }
       }
       }
     }
     // Posterior prediction for final reported data (i.e at t = dmax + 1)
+    // Organise into a grouped and time structured array
     profile("generated_obs") {
     for (k in 1:g) {
       int start_t = t - dmax;
       for (i in 1:dmax) {
-        int snap = ts[start_t + i, k];
-        pp_inf_obs[i, k] = sum(obs[snap, 1:sl[snap]]);
-        if (sl[snap] < dmax) {
-          pp_inf_obs[i, k] += sum(pp_obs_tmp[snap, (sl[snap]+1):dmax]);
+        int i_start = ts[start_t + i, k];
+        array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
+        array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
+        pp_inf_obs[i, k] = sum(flat_obs[(l[1] + 1):l[2]]);
+        if (sl[i_start] < dmax) {
+          pp_inf_obs[i, k] += sum(pp_obs_tmp[(f[1] + sl[i_start] + 1):f[2]]);
         }
       }
     }
     // If posterior predictions for all observations are needed copy
     // from a temporary object to a permanent one
-    // store in a flat vector to make observation linking easier
+    // drop predictions without linked observations
     if (pp) {
-      int start_t = 0;
       for (i in 1:s) {
-        pp_obs[(start_t + 1):(start_t + sl[i])] = pp_obs_tmp[i, 1:sl[i]];
-        start_t += sl[i];
+        array[3] int l = filt_obs_indexes(i, i, csl, sl);
+        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
+        pp_obs[(l[1] + 1):l[2]] = pp_obs_tmp[(f[1] + 1):(f[1] + sl[i])];
       }
     }
     }
