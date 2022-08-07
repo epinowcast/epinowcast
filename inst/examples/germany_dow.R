@@ -41,7 +41,7 @@ reference_module <- enw_reference(~1, data = pobs)
 # Report date model
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 
-# Compile nowcasting model
+# Compile nowcasting model using multi-threading
 model <- enw_model(threads = TRUE)
 
 # Fit nowcast model and produce a nowcast
@@ -51,8 +51,8 @@ nowcast <- epinowcast(pobs,
   report = report_module,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 2, threads_per_chain = 1,
+    chains = 2, threads_per_chain = 2,
     iter_warmup = 500, iter_sampling = 500
   ),
-  model = model,
+  model = model
 )
