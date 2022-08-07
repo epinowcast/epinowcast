@@ -93,9 +93,11 @@ enw_add_metaobs_features <- function(
   datecol = "date"
 ) {
   metaobs <- data.table::as.data.table(metaobs)
-  stopifnot(
-    "`metaobs` does not have a date column." = !is.null(metaobs[[datecol]])
-  )
+  if (is.null(metaobs[[datecol]])) {
+    stop(sprintf("metaobs does not have datecol '%s'.", datecol))
+  } else if (!is.Date(metaobs[[datecol]])) {
+    stop(sprintf("metaobs column '%s' is not a Date.", datecol))
+  }
 
   # if not present, add day_of_week
   if (is.null(metaobs$day_of_week)) {
