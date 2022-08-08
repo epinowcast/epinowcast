@@ -323,6 +323,8 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
   out <- list()
   out$formula$r <- r_form$formula
   out$formula$observation <- obs_form$formula
+  out$data_raw$r <- r_features
+  out$data_raw$observation <- data$metareference[[1]]
 
   names(r_list) <- paste0("expr_", names(r_list))
   names(obs_list) <- paste0("expo_", names(obs_list))
