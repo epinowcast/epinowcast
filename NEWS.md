@@ -1,8 +1,8 @@
 # epinowcast 0.2.0
 
 ## Package
-- changed `enw_add_metaobs_features(...)` interface to have `holidays` argument as
-a series of dates. Assorted associated backend additions as well. See #151 by @pearsonca
+- Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
+a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
 
