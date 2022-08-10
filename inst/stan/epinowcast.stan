@@ -96,7 +96,6 @@ data {
   // of d, their index in the flat vector of obs by reference time (e.g. flat_obs)
   // would be: obs_by_report[i, d] 
   array[miss_obs, dmax] int obs_by_report;
-<<<<<<< HEAD
   // observations by group (and cumulative) for missing_reference and
   // obs_by_report
   array[miss_obs ? g : 0] int miss_st;
@@ -107,14 +106,6 @@ data {
   // Observation model
   int model_obs; // control parameter for the observation model
   array[2] real sqrt_phi_p; // 1/sqrt (overdispersion)
-=======
-  array[2, 1] real miss_int_p;
-  array[2, 1] real miss_beta_sd_p;
-
-  // Observation model
-  int model_obs; // Control parameter for the observation model
-  array[2, 1] real sqrt_phi_p; // 1/sqrt(overdispersion)
->>>>>>> test simple example
 
   // Control parameters
   int debug; // should debug information be shown
