@@ -143,6 +143,63 @@ enw_example <- function(type = "nowcast") {
   return(out)
 }
 
+#' @title Coerce Dates
+#'
+#' @description Provides consistent coercion of inputs to [IDate]
+#' with error handling
+#'
+#' @param dates a vector-like input, which the function attempts
+#' to coerce via [data.table::as.IDate()]
+#'
+#' @return an [IDate] vector
+#'
+#' @details If any of the elements of `dates` cannot be coerced,
+#' this function will result in an error, indicating all indices
+#' which cannot be coerced to [IDate].
+#'
+#' Internal methods of [epinowcast] assume dates are represented
+#' as [IDate].
+#'
+#' @export
+#' @importFrom data.table as.IDate
+#' @examples
+#' # works
+#' epinowcast::coerce_date(c("2020-05-28", "2020-05-29"))
+#' # does not, indicates index 2 is problem
+#' tryCatch(
+#'  epinowcast::coerce_date(c("2020-05-28", "2020-o5-29")),
+#'  error = function(e) print(e)
+#' )
+coerce_date <- function(dates) {
+
+  res <- data.table::as.IDate(c())
+  if (length(dates) == 0) {
+    return(res)
+  }
+
+  res <- data.table::as.IDate(vapply(dates, function(d) {
+    tryCatch(
+      data.table::as.IDate(d, optional = TRUE),
+      error = function(e) {
+        return(data.table::as.IDate(NA))
+      }
+  ) }, FUN.VALUE = data.table::as.IDate(0)))
+
+  if (any(is.na(res))) {
+    bads <- is.na(res)
+    stop(sprintf(
+      "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
+      paste(dates[bads], collapse = ", "),
+      paste(which(bads), collapse = ", ")
+    ))
+  } else {
+    return(res)
+  }
+
+}
+
+
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",

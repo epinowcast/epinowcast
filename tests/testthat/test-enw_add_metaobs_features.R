@@ -13,6 +13,8 @@ holidays = c(
 
 junk <- c("Garbage Date")
 
+metadatacols <- c("day_of_week", "day", "week", "month")
+
 test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)", {
   expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "reference_date"), NA)
   expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "report_date"), NA)
@@ -20,6 +22,28 @@ test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)",
   expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "location"))
 })
 
+test_that("enw_add_metaobs_features always adds all columns", {
+  expect_equal(
+    sort(intersect(
+      colnames(enw_add_metaobs_features(nat_germany_hosp, datecol = "reference_date")),
+      metadatacols
+    )),
+    sort(metadatacols)
+  )
+})
+
+test_that("enw_add_metaobs_features overwrites columns with a warning", {
+  dummy <- as.data.table(nat_germany_hosp)
+  dow <- "Placeholder"
+  dummy[, day_of_week := dow ]
+  expect_warning(
+    metaobs <- enw_add_metaobs_features(dummy, datecol = "reference_date")
+  )
+  expect_no_match(
+    as.character(metaobs$day_of_week),
+    dow
+  )
+})
 
 test_that("enw_add_metaobs_features errors when provided unparseable dates.", {
   expect_error(enw_add_metaobs_features(
@@ -34,7 +58,7 @@ test_that("enw_add_metaobs_features errors when provided unparseable dates.", {
   ))
 })
 
-test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` provided", {
+test_that("enw_add_metaobs_features does not set holidays if `c()` provided", {
   mobs <- enw_add_metaobs_features(
     nat_germany_hosp,
     datecol = "reference_date",

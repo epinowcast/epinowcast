@@ -1,6 +1,8 @@
 # epinowcast 0.2.0
 
 ## Package
+- changed `enw_add_metaobs_features(...)` interface to have `holidays` argument as
+a series of dates. Assorted associated backend additions as well. See #151 by @pearsonca
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
 

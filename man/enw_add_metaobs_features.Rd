@@ -7,7 +7,7 @@
 enw_add_metaobs_features(
   metaobs,
   holidays_to = "Sunday",
-  holidays,
+  holidays = c(),
   datecol = "date"
 )
 }
@@ -16,11 +16,11 @@ enw_add_metaobs_features(
 Coerced object must have \link{Dates} column corresponding to \code{datecol} name.}
 
 \item{holidays_to}{A character string to assign to holidays, when \code{holidays}
-argument present. Replaces the \code{day_of_week} column value}
+argument non-empty. Replaces the \code{day_of_week} column value}
 
-\item{holidays}{Optionally, a vector of \link{Date}s or elements coerceable to
-\link{Date}s via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}. The \code{day_of_week} column will be set
-to \code{holidays_to} for these dates.}
+\item{holidays}{a (potentially empty) vector of dates (or input
+coerceable to such; see \code{\link[=coerce_date]{coerce_date()}}).
+The \code{day_of_week} column will be set to \code{holidays_to} for these dates.}
 
 \item{datecol}{The column in \code{metaobs} corresponding to pertinent dates.}
 }

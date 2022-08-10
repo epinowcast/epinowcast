@@ -31,11 +31,11 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #'  Coerced object must have [Dates] column corresponding to `datecol` name.
 #'
 #' @param holidays_to A character string to assign to holidays, when `holidays`
-#' argument present. Replaces the `day_of_week` column value
+#' argument non-empty. Replaces the `day_of_week` column value
 #'
-#' @param holidays Optionally, a vector of [Date]s or elements coerceable to
-#' [Date]s via [data.table::as.IDate()]. The `day_of_week` column will be set
-#' to `holidays_to` for these dates.
+#' @param holidays a (potentially empty) vector of dates (or input
+#' coerceable to such; see [coerce_date()]).
+#' The `day_of_week` column will be set to `holidays_to` for these dates.
 #'
 #' @param datecol The column in `metaobs` corresponding to pertinent dates.
 #'
@@ -49,7 +49,7 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' However, it can also be used directly on other data.
 #'
 #' @return a copy of the `metaobs` input, with additional columns:
-#'  * `day_of_week`, a factor of values as output from [weekday()] and
+#'  * `day_of_week`, a factor of values as output from [weekdays()] and
 #'  possibly as `holiday_to` if distinct from weekdays values
 #'  * `day`, numeric, 0 based from start of time series
 #'  * `week`, numeric, 0 based from start of time series
@@ -57,8 +57,6 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #'
 #' @family preprocess
 #' @export
-#' @importFrom data.table as.data.table
-#' @importFrom lubridate week month
 #' @examples
 #'
 #' # make some example date
@@ -89,9 +87,10 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 enw_add_metaobs_features <- function(
   metaobs,
   holidays_to = "Sunday",
-  holidays,
+  holidays = c(),
   datecol = "date"
 ) {
+  # localize and check metaobs input
   metaobs <- data.table::as.data.table(metaobs)
   if (is.null(metaobs[[datecol]])) {
     stop(sprintf("metaobs does not have datecol '%s'.", datecol))
@@ -99,48 +98,53 @@ enw_add_metaobs_features <- function(
     stop(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
 
-  # if not present, add day_of_week
-  if (is.null(metaobs$day_of_week)) {
-    metaobs[, day_of_week := weekdays(get(datecol))]
+  # this may also error, so coercing first
+  holidays <- coerce_date(holidays)
+
+  # warn about columns that may be overwritten
+  tarcols <- c("day_of_week", "day", "week", "month")
+  if (any(tarcols %in% colnames(metaobs))) {
+    warning(sprintf(
+      "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
+      intersect(tarcols, colnames(metaobs))
+    ))
   }
 
-  # set holidays to associated day_of_week
-  if (!missing(holidays) && (length(holidays) > 0)) {
-    holidays <- as.IDate(holidays, optional = TRUE)
-    if (any(is.na(holidays))) {
-      stop(
-        sprintf(
-          "Failed to parse holidays; first failure at index %i.",
-          which.max(is.na(holidays))
-        )
-      )
-    }
-    metaobs[get(datecol) %in% holidays, day_of_week := holidays_to]
-  }
+  # build up the transformations to be applied to datecol
+  # day_of_week = weekday or holidays_to, as a factor
+  funs <- list(day_of_week = purrr::compose(
+    factor,
+    function(d) fifelse(d %in% holidays, holidays_to, weekdays(d))
+  ))
 
-  # make day_of_week a factor
-  metaobs[, day_of_week := factor(day_of_week)]
-
-  # function for transforming numbers to be referenced from 0
+  # functions to extract date indices
+  indexfuns <- list(
+    day = as.numeric,
+    week = lubridate::week,
+    month = lubridate::month
+  )
+  # function to transform numbers to be referenced from 0
   zerobase <- function(x) {
     return(x - min(x))
   }
 
-  # only compute columns not already present
-  tarcols <- setdiff(c("day", "week", "month"), colnames(metaobs))
+  funs <- c(
+    funs,
+    # add functions for zero-based day, week, and month
+    lapply(indexfuns, function(first) {
+      purrr::compose(zerobase, first)
+    })
+  )
+
+  # current implementation: this is always true. if we later
+  # determine that e.g. we want to optionally overwrite columns
+  # then this logic will become useful
   if (length(tarcols)) {
-    # transforms associated with those columns
-    xforms <- list(
-      day = as.numeric, week = lubridate::week, month = lubridate::month
-    )[tarcols]
+    # pick out transforms associated with those columns
+    xforms <- funs[tarcols]
 
     # add tarcol features
-    metaobs[, c(tarcols) :=
-      lapply(
-        lapply(xforms, do.call, .(get(datecol))),
-        zerobase
-      )
-    ]
+    metaobs[, c(tarcols) := lapply(xforms, do.call, .(get(datecol)))]
   }
 
   return(metaobs[])
