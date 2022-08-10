@@ -30,12 +30,12 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' @param metaobs Raw data, coerceable via [data.table::as.data.table()].
 #'  Coerced object must have [Dates] column corresponding to `datecol` name.
 #'
-#' @param holidays_to A character string to assign to holidays, when `holidays`
-#' argument non-empty. Replaces the `day_of_week` column value
-#'
 #' @param holidays a (potentially empty) vector of dates (or input
 #' coerceable to such; see [coerce_date()]).
 #' The `day_of_week` column will be set to `holidays_to` for these dates.
+#'
+#' @param holidays_to A character string to assign to holidays, when `holidays`
+#' argument non-empty. Replaces the `day_of_week` column value
 #'
 #' @param datecol The column in `metaobs` corresponding to pertinent dates.
 #'
@@ -48,46 +48,47 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #'
 #' However, it can also be used directly on other data.
 #'
-#' @return a copy of the `metaobs` input, with additional columns:
+#' @return A copy of the `metaobs` input, with additional columns:
 #'  * `day_of_week`, a factor of values as output from [weekdays()] and
 #'  possibly as `holiday_to` if distinct from weekdays values
 #'  * `day`, numeric, 0 based from start of time series
-#'  * `week`, numeric, 0 based from start of time series
-#'  * `month`, numeric, 0 based from start of time series
+#'  * `week`, numeric, year based
+#'  * `month`, numeric, year based
 #'
 #' @family preprocess
+#' @importFrom purrr compose
 #' @export
 #' @examples
 #'
 #' # make some example date
 #' nat_germany_hosp <- subset(
-#'   epinowcast::germany_covid19_hosp,
+#'   germany_covid19_hosp,
 #'   location == "DE" & age_group == "80+"
 #' )[1:40]
 #'
-#' basemeta <- epinowcast::enw_add_metaobs_features(
+#' basemeta <- enw_add_metaobs_features(
 #'   nat_germany_hosp,
 #'   datecol = "report_date"
 #' )
 #' basemeta
 #'
 #' # with holidays - n.b.: holidays not found are silently ignored
-#' holidaymeta <- epinowcast::enw_add_metaobs_features(
+#' holidaymeta <- enw_add_metaobs_features(
 #'   nat_germany_hosp,
 #'   datecol = "report_date",
-#'   holidays_to = "Holiday",
 #'   holidays = c(
 #'     "2021-04-04", "2021-04-05",
 #'     "2021-05-01", "2021-05-13",
 #'     "2021-05-24"
-#'   )
+#'   ),
+#'   holidays_to = "Holiday"
 #' )
 #' holidaymeta
 #' subset(holidaymeta, day_of_week == "Holiday")
 enw_add_metaobs_features <- function(
   metaobs,
-  holidays_to = "Sunday",
   holidays = c(),
+  holidays_to = "Sunday",
   datecol = "date"
 ) {
   # localize and check metaobs input
@@ -114,19 +115,17 @@ enw_add_metaobs_features <- function(
   # day_of_week = weekday or holidays_to, as a factor
   funs <- list(day_of_week = purrr::compose(
     factor,
-    function(d) fifelse(d %in% holidays, holidays_to, weekdays(d))
+    ~ data.table::fifelse(.x %in% holidays, holidays_to, weekdays(.x))
   ))
 
   # functions to extract date indices
   indexfuns <- list(
     day = as.numeric,
-    week = lubridate::week,
-    month = lubridate::month
+    week = data.table::week,
+    month = data.table::month
   )
   # function to transform numbers to be referenced from 0
-  zerobase <- function(x) {
-    return(x - min(x))
-  }
+  zerobase <- ~ .x - min(.x)
 
   funs <- c(
     funs,
