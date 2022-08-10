@@ -5,15 +5,15 @@ garbage <- c("2020-50-12", "2020-O5-12")
 
 test_that("coerce_date works for non-garbage in", {
   expect_error(
-    epinowcast::coerce_date(nongarbage), NA
+    coerce_date(nongarbage), NA
   )
   expect_error(
-    epinowcast::coerce_date(refresult), NA
+    coerce_date(refresult), NA
   )
   expect_error(
-    epinowcast::coerce_date(c()), NA
+    coerce_date(c()), NA
   )
-  coerced <- epinowcast::coerce_date(nongarbage)
+  coerced <- coerce_date(nongarbage)
   expect_equal(coerced, refresult)
   expect_equal(class(coerced), class(refresult))
 })
