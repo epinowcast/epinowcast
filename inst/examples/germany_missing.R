@@ -56,7 +56,7 @@ nat_germany_hosp <- enw_simulate_missing_reference(
 # Make a retrospective dataset
 retro_nat_germany <- enw_filter_report_dates(
   nat_germany_hosp,
-  remove_days = 50
+  remove_days = 40
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
@@ -67,7 +67,7 @@ retro_nat_germany <- enw_filter_reference_dates(
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 50, include_days = 20
+  remove_days = 40, include_days = 20
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
