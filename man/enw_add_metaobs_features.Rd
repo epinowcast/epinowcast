@@ -27,7 +27,7 @@ The \code{day_of_week} column will be set to \code{holidays_to} for these dates.
 \value{
 a copy of the \code{metaobs} input, with additional columns:
 \itemize{
-\item \code{day_of_week}, a factor of values as output from \code{\link[=weekday]{weekday()}} and
+\item \code{day_of_week}, a factor of values as output from \code{\link[=weekdays]{weekdays()}} and
 possibly as \code{holiday_to} if distinct from weekdays values
 \item \code{day}, numeric, 0 based from start of time series
 \item \code{week}, numeric, 0 based from start of time series
