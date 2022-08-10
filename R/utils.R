@@ -148,10 +148,10 @@ enw_example <- function(type = "nowcast") {
 #' @description Provides consistent coercion of inputs to [IDate]
 #' with error handling
 #'
-#' @param dates a vector-like input, which the function attempts
-#' to coerce via [data.table::as.IDate()]
+#' @param dates A vector-like input, which the function attempts
+#' to coerce via [data.table::as.IDate()].
 #'
-#' @return an [IDate] vector
+#' @return An [IDate] vector.
 #'
 #' @details If any of the elements of `dates` cannot be coerced,
 #' this function will result in an error, indicating all indices
@@ -162,19 +162,19 @@ enw_example <- function(type = "nowcast") {
 #'
 #' @export
 #' @importFrom data.table as.IDate
+#' @family utils
 #' @examples
 #' # works
-#' epinowcast::coerce_date(c("2020-05-28", "2020-05-29"))
+#' coerce_date(c("2020-05-28", "2020-05-29"))
 #' # does not, indicates index 2 is problem
 #' tryCatch(
-#'  epinowcast::coerce_date(c("2020-05-28", "2020-o5-29")),
+#'  coerce_date(c("2020-05-28", "2020-o5-29")),
 #'  error = function(e) print(e)
 #' )
 coerce_date <- function(dates) {
 
-  res <- data.table::as.IDate(c())
   if (length(dates) == 0) {
-    return(res)
+    return(data.table::as.IDate(dates))
   }
 
   res <- data.table::as.IDate(vapply(dates, function(d) {
