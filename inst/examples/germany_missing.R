@@ -80,7 +80,7 @@ model <- enw_model(threads = TRUE)
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
-  missing = enw_missing(~ rw(day), data = pobs),
+  missing = enw_missing(~1, data = pobs),
   report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
