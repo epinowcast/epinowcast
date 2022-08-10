@@ -58,7 +58,7 @@ test_that("enw_add_metaobs_features errors when provided unparseable dates.", {
   ))
 })
 
-test_that("enw_add_metaobs_features does not set holidays if `c()` provided", {
+test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` provided", {
   mobs <- enw_add_metaobs_features(
     nat_germany_hosp,
     datecol = "reference_date",
