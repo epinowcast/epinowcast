@@ -21,6 +21,9 @@ nat_germany_hosp <- enw_complete_dates(
   missing_reference = FALSE
 )
 
+# Set proportion missing at 35%
+prop_miss <- 0.35
+
 # Prototypes for simulating missing data - likely to be implemented in 0.2.0
 enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
   obs <- check_dates(obs)
@@ -44,16 +47,16 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
   return(obs[])
 }
 
-
+# Simulate using this function
 nat_germany_hosp <- enw_simulate_missing_reference(
   nat_germany_hosp,
-  proportion = 0.1, by = c("location", "age_group")
+  proportion = prop_miss, by = c("location", "age_group")
 )
 
 # Make a retrospective dataset
 retro_nat_germany <- enw_filter_report_dates(
   nat_germany_hosp,
-  remove_days = 40
+  remove_days = 50
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
@@ -64,7 +67,7 @@ retro_nat_germany <- enw_filter_reference_dates(
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 40, include_days = 20
+  remove_days = 50, include_days = 20
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
@@ -77,14 +80,14 @@ model <- enw_model(threads = TRUE)
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
-  missing = enw_missing(~1, data = pobs),
+  missing = enw_missing(~ rw(day), data = pobs),
   report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
     iter_warmup = 500, iter_sampling = 500
   ),
-  obs = enw_obs(family = "poisson", data = pobs),
+  obs = enw_obs(family = "negbin", data = pobs),
   model = model
 )
 
@@ -102,7 +105,7 @@ miss_prop <- cbind(
 ggplot(miss_prop) +
   aes(x = reference_date) +
   geom_line(aes(y = median), size = 1, alpha = 0.6) +
-  geom_line(aes(y = mean), linetype = 2) +
+  geom_hline(yintercept = prop_miss, linetype = 2) +
   geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   theme_bw() +
