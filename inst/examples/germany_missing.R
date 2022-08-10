@@ -22,23 +22,9 @@ nat_germany_hosp <- enw_complete_dates(
 )
 
 # Prototypes for simulating missing data - likely to be implemented in 0.2.0
-enw_incidence_to_cumulative <- function(obs, by = c()) {
-  obs <- data.table::as.data.table(obs)
-  obs <- check_dates(obs)
-
-  obs <- obs[!is.na(reference_date)]
-  obs[order(reference_date, report_date)]
-
-  obs[, confirm := cumsum(new_confirm), by = c(by, "reference_date")]
-  return(obs[])
-}
-
 enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
-  obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
-  obs <- enw_assign_group(obs, by = by)
-  by_with_group_id <- c(".group", by)
-  obs <- enw_new_reports(obs)
+  obs <- enw_cumulative_to_incidence(obs, by = by)
 
   obs[, missing := purrr::map2_dbl(
     new_confirm, proportion, ~ rbinom(1, .x, .y)
@@ -46,7 +32,7 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
   obs[, new_confirm := new_confirm - missing]
 
   complete_ref <- enw_incidence_to_cumulative(obs, by = by)
-  complete_ref[, c("new_confirm", ".group", "delay", "missing") := NULL]
+  complete_ref[, c("new_confirm", "delay", "missing") := NULL]
 
   missing_ref <- obs[, .(confirm = sum(missing)),
     by = c(by, "report_date")
@@ -57,6 +43,7 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
   obs[order(reference_date, report_date)]
   return(obs[])
 }
+
 
 nat_germany_hosp <- enw_simulate_missing_reference(
   nat_germany_hosp,
