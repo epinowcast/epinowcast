@@ -39,7 +39,7 @@ latest_obs <- enw_filter_reference_dates(
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Compile nowcasting model using multi-threading
-model <- enw_model(threads = TRUE)
+model <- enw_model(threads = TRUE, stanc_options = list("O1"))
 
 # Reference date model: Fixed log-normal distribution
 reference_module <- enw_reference(~1, data = pobs)

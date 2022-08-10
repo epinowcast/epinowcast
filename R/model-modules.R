@@ -336,7 +336,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
       rep("expr_leobs_int", length(seed_obs)),
       "expo_beta_sd"
     ),
-    dimension = c(1, 1, seq_along(seed_obs)),
+    dimension = c(1, 1, seq_along(seed_obs), 1),
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
@@ -345,10 +345,11 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
       "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(
-      "Normal", "Zero truncated normal", rep("Normal", length(seed_obs))
+      "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
+      "Zero truncated normal"
     ),
-    mean = c(0, 0, seed_obs),
-    sd = c(0.2, 1, rep(1, length(seed_obs)))
+    mean = c(0, 0, seed_obs, 0),
+    sd = c(0.2, 1, rep(1, length(seed_obs)), 1)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
