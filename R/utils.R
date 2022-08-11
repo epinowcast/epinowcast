@@ -155,6 +155,6 @@ utils::globalVariables(
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
-    "formula"
+    "formula", ".id", "n"
   )
 )
