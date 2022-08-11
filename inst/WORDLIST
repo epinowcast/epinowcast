@@ -36,6 +36,7 @@ lme
 loglogistic
 mathbb
 modeldesign
+modelmodulehelpers
 modelmodules
 modeltools
 modelvalidation
