@@ -303,6 +303,7 @@ enw_latest_data <- function(obs) {
 #' @return The input data frame with a new variable `new_confirm`. If
 #' `max_confirm` was present in the data frame then the proportion
 #' reported on each day (`prop_reported`) is also added.
+#' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
 #' @importFrom data.table shift
@@ -346,6 +347,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' report date).
 #'
 #' @return The input data frame with a new variable `confirm`.
+#' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
 #' @examples

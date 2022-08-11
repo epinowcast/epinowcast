@@ -11,6 +11,11 @@ enw_incidence_to_cumulative(obs, by = c())
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{new_confirm} (incident observations by reference and
 report date).}
+
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 }
 \value{
 The input data frame with a new variable \code{confirm}.
