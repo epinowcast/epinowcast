@@ -12,10 +12,13 @@
 - Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these functions rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
 - Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. See #138 by @seabbs and @adrian-lison.
 - Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
+- Added support for modelling missing reference dates to the likelihood. See #147 by @seabbs.
+
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
 - Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
+- Update the model definition vignette to include the missing reference date model. See #147 by @seabbs.
 
 ## Bugs
 

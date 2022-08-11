@@ -36,8 +36,12 @@ reference:
     desc: Modular model components.
     contents:
       - has_concept("modelmodules")
+  - title: Helpers for defining model modules
+    desc: Functions that help with the setup of model modules and that may be specific to individual modules.
+    contents:
+      - has_concept("modelmodulehelpers")
   - title: Model tools
-    desc: Functions that assist with combining and using modular models.
+    desc: Generic functions that assist with combining and using modular models.
     contents:
       - has_concept("modeltools")
   - title: Postprocess

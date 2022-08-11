@@ -4,14 +4,14 @@ library(data.table)
 library(purrr)
 library(ggplot2)
 
-# Use 2 cores
-options(mc.cores = 2)
+# Use 4 cores
+options(mc.cores = 4)
 
 # Load and filter germany hospitalisations
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
-  latest_date = "2021-10-30"
+  latest_date = "2021-08-01"
 )
 
 # Make sure observations are complete
@@ -73,19 +73,19 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
-# Compile nowcasting model using multi-threading
-model <- enw_model(threads = TRUE)
+# Compile nowcasting model without multi-threading as only using a single
+# group and the missing reference only supports multi-threading across groups
+model <- enw_model(threads = FALSE)
 
 # Fit the nowcast model with support for observations with missing reference
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
-  missing = enw_missing(~ (1 | day), data = pobs),
+  missing = enw_missing(~1, data = pobs),
   report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 2, threads_per_chain = 2,
-    iter_warmup = 500, iter_sampling = 500,
+    chains = 4, iter_warmup = 500, iter_sampling = 500,
     likelihood_aggregation = "groups", adapt_delta = 0.9
   ),
   obs = enw_obs(family = "negbin", data = pobs),
