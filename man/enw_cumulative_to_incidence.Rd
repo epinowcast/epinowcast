@@ -16,6 +16,11 @@ date).}
 counts (for calculated incidence of observations) be set to zero. Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
+
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 }
 \value{
 The input data frame with a new variable \code{new_confirm}. If
