@@ -1,9 +1,9 @@
 library(data.table)
 
 # Filter example hospitalisation data to be natioanl and over all ages
-nat_germany_hosp <- germany_covid19_hosp[
+nat_germany_hosp <- setkey(germany_covid19_hosp[
   (location == "DE") & (age_group %in% "00+")
-]
+], reference_date)
 
 holidays = c(
   "2021-04-04", "2021-04-05",
@@ -17,7 +17,7 @@ metadatacols <- c("day_of_week", "day", "week", "month")
 
 test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)", {
   expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "reference_date"), NA)
-  expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "report_date"), NA)
+  expect_warning(enw_add_metaobs_features(nat_germany_hosp, datecol = "report_date"))
   expect_error(enw_add_metaobs_features(nat_germany_hosp))
   expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "location"))
 })
@@ -25,7 +25,9 @@ test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)",
 test_that("enw_add_metaobs_features always adds all columns", {
   expect_equal(
     sort(intersect(
-      colnames(enw_add_metaobs_features(nat_germany_hosp, datecol = "reference_date")),
+      colnames(enw_add_metaobs_features(
+        nat_germany_hosp, datecol = "reference_date"
+      )),
       metadatacols
     )),
     sort(metadatacols)
@@ -101,3 +103,13 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
     enw_preprocess_data(nat_germany_hosp, holidays = junk)
   )
 })
+
+# still WIP
+# test_that("enw_add_metaobs_features handles annual cycle boundaries", {
+#   fake <- enw_complete_dates(rbind(
+#     copy(nat_germany_hosp)[, report_date := report_date - 365 ],
+#     nat_germany_hosp
+#   ), missing_reference = FALSE)
+#   pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
+#
+# })

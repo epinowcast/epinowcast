@@ -111,29 +111,41 @@ enw_add_metaobs_features <- function(
     ))
   }
 
-  # build up the transformations to be applied to datecol
-  # day_of_week = weekday or holidays_to, as a factor
-  funs <- list(day_of_week = purrr::compose(
-    factor,
-    ~ data.table::fifelse(.x %in% holidays, holidays_to, weekdays(.x))
-  ))
+  if (is.unsorted(metaobs[[datecol]])) {
+    warning(sprintf(
+      "metaobs is not sorted by column '%s'; returned result will be.",
+      datecol
+    ))
+  }
+  setkeyv(metaobs, union(key(metaobs), datecol))
 
-  # functions to extract date indices
-  indexfuns <- list(
-    day = as.numeric,
-    week = data.table::week,
-    month = data.table::month
-  )
   # function to transform numbers to be referenced from 0
   zerobase <- ~ .x - min(.x)
+  # function to transform by weeks
+  toweek <- ~ .x%/%7L + 1L
+  # function to count months from series start
+  toevermonths <- function(m) {
+    offsets <- rle(which(m == 1)*12)
+    offsets$values <- cumsum(offsets$values)
+    return(m + inverse.rle(offsets))
+  }
 
-  funs <- c(
-    funs,
-    # add functions for zero-based day, week, and month
-    lapply(indexfuns, function(first) {
-      purrr::compose(zerobase, first)
-    })
-  )
+  # functions to extract date indices; defined as
+  # series of transformations applied (right to left)
+  # then purrr::compose'd
+  funs <- lapply(list(
+    day_of_week = list(
+      factor,
+      ~ data.table::fifelse(
+        .x %in% holidays, holidays_to, weekdays(.x)
+      )
+    ),
+    day = list(zerobase, as.numeric),
+    week = list(toweek, zerobase, as.numeric),
+    month = list(toevermonths, data.table::month)
+  ), function(fns) {
+    purrr::compose(!!!fns)
+  })
 
   # current implementation: this is always true. if we later
   # determine that e.g. we want to optionally overwrite columns
