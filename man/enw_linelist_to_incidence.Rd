@@ -4,7 +4,13 @@
 \alias{enw_linelist_to_incidence}
 \title{Convert linelist data into a format usable by epinowcast}
 \usage{
-enw_linelist_to_incidence(obs, reference_col, by = c())
+enw_linelist_to_incidence(
+  obs,
+  reference_col,
+  report_col,
+  by = c(),
+  remove_reference_date_NA = TRUE
+)
 }
 \arguments{
 \item{obs}{}
@@ -20,5 +26,11 @@ stuff
 Convert linelist data into a format usable by epinowcast
 }
 \examples{
-# Will sort this when the function works properly
+# Transform fake linelist into cumulative
+data("linelist", package = "epinowcast")
+
+enw_linelist_to_incidence(obs = linelist, 
+reference_col = "date_onset", 
+by = "age_group")
+
 }

@@ -377,24 +377,34 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 #'
 #' @return stuff
 #' @export
-#' @importFrom data.table copy setnames merge.data.table
+#' @importFrom data.table copy setnames merge.data.table fifelse
 #'
 #' @examples
-#' # Will sort this when the function works properly
-enw_linelist_to_incidence <- function(obs, reference_col, by = c()) {
+#' # Transform fake linelist into cumulative
+#' data("linelist", package = "epinowcast")
+#' 
+#' enw_linelist_to_incidence(obs = linelist, 
+#' reference_col = "date_onset", 
+#' by = "age_group")
+#' 
+enw_linelist_to_incidence <- function(obs, reference_col, report_col, by = c(), remove_reference_date_NA = TRUE) {
   reports <- data.table::copy(obs)
   
   data.table::setnames(reports, reference_col, "reference_date")
+  data.table::setnames(reports, report_col, "report_date")
   
   # Select relevant columns
   cols <- c("reference_date", "report_date", by)
   reports <- reports[ , ..cols]
   
-  # Filter out bad entries
-  reports <- reports[!is.na(reference_date) & !is.na(report_date)]
-  
+  # Filter out bad dates entries
+  reports <- reports[!is.na(report_date)]
+  if(remove_reference_date_NA) {
+    reports <- reports[!is.na(reference_date)]
+  }
+
   # Sum cases by reference and report
-  reports <- reports[, .(new_confirm = .N), by = c("reference_date", "report_date", by)]
+  reports <- reports[, new_confirm := .N, by = c("reference_date", "report_date", by)]
   
   # Assign group indices
   reports <- epinowcast::enw_assign_group(reports, by = "age_group")
@@ -402,8 +412,6 @@ enw_linelist_to_incidence <- function(obs, reference_col, by = c()) {
   # Calculate delays
   reports[, delay := report_date - reference_date]
   reports <- reports[delay >= 0]
-  
-  reports[.group == 1 & reference_date == "2020-02-23"]
   
   # Pad out 
   newrep <- reports[, data.table::CJ(reference_date = seq.Date(min(reference_date), max(reference_date), by = "day"),
@@ -425,6 +433,10 @@ enw_linelist_to_incidence <- function(obs, reference_col, by = c()) {
   
   # Add cumulative information
   out <- epinowcast::enw_incidence_to_cumulative(out, by)
+  
+  out[, max_confirm := max(confirm), c("reference_date", by)]
+  out[, prop_reported := data.table::fifelse(max_confirm > 0, confirm / max_confirm, 1)]
+  out[, max_confirm := NULL]
   
   return(out[order(reference_date, .group)])
 }
