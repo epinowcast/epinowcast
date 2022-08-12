@@ -7,9 +7,9 @@
 enw_missing_reference(obs)
 }
 \arguments{
-\item{obs}{A data frame as produced by \code{\link[=enw_new_reports]{enw_new_reports()}}. Must contain the
-following variables: \code{report_date}, \code{reference_date}, \code{.group}, and
-\code{confirm}, and \code{new_confirm}.}
+\item{obs}{A data frame as produced by \code{\link[=enw_cumulative_to_incidence]{enw_cumulative_to_incidence()}}. Must
+contain the following variables: \code{report_date}, \code{reference_date}, \code{.group},
+and \code{confirm}, and \code{new_confirm}.}
 }
 \value{
 A \code{data.table} of missing counts and proportions by report date and
@@ -30,7 +30,7 @@ obs <- rbind(
 )
 obs <- enw_complete_dates(obs)
 obs <- enw_assign_group(obs)
-obs <- enw_new_reports(obs)
+obs <- enw_cumulative_to_incidence(obs)
 enw_missing_reference(obs)
 }
 \seealso{
@@ -41,14 +41,15 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
-\code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
 \code{\link{enw_reporting_triangle}()}
