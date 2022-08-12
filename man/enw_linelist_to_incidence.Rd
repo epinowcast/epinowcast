@@ -13,14 +13,26 @@ enw_linelist_to_incidence(
 )
 }
 \arguments{
-\item{obs}{}
+\item{obs}{A dataframe of linelist data that contains at least a column
+containing the date of interest (\code{reference_col}) and a column containing
+the observation report date (\code{report_col})}
 
-\item{reference_col}{}
+\item{reference_col}{The name of the column for the date of interest}
 
-\item{by}{}
+\item{report_col}{The name of the column of the report date}
+
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
+
+\item{remove_reference_data_NA}{A boolean indicating whether linelist
+entries with missing reference dates should be removed (entries with missing
+report dates are automatically removed).}
 }
 \value{
-stuff
+A data.frame containing the number of newly confirmed and total
+confirmed cases on each date of report for each reference date.
 }
 \description{
 Convert linelist data into a format usable by epinowcast

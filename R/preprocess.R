@@ -371,11 +371,21 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 
 #' Convert linelist data into a format usable by epinowcast
 #'
-#' @param obs 
-#' @param reference_col 
-#' @param by 
+#' @param obs A dataframe of linelist data that contains at least a column 
+#' containing the date of interest (`reference_col`) and a column containing
+#' the observation report date (`report_col`)
+#' @param reference_col The name of the column for the date of interest
+#' @param report_col The name of the column of the report date
+#' @param by A character vector describing the stratification of
+#' observations. This defaults to no grouping. This should be used
+#' when modelling multiple time series in order to identify them for
+#' downstream modelling
+#' @param remove_reference_data_NA A boolean indicating whether linelist
+#' entries with missing reference dates should be removed (entries with missing
+#' report dates are automatically removed).
 #'
-#' @return stuff
+#' @return A data.frame containing the number of newly confirmed and total
+#' confirmed cases on each date of report for each reference date.
 #' @export
 #' @importFrom data.table copy setnames merge.data.table fifelse
 #'
