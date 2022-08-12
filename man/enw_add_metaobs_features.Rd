@@ -6,8 +6,8 @@
 \usage{
 enw_add_metaobs_features(
   metaobs,
-  holidays_to = "Sunday",
   holidays = c(),
+  holidays_to = "Sunday",
   datecol = "date"
 )
 }
@@ -15,23 +15,23 @@ enw_add_metaobs_features(
 \item{metaobs}{Raw data, coerceable via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
 Coerced object must have \link{Dates} column corresponding to \code{datecol} name.}
 
-\item{holidays_to}{A character string to assign to holidays, when \code{holidays}
-argument non-empty. Replaces the \code{day_of_week} column value}
-
 \item{holidays}{a (potentially empty) vector of dates (or input
 coerceable to such; see \code{\link[=coerce_date]{coerce_date()}}).
 The \code{day_of_week} column will be set to \code{holidays_to} for these dates.}
 
+\item{holidays_to}{A character string to assign to holidays, when \code{holidays}
+argument non-empty. Replaces the \code{day_of_week} column value}
+
 \item{datecol}{The column in \code{metaobs} corresponding to pertinent dates.}
 }
 \value{
-a copy of the \code{metaobs} input, with additional columns:
+A copy of the \code{metaobs} input, with additional columns:
 \itemize{
 \item \code{day_of_week}, a factor of values as output from \code{\link[=weekdays]{weekdays()}} and
 possibly as \code{holiday_to} if distinct from weekdays values
 \item \code{day}, numeric, 0 based from start of time series
-\item \code{week}, numeric, 0 based from start of time series
-\item \code{month}, numeric, 0 based from start of time series
+\item \code{week}, numeric, year based
+\item \code{month}, numeric, year based
 }
 }
 \description{
@@ -53,26 +53,26 @@ However, it can also be used directly on other data.
 
 # make some example date
 nat_germany_hosp <- subset(
-  epinowcast::germany_covid19_hosp,
+  germany_covid19_hosp,
   location == "DE" & age_group == "80+"
 )[1:40]
 
-basemeta <- epinowcast::enw_add_metaobs_features(
+basemeta <- enw_add_metaobs_features(
   nat_germany_hosp,
   datecol = "report_date"
 )
 basemeta
 
 # with holidays - n.b.: holidays not found are silently ignored
-holidaymeta <- epinowcast::enw_add_metaobs_features(
+holidaymeta <- enw_add_metaobs_features(
   nat_germany_hosp,
   datecol = "report_date",
-  holidays_to = "Holiday",
   holidays = c(
     "2021-04-04", "2021-04-05",
     "2021-05-01", "2021-05-13",
     "2021-05-24"
-  )
+  ),
+  holidays_to = "Holiday"
 )
 holidaymeta
 subset(holidaymeta, day_of_week == "Holiday")

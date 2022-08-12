@@ -7,11 +7,11 @@
 coerce_date(dates)
 }
 \arguments{
-\item{dates}{a vector-like input, which the function attempts
-to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}}
+\item{dates}{A vector-like input, which the function attempts
+to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}.}
 }
 \value{
-an \link{IDate} vector
+An \link{IDate} vector.
 }
 \description{
 Provides consistent coercion of inputs to \link{IDate}
@@ -27,10 +27,18 @@ as \link{IDate}.
 }
 \examples{
 # works
-epinowcast::coerce_date(c("2020-05-28", "2020-05-29"))
+coerce_date(c("2020-05-28", "2020-05-29"))
 # does not, indicates index 2 is problem
 tryCatch(
- epinowcast::coerce_date(c("2020-05-28", "2020-o5-29")),
+ coerce_date(c("2020-05-28", "2020-o5-29")),
  error = function(e) print(e)
 )
 }
+\seealso{
+Utility functions
+\code{\link{convert_cmdstan_to_rstan}()},
+\code{\link{expose_stan_fns}()},
+\code{\link{is.Date}()},
+\code{\link{stan_fns_as_string}()}
+}
+\concept{utils}
