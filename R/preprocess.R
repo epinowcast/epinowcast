@@ -369,6 +369,66 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
   return(obs[])
 }
 
+#' Convert linelist data into a format usable by epinowcast
+#'
+#' @param obs 
+#' @param reference_col 
+#' @param by 
+#'
+#' @return stuff
+#' @export
+#' @importFrom data.table copy setnames merge.data.table
+#'
+#' @examples
+#' # Will sort this when the function works properly
+enw_linelist_to_incidence <- function(obs, reference_col, by = c()) {
+  reports <- data.table::copy(obs)
+  
+  data.table::setnames(reports, reference_col, "reference_date")
+  
+  # Select relevant columns
+  cols <- c("reference_date", "report_date", by)
+  reports <- reports[ , ..cols]
+  
+  # Filter out bad entries
+  reports <- reports[!is.na(reference_date) & !is.na(report_date)]
+  
+  # Sum cases by reference and report
+  reports <- reports[, .(new_confirm = .N), by = c("reference_date", "report_date", by)]
+  
+  # Assign group indices
+  reports <- epinowcast::enw_assign_group(reports, by = "age_group")
+  
+  # Calculate delays
+  reports[, delay := report_date - reference_date]
+  reports <- reports[delay >= 0]
+  
+  reports[.group == 1 & reference_date == "2020-02-23"]
+  
+  # Pad out 
+  newrep <- reports[, data.table::CJ(reference_date = seq.Date(min(reference_date), max(reference_date), by = "day"),
+                                     report_date = seq.Date(min(reference_date), max(report_date), by = "day"), .group, unique = TRUE)]
+  
+  newrep <- data.table::merge.data.table(x = newrep, 
+                                         y = reports[, .(reference_date, report_date, .group, new_confirm)], 
+                                         by = c("reference_date", "report_date", ".group"),
+                                         all.x = TRUE)
+  
+  # Change NA entries to 0
+  newrep[, new_confirm := data.table::fifelse(is.na(new_confirm), 0, new_confirm)]
+  
+  # Re-add age_groups
+  out <- data.table::merge.data.table(x = newrep,
+                                      y = reports[, .(age_group = unique(age_group)), by = ".group"],
+                                      by = ".group",
+                                      all.x = TRUE)
+  
+  # Add cumulative information
+  out <- epinowcast::enw_incidence_to_cumulative(out, by)
+  
+  return(out[order(reference_date, .group)])
+}
+
 #' Filter observations to restrict the maximum reporting delay
 #'
 #' @return A data frame filtered so that dates by report are less than or equal
