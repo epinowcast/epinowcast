@@ -164,8 +164,10 @@ remove_profiling <- function(s) {
 #' profiling statements
 #'
 #' @family modeltools
-write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
-                                        target_dir = tempdir()) {
+write_stan_files_no_profile <- function(
+  stan_file, include_paths = NULL,
+  target_dir = tempdir()
+) {
   # remove profiling from main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
   code_main_model_no_profile <- remove_profiling(code_main_model)
@@ -231,8 +233,11 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @export
 #' @importFrom cmdstanr cmdstan_model
 #' @importFrom posterior rhat
-enw_sample <- function(data, model = epinowcast::enw_model(),
-                       diagnostics = TRUE, ...) {
+enw_sample <- function(
+  data, model = epinowcast::enw_model(),
+  diagnostics = TRUE, ...
+) {
+
   fit <- model$sample(data = data, ...)
 
   out <- data.table(
@@ -302,44 +307,44 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(model, include, compile = TRUE,
-                      threads = FALSE, profile = FALSE,
-                      stanc_options = list(), verbose = TRUE, ...) {
-  if (missing(model)) {
-    model <- "stan/epinowcast.stan"
-    model <- system.file(model, package = "epinowcast")
-  }
-  if (missing(include)) {
-    include <- system.file("stan", package = "epinowcast")
+enw_model <- function(
+    model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
+    include = dirname(model),
+    compile = TRUE, threads = FALSE, profile = FALSE,
+    stanc_options = list(), verbose = TRUE,
+    ...
+) {
+
+  if (verbose) {
+    message(sprintf("Using model %s.", model))
+    message(sprintf("include is %s.", paste(include, collapse = ", ")))
   }
 
   if (!profile) {
     stan_no_profile <- write_stan_files_no_profile(model, include)
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths
+    if (verbose) {
+      message("Profiling removed; now...")
+      message(sprintf("Using model %s.", model))
+      message(sprintf("include is %s.", paste(include, collapse = ", ")))
+    }
   }
 
   if (compile) {
+    wrapper <- suppressMessages
     if (verbose) {
-      model <- cmdstanr::cmdstan_model(model,
-        include_paths = include,
-        stanc_options = stanc_options,
-        cpp_options = list(
-          stan_threads = threads
-        ),
-        ...
-      )
-    } else {
-      suppressMessages(
-        model <- cmdstanr::cmdstan_model(model,
-          include_paths = include,
-          stanc_options = stanc_options,
-          cpp_options = list(
-            stan_threads = threads
-          ), ...
-        )
-      )
+      wrapper <- function(x) return(x)
     }
+    model <- wrapper(cmdstanr::cmdstan_model(
+      model, include_paths = include,
+      stanc_options = stanc_options,
+      cpp_options = list(
+        stan_threads = threads
+      ),
+      ...
+    ))
   }
   return(model)
 }
+

@@ -133,7 +133,7 @@ enw_example <- function(
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
     file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
     return(readRDS(file))
-  } else if (type == "script") {
+  } else if (type == "scripts") {
     return(list.files(system.file(type, package = "epinowcast"), full.names = TRUE))
   }
 
