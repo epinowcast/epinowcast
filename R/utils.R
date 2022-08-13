@@ -99,12 +99,16 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' functionality without needing to install `cmdstanr`.
 #'
 #' @param type A character string indicating the example to load.
-#' Supported options are "nowcast, "preprocessed_observations", "observations",
-#' and "script" which are the output of epinowcast()], [enw_preprocess_data()],
-#' and [enw_latest_data()] applied to the [germany_covid19_hosp] package
-#' dataset), and the script used to generate these examples respectively.
+#' Supported options are
+#'  * "nowcast, "preprocessed_observations", and "observations",
+#'  corresponding to the output of [epinowcast()], [enw_preprocess_data()],
+#' and [enw_latest_data()] applied to the [germany_covid19_hosp]
+#' dataset, and
+#'  * "script", the script used to generate these examples respectively.
 #'
 #' @return A `data.table` of summarised output
+#'  (`type` one of "nowcast, "preprocessed_observations", and "observations")
+#' or a file name for the script to generate these outputs (`type` = "script")
 #'
 #' @family data
 #' @export
@@ -121,26 +125,18 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
 #' readLines(enw_example(type = "script"))
-enw_example <- function(type = "nowcast") {
-  type <- match.arg(
-    type,
-    choices = c(
-      "nowcast", "preprocessed_observations", "observations", "script"
-    )
-  )
+enw_example <- function(
+  type = c("nowcast", "preprocessed_observations", "observations", "script")
+) {
+  type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
     file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
-  } else if (type %in% "script") {
-    file <- system.file("scripts", "germany_example.R", package = "epinowcast")
+    return(readRDS(file))
+  } else if (type == "script") {
+    return(system.file("scripts", "generate_examples.R", package = "epinowcast"))
   }
 
-  if (type %in% "script") {
-    out <- file
-  } else {
-    out <- readRDS(file)
-  }
-  return(out)
 }
 
 #' @title Coerce Dates
