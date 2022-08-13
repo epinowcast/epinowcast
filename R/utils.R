@@ -104,7 +104,7 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #'  corresponding to the output of [epinowcast()], [enw_preprocess_data()],
 #' and [enw_latest_data()] applied to the [germany_covid19_hosp]
 #' dataset, and
-#'  * "script", the script used to generate these examples respectively.
+#'  * "scripts", the code used to generate these examples respectively.
 #'
 #' @return A `data.table` of summarised output
 #'  (`type` one of "nowcast, "preprocessed_observations", and "observations")
@@ -124,9 +124,9 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #'
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
-#' readLines(enw_example(type = "script"))
+#' readLines(enw_example(type = "scripts"))
 enw_example <- function(
-  type = c("nowcast", "preprocessed_observations", "observations", "script")
+  type = c("nowcast", "preprocessed_observations", "observations", "scripts")
 ) {
   type <- match.arg(type)
 
@@ -134,7 +134,7 @@ enw_example <- function(
     file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
     return(readRDS(file))
   } else if (type == "script") {
-    return(system.file("scripts", "generate_examples.R", package = "epinowcast"))
+    return(list.files(system.file(type, package = "epinowcast"), full.names = TRUE))
   }
 
 }
