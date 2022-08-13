@@ -347,4 +347,3 @@ enw_model <- function(
   }
   return(model)
 }
-

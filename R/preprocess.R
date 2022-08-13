@@ -122,12 +122,12 @@ enw_add_metaobs_features <- function(
   # function to transform numbers to be referenced from 0
   zerobase <- ~ .x - min(.x)
   # function to transform by weeks
-  toweek <- ~ .x%/%7L + 1L
+  to0week <- ~ .x %/% 7L
   # function to count months from series start
-  toevermonths <- function(m) {
-    offsets <- rle(which(m == 1)*12)
-    offsets$values <- cumsum(offsets$values)
-    return(m + inverse.rle(offsets))
+  toevermonths <- function(d) {
+    m <- data.table::month(d) - 1
+    y <- data.table::year(d)
+    return(m + 12 * (y - min(y)))
   }
 
   # functions to extract date indices; defined as
@@ -141,8 +141,8 @@ enw_add_metaobs_features <- function(
       )
     ),
     day = list(zerobase, as.numeric),
-    week = list(toweek, zerobase, as.numeric),
-    month = list(toevermonths, data.table::month)
+    week = list(to0week, zerobase, as.numeric),
+    month = list(toevermonths)
   ), function(fns) {
     purrr::compose(!!!fns)
   })

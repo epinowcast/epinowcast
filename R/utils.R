@@ -131,10 +131,14 @@ enw_example <- function(
   type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
-    file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
-    return(readRDS(file))
+    return(readRDS(
+      system.file("extdata", sprintf("%s.rds", type), package = "epinowcast")
+    ))
   } else if (type == "scripts") {
-    return(list.files(system.file(type, package = "epinowcast"), full.names = TRUE))
+    return(list.files(
+      system.file(type, package = "epinowcast"),
+      full.names = TRUE)
+    )
   }
 
 }
