@@ -5,7 +5,7 @@
 \title{Load a package example}
 \usage{
 enw_example(
-  type = c("nowcast", "preprocessed_observations", "observations", "scripts")
+  type = c("nowcast", "preprocessed_observations", "observations", "script")
 )
 }
 \arguments{
@@ -16,7 +16,7 @@ Supported options are
 \item "preprocessed_observations", for \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} applied to
 \link{germany_covid19_hosp}
 \item "observations", for \code{\link[=enw_latest_data]{enw_latest_data()}} applied to \link{germany_covid19_hosp}
-\item "scripts", the code used to generate these examples.
+\item "script", the code used to generate these examples.
 }}
 }
 \value{

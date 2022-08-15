@@ -79,6 +79,11 @@ test_that("enw_preprocess_data hasn't changed compared to saved example data", {
 })
 
 test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
+  holidays <- c(
+    "2021-04-04", "2021-04-05",
+    "2021-05-01", "2021-05-13",
+    "2021-05-24"
+  )
   pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
   expect_equal(
     as.character(
