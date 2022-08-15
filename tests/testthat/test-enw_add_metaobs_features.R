@@ -99,7 +99,6 @@ test_that("enw_add_metaobs_features resulting day, week, month always ascending"
     holidays_to = "Holiday"
   )
   expect_equal(mobs[, c(
-      all(diff(day) >= 0), all(diff(week) >= 0), all(diff(month) >= 0)
-    ) ], c(TRUE, TRUE, TRUE)
-  )
+    all(diff(day) >= 0), all(diff(week) >= 0), all(diff(month) >= 0)
+  )], c(TRUE, TRUE, TRUE))
 })

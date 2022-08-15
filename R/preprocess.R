@@ -140,7 +140,8 @@ enw_add_metaobs_features <- function(metaobs,
       factor,
       function(d) {
         data.table::fifelse(
-          d %in% holidays, yes = holidays_to, no = weekdays(d)
+          d %in% holidays,
+          yes = holidays_to, no = weekdays(d)
         )
       }
     ),
