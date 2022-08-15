@@ -78,12 +78,28 @@ test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` pro
   expect_equal(mobs[day_of_week == "Holiday", .N], 0)
 })
 
-# still WIP
-# test_that("enw_add_metaobs_features handles annual cycle boundaries", {
-#   fake <- enw_complete_dates(rbind(
-#     copy(nat_germany_hosp)[, report_date := report_date - 365 ],
-#     nat_germany_hosp
-#   ), missing_reference = FALSE)
-#   pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
-#
-# })
+test_that("enw_add_metaobs_features count from zero", {
+  mobs <- enw_add_metaobs_features(
+    nat_germany_hosp,
+    datecol = "reference_date",
+    holidays = NULL,
+    holidays_to = "Holiday"
+  )
+  expect_equal(mobs[1, c(day, week, month)], c(0, 0, 0))
+})
+
+test_that("enw_add_metaobs_features resulting day, week, month always ascending", {
+  mobs <- enw_add_metaobs_features(
+    rbind(
+      copy(nat_germany_hosp)[, reference_date := reference_date - 365],
+      nat_germany_hosp
+    ),
+    datecol = "reference_date",
+    holidays = NULL,
+    holidays_to = "Holiday"
+  )
+  expect_equal(mobs[, c(
+      all(diff(day) >= 0), all(diff(week) >= 0), all(diff(month) >= 0)
+    ) ], c(TRUE, TRUE, TRUE)
+  )
+})
