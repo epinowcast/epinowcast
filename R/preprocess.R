@@ -21,41 +21,147 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   return(metaobs[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param metaobs PARAM_DESCRIPTION
-#' @param holidays PARAM_DESCRIPTION
-#' @param holidays_to A character string to assign to holidays when present.
-#' Replaces the day of the week and defaults to Sunday.
-#' @return OUTPUT_DESCRIPTION
+#' @title Add common metadata variables
+#'
+#' @description If not already present, annotates time series data with metadata
+#' commonly used in models: day of week, and days, weeks, and months since start
+#' of time series.
+#'
+#' @param metaobs Raw data, coerceable via [data.table::as.data.table()].
+#' Coerced object must have [Dates] column corresponding to `datecol` name.
+#'
+#' @param holidays a (potentially empty) vector of dates (or input
+#' coerceable to such; see [coerce_date()]). The `day_of_week` column will be
+#' set to `holidays_to` for these dates.
+#'
+#' @param holidays_to A character string to assign to holidays, when `holidays`
+#' argument non-empty. Replaces the `day_of_week` column value
+#'
+#' @param datecol The column in `metaobs` corresponding to pertinent dates.
+#'
+#' @details Effects models often need to include covariates for time-based
+#' features, such as day of the week (e.g. to reflect different care-seeking
+#' and/or reporting behavior).
+#'
+#' This function is called from within [enw_preprocess_data()] to systematically
+#' annotate `metaobs` with these commonly used metadata, if not already present.
+#'
+#' However, it can also be used directly on other data.
+#'
+#' @return A copy of the `metaobs` input, with additional columns:
+#'  * `day_of_week`, a factor of values as output from [weekdays()] and
+#'  possibly as `holiday_to` if distinct from weekdays values
+#'  * `day`, numeric, 0 based from start of time series
+#'  * `week`, numeric, 0 based from start of time series
+#'  * `month`, numeric, 0 based from start of time series
+#'
 #' @family preprocess
+#' @importFrom purrr compose
 #' @export
-#' @importFrom data.table as.data.table
-enw_add_metaobs_features <- function(metaobs, holidays = c(),
-                                     holidays_to = "Sunday") {
-  # add days of week
-  metaobs <- data.table::copy(metaobs)
-  metaobs[, day_of_week := weekdays(date)]
-
-  # make holidays be Sundays
-  if (length(holidays) != 0) {
-    metaobs[get(holidays) == TRUE, day_of_week := holidays_to]
+#' @examples
+#'
+#' # make some example date
+#' nat_germany_hosp <- subset(
+#'   germany_covid19_hosp,
+#'   location == "DE" & age_group == "80+"
+#' )[1:40]
+#'
+#' basemeta <- enw_add_metaobs_features(
+#'   nat_germany_hosp,
+#'   datecol = "report_date"
+#' )
+#' basemeta
+#'
+#' # with holidays - n.b.: holidays not found are silently ignored
+#' holidaymeta <- enw_add_metaobs_features(
+#'   nat_germany_hosp,
+#'   datecol = "report_date",
+#'   holidays = c(
+#'     "2021-04-04", "2021-04-05",
+#'     "2021-05-01", "2021-05-13",
+#'     "2021-05-24"
+#'   ),
+#'   holidays_to = "Holiday"
+#' )
+#' holidaymeta
+#' subset(holidaymeta, day_of_week == "Holiday")
+enw_add_metaobs_features <- function(metaobs,
+                                     holidays = c(),
+                                     holidays_to = "Sunday",
+                                     datecol = "date") {
+  # localize and check metaobs input
+  metaobs <- data.table::as.data.table(metaobs)
+  if (is.null(metaobs[[datecol]])) {
+    stop(sprintf("metaobs does not have datecol '%s'.", datecol))
+  } else if (!is.Date(metaobs[[datecol]])) {
+    stop(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
 
-  # make day of week a factor
-  metaobs[, day_of_week := factor(day_of_week)]
+  # this may also error, so coercing first
+  holidays <- coerce_date(holidays)
 
-  # add day feature
-  metaobs[, day := as.numeric(date)]
-  metaobs[, day := day - min(day)]
+  # warn about columns that may be overwritten
+  tarcols <- c("day_of_week", "day", "week", "month")
+  if (any(tarcols %in% colnames(metaobs))) {
+    warning(sprintf(
+      "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
+      intersect(tarcols, colnames(metaobs))
+    ))
+  }
 
-  # add week feature
-  metaobs[, week := lubridate::week(date)]
-  metaobs[, week := week - min(week)]
+  if (is.unsorted(metaobs[[datecol]])) {
+    warning(sprintf(
+      "metaobs is not sorted by column '%s'; returned result will be.",
+      datecol
+    ))
+  }
+  data.table::setkeyv(metaobs, union(data.table::key(metaobs), datecol))
 
-  # add month feature
-  metaobs[, month := lubridate::month(date)]
-  metaobs[, month := month - min(month)]
+  # function to transform numbers to be referenced from 0
+  zerobase <- function(x) {
+    return(x - min(x))
+  }
+  # function to transform by weeks
+  to0week <- function(x) {
+    return(x %/% 7L)
+  }
+  # function to count months from series start
+  toevermonths <- function(d) {
+    m <- data.table::month(d)
+    y <- zerobase(data.table::year(d))
+    return(m + 12 * y)
+  }
+
+  # functions to extract date indices; defined as
+  # series of transformations applied (right to left)
+  # then purrr::compose'd
+  funs <- lapply(list(
+    day_of_week = list(
+      factor,
+      function(d) {
+        data.table::fifelse(
+          d %in% holidays,
+          yes = holidays_to, no = weekdays(d)
+        )
+      }
+    ),
+    day = list(zerobase, as.numeric),
+    week = list(to0week, zerobase, as.numeric),
+    month = list(zerobase, toevermonths)
+  ), function(fns) {
+    purrr::compose(!!!fns)
+  })
+
+  # current implementation: this is always true. if we later
+  # determine that e.g. we want to optionally overwrite columns
+  # then this logic will become useful
+  if (length(tarcols)) {
+    # pick out transforms associated with those columns
+    xforms <- funs[tarcols]
+
+    # add tarcol features
+    metaobs[, c(tarcols) := lapply(xforms, do.call, .(get(datecol)))]
+  }
 
   return(metaobs[])
 }
@@ -721,9 +827,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' that this is zero indexed and so includes the reference date and
 #' `max_delay - 1` other days.
 #'
-#' @param holidays A vector of dates indicating when holidays occur used by
-#' [enw_add_metaobs_features()] to treat holidays as sundays within the
-#' `day_of_week` variable it creates internally.
+#' @param ... Other arguments to [enw_add_metaobs_features()],
+#'   e.g. `holidays`, which sets commonly used metadata
+#'   (e.g. day of week, days since start of time series)
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data frames as well as variables containing metadata. These are:
@@ -754,15 +860,16 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @examples
 #' library(data.table)
 #'
-#' # Filter example hospitalisation data to be natioanl and over all ages
+#' # Filter example hospitalisation data to be national and over all ages
 #' nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 #' nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
 #'
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
-                                set_negatives_to_zero = TRUE) {
+enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
+                                set_negatives_to_zero = TRUE,
+                                ...) {
   obs <- check_dates(obs)
   check_group(obs)
   obs <- obs[order(reference_date)]
@@ -815,14 +922,14 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20, holidays = c(),
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(metareport, max_delay = max_delay)
-  metareport <- enw_add_metaobs_features(metareport, holidays = holidays)
+  metareport <- enw_add_metaobs_features(metareport, ...)
 
   # extract and add features for reference date
   metareference <- enw_metadata(
     obs[!is.na(reference_date)],
     target_date = "reference_date"
   )
-  metareference <- enw_add_metaobs_features(metareference, holidays = holidays)
+  metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
   metadelay <- enw_delay_metadata(max_delay, breaks = 4)

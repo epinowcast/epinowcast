@@ -5,8 +5,8 @@
 \title{Load and compile the nowcasting model}
 \usage{
 enw_model(
-  model,
-  include,
+  model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
+  include = system.file("stan", package = "epinowcast"),
   compile = TRUE,
   threads = FALSE,
   profile = FALSE,
