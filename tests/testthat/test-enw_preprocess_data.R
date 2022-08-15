@@ -77,3 +77,30 @@ test_that("enw_preprocess_data hasn't changed compared to saved example data", {
   pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
   expect_equal(pobs, enw_example("preprocessed"))
 })
+
+test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
+  pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
+  expect_equal(
+    as.character(
+      pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
+    ),
+    "Sunday"
+  )
+  expect_equal(
+    as.character(
+      pobs$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]
+    ),
+    "Sunday"
+  )
+  expect_equal(
+    as.character(enw_preprocess_data(
+      nat_germany_hosp,
+      holidays = holidays,
+      holidays_to = "Holiday"
+    )$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]),
+    "Holiday"
+  )
+  expect_error(
+    enw_preprocess_data(nat_germany_hosp, holidays = junk)
+  )
+})

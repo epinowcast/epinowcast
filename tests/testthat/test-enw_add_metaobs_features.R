@@ -5,7 +5,7 @@ nat_germany_hosp <- setkey(germany_covid19_hosp[
   (location == "DE") & (age_group %in% "00+")
 ], reference_date)
 
-holidays = c(
+holidays <- c(
   "2021-04-04", "2021-04-05",
   "2021-05-01", "2021-05-13",
   "2021-05-24"
@@ -26,7 +26,8 @@ test_that("enw_add_metaobs_features always adds all columns", {
   expect_equal(
     sort(intersect(
       colnames(enw_add_metaobs_features(
-        nat_germany_hosp, datecol = "reference_date"
+        nat_germany_hosp,
+        datecol = "reference_date"
       )),
       metadatacols
     )),
@@ -37,7 +38,7 @@ test_that("enw_add_metaobs_features always adds all columns", {
 test_that("enw_add_metaobs_features overwrites columns with a warning", {
   dummy <- as.data.table(nat_germany_hosp)
   dow <- "Placeholder"
-  dummy[, day_of_week := dow ]
+  dummy[, day_of_week := dow]
   expect_warning(
     metaobs <- enw_add_metaobs_features(dummy, datecol = "reference_date")
   )
@@ -75,33 +76,6 @@ test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` pro
     holidays_to = "Holiday"
   )
   expect_equal(mobs[day_of_week == "Holiday", .N], 0)
-})
-
-test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
-  pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
-  expect_equal(
-    as.character(
-      pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
-    ),
-    "Sunday"
-  )
-  expect_equal(
-    as.character(
-      pobs$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]
-    ),
-    "Sunday"
-  )
-  expect_equal(
-    as.character(enw_preprocess_data(
-      nat_germany_hosp,
-      holidays = holidays,
-      holidays_to = "Holiday"
-    )$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]),
-    "Holiday"
-  )
-  expect_error(
-    enw_preprocess_data(nat_germany_hosp, holidays = junk)
-  )
 })
 
 # still WIP
