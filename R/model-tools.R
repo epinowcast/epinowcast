@@ -303,7 +303,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @examplesIf interactive()
 #' mod <- enw_model()
 enw_model <- function(model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
-                      include = dirname(model),
+                      include = system.file("stan", package = "epinowcast"),
                       compile = TRUE, threads = FALSE, profile = FALSE,
                       stanc_options = list(), verbose = TRUE,
                       ...) {
@@ -316,21 +316,16 @@ enw_model <- function(model = system.file("stan", "epinowcast.stan", package = "
     stan_no_profile <- write_stan_files_no_profile(model, include)
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths
-    if (verbose) {
-      message("Profiling removed; now...")
-      message(sprintf("Using model %s.", model))
-      message(sprintf("include is %s.", paste(include, collapse = ", ")))
-    }
   }
 
   if (compile) {
-    wrapper <- suppressMessages
+    monitor <- suppressMessages
     if (verbose) {
-      wrapper <- function(x) {
+      monitor <- function(x) {
         return(x)
       }
     }
-    model <- wrapper(cmdstanr::cmdstan_model(
+    model <- monitor(cmdstanr::cmdstan_model(
       model,
       include_paths = include,
       stanc_options = stanc_options,
