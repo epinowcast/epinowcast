@@ -100,15 +100,14 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #'
 #' @param type A character string indicating the example to load.
 #' Supported options are
-#'  * "nowcast, "preprocessed_observations", and "observations",
-#'  corresponding to the output of [epinowcast()], [enw_preprocess_data()],
-#' and [enw_latest_data()] applied to the [germany_covid19_hosp]
-#' dataset, and
-#'  * "scripts", the code used to generate these examples respectively.
+#'  * "nowcast", for [epinowcast()] applied to [germany_covid19_hosp]
+#'  * "preprocessed_observations", for [enw_preprocess_data()] applied to
+#'  [germany_covid19_hosp]
+#'  * "observations", for [enw_latest_data()] applied to [germany_covid19_hosp]
+#'  * "scripts", the code used to generate these examples.
 #'
-#' @return A `data.table` of summarised output
-#'  (`type` one of "nowcast, "preprocessed_observations", and "observations")
-#' or a file name for the script to generate these outputs (`type` = "script")
+#' @return Depending on `type`, a `data.table` of the requested output OR
+#' the file name(s) to generate these outputs (`type` = "script")
 #'
 #' @family data
 #' @export
@@ -125,7 +124,10 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
 #' readLines(enw_example(type = "scripts"))
-enw_example <- function(type = c("nowcast", "preprocessed_observations", "observations", "scripts")) {
+enw_example <- function(type = c(
+                          "nowcast", "preprocessed_observations",
+                          "observations", "scripts"
+                        )) {
   type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
@@ -166,7 +168,9 @@ enw_example <- function(type = c("nowcast", "preprocessed_observations", "observ
 #' # does not, indicates index 2 is problem
 #' tryCatch(
 #'   coerce_date(c("2020-05-28", "2020-o5-29")),
-#'   error = function(e) print(e)
+#'   error = function(e) {
+#'     print(e)
+#'   }
 #' )
 coerce_date <- function(dates) {
   if (length(dates) == 0) {

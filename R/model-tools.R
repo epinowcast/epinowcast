@@ -302,7 +302,10 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
+enw_model <- function(model = system.file(
+                        "stan", "epinowcast.stan",
+                        package = "epinowcast"
+                      ),
                       include = system.file("stan", package = "epinowcast"),
                       compile = TRUE, threads = FALSE, profile = FALSE,
                       stanc_options = list(), verbose = TRUE,
