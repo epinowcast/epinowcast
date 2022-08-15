@@ -40,7 +40,7 @@ enw_example(type = "observations")
 
 # Load the script used to generate these examples
 # Optionally source this script to regenerate the example
-readLines(enw_example(type = "scripts"))
+readLines(enw_example(type = "script"))
 }
 \seealso{
 Package data sets

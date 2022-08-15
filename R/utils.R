@@ -123,7 +123,7 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #'
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
-#' readLines(enw_example(type = "scripts"))
+#' readLines(enw_example(type = "script"))
 enw_example <- function(type = c(
                           "nowcast", "preprocessed_observations",
                           "observations", "script"
