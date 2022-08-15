@@ -33,7 +33,7 @@ enw_formula_as_data_list <- function(formula, prefix,
     paste0(lab, "_", string)
   }
   if (!missing(formula)) {
-    if (!("enw_formula" %in% class(formula))) {
+    if (!inherits(formula, "enw_formula")) {
       stop(
         "formula must be an object of class enw_formula as produced using
         enw_formula"
