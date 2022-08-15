@@ -6,7 +6,7 @@
 \usage{
 enw_model(
   model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
-  include = dirname(model),
+  include = system.file("stan", package = "epinowcast"),
   compile = TRUE,
   threads = FALSE,
   profile = FALSE,

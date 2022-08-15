@@ -30,8 +30,10 @@ as \link{IDate}.
 coerce_date(c("2020-05-28", "2020-05-29"))
 # does not, indicates index 2 is problem
 tryCatch(
- coerce_date(c("2020-05-28", "2020-o5-29")),
- error = function(e) print(e)
+  coerce_date(c("2020-05-28", "2020-o5-29")),
+  error = function(e) {
+    print(e)
+  }
 )
 }
 \seealso{

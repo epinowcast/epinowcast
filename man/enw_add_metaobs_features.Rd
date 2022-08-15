@@ -16,8 +16,8 @@ enw_add_metaobs_features(
 Coerced object must have \link{Dates} column corresponding to \code{datecol} name.}
 
 \item{holidays}{a (potentially empty) vector of dates (or input
-coerceable to such; see \code{\link[=coerce_date]{coerce_date()}}).
-The \code{day_of_week} column will be set to \code{holidays_to} for these dates.}
+coerceable to such; see \code{\link[=coerce_date]{coerce_date()}}). The \code{day_of_week} column will be
+set to \code{holidays_to} for these dates.}
 
 \item{holidays_to}{A character string to assign to holidays, when \code{holidays}
 argument non-empty. Replaces the \code{day_of_week} column value}
@@ -30,8 +30,8 @@ A copy of the \code{metaobs} input, with additional columns:
 \item \code{day_of_week}, a factor of values as output from \code{\link[=weekdays]{weekdays()}} and
 possibly as \code{holiday_to} if distinct from weekdays values
 \item \code{day}, numeric, 0 based from start of time series
-\item \code{week}, numeric, year based
-\item \code{month}, numeric, year based
+\item \code{week}, numeric, 0 based from start of time series
+\item \code{month}, numeric, 0 based from start of time series
 }
 }
 \description{

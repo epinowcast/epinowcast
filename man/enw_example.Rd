@@ -12,17 +12,16 @@ enw_example(
 \item{type}{A character string indicating the example to load.
 Supported options are
 \itemize{
-\item "nowcast, "preprocessed_observations", and "observations",
-corresponding to the output of \code{\link[=epinowcast]{epinowcast()}}, \code{\link[=enw_preprocess_data]{enw_preprocess_data()}},
-and \code{\link[=enw_latest_data]{enw_latest_data()}} applied to the \link{germany_covid19_hosp}
-dataset, and
-\item "scripts", the code used to generate these examples respectively.
+\item "nowcast", for \code{\link[=epinowcast]{epinowcast()}} applied to \link{germany_covid19_hosp}
+\item "preprocessed_observations", for \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} applied to
+\link{germany_covid19_hosp}
+\item "observations", for \code{\link[=enw_latest_data]{enw_latest_data()}} applied to \link{germany_covid19_hosp}
+\item "scripts", the code used to generate these examples.
 }}
 }
 \value{
-A \code{data.table} of summarised output
-(\code{type} one of "nowcast, "preprocessed_observations", and "observations")
-or a file name for the script to generate these outputs (\code{type} = "script")
+Depending on \code{type}, a \code{data.table} of the requested output OR
+the file name(s) to generate these outputs (\code{type} = "script")
 }
 \description{
 Loads examples of nowcasts produce using example scripts. Used to streamline
