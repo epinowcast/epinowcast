@@ -28,11 +28,11 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' of time series.
 #'
 #' @param metaobs Raw data, coerceable via [data.table::as.data.table()].
-#'  Coerced object must have [Dates] column corresponding to `datecol` name.
+#' Coerced object must have [Dates] column corresponding to `datecol` name.
 #'
 #' @param holidays a (potentially empty) vector of dates (or input
-#' coerceable to such; see [coerce_date()]).
-#' The `day_of_week` column will be set to `holidays_to` for these dates.
+#' coerceable to such; see [coerce_date()]). The `day_of_week` column will be
+#' set to `holidays_to` for these dates.
 #'
 #' @param holidays_to A character string to assign to holidays, when `holidays`
 #' argument non-empty. Replaces the `day_of_week` column value
@@ -52,8 +52,8 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #'  * `day_of_week`, a factor of values as output from [weekdays()] and
 #'  possibly as `holiday_to` if distinct from weekdays values
 #'  * `day`, numeric, 0 based from start of time series
-#'  * `week`, numeric, year based
-#'  * `month`, numeric, year based
+#'  * `week`, numeric, 0 based from start of time series
+#'  * `month`, numeric, 0 based from start of time series
 #'
 #' @family preprocess
 #' @importFrom purrr compose
@@ -115,17 +115,21 @@ enw_add_metaobs_features <- function(metaobs,
       datecol
     ))
   }
-  setkeyv(metaobs, union(key(metaobs), datecol))
+  data.table::setkeyv(metaobs, union(data.table::key(metaobs), datecol))
 
   # function to transform numbers to be referenced from 0
-  zerobase <- ~ .x - min(.x)
+  zerobase <- function(x) {
+    return(x - min(x))
+  }
   # function to transform by weeks
-  to0week <- ~ .x %/% 7L
+  to0week <- function(x) {
+    return(x %/% 7L)
+  }
   # function to count months from series start
   toevermonths <- function(d) {
-    m <- data.table::month(d) - 1
-    y <- data.table::year(d)
-    return(m + 12 * (y - min(y)))
+    m <- data.table::month(d)
+    y <- zerobase(data.table::year(d))
+    return(m + 12 * y)
   }
 
   # functions to extract date indices; defined as
@@ -134,13 +138,15 @@ enw_add_metaobs_features <- function(metaobs,
   funs <- lapply(list(
     day_of_week = list(
       factor,
-      ~ data.table::fifelse(
-        .x %in% holidays, holidays_to, weekdays(.x)
-      )
+      function(d) {
+        data.table::fifelse(
+          d %in% holidays, yes = holidays_to, no = weekdays(d)
+        )
+      }
     ),
     day = list(zerobase, as.numeric),
     week = list(to0week, zerobase, as.numeric),
-    month = list(toevermonths)
+    month = list(zerobase, toevermonths)
   ), function(fns) {
     purrr::compose(!!!fns)
   })
