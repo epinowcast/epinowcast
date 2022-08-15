@@ -108,7 +108,7 @@ check_module <- function(module) {
 check_modules_compatible <- function(modules) {
   if (
     modules[[4]]$data$model_miss &&
-    !modules[[6]]$data$likelihood_aggregation
+      !modules[[6]]$data$likelihood_aggregation
   ) {
     warning(paste0(
       "Incompatible model specification: A missingness model has ",

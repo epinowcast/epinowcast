@@ -85,12 +85,10 @@ enw_metadata <- function(obs, target_date = "reference_date") {
 #' )
 #' holidaymeta
 #' subset(holidaymeta, day_of_week == "Holiday")
-enw_add_metaobs_features <- function(
-  metaobs,
-  holidays = c(),
-  holidays_to = "Sunday",
-  datecol = "date"
-) {
+enw_add_metaobs_features <- function(metaobs,
+                                     holidays = c(),
+                                     holidays_to = "Sunday",
+                                     datecol = "date") {
   # localize and check metaobs input
   metaobs <- data.table::as.data.table(metaobs)
   if (is.null(metaobs[[datecol]])) {
@@ -831,11 +829,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-enw_preprocess_data <- function(
-  obs, by = c(), max_delay = 20,
-  set_negatives_to_zero = TRUE,
-  ...
-) {
+enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
+                                set_negatives_to_zero = TRUE,
+                                ...) {
   obs <- check_dates(obs)
   check_group(obs)
   obs <- obs[order(reference_date)]

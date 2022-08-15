@@ -328,7 +328,8 @@ enw_missing <- function(formula = ~1, data) {
     warning(
       "A missingness model has been specified. Note that this is not yet fully
        supported and unless you are a developer you likely want to keep this
-       turned off.", immediate. = TRUE
+       turned off.",
+      immediate. = TRUE
     )
   }
 
@@ -561,7 +562,8 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     nowcast <- TRUE
   }
   likelihood_aggregation <- match.arg(
-    likelihood_aggregation, choices = c("snapshots", "groups")
+    likelihood_aggregation,
+    choices = c("snapshots", "groups")
   )
   out <- list(sampler = sampler)
   out$data <- list(

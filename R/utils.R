@@ -125,9 +125,7 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
 #' readLines(enw_example(type = "scripts"))
-enw_example <- function(
-  type = c("nowcast", "preprocessed_observations", "observations", "scripts")
-) {
+enw_example <- function(type = c("nowcast", "preprocessed_observations", "observations", "scripts")) {
   type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
@@ -137,10 +135,9 @@ enw_example <- function(
   } else if (type == "scripts") {
     return(list.files(
       system.file(type, package = "epinowcast"),
-      full.names = TRUE)
-    )
+      full.names = TRUE
+    ))
   }
-
 }
 
 #' @title Coerce Dates
@@ -168,11 +165,10 @@ enw_example <- function(
 #' coerce_date(c("2020-05-28", "2020-05-29"))
 #' # does not, indicates index 2 is problem
 #' tryCatch(
-#'  coerce_date(c("2020-05-28", "2020-o5-29")),
-#'  error = function(e) print(e)
+#'   coerce_date(c("2020-05-28", "2020-o5-29")),
+#'   error = function(e) print(e)
 #' )
 coerce_date <- function(dates) {
-
   if (length(dates) == 0) {
     return(data.table::as.IDate(dates))
   }
@@ -183,7 +179,8 @@ coerce_date <- function(dates) {
       error = function(e) {
         return(data.table::as.IDate(NA))
       }
-  ) }, FUN.VALUE = data.table::as.IDate(0)))
+    )
+  }, FUN.VALUE = data.table::as.IDate(0)))
 
   if (any(is.na(res))) {
     bads <- is.na(res)
@@ -195,7 +192,6 @@ coerce_date <- function(dates) {
   } else {
     return(res)
   }
-
 }
 
 
