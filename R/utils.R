@@ -104,7 +104,7 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #'  * "preprocessed_observations", for [enw_preprocess_data()] applied to
 #'  [germany_covid19_hosp]
 #'  * "observations", for [enw_latest_data()] applied to [germany_covid19_hosp]
-#'  * "scripts", the code used to generate these examples.
+#'  * "script", the code used to generate these examples.
 #'
 #' @return Depending on `type`, a `data.table` of the requested output OR
 #' the file name(s) to generate these outputs (`type` = "script")
@@ -126,7 +126,7 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' readLines(enw_example(type = "scripts"))
 enw_example <- function(type = c(
                           "nowcast", "preprocessed_observations",
-                          "observations", "scripts"
+                          "observations", "script"
                         )) {
   type <- match.arg(type)
 
@@ -134,11 +134,10 @@ enw_example <- function(type = c(
     return(readRDS(
       system.file("extdata", sprintf("%s.rds", type), package = "epinowcast")
     ))
-  } else if (type == "scripts") {
-    return(list.files(
-      system.file(type, package = "epinowcast"),
-      full.names = TRUE
-    ))
+  } else if (type == "script") {
+    return(
+      system.file("examples", "germany_dow.R", package = "epinowcast")
+    )
   }
 }
 
