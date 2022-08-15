@@ -5,3 +5,17 @@ if (not_on_cran() & FALSE) {
     source(enw_example("script"))
   )
 }
+
+# Toy example data
+toy_incidence <- data.table::data.table(
+  reference_date = data.table::as.IDate("2021-10-01"),
+  report_date = seq(
+    data.table::as.IDate("2021-10-01"),
+    length.out = 10, by = 1
+  ),
+  new_confirm = c(1, 2, 3, 4, -2, 5, 5, 6, 7, 9)
+)
+
+toy_cumulative <- data.table::copy(toy_incidence)
+toy_cumulative <- toy_cumulative[, confirm := cumsum(new_confirm)]
+toy_cumulative <- toy_cumulative[sample(.N, .N)][, new_confirm := NULL]
