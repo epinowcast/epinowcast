@@ -1,10 +1,12 @@
 # epinowcast 0.2.0
 
 ## Package
-- Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
-a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
+- Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
+a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
+ - #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
+ - #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="scripts"`.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
@@ -22,6 +24,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 ## Bugs
 
 - The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying `ref_as_p` in the stan code. There was an additional issue in that the `enw_report()` module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in #142 by @seabbs.
+- The addition of meta features week and month did not properly sequentially number weeks and months when time series crossed year boundaries. This would impact models that included effects expecting those to in fact be sequentially numbered (e.g. random walks). Fixed in #151 by @pearsonca.
 
 # epinowcast 0.1.0
 
