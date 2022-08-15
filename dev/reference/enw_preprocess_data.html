@@ -126,8 +126,8 @@ completed with <code><a href="enw_complete_dates.html">enw_complete_dates()</a><
 <span>  <span class="va">obs</span>,</span>
 <span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fl">20</span>,</span>
-<span>  holidays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  set_negatives_to_zero <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  set_negatives_to_zero <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -155,17 +155,17 @@ that this is zero indexed and so includes the reference date and
 <code>max_delay - 1</code> other days.</p></dd>
 
 
-<dt>holidays</dt>
-<dd><p>A vector of dates indicating when holidays occur used by
-<code><a href="enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code> to treat holidays as sundays within the
-<code>day_of_week</code> variable it creates internally.</p></dd>
-
-
 <dt>set_negatives_to_zero</dt>
 <dd><p>Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Other arguments to <code><a href="enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code>,
+e.g. <code>holidays</code>, which sets commonly used metadata
+(e.g. day of week, days since start of time series)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -220,7 +220,7 @@ nowcasting.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Filter example hospitalisation data to be natioanl and over all ages</span></span></span>
+<span class="r-in"><span><span class="co"># Filter example hospitalisation data to be national and over all ages</span></span></span>
 <span class="r-in"><span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
@@ -242,7 +242,7 @@ nowcasting.</p></li>
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
 </div>
 
 <div class="pkgdown">

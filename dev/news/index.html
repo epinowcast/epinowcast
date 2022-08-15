@@ -81,6 +81,9 @@
 <li>Fixed indentations for authors and contributors in the <code>DESCRIPTION</code> file. See <a href="https://github.com/epiforecasts/epinowcast/issues/132" class="external-link">#132</a> by <a href="https://github.com/choi-hannah" class="external-link">@choi-hannah</a>.</li>
 <li>Renamed <code>enw_new_reports()</code> to <code><a href="../reference/enw_cumulative_to_incidence.html">enw_cumulative_to_incidence()</a></code> and added the reverse function <code><a href="../reference/enw_incidence_to_cumulative.html">enw_incidence_to_cumulative()</a></code> both functions use a <code>by</code> argument to allow specification of variable groupings. See <a href="https://github.com/epiforecasts/epinowcast/issues/157" class="external-link">#157</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 <li>Switched class checking to <code>inherits(x, "class")</code> rather than <code>class(x) %in% "class"</code>. See <a href="https://github.com/epiforecasts/epinowcast/issues/155" class="external-link">#155</a> by <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a>.</li>
+<li>Changed <code><a href="../reference/enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code> interface to have <code>holidays</code> argument as a series of dates. Changed interface of <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> to pass <code>...</code> to <code><a href="../reference/enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code>. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces <code><a href="../reference/coerce_date.html">coerce_date()</a></code> to <code>R/utils.R</code>, which wraps <code><a href="https://Rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code> with error handling. See <a href="https://github.com/epiforecasts/epinowcast/issues/151" class="external-link">#151</a> by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
+<li>#151 also corrects a subtle error previously underlying the addition of <code>week</code>s and <code>month</code>s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the <code><a href="https://lubridate.tidyverse.org/reference/week.html" class="external-link">lubridate::week</a></code> and <code><a href="https://lubridate.tidyverse.org/reference/month.html" class="external-link">lubridate::month</a></code> functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.</li>
+<li>#151 also corrects a minor issue with <code><a href="../reference/enw_example.html">enw_example()</a></code> pointing at an old file name when <code>type="script"</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="model-0-2-0">Model<a class="anchor" aria-label="anchor" href="#model-0-2-0"></a></h3>
@@ -99,7 +102,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bugs-0-2-0">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-0"></a></h3>
-<ul><li>The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying <code>ref_as_p</code> in the stan code. There was an additional issue in that the <code><a href="../reference/enw_report.html">enw_report()</a></code> module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in <a href="https://github.com/epiforecasts/epinowcast/issues/142" class="external-link">#142</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li></ul></div>
+<ul><li>The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying <code>ref_as_p</code> in the stan code. There was an additional issue in that the <code><a href="../reference/enw_report.html">enw_report()</a></code> module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in <a href="https://github.com/epiforecasts/epinowcast/issues/142" class="external-link">#142</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<li>The addition of meta features week and month did not properly sequentially number weeks and months when time series crossed year boundaries. This would impact models that included effects expecting those to in fact be sequentially numbered (e.g. random walks). Fixed in <a href="https://github.com/epiforecasts/epinowcast/issues/151" class="external-link">#151</a> by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="epinowcast-010">epinowcast 0.1.0<a class="anchor" aria-label="anchor" href="#epinowcast-010"></a></h2>
@@ -205,7 +210,7 @@
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
 </div>
 
 <div class="pkgdown">

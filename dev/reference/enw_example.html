@@ -86,24 +86,29 @@ functionality without needing to install <code>cmdstanr</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"nowcast"</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_example</span><span class="op">(</span></span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nowcast"</span>, <span class="st">"preprocessed_observations"</span>, <span class="st">"observations"</span>, <span class="st">"script"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>type</dt>
 <dd><p>A character string indicating the example to load.
-Supported options are "nowcast, "preprocessed_observations", "observations",
-and "script" which are the output of epinowcast()], <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>,
-and <code><a href="enw_latest_data.html">enw_latest_data()</a></code> applied to the <a href="germany_covid19_hosp.html">germany_covid19_hosp</a> package
-dataset), and the script used to generate these examples respectively.</p></dd>
+Supported options are</p><ul><li><p>"nowcast", for <code><a href="epinowcast.html">epinowcast()</a></code> applied to <a href="germany_covid19_hosp.html">germany_covid19_hosp</a></p></li>
+<li><p>"preprocessed_observations", for <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> applied to
+<a href="germany_covid19_hosp.html">germany_covid19_hosp</a></p></li>
+<li><p>"observations", for <code><a href="enw_latest_data.html">enw_latest_data()</a></code> applied to <a href="germany_covid19_hosp.html">germany_covid19_hosp</a></p></li>
+<li><p>"script", the code used to generate these examples.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A <code>data.table</code> of summarised output</p>
+<p>Depending on <code>type</code>, a <code>data.table</code> of the requested output OR
+the file name(s) to generate these outputs (<code>type</code> = "script")</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -122,11 +127,11 @@ dataset), and the script used to generate these examples respectively.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             metareport          metadelay time snapshots by groups max_delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[60x12]&gt; &lt;data.table[20x4]&gt;   41        41         1        20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      max_date               fit       data  fit_args samples max_rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[63]&gt; &lt;list[6]&gt;    1000     1.02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[67]&gt; &lt;list[6]&gt;    1000     1.01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    divergent_transitions per_divergent_transitions max_treedepth</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:                     0                         0             8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    no_at_max_treedepth per_at_max_treedepth run_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                  87                0.087     89.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 183                0.183     70.2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the preprocessed observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"preprocessed_observations"</span><span class="op">)</span></span></span>
@@ -168,8 +173,64 @@ dataset), and the script used to generate these examples respectively.</p></dd>
 <span class="r-in"><span><span class="co"># Load the script used to generate these examples</span></span></span>
 <span class="r-in"><span><span class="co"># Optionally source this script to regenerate the example</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"script"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>file("") only supports open = "w+" and open = "w+b": using the former</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "# Load epinowcast and data.table"                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "library(epinowcast)"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "library(data.table)"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "# Load and filter germany hospitalisations"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "nat_germany_hosp &lt;- germany_covid19_hosp[location == \"DE\"][age_group %in% \"00+\"]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "nat_germany_hosp &lt;- enw_filter_report_dates("                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "  nat_germany_hosp,"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "  latest_date = \"2021-10-01\""                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "# Make sure observations are complete"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "nat_germany_hosp &lt;- enw_complete_dates("                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "  nat_germany_hosp,"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "  by = c(\"location\", \"age_group\")"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "# Make a retrospective dataset"                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "retro_nat_germany &lt;- enw_filter_report_dates("                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "  nat_germany_hosp,"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "  remove_days = 40"                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "retro_nat_germany &lt;- enw_filter_reference_dates("                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "  retro_nat_germany,"                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "  include_days = 40"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "# Get latest observations for the same time period"                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "latest_obs &lt;- enw_latest_data(nat_germany_hosp)"                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "latest_obs &lt;- enw_filter_reference_dates("                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "  latest_obs,"                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "  remove_days = 40, include_days = 20"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "# Preprocess observations"                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "# Reference date model"                                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "reference_module &lt;- enw_reference(~1, data = pobs)"                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "# Report date model"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "report_module &lt;- enw_report(~ (1 | day_of_week), data = pobs)"                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "# Compile nowcasting model using multi-threading"                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "model &lt;- enw_model(threads = TRUE)"                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46] ""                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "# Fit nowcast model and produce a nowcast"                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "# Note that we have reduced samples for this example to reduce runtimes"             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "nowcast &lt;- epinowcast(pobs,"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [50] "  reference = reference_module,"                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "  report = report_module,"                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [52] "  fit = enw_fit_opts("                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "    save_warmup = FALSE, pp = TRUE,"                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [54] "    chains = 2, threads_per_chain = 2,"                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [55] "    iter_warmup = 500, iter_sampling = 500"                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [56] "  ),"                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [57] "  model = model"                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [58] ")"                                                                                   </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -177,7 +238,7 @@ dataset), and the script used to generate these examples respectively.</p></dd>
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
 </div>
 
 <div class="pkgdown">
