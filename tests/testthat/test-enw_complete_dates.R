@@ -22,8 +22,10 @@ test_that("enw_complete_dates works as expected with well behaved data", {
     exp_obs[!is.na(reference_date)]
   )
   obs$location <- "DE"
+  data.table::setkeyv(
+    exp_obs[, location := "DE"], c("location", "reference_date", "report_date")
+  )
   expect_equal(
-    enw_complete_dates(obs, by = "location"),
-    data.table::setcolorder(exp_obs[, location := "DE"], "location")
+    enw_complete_dates(obs, by = "location"), exp_obs
   )
 })
