@@ -60,7 +60,7 @@ retro_nat_germany <- enw_filter_report_dates(
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
-  include_days = 40
+  include_days = 60
 )
 
 # Get latest observations for the same time period
@@ -81,7 +81,7 @@ model <- enw_model(threads = FALSE)
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
 nowcast <- epinowcast(pobs,
-  missing = enw_missing(~1, data = pobs),
+  missing = enw_missing(~week, data = pobs),
   report = enw_report(~ (1 | day_of_week), data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,

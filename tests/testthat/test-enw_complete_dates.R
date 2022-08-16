@@ -15,6 +15,7 @@ test_that("enw_complete_dates works as expected with well behaved data", {
     ),
     confirm = c(rep(1, 3), rep(0, 6))
   )
+  data.table::setkeyv(exp_obs, c("reference_date", "report_date"))
   expect_equal(enw_complete_dates(obs), exp_obs)
   expect_equal(
     enw_complete_dates(obs, missing_reference = FALSE),
