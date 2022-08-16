@@ -33,7 +33,7 @@ enw_formula_as_data_list <- function(formula, prefix,
     paste0(lab, "_", string)
   }
   if (!missing(formula)) {
-    if (!("enw_formula" %in% class(formula))) {
+    if (!inherits(formula, "enw_formula")) {
       stop(
         "formula must be an object of class enw_formula as produced using
         enw_formula"
@@ -302,15 +302,17 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(model, include, compile = TRUE,
-                      threads = FALSE, profile = FALSE,
-                      stanc_options = list(), verbose = TRUE, ...) {
-  if (missing(model)) {
-    model <- "stan/epinowcast.stan"
-    model <- system.file(model, package = "epinowcast")
-  }
-  if (missing(include)) {
-    include <- system.file("stan", package = "epinowcast")
+enw_model <- function(model = system.file(
+                        "stan", "epinowcast.stan",
+                        package = "epinowcast"
+                      ),
+                      include = system.file("stan", package = "epinowcast"),
+                      compile = TRUE, threads = FALSE, profile = FALSE,
+                      stanc_options = list(), verbose = TRUE,
+                      ...) {
+  if (verbose) {
+    message(sprintf("Using model %s.", model))
+    message(sprintf("include is %s.", paste(include, collapse = ", ")))
   }
 
   if (!profile) {
@@ -320,26 +322,21 @@ enw_model <- function(model, include, compile = TRUE,
   }
 
   if (compile) {
+    monitor <- suppressMessages
     if (verbose) {
-      model <- cmdstanr::cmdstan_model(model,
-        include_paths = include,
-        stanc_options = stanc_options,
-        cpp_options = list(
-          stan_threads = threads
-        ),
-        ...
-      )
-    } else {
-      suppressMessages(
-        model <- cmdstanr::cmdstan_model(model,
-          include_paths = include,
-          stanc_options = stanc_options,
-          cpp_options = list(
-            stan_threads = threads
-          ), ...
-        )
-      )
+      monitor <- function(x) {
+        return(x)
+      }
     }
+    model <- monitor(cmdstanr::cmdstan_model(
+      model,
+      include_paths = include,
+      stanc_options = stanc_options,
+      cpp_options = list(
+        stan_threads = threads
+      ),
+      ...
+    ))
   }
   return(model)
 }
