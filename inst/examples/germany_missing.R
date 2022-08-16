@@ -11,7 +11,7 @@ options(mc.cores = 4)
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
-  latest_date = "2021-08-01"
+  latest_date = "2021-10-01"
 )
 
 # Make sure observations are complete
@@ -22,7 +22,7 @@ nat_germany_hosp <- enw_complete_dates(
 )
 
 # Set proportion missing at 35%
-prop_miss <- 0.15
+prop_miss <- 0.35
 
 # Prototypes for simulating missing data - likely to be implemented in 0.2.0
 enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {

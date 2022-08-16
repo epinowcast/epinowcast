@@ -353,7 +353,7 @@ enw_missing <- function(formula = ~1, data) {
 
     # Get (and order) reported cases with a missing reference date
     missing_reference <- data.table::copy(data$missing_reference[[1]])
-    data.table::setorderv(missing_reference, c(".group", "report_date"))
+    data.table::setkeyv(missing_reference, c(".group", "report_date"))
     data_list$missing_reference <- data.table::copy(missing_reference)[
       rep_w_complete_ref,
       on = c("report_date", ".group")
@@ -364,7 +364,7 @@ enw_missing <- function(formula = ~1, data) {
       missing_reference,
       reps_with_complete_refs = rep_w_complete_ref,
       metareference = data$metareference[[1]],
-      max_delay = data$max_delay[[1]],
+      max_delay = data$max_delay[[1]]
     )
     data_list$obs_by_report <- as.matrix(reference_by_report[, -1])
 
@@ -448,7 +448,7 @@ enw_obs <- function(family = "negbin", data) {
 
   # get new confirm for processing
   new_confirm <- data.table::copy(data$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
+  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm

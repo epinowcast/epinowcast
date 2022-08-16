@@ -4,6 +4,7 @@
 #' @param target_date PARAM_DESCRIPTION, Default: 'reference_date'
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
+#' @importFrom data.table setkeyv
 #' @export
 #' @importFrom data.table as.data.table
 enw_metadata <- function(obs, target_date = "reference_date") {
@@ -18,6 +19,7 @@ enw_metadata <- function(obs, target_date = "reference_date") {
   metaobs <- unique(metaobs)
   setnames(metaobs, target_date, "date")
   metaobs <- metaobs[, .SD[1, ], by = c("date", ".group")]
+  data.table::setkeyv(metaobs, c(".group", "date"))
   return(metaobs[])
 }
 
@@ -108,13 +110,7 @@ enw_add_metaobs_features <- function(metaobs,
       intersect(tarcols, colnames(metaobs))
     ))
   }
-
-  if (is.unsorted(metaobs[[datecol]])) {
-    warning(sprintf(
-      "metaobs is not sorted by column '%s'; returned result will be.",
-      datecol
-    ))
-  }
+  # sort by current sorting and datacol
   data.table::setkeyv(metaobs, union(data.table::key(metaobs), datecol))
 
   # function to transform numbers to be referenced from 0
@@ -173,7 +169,7 @@ enw_add_metaobs_features <- function(metaobs,
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy data.table rbindlist setorderv
+#' @importFrom data.table copy data.table rbindlist setkeyv
 #' @importFrom purrr map
 enw_extend_date <- function(metaobs, max_delay = 20) {
   exts <- data.table::copy(metaobs)
@@ -194,7 +190,7 @@ enw_extend_date <- function(metaobs, max_delay = 20) {
     data.table::copy(metaobs)[, observed := TRUE],
     exts[, observed := FALSE]
   )
-  data.table::setorderv(exts, c(".group", "date"))
+  data.table::setkeyv(exts, c(".group", "date"))
   return(exts[])
 }
 
@@ -219,6 +215,7 @@ enw_assign_group <- function(obs, by = c()) {
     groups_index[, .group := 1:.N]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
   }
+  data.table::setkeyv(obs, union(".group", data.table::key(obs)))
   return(obs = obs[])
 }
 
@@ -425,7 +422,7 @@ enw_latest_data <- function(obs) {
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
                                         by = c()) {
   reports <- check_dates(obs)
-  reports <- reports[order(reference_date, report_date)]
+  data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
     by = c("reference_date", by)
   ]
@@ -469,7 +466,7 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
   obs <- check_dates(obs)
 
   obs <- obs[!is.na(reference_date)]
-  obs[order(reference_date, report_date)]
+  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
 
   obs[, confirm := cumsum(new_confirm), by = c(by, "reference_date")]
   return(obs[])
@@ -527,7 +524,7 @@ enw_reporting_triangle <- function(obs) {
     obs, .group + reference_date ~ delay,
     value.var = "new_confirm", fill = 0
   )
-  data.table::setorderv(reports, c("reference_date", ".group"))
+  data.table::setkeyv(reports, c(".group", "reference_date"))
   return(reports[])
 }
 
@@ -550,7 +547,7 @@ enw_reporting_triangle_to_long <- function(obs) {
     id.vars = c("reference_date", ".group"),
     variable.name = "delay", value.name = "new_confirm"
   )
-  data.table::setorderv(reports_long, c("reference_date", ".group"))
+  data.table::sekeyv(reports_long, c(".group", "reference_date", "delay"))
   return(reports_long[])
 }
 
@@ -627,6 +624,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
     by = c("reference_date", ".group")
   ]
   obs[, .group := NULL]
+  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
   return(obs[])
 }
 
@@ -677,6 +675,7 @@ enw_missing_reference <- function(obs) {
   ref_missing <- ref_avail[ref_missing, on = c(".group", "report_date")]
   ref_missing[, prop_missing := confirm / (confirm + .old_group)]
   ref_missing[, .old_group := NULL]
+  data.table::setkeyv(ref_missing, c(".group", "report_date"))
   return(ref_missing[])
 }
 
@@ -872,7 +871,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
                                 ...) {
   obs <- check_dates(obs)
   check_group(obs)
-  obs <- obs[order(reference_date)]
+  data.table::setkeyv(obs, "reference_date")
 
   obs <- enw_assign_group(obs, by = by)
   obs <- enw_add_max_reported(obs)

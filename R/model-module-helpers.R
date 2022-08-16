@@ -48,7 +48,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     by = c("reference_date", ".group")
   ]
   miss_lk[, report_date := reference_date + delay]
-  data.table::setorderv(miss_lk, c("reference_date", ".group", "report_date"))
+  data.table::setkeyv(miss_lk, c(".group", "reference_date", "report_date"))
 
   # Assign an index (this should link with the in model index)
   miss_lk[, .id := 1:.N]
@@ -58,7 +58,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     reps_with_complete_refs,
     on = c("report_date", ".group")
   ]
-  data.table::setorderv(complete_miss_lk, c(".group", "report_date"))
+  data.table::setkeyv(complete_miss_lk, c(".group", "report_date"))
 
   # Make wide format
   refs_by_report <- data.table::dcast(
