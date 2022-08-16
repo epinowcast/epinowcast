@@ -547,7 +547,7 @@ enw_reporting_triangle_to_long <- function(obs) {
     id.vars = c("reference_date", ".group"),
     variable.name = "delay", value.name = "new_confirm"
   )
-  data.table::sekeyv(reports_long, c(".group", "reference_date", "delay"))
+  data.table::setkeyv(reports_long, c(".group", "reference_date", "delay"))
   return(reports_long[])
 }
 

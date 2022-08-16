@@ -58,7 +58,9 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     reps_with_complete_refs,
     on = c("report_date", ".group")
   ]
-  data.table::setkeyv(complete_miss_lk, c(".group", "report_date"))
+  data.table::setkeyv(
+    complete_miss_lk, c(".group", "report_date", "reference_date")
+  )
 
   # Make wide format
   refs_by_report <- data.table::dcast(

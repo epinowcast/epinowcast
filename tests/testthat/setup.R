@@ -15,7 +15,7 @@ toy_incidence <- data.table::data.table(
   ),
   new_confirm = c(1, 2, 3, 4, -2, 5, 5, 6, 7, 9)
 )
-data.table::setkeyv(toy_incidence, c("reference_data", "report_date"))
+data.table::setkeyv(toy_incidence, c("reference_date", "report_date"))
 
 toy_cumulative <- data.table::copy(toy_incidence)
 toy_cumulative <- toy_cumulative[, confirm := cumsum(new_confirm)]
