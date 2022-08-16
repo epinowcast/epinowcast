@@ -14,7 +14,7 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
     by = c(by, "report_date")
-  ][n == max_delay]
+  ][n >= max_delay]
   rep_with_complete_ref[, n := NULL]
   return(rep_with_complete_ref[])
 }
