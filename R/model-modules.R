@@ -340,13 +340,15 @@ enw_missing <- function(formula = ~1, data) {
     form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
     data_list <- enw_formula_as_data_list(
       form,
-      prefix = "miss", drop_intercept = TRUE
+      prefix = "miss",
+      drop_intercept = TRUE
     )
 
     # Get report dates that cover all reference dates up to the max delay
     rep_w_complete_ref <- enw_reps_with_complete_refs(
       data$new_confirm[[1]],
-      max_delay = data$max_delay[[1]], by = ".group"
+      max_delay = data$max_delay[[1]],
+      by = ".group"
     )
 
     # Get (and order) reported cases with a missing reference date
@@ -360,8 +362,9 @@ enw_missing <- function(formula = ~1, data) {
     # Build a look up between reports and reference dates
     reference_by_report <- enw_reference_by_report(
       missing_reference,
+      reps_with_complete_refs = rep_w_complete_ref,
+      metareference = data$metareference[[1]],
       max_delay = data$max_delay[[1]],
-      reps_with_complete_refs = rep_w_complete_ref
     )
     data_list$obs_by_report <- as.matrix(reference_by_report[, -1])
 

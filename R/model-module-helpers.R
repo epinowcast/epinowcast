@@ -28,21 +28,27 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
 #' (i.e fully reported) reference dates as produced using
 #' [enw_reps_with_complete_refs()].
 #'
+#' @param metareference `metareference` data.frame output from
+#' [enw_preprocess_data()].
+#'
 #' @return A wide data frame with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
-enw_reference_by_report <- function(missing_reference, max_delay,
-                                    reps_with_complete_refs) {
+enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
+                                    metareference, max_delay) {
   # Make a complete data frame of all possible reference and report dates
-  miss_lk <- unique(missing_reference[, .(report_date, .group)])
-  miss_lk[, delay := list((max_delay[[1]] - 1):0)]
+  miss_lk <- data.table::copy(metareference)[
+    ,
+    .(reference_date = date, .group)
+  ]
+  miss_lk[, delay := list(0:(max_delay - 1))]
   miss_lk <- miss_lk[,
     .(delay = unlist(delay)),
-    by = c("report_date", ".group")
+    by = c("reference_date", ".group")
   ]
-  miss_lk[, reference_date := report_date - delay]
-  data.table::setorderv(miss_lk, c("reference_date", ".group", "delay"))
+  miss_lk[, report_date := reference_date + delay]
+  data.table::setorderv(miss_lk, c("reference_date", ".group", "report_date"))
 
   # Assign an index (this should link with the in model index)
   miss_lk[, .id := 1:.N]
