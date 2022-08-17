@@ -68,6 +68,10 @@ reference:
     desc: Package datasets used in examples and by users to explore the package functionality.
     contents:
       - has_concept("data")
+  - title: Simulate Datasets
+    desc: Tools for simulating datasets
+    contents:
+      - has_concept("simulate")
   - title: Check inputs
     desc: Functions to check the structure of user inputs.
     contents:

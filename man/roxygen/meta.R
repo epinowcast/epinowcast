@@ -11,6 +11,7 @@ list( # nolint
     nowcast = "Functions used for nowcasting", # nolint
     generatedata = "Functions to generate simulated data",
     scenarios = "Functions to define and create scenarios",
+    simulate = "Tools for data simulation",
     data = "Package data sets",
     check = "Functions used for checking inputs",
     utils = "Utility functions"
