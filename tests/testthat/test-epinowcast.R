@@ -188,38 +188,32 @@ test_that("epinowcast can fit a simple missing data model", {
   expect_lt(nowcast$max_treedepth, 10)
   expect_lt(nowcast$max_rhat, 1.05)
   # Extract posteriors
-  posterior <- as.data.table(no_missing_nowcast$fit[[1]]$summary())
-  no_missing_posteiror <- as.data.table(nowcast$fit[[1]]$summary())
+  posterior <- as.data.table(nowcast$fit[[1]]$summary())
+  no_missing_posterior <- as.data.table(no_missing_nowcast$fit[[1]]$summary())
   # Check proportion missing
   miss_prop <- enw_posterior(nowcast$fit[[1]], variables = "miss_ref_lprop")
   cols <- c("mean", "median", "q5", "q20", "q80", "q95")
   miss_prop[, (cols) := lapply(.SD, exp), .SDcols = cols]
 
-  expect_diff_sum_abs_lt(
-    miss_prop[1, median], prop_miss, 0.02
-  )
+  # expect_diff_sum_abs_lt(
+  #   miss_prop[1, median], prop_miss, 0.02
+  # )
   # Posterior predictions have not changed by more than in total
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_obs", median],
-    regression_posterior[variable %like% "pp_obs", median],
+    no_missing_posterior[variable %like% "pp_obs", median],
     150
   )
-  # Day of the week effects are equal to within 25%
-  expect_diff_abs_lt_per(
-    posterior[variable %like% "rep_beta", median],
-    regression_posterior[variable %like% "rep_beta", median],
-    0.25
-  )
-  # Reporting distribution mean is equal to within 25%
+  # Reporting distribution mean is equal to within 10%
   expect_diff_abs_lt_per(
     posterior[variable %like% "refp_mean", median],
-    regression_posterior[variable %like% "refp_mean", median],
-    0.25
+    no_missing_posterior[variable %like% "refp_mean", median],
+    0.1
   )
-  # Reporting distribution sd is equal to within 25%
+  # Reporting distribution sd is equal to within 10%
   expect_diff_abs_lt_per(
     posterior[variable %like% "refp_sd", median],
-    regression_posterior[variable %like% "refp_sd", median],
-    0.25
+    no_missing_posterior[variable %like% "refp_sd", median],
+    0.1
   )
 })
