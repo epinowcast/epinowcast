@@ -14,6 +14,7 @@
 #'
 #' @inheritParams enw_cumulative_to_incidence
 #' @family simulate
+#' @export
 #' @examples
 #' # Load and filter germany hospitalisations
 #' nat_germany_hosp <- subset(
