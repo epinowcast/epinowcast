@@ -25,6 +25,7 @@ test_that("enw_complete_dates works as expected with well behaved data", {
   data.table::setkeyv(
     exp_obs[, location := "DE"], c("location", "reference_date", "report_date")
   )
+  data.table::setcolorder(exp_obs, "location")
   expect_equal(
     enw_complete_dates(obs, by = "location"), exp_obs
   )
