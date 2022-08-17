@@ -7,8 +7,11 @@
 - Switched class checking to `inherits(x, "class")` rather than `class(x) %in% "class"`. See #155 by @Bisaloo.
 - Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
 a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
- - #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
- - #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
+- #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
+- #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
+- Refined the use of data ordering throughout the preprocessing functions. See #147 by @seabbs.
+- Skipped tests that use `cmdstan` locally to improve the developer/contributor experience. See #147 by @seabbs.
+- Added a basic simulator function for missing reference data. See #147 by @seabbs.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
