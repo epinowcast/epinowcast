@@ -17,3 +17,10 @@ epinowcast_as_data <- function(...) {
   ))
   return(nowcast)
 }
+
+skip_on_local <- function() {
+  if (on_ci()) {
+    return(invisible(TRUE))
+  }
+  skip("Not on CI")
+}

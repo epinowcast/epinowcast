@@ -17,6 +17,7 @@ FUNCTION_DESCRIPTION
 }
 \seealso{
 Utility functions
+\code{\link{coerce_date}()},
 \code{\link{convert_cmdstan_to_rstan}()},
 \code{\link{expose_stan_fns}()},
 \code{\link{stan_fns_as_string}()}

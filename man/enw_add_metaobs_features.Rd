@@ -2,23 +2,80 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_metaobs_features}
 \alias{enw_add_metaobs_features}
-\title{FUNCTION_TITLE}
+\title{Add common metadata variables}
 \usage{
-enw_add_metaobs_features(metaobs, holidays = c(), holidays_to = "Sunday")
+enw_add_metaobs_features(
+  metaobs,
+  holidays = c(),
+  holidays_to = "Sunday",
+  datecol = "date"
+)
 }
 \arguments{
-\item{metaobs}{PARAM_DESCRIPTION}
+\item{metaobs}{Raw data, coerceable via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
+Coerced object must have \link{Dates} column corresponding to \code{datecol} name.}
 
-\item{holidays}{PARAM_DESCRIPTION}
+\item{holidays}{a (potentially empty) vector of dates (or input
+coerceable to such; see \code{\link[=coerce_date]{coerce_date()}}). The \code{day_of_week} column will be
+set to \code{holidays_to} for these dates.}
 
-\item{holidays_to}{A character string to assign to holidays when present.
-Replaces the day of the week and defaults to Sunday.}
+\item{holidays_to}{A character string to assign to holidays, when \code{holidays}
+argument non-empty. Replaces the \code{day_of_week} column value}
+
+\item{datecol}{The column in \code{metaobs} corresponding to pertinent dates.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A copy of the \code{metaobs} input, with additional columns:
+\itemize{
+\item \code{day_of_week}, a factor of values as output from \code{\link[=weekdays]{weekdays()}} and
+possibly as \code{holiday_to} if distinct from weekdays values
+\item \code{day}, numeric, 0 based from start of time series
+\item \code{week}, numeric, 0 based from start of time series
+\item \code{month}, numeric, 0 based from start of time series
+}
 }
 \description{
-FUNCTION_DESCRIPTION
+If not already present, annotates time series data with metadata
+commonly used in models: day of week, and days, weeks, and months since start
+of time series.
+}
+\details{
+Effects models often need to include covariates for time-based
+features, such as day of the week (e.g. to reflect different care-seeking
+and/or reporting behavior).
+
+This function is called from within \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} to systematically
+annotate \code{metaobs} with these commonly used metadata, if not already present.
+
+However, it can also be used directly on other data.
+}
+\examples{
+
+# make some example date
+nat_germany_hosp <- subset(
+  germany_covid19_hosp,
+  location == "DE" & age_group == "80+"
+)[1:40]
+
+basemeta <- enw_add_metaobs_features(
+  nat_germany_hosp,
+  datecol = "report_date"
+)
+basemeta
+
+# with holidays - n.b.: holidays not found are silently ignored
+holidaymeta <- enw_add_metaobs_features(
+  nat_germany_hosp,
+  datecol = "report_date",
+  holidays = c(
+    "2021-04-04", "2021-04-05",
+    "2021-05-01", "2021-05-13",
+    "2021-05-24"
+  ),
+  holidays_to = "Holiday"
+)
+holidaymeta
+subset(holidaymeta, day_of_week == "Holiday")
 }
 \seealso{
 Preprocessing functions
@@ -27,15 +84,16 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
-\code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
 \code{\link{enw_reporting_triangle}()}
