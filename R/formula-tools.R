@@ -296,7 +296,7 @@ rw <- function(time, by, type = "independent") {
 #'
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
-  if (!(class(rw) %in% "enw_rw_term")) {
+  if (!inherits(rw, "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
   }
   data <- data.table::copy(data)
@@ -414,7 +414,7 @@ re <- function(formula) {
 #' random_effect2 <- re(form$random[[2]])
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
-  if (!(class(re) %in% "enw_re_term")) {
+  if (!inherits(re, "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
   data <- data.table::as.data.table(data)

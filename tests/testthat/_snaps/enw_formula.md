@@ -132,26 +132,23 @@
       
       
       $expanded_formula
-      [1] "~1 + cweek1 + cweek2 + age_group"
+      [1] "~1 + cweek1 + age_group"
       
       $fixed
       $fixed$formula
-      [1] "~1 + cweek1 + cweek2 + age_group"
+      [1] "~1 + cweek1 + age_group"
       
       $fixed$design
-         (Intercept) cweek1 cweek2 age_group00+ age_group05-14 age_group15-34
-      1            1      0      0            1              0              0
-      2            1      1      0            1              0              0
-      9            1      1      1            1              0              0
-      12           1      0      0            0              1              0
-      13           1      1      0            0              1              0
-      20           1      1      1            0              1              0
-      23           1      0      0            0              0              1
-      24           1      1      0            0              0              1
-      31           1      1      1            0              0              1
+         (Intercept) cweek1 age_group00+ age_group05-14 age_group15-34
+      1            1      0            1              0              0
+      8            1      1            1              0              0
+      12           1      0            0              1              0
+      19           1      1            0              1              0
+      23           1      0            0              0              1
+      30           1      1            0              0              1
       
       $fixed$index
-       [1] 1 2 2 2 2 2 2 2 3 3 3 4 5 5 5 5 5 5 5 6 6 6 7 8 8 8 8 8 8 8 9 9 9
+       [1] 1 1 1 1 1 1 1 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 5 5 5 5 5 5 5 6 6 6 6
       
       
       $random
@@ -164,12 +161,11 @@
       2     0         1    0
       3     0         1    0
       4     0         0    1
-      5     0         0    1
       attr(,"assign")
       [1] 1 2 3
       
       $random$index
-      [1] 1 2 3 4 5
+      [1] 1 2 3 4
       
       
       attr(,"class")
@@ -198,46 +194,30 @@
       
       
       $expanded_formula
-      [1] "~1 + age_group:cweek1 + age_group:cweek2 + age_group"
+      [1] "~1 + age_group:cweek1 + age_group"
       
       $fixed
       $fixed$formula
-      [1] "~1 + age_group:cweek1 + age_group:cweek2 + age_group"
+      [1] "~1 + age_group:cweek1 + age_group"
       
       $fixed$design
          (Intercept) age_group00+ age_group05-14 age_group15-34 age_group00+:cweek1
       1            1            1              0              0                   0
-      2            1            1              0              0                   1
-      9            1            1              0              0                   1
+      8            1            1              0              0                   1
       12           1            0              1              0                   0
-      13           1            0              1              0                   0
-      20           1            0              1              0                   0
+      19           1            0              1              0                   0
       23           1            0              0              1                   0
-      24           1            0              0              1                   0
-      31           1            0              0              1                   0
-         age_group05-14:cweek1 age_group15-34:cweek1 age_group00+:cweek2
-      1                      0                     0                   0
-      2                      0                     0                   0
-      9                      0                     0                   1
-      12                     0                     0                   0
-      13                     1                     0                   0
-      20                     1                     0                   0
-      23                     0                     0                   0
-      24                     0                     1                   0
-      31                     0                     1                   0
-         age_group05-14:cweek2 age_group15-34:cweek2
+      30           1            0              0              1                   0
+         age_group05-14:cweek1 age_group15-34:cweek1
       1                      0                     0
-      2                      0                     0
-      9                      0                     0
+      8                      0                     0
       12                     0                     0
-      13                     0                     0
-      20                     1                     0
+      19                     1                     0
       23                     0                     0
-      24                     0                     0
-      31                     0                     1
+      30                     0                     1
       
       $fixed$index
-       [1] 1 2 2 2 2 2 2 2 3 3 3 4 5 5 5 5 5 5 5 6 6 6 7 8 8 8 8 8 8 8 9 9 9
+       [1] 1 1 1 1 1 1 1 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 5 5 5 5 5 5 5 6 6 6 6
       
       
       $random
@@ -252,9 +232,6 @@
       4     0         0                    1                      0
       5     0         0                    0                      1
       6     0         0                    0                      0
-      7     0         0                    1                      0
-      8     0         0                    0                      1
-      9     0         0                    0                      0
         `age_group15-34__week`
       1                      0
       2                      0
@@ -262,14 +239,11 @@
       4                      0
       5                      0
       6                      1
-      7                      0
-      8                      0
-      9                      1
       attr(,"assign")
       [1] 1 2 3 4 5
       
       $random$index
-      [1] 1 2 3 4 5 6 7 8 9
+      [1] 1 2 3 4 5 6
       
       
       attr(,"class")
@@ -298,11 +272,11 @@
       
       
       $expanded_formula
-      [1] "~1 + day_of_week + cweek1 + cweek2 + age_group"
+      [1] "~1 + day_of_week + cweek1 + age_group"
       
       $fixed
       $fixed$formula
-      [1] "~1 + day_of_week + cweek1 + cweek2 + age_group"
+      [1] "~1 + day_of_week + cweek1 + age_group"
       
       $fixed$design
          (Intercept) day_of_weekMonday day_of_weekSaturday day_of_weekSunday
@@ -339,40 +313,40 @@
       31           1                 0                   0                 0
       32           1                 0                   1                 0
       33           1                 0                   0                 1
-         day_of_weekThursday day_of_weekTuesday day_of_weekWednesday cweek1 cweek2
-      1                    1                  0                    0      0      0
-      2                    0                  0                    0      1      0
-      3                    0                  0                    0      1      0
-      4                    0                  0                    0      1      0
-      5                    0                  0                    0      1      0
-      6                    0                  1                    0      1      0
-      7                    0                  0                    1      1      0
-      8                    1                  0                    0      1      0
-      9                    0                  0                    0      1      1
-      10                   0                  0                    0      1      1
-      11                   0                  0                    0      1      1
-      12                   1                  0                    0      0      0
-      13                   0                  0                    0      1      0
-      14                   0                  0                    0      1      0
-      15                   0                  0                    0      1      0
-      16                   0                  0                    0      1      0
-      17                   0                  1                    0      1      0
-      18                   0                  0                    1      1      0
-      19                   1                  0                    0      1      0
-      20                   0                  0                    0      1      1
-      21                   0                  0                    0      1      1
-      22                   0                  0                    0      1      1
-      23                   1                  0                    0      0      0
-      24                   0                  0                    0      1      0
-      25                   0                  0                    0      1      0
-      26                   0                  0                    0      1      0
-      27                   0                  0                    0      1      0
-      28                   0                  1                    0      1      0
-      29                   0                  0                    1      1      0
-      30                   1                  0                    0      1      0
-      31                   0                  0                    0      1      1
-      32                   0                  0                    0      1      1
-      33                   0                  0                    0      1      1
+         day_of_weekThursday day_of_weekTuesday day_of_weekWednesday cweek1
+      1                    1                  0                    0      0
+      2                    0                  0                    0      0
+      3                    0                  0                    0      0
+      4                    0                  0                    0      0
+      5                    0                  0                    0      0
+      6                    0                  1                    0      0
+      7                    0                  0                    1      0
+      8                    1                  0                    0      1
+      9                    0                  0                    0      1
+      10                   0                  0                    0      1
+      11                   0                  0                    0      1
+      12                   1                  0                    0      0
+      13                   0                  0                    0      0
+      14                   0                  0                    0      0
+      15                   0                  0                    0      0
+      16                   0                  0                    0      0
+      17                   0                  1                    0      0
+      18                   0                  0                    1      0
+      19                   1                  0                    0      1
+      20                   0                  0                    0      1
+      21                   0                  0                    0      1
+      22                   0                  0                    0      1
+      23                   1                  0                    0      0
+      24                   0                  0                    0      0
+      25                   0                  0                    0      0
+      26                   0                  0                    0      0
+      27                   0                  0                    0      0
+      28                   0                  1                    0      0
+      29                   0                  0                    1      0
+      30                   1                  0                    0      1
+      31                   0                  0                    0      1
+      32                   0                  0                    0      1
+      33                   0                  0                    0      1
          age_group00+ age_group05-14 age_group15-34
       1             1              0              0
       2             1              0              0
@@ -429,12 +403,11 @@
       8      0         1    0
       9      0         1    0
       10     0         0    1
-      11     0         0    1
       attr(,"assign")
       [1] 1 2 3
       
       $random$index
-       [1]  1  2  3  4  5  6  7  8  9 10 11
+       [1]  1  2  3  4  5  6  7  8  9 10
       
       
       attr(,"class")

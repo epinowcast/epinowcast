@@ -99,12 +99,15 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' functionality without needing to install `cmdstanr`.
 #'
 #' @param type A character string indicating the example to load.
-#' Supported options are "nowcast, "preprocessed_observations", "observations",
-#' and "script" which are the output of epinowcast()], [enw_preprocess_data()],
-#' and [enw_latest_data()] applied to the [germany_covid19_hosp] package
-#' dataset), and the script used to generate these examples respectively.
+#' Supported options are
+#'  * "nowcast", for [epinowcast()] applied to [germany_covid19_hosp]
+#'  * "preprocessed_observations", for [enw_preprocess_data()] applied to
+#'  [germany_covid19_hosp]
+#'  * "observations", for [enw_latest_data()] applied to [germany_covid19_hosp]
+#'  * "script", the code used to generate these examples.
 #'
-#' @return A `data.table` of summarised output
+#' @return Depending on `type`, a `data.table` of the requested output OR
+#' the file name(s) to generate these outputs (`type` = "script")
 #'
 #' @family data
 #' @export
@@ -121,27 +124,80 @@ expose_stan_fns <- function(files, target_dir, ...) {
 #' # Load the script used to generate these examples
 #' # Optionally source this script to regenerate the example
 #' readLines(enw_example(type = "script"))
-enw_example <- function(type = "nowcast") {
-  type <- match.arg(
-    type,
-    choices = c(
-      "nowcast", "preprocessed_observations", "observations", "script"
-    )
-  )
+enw_example <- function(type = c(
+                          "nowcast", "preprocessed_observations",
+                          "observations", "script"
+                        )) {
+  type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
-    file <- system.file("extdata", paste0(type, ".rds"), package = "epinowcast")
-  } else if (type %in% "script") {
-    file <- system.file("scripts", "germany_example.R", package = "epinowcast")
+    return(readRDS(
+      system.file("extdata", sprintf("%s.rds", type), package = "epinowcast")
+    ))
+  } else if (type == "script") {
+    return(
+      system.file("examples", "germany_dow.R", package = "epinowcast")
+    )
+  }
+}
+
+#' @title Coerce Dates
+#'
+#' @description Provides consistent coercion of inputs to [IDate]
+#' with error handling
+#'
+#' @param dates A vector-like input, which the function attempts
+#' to coerce via [data.table::as.IDate()].
+#'
+#' @return An [IDate] vector.
+#'
+#' @details If any of the elements of `dates` cannot be coerced,
+#' this function will result in an error, indicating all indices
+#' which cannot be coerced to [IDate].
+#'
+#' Internal methods of [epinowcast] assume dates are represented
+#' as [IDate].
+#'
+#' @export
+#' @importFrom data.table as.IDate
+#' @family utils
+#' @examples
+#' # works
+#' coerce_date(c("2020-05-28", "2020-05-29"))
+#' # does not, indicates index 2 is problem
+#' tryCatch(
+#'   coerce_date(c("2020-05-28", "2020-o5-29")),
+#'   error = function(e) {
+#'     print(e)
+#'   }
+#' )
+coerce_date <- function(dates) {
+  if (length(dates) == 0) {
+    return(data.table::as.IDate(dates))
   }
 
-  if (type %in% "script") {
-    out <- file
+  res <- data.table::as.IDate(vapply(dates, function(d) {
+    tryCatch(
+      data.table::as.IDate(d, optional = TRUE),
+      error = function(e) {
+        return(data.table::as.IDate(NA))
+      }
+    )
+  }, FUN.VALUE = data.table::as.IDate(0)))
+
+  if (any(is.na(res))) {
+    bads <- is.na(res)
+    stop(sprintf(
+      "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
+      paste(dates[bads], collapse = ", "),
+      paste(which(bads), collapse = ", ")
+    ))
   } else {
-    out <- readRDS(file)
+    return(res)
   }
-  return(out)
 }
+
+
 
 utils::globalVariables(
   c(
@@ -155,6 +211,6 @@ utils::globalVariables(
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
-    "formula"
+    "formula", ".id", "n"
   )
 )

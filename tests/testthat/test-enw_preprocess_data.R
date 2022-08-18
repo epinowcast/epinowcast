@@ -39,7 +39,7 @@ test_that("Preprocessing produces expected output when excluding and using a
   expect_equal(pobs$max_delay[[1]], 10)
 })
 
-test_that("Preprocessing hanbdles groups as expected", {
+test_that("Preprocessing handles groups as expected", {
   pobs <- enw_preprocess_data(
     germany_covid19_hosp,
     by = c("location", "age_group")
@@ -52,7 +52,7 @@ test_that("Preprocessing hanbdles groups as expected", {
   expect_equal(pobs$max_delay[[1]], 20)
 })
 
-test_that("enw_preprocess_data hasn't changed compared to saved examle data", {
+test_that("enw_preprocess_data hasn't changed compared to saved example data", {
   nat_germany_hosp <- enw_filter_report_dates(
     nat_germany_hosp,
     latest_date = "2021-10-01"
@@ -76,4 +76,36 @@ test_that("enw_preprocess_data hasn't changed compared to saved examle data", {
   # Preprocess observations
   pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
   expect_equal(pobs, enw_example("preprocessed"))
+})
+
+test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
+  holidays <- c(
+    "2021-04-04", "2021-04-05",
+    "2021-05-01", "2021-05-13",
+    "2021-05-24"
+  )
+  pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
+  expect_equal(
+    as.character(
+      pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
+    ),
+    "Sunday"
+  )
+  expect_equal(
+    as.character(
+      pobs$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]
+    ),
+    "Sunday"
+  )
+  expect_equal(
+    as.character(enw_preprocess_data(
+      nat_germany_hosp,
+      holidays = holidays,
+      holidays_to = "Holiday"
+    )$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]),
+    "Holiday"
+  )
+  expect_error(
+    enw_preprocess_data(nat_germany_hosp, holidays = junk)
+  )
 })

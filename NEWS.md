@@ -4,25 +4,35 @@
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
 - Removed the warning for `enw_missing()` being used as this module is now supported. Updated `enw_missing()` to return a flat vector of observations with a missing reference date and a look-up matrix that maps between report dates and reference dates in `flat_obs` returned by `enw_obs()`. See #147 by @seabbs.
-
+- Renamed `enw_new_reports()` to `enw_cumulative_to_incidence()` and added the reverse function `enw_incidence_to_cumulative()` both functions use a `by` argument to allow specification of variable groupings. See #157 by @seabbs.
+- Switched class checking to `inherits(x, "class")` rather than `class(x) %in% "class"`. See #155 by @Bisaloo.
+- Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
+a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
+- #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
+- #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
+- Refined the use of data ordering throughout the preprocessing functions. See #147 by @seabbs.
+- Skipped tests that use `cmdstan` locally to improve the developer/contributor experience. See #147 by @seabbs.
+- Added a basic simulator function for missing reference data. See #147 by @seabbs.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
 - Implemented direct specification of parametric baseline hazards. See #134 by @adrian-lison.
 - Refactored the observation model, the combination of logit hazards, and the effects priors to be contained in generic functions to make extending package functionality easier. See #137 by @seabbs.
 - Implemented specification of the parametric baseline hazards and probabilities on the log scale to increase robustness and efficiency. Also includes refactoring of these functions and reorganisation of `inst/stan/epinowcast.stan` to increase modularity and clarity. See #140 by @seabbs.
-- Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these function rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
+- Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these functions rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
 - Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. See #138 by @seabbs and @adrian-lison.
 - Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
 - Added additional functionality to `delay_group_lmpf` to support modelling observations missing reference dates. Also updated the generated quantities to support this mode. See #147 by @seabbs based on #64 by @adrian-lison.
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
-- Added a new example using simulated data and the `enw_missing()` model module including a demonstration of extracting summarised posterior values for parameters of interest. See #138 and #147 by @seabbs.
+- Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
+- Update the model definition vignette to include the missing reference date model. See #147 by @seabbs.
 
 ## Bugs
 
 - The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying `ref_as_p` in the stan code. There was an additional issue in that the `enw_report()` module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in #142 by @seabbs.
+- The addition of meta features week and month did not properly sequentially number weeks and months when time series crossed year boundaries. This would impact models that included effects expecting those to in fact be sequentially numbered (e.g. random walks). Fixed in #151 by @pearsonca.
 
 # epinowcast 0.1.0
 

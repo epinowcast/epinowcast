@@ -18,6 +18,7 @@ Convert Cmdstan to Rstan
 }
 \seealso{
 Utility functions
+\code{\link{coerce_date}()},
 \code{\link{expose_stan_fns}()},
 \code{\link{is.Date}()},
 \code{\link{stan_fns_as_string}()}

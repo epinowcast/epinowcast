@@ -4,17 +4,24 @@
 \alias{enw_example}
 \title{Load a package example}
 \usage{
-enw_example(type = "nowcast")
+enw_example(
+  type = c("nowcast", "preprocessed_observations", "observations", "script")
+)
 }
 \arguments{
 \item{type}{A character string indicating the example to load.
-Supported options are "nowcast, "preprocessed_observations", "observations",
-and "script" which are the output of epinowcast()], \code{\link[=enw_preprocess_data]{enw_preprocess_data()}},
-and \code{\link[=enw_latest_data]{enw_latest_data()}} applied to the \link{germany_covid19_hosp} package
-dataset), and the script used to generate these examples respectively.}
+Supported options are
+\itemize{
+\item "nowcast", for \code{\link[=epinowcast]{epinowcast()}} applied to \link{germany_covid19_hosp}
+\item "preprocessed_observations", for \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} applied to
+\link{germany_covid19_hosp}
+\item "observations", for \code{\link[=enw_latest_data]{enw_latest_data()}} applied to \link{germany_covid19_hosp}
+\item "script", the code used to generate these examples.
+}}
 }
 \value{
-A \code{data.table} of summarised output
+Depending on \code{type}, a \code{data.table} of the requested output OR
+the file name(s) to generate these outputs (\code{type} = "script")
 }
 \description{
 Loads examples of nowcasts produce using example scripts. Used to streamline

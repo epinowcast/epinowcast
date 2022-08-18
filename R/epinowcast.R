@@ -138,6 +138,7 @@ epinowcast <- function(data,
   )
   names(modules) <- as.character(seq_len(length(modules)))
   purrr::walk(modules, check_module)
+  check_modules_compatible(modules)
 
   modules <- purrr::transpose(modules)
   data_as_list <- purrr::flatten(modules$data)
