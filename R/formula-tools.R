@@ -158,19 +158,17 @@ rw_terms <- function(formula) {
 #'
 #' epinowcast:::remove_rw_terms(~ 1 + age_group + location + rw(week, location))
 remove_rw_terms <- function(formula) {
-  form <- as_string_formula(formula)
-  form <- gsub("rw\\(.*?\\) \\+ ", "", form)
-  form <- gsub("\\+ rw\\(.*?\\)", "", form)
-  form <- gsub("rw\\(.*?\\)", "", form)
 
-  form <- tryCatch(
-    {
-      as.formula(form)
-    },
-    error = function(cond) {
-      as.formula(paste(form, 1))
-    }
-  )
+  trms <- terms(formula, specials = "rw")
+
+  newtrms <- labels(drop.terms(trms, attr(trms, "specials")$rw))
+
+  if (attr(trms, "intercept") == 1) {
+    newtrms <- c(1, newtrms)
+  }
+
+  form <- reformulate(newtrms)
+
   return(form)
 }
 
@@ -625,3 +623,4 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   class(out) <- c("enw_formula", class(out))
   return(out)
 }
+
