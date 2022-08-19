@@ -129,14 +129,14 @@ split_formula_to_terms <- function(formula) {
 #' epinowcast:::rw_terms(~ 1 + age_group + location)
 #'
 #' epinowcast:::rw_terms(~ 1 + age_group + location + rw(week, location))
+#'
+# FIXME: add an example & a test where rw() is in a random effect term. It
+# should then be ignored
 rw_terms <- function(formula) {
-  # use regex to find random walk terms in formula
-  trms <- attr(terms(formula), "term.labels")
-  match <- grepl("(^(rw)\\([^:]*\\))$", trms)
 
-  # ignore when included in a random effects term
-  match <- match & !grepl("\\|", trms)
-  return(trms[match])
+  trms <- terms(formula, specials = "rw")
+
+  return(labels(trms)[attr(trms, "specials")$rw])
 }
 
 #' Remove random walk terms from a formula object
