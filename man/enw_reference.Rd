@@ -6,7 +6,7 @@
 \usage{
 enw_reference(
   parametric = ~1,
-  distribution = "lognormal",
+  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
   non_parametric = ~0,
   data
 )
