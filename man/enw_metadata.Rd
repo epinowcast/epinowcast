@@ -4,7 +4,7 @@
 \alias{enw_metadata}
 \title{FUNCTION_TITLE}
 \usage{
-enw_metadata(obs, target_date = "reference_date")
+enw_metadata(obs, target_date = c("reference_date", "report_date"))
 }
 \arguments{
 \item{obs}{PARAM_DESCRIPTION}

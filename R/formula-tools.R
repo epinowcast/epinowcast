@@ -232,9 +232,9 @@ parse_formula <- function(formula) {
 #' If not specified no grouping is used. Currently this is limited to a single
 #' variable.
 #'
-#' @param type Character string, defaults to "independent". How should the
-#' standard deviation of the grouped random walks be estimated. Currently this
-#' can be set to be independent or dependent across groups.
+#' @param type Character string, how standard deviation of grouped random
+#' walks is estimated: "independent", or "dependent" across groups;
+#' enforced by [base::match.arg()].
 #'
 #' @return A list defining the time frame, group, and type with class
 #' "enw_rw_term" that can be interpreted by [construct_rw()].
@@ -246,8 +246,8 @@ parse_formula <- function(formula) {
 #' rw(time, location)
 #'
 #' rw(time, location, type = "dependent")
-rw <- function(time, by, type = "independent") {
-  type <- match.arg(type, choices = c("independent", "dependent"))
+rw <- function(time, by, type = c("independent", "dependent")) {
+  type <- match.arg(type)
   if (missing(time)) {
     stop("time must be present")
   } else {

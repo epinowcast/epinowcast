@@ -4,7 +4,13 @@
 \alias{plot.epinowcast}
 \title{Plot method for epinowcast}
 \usage{
-\method{plot}{epinowcast}(x, latest_obs = NULL, type = "nowcast", log = FALSE, ...)
+\method{plot}{epinowcast}(
+  x,
+  latest_obs = NULL,
+  type = c("nowcast", "posterior_prediction"),
+  log = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{A \code{data.table} of output as produced by \code{\link[=epinowcast]{epinowcast()}}.}
@@ -12,17 +18,20 @@
 \item{latest_obs}{A \code{data.frame} of observed data which may be passed to
 lower level methods.}
 
-\item{type}{A character string indicating the type of plot required.
-Currently supported options are "nowcast" which plots the nowcast
-for each dataset along with the latest available observed data (using
-\code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}}), and "posterior_prediction" which plots
-observations reported at the time against simulated observations from  the
-model (using \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}).}
+\item{type}{Character string indicating the plot required; enforced by
+\code{\link[base:match.arg]{base::match.arg()}}. Currently supported options:
+\itemize{
+\item "nowcast" which plots the nowcast for each dataset along with latest
+available observed data using \code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}},
+\item "posterior_prediction" which plots observations reported at the time
+against simulated observations from the model using
+\code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}.
+}}
 
 \item{log}{Logical, defaults to \code{FALSE}. Should counts be plot on the log
 scale.}
 
-\item{...}{Pass additional arguments to lower level plot functions.}
+\item{...}{Additional arguments to the plot function specified by \code{type}.}
 }
 \value{
 \code{ggplot2} object
