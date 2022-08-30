@@ -81,7 +81,11 @@
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for epinowcast</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">object</span>, type <span class="op">=</span> <span class="st">"nowcast"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
+<span>  <span class="va">object</span>,</span>
+<span>  type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nowcast"</span>, <span class="st">"nowcast_samples"</span>, <span class="st">"fit"</span>, <span class="st">"posterior_prediction"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -91,17 +95,17 @@
 
 
 <dt>type</dt>
-<dd><p>A character string indicating the type of summary to return.
-Currently supported options are "nowcast" which summaries the nowcast
-posterior using <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>, "nowcast_samples" which returns
-posterior samples from the most recent nowcast, "fit" which returns the
-summarised <code>cmdstanr</code> fit using <code><a href="enw_posterior.html">enw_posterior()</a></code>, and
-"posterior_prediction" which returns summarised posterior predictions for
-observations used in fitting (using <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>).</p></dd>
+<dd><p>Character string indicating the summary to return; enforced by
+<code><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">base::match.arg()</a></code>. Supported options are:</p><ul><li><p>"nowcast" which summarises nowcast posterior with <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>,</p></li>
+<li><p>"nowcast_samples" which samples latest with <code><a href="enw_nowcast_samples.html">enw_nowcast_samples()</a></code>,</p></li>
+<li><p>"fit" which returns the summarised <code>cmdstanr</code> fit with <code><a href="enw_posterior.html">enw_posterior()</a></code>,</p></li>
+<li><p>"posterior_prediction" which returns summarised posterior predictions for
+the observations after fitting using <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>.</p></li>
+</ul></dd>
 
 
 <dt>...</dt>
-<dd><p>Pass additional arguments to summary functions.</p></dd>
+<dd><p>Additional arguments passed to summary specified by <code>type</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
