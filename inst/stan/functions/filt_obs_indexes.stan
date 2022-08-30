@@ -5,6 +5,6 @@ array[] int filt_obs_indexes(int start, int end, array[] int csl,
   array[3] int n;
   n[1] = csl[start] - sl[start] + 1; // index of first obs in snapshot start
   n[2] = csl[end]; // index of last obs in snapshot end
-  n[3] = n[2] - n[1]; // total number of flattened obs / length of interval
+  n[3] = n[2] - n[1] + 1; // total number of flattened obs / length of interval
   return(n);
 }
