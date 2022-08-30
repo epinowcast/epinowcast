@@ -310,7 +310,7 @@ generated quantities {
         log_lik[i] = 0;
         for (j in 1:sl[i]) {
           log_lik[i] += obs_lpmf(
-            flat_obs[l[1] + j]  | log_exp_obs[f[1] + j], phi, model_obs
+            flat_obs[l[1] + j - 1]  | log_exp_obs[f[1] + j - 1], phi, model_obs
           );
         }
       }
@@ -333,10 +333,10 @@ generated quantities {
         int i_start = ts[start_t + i, k];
         array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
-        pp_inf_obs[i, k] = sum(segment(flat_obs, l[1] + 1, l[3]));
+        pp_inf_obs[i, k] = sum(segment(flat_obs, l[1], l[3]));
         if (sl[i_start] < dmax) {
           pp_inf_obs[i, k] += sum(
-            segment(pp_obs_tmp, f[1] + sl[i_start] + 1, f[3] - sl[i_start])
+            segment(pp_obs_tmp, f[1] + sl[i_start], f[3] - sl[i_start])
           );
         }
       }

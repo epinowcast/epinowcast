@@ -5,7 +5,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   real tar = 0;
   // Where am I?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
-  array[n[3]] int filt_obs = obs[(n[1] + 1):n[2]];
+  array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
   vector[n[3]] log_exp_obs;
 
   // combine expected final obs and date effects to get expected obs
@@ -35,7 +35,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   int i_start = ts[1, start];
   int i_end = ts[t, end];
   array[3] int n = filt_obs_indexes(i_start, i_end, csl, sl);
-  array[n[3]] int filt_obs = segment(obs, n[1] + 1, n[3]);
+  array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
   vector[model_miss ? miss_obs : 0]  log_exp_miss_ref;

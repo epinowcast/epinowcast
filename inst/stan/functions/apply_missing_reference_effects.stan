@@ -5,8 +5,8 @@ vector apply_missing_reference_effects(int start, int end, vector obs,
   vector[n[3]] alloc_obs;
   for (i in start:end) {
     array[3] int l = filt_obs_indexes(i, i, csl, sl);
-    alloc_obs[(l[1] + 1):l[2]] =
-      segment(obs, l[1] + 1, l[3]) + miss_ref_lprop[i];
+    alloc_obs[l[1]:l[2]] =
+      segment(obs, l[1], l[3]) + miss_ref_lprop[i];
   }
   return(alloc_obs);        
 }
