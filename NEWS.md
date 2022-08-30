@@ -10,13 +10,15 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
  - #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
  - #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
  - Changed the style of using `match.arg` for validating inputs. Briefly, the preference is now to define options via function arguments and validate with automatic `match.arg` idiom, e.g.
- ```
- enw_somefun <- function(..., somearg = c("default", "option1", "option2")) {
-  somearg <- match.arg(some.arg)
-  # ...
- }
- ```
- ...with corresponding enumerated documentation of the options. For this idiom, the first item in the definition is the default. This approach only applies to string-based arguments; different types of arguments cannot be matched this way, nor can arguments that allow for vector-valued options (e.g., if `somearg = c("option1", "option2")` were a legal argument indicating to use both options). See #162 by @pearsonca addressing issue #156 by @Bisaloo
+
+   ```
+   enw_somefun <- function(..., somearg = c("default", "option1", "option2")) {
+     somearg <- match.arg(somearg)
+     # ...
+   }
+   ```
+
+   ...with corresponding enumerated documentation of the options. For this idiom, the first item in the definition is the default. This approach only applies to string-based arguments; different types of arguments cannot be matched this way, nor can arguments that allow for vector-valued options (e.g., if `somearg = c("option1", "option2")` were a legal argument indicating to use both options). See #162 by @pearsonca addressing issue #156 by @Bisaloo
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
