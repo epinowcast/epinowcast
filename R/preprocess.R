@@ -660,7 +660,7 @@ enw_missing_reference <- function(obs) {
   obs <- check_dates(obs)
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
-    .(.old_group = sum(new_confirm)),
+    .(.confirm_avail = sum(new_confirm)),
     by = c("report_date", ".group")
   ]
 
@@ -673,8 +673,8 @@ enw_missing_reference <- function(obs) {
   )
   ref_missing[, (cols) := NULL]
   ref_missing <- ref_avail[ref_missing, on = c(".group", "report_date")]
-  ref_missing[, prop_missing := confirm / (confirm + .old_group)]
-  ref_missing[, .old_group := NULL]
+  ref_missing[, prop_missing := confirm / (confirm + .confirm_avail)]
+  ref_missing[, .confirm_avail := NULL]
   data.table::setkeyv(ref_missing, c(".group", "report_date"))
   return(ref_missing[])
 }
