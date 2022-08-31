@@ -16,27 +16,27 @@ functions {
 
 data {
   // Indexes and lookups
-  int n; // total observations
-  int t; // time range over which data is available 
-  int s; // number of snapshots there are
-  int g; // number of data groups
+  int n; // total number of observations (obs)
+  int t; // total number of time points 
+  int s; // total number of snapshots
+  int g; // total number of groups
   array[g] int groups; // array of group ids
-  array[s] int st; // when in this time snapshots are from
-  array[t, g] int ts; // snapshot related to time and group
-  array[s] int sl; // how many days of reported data does each snapshot have
-  array[s] int csl; // cumulative version of the above
-  array[s] int sg; // how snapshots are related
-  int dmax; // maximum possible report date
-  array[s] int sdmax; // Array of maximum reported dates
-  array[s] int csdmax; // Arraay of maximum cumulative reported dates
+  array[s] int st; // time index of each snapshot (snapshot time)
+  array[s] int sg; // group index of each snapshot (snapshot group)
+  array[t, g] int ts; // snapshot index by time and group
+  array[s] int sl; // number of reported obs per snapshot (snapshot length)
+  array[s] int csl; // cumulative version of sl
+  int dmax; // maximum possible reporting delay
+  array[s] int sdmax; // maximum delay by snapshot (snapshot dmax)
+  array[s] int csdmax; // cumulative version of sdmax
 
   // Observations
-  array[s, dmax] int obs; // obs for each primary date (row) and report date (column)
+  array[s, dmax] int obs; // obs by reference time (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
-  array[t, g] int latest_obs; // latest obs for each snapshot group
+  array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
-  array[2] real eobs_lsd_p; // Standard deviation for expected final observations
+  array[2] real eobs_lsd_p; // standard deviation for expected final obs
 
   // Reference day model
   int model_refp;
@@ -53,7 +53,7 @@ data {
 
   // Reporting day model
   int model_rep;
-  int rep_t; // how many reporting days are there (t + dmax - 1)
+  int rep_t; // total number of reporting times (t + dmax - 1)
   int rep_fnrow; 
   array[g, rep_t] int rep_findex; 
   int rep_fncol;
@@ -70,16 +70,21 @@ data {
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
-  // Observations reported without a reference date
+  // Observations reported without a reference time (by reporting time)
+  // Note: Since the first dmax-1 obs are not used here, the reporting time
+  // starts at dmax, not at 1
   array[miss_obs] int missing_reference;
-  // Linkage between expected observations by report and reference and by report
+  // Lookup for the obs index by reference time of entries in missing_reference:
+  // If observations from entry i of missing_reference had a reporting delay
+  // of d, their index in the flat vector of obs by reference time (e.g. flat_obs)
+  // would be: obs_by_report[i, d] 
   array[miss_obs, dmax] int obs_by_report;
   array[2] real miss_int_p;
   array[2] real miss_beta_sd_p;
 
   // Observation model
-  int model_obs; // Control parameter for the observation model
-  array[2] real sqrt_phi_p; // 1/sqrt(overdispersion)
+  int model_obs; // control parameter for the observation model
+  array[2] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
   // Control parameters
   int debug; // should debug information be shown
@@ -88,7 +93,7 @@ data {
   int likelihood_aggregation;
   int pp; // should posterior predictions be produced
   int cast; // should a nowcast be produced
-  int ologlik; // Should the pointwise log likelihood be calculated
+  int ologlik; // should the pointwise log likelihood be calculated
 }
 
 transformed data{
@@ -104,7 +109,7 @@ transformed data{
 
 parameters {
   // Expectation model
-  array[g] real leobs_init; // First time point for expected observations
+  array[g] real leobs_init; // First time point for expected obs
   vector<lower=0>[g] eobs_lsd; // standard deviation of rw for primary obs
   array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
 
