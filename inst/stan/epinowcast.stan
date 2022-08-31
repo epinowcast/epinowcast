@@ -70,7 +70,7 @@ data {
   matrix[expo_fncol,  expo_rncol + 1] expo_rdesign;
   array[2, 1] real expo_beta_sd_p;
 
-  // Reference day model
+  // Reference time model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -305,10 +305,17 @@ model {
       );
     }
   }
+<<<<<<< HEAD
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
   // Missing reference model
+=======
+  // priors and scaling for time of report effects
+  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
+  
+  // priors for missing reference time effects
+>>>>>>> Streamline time wording in in-model doc
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
