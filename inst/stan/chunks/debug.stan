@@ -24,7 +24,7 @@
         if (model_refp > 1) {
           print(refp_sd[i]);
         }
-        print("Unique report day hazards");
+        print("Unique reporting time hazards");
         print(srdlh);
         if (model_obs) {
           print("Overdispersion");
@@ -38,6 +38,6 @@
       j += is_inf(abs(srdlh[k])) ? 1 : 0;
     }
     if (j) {
-      print("Hazard effects on report date");
+      print("Hazard effects on reporting time");
       print(srdlh);
     }

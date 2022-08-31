@@ -38,7 +38,7 @@ data {
   // Expectation model
   array[2] real eobs_lsd_p; // standard deviation for expected final obs
 
-  // Reference day model
+  // Reference time model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -51,7 +51,7 @@ data {
   array[2] real refp_mean_beta_sd_p;
   array[2] real refp_sd_beta_sd_p; 
 
-  // Reporting day model
+  // Reporting time model
   int model_rep;
   int rep_t; // total number of reporting times (t + dmax - 1)
   int rep_fnrow; 
@@ -62,7 +62,7 @@ data {
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
   array[2] real rep_beta_sd_p;
 
-  // Missing reference date model
+  // Missing reference time model
   int model_miss;
   int miss_obs;
   int miss_fnindex;
@@ -100,7 +100,7 @@ transformed data{
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
   // prior mean of cases based on thoose observed
   vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
-  // if no reporting day effects use native probability for reference day
+  // if no reporting time effects use native probability for reference time
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
   // Type of likelihood aggregation to use
@@ -125,7 +125,7 @@ parameters {
   vector[rep_fncol] rep_beta;
   vector<lower=0>[rep_rncol] rep_beta_sd; 
 
-  // Missing reference date model
+  // Missing reference time model
   array[model_miss] real miss_int;
   vector[miss_fncol] miss_beta; 
   vector<lower=0>[miss_rncol] miss_beta_sd; 
@@ -142,7 +142,7 @@ transformed parameters{
   vector[refp_fnrow] refp_sd;
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
   // Report model
-  vector[rep_fnrow] srdlh; // sparse report day logit hazards
+  vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
   // Missing model
   vector[miss_fnindex] miss_ref_lprop;
 
@@ -160,10 +160,10 @@ transformed parameters{
   }
 
   // Reference model
-  profile("transformed_delay_reference_date_total") {
+  profile("transformed_delay_reference_time_total") {
   if (model_refp) {
-    // calculate sparse reference date effects
-    profile("transformed_delay_reference_date_effects") {
+    // calculate sparse reference time effects
+    profile("transformed_delay_reference_time_effects") {
     refp_mean = combine_effects(refp_mean_int[1], refp_mean_beta, refp_fdesign,
                                 refp_mean_beta_sd, refp_rdesign, 1);
     if (model_refp > 1) {
@@ -172,8 +172,8 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     }
     }
-    // calculate reference date logit hazards (unless no reporting effects)
-    profile("transformed_delay_reference_date_hazards") {
+    // calculate reference time logit hazards (unless no reporting effects)
+    profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
       ref_lh[, i] = discretised_logit_hazard(
         refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
@@ -184,7 +184,7 @@ transformed parameters{
   }
 
   // Report model
-  profile("transformed_delay_reporting_date_effects") {
+  profile("transformed_delay_reporting_time_effects") {
   srdlh =
     combine_effects(0, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
   }
@@ -234,10 +234,10 @@ model {
       );
     }
   }
-  // priors and scaling for date of report effects
+  // priors and scaling for time of report effects
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
-  // priors for missing reference date effects
+  // priors for missing reference time effects
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
@@ -351,7 +351,7 @@ generated quantities {
       // from a temporary object to a permanent one
       // drop predictions without linked observations
       pp_obs = allocate_observed_obs(1, s, pp_obs_tmp, sl, csl, sdmax, csdmax);
-      // Posterior predictions for observations missing reference dates
+      // Posterior predictions for observations missing reference times
       if (miss_obs) {
         pp_miss_ref = obs_rng(log_exp_miss_ref, phi, model_obs);
       }

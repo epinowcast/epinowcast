@@ -8,7 +8,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
   vector[n[3]] log_exp_obs;
 
-  // combine expected final obs and date effects to get expected obs
+  // combine expected final obs and time effects to get expected obs
   log_exp_obs = expected_obs_from_snaps(
     start, end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p,
     sl, csl, sg, st, n[3]
@@ -40,8 +40,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   vector[n[3]] log_exp_obs;
   vector[model_miss ? miss_obs : 0]  log_exp_miss_ref;
 
-  // Combine expected final obs and date effects to get expected obs
-  // If missing reference module in place calculated all expected obs vs 
+  // Combine expected final obs and time effects to get expected obs
+  // If missing reference module in place calculate all expected obs vs 
   // just those observed and allocate if missing or not.
   if (model_miss) {
     array[3] int f = filt_obs_indexes(i_start, i_end, csdmax, sdmax);
@@ -60,7 +60,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
       i_start, i_end, log_exp_obs, sl, csl, log1m_exp(miss_ref_lprop)
     );
 
-    // Allocate expected cases by report date
+    // Allocate expected cases by reporting time
     if (miss_obs) {
       log_exp_complete = apply_missing_reference_effects(
         i_start, i_end, log_exp_complete, sdmax, csdmax, miss_ref_lprop
