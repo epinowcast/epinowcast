@@ -9,6 +9,8 @@ enw_extend_date(metaobs, days = 20, direction = "end")
 \arguments{
 \item{metaobs}{PARAM_DESCRIPTION}
 
+\item{days}{PARAM_DESCRIPTION}
+
 \item{direction}{Should new dates be added at the begining or end of
 the data. Default is "end" with "start" also available}
 }

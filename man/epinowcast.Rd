@@ -9,8 +9,8 @@ epinowcast(
   reference = epinowcast::enw_reference(parametric = ~1, distribution = "lognormal",
     non_parametric = ~0, data = data),
   report = epinowcast::enw_report(non_parametric = ~0, structural = ~0, data = data),
-  expectation = epinowcast::enw_expectation(formula = ~rw(day, .group), generation_time
-    = 1, observation = ~1, latent_reporting_delay = 1, data = data),
+  expectation = epinowcast::enw_expectation(r = ~rw(week, .group), generation_time = 1,
+    observation = ~1, latent_reporting_delay = 1, data = data),
   missing = epinowcast::enw_missing(formula = ~0, data = data),
   obs = epinowcast::enw_obs(family = "negbin", data = data),
   fit = epinowcast::enw_fit_opts(fit = epinowcast::enw_sample, nowcast = TRUE, pp =
@@ -30,8 +30,8 @@ specification as defined using \code{\link[=enw_reference]{enw_reference()}}.}
 specification as defined using \code{\link[=enw_report]{enw_report()}}.}
 
 \item{expectation}{The expectation model specification as defined using
-\code{\link[=enw_expectation]{enw_expectation()}}. By default this is set to be highly flexible and thus
-weakly informed.}
+\code{\link[=enw_expectation]{enw_expectation()}}. By default this is set to be flexible and thus
+weakly informed with a random walk on the growth rate.}
 
 \item{missing}{The missing reference date model specification as defined
 using \code{\link[=enw_missing]{enw_missing()}}. By default this is set to not be used.}

@@ -115,12 +115,12 @@ data {
   // obs_by_report
   array[miss_obs ? g : 0] int miss_st;
   array[miss_obs ? g : 0] int miss_cst;
-  array[2] real miss_int_p;
-  array[2] real miss_beta_sd_p;
+  array[2, 1] real miss_int_p;
+  array[2, 1] real miss_beta_sd_p;
 
   // Observation model
   int model_obs; // control parameter for the observation model
-  array[2] real sqrt_phi_p; // 1/sqrt (overdispersion)
+  array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
   // Control parameters
   int debug; // should debug information be shown
@@ -321,8 +321,8 @@ model {
     profile("model_likelihood") {
     if (ll_aggregation) {
       target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, exp_lobs, t, sg, ts,
+        st, rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst
       );
     } else {
