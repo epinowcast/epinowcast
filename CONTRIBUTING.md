@@ -1,6 +1,6 @@
 # Contributing
 
-Development is a community effort, and we welcome participation.
+Development is a community effort, and we welcome participation. For more details on other forms of contribution please see our [community contribution page](https://www.epinowcast.org/contribute.html).
 
 ## Community
 
@@ -12,7 +12,7 @@ By participating in this project, you agree to abide by the [code of conduct](ht
 
 ## Discussions
 
-At <https://github.com/epinowcast/epinowcast/discussions>, you can post general questions, brainstorm ideas, and ask for help.
+At <https://community.epinowcast.org>, you can post general questions, brainstorm ideas, and ask for help.
 
 ## Issues
 
