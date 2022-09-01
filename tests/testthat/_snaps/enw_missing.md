@@ -82,12 +82,10 @@
       [1] 1
       
       $data$miss_st
-         .group V1
-      1:      1 22
+      [1] 22
       
       $data$miss_cst
-         .group V1
-      1:      1 22
+      [1] 22
       
       $data$missing_reference
        [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -197,10 +195,10 @@
       $data$obs_by_report
       numeric(0)
       
-      $data$miss_gt_start
+      $data$miss_st
       numeric(0)
       
-      $data$miss_gt_end
+      $data$miss_cst
       numeric(0)
       
       $data$model_miss
