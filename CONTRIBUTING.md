@@ -8,7 +8,7 @@ We hold a monthly community call where we discuss package development, research 
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by the [code of conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html).
+By participating in this project, you agree to abide by the [code of conduct](https://package.epinowcast.org/CODE_OF_CONDUCT.html).
 
 ## Discussions
 

@@ -12,7 +12,7 @@ This is a major release focusing on improving the user experience, and preparing
 * Convolution-based delay models (i.e hospitalisations and deaths) with partially reported data.
 * Additional observation models.
 
-If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://epiforecasts.io/epinowcast/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
+If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://package.epinowcast.org/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
 
 This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epiforecasts/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
 
@@ -68,7 +68,7 @@ This release contains multiple breaking changes. If needing the old interface pl
 * `prob_to_hazard` has been optimised so that only required cumulative probabilities are calculated (see [#53] by [@adrian-lison](https://github.com/adrian-lison) and [@seabbs](https://github.com/seabbs)).
 * Updated to use  the `inv_sqrt` stan function (see [#60](https://github.com/epiforecasts/epinowcast/pull/60) by @seabbs).
 * Added support for `scoringutils 1.0.0` (see [#61](https://github.com/epiforecasts/epinowcast/pull/61) by @seabbs). 
-* Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see [#61](https://github.com/epiforecasts/epinowcast/pull/61) by @seabbs).
+* Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epinowcast.org/forecast.vocs/) (see [#61](https://github.com/epiforecasts/epinowcast/pull/61) by @seabbs).
 
 # epinowcast 0.0.5
 

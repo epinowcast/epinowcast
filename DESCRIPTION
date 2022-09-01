@@ -32,7 +32,7 @@ Description: Tools to enable flexible and efficient hierarchical nowcasting of
     designed with epidemiological applications in mind, it could be applied
     to any set of right-truncated time-series count data.
 License: MIT + file LICENSE
-URL: https://epiforecasts.io/epinowcast/,
+URL: https://package.epinowcast.org,
     https://github.com/epiforecasts/epinowcast/
 BugReports: https://github.com/epiforecasts/epinowcast/issues/
 Depends:
