@@ -4,7 +4,7 @@ pkgdown_sha: 956f076f661eb2de9413f64ea24a580cf444466d
 articles:
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
-last_built: 2022-09-01T15:24Z
+last_built: 2022-09-01T15:40Z
 urls:
   reference: package.epinowcast.org/reference
   article: package.epinowcast.org/articles
