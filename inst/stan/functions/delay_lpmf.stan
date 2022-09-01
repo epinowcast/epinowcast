@@ -38,23 +38,23 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
-  vector[model_miss ? miss_obs : 0]  log_exp_miss_ref;
+  vector[model_miss ? miss_obs : 0]  log_exp_obs_miss;
 
   // Combine expected final obs and time effects to get expected obs
   // If missing reference module in place calculate all expected obs vs 
   // just those observed and allocate if missing or not.
   if (model_miss) {
     array[3] int f = filt_obs_indexes(i_start, i_end, csdmax, sdmax);
-    vector[f[3]] log_exp_complete;
+    vector[f[3]] log_exp_all;
 
     // Calculate all expected observations
-    log_exp_complete = expected_obs_from_snaps(
+    log_exp_all = expected_obs_from_snaps(
       i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3]
     );
 
     // Allocate to just those actually observed
     log_exp_obs = allocate_observed_obs(
-      i_start, i_end, log_exp_complete, sl, csl, sdmax, csdmax
+      i_start, i_end, log_exp_all, sl, csl, sdmax, csdmax
     );
     log_exp_obs = apply_missing_reference_effects(
       i_start, i_end, log_exp_obs, sl, csl, log1m_exp(miss_ref_lprop)
@@ -62,11 +62,11 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
 
     // Allocate expected cases by reporting time
     if (miss_obs) {
-      log_exp_complete = apply_missing_reference_effects(
-        i_start, i_end, log_exp_complete, sdmax, csdmax, miss_ref_lprop
+      log_exp_all = apply_missing_reference_effects(
+        i_start, i_end, log_exp_all, sdmax, csdmax, miss_ref_lprop
       );
-      log_exp_miss_ref = log_expected_by_report(
-        log_exp_complete, obs_by_report
+      log_exp_obs_miss = log_expected_by_report(
+        log_exp_all, obs_by_report
       );
     }
   }else{
@@ -78,7 +78,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   profile("model_likelihood_neg_binomial") {
   tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
   if (model_miss && miss_obs) {
-    tar += obs_lpmf(missing_reference | log_exp_miss_ref, phi, model_obs);
+    tar += obs_lpmf(missing_reference | log_exp_obs_miss, phi, model_obs);
   }
   }
   return(tar);
