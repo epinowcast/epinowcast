@@ -33,8 +33,8 @@ Description: Tools to enable flexible and efficient hierarchical nowcasting of
     to any set of right-truncated time-series count data.
 License: MIT + file LICENSE
 URL: https://package.epinowcast.org,
-    https://github.com/epiforecasts/epinowcast/
-BugReports: https://github.com/epiforecasts/epinowcast/issues/
+    https://github.com/epinowcast/epinowcast/
+BugReports: https://github.com/epinowcast/epinowcast/issues/
 Depends:
     R (>= 3.5.0)
 Imports:

@@ -2,7 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.183.0/containers/r
 {
 	"name": "epinowcast",
-	"image": "ghcr.io/epiforecasts/epinowcast:main",
+	"image": "ghcr.io/epinowcast/epinowcast:main",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {

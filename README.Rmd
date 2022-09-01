@@ -19,12 +19,12 @@ knitr::opts_chunk$set(
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/epiforecasts/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epiforecasts/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epiforecasts/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiforecasts/epinowcast)
+[![R-CMD-check](https://github.com/epinowcastpinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
 
-[![Universe](https://epiforecasts.r-universe.dev/badges/epinowcast)](https://epiforecasts.r-universe.dev/)
+[![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/)
 [![MIT
-license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epiforecasts/epinowcast/blob/master/LICENSE.md/)
-[![GitHub contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast)](https://github.com/epiforecasts/epinowcast/graphs/contributors) 
+license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/epinowcast/blob/master/LICENSE.md/)
+[![GitHub contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)](https://github.com/epinowcast/epinowcast/graphs/contributors) 
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
@@ -37,19 +37,19 @@ Tools to enable flexible and efficient hierarchical nowcasting of right-truncate
 Install the stable development version of the package with:
 
 ```{r, eval = FALSE}
-install.packages("epinowcast", repos = "https://epiforecasts.r-universe.dev")
+install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
 Alternatively, install the stable development from GitHub using the following, 
 
 ```{r, eval = FALSE}
-remotes::install_github("epiforecasts/epinowcast", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
 The unstable development version can also be installed from GitHub using the following,
 
 ```{r, eval = FALSE}
-remotes::install_github("epiforecasts/epinowcast@develop", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast@develop", dependencies = TRUE)
 ```
 
 ### Installing CmdStan
@@ -213,11 +213,11 @@ citation("epinowcast")
 
 ## How to make a bug report or feature request
 
-Please briefly describe your problem and what output you expect in an [issue](https://github.com/epiforecasts/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
+Please briefly describe your problem and what output you expect in an [issue](https://github.com/epinowcast/epinowcast/issues). If you have a question, please don't open an issue. Instead, ask on our [Q and A page](https://github.com/epinowcast/epinowcast/discussions/categories/q-a). See our [contributing guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
 ## Contributing
 
-We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epiforecasts/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epiforecasts/epinowcast/pulls). See our [contributing guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md) for more information.
+We welcome contributions and new contributors! We particularly appreciate help on priority problems in the [issues](https://github.com/epinowcast/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epinowcast/epinowcast/pulls). See our [contributing guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
 If interested in expanding the functionality of the underlying model note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors. Even if not wanting to add your updated model to the package please do reach out as we would love to hear about your use case.
 

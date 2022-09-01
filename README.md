@@ -5,15 +5,15 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/epiforecasts/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epiforecasts/epinowcast/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/epinowcastpinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/epiforecasts/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epiforecasts/epinowcast)
+coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
 
-[![Universe](https://epiforecasts.r-universe.dev/badges/epinowcast)](https://epiforecasts.r-universe.dev/)
+[![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/)
 [![MIT
-license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epiforecasts/epinowcast/blob/master/LICENSE.md/)
+license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/epinowcast/blob/master/LICENSE.md/)
 [![GitHub
-contributors](https://img.shields.io/github/contributors/epiforecasts/epinowcast)](https://github.com/epiforecasts/epinowcast/graphs/contributors)
+contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)](https://github.com/epinowcast/epinowcast/graphs/contributors)
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
@@ -36,21 +36,21 @@ applied to any set of right-truncated time-series count data.
 Install the stable development version of the package with:
 
 ``` r
-install.packages("epinowcast", repos = "https://epiforecasts.r-universe.dev")
+install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
 Alternatively, install the stable development from GitHub using the
 following,
 
 ``` r
-remotes::install_github("epiforecasts/epinowcast", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
 The unstable development version can also be installed from GitHub using
 the following,
 
 ``` r
-remotes::install_github("epiforecasts/epinowcast@develop", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast@develop", dependencies = TRUE)
 ```
 
 ### Installing CmdStan
@@ -390,22 +390,22 @@ following,
 ## How to make a bug report or feature request
 
 Please briefly describe your problem and what output you expect in an
-[issue](https://github.com/epiforecasts/epinowcast/issues). If you have
+[issue](https://github.com/epinowcast/epinowcast/issues). If you have
 a question, please don’t open an issue. Instead, ask on our [Q and A
-page](https://github.com/epiforecasts/epinowcast/discussions/categories/q-a).
+page](https://github.com/epinowcast/epinowcast/discussions/categories/q-a).
 See our [contributing
-guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
+guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
 for more information.
 
 ## Contributing
 
 We welcome contributions and new contributors\! We particularly
 appreciate help on priority problems in the
-[issues](https://github.com/epiforecasts/epinowcast/issues). Please
+[issues](https://github.com/epinowcast/epinowcast/issues). Please
 check and add to the issues, and/or add a [pull
-request](https://github.com/epiforecasts/epinowcast/pulls). See our
+request](https://github.com/epinowcast/epinowcast/pulls). See our
 [contributing
-guide](https://github.com/epiforecasts/epinowcast/blob/main/CONTRIBUTING.md)
+guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
 for more information.
 
 If interested in expanding the functionality of the underlying model
