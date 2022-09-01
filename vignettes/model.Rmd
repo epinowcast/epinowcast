@@ -99,7 +99,7 @@ Expected notifications by time of reference ($t$) and reporting delay can now be
   N_{g,t} &= \sum_{d=0}^{D} n_{g,t,d}
 \end{align}
 
-Where $\alpha_{g,t}$ is the proportion of cases by reference date that will not report their reference date. By default this is not modelled and is set to zero , see the accounting for reported cases with a missing reference date section for further detauls. Other observation models such as the Poisson distribution are also supported. See the documentation `enw_obs()` for details.
+Where $\alpha_{g,t}$ is the proportion of cases by reference date that will not report their reference date. By default this is not modelled and is set to zero , see the accounting for reported cases with a missing reference date section for further defaults. Other observation models such as the Poisson distribution are also supported. See the documentation `enw_obs()` for details.
 
 In order to make best use of observed data when nowcasting we use observations where available and where they have not been reported for a given report and reference date we use the posterior prediction from the observation model above. This means that as nowcast dates become increasingly truncated they depend more on modelled estimates whereas when they are more complete the majority of the final count is known.
 

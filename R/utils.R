@@ -197,8 +197,6 @@ coerce_date <- function(dates) {
   }
 }
 
-
-
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",
@@ -211,6 +209,6 @@ utils::globalVariables(
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
-    "formula", ".id", "n"
+    "formula", ".id", "n", ".confirm_avail"
   )
 )

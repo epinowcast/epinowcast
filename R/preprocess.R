@@ -30,11 +30,11 @@ enw_metadata <- function(obs, target_date = c(
 #' commonly used in models: day of week, and days, weeks, and months since start
 #' of time series.
 #'
-#' @param metaobs Raw data, coerceable via [data.table::as.data.table()].
+#' @param metaobs Raw data, coercible via [data.table::as.data.table()].
 #' Coerced object must have [Dates] column corresponding to `datecol` name.
 #'
 #' @param holidays a (potentially empty) vector of dates (or input
-#' coerceable to such; see [coerce_date()]). The `day_of_week` column will be
+#' coercible to such; see [coerce_date()]). The `day_of_week` column will be
 #' set to `holidays_to` for these dates.
 #'
 #' @param holidays_to A character string to assign to holidays, when `holidays`
@@ -44,7 +44,7 @@ enw_metadata <- function(obs, target_date = c(
 #'
 #' @details Effects models often need to include covariates for time-based
 #' features, such as day of the week (e.g. to reflect different care-seeking
-#' and/or reporting behavior).
+#' and/or reporting behaviour).
 #'
 #' This function is called from within [enw_preprocess_data()] to systematically
 #' annotate `metaobs` with these commonly used metadata, if not already present.

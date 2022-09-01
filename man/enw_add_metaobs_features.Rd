@@ -12,11 +12,11 @@ enw_add_metaobs_features(
 )
 }
 \arguments{
-\item{metaobs}{Raw data, coerceable via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
+\item{metaobs}{Raw data, coercible via \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.
 Coerced object must have \link{Dates} column corresponding to \code{datecol} name.}
 
 \item{holidays}{a (potentially empty) vector of dates (or input
-coerceable to such; see \code{\link[=coerce_date]{coerce_date()}}). The \code{day_of_week} column will be
+coercible to such; see \code{\link[=coerce_date]{coerce_date()}}). The \code{day_of_week} column will be
 set to \code{holidays_to} for these dates.}
 
 \item{holidays_to}{A character string to assign to holidays, when \code{holidays}
@@ -42,7 +42,7 @@ of time series.
 \details{
 Effects models often need to include covariates for time-based
 features, such as day of the week (e.g. to reflect different care-seeking
-and/or reporting behavior).
+and/or reporting behaviour).
 
 This function is called from within \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} to systematically
 annotate \code{metaobs} with these commonly used metadata, if not already present.
