@@ -11,7 +11,7 @@ options(mc.cores = 4)
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
-  latest_date = "2021-08-01"
+  latest_date = "2021-09-01"
 )
 
 # Make sure observations are complete

@@ -29,7 +29,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] real phi, int model_obs, int model_miss,
                       int miss_obs, array[] int missing_reference,
                       array[,] int obs_by_report, vector miss_ref_lprop,
-                      array[] int sdmax, array[] int csdmax) {
+                      array[] int sdmax, array[] int csdmax,
+                      array[] int miss_st, array[] int miss_cst) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
@@ -45,6 +46,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   // just those observed and allocate if missing or not.
   if (model_miss) {
     array[3] int f = filt_obs_indexes(i_start, i_end, csdmax, sdmax);
+    array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
     vector[f[3]] log_exp_all;
 
     // Calculate all expected observations
@@ -66,7 +68,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
         i_start, i_end, log_exp_all, sdmax, csdmax, miss_ref_lprop
       );
       log_exp_obs_miss = log_expected_by_report(
-        log_exp_all, obs_by_report
+        log_exp_all, obs_by_report[l[1]:l[2]]
       );
     }
   }else{
@@ -78,6 +80,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   profile("model_likelihood_neg_binomial") {
   tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
   if (model_miss && miss_obs) {
+    array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
+    array[l[3]] int filt_miss_ref = segment(missing_reference, l[1], l[3]);
     tar += obs_lpmf(missing_reference | log_exp_obs_miss, phi, model_obs);
   }
   }

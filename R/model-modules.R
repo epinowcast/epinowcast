@@ -333,6 +333,8 @@ enw_missing <- function(formula = ~1, data) {
     )
     data_list$missing_reference <- numeric(0)
     data_list$obs_by_report <- numeric(0)
+    data_list$miss_gt_start <- numeric(0)
+    data_list$miss_gt_end <- numeric(0)
     data_list$model_miss <- 0
     data_list$miss_obs <- 0
   } else {
@@ -350,6 +352,13 @@ enw_missing <- function(formula = ~1, data) {
       max_delay = data$max_delay[[1]],
       by = ".group"
     )
+
+    # Get the indexes for when grouped observations start and end
+    miss_lookup <- data.table::copy(rep_w_complete_ref)
+    data_list$miss_st <- miss_lookup[, n := 1:.N, by = ".group"]
+    data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
+    data_list$miss_cst <- miss_lookup[, n := 1:.N]
+    data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
 
     # Get (and order) reported cases with a missing reference date
     missing_reference <- data.table::copy(data$missing_reference[[1]])
