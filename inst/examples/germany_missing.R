@@ -21,8 +21,8 @@ nat_germany_hosp <- enw_complete_dates(
   missing_reference = FALSE
 )
 
-# Set proportion missing at 35%
-prop_miss <- 0.35
+# Set proportion missing at 20%
+prop_miss <- 0.2
 
 # Simulate using this function
 nat_germany_hosp <- enw_simulate_missing_reference(

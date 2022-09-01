@@ -82,7 +82,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   if (model_miss && miss_obs) {
     array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
     array[l[3]] int filt_miss_ref = segment(missing_reference, l[1], l[3]);
-    tar += obs_lpmf(missing_reference | log_exp_obs_miss, phi, model_obs);
+    tar += obs_lpmf(filt_miss_ref | log_exp_obs_miss, phi, model_obs);
   }
   }
   return(tar);

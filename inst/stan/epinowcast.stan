@@ -37,7 +37,7 @@ data {
 
   // Expectation model
   array[2] real eobs_lsd_p; // standard deviation for expected final obs
-
+ 
   // Reference time model
   int model_refp;
   int refp_fnrow;
