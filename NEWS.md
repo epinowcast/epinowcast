@@ -52,9 +52,9 @@ This is a major release focusing on improving the user experience, and preparing
 * Convolution-based delay models (i.e hospitalisations and deaths) with partially reported data.
 * Additional observation models.
 
-If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://epiforecasts.io/epinowcast/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
+If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://package.epinowcast.org/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
 
-This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epiforecasts/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
+This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epinowcast/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
 
 @adrian-lison, @sbfnk, and @seabbs contributed to this release. 
 

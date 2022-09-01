@@ -8,18 +8,18 @@ We hold a monthly community call where we discuss package development, research 
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by the [code of conduct](https://epiforecasts.io/epinowcast/CODE_OF_CONDUCT.html).
+By participating in this project, you agree to abide by the [code of conduct](https://package.epinowcast.org/CODE_OF_CONDUCT.html).
 
 ## Discussions
 
-At <https://github.com/epiforecasts/epinowcast/discussions>, you can post general questions, brainstorm ideas, and ask for help.
+At <https://github.com/epinowcast/epinowcast/discussions>, you can post general questions, brainstorm ideas, and ask for help.
 
 ## Issues
 
-<https://github.com/epiforecasts/epinowcast/issues> is for bug reports, performance issues, maintenance tasks, and feature requests. When you post, please abide by the following guidelines.
+<https://github.com/epinowcast/epinowcast/issues> is for bug reports, performance issues, maintenance tasks, and feature requests. When you post, please abide by the following guidelines.
 
 * Before posting a new issue, please take a moment to search for existing similar issues in order to avoid duplication.
-* For bug reports: if you can, please install the latest GitHub version of `epinowcast` (i.e. `remotes::install_github("epiforecasts/epinowcast")`) and verify that the issue still persists.
+* For bug reports: if you can, please install the latest GitHub version of `epinowcast` (i.e. `remotes::install_github("epinowcast/epinowcast")`) and verify that the issue still persists.
 * Describe your issue in prose as clearly and concisely as possible.
 * For any problem you identify, post a [minimal reproducible example](https://www.tidyverse.org/help/) like [this one](https://github.com/ropensci/targets/issues/256#issuecomment-754229683) so other contributors and authors can troubleshoot. A reproducible example is:
     * **Runnable**: post enough R code and data so any onlooker can create the error on their own computer.
@@ -30,7 +30,7 @@ At <https://github.com/epiforecasts/epinowcast/discussions>, you can post genera
 
 External code contributions are extremely helpful and appreciated. Here are the recommended steps.
 
-1. Prior to contribution, please propose your idea in a [new issue thread](https://github.com/epiforecasts/epinowcast/issues) so you and the reviewer can define the intent and scope of the work.
+1. Prior to contribution, please propose your idea in a [new issue thread](https://github.com/epinowcast/epinowcast/issues) so you and the reviewer can define the intent and scope of the work.
 2. [Fork the repository](https://help.github.com/articles/fork-a-repo/).
 3. Follow the [GitHub flow](https://guides.github.com/introduction/flow/index.html) to create a new branch, add commits, and open a pull request. 
 4. Discuss your code with the reviewer in the pull request thread.
@@ -45,5 +45,5 @@ Please also follow these additional guidelines.
 * Format your code according to the [tidyverse style guide](https://style.tidyverse.org/). That formatting can achieved by running `style_pkg()` from [`styler`](https://github.com/r-lib/styler) (which rewrites the files) and `lint_package()` from [`lintr`](https://github.com/jimhester/lintr) (which provides a list of complaints for you to resolve). Note: `styler::style_pkg()` does not examine roxygen content i.e. `@examples` so you will need to check that manually.
 * Check code coverage with `covr::package_coverage()`. Automated tests should cover all the new or changed functionality in your pull request.
 * Run overall package checks with `devtools::check()` and `goodpractice::gp()`
-* Describe your contribution in the project's [`NEWS.md`](https://github.com/epiforecasts/epinowcast/blob/main/NEWS.md) file. Be sure to mention relevant GitHub issue numbers and your GitHub name as done in existing news entries.
+* Describe your contribution in the project's [`NEWS.md`](https://github.com/epinowcast/epinowcast/blob/main/NEWS.md) file. Be sure to mention relevant GitHub issue numbers and your GitHub name as done in existing news entries.
 * If you feel your contribution is substantial enough for author or contributor status, please add yourself to the `Authors@R` field of the [`DESCRIPTION`](https://github.com/ropensci/jagstargets/blob/main/DESCRIPTION) file. In general, we consider any contribution sufficient for contributor status and several minor or a single major contributions sufficient for author status. If planning on writing a paper or similar about your package extension please note this in your contribution and feel free to suggest how you would like this to be managed.

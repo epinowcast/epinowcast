@@ -1,4 +1,4 @@
-url: epiforecasts.io/epinowcast/
+url: package.epinowcast.org/
 template:
   bootstrap: 5
   package: preferably

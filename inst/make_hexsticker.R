@@ -38,7 +38,7 @@ sticker(hex_plot,
         h_fill = "#ffffff",
         h_color = "#646770",
         filename = "./man/figures/logo.png",
-        url = "epiforecasts.io/epinowcast",
+        url = "epinowcast.org",
         u_color = "#646770",
         u_size = 3.5
 )
