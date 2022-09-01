@@ -4,9 +4,9 @@
   "identifier": "epinowcast",
   "description": "Tools to enable flexible and efficient hierarchical nowcasting of right censored epidemiological counts using a semi-mechanistic Bayesian method with support for both day of reference and day of report effects. Nowcasting in this context is the estimation of the total notifications (for example hospitalisations or deaths) that will be reported for a given date based on those currently reported and the pattern of reporting for previous days. This can be useful when tracking the spread of infectious disease in real-time as otherwise changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation.",
   "name": "epinowcast: Hierarchical Nowcasting of Right Censored Epidemiological Counts",
-  "relatedLink": "https://epiforecasts.io/epinowcast/",
-  "codeRepository": "https://github.com/epiforecasts/epinowcast/",
-  "issueTracker": "https://github.com/epiforecasts/epinowcast/issues/",
+  "relatedLink": "https://package.epinowcast.org/",
+  "codeRepository": "https://github.com/epinowcast/epinowcast/",
+  "issueTracker": "https://github.com/epinowcast/epinowcast/issues/",
   "license": "https://spdx.org/licenses/MIT",
   "version": "0.1.0.1000",
   "programmingLanguage": {
@@ -284,9 +284,9 @@
       }
     }
   ],
-  "releaseNotes": "https://github.com/epiforecasts/epinowcast/blob/master/NEWS.md",
-  "readme": "https://github.com/epiforecasts/epinowcast/blob/main/README.md",
-  "contIntegration": ["https://github.com/epiforecasts/epinowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epiforecasts/epinowcast"],
+  "releaseNotes": "https://github.com/epinowcast/epinowcast/blob/master/NEWS.md",
+  "readme": "https://github.com/epinowcast/epinowcast/blob/main/README.md",
+  "contIntegration": ["https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml", "https://app.codecov.io/gh/epinowcast/epinowcast"],
   "developmentStatus": "https://www.tidyverse.org/lifecycle/#experimental",
   "keywords": ["nowcasting", "stan", "cmdstanr", "epidemiology"]
 }

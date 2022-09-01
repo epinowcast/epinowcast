@@ -12,9 +12,9 @@ Tools to enable flexible and efficient hierarchical nowcasting of right-truncate
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://epiforecasts.io/epinowcast/}
-  \item \url{https://github.com/epiforecasts/epinowcast/}
-  \item Report bugs at \url{https://github.com/epiforecasts/epinowcast/issues/}
+  \item \url{https://package.epinowcast.org/}
+  \item \url{https://github.com/epinowcast/epinowcast/}
+  \item Report bugs at \url{https://github.com/epinowcast/epinowcast/issues/}
 }
 
 }

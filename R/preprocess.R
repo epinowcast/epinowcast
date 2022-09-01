@@ -7,17 +7,18 @@
 #' @importFrom data.table setkeyv
 #' @export
 #' @importFrom data.table as.data.table
-enw_metadata <- function(obs, target_date = "reference_date") {
+enw_metadata <- function(obs, target_date = c(
+                           "reference_date", "report_date"
+                         )) {
   choices <- c("reference_date", "report_date")
-  target_date <- match.arg(target_date, choices)
+  target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
-  metaobs <- data.table::as.data.table(obs)
+
+  metaobs <- setnames(data.table::as.data.table(obs), target_date, "date")
   metaobs[
     ,
     c(date_to_drop, "confirm", "max_confirm", "cum_prop_reported") := NULL
   ]
-  metaobs <- unique(metaobs)
-  setnames(metaobs, target_date, "date")
   metaobs <- metaobs[, .SD[1, ], by = c("date", ".group")]
   data.table::setkeyv(metaobs, c(".group", "date"))
   return(metaobs[])

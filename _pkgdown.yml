@@ -1,9 +1,9 @@
-url: epiforecasts.io/epinowcast/
+url: package.epinowcast.org/
 template:
   bootstrap: 5
   package: preferably
   params:
-    toggle: manual
+    toggle: auto
   twitter:
     creator: "@seabbs"
     card: summary_large_image

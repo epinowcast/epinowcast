@@ -1,5 +1,7 @@
 # epinowcast 0.2.0
 
+This is an experimental release that adds a large number of new features that remain potentially unstable. Please see our main release for a more stable package version.
+
 ## Package
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
@@ -7,11 +9,9 @@
 - Switched class checking to `inherits(x, "class")` rather than `class(x) %in% "class"`. See #155 by @Bisaloo.
 - Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
 a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
-- #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
-- #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
-- Refined the use of data ordering throughout the preprocessing functions. See #147 by @seabbs.
-- Skipped tests that use `cmdstan` locally to improve the developer/contributor experience. See #147 by @seabbs.
-- Added a basic simulator function for missing reference data. See #147 by @seabbs.
+ - #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
+ - #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
+ - Changed the style of using `match.arg` for validating inputs. Briefly, the preference is now to define options via function arguments and validate with automatic `match.arg` idiom with corresponding enumerated documentation of the options. For this idiom, the first item in the definition is the default. This approach only applies to string-based arguments; different types of arguments cannot be matched this way, nor can arguments that allow for vector-valued options (e.g., if `somearg = c("option1", "option2")` were a legal argument indicating to use both options). See #162 by @pearsonca addressing issue #156 by @Bisaloo
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
@@ -21,13 +21,10 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these functions rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
 - Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. See #138 by @seabbs and @adrian-lison.
 - Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
-- Added support for modelling missing reference dates to the likelihood. See #147 by @seabbs.
-
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
 - Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
-- Update the model definition vignette to include the missing reference date model. See #147 by @seabbs.
 
 ## Bugs
 
@@ -48,9 +45,9 @@ This is a major release focusing on improving the user experience, and preparing
 * Convolution-based delay models (i.e hospitalisations and deaths) with partially reported data.
 * Additional observation models.
 
-If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://epiforecasts.io/epinowcast/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
+If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://package.epinowcast.org/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
 
-This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epiforecasts/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
+This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epinowcast/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
 
 @adrian-lison, @sbfnk, and @seabbs contributed to this release. 
 
@@ -84,7 +81,7 @@ This release contains multiple breaking changes. If needing the old interface pl
 
 ## Internals
 
-* Array declarations in the stan model have been updated. To maintain compatibility with `expose_stan_fns()` (which itself depends on `rstan`), additional functionality has been added to parse stan code in this function. See #74, [#85](https://github.com/epiforecasts/epinowcast/pull/85#issuecomment-1172010003), and #93 by @sbfnk and @seabbs.
+* Array declarations in the stan model have been updated. To maintain compatibility with `expose_stan_fns()` (which itself depends on `rstan`), additional functionality has been added to parse stan code in this function. See #74, #85, and #93 by @sbfnk and @seabbs.
 * Remove spurious warnings due to missing initial values for optional parameters. See #76 by @sbfnk and @seabbs.
 
 # epinowcast 0.0.7
