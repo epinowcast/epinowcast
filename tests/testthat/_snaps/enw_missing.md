@@ -82,10 +82,19 @@
       [1] 1
       
       $data$miss_st
+<<<<<<< HEAD
       [1] 22
       
       $data$miss_cst
       [1] 22
+=======
+         .group V1
+      1:      1 22
+      
+      $data$miss_cst
+         .group V1
+      1:      1 22
+>>>>>>> add handling of group-wise missing reference observations and look-ups
       
       $data$missing_reference
        [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
