@@ -305,17 +305,10 @@ model {
       );
     }
   }
-<<<<<<< HEAD
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
   // Missing reference model
-=======
-  // priors and scaling for time of report effects
-  effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
-  
-  // priors for missing reference time effects
->>>>>>> Streamline time wording in in-model doc
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
