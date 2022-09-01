@@ -333,8 +333,8 @@ enw_missing <- function(formula = ~1, data) {
     )
     data_list$missing_reference <- numeric(0)
     data_list$obs_by_report <- numeric(0)
-    data_list$miss_gt_start <- numeric(0)
-    data_list$miss_gt_end <- numeric(0)
+    data_list$miss_st <- numeric(0)
+    data_list$miss_cst <- numeric(0)
     data_list$model_miss <- 0
     data_list$miss_obs <- 0
   } else {
