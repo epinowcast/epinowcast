@@ -2,6 +2,7 @@ functions {
 #include functions/zero_truncated_normal.stan
 #include functions/regression.stan
 #include functions/log_expected_obs_from_r.stan
+#include functions/log_expected_obs_from_latent_obs.stan
 #include functions/discretised_logit_hazard.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
@@ -37,9 +38,11 @@ data {
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
+    // Growth rate submodule
   int expr_r_seed; // How many seeding initial intercepts to use?
   int expr_gt_n; // Length of the generation time
   int expr_t; // Time span for r
+  int expr_ft; // Sum of expr_t + expr_r_seed
   // PMF describing the generation time (reversed and logged)
   vector[expr_gt_n] expr_lrgt; 
   // Observation model to use for the latent process. Currently 0 = none
@@ -53,7 +56,19 @@ data {
   // Mean of initial log cases
   array[2, g * expr_r_seed] real expr_leobs_int_p; 
   array[2, 1] real expr_r_int_p;
- array[2, 1] real expr_beta_sd_p;
+  array[2, 1] real expr_beta_sd_p;
+    // Observation sub-module
+  int expo_lrd_n; // Length of the generation time
+  // Parrtial PMF describing the reporting delay (reversed and logged)
+  vector[expo_lrd_n] expo_lrlrd; 
+  // Observation model to use for the latent process. Currently 0 = none
+  int expo_obs;
+  int expo_fnindex;
+  int expo_fncol;
+  int expo_rncol;
+  matrix[expo_fnindex, expo_fncol + 1] expo_fdesign;
+  matrix[expo_fncol,  expo_rncol + 1] expo_rdesign;
+  array[2, 1] real expo_beta_sd_p;
 
   // Reference day model
   int model_refp;
@@ -128,11 +143,15 @@ transformed data{
 
 parameters {
   // Expectation model
-  // Initial log observations by group
+    // Growth rate submodule
+    // Initial log observations by group
   matrix[expr_r_seed, g] expr_leobs_int; 
   real expr_r_int; 
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
+    // Observation sub-module
+    vector[expo_fncol] expo_beta;
+    vector<lower=0>[expo_rncol] expo_beta_sd;
 
   // Reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
@@ -158,6 +177,8 @@ parameters {
 transformed parameters{
   // Expectation model
   vector[expr_t] r; // Log growth rate of observations
+  array[g] vector[expr_ft]  exp_latent_lobs; // Expected final observations
+  vector[expo_obs ? expo_fnindex : 0] expo_modifier; // Reporting modifier
   array[g] vector[t]  exp_lobs; // Expected final observations
   // Reference model
   vector[refp_fnrow] refp_mean;
@@ -173,12 +194,27 @@ transformed parameters{
 
   // Expectation model
   profile("transformed_expected_final_observations") {
+  // Get log growth rates and map to expected latent observations
   r = combine_effects(
     expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 1
   );
-  exp_lobs = log_expected_obs_from_r(
-    expr_leobs_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt, t, g
+  exp_latent_lobs = log_expected_obs_from_r(
+    expr_leobs_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+    expr_ft, g
   );
+  // Get reporting modifiers and map latent expected observations to expected
+  // observations
+  if (expo_obs) {
+    expo_modifier = combine_effects(
+      0, expo_beta, expo_fdesign, expo_beta_sd, expo_rdesign, 1
+    );
+    exp_lobs = log_expected_obs_from_latent_obs(
+      exp_latent_lobs, expo_lrd_n, expo_lrlrd, t, g, expo_modifier
+    );
+  }else{
+    exp_lobs = exp_latent_lobs;
+  }
+
   }
 
   // Reference model
@@ -233,6 +269,7 @@ transformed parameters{
 model {
   profile("model_priors") {
   // Expectation model
+    // Growth rate sub-module
   // Initial intercept of log observations 
   to_vector(expr_leobs_int) ~ normal(expr_leobs_int_p[1], expr_leobs_int_p[2]);
   // Intercept of growth rate
@@ -241,7 +278,16 @@ model {
   effect_priors_lp(
     expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
   );
-  
+    // Observation model sub-module
+  // Reporting modifiers
+  effect_priors_lp(
+    expo_beta, expo_beta_sd, expo_beta_sd_p, expo_fncol, expo_rncol
+  );
+  // Reporting overdispersion (1/sqrt)
+  if (model_obs) {   
+    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
+  }
+
   // Reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
@@ -268,11 +314,6 @@ model {
     effect_priors_lp(
       miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
     );
-  }
-
-  // Observation model
-  if (model_obs) {   // reporting overdispersion (1/sqrt)
-    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
   }
   }
   // Log-Likelihood either by snapshot or group depending on settings/model

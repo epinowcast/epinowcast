@@ -219,48 +219,76 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 
 #' Expectation model module
 #'
-#' @param formula A formula (as implemented in [enw_formula()]) describing
+#' @param r A formula (as implemented in [enw_formula()]) describing
 #' the generative process used for expected incidence. This can use features
 #' defined by reference date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. By default this is set to use a daily group
-#' specific random walk. Note that the daily group specific random walk is
-#' currently the only option supported by [epinowcast()].
+#' specific random walk.
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
 #' renewal equation). When set to 1 (the default) this corresponds to modelling
 #' the daily growth rate.
 #'
+#' @param observation A formula (as implemented in [enw_formula()]) describing
+#' the modifiers used to adjust expected observations. This can use features
+#' defined by reference date as defined in `metareference` as produced by
+#' [enw_preprocess_data()]. By default no modifiers are used but a common choice
+#' might be to adjust for the day of the week. Note as the baseline is no
+#' modification an intercept is always used and it is set to 0.
+#'
+#' @param latent_reporting_delay A numeric vector that defaults to 1.
+#' Describes the weighting to apply to past and current latent expected
+#' observations (from most recent to least). This can be used both to convolve
+#' based on some assumed reporting delay and to rescale obserations (by
+#' multiplying a probability mass function by some fraction) to account
+#' ascertainment etc.
+#'
+#' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
+#' same arguments as passed to `enw_preprocess_data()` should be used here.
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(formula = ~ rw(day, by = .group),
-                            generation_time = 1, data) {
-  if (as_string_formula(formula) %in% "~0") {
-    stop("An expectation model formula must be specified")
+enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
+                            observation = ~1, latent_reporting_delay = 1,
+                            data, ...) {
+  if (as_string_formula(r) %in% "~0") {
+    stop("An expectation model formula for r must be specified")
   }
-
+  if (as_string_formula(observation) %in% "~0") {
+    observation <- ~1
+  }
   if (sum(generation_time) != 1) {
     stop("The generation time must sum to 1")
   }
 
-  features <- data$metareference[[1]]
-  features <- features[
+  # Set up growth rate features
+  r_features <- data$metareference[[1]]
+  if (length(latent_reporting_delay) > 1) {
+    r_features <- enw_extend_date(
+      r_features,
+      days = length(latent_reporting_delay) - 1, direction = "start"
+    )
+    enw_add_metaobs_features(r_features, ...)
+  }
+  r_features <- r_features[
     date >= (min(date) + length(generation_time))
   ]
 
+  # Growth rate indicator variables
   r_list <- list(
     r_seed = length(generation_time),
     gt_n = length(generation_time),
     lrgt = log(rev(generation_time)),
-    t = nrow(features),
+    t = nrow(r_features),
     obs = 0
   )
 
   r_list$g <- cumsum(rep(r_list$t, data$groups[[1]])) - r_list$t
+  r_list$ft <- r_list$t + r_list$r_seed
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
@@ -268,33 +296,60 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
   seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
-  form <- enw_formula(formula, features, sparse = FALSE)
-  data <- enw_formula_as_data_list(
-    form,
+  # Growth rate model formula
+  r_form <- enw_formula(r, r_features, sparse = FALSE)
+  r_data <- enw_formula_as_data_list(
+    r_form,
     prefix = "expr", drop_intercept = TRUE
   )
 
+  # Observation indicator variables
+  obs_list <- list(
+    lrd_n = length(latent_reporting_delay),
+    lrlrd = log(rev(latent_reporting_delay))
+  )
+  obs_list$obs <- ifelse(
+    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
+      as_string_formula(observation) %in% "~1",
+    0, 1
+  )
+  # Observation formula
+  obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
+  obs_data <- enw_formula_as_data_list(
+    obs_form,
+    prefix = "expo", drop_intercept = TRUE
+  )
+
   out <- list()
-  out$formula$expectation <- form$formula
+  out$formula$r <- r_form$formula
+  out$formula$observation <- obs_form$formula
+  out$data_raw$r <- r_features
+  out$data_raw$observation <- data$metareference[[1]]
+
   names(r_list) <- paste0("expr_", names(r_list))
-  out$data <- c(r_list, data)
+  names(obs_list) <- paste0("expo_", names(obs_list))
+  out$data <- c(r_list, r_data, obs_list, obs_data)
+
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
-      rep("expr_leobs_int", length(seed_obs))
+      rep("expr_leobs_int", length(seed_obs)),
+      "expo_beta_sd"
     ),
-    dimension = c(1, 1, seq_along(seed_obs)),
+    dimension = c(1, 1, seq_along(seed_obs), 1),
     description = c(
       "Intercept of the log growth rate",
-      "Standard deviation of scaled pooled expectation effects",
+      "Standard deviation of scaled pooled log growth rate effects",
       rep("Intercept for initial log observations (ordered by group and then
-          time)", length(seed_obs))
+          time)", length(seed_obs)),
+      "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(
-      "Normal", "Zero truncated normal", rep("Normal", length(seed_obs))
+      "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
+      "Zero truncated normal"
     ),
-    mean = c(0, 0, seed_obs),
-    sd = c(0.2, 0.1, rep(1, length(seed_obs)))
+    mean = c(0, 0, seed_obs, 0),
+    sd = c(0.2, 1, rep(1, length(seed_obs)), 1)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -312,15 +367,26 @@ enw_expectation <- function(formula = ~ rw(day, by = .group),
         )),
         expr_r_int = rnorm(
           1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
-        )
+        ),
+        expo_beta = numeric(0),
+        expo_beta_sd = numeric(0)
       )
       if (data$expr_fncol > 0) {
         init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
       }
-      if (data$ expr_rncol > 0) {
+      if (data$expr_rncol > 0) {
         init$expr_beta_sd <- abs(rnorm(
           data$expr_rncol, priors$expr_beta_sd_p[1],
           priors$expr_beta_sd_p[2] / 10
+        ))
+      }
+      if (data$expo_fncol > 0) {
+        init$expo_beta <- rnorm(data$expo_fncol, 0, 0.01)
+      }
+      if (data$expo_rncol > 0) {
+        init$expo_beta_sd <- abs(rnorm(
+          data$expo_rncol, priors$expo_beta_sd_p[1],
+          priors$expo_beta_sd_p[2] / 10
         ))
       }
       return(init)

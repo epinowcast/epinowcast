@@ -38,13 +38,13 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
-# Fit the default nowcast model and produce a nowcast
-# Note that we have reduced samples for this example to reduce runtimes
+# Fit a simple nowcasting model with fixed growth rate and a
+# log-normal reporting distribution.
 nowcast <- epinowcast(pobs,
-  expectation = enw_expectation(~ rw(week) + (1 | day_of_week), data = pobs),
+  expectation = enw_expectation(~1, data = pobs),
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 2, iter_warmup = 500, iter_sampling = 500
+    chains = 2, iter_warmup = 500, iter_sampling = 500,
   ),
-  obs = enw_obs(family = "poisson", data = pobs)
+  obs = enw_obs(family = "poisson", data = pobs),
 )
