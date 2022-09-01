@@ -1,5 +1,7 @@
 # epinowcast 0.2.0
 
+This is an experimental release that adds a large number of new features that remain potentially unstable. Please see our main release for a more stable package version.
+
 ## Package
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
