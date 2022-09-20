@@ -97,13 +97,13 @@ of time series.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>metaobs</dt>
-<dd><p>Raw data, coerceable via <code><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>.
+<dd><p>Raw data, coercible via <code><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>.
 Coerced object must have <a href="https://rdrr.io/r/base/Dates.html" class="external-link">Dates</a> column corresponding to <code>datecol</code> name.</p></dd>
 
 
 <dt>holidays</dt>
 <dd><p>a (potentially empty) vector of dates (or input
-coerceable to such; see <code><a href="coerce_date.html">coerce_date()</a></code>). The <code>day_of_week</code> column will be
+coercible to such; see <code><a href="coerce_date.html">coerce_date()</a></code>). The <code>day_of_week</code> column will be
 set to <code>holidays_to</code> for these dates.</p></dd>
 
 
@@ -130,7 +130,7 @@ possibly as <code>holiday_to</code> if distinct from weekdays values</p></li>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Effects models often need to include covariates for time-based
 features, such as day of the week (e.g. to reflect different care-seeking
-and/or reporting behavior).</p>
+and/or reporting behaviour).</p>
 <p>This function is called from within <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> to systematically
 annotate <code>metaobs</code> with these commonly used metadata, if not already present.</p>
 <p>However, it can also be used directly on other data.</p>

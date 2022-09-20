@@ -120,9 +120,6 @@ can be used to sample from a tightened version of the prior distribution.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Missing model with a fixed intercept only</span></span></span>
 <span class="r-in"><span><span class="fu">enw_missing</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>A missingness model has been specified. Note that this is not yet fully</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>        supported and unless you are a developer you likely want to keep this</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>        turned off.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -194,24 +191,68 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_rncol</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$missing_ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-07-13 2021-07-14 2021-07-15 2021-07-16 2021-07-17 2021-07-18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-07-19 2021-07-20 2021-07-21 2021-07-22 2021-07-23 2021-07-24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-07-25 2021-07-26 2021-07-27 2021-07-28 2021-07-29 2021-07-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-07-31 2021-08-01 2021-08-02 2021-08-03 2021-08-04 2021-08-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-08-06 2021-08-07 2021-08-08 2021-08-09 2021-08-10 2021-08-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-08-12 2021-08-13 2021-08-14 2021-08-15 2021-08-16 2021-08-17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0          0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      2021-08-18 2021-08-19 2021-08-20 2021-08-21 2021-08-22</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]          0          0          0          0          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_st</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_cst</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$missing_reference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$obs_by_report</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,] 381 362 343 324 305 286 267 248 229 210 191 172 153 134 115  96  77  58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,] 401 382 363 344 325 306 287 268 249 230 211 192 173 154 135 116  97  78</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,] 421 402 383 364 345 326 307 288 269 250 231 212 193 174 155 136 117  98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,] 441 422 403 384 365 346 327 308 289 270 251 232 213 194 175 156 137 118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 461 442 423 404 385 366 347 328 309 290 271 252 233 214 195 176 157 138</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 481 462 443 424 405 386 367 348 329 310 291 272 253 234 215 196 177 158</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 501 482 463 444 425 406 387 368 349 330 311 292 273 254 235 216 197 178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 521 502 483 464 445 426 407 388 369 350 331 312 293 274 255 236 217 198</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 541 522 503 484 465 446 427 408 389 370 351 332 313 294 275 256 237 218</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 561 542 523 504 485 466 447 428 409 390 371 352 333 314 295 276 257 238</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,] 581 562 543 524 505 486 467 448 429 410 391 372 353 334 315 296 277 258</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 601 582 563 544 525 506 487 468 449 430 411 392 373 354 335 316 297 278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] 621 602 583 564 545 526 507 488 469 450 431 412 393 374 355 336 317 298</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 641 622 603 584 565 546 527 508 489 470 451 432 413 394 375 356 337 318</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,] 661 642 623 604 585 566 547 528 509 490 471 452 433 414 395 376 357 338</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,] 681 662 643 624 605 586 567 548 529 510 491 472 453 434 415 396 377 358</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,] 701 682 663 644 625 606 587 568 549 530 511 492 473 454 435 416 397 378</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 721 702 683 664 645 626 607 588 569 550 531 512 493 474 455 436 417 398</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,] 741 722 703 684 665 646 627 608 589 570 551 532 513 494 475 456 437 418</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 761 742 723 704 685 666 647 628 609 590 571 552 533 514 495 476 457 438</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] 781 762 743 724 705 686 667 648 629 610 591 572 553 534 515 496 477 458</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,] 801 782 763 744 725 706 687 668 649 630 611 592 573 554 535 516 497 478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        18  19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]  39  20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]  59  40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]  79  60</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]  99  80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,] 119 100</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,] 139 120</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,] 159 140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,] 179 160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,] 199 180</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,] 219 200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,] 239 220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,] 259 240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,] 279 260</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,] 299 280</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,] 319 300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,] 339 320</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,] 359 340</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,] 379 360</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,] 399 380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,] 419 400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,] 439 420</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,] 459 440</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_miss</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 22</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
@@ -246,8 +287,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x558ccca9e8f8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x558cccaae6c8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5579b7e000d0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5579b7de7958&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># No missingness model specified</span></span></span>
@@ -277,11 +318,23 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_rncol</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$missing_reference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$obs_by_report</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_st</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_cst</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$model_miss</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$missing_ref</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> numeric(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$miss_obs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
@@ -316,8 +369,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x558ccca9e8f8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x558ccedd87d8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5579b7e000d0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5579b7246778&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

@@ -152,8 +152,6 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">obs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span><span class="va">obs</span>, include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">obs</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"age_group"</span>, <span class="st">"location"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>metaobs is not sorted by column 'date'; returned result will be.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>metaobs is not sorted by column 'date'; returned result will be.</span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Model with fixed effects for age group</span></span></span>
@@ -180,32 +178,32 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + age_group"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept) age_group00+ age_group05-14 age_group15-34 age_group35-59</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1            0              0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           1            1              0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           1            0              1              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           1            0              0              1              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           1            0              0              0              1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           1            0              0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           1            0              0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   age_group60-79 age_group80+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     (Intercept) age_group00+ age_group05-14 age_group15-34 age_group35-59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1            1              0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42            1            0              0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83            1            0              1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124           1            0              0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165           1            0              0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206           1            0              0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247           1            0              0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     age_group60-79 age_group80+</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42               0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83               0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247              0            1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [38] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [75] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [112] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [149] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [186] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [223] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [38] 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [75] 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [112] 3 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [149] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [186] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [223] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 7 7 7 7 7 7 7 7 7 7 7 7 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>
@@ -256,32 +254,32 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + age_group"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1              1            0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2           1              0            1              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3           1              0            0              1              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4           1              0            0              0              1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5           1              0            0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6           1              0            0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7           1              0            0              0              0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   age_group35-59 age_group60-79 age_group80+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83            1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     age_group35-59 age_group60-79 age_group80+</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42               0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83               0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247              0              0            1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [38] 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [75] 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [112] 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [149] 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [186] 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [223] 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7 1 2 3 4 5 6 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [38] 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [75] 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [112] 3 3 3 3 3 3 3 3 3 3 3 3 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [149] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [186] 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [223] 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 7 7 7 7 7 7 7 7 7 7 7 7 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>
@@ -334,105 +332,105 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     (Intercept) cweek1 cweek2 cweek3 cweek4 cweek5 age_group00-04 age_group00+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1      0      0      0      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2             1      0      0      0      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3             1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4             1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5             1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6             1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7             1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50            1      1      0      0      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51            1      1      0      0      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52            1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53            1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54            1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55            1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56            1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 99            1      1      1      0      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100           1      1      1      0      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 101           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 102           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 103           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 105           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148           1      1      1      1      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149           1      1      1      1      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 150           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 151           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 153           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 154           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 197           1      1      1      1      1      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 198           1      1      1      1      1      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 199           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 200           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 201           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 202           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 203           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 246           1      1      1      1      1      1              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 247           1      1      1      1      1      1              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 248           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 249           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 250           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 251           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 252           1      1      1      1      1      1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1      0      0      0      0      0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8             1      1      0      0      0      0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15            1      1      1      0      0      0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22            1      1      1      1      0      0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29            1      1      1      1      1      0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36            1      1      1      1      1      1              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42            1      0      0      0      0      0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49            1      1      0      0      0      0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56            1      1      1      0      0      0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63            1      1      1      1      0      0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70            1      1      1      1      1      0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77            1      1      1      1      1      1              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83            1      0      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90            1      1      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97            1      1      1      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104           1      1      1      1      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111           1      1      1      1      1      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118           1      1      1      1      1      1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124           1      0      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131           1      1      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138           1      1      1      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145           1      1      1      1      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152           1      1      1      1      1      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159           1      1      1      1      1      1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165           1      0      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172           1      1      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179           1      1      1      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 186           1      1      1      1      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 193           1      1      1      1      1      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 200           1      1      1      1      1      1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206           1      0      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 213           1      1      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 220           1      1      1      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 227           1      1      1      1      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 234           1      1      1      1      1      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 241           1      1      1      1      1      1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247           1      0      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 254           1      1      0      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 261           1      1      1      0      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268           1      1      1      1      0      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 275           1      1      1      1      1      0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282           1      1      1      1      1      1              0            0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     age_group05-14 age_group15-34 age_group35-59 age_group60-79 age_group80+</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52               1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53               0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54               0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55               0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56               0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 99               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 101              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 102              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 103              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 105              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 150              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 151              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 153              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 154              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 197              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 198              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 199              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 200              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 201              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 202              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 203              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 246              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 247              0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 248              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 249              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 250              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 251              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 252              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77               0              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83               1              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90               1              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97               1              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104              1              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111              1              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118              1              0              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124              0              1              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131              0              1              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138              0              1              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145              0              1              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152              0              1              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159              0              1              0              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165              0              0              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172              0              0              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179              0              0              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 186              0              0              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 193              0              0              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 200              0              0              1              0            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206              0              0              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 213              0              0              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 220              0              0              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 227              0              0              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 234              0              0              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 241              0              0              0              1            0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 254              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 261              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 275              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282              0              0              0              0            1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1  2  3  4  5  6  7  1  2  3  4  5  6  7  1  2  3  4  5  6  7  1  2  3  4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]  5  6  7  1  2  3  4  5  6  7  1  2  3  4  5  6  7  1  2  3  4  5  6  7  8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [51]  9 10 11 12 13 14  8  9 10 11 12 13 14  8  9 10 11 12 13 14  8  9 10 11 12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] 13 14  8  9 10 11 12 13 14  8  9 10 11 12 13 14  8  9 10 11 12 13 14 15 16</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [101] 17 18 19 20 21 15 16 17 18 19 20 21 15 16 17 18 19 20 21 15 16 17 18 19 20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [126] 21 15 16 17 18 19 20 21 15 16 17 18 19 20 21 15 16 17 18 19 20 21 22 23 24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [151] 25 26 27 28 22 23 24 25 26 27 28 22 23 24 25 26 27 28 22 23 24 25 26 27 28</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [176] 22 23 24 25 26 27 28 22 23 24 25 26 27 28 22 23 24 25 26 27 28 29 30 31 32</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [201] 33 34 35 29 30 31 32 33 34 35 29 30 31 32 33 34 35 29 30 31 32 33 34 35 29</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [226] 30 31 32 33 34 35 29 30 31 32 33 34 35 29 30 31 32 33 34 35 36 37 38 39 40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [251] 41 42 36 37 38 39 40 41 42 36 37 38 39 40 41 42 36 37 38 39 40 41 42 36 37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [276] 38 39 40 41 42 36 37 38 39 40 41 42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [26]  4  4  4  5  5  5  5  5  5  5  6  6  6  6  6  6  7  7  7  7  7  7  7  8  8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [51]  8  8  8  8  8  9  9  9  9  9  9  9 10 10 10 10 10 10 10 11 11 11 11 11 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [76] 11 12 12 12 12 12 12 13 13 13 13 13 13 13 14 14 14 14 14 14 14 15 15 15 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [101] 15 15 15 16 16 16 16 16 16 16 17 17 17 17 17 17 17 18 18 18 18 18 18 19 19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [126] 19 19 19 19 19 20 20 20 20 20 20 20 21 21 21 21 21 21 21 22 22 22 22 22 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [151] 22 23 23 23 23 23 23 23 24 24 24 24 24 24 25 25 25 25 25 25 25 26 26 26 26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [176] 26 26 26 27 27 27 27 27 27 27 28 28 28 28 28 28 28 29 29 29 29 29 29 29 30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [201] 30 30 30 30 30 31 31 31 31 31 31 31 32 32 32 32 32 32 32 33 33 33 33 33 33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [226] 33 34 34 34 34 34 34 34 35 35 35 35 35 35 35 36 36 36 36 36 36 37 37 37 37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [251] 37 37 37 38 38 38 38 38 38 38 39 39 39 39 39 39 39 40 40 40 40 40 40 40 41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [276] 41 41 41 41 41 41 42 42 42 42 42 42</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>
