@@ -36,8 +36,12 @@ reference:
     desc: Modular model components.
     contents:
       - has_concept("modelmodules")
+  - title: Helpers for defining model modules
+    desc: Functions that help with the setup of model modules and that may be specific to individual modules.
+    contents:
+      - has_concept("modelmodulehelpers")
   - title: Model tools
-    desc: Functions that assist with combining and using modular models.
+    desc: Generic functions that assist with combining and using modular models.
     contents:
       - has_concept("modeltools")
   - title: Postprocess
@@ -64,6 +68,10 @@ reference:
     desc: Package datasets used in examples and by users to explore the package functionality.
     contents:
       - has_concept("data")
+  - title: Simulate Datasets
+    desc: Tools for simulating datasets
+    contents:
+      - has_concept("simulate")
   - title: Check inputs
     desc: Functions to check the structure of user inputs.
     contents:

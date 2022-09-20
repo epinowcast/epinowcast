@@ -20,6 +20,7 @@ test_that("enw_missing_reference works as expected given correct input data", {
     .group = 1, location = "DE",
     confirm = c(rep(0, 3), 4), prop_missing = c(0, NaN, NaN, 1)
   )
+  data.table::setkeyv(exp_obs, c(".group", "report_date"))
   expect_equal(enw_missing_reference(obs), exp_obs)
 })
 

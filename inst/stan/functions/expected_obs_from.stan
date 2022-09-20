@@ -15,7 +15,7 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
       i, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, g, t, l
     );
   }
-  // combine expected final obs and date effects to get expected obs
+  // combine expected final obs and time effects to get expected obs
   profile("model_likelihood_expected_obs") {
   log_exp_obs = expected_obs(tar_obs, lh, ref_as_p);
   }
@@ -42,7 +42,7 @@ vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
     t = st[i];
     l = sl[i];
     }
-    // combine expected final obs and date effects to get expected obs
+    // combine expected final obs and time effects to get expected obs
     profile("expected_obs_from_index") {
     esnap += l;
     log_exp_obs[ssnap:esnap] = expected_obs_from_index(

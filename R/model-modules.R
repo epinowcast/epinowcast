@@ -310,6 +310,8 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
+#' @importFrom data.table setorderv copy dcast
+#' @importFrom purrr map
 #' @export
 #' @examples
 #' # Missing model with a fixed intercept only
@@ -324,43 +326,66 @@ enw_missing <- function(formula = ~1, data) {
           observations without reference dates is not available.")
   }
 
-  if (!(as_string_formula(formula) %in% "~0")) {
-    warning(
-      "A missingness model has been specified. Note that this is not yet fully
-       supported and unless you are a developer you likely want to keep this
-       turned off.",
-      immediate. = TRUE
-    )
-  }
-
   if (as_string_formula(formula) %in% "~0") {
+    # empty data list required by stan
     data_list <- enw_formula_as_data_list(
       prefix = "miss", drop_intercept = FALSE
     )
+    data_list$missing_reference <- numeric(0)
+    data_list$obs_by_report <- numeric(0)
+    data_list$miss_st <- numeric(0)
+    data_list$miss_cst <- numeric(0)
     data_list$model_miss <- 0
-    data_list$missing_ref <- numeric(0)
+    data_list$miss_obs <- 0
   } else {
+    # Make formula for effects
     form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
     data_list <- enw_formula_as_data_list(
       form,
-      prefix = "miss", drop_intercept = TRUE
+      prefix = "miss",
+      drop_intercept = TRUE
     )
+
+    # Get report dates that cover all reference dates up to the max delay
+    rep_w_complete_ref <- enw_reps_with_complete_refs(
+      data$new_confirm[[1]],
+      max_delay = data$max_delay[[1]],
+      by = ".group"
+    )
+
+    # Get the indexes for when grouped observations start and end
+    miss_lookup <- data.table::copy(rep_w_complete_ref)
+    data_list$miss_st <- miss_lookup[, n := 1:.N, by = ".group"]
+    data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
+    data_list$miss_cst <- miss_lookup[, n := 1:.N]
+    data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
+
+    # Get (and order) reported cases with a missing reference date
     missing_reference <- data.table::copy(data$missing_reference[[1]])
-    data.table::setorderv(missing_reference, c(".group", "report_date"))
-    missing_reference <- as.matrix(
-      data.table::dcast(
-        missing_reference, .group ~ report_date,
-        value.var = "confirm",
-        fill = 0
-      )[, -1]
+    data.table::setkeyv(missing_reference, c(".group", "report_date"))
+    data_list$missing_reference <- data.table::copy(missing_reference)[
+      rep_w_complete_ref,
+      on = c("report_date", ".group")
+    ][, confirm]
+
+    # Build a look up between reports and reference dates
+    reference_by_report <- enw_reference_by_report(
+      missing_reference,
+      reps_with_complete_refs = rep_w_complete_ref,
+      metareference = data$metareference[[1]],
+      max_delay = data$max_delay[[1]]
     )
-    data_list$missing_ref <- missing_reference
+    data_list$obs_by_report <- as.matrix(reference_by_report[, -1])
+
+    # Add indicator and length/shape variables
     data_list$model_miss <- 1
+    data_list$miss_obs <- length(data_list$missing_reference)
   }
 
   out <- list()
   out$formula <- as_string_formula(formula)
   out$data <- data_list
+  # Define default priors
   out$priors <- data.table::data.table(
     variable = c("miss_int", "miss_beta_sd"),
     description = c(
@@ -372,6 +397,7 @@ enw_missing <- function(formula = ~1, data) {
     mean = c(0, 0),
     sd = c(1, 1)
   )
+  # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
@@ -432,7 +458,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # get new confirm for processing
   new_confirm <- data.table::copy(data$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
+  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm

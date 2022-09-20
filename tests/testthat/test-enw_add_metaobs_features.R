@@ -16,8 +16,9 @@ junk <- c("Garbage Date")
 metadatacols <- c("day_of_week", "day", "week", "month")
 
 test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)", {
-  expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "reference_date"), NA)
-  expect_warning(enw_add_metaobs_features(nat_germany_hosp, datecol = "report_date"))
+  expect_error(enw_add_metaobs_features(
+    nat_germany_hosp, datecol = "reference_date"), NA
+  )
   expect_error(enw_add_metaobs_features(nat_germany_hosp))
   expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "location"))
 })

@@ -165,6 +165,11 @@ epinowcast <- function(data,
     stop("Only first order expectation models are currently supported")
   }
 
+  if (!missing$formula %in% "~0") {
+    warning("The missing data model is highly experimental. There is a
+     significant likelihood that bugs are present in its implementation.")
+  }
+
   inits <- purrr::compact(modules$inits)
   init_fns <- purrr::map(names(inits), ~ inits[[.]](data_as_list, priors))
 
