@@ -184,7 +184,7 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
 Construct a model with a fixed underlying growth rate for the final
-notifications.
+expected number of cases by reference date.
 
 ``` r
 expectation_module <- enw_expectation(
