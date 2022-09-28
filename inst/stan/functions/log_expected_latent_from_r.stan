@@ -10,9 +10,8 @@ array[] vector log_expected_latent_from_r(
       exp_lobs[k][(r_seed + 1):t] = exp_lobs[k][1] + cumulative_sum(local_r);
     } else {
       for (i in 1:r_t) {
-        exp_lobs[k][r_seed + i] = local_r[i] +
-          log_sum_exp(
-            segment(exp_lobs[k], r_seed + i - gt_n, gt_n) + lrgt
+        exp_lobs[k][r_seed + i] = local_r[i] + log_dot_product(
+            segment(exp_lobs[k], r_seed + i - gt_n, gt_n), lrgt
           );
       }
     }

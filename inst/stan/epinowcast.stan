@@ -1,4 +1,5 @@
 functions {
+#include functions/utils.stan
 #include functions/zero_truncated_normal.stan
 #include functions/regression.stan
 #include functions/log_expected_latent_from_r.stan

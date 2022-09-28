@@ -8,10 +8,7 @@ array[] vector log_expected_obs_from_latent(
       exp_lobs[k] = exp_llatent[k] + rep_vector(lrrd[1], t);
     } else {
       for (i in 1:t) {
-        exp_lobs[k][i] = 
-          log_sum_exp(
-            segment(exp_llatent[k], i, rd_n) + lrrd
-          );
+        exp_lobs[k][i] = log_dot_product(segment(exp_llatent[k], i, rd_n), lrrd);
       }
     }
     exp_lobs[k] = exp_lobs[k] + segment(modifier, (k-1) * t + 1, t);
