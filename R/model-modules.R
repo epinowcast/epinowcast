@@ -317,7 +317,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
   obs_data <- enw_formula_as_data_list(
     obs_form,
-    prefix = "expo", drop_intercept = TRUE
+    prefix = "expl", drop_intercept = TRUE
   )
 
   out <- list()
