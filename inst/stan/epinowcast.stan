@@ -58,19 +58,19 @@ data {
   array[2, 1] real expr_r_int_p;
   array[2, 1] real expr_beta_sd_p;
   // ---- Latent case sub-module ----
-  int expo_lrd_n; // maximum latent delay (from latent case to obs at ref time)
+  int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of latent delay distribution (reversed and on log scale)
-  vector[expo_lrd_n] expo_lrlrd; 
+  vector[expl_lrd_n] expl_lrlrd; 
   // Model for latent-to-observed proportion. Currently, 0 = none
   // --> proportion of latent cases that will become observations
   // --> e.g.: infection fatality rate for death data
-  int expo_obs;
-  int expo_fnindex;
-  int expo_fncol;
-  int expo_rncol;
-  matrix[expo_fnindex, expo_fncol + 1] expo_fdesign;
-  matrix[expo_fncol, expo_rncol + 1] expo_rdesign;
-  array[2, 1] real expo_beta_sd_p;
+  int expl_obs;
+  int expl_fnindex;
+  int expl_fncol;
+  int expl_rncol;
+  matrix[expl_fnindex, expl_fncol + 1] expl_fdesign;
+  matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
+  array[2, 1] real expl_beta_sd_p;
 
   // Reference time model
   int model_refp;
@@ -152,9 +152,8 @@ parameters {
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
     // Observation sub-module
-    vector[expo_fncol] expo_beta;
-    vector<lower=0>[expo_rncol] expo_beta_sd;
-
+    vector[expl_fncol] expl_beta;
+    vector<lower=0>[expl_rncol] expl_beta_sd;
   // Reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
@@ -180,7 +179,7 @@ transformed parameters{
   // Expectation model
   vector[expr_t] r; // Log growth rate of observations
   array[g] vector[expr_ft]  exp_latent_lobs; // Expected final observations
-  vector[expo_obs ? expo_fnindex : 0] expo_modifier; // Reporting modifier
+  vector[expl_obs ? expl_fnindex : 0] expl_modifier; // Reporting modifier
   array[g] vector[t]  exp_lobs; // Expected final observations
   // Reference model
   vector[refp_fnrow] refp_mean;
@@ -206,12 +205,12 @@ transformed parameters{
   );
   // Get reporting modifiers and map latent expected observations to expected
   // observations
-  if (expo_obs) {
-    expo_modifier = combine_effects(
-      0, expo_beta, expo_fdesign, expo_beta_sd, expo_rdesign, 1
+  if (expl_obs) {
+    expl_modifier = combine_effects(
+      0, expl_beta, expl_fdesign, expl_beta_sd, expl_rdesign, 1
     );
     exp_lobs = log_expected_obs_from_latent_obs(
-      exp_latent_lobs, expo_lrd_n, expo_lrlrd, t, g, expo_modifier
+      exp_latent_lobs, expl_lrd_n, expl_lrlrd, t, g, expl_modifier
     );
   } else {
     exp_lobs = exp_latent_lobs;
@@ -283,7 +282,7 @@ model {
     // Observation model sub-module
   // Reporting modifiers
   effect_priors_lp(
-    expo_beta, expo_beta_sd, expo_beta_sd_p, expo_fncol, expo_rncol
+    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
   );
   // Reporting overdispersion (1/sqrt)
   if (model_obs) {   

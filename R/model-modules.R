@@ -327,14 +327,14 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
   out$data_raw$observation <- data$metareference[[1]]
 
   names(r_list) <- paste0("expr_", names(r_list))
-  names(obs_list) <- paste0("expo_", names(obs_list))
+  names(obs_list) <- paste0("expl_", names(obs_list))
   out$data <- c(r_list, r_data, obs_list, obs_data)
 
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
       rep("expr_leobs_int", length(seed_obs)),
-      "expo_beta_sd"
+      "expl_beta_sd"
     ),
     dimension = c(1, 1, seq_along(seed_obs), 1),
     description = c(
@@ -368,8 +368,8 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
         expr_r_int = rnorm(
           1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
         ),
-        expo_beta = numeric(0),
-        expo_beta_sd = numeric(0)
+        expl_beta = numeric(0),
+        expl_beta_sd = numeric(0)
       )
       if (data$expr_fncol > 0) {
         init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
@@ -380,13 +380,13 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
           priors$expr_beta_sd_p[2] / 10
         ))
       }
-      if (data$expo_fncol > 0) {
-        init$expo_beta <- rnorm(data$expo_fncol, 0, 0.01)
+      if (data$expl_fncol > 0) {
+        init$expl_beta <- rnorm(data$expl_fncol, 0, 0.01)
       }
-      if (data$expo_rncol > 0) {
-        init$expo_beta_sd <- abs(rnorm(
-          data$expo_rncol, priors$expo_beta_sd_p[1],
-          priors$expo_beta_sd_p[2] / 10
+      if (data$expl_rncol > 0) {
+        init$expl_beta_sd <- abs(rnorm(
+          data$expl_rncol, priors$expl_beta_sd_p[1],
+          priors$expl_beta_sd_p[2] / 10
         ))
       }
       return(init)

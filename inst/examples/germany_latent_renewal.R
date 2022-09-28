@@ -108,7 +108,7 @@ latent_exp_cases[, (cols) := lapply(.SD, exp), .SDcols = cols]
 latent_exp_cases <- cbind(
   enw_extend_date(
     expectation_module$data_raw$r[, .(date, .group = 1)],
-    days = nowcast$data[[1]]$expo_lrd_n,
+    days = nowcast$data[[1]]$expl_lrd_n,
     direction = "start"
   ),
   latent_exp_cases
