@@ -11,7 +11,7 @@ test_that("enw_expectation produces the expected default model", {
   obs <- enw_obs(data = pobs)
   expect_named(
     exp$init(c(exp$data, obs$data), exp$priors)(),
-    c("expr_beta", "expr_beta_sd", "expr_leobs_int", "expr_r_int")
+    c("expr_beta", "expr_beta_sd", "expr_lelatent_int", "expr_r_int")
   )
 })
 

@@ -333,7 +333,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
   out$priors <- data.table::data.table(
     variable = c(
       "expr_r_int", "expr_beta_sd",
-      rep("expr_leobs_int", length(seed_obs)),
+      rep("expr_lelatent_int", length(seed_obs)),
       "expl_beta_sd"
     ),
     dimension = c(1, 1, seq_along(seed_obs), 1),
@@ -357,11 +357,11 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
       init <- list(
         expr_beta = numeric(0),
         expr_beta_sd = numeric(0),
-        expr_leobs_int = array(matrix(
+        expr_lelatent_int = array(matrix(
           rnorm(
             1,
-            as.vector(priors$expr_leobs_int_p[1]),
-            as.vector(priors$expr_leobs_int_p[2]) * 0.1
+            as.vector(priors$expr_lelatent_int_p[1]),
+            as.vector(priors$expr_lelatent_int_p[2]) * 0.1
           ),
           nrow = data$expr_gt_n
         )),

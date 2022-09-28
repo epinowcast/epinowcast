@@ -55,7 +55,7 @@ data {
   matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
   array[g] int expr_g; // starting time points for growth of each group
   // Priors for growth rate and initial log latent cases
-  array[2, g * expr_r_seed] real expr_leobs_int_p; 
+  array[2, g * expr_r_seed] real expr_lelatent_int_p; 
   array[2, 1] real expr_r_int_p;
   array[2, 1] real expr_beta_sd_p;
   // ---- Latent case submodule ----
@@ -147,7 +147,7 @@ transformed data{
 parameters {
   // Expectation model
   // ---- Growth rate submodule ----
-  matrix[expr_r_seed, g] expr_leobs_int; // initial observations by group (log)
+  matrix[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
   real expr_r_int; // growth rate intercept
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
@@ -204,7 +204,7 @@ transformed parameters{
     expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 1
   );
   exp_llatent = log_expected_latent_from_r(
-    expr_leobs_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
     expr_ft, g
   );
   // Get latent-to-obs proportions and map expected latent cases to expected
@@ -274,25 +274,21 @@ transformed parameters{
 model {
   profile("model_priors") {
   // Expectation model
-    // Growth rate sub-module
-  // Initial intercept of log observations 
-  to_vector(expr_leobs_int) ~ normal(expr_leobs_int_p[1], expr_leobs_int_p[2]);
-  // Intercept of growth rate
+  // ---- Growth rate submodule ----
+  // intercept/initial latent cases (log)
+  to_vector(expr_lelatent_int) ~ normal(expr_lelatent_int_p[1], expr_lelatent_int_p[2]);
+  // intercept of growth rate
   expr_r_int  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
-  // Growth rate effect priors
+  // growth rate effect priors
   effect_priors_lp(
     expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
   );
-    // Observation model sub-module
-  // Reporting modifiers
+  // ---- Latent case submodule ----
+  // latent-to-obs proportion
   effect_priors_lp(
     expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
   );
-  // Reporting overdispersion (1/sqrt)
-  if (model_obs) {   
-    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
-  }
-
+  
   // Reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
@@ -313,13 +309,20 @@ model {
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
-  // Missing reference model
+  // Missing reference time model
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
       miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
     );
   }
+  
+  // Observation model
+  // overdispersion (1/sqrt)
+  if (model_obs) {   
+    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
+  }
+  
   }
   // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {

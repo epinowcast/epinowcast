@@ -1,6 +1,6 @@
 array[] vector log_expected_obs_from_latent(
   array[] vector exp_llatent, int rd_n, vector lrrd, int t,
-  int g, vector modifier
+  int g, vector latent_obs_prop
 ) {
   array[g] vector[t] exp_lobs;
   for (k in 1:g) {
@@ -11,7 +11,7 @@ array[] vector log_expected_obs_from_latent(
         exp_lobs[k][i] = log_dot_product(segment(exp_llatent[k], i, rd_n), lrrd);
       }
     }
-    exp_lobs[k] = exp_lobs[k] + segment(modifier, (k-1) * t + 1, t);
+    exp_lobs[k] = exp_lobs[k] + segment(latent_obs_prop, (k-1) * t + 1, t);
   }
   return(exp_lobs);
 }
