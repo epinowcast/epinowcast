@@ -1,4 +1,4 @@
-array[] vector log_expected_obs_from_r(
+array[] vector log_expected_latent_from_r(
   matrix lexp_obs_int, vector r, array[] int r_g, int r_t,
   int r_seed, int gt_n, vector lrgt, int t, int g
 ) {

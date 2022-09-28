@@ -102,7 +102,7 @@ ggplot(rt) +
 # Plot expected latent cases
 latent_exp_cases <- enw_posterior(
   nowcast$fit[[1]],
-  variables = "exp_latent_lobs"
+  variables = "exp_llatent"
 )
 latent_exp_cases[, (cols) := lapply(.SD, exp), .SDcols = cols]
 latent_exp_cases <- cbind(
