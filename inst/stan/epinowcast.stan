@@ -38,36 +38,38 @@ data {
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
-    // Growth rate submodule
-  int expr_r_seed; // How many seeding initial intercepts to use?
-  int expr_gt_n; // Length of the generation time
-  int expr_t; // Time span for r
-  int expr_ft; // Sum of expr_t + expr_r_seed
-  // PMF describing the generation time (reversed and logged)
+  // ---- Growth rate submodule ----
+  int expr_r_seed; // number of time points with seeded/initial latent cases
+  int expr_gt_n; // maximum generation time
+  int expr_t; // number of time points with modeled growth rate
+  int expr_ft; // number of time points with latent cases (expr_r_seed + expr_t)
+  // PMF of the generation time distribution (reversed and on log scale)
   vector[expr_gt_n] expr_lrgt; 
-  // Observation model to use for the latent process. Currently 0 = none
+  // Model for growth rate process. Currently, 0 = none
   int expr_obs;
   int expr_fnindex;
   int expr_fncol;
   int expr_rncol;
   matrix[expr_fnindex, expr_fncol + 1] expr_fdesign;
-  matrix[expr_fncol,  expr_rncol + 1] expr_rdesign;
-  array[g] int expr_g; // Where does each group start for growth?
-  // Mean of initial log cases
+  matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
+  array[g] int expr_g; // starting time points for growth of each group
+  // Priors for growth rate and initial log latent cases
   array[2, g * expr_r_seed] real expr_leobs_int_p; 
   array[2, 1] real expr_r_int_p;
   array[2, 1] real expr_beta_sd_p;
-    // Observation sub-module
-  int expo_lrd_n; // Length of the generation time
-  // Parrtial PMF describing the reporting delay (reversed and logged)
+  // ---- Latent case sub-module ----
+  int expo_lrd_n; // maximum latent delay (from latent case to obs at ref time)
+  // Partial PMF of latent delay distribution (reversed and on log scale)
   vector[expo_lrd_n] expo_lrlrd; 
-  // Observation model to use for the latent process. Currently 0 = none
+  // Model for latent-to-observed proportion. Currently, 0 = none
+  // --> proportion of latent cases that will become observations
+  // --> e.g.: infection fatality rate for death data
   int expo_obs;
   int expo_fnindex;
   int expo_fncol;
   int expo_rncol;
   matrix[expo_fnindex, expo_fncol + 1] expo_fdesign;
-  matrix[expo_fncol,  expo_rncol + 1] expo_rdesign;
+  matrix[expo_fncol, expo_rncol + 1] expo_rdesign;
   array[2, 1] real expo_beta_sd_p;
 
   // Reference time model
@@ -78,10 +80,10 @@ data {
   matrix[refp_fnrow, refp_fncol + 1] refp_fdesign;
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
- array[2, 1] real refp_mean_int_p;
- array[2, 1] real refp_sd_int_p;
- array[2, 1] real refp_mean_beta_sd_p;
- array[2, 1] real refp_sd_beta_sd_p; 
+  array[2, 1] real refp_mean_int_p;
+  array[2, 1] real refp_sd_int_p;
+  array[2, 1] real refp_mean_beta_sd_p;
+  array[2, 1] real refp_sd_beta_sd_p; 
 
   // Reporting time model
   int model_rep;
@@ -211,7 +213,7 @@ transformed parameters{
     exp_lobs = log_expected_obs_from_latent_obs(
       exp_latent_lobs, expo_lrd_n, expo_lrlrd, t, g, expo_modifier
     );
-  }else{
+  } else {
     exp_lobs = exp_latent_lobs;
   }
 
