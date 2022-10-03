@@ -252,8 +252,8 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = 1,
-                            observation = ~1, latent_reporting_delay = 1,
+enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = c(1),
+                            observation = ~1, latent_reporting_delay = c(1),
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
     stop("An expectation model formula for r must be specified")
