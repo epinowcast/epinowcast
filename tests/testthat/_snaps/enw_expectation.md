@@ -9,55 +9,169 @@
       expectation
     Output
       $formula
-      $formula$expectation
-      [1] "~rw(day, .group)"
+      $formula$r
+      [1] "~rw(day, by = .group)"
+      
+      $formula$observation
+      [1] "~1"
+      
+      
+      $data_raw
+      $data_raw$r
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       3: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       4: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       5: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       6: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       7: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       8: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+       9: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      10: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      11: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      12: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      13: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      14: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      15: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      16: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      17: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      18: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      19: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      20: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      21: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      22: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      23: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      24: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      25: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      26: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      27: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      28: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      29: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      30: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      31: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      32: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      33: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      34: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      35: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      36: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      37: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      38: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      39: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      40: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
+      
+      $data_raw$observation
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0
+       2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       4: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       7: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+      10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      11: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      14: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      18: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      21: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      25: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      28: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      32: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      35: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      39: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
       
       
       $data
-      $data$exp_fdesign
-         (Intercept) cday1 cday2 cday3 cday4 cday5 cday6 cday7 cday8 cday9 cday10
-      1            1     0     0     0     0     0     0     0     0     0      0
-      2            1     1     0     0     0     0     0     0     0     0      0
-      3            1     1     1     0     0     0     0     0     0     0      0
-      4            1     1     1     1     0     0     0     0     0     0      0
-      5            1     1     1     1     1     0     0     0     0     0      0
-      6            1     1     1     1     1     1     0     0     0     0      0
-      7            1     1     1     1     1     1     1     0     0     0      0
-      8            1     1     1     1     1     1     1     1     0     0      0
-      9            1     1     1     1     1     1     1     1     1     0      0
-      10           1     1     1     1     1     1     1     1     1     1      0
-      11           1     1     1     1     1     1     1     1     1     1      1
-      12           1     1     1     1     1     1     1     1     1     1      1
-      13           1     1     1     1     1     1     1     1     1     1      1
-      14           1     1     1     1     1     1     1     1     1     1      1
-      15           1     1     1     1     1     1     1     1     1     1      1
-      16           1     1     1     1     1     1     1     1     1     1      1
-      17           1     1     1     1     1     1     1     1     1     1      1
-      18           1     1     1     1     1     1     1     1     1     1      1
-      19           1     1     1     1     1     1     1     1     1     1      1
-      20           1     1     1     1     1     1     1     1     1     1      1
-      21           1     1     1     1     1     1     1     1     1     1      1
-      22           1     1     1     1     1     1     1     1     1     1      1
-      23           1     1     1     1     1     1     1     1     1     1      1
-      24           1     1     1     1     1     1     1     1     1     1      1
-      25           1     1     1     1     1     1     1     1     1     1      1
-      26           1     1     1     1     1     1     1     1     1     1      1
-      27           1     1     1     1     1     1     1     1     1     1      1
-      28           1     1     1     1     1     1     1     1     1     1      1
-      29           1     1     1     1     1     1     1     1     1     1      1
-      30           1     1     1     1     1     1     1     1     1     1      1
-      31           1     1     1     1     1     1     1     1     1     1      1
-      32           1     1     1     1     1     1     1     1     1     1      1
-      33           1     1     1     1     1     1     1     1     1     1      1
-      34           1     1     1     1     1     1     1     1     1     1      1
-      35           1     1     1     1     1     1     1     1     1     1      1
-      36           1     1     1     1     1     1     1     1     1     1      1
-      37           1     1     1     1     1     1     1     1     1     1      1
-      38           1     1     1     1     1     1     1     1     1     1      1
-      39           1     1     1     1     1     1     1     1     1     1      1
-      40           1     1     1     1     1     1     1     1     1     1      1
-      41           1     1     1     1     1     1     1     1     1     1      1
-         cday11 cday12 cday13 cday14 cday15 cday16 cday17 cday18 cday19 cday20 cday21
+      $data$expr_r_seed
+      [1] 1
+      
+      $data$expr_gt_n
+      [1] 1
+      
+      $data$expr_lrgt
+      [1] 0
+      
+      $data$expr_t
+      [1] 40
+      
+      $data$expr_obs
+      [1] 0
+      
+      $data$expr_g
+      [1] 0
+      
+      $data$expr_ft
+      [1] 41
+      
+      $data$expr_fdesign
+         (Intercept) cday2 cday3 cday4 cday5 cday6 cday7 cday8 cday9 cday10 cday11
+      1            1     0     0     0     0     0     0     0     0      0      0
+      2            1     1     0     0     0     0     0     0     0      0      0
+      3            1     1     1     0     0     0     0     0     0      0      0
+      4            1     1     1     1     0     0     0     0     0      0      0
+      5            1     1     1     1     1     0     0     0     0      0      0
+      6            1     1     1     1     1     1     0     0     0      0      0
+      7            1     1     1     1     1     1     1     0     0      0      0
+      8            1     1     1     1     1     1     1     1     0      0      0
+      9            1     1     1     1     1     1     1     1     1      0      0
+      10           1     1     1     1     1     1     1     1     1      1      0
+      11           1     1     1     1     1     1     1     1     1      1      1
+      12           1     1     1     1     1     1     1     1     1      1      1
+      13           1     1     1     1     1     1     1     1     1      1      1
+      14           1     1     1     1     1     1     1     1     1      1      1
+      15           1     1     1     1     1     1     1     1     1      1      1
+      16           1     1     1     1     1     1     1     1     1      1      1
+      17           1     1     1     1     1     1     1     1     1      1      1
+      18           1     1     1     1     1     1     1     1     1      1      1
+      19           1     1     1     1     1     1     1     1     1      1      1
+      20           1     1     1     1     1     1     1     1     1      1      1
+      21           1     1     1     1     1     1     1     1     1      1      1
+      22           1     1     1     1     1     1     1     1     1      1      1
+      23           1     1     1     1     1     1     1     1     1      1      1
+      24           1     1     1     1     1     1     1     1     1      1      1
+      25           1     1     1     1     1     1     1     1     1      1      1
+      26           1     1     1     1     1     1     1     1     1      1      1
+      27           1     1     1     1     1     1     1     1     1      1      1
+      28           1     1     1     1     1     1     1     1     1      1      1
+      29           1     1     1     1     1     1     1     1     1      1      1
+      30           1     1     1     1     1     1     1     1     1      1      1
+      31           1     1     1     1     1     1     1     1     1      1      1
+      32           1     1     1     1     1     1     1     1     1      1      1
+      33           1     1     1     1     1     1     1     1     1      1      1
+      34           1     1     1     1     1     1     1     1     1      1      1
+      35           1     1     1     1     1     1     1     1     1      1      1
+      36           1     1     1     1     1     1     1     1     1      1      1
+      37           1     1     1     1     1     1     1     1     1      1      1
+      38           1     1     1     1     1     1     1     1     1      1      1
+      39           1     1     1     1     1     1     1     1     1      1      1
+      40           1     1     1     1     1     1     1     1     1      1      1
+         cday12 cday13 cday14 cday15 cday16 cday17 cday18 cday19 cday20 cday21 cday22
       1       0      0      0      0      0      0      0      0      0      0      0
       2       0      0      0      0      0      0      0      0      0      0      0
       3       0      0      0      0      0      0      0      0      0      0      0
@@ -98,8 +212,7 @@
       38      1      1      1      1      1      1      1      1      1      1      1
       39      1      1      1      1      1      1      1      1      1      1      1
       40      1      1      1      1      1      1      1      1      1      1      1
-      41      1      1      1      1      1      1      1      1      1      1      1
-         cday22 cday23 cday24 cday25 cday26 cday27 cday28 cday29 cday30 cday31 cday32
+         cday23 cday24 cday25 cday26 cday27 cday28 cday29 cday30 cday31 cday32 cday33
       1       0      0      0      0      0      0      0      0      0      0      0
       2       0      0      0      0      0      0      0      0      0      0      0
       3       0      0      0      0      0      0      0      0      0      0      0
@@ -140,67 +253,65 @@
       38      1      1      1      1      1      1      1      1      1      1      1
       39      1      1      1      1      1      1      1      1      1      1      1
       40      1      1      1      1      1      1      1      1      1      1      1
-      41      1      1      1      1      1      1      1      1      1      1      1
-         cday33 cday34 cday35 cday36 cday37 cday38 cday39 cday40
-      1       0      0      0      0      0      0      0      0
-      2       0      0      0      0      0      0      0      0
-      3       0      0      0      0      0      0      0      0
-      4       0      0      0      0      0      0      0      0
-      5       0      0      0      0      0      0      0      0
-      6       0      0      0      0      0      0      0      0
-      7       0      0      0      0      0      0      0      0
-      8       0      0      0      0      0      0      0      0
-      9       0      0      0      0      0      0      0      0
-      10      0      0      0      0      0      0      0      0
-      11      0      0      0      0      0      0      0      0
-      12      0      0      0      0      0      0      0      0
-      13      0      0      0      0      0      0      0      0
-      14      0      0      0      0      0      0      0      0
-      15      0      0      0      0      0      0      0      0
-      16      0      0      0      0      0      0      0      0
-      17      0      0      0      0      0      0      0      0
-      18      0      0      0      0      0      0      0      0
-      19      0      0      0      0      0      0      0      0
-      20      0      0      0      0      0      0      0      0
-      21      0      0      0      0      0      0      0      0
-      22      0      0      0      0      0      0      0      0
-      23      0      0      0      0      0      0      0      0
-      24      0      0      0      0      0      0      0      0
-      25      0      0      0      0      0      0      0      0
-      26      0      0      0      0      0      0      0      0
-      27      0      0      0      0      0      0      0      0
-      28      0      0      0      0      0      0      0      0
-      29      0      0      0      0      0      0      0      0
-      30      0      0      0      0      0      0      0      0
-      31      0      0      0      0      0      0      0      0
-      32      0      0      0      0      0      0      0      0
-      33      0      0      0      0      0      0      0      0
-      34      1      0      0      0      0      0      0      0
-      35      1      1      0      0      0      0      0      0
-      36      1      1      1      0      0      0      0      0
-      37      1      1      1      1      0      0      0      0
-      38      1      1      1      1      1      0      0      0
-      39      1      1      1      1      1      1      0      0
-      40      1      1      1      1      1      1      1      0
-      41      1      1      1      1      1      1      1      1
+         cday34 cday35 cday36 cday37 cday38 cday39 cday40
+      1       0      0      0      0      0      0      0
+      2       0      0      0      0      0      0      0
+      3       0      0      0      0      0      0      0
+      4       0      0      0      0      0      0      0
+      5       0      0      0      0      0      0      0
+      6       0      0      0      0      0      0      0
+      7       0      0      0      0      0      0      0
+      8       0      0      0      0      0      0      0
+      9       0      0      0      0      0      0      0
+      10      0      0      0      0      0      0      0
+      11      0      0      0      0      0      0      0
+      12      0      0      0      0      0      0      0
+      13      0      0      0      0      0      0      0
+      14      0      0      0      0      0      0      0
+      15      0      0      0      0      0      0      0
+      16      0      0      0      0      0      0      0
+      17      0      0      0      0      0      0      0
+      18      0      0      0      0      0      0      0
+      19      0      0      0      0      0      0      0
+      20      0      0      0      0      0      0      0
+      21      0      0      0      0      0      0      0
+      22      0      0      0      0      0      0      0
+      23      0      0      0      0      0      0      0
+      24      0      0      0      0      0      0      0
+      25      0      0      0      0      0      0      0
+      26      0      0      0      0      0      0      0
+      27      0      0      0      0      0      0      0
+      28      0      0      0      0      0      0      0
+      29      0      0      0      0      0      0      0
+      30      0      0      0      0      0      0      0
+      31      0      0      0      0      0      0      0
+      32      0      0      0      0      0      0      0
+      33      0      0      0      0      0      0      0
+      34      1      0      0      0      0      0      0
+      35      1      1      0      0      0      0      0
+      36      1      1      1      0      0      0      0
+      37      1      1      1      1      0      0      0
+      38      1      1      1      1      1      0      0
+      39      1      1      1      1      1      1      0
+      40      1      1      1      1      1      1      1
       attr(,"assign")
        [1]  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
-      [26] 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40
+      [26] 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
       
-      $data$exp_fnrow
-      [1] 41
-      
-      $data$exp_findex
-       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41
-      
-      $data$exp_fnindex
-      [1] 41
-      
-      $data$exp_fncol
+      $data$expr_fnrow
       [1] 40
       
-      $data$exp_rdesign
+      $data$expr_findex
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40
+      
+      $data$expr_fnindex
+      [1] 40
+      
+      $data$expr_fncol
+      [1] 39
+      
+      $data$expr_rdesign
          fixed day
       1      0   1
       2      0   1
@@ -241,24 +352,105 @@
       37     0   1
       38     0   1
       39     0   1
-      40     0   1
       attr(,"assign")
       [1] 1 2
       
-      $data$exp_rncol
+      $data$expr_rncol
       [1] 1
       
-      $data$exp_order
+      $data$expl_lrd_n
       [1] 1
+      
+      $data$expl_lrlrd
+      [1] 0
+      
+      $data$expl_obs
+      [1] 0
+      
+      $data$expl_fdesign
+         (Intercept)
+      1            1
+      2            1
+      3            1
+      4            1
+      5            1
+      6            1
+      7            1
+      8            1
+      9            1
+      10           1
+      11           1
+      12           1
+      13           1
+      14           1
+      15           1
+      16           1
+      17           1
+      18           1
+      19           1
+      20           1
+      21           1
+      22           1
+      23           1
+      24           1
+      25           1
+      26           1
+      27           1
+      28           1
+      29           1
+      30           1
+      31           1
+      32           1
+      33           1
+      34           1
+      35           1
+      36           1
+      37           1
+      38           1
+      39           1
+      40           1
+      41           1
+      attr(,"assign")
+      [1] 0
+      
+      $data$expl_fnrow
+      [1] 41
+      
+      $data$expl_findex
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41
+      
+      $data$expl_fnindex
+      [1] 41
+      
+      $data$expl_fncol
+      [1] 0
+      
+      $data$expl_rdesign
+           (Intercept)
+      attr(,"assign")
+      [1] 0
+      
+      $data$expl_rncol
+      [1] 0
       
       
       $priors
-            variable                                             description
-      1: exp_beta_sd Standard deviation of scaled pooled expectation effects
-      2:    eobs_lsd      Standard deviation for expected final observations
-                  distribution mean sd
-      1: Zero truncated normal    0  1
-      2: Zero truncated normal    0  1
+                  variable dimension
+      1:        expr_r_int         1
+      2:      expr_beta_sd         1
+      3: expr_lelatent_int         1
+      4:      expl_beta_sd         1
+                                                                                description
+      1:                                                   Intercept of the log growth rate
+      2:                        Standard deviation of scaled pooled log growth rate effects
+      3: Intercept for initial log observations (ordered by group and then\n          time)
+      4:                        Standard deviation of scaled pooled log growth rate effects
+                  distribution mean  sd
+      1:                Normal  0.0 0.2
+      2: Zero truncated normal  0.0 1.0
+      3:                Normal  4.1 1.0
+      4: Zero truncated normal  0.0 1.0
       
 
 # enw_expectation supports custom expectation models
@@ -269,138 +461,250 @@
       expectation
     Output
       $formula
-      $formula$expectation
+      $formula$r
       [1] "~1 + (1 | day_of_week)"
+      
+      $formula$observation
+      [1] "~1"
+      
+      
+      $data_raw
+      $data_raw$r
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       3: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       4: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       5: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       6: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       7: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       8: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+       9: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      10: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      11: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      12: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      13: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      14: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      15: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      16: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      17: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      18: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      19: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      20: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      21: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      22: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      23: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      24: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      25: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      26: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      27: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      28: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      29: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      30: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      31: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      32: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      33: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      34: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      35: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      36: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      37: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      38: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      39: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      40: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
+      
+      $data_raw$observation
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0
+       2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       4: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       7: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+      10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      11: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      14: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      18: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      21: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      25: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      28: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      32: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      35: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      39: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
       
       
       $data
-      $data$exp_fdesign
+      $data$expr_r_seed
+      [1] 1
+      
+      $data$expr_gt_n
+      [1] 1
+      
+      $data$expr_lrgt
+      [1] 0
+      
+      $data$expr_t
+      [1] 40
+      
+      $data$expr_obs
+      [1] 0
+      
+      $data$expr_g
+      [1] 0
+      
+      $data$expr_ft
+      [1] 41
+      
+      $data$expr_fdesign
          (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
       1            1                 0                 0                   0
       2            1                 0                 0                   0
-      3            1                 0                 0                   0
-      4            1                 1                 0                   0
-      5            1                 0                 0                   1
-      6            1                 0                 0                   0
-      7            1                 0                 1                   0
+      3            1                 1                 0                   0
+      4            1                 0                 0                   1
+      5            1                 0                 0                   0
+      6            1                 0                 1                   0
+      7            1                 0                 0                   0
       8            1                 0                 0                   0
       9            1                 0                 0                   0
-      10           1                 0                 0                   0
-      11           1                 1                 0                   0
-      12           1                 0                 0                   1
-      13           1                 0                 0                   0
-      14           1                 0                 1                   0
+      10           1                 1                 0                   0
+      11           1                 0                 0                   1
+      12           1                 0                 0                   0
+      13           1                 0                 1                   0
+      14           1                 0                 0                   0
       15           1                 0                 0                   0
       16           1                 0                 0                   0
-      17           1                 0                 0                   0
-      18           1                 1                 0                   0
-      19           1                 0                 0                   1
-      20           1                 0                 0                   0
-      21           1                 0                 1                   0
+      17           1                 1                 0                   0
+      18           1                 0                 0                   1
+      19           1                 0                 0                   0
+      20           1                 0                 1                   0
+      21           1                 0                 0                   0
       22           1                 0                 0                   0
       23           1                 0                 0                   0
-      24           1                 0                 0                   0
-      25           1                 1                 0                   0
-      26           1                 0                 0                   1
-      27           1                 0                 0                   0
-      28           1                 0                 1                   0
+      24           1                 1                 0                   0
+      25           1                 0                 0                   1
+      26           1                 0                 0                   0
+      27           1                 0                 1                   0
+      28           1                 0                 0                   0
       29           1                 0                 0                   0
       30           1                 0                 0                   0
-      31           1                 0                 0                   0
-      32           1                 1                 0                   0
-      33           1                 0                 0                   1
-      34           1                 0                 0                   0
-      35           1                 0                 1                   0
+      31           1                 1                 0                   0
+      32           1                 0                 0                   1
+      33           1                 0                 0                   0
+      34           1                 0                 1                   0
+      35           1                 0                 0                   0
       36           1                 0                 0                   0
       37           1                 0                 0                   0
-      38           1                 0                 0                   0
-      39           1                 1                 0                   0
-      40           1                 0                 0                   1
-      41           1                 0                 0                   0
+      38           1                 1                 0                   0
+      39           1                 0                 0                   1
+      40           1                 0                 0                   0
          day_of_weekSunday day_of_weekThursday day_of_weekTuesday
-      1                  0                   0                  1
-      2                  0                   0                  0
-      3                  0                   1                  0
+      1                  0                   0                  0
+      2                  0                   1                  0
+      3                  0                   0                  0
       4                  0                   0                  0
-      5                  0                   0                  0
-      6                  1                   0                  0
-      7                  0                   0                  0
-      8                  0                   0                  1
-      9                  0                   0                  0
-      10                 0                   1                  0
+      5                  1                   0                  0
+      6                  0                   0                  0
+      7                  0                   0                  1
+      8                  0                   0                  0
+      9                  0                   1                  0
+      10                 0                   0                  0
       11                 0                   0                  0
-      12                 0                   0                  0
-      13                 1                   0                  0
-      14                 0                   0                  0
-      15                 0                   0                  1
-      16                 0                   0                  0
-      17                 0                   1                  0
+      12                 1                   0                  0
+      13                 0                   0                  0
+      14                 0                   0                  1
+      15                 0                   0                  0
+      16                 0                   1                  0
+      17                 0                   0                  0
       18                 0                   0                  0
-      19                 0                   0                  0
-      20                 1                   0                  0
-      21                 0                   0                  0
-      22                 0                   0                  1
-      23                 0                   0                  0
-      24                 0                   1                  0
+      19                 1                   0                  0
+      20                 0                   0                  0
+      21                 0                   0                  1
+      22                 0                   0                  0
+      23                 0                   1                  0
+      24                 0                   0                  0
       25                 0                   0                  0
-      26                 0                   0                  0
-      27                 1                   0                  0
-      28                 0                   0                  0
-      29                 0                   0                  1
-      30                 0                   0                  0
-      31                 0                   1                  0
+      26                 1                   0                  0
+      27                 0                   0                  0
+      28                 0                   0                  1
+      29                 0                   0                  0
+      30                 0                   1                  0
+      31                 0                   0                  0
       32                 0                   0                  0
-      33                 0                   0                  0
-      34                 1                   0                  0
-      35                 0                   0                  0
-      36                 0                   0                  1
-      37                 0                   0                  0
-      38                 0                   1                  0
+      33                 1                   0                  0
+      34                 0                   0                  0
+      35                 0                   0                  1
+      36                 0                   0                  0
+      37                 0                   1                  0
+      38                 0                   0                  0
       39                 0                   0                  0
-      40                 0                   0                  0
-      41                 1                   0                  0
+      40                 1                   0                  0
          day_of_weekWednesday
-      1                     0
-      2                     1
+      1                     1
+      2                     0
       3                     0
       4                     0
       5                     0
       6                     0
       7                     0
-      8                     0
-      9                     1
+      8                     1
+      9                     0
       10                    0
       11                    0
       12                    0
       13                    0
       14                    0
-      15                    0
-      16                    1
+      15                    1
+      16                    0
       17                    0
       18                    0
       19                    0
       20                    0
       21                    0
-      22                    0
-      23                    1
+      22                    1
+      23                    0
       24                    0
       25                    0
       26                    0
       27                    0
       28                    0
-      29                    0
-      30                    1
+      29                    1
+      30                    0
       31                    0
       32                    0
       33                    0
       34                    0
       35                    0
-      36                    0
-      37                    1
+      36                    1
+      37                    0
       38                    0
       39                    0
       40                    0
-      41                    0
       attr(,"assign")
       [1] 0 1 1 1 1 1 1 1
       attr(,"contrasts")
@@ -415,20 +719,20 @@
       Wednesday      0      0        0      0        0       0         1
       
       
-      $data$exp_fnrow
-      [1] 41
+      $data$expr_fnrow
+      [1] 40
       
-      $data$exp_findex
+      $data$expr_findex
        [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41
+      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40
       
-      $data$exp_fnindex
-      [1] 41
+      $data$expr_fnindex
+      [1] 40
       
-      $data$exp_fncol
+      $data$expr_fncol
       [1] 7
       
-      $data$exp_rdesign
+      $data$expr_rdesign
         fixed day_of_week
       1     0           1
       2     0           1
@@ -440,19 +744,101 @@
       attr(,"assign")
       [1] 1 2
       
-      $data$exp_rncol
+      $data$expr_rncol
       [1] 1
       
-      $data$exp_order
+      $data$expl_lrd_n
       [1] 1
+      
+      $data$expl_lrlrd
+      [1] 0
+      
+      $data$expl_obs
+      [1] 0
+      
+      $data$expl_fdesign
+         (Intercept)
+      1            1
+      2            1
+      3            1
+      4            1
+      5            1
+      6            1
+      7            1
+      8            1
+      9            1
+      10           1
+      11           1
+      12           1
+      13           1
+      14           1
+      15           1
+      16           1
+      17           1
+      18           1
+      19           1
+      20           1
+      21           1
+      22           1
+      23           1
+      24           1
+      25           1
+      26           1
+      27           1
+      28           1
+      29           1
+      30           1
+      31           1
+      32           1
+      33           1
+      34           1
+      35           1
+      36           1
+      37           1
+      38           1
+      39           1
+      40           1
+      41           1
+      attr(,"assign")
+      [1] 0
+      
+      $data$expl_fnrow
+      [1] 41
+      
+      $data$expl_findex
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
+      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41
+      
+      $data$expl_fnindex
+      [1] 41
+      
+      $data$expl_fncol
+      [1] 0
+      
+      $data$expl_rdesign
+           (Intercept)
+      attr(,"assign")
+      [1] 0
+      
+      $data$expl_rncol
+      [1] 0
       
       
       $priors
-            variable                                             description
-      1: exp_beta_sd Standard deviation of scaled pooled expectation effects
-      2:    eobs_lsd      Standard deviation for expected final observations
-                  distribution mean sd
-      1: Zero truncated normal    0  1
-      2: Zero truncated normal    0  1
+                  variable dimension
+      1:        expr_r_int         1
+      2:      expr_beta_sd         1
+      3: expr_lelatent_int         1
+      4:      expl_beta_sd         1
+                                                                                description
+      1:                                                   Intercept of the log growth rate
+      2:                        Standard deviation of scaled pooled log growth rate effects
+      3: Intercept for initial log observations (ordered by group and then\n          time)
+      4:                        Standard deviation of scaled pooled log growth rate effects
+                  distribution mean  sd
+      1:                Normal  0.0 0.2
+      2: Zero truncated normal  0.0 1.0
+      3:                Normal  4.1 1.0
+      4: Zero truncated normal  0.0 1.0
       
 
