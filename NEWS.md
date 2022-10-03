@@ -15,7 +15,6 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Refined the use of data ordering throughout the preprocessing functions. See #147 by @seabbs.
 - Skipped tests that use `cmdstan` locally to improve the developer/contributor experience. See #147 by @seabbs and @adrian-lison.
 - Added a basic simulator function for missing reference data. See #147 by @seabbs and @adrian-lison.
-- Added a basic simulator function for missing reference data. See #147 by @seabbs and @adrian-lison.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
