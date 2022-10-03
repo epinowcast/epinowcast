@@ -6,9 +6,9 @@
 \usage{
 enw_expectation(
   r = ~rw(day, by = .group),
-  generation_time = 1,
+  generation_time = c(1),
   observation = ~1,
-  latent_reporting_delay = 1,
+  latent_reporting_delay = c(1),
   data,
   ...
 )
