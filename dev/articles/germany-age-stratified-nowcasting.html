@@ -122,20 +122,40 @@
 
     
     
-<p>In this vignette we explore using <code>epinowcast</code> to estimate COVID-19 hospitalisations by date of positive test in Germany stratified by age using several model specifications with different degrees of flexibility. We then evaluate the resulting nowcasts using visual checks, approximate leave-one-out (LOO) cross-validation using Pareto smoothed importance sampling, and out of sample scoring using the weighted interval score and other scoring measures for the single report date considered here. Before working through this vignette reading the model definition is advised (<code>vignette("model-definition")</code>)</p>
+<p>In this vignette we explore using <code>epinowcast</code> to estimate
+COVID-19 hospitalisations by date of positive test in Germany stratified
+by age using several model specifications with different degrees of
+flexibility. We then evaluate the resulting nowcasts using visual
+checks, approximate leave-one-out (LOO) cross-validation using Pareto
+smoothed importance sampling, and out of sample scoring using the
+weighted interval score and other scoring measures for the single report
+date considered here. Before working through this vignette reading the
+model definition is advised
+(<code>vignette("model-definition")</code>)</p>
 <div class="section level2">
 <h2 id="packages">Packages<a class="anchor" aria-label="anchor" href="#packages"></a>
 </h2>
-<p>We use the <code>epinowcast</code> package, <code>data.table</code> and <code>purrr</code> for data manipulation, <code>ggplot2</code> for plotting, <code>knitr</code> to produce tables of output, <code>loo</code> to approximately evaluate out of sample performance and <code>scoringutils</code> to evaluate out of sample forecast performance.</p>
+<p>We use the <code>epinowcast</code> package, <code>data.table</code>
+and <code>purrr</code> for data manipulation, <code>ggplot2</code> for
+plotting, <code>knitr</code> to produce tables of output,
+<code>loo</code> to approximately evaluate out of sample performance and
+<code>scoringutils</code> to evaluate out of sample forecast
+performance.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org">epinowcast</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mc-stan.org/loo/" class="external-link">loo</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://epiforecasts.io/scoringutils/" class="external-link">scoringutils</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yihui.org/knitr/" class="external-link">knitr</a></span><span class="op">)</span></span></code></pre></div>
-<p>This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.</p>
+<p>This vignette includes several models that take upwards of 30 minutes
+to fit to data on a moderately equipped laptop. To speed up model
+fitting if more CPUs are available set the number of threads used per
+chain to half the number of real cores available (here 2 as we are using
+2 MCMC chains and have 4 real cores). Note this may cause conflicts with
+other processes running on your computer and if this is an issue reduce
+the number of threads used.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">threads</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
@@ -143,9 +163,23 @@
 <div class="section level2">
 <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
 </h2>
-<p>Nowcasting is effectively the estimation of reporting patterns for recently reported data. This requires data on these patterns for previous observations, which typically means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used but this is not yet supported in <code>epinowcast</code>).</p>
-<p>Here we use COVID-19 hospitalisations by date of positive test in Germany stratified by age group available from up to the 1st of September 2020 (with 40 days of data included prior to this) as an example of data available in real-time and hospitalisations by date of positive test available up to 20th of October to represent hospitalisations as finally reported. These data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a> where they are deconvolved from weekly data and days with negative reported hospitalisations are adjusted.</p>
-<p>We first filter out the data that would have been available on the 1st of September for the last 40 days.</p>
+<p>Nowcasting is effectively the estimation of reporting patterns for
+recently reported data. This requires data on these patterns for
+previous observations, which typically means the time series of data as
+reported on multiple consecutive days (in theory non-consecutive days
+could be used but this is not yet supported in
+<code>epinowcast</code>).</p>
+<p>Here we use COVID-19 hospitalisations by date of positive test in
+Germany stratified by age group available from up to the 1st of
+September 2020 (with 40 days of data included prior to this) as an
+example of data available in real-time and hospitalisations by date of
+positive test available up to 20th of October to represent
+hospitalisations as finally reported. These data are sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert
+Koch Institute via the Germany Nowcasting hub</a> where they are
+deconvolved from weekly data and days with negative reported
+hospitalisations are adjusted.</p>
+<p>We first filter out the data that would have been available on the
+1st of September for the last 40 days.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="../reference/germany_covid19_hosp.html">germany_covid19_hosp</a></span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span></span>
 <span></span>
@@ -165,7 +199,8 @@
 <span><span class="co">#&gt; 6025:     2021-07-23       DE     35-59      39  2021-09-01</span></span>
 <span><span class="co">#&gt; 6026:     2021-07-23       DE     60-79      21  2021-09-01</span></span>
 <span><span class="co">#&gt; 6027:     2021-07-23       DE       80+       5  2021-09-01</span></span></code></pre></div>
-<p>Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target “true” data.</p>
+<p>Similarly we then find the data that were available on the 20th of
+October for these dates, which will serve as the target “true” data.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_nat_germany</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span><span class="st">"2021-10-20"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -175,8 +210,33 @@
 <div class="section level2">
 <h2 id="data-preprocessing">Data preprocessing<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
 </h2>
-<p><code>epinowcast</code> works by assuming data has been preprocessed into the reporting format it requires, coupled with meta data for both reference and report dates. <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> can be used for this, although users can also use the internal functions to produce their own custom preprocessing steps. It is at this stage that arbitrary groupings of observations can be defined, which will then be propagated throughout all subsequent modelling steps. Here we have data stratified by age, and hence grouped by age group, but in principle this could be any grouping or combination of groups independent of the reference and report date models. We furthermore assume a maximum delay required to make the model identifiable. We set this to 40 days due to evidence of long reporting delays in this example data. However, note that in most cases the majority of right truncation occurs in the first few days and that increasing the maximum delay has a non-linear effect on run-time (i.e. a model with a maximum delay of 20 days will be much faster to fit than with 40 days). Note also that under the current formulation delays longer than the maximum are ignored so that the adjusted estimate is really for data reported after the maximum delay rather than for finally reported data.</p>
-<p>Another key modelling choice we make at this stage is to model overall hospitalisations jointly with age groups rather than as an aggregation of age group estimates. This implicitly assumes that aggregated and non-aggregated data are not comparable (which may or may not be the case) but that the reporting process shares some of the same mechanisms. Another way to approach this would be to only model age stratified hospitalisations and then to aggregate the nowcast estimates into total counts after fitting the model.</p>
+<p><code>epinowcast</code> works by assuming data has been preprocessed
+into the reporting format it requires, coupled with meta data for both
+reference and report dates. <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> can be
+used for this, although users can also use the internal functions to
+produce their own custom preprocessing steps. It is at this stage that
+arbitrary groupings of observations can be defined, which will then be
+propagated throughout all subsequent modelling steps. Here we have data
+stratified by age, and hence grouped by age group, but in principle this
+could be any grouping or combination of groups independent of the
+reference and report date models. We furthermore assume a maximum delay
+required to make the model identifiable. We set this to 40 days due to
+evidence of long reporting delays in this example data. However, note
+that in most cases the majority of right truncation occurs in the first
+few days and that increasing the maximum delay has a non-linear effect
+on run-time (i.e. a model with a maximum delay of 20 days will be much
+faster to fit than with 40 days). Note also that under the current
+formulation delays longer than the maximum are ignored so that the
+adjusted estimate is really for data reported after the maximum delay
+rather than for finally reported data.</p>
+<p>Another key modelling choice we make at this stage is to model
+overall hospitalisations jointly with age groups rather than as an
+aggregation of age group estimates. This implicitly assumes that
+aggregated and non-aggregated data are not comparable (which may or may
+not be the case) but that the reporting process shares some of the same
+mechanisms. Another way to approach this would be to only model age
+stratified hospitalisations and then to aggregate the nowcast estimates
+into total counts after fitting the model.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span>, by <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
@@ -190,14 +250,28 @@
 <div class="section level2">
 <h2 id="models">Models<a class="anchor" aria-label="anchor" href="#models"></a>
 </h2>
-<p>Here we explore a range of increasingly complex models using subject area knowledge and posterior predictive checks to motivate modelling choices.</p>
+<p>Here we explore a range of increasingly complex models using subject
+area knowledge and posterior predictive checks to motivate modelling
+choices.</p>
 <div class="section level3">
 <h3 id="shared-reporting-delay-distribution">Shared reporting delay distribution<a class="anchor" aria-label="anchor" href="#shared-reporting-delay-distribution"></a>
 </h3>
-<p>We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call <code>epinowcast</code>. As we want to make use of <code>CmdStan</code>’s support for within-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass <code>threads_per_chain</code> to <code>epinowcast</code>).</p>
+<p>We first explore a relatively simple model that assumes that
+reporting delays are fixed across age groups and time. As this model is
+the default we simply call <code>epinowcast</code>. As we want to make
+use of <code>CmdStan</code>’s support for within-chain parallelisation
+we first compile the default model with this enabled (because of this we
+also need to pass <code>threads_per_chain</code> to
+<code>epinowcast</code>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">multithread_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Note that here we use two chains each using 2 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.</p>
+<p>Note that here we use two chains each using 2 threads as a
+demonstration but in general using 4 chains is recommended. Also note
+that warm-up and sampling iterations have been set below default values
+to reduce compute requirements but this may not be sufficient for many
+real world use cases. Finally, note that here we have silenced fitting
+progress and potential warning messages but in general this should not
+be done.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -217,12 +291,22 @@
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
 <span><span class="co">#&gt; Mean chain execution time: 252.1 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 253.1 seconds.</span></span></code></pre></div>
-<p>We first visualise the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.</p>
+<p>We first visualise the observations available to the model, the
+nowcast of final reported hospitalisations and the actual reported
+observations.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figures/nowcast-1.png" title="plot of chunk nowcast" alt="plot of chunk nowcast" width="100%"></p>
-<p>In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is faceted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.</p>
+<p>In order to identify areas where the current model is poorly
+reproducing the data we plot the posterior predictions against the data.
+This plot is faceted age group and reference data with the y axis
+showing the number of observations reported on a given day for a given
+reference day and the x axis showing the report date. We see fairly
+clearly oscillations in reported cases every 7 days which is expressed
+in the plot by oscillations in each facet that appear to move from left
+to right across facets. This indicates that some kind of week day
+adjustment may be needed.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span>, <span class="va">reference_date</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
@@ -231,10 +315,20 @@
 <div class="section level3">
 <h3 id="reporting-day-of-the-week-effect">Reporting day of the week effect<a class="anchor" aria-label="anchor" href="#reporting-day-of-the-week-effect"></a>
 </h3>
-<p>As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
+<p>As noted using the posterior predictions from the simple model fit
+above there appears to be a day of the week effect for reported
+observations. To adjust for this we introduce a random effect for day of
+the week by date of report using the following helper function which
+uses the metadata produced by <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note
+that <code>epinowcast</code> uses a sparse design matrix to reduce
+runtimes so the design matrix shows only unique rows with
+<code>index</code> containing the mapping to the full design matrix.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report_module_dow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
-<p>To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.</p>
+<p>To speed up model fitting we make use of posterior information from
+the previous model (with some inflation) for some parameters. Note that
+this is not a truly Bayesian approach and in some situations may be
+problematic.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcast</span>,</span>
@@ -251,7 +345,8 @@
 <span><span class="co">#&gt; 1: 1800.326 775.8310</span></span>
 <span><span class="co">#&gt; 2: 1680.222 834.0991</span></span>
 <span><span class="co">#&gt; 3: 1265.155 762.6747</span></span></code></pre></div>
-<p>We now repeat the nowcasting step with the day of the week reporting model included.</p>
+<p>We now repeat the nowcasting step with the day of the week reporting
+model included.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dow_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
@@ -267,7 +362,11 @@
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
 <span><span class="co">#&gt; Mean chain execution time: 427.0 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 433.7 seconds.</span></span></code></pre></div>
-<p>Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance). We could also plot the posterior predictions for this model in the same way as for the previous model.</p>
+<p>Nowcast performance looks visually improved but there is notable
+variation across age groups with the 35-59 year old nowcast appearing
+quite poor (and as a result the aggregate nowcast also not showing great
+performance). We could also plot the posterior predictions for this
+model in the same way as for the previous model.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dow_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
@@ -276,10 +375,15 @@
 <div class="section level3">
 <h3 id="age-group-variation">Age group variation<a class="anchor" aria-label="anchor" href="#age-group-variation"></a>
 </h3>
-<p>It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).</p>
+<p>It is quite likely that there is some variation in the reporting
+delay by age and that this may be driving the variation in nowcast
+performance noted for the last model. Here we model this using a random
+effect for 5 year age group (as these were the groups supplied in the
+data).</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
-<p>We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.</p>
+<p>We again nowcast this time using both the age adjusted reference date
+model and the day of the week adjusted report date model.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_age</span>,</span>
@@ -296,7 +400,9 @@
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
 <span><span class="co">#&gt; Mean chain execution time: 545.8 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 550.3 seconds.</span></span></code></pre></div>
-<p>Fit looks slightly better with this adjustment though uncertainty has also increased for all age groups and performance for the final day of data may have reduced compared to the first model.</p>
+<p>Fit looks slightly better with this adjustment though uncertainty has
+also increased for all age groups and performance for the final day of
+data may have reduced compared to the first model.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
@@ -305,7 +411,14 @@
 <div class="section level3">
 <h3 id="variation-based-on-reference-date">Variation based on reference date<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date"></a>
 </h3>
-<p>It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.</p>
+<p>It could be the case that reporting delays change over time as well
+as across age groups. One way of modelling this is to assume piecewise
+constant variation over time modelled with a first order weekly random
+walk. An attractive property of this approach is that it limits the
+number of report date distributions that need to be evaluated in the
+model to the number of weeks of data and as this is an expensive
+computational step using this approach to introducing a time-varying
+parameter limits the additional computational overhead.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_age_week</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
@@ -327,7 +440,9 @@
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
 <span><span class="co">#&gt; Mean chain execution time: 947.6 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 959.1 seconds.</span></span></code></pre></div>
-<p>In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.</p>
+<p>In comparison to the previous model it looks like the introduction of
+variation over time has introduce a slight improvement in capturing
+hospitalisations in some age groups.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
@@ -336,12 +451,19 @@
 <div class="section level3">
 <h3 id="variation-based-on-reference-date-stratified-by-age">Variation based on reference date stratified by age<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date-stratified-by-age"></a>
 </h3>
-<p>As a final hierarchical model it makes sense to explore whether there is evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.</p>
+<p>As a final hierarchical model it makes sense to explore whether there
+is evidence that reporting delays vary by week and age group jointly. In
+this scenario the assumption is that delays may evolve differently over
+time for each age group but reporting effects and measurement error are
+still shared across data sets.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_week_by_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, by <span class="op">=</span> <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the <code>adapt_delta</code> setting to 0.98 here to mitigate divergent transitions).</p>
+<p>We can now fit this model as before (note that this model is quite
+complex and so may take some time to fit and that we have had to
+increase the <code>adapt_delta</code> setting to 0.98 here to mitigate
+divergent transitions).</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_week_by_age</span>,</span>
@@ -364,7 +486,9 @@
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
 <span><span class="co">#&gt; Mean chain execution time: 2565.7 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 2603.3 seconds.</span></span></code></pre></div>
-<p>In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.</p>
+<p>In comparison to the previous model it looks like the introduction of
+variation over time has introduce a slight improvement in capturing
+hospitalisations in some age groups.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
@@ -373,8 +497,17 @@
 <div class="section level3">
 <h3 id="independent-models-for-each-age-group-">Independent models for each age group.<a class="anchor" aria-label="anchor" href="#independent-models-for-each-age-group-"></a>
 </h3>
-<p>The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the reference date stratified by age) to each age group independently.</p>
-<p>We could define this model with a single call to <code>epinowcast</code> but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.</p>
+<p>The obvious question to ask at this stage is if using a model that
+jointly fits to all age groups at once is actually beneficial. Here we
+explore this by fitting the same model as previously (a day of week
+effect for report date and a random walk on the week of the reference
+date stratified by age) to each age group independently.</p>
+<p>We could define this model with a single call to
+<code>epinowcast</code> but fitting each dataset independently but in a
+joint setting would likely lead to long fit times for no real benefit.
+Instead here we write a small helper function to preprocess our input
+data, define report and reference date models and then run a
+nowcast.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">independent_epinowcast</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span> <span class="op">=</span> <span class="fl">40</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">pobs_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">obs</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span>
@@ -392,7 +525,9 @@
 <span>  <span class="op">)</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">nowcast_summary</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data frame.</p>
+<p>We can now use this wrapper function on the data available for each
+age group, summarise the resulting nowcast, and then join these into a
+single data frame.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -472,7 +607,15 @@
 <span><span class="co">#&gt; Mean chain execution time: 308.8 seconds.</span></span>
 <span><span class="co">#&gt; Total execution time: 329.6 seconds.</span></span>
 <span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
-<p>As we now have the summarised nowcasts rather than an object of class <code>epinowcast</code> we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.</p>
+<p>As we now have the summarised nowcasts rather than an object of class
+<code>epinowcast</code> we need to make use of the underlying plot
+function ourselves. Doing so we see that performance is generally quite
+good across the board though the width of credible intervals has also
+increased. Importantly the 35-59 year old age group is being captured at
+least as well as in the heirarchical models with only minor reductions
+in performance in other age groups. This suggests that for this dataset
+and nowcast date there may be relatively little benefit to jointly
+modelling age groups.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
 <span>  <span class="va">independent_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span></span>
@@ -483,15 +626,43 @@
 <div class="section level3">
 <h3 id="alternative-models">Alternative models<a class="anchor" aria-label="anchor" href="#alternative-models"></a>
 </h3>
-<p>In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by <code>epinowcast</code>) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.</p>
-<p>There are any number of additional models we could explore within the framework supported by <code>epinowcast</code> as well as a large number of alternative parameterisations that are not yet supported. For example, we could explore models with more complex reporting day effects, including holidays (supported in <code>epinowcast</code> either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.</p>
-<p>If interested in expanding the functionality of the underlying model to address some of these issues note that <code>epinowcast</code> allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.</p>
+<p>In all the models defined above we have assumed that the delay
+distribution, aside from report day effects, is parametric and has a
+lognormal distribution. Both of these assumptions may be less than
+optimal. Alternatives include assuming a different distributional form
+(such as the gamma distribution which is also supported by
+<code>epinowcast</code>) or assuming that the report delay is fully
+non-parametric which is not yet supported but will be in future package
+versions.</p>
+<p>There are any number of additional models we could explore within the
+framework supported by <code>epinowcast</code> as well as a large number
+of alternative parameterisations that are not yet supported. For
+example, we could explore models with more complex reporting day
+effects, including holidays (supported in <code>epinowcast</code> either
+as a separate effect or by assuming they have the same reporting hazard
+as Sundays) and variation over time which would represent reporting
+delays changing independently of reference date (this would be similar
+to the time varying model we defined above but with this effect
+occurring in the report date model rather than in the reference date
+model). These choices are data dependent and domain knowledge needs to
+be used to assess the likely censoring mechanisms.</p>
+<p>If interested in expanding the functionality of the underlying model
+to address some of these issues note that <code>epinowcast</code> allows
+users to pass in their own models meaning that alternative
+parameterisations, for example altering the forecast model used for
+inferring expected observations, may be easily tested within the package
+infrastructure. Once this testing has been done alterations that
+increase the flexibility of the package model and improves its defaults
+are very welcome as pull requests.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="evaluation">Evaluation<a class="anchor" aria-label="anchor" href="#evaluation"></a>
 </h2>
-<p>As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous but we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions.</p>
+<p>As we have only nowcast a single date, and we visualised performance
+as we went, this evaluation is anything but complete or rigorous but we
+can give some examples of how we might evaluate performance more
+generally and potentially draw some useful initial conclusions.</p>
 <p>We first list all models and give them informative names,</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -501,7 +672,8 @@
 <span>  <span class="st">"Reference: Age and week, Report: Day of week"</span> <span class="op">=</span> <span class="va">week_nowcast</span>,</span>
 <span>  <span class="st">"Reference: Age and week by age, Report: Day of week"</span> <span class="op">=</span> <span class="va">age_week_nowcast</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>and then summarise the nowcast posterior for each model and join into a tidy data frame to make further analysis easier.</p>
+<p>and then summarise the nowcast posterior for each model and join into
+a tidy data frame to make further analysis easier.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcasts</span>, <span class="va">summary</span>,</span>
@@ -524,14 +696,25 @@
 <span>    <span class="va">age_group</span>,</span>
 <span>    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"00+"</span>, <span class="st">"00-04"</span>, <span class="st">"05-14"</span>, <span class="st">"15-34"</span>, <span class="st">"35-59"</span>, <span class="st">"60-79"</span>, <span class="st">"80+"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<p>This allows us to plot nowcasts for each model and age group compared to the latest data. Looking at the plot shows some small differences across models with uncertainty generally decreasing as model complexity increases. Some age groups are clearly better nowcast than others with the 35-59 year old age group in particular having poor nowcast coverage.</p>
+<p>This allows us to plot nowcasts for each model and age group compared
+to the latest data. Looking at the plot shows some small differences
+across models with uncertainty generally decreasing as model complexity
+increases. Some age groups are clearly better nowcast than others with
+the 35-59 year old age group in particular having poor nowcast
+coverage.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
 <span>  <span class="va">summarised_nowcasts</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="figures/unnamed-chunk-20-1.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" width="100%"></p>
-<p>As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the <code>loo</code> package though note this is not typically appropriate for time series data (<a href="https://cran.r-project.org/web//packages/loo/vignettes/loo2-lfo.html" class="external-link">where approximate LFO cross validation is likely to perform better</a>), the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required.</p>
+<p>As a crude measure of general out of sample performance we can use
+the leave one out information criterion as supplied by the
+<code>loo</code> package though note this is not typically appropriate
+for time series data (<a href="https://cran.r-project.org/web//packages/loo/vignettes/loo2-lfo.html" class="external-link">where
+approximate LFO cross validation is likely to perform better</a>), the
+approximation used here to avoid refitting is likely to be poor, and we
+are not accounting for this by refitting the model as required.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">loos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">nowcasts</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">loo</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
@@ -541,9 +724,27 @@
 <span><span class="co">#&gt; Reference: Age, Report: Day of week                  -19.2       9.0 </span></span>
 <span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -31.1      10.6 </span></span>
 <span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -608.6      46.9</span></span></code></pre></div>
-<p>We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.</p>
-<p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code>scoringutils::eval_forecasts()</code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
-<p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
+<p>We see that the most model which includes day of the week effects for
+the date of report substantially outperformed the baseline model with no
+adjustment and that the more complex models that adjusted for variation
+by age and week for the date of test improved estimated out of sample
+performance but uncertainty around these estimates was wide.</p>
+<p>More rigorously, we can evaluate the nowcasts using proper scoring
+rules from the <code>scoringutils</code> package including the weighted
+interval score. Here we limit the nowcasts scored to the last 7 days of
+data to make interpretation easier, transform nowcasts into format
+required for <code>scoringutils</code>, link with the latest available
+data, and the finally call <code>scoringutils::eval_forecasts()</code>.
+Note that as we are only scoring a single nowcasts it is difficult to
+generalise our findings as this one day of reporting may have been
+unusual. To have a more informed view of which model to pick we would
+ideally nowcast a range of dates and evaluate each of them.</p>
+<p>As a first step we score overall performance. Here we see that the
+baseline model with no variation actually performs very well with only
+models that include at least day of the week, age groups and variation
+by week performing comparably. Other performance characteristics are
+relatively similar across models (with all models being biased towards
+underprediction for example).</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span></span>
 <span> <span class="va">summarised_nowcasts</span>,</span>
@@ -616,7 +817,8 @@
 <td align="right">21.16327</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="right">14.68425</td>
 <td align="right">3.063155</td>
 <td align="right">10.799152</td>
@@ -626,7 +828,8 @@
 <td align="right">23.08163</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="right">11.10881</td>
 <td align="right">3.573224</td>
 <td align="right">6.482575</td>
@@ -637,7 +840,9 @@
 </tr>
 </tbody>
 </table>
-<p>Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others.</p>
+<p>Stratifying by age group we see that trends in performance are fairly
+consistent with some small variation in the ordering of which model out
+performs the others.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">score</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -711,7 +916,8 @@
 <td align="right">64.714286</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">00+</td>
 <td align="right">41.927253</td>
 <td align="right">9.7698901</td>
@@ -722,7 +928,8 @@
 <td align="right">71.857143</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">00+</td>
 <td align="right">34.670769</td>
 <td align="right">11.0435165</td>
@@ -777,7 +984,8 @@
 <td align="right">3.571429</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">00-04</td>
 <td align="right">2.177846</td>
 <td align="right">0.6393846</td>
@@ -788,7 +996,8 @@
 <td align="right">3.142857</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">00-04</td>
 <td align="right">1.005407</td>
 <td align="right">0.4779341</td>
@@ -843,7 +1052,8 @@
 <td align="right">2.000000</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">05-14</td>
 <td align="right">1.318154</td>
 <td align="right">0.4829890</td>
@@ -854,7 +1064,8 @@
 <td align="right">2.000000</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">05-14</td>
 <td align="right">1.557099</td>
 <td align="right">0.4800659</td>
@@ -909,7 +1120,8 @@
 <td align="right">10.571429</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">15-34</td>
 <td align="right">6.134637</td>
 <td align="right">2.5632088</td>
@@ -920,7 +1132,8 @@
 <td align="right">11.142857</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">15-34</td>
 <td align="right">6.215275</td>
 <td align="right">3.2262637</td>
@@ -975,7 +1188,8 @@
 <td align="right">47.285714</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">35-59</td>
 <td align="right">37.469451</td>
 <td align="right">3.7674725</td>
@@ -986,7 +1200,8 @@
 <td align="right">51.000000</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">35-59</td>
 <td align="right">19.760659</td>
 <td align="right">5.3021978</td>
@@ -1041,7 +1256,8 @@
 <td align="right">12.142857</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">60-79</td>
 <td align="right">8.719473</td>
 <td align="right">2.4207912</td>
@@ -1052,7 +1268,8 @@
 <td align="right">13.428571</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">60-79</td>
 <td align="right">7.854088</td>
 <td align="right">2.7017802</td>
@@ -1107,7 +1324,8 @@
 <td align="right">7.857143</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">80+</td>
 <td align="right">5.042967</td>
 <td align="right">1.7983516</td>
@@ -1118,7 +1336,8 @@
 <td align="right">9.000000</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">80+</td>
 <td align="right">6.698396</td>
 <td align="right">1.7808132</td>
@@ -1130,7 +1349,15 @@
 </tr>
 </tbody>
 </table>
-<p>Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend).</p>
+<p>Stratifying by date we find that interestingly the more complex
+models appear to do better for earlier dates (for which more data is
+available) with the addition of age group appearing to be the factor
+that drives this increase in performance. Our finding from the overall
+summary that the simple model performed comparably appears to be largely
+driven by performance for the last nowcast target where this model
+significantly outperformed the others (this underlines the need to
+evaluate nowcasts from different dates as this single data point may be
+may anomalous or we may have identified a real trend).</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">score</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1204,7 +1431,8 @@
 <td align="right">13.428571</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-08-26</td>
 <td align="right">8.186835</td>
 <td align="right">2.429692</td>
@@ -1215,7 +1443,8 @@
 <td align="right">14.000000</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-08-26</td>
 <td align="right">5.986945</td>
 <td align="right">2.299912</td>
@@ -1270,7 +1499,8 @@
 <td align="right">12.500000</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-08-27</td>
 <td align="right">8.913429</td>
 <td align="right">2.343758</td>
@@ -1281,7 +1511,8 @@
 <td align="right">14.214286</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-08-27</td>
 <td align="right">5.456484</td>
 <td align="right">2.713516</td>
@@ -1336,7 +1567,8 @@
 <td align="right">15.142857</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-08-28</td>
 <td align="right">10.191231</td>
 <td align="right">2.267055</td>
@@ -1347,7 +1579,8 @@
 <td align="right">17.428571</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-08-28</td>
 <td align="right">4.538506</td>
 <td align="right">3.169714</td>
@@ -1402,7 +1635,8 @@
 <td align="right">17.928571</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-08-29</td>
 <td align="right">12.220110</td>
 <td align="right">2.623846</td>
@@ -1413,7 +1647,8 @@
 <td align="right">20.285714</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-08-29</td>
 <td align="right">6.071451</td>
 <td align="right">3.212110</td>
@@ -1468,7 +1703,8 @@
 <td align="right">14.428571</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-08-30</td>
 <td align="right">7.042747</td>
 <td align="right">2.702088</td>
@@ -1479,7 +1715,8 @@
 <td align="right">11.285714</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-08-30</td>
 <td align="right">9.866857</td>
 <td align="right">3.202681</td>
@@ -1534,7 +1771,8 @@
 <td align="right">5.785714</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-08-31</td>
 <td align="right">6.042308</td>
 <td align="right">3.647802</td>
@@ -1545,7 +1783,8 @@
 <td align="right">10.071429</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-08-31</td>
 <td align="right">5.577275</td>
 <td align="right">4.341011</td>
@@ -1600,7 +1839,8 @@
 <td align="right">68.928571</td>
 </tr>
 <tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of week</td>
+<td align="left">Reference: Age and week by age, Report: Day of
+week</td>
 <td align="left">2021-09-01</td>
 <td align="right">50.193121</td>
 <td align="right">5.427846</td>
@@ -1611,7 +1851,8 @@
 <td align="right">74.285714</td>
 </tr>
 <tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of week</td>
+<td align="left">Independent by age, Reference: Week, Report: Day of
+week</td>
 <td align="left">2021-09-01</td>
 <td align="right">40.264176</td>
 <td align="right">6.073626</td>
@@ -1623,7 +1864,13 @@
 </tr>
 </tbody>
 </table>
-<p>Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.</p>
+<p>Finally we can look across all scores relative to the simple model
+with no variation. This nicely captures the role of the last data point
+on performance but also highlights more variation across reference dates
+and age groups between models. The difference in performance between the
+hierarchical by age models and the model that treats age groups
+independently is also very clear with only this model performing well
+for all days in the 35-59 year age group.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_date_score</span> <span class="op">&lt;-</span> <span class="va">score</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span></span>
@@ -1656,9 +1903,37 @@
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h2>
-<p>In this vignette we showcased using <code>epinowcast</code> to nowcast age stratified COVID-19 hospitalisations in Germany by date of test with a series of increasingly complex models motivated by the data. We also showed some simple methods for exploring these nowcasts and evaluating them.</p>
-<p>Using the limited information available to us (as we have only nowcast a single date and used performance for this date to motivate new models) it appears that all models performed acceptably and that, aside from the last data point, models with age and day of the week effects likely performed better. It is also fairly clear that performance degrades as the amount of reported data is reduced which intuitively makes sense with performance being particularly sensitive the first day reported data is available (i.e “now”). Our apparent finding that delays evolve fairly independently across age groups motivates choosing a model that is very flexible to this, at least for the date of reference model.</p>
-<p>Despite the independent model and the fixed effect model both doing well overall, for most applications if choosing a model based on this evaluation, I would likely select a relatively flexible model (with day of the week, age group, and age stratified weekly variation) relying on the hierarchical structure to limit overfitting, and excepting a small reduction in performance in some edge cases (with the hope that these are edge cases and not a common feature of the data). However in practice, I would want to explore nowcasting and evaluating more dates and if possible a greater range of model structures (as discussed in the alternative modelling section of this vignette). Note that with the proper scoring approach taken here to understand model performance (and commonly used in the literature) we are ranking models based on absolute errors and so groups with high counts (such as the 35-59 age group) are more important to nowcast correctly than groups with smaller counts (such as those aged 80+).</p>
+<p>In this vignette we showcased using <code>epinowcast</code> to
+nowcast age stratified COVID-19 hospitalisations in Germany by date of
+test with a series of increasingly complex models motivated by the data.
+We also showed some simple methods for exploring these nowcasts and
+evaluating them.</p>
+<p>Using the limited information available to us (as we have only
+nowcast a single date and used performance for this date to motivate new
+models) it appears that all models performed acceptably and that, aside
+from the last data point, models with age and day of the week effects
+likely performed better. It is also fairly clear that performance
+degrades as the amount of reported data is reduced which intuitively
+makes sense with performance being particularly sensitive the first day
+reported data is available (i.e “now”). Our apparent finding that delays
+evolve fairly independently across age groups motivates choosing a model
+that is very flexible to this, at least for the date of reference
+model.</p>
+<p>Despite the independent model and the fixed effect model both doing
+well overall, for most applications if choosing a model based on this
+evaluation, I would likely select a relatively flexible model (with day
+of the week, age group, and age stratified weekly variation) relying on
+the hierarchical structure to limit overfitting, and excepting a small
+reduction in performance in some edge cases (with the hope that these
+are edge cases and not a common feature of the data). However in
+practice, I would want to explore nowcasting and evaluating more dates
+and if possible a greater range of model structures (as discussed in the
+alternative modelling section of this vignette). Note that with the
+proper scoring approach taken here to understand model performance (and
+commonly used in the literature) we are ranking models based on absolute
+errors and so groups with high counts (such as the 35-59 age group) are
+more important to nowcast correctly than groups with smaller counts
+(such as those aged 80+).</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

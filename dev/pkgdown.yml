@@ -1,10 +1,10 @@
-pandoc: 2.14.2
+pandoc: 2.19.2
 pkgdown: 2.0.6.9000
-pkgdown_sha: 956f076f661eb2de9413f64ea24a580cf444466d
+pkgdown_sha: 4d7f0f8620fc6b9c80932cac0c7ec7946678bbd3
 articles:
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
-last_built: 2022-09-20T08:21Z
+last_built: 2022-11-28T20:25Z
 urls:
   reference: package.epinowcast.org/reference
   article: package.epinowcast.org/articles

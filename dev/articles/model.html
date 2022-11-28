@@ -113,7 +113,8 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Model definition and implementation</h1>
-                        <h4 data-toc-skip class="author">Sam Abbott, Sebastian Funk</h4>
+                        <h4 data-toc-skip class="author">Sam Abbott,
+Sebastian Funk</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/HEAD/vignettes/model.Rmd" class="external-link"><code>vignettes/model.Rmd</code></a></small>
@@ -122,119 +123,285 @@
 
     
     
-<p>In the following sections we provide methodological and implementation details for the nowcasting framework implemented in <code>epinowcast</code>. Our approach is an extension of that proposed by Günther et al.<span class="citation"><sup>[1]</sup></span> which was itself an extension of the model proposed by Höhle and Heiden<span class="citation"><sup>[2]</sup></span> and implemented in the <code>surveillance</code> R package<span class="citation"><sup>[3]</sup></span>. Compared to the model proposed in Günther et al.<span class="citation"><sup>[1]</sup></span>, <code>epinowcast</code> adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates, and an efficient implementation in <code>stan</code> which makes use of sparse design matrices and within chain parallelisation to reduce runtimes<span class="citation"><sup>[4,5]</sup></span> as well as a range of other model extensions.</p>
+<p>In the following sections we provide methodological and
+implementation details for the nowcasting framework implemented in
+<code>epinowcast</code>. Our approach is an extension of that proposed
+by Günther et al.<span class="citation"><sup>[1]</sup></span> which was
+itself an extension of the model proposed by Höhle and Heiden<span class="citation"><sup>[2]</sup></span> and implemented in the
+<code>surveillance</code> R package<span class="citation"><sup>[3]</sup></span>. Compared to the model proposed
+in Günther et al.<span class="citation"><sup>[1]</sup></span>,
+<code>epinowcast</code> adds support for jointly nowcasting multiple
+related datasets, a flexible formula interface allowing for the
+specification of a large range of models, an optional parametric
+assumption for the underlying reporting delay, the ability to flexibly
+data with missing reference dates, and an efficient implementation in
+<code>stan</code> which makes use of sparse design matrices and within
+chain parallelisation to reduce runtimes<span class="citation"><sup>[4,5]</sup></span> as well as a range of other
+model extensions.</p>
 <div class="section level2">
-<h2 id="decomposition-into-expected-final-notifications-and-report-delay-components">Decomposition into expected final notifications and report delay components<a class="anchor" aria-label="anchor" href="#decomposition-into-expected-final-notifications-and-report-delay-components"></a>
+<h2 id="decomposition-into-expected-final-notifications-and-report-delay-components">Decomposition into expected final notifications and report delay
+components<a class="anchor" aria-label="anchor" href="#decomposition-into-expected-final-notifications-and-report-delay-components"></a>
 </h2>
-<p>We are concerned with outcomes that occur at a time of <em>reference</em> (e.g., date of symptom onset or test for a disease) that are reported only with a delay, at the time of <em>report</em> (e.g. the date onsets are entered into a central database and so become available for analysis). We assume that these times are measured in discrete time steps, usually of a day (in which case the times are dates).</p>
-<p>We follow the approach of Höhle and Heiden<span class="citation"><sup>[2]</sup></span> and consider the distribution of notifications (<span class="math inline">\(n_{g,t,d}\)</span>) by time of reference (<span class="math inline">\(t\)</span>) and reporting delay (<span class="math inline">\(d\)</span>) conditional on the final observed count <span class="math inline">\(N_{g,t}\)</span> for each dataset (<span class="math inline">\(g\)</span>) such that,</p>
+<p>We are concerned with outcomes that occur at a time of
+<em>reference</em> (e.g., date of symptom onset or test for a disease)
+that are reported only with a delay, at the time of <em>report</em>
+(e.g. the date onsets are entered into a central database and so become
+available for analysis). We assume that these times are measured in
+discrete time steps, usually of a day (in which case the times are
+dates).</p>
+<p>We follow the approach of Höhle and Heiden<span class="citation"><sup>[2]</sup></span> and consider the distribution of
+notifications (<span class="math inline">\(n_{g,t,d}\)</span>) by time
+of reference (<span class="math inline">\(t\)</span>) and reporting
+delay (<span class="math inline">\(d\)</span>) conditional on the final
+observed count <span class="math inline">\(N_{g,t}\)</span> for each
+dataset (<span class="math inline">\(g\)</span>) such that,</p>
 <p><span class="math display">\[\begin{equation}
   N_{g,t} = \sum_{d=0}^{D} n_{g,t,d}
 \end{equation}\]</span></p>
-<p>where <span class="math inline">\(D\)</span> represents the maximum delay between time of reference and time of report which in theory could be infinite but in practice we set to a finite value in order to make the model identifiable and computationally feasible. For each <span class="math inline">\(t\)</span> and <span class="math inline">\(g\)</span> these notifications are assumed to be drawn from a multinomial distribution with <span class="math inline">\(N_{g,t}\)</span> trials and a probability vector (<span class="math inline">\(p_{g,t,d}\)</span>) of length <span class="math inline">\(D\)</span>. The aim of nowcasting is to predict the final observed counts <span class="math inline">\(N_{g,t}\)</span> given information available up to time <span class="math inline">\(t\)</span>. We do this by estimating the components of this probability vector jointly with the expected number of final notifications (<span class="math inline">\(\lambda_{g,t} = \mathbb{E}[N_{g,t}]\)</span>) in dataset <span class="math inline">\(g\)</span> at time <span class="math inline">\(t\)</span>.</p>
-<p>An alternative approach, not explored here, would be to consider each <span class="math inline">\(n_{g,t,d}\)</span> independently at which point the model can be defined as a regression that can be fit using standard software with the appropriate observation model and adjustment for reporting delay (i.e it becomes a Poisson or Negative Binomial regression). An implementation of this approach is available in Bastos et al.<span class="citation"><sup>[6]</sup></span>. A downside of this simplified approach is that reporting is not conditionally dependent which may make specifying models for complex reporting distributions difficult.</p>
+<p>where <span class="math inline">\(D\)</span> represents the maximum
+delay between time of reference and time of report which in theory could
+be infinite but in practice we set to a finite value in order to make
+the model identifiable and computationally feasible. For each <span class="math inline">\(t\)</span> and <span class="math inline">\(g\)</span> these notifications are assumed to be
+drawn from a multinomial distribution with <span class="math inline">\(N_{g,t}\)</span> trials and a probability vector
+(<span class="math inline">\(p_{g,t,d}\)</span>) of length <span class="math inline">\(D\)</span>. The aim of nowcasting is to predict
+the final observed counts <span class="math inline">\(N_{g,t}\)</span>
+given information available up to time <span class="math inline">\(t\)</span>. We do this by estimating the
+components of this probability vector jointly with the expected number
+of final notifications (<span class="math inline">\(\lambda_{g,t} =
+\mathbb{E}[N_{g,t}]\)</span>) in dataset <span class="math inline">\(g\)</span> at time <span class="math inline">\(t\)</span>.</p>
+<p>An alternative approach, not explored here, would be to consider each
+<span class="math inline">\(n_{g,t,d}\)</span> independently at which
+point the model can be defined as a regression that can be fit using
+standard software with the appropriate observation model and adjustment
+for reporting delay (i.e it becomes a Poisson or Negative Binomial
+regression). An implementation of this approach is available in Bastos
+et al.<span class="citation"><sup>[6]</sup></span>. A downside of this
+simplified approach is that reporting is not conditionally dependent
+which may make specifying models for complex reporting distributions
+difficult.</p>
 </div>
 <div class="section level2">
 <h2 id="expected-final-notifications">Expected final notifications<a class="anchor" aria-label="anchor" href="#expected-final-notifications"></a>
 </h2>
-<p>Here we follow the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a Gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.</p>
+<p>Here we follow the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> and specify the model for
+expected final notifications as a first order random walk. This model
+can in principle be any model such as a more complex time-series
+approach, a Gaussian process, or a mechanistic or semi-mechanistic
+compartmental model. Extending the flexibility of this model is an area
+of further work as is evaluating the benefits and tradeoffs of more
+complex approaches.</p>
 <p><span class="math display">\[\begin{align}
-  \log (\lambda_{g,t}) &amp;\sim \text{Normal}\left(\log (\lambda_{g,t-1}) , \sigma^{\lambda}_{g} \right) \\
-  \log (\lambda_{g,0}) &amp;\sim \text{Normal}\left(\log (N_{g,0} + 1), 1 \right) \\ \sigma^{\lambda}_{g} &amp;\sim \text{Half-Normal}\left(0, 1\right)
+  \log (\lambda_{g,t}) &amp;\sim \text{Normal}\left(\log
+(\lambda_{g,t-1}) , \sigma^{\lambda}_{g} \right) \\
+  \log (\lambda_{g,0}) &amp;\sim \text{Normal}\left(\log (N_{g,0} + 1),
+1 \right) \\ \sigma^{\lambda}_{g} &amp;\sim \text{Half-Normal}\left(0,
+1\right)
 \end{align}\]</span></p>
-<p>where <span class="math inline">\(N_{g0}\)</span>, the first time point for expected observations in dataset <span class="math inline">\(d\)</span>, is assumed to have been completely observed.</p>
+<p>where <span class="math inline">\(N_{g0}\)</span>, the first time
+point for expected observations in dataset <span class="math inline">\(d\)</span>, is assumed to have been completely
+observed.</p>
 </div>
 <div class="section level2">
 <h2 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
 </h2>
-<p>Again following the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> we estimate the delay distribution (<span class="math inline">\(p_{g,t,d}\)</span>) using a discrete-time logistic hazard model <span class="math display">\[
-h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{g,t,d}\right)
-\]</span> but we extend this model to decompose <span class="math inline">\(W_{g,t,d}\)</span> into 3 components: hazard derived from a parametric delay distribution (<span class="math inline">\(\gamma_{g,t,d}\)</span>) dependent on covariates at the time of reference, hazard not derived from a parametric distribution (<span class="math inline">\(\delta_{g,t,d}\)</span>) dependent on covariates at the time of reference, and hazard dependent on covariates referenced to the time of report (<span class="math inline">\(\epsilon_{g,t,d}\)</span>).</p>
-<p>The first component (<span class="math inline">\(\gamma_{g,t,d}\)</span>) we estimate what would be the probability of reporting <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> at a given time if it followed a parametric distribution, here implemented using a discretised log normal (with other distributions being available) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients (note these can include auto-regressive terms),</p>
+<p>Again following the approach of Günther et al.<span class="citation"><sup>[1]</sup></span> we estimate the delay
+distribution (<span class="math inline">\(p_{g,t,d}\)</span>) using a
+discrete-time logistic hazard model <span class="math display">\[
+h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d,
+W_{g,t,d}\right)
+\]</span> but we extend this model to decompose <span class="math inline">\(W_{g,t,d}\)</span> into 3 components: hazard
+derived from a parametric delay distribution (<span class="math inline">\(\gamma_{g,t,d}\)</span>) dependent on covariates
+at the time of reference, hazard not derived from a parametric
+distribution (<span class="math inline">\(\delta_{g,t,d}\)</span>)
+dependent on covariates at the time of reference, and hazard dependent
+on covariates referenced to the time of report (<span class="math inline">\(\epsilon_{g,t,d}\)</span>).</p>
+<p>The first component (<span class="math inline">\(\gamma_{g,t,d}\)</span>) we estimate what would be
+the probability of reporting <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> at a given time if it
+followed a parametric distribution, here implemented using a discretised
+log normal (with other distributions being available) with the log mean
+and log standard deviation defined using an intercept and arbitrary
+shared, reference time indexed, covariates with fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients (note these can
+include auto-regressive terms),</p>
 <p><span class="math display">\[\begin{align}
-  p^{\prime}_{g,t,d} &amp;\sim \text{LogNormal} \left(\mu_{g,t}, \upsilon_{g,t} \right) \\
-  \mu_{g,t} &amp;= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu} Z_{\gamma} \\
-  \text{log} (\upsilon_{g,t}) &amp;= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma} 
+  p^{\prime}_{g,t,d} &amp;\sim \text{LogNormal} \left(\mu_{g,t},
+\upsilon_{g,t} \right) \\
+  \mu_{g,t} &amp;= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu}
+Z_{\gamma} \\
+  \text{log} (\upsilon_{g,t}) &amp;= \upsilon_0 + \beta_{f,\upsilon}
+X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}\]</span></p>
-<p>Note we normalise this distribution so that it sums to 1. The parametric logit hazard (i.e. the probability of report at a given time conditional on not already having reported) for this component of the model is then,</p>
+<p>Note we normalise this distribution so that it sums to 1. The
+parametric logit hazard (i.e. the probability of report at a given time
+conditional on not already having reported) for this component of the
+model is then,</p>
 <p><span class="math display">\[\begin{equation}
-  \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right)
+  \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1
+-\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right)
 \end{equation}\]</span></p>
-<p>In addition to parametric reporting effects there may also be non-parametric effects referenced by both reference and report dates. These are represented by the non-distributional logit hazard components for the time of reference and report, defined using an intercept (<span class="math inline">\(\delta_0\)</span>) and arbitrary shared covariates with fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients (note these can include auto-regressive terms).</p>
+<p>In addition to parametric reporting effects there may also be
+non-parametric effects referenced by both reference and report dates.
+These are represented by the non-distributional logit hazard components
+for the time of reference and report, defined using an intercept (<span class="math inline">\(\delta_0\)</span>) and arbitrary shared covariates
+with fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random
+(<span class="math inline">\(\beta_{r,i}\)</span>) coefficients (note
+these can include auto-regressive terms).</p>
 <p><span class="math display">\[\begin{align}
-  \delta_{g,t,d} &amp;= \delta_0 + \beta_{f,\delta} X_{\delta} + \beta_{r,\delta} Z_{\delta} \\
-  \epsilon_{g,t,d} &amp;= \beta_{f,\epsilon} X_{\epsilon} + \beta_{r,\epsilon} Z_{\epsilon}
+  \delta_{g,t,d} &amp;= \delta_0 + \beta_{f,\delta} X_{\delta} +
+\beta_{r,\delta} Z_{\delta} \\
+  \epsilon_{g,t,d} &amp;= \beta_{f,\epsilon} X_{\epsilon} +
+\beta_{r,\epsilon} Z_{\epsilon}
 \end{align}\]</span></p>
-<p>The overall hazard for each group, reference time, and delay is then,</p>
+<p>The overall hazard for each group, reference time, and delay is
+then,</p>
 <p><span class="math display">\[\begin{equation}
-  \text{logit} (h_{g,t,d}) = \gamma_{g,t,d} + \delta_{g,t,d} +  \epsilon_{g,t,d},\ h_{g,t,D} = 1
+  \text{logit} (h_{g,t,d}) = \gamma_{g,t,d} + \delta_{g,t,d}
++  \epsilon_{g,t,d},\ h_{g,t,D} = 1
 \end{equation}\]</span></p>
-<p>where the hazard on the final day has been assumed to be 1 in order to enforce the constraint that all reported observations are reported within the specified maximum delay. The probability of report for a given delay, reference time, and group is then as follows,</p>
+<p>where the hazard on the final day has been assumed to be 1 in order
+to enforce the constraint that all reported observations are reported
+within the specified maximum delay. The probability of report for a
+given delay, reference time, and group is then as follows,</p>
 <p><span class="math display">\[\begin{equation}
-  p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0} p_{g,t,d^{\prime}} \right) \times h_{g,t,d}
+  p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0}
+p_{g,t,d^{\prime}} \right) \times h_{g,t,d}
 \end{equation}\]</span></p>
-<p>All (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations. For further implementation details see <code><a href="../reference/enw_reference.html">enw_reference()</a></code> for delays linked to the date of reference, <code><a href="../reference/enw_report.html">enw_report()</a></code> for delays linked to the date of report.</p>
+<p>All (<span class="math inline">\(\beta_{f,i}\)</span>) and random
+(<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have
+standard normal priors by default with standard half-normal priors for
+pooled standard deviations. For further implementation details see
+<code><a href="../reference/enw_reference.html">enw_reference()</a></code> for delays linked to the date of reference,
+<code><a href="../reference/enw_report.html">enw_report()</a></code> for delays linked to the date of report.</p>
 </div>
 <div class="section level2">
 <h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h2>
-<p>Expected notifications by time of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion<span class="citation"><sup>[7]</sup></span>) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.</p>
+<p>Expected notifications by time of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found
+by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for
+each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We
+assume a negative binomial observation model, by default, with a joint
+overdispersion parameter (with a standard half normal prior on 1 over
+square root of the overdispersion<span class="citation"><sup>[7]</sup></span>) and produce a nowcast of final
+observed notifications at each reference time by summing posterior
+estimates for unobserved notification and observed notifications for
+that reference time.</p>
 <p><span class="math display">\[\begin{align}
-  n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &amp;\sim \text{NB} \left((1 - \alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T. \\
+  n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &amp;\sim \text{NB} \left((1 -
+\alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T.
+\\
     \frac{1}{\sqrt{\phi}} &amp;\sim \text{Half-Normal}(0, 1) \\
   N_{g,t} &amp;= \sum_{d=0}^{D} n_{g,t,d}
 \end{align}\]</span></p>
-<p>Where <span class="math inline">\(\alpha_{g,t}\)</span> is the proportion of cases by reference date that will not report their reference date. By default this is not modelled and is set to zero , see the accounting for reported cases with a missing reference date section for further defaults. Other observation models such as the Poisson distribution are also supported. See the documentation <code><a href="../reference/enw_obs.html">enw_obs()</a></code> for details.</p>
-<p>In order to make best use of observed data when nowcasting we use observations where available and where they have not been reported for a given report and reference date we use the posterior prediction from the observation model above. This means that as nowcast dates become increasingly truncated they depend more on modelled estimates whereas when they are more complete the majority of the final count is known.</p>
+<p>Where <span class="math inline">\(\alpha_{g,t}\)</span> is the
+proportion of cases by reference date that will not report their
+reference date. By default this is not modelled and is set to zero , see
+the accounting for reported cases with a missing reference date section
+for further defaults. Other observation models such as the Poisson
+distribution are also supported. See the documentation
+<code><a href="../reference/enw_obs.html">enw_obs()</a></code> for details.</p>
+<p>In order to make best use of observed data when nowcasting we use
+observations where available and where they have not been reported for a
+given report and reference date we use the posterior prediction from the
+observation model above. This means that as nowcast dates become
+increasingly truncated they depend more on modelled estimates whereas
+when they are more complete the majority of the final count is
+known.</p>
 </div>
 <div class="section level2">
 <h2 id="accounting-for-reported-cases-with-a-missing-reference-date">Accounting for reported cases with a missing reference date<a class="anchor" aria-label="anchor" href="#accounting-for-reported-cases-with-a-missing-reference-date"></a>
 </h2>
-<p>In real-world settings observations may be reported without a linked reference date. A common example of this is cases by date of symptom onset where report date is often known but onset date may not be. To account for this we support modelling this missing process by assuming that cases with a missing reference date have the same reporting delay distribution as cases with a known reference date and that processes that drive the probability of having a missing reference date ($_{g,t}) are linked to the unknown date of reference rather than the date of report. We model this probability flexibly on a logit scale as follows,</p>
+<p>In real-world settings observations may be reported without a linked
+reference date. A common example of this is cases by date of symptom
+onset where report date is often known but onset date may not be. To
+account for this we support modelling this missing process by assuming
+that cases with a missing reference date have the same reporting delay
+distribution as cases with a known reference date and that processes
+that drive the probability of having a missing reference date ($_{g,t})
+are linked to the unknown date of reference rather than the date of
+report. We model this probability flexibly on a logit scale as
+follows,</p>
 <p><span class="math display">\[\begin{equation}
-  \text{logit} (\alpha_{g,t}) = \alpha_0 + \beta_{f,\alpha} X_{\alpha} + \beta_{r,\alpha} Z_{\alpha}
+  \text{logit} (\alpha_{g,t}) = \alpha_0 + \beta_{f,\alpha} X_{\alpha} +
+\beta_{r,\alpha} Z_{\alpha}
 \end{equation}\]</span></p>
-<p>Where <span class="math inline">\(\alpha_0\)</span> represents the intercept, <span class="math inline">\(\beta_{f,\alpha}\)</span> fixed effects, and <span class="math inline">\(\beta_{r,\alpha}\)</span> random effects. To link with observations by date of report with a missing reference date (<span class="math inline">\(M_{g,t}\)</span>) we convolve expected notifications with the probability of having a missing reference date and the probability of reporting on a given day as follows,</p>
+<p>Where <span class="math inline">\(\alpha_0\)</span> represents the
+intercept, <span class="math inline">\(\beta_{f,\alpha}\)</span> fixed
+effects, and <span class="math inline">\(\beta_{r,\alpha}\)</span>
+random effects. To link with observations by date of report with a
+missing reference date (<span class="math inline">\(M_{g,t}\)</span>) we
+convolve expected notifications with the probability of having a missing
+reference date and the probability of reporting on a given day as
+follows,</p>
 <p><span class="math display">\[\begin{equation}
-  M_{g,t} \mid \lambda_{g,t},p_{g,t,d}, \alpha_{g,t}  \sim \text{NB} \left( \sum^D_{d=0} \alpha_{g,t-d} \lambda_{g,t-d} p_{g,t-d,d}, \phi \right),\ t=1,...,T.
+  M_{g,t} \mid \lambda_{g,t},p_{g,t,d}, \alpha_{g,t}  \sim \text{NB}
+\left( \sum^D_{d=0} \alpha_{g,t-d} \lambda_{g,t-d} p_{g,t-d,d}, \phi
+\right),\ t=1,...,T.
 \end{equation}\]</span></p>
-<p>As for cases with known reference dates other observation models are supported. For further implementation details see <code><a href="../reference/enw_missing.html">enw_missing()</a></code>.</p>
+<p>As for cases with known reference dates other observation models are
+supported. For further implementation details see
+<code><a href="../reference/enw_missing.html">enw_missing()</a></code>.</p>
 </div>
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in <code>stan</code> using <code>cmdstanr</code> with no defaults altered<span class="citation"><sup>[4,5]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[8]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[9]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
+<p>The model is implemented in <code>stan</code> using
+<code>cmdstanr</code> with no defaults altered<span class="citation"><sup>[4,5]</sup></span>. Optional within chain
+parallelisation is available across times of reference to reduce
+runtimes. Sparse design matrices have been used for all covariates to
+limit the number of probability mass functions that need to be
+calculated. <code>epinowcast</code> incorporates additional
+functionality written in R<span class="citation"><sup>[8]</sup></span>
+to enable plotting nowcasts and posterior predictions, summarising
+nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[9]</sup></span>. A flexible formula interface is
+provided to enable easier implementation of complex user specified
+models without interacting with the underlying code base. All
+functionality is modular allowing users to extend and alter the
+underlying model whilst continuing to use the package framework.</p>
 </div>
 <div class="section level2">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
 <div id="ref-gunther2021" class="csl-entry">
-1. Günther, F., Bender, A., Katz, K., Küchenhoff, H., &amp; Höhle, M. (2021). Nowcasting the <span>COVID</span>-19 pandemic in <span>Bavaria</span>. <em>Biometrical Journal</em>, <em>63</em>(3), 490–502. <a href="https://doi.org/10.1002/bimj.202000112" class="external-link">https://doi.org/10.1002/bimj.202000112</a>
+1. Günther, F., Bender, A., Katz, K., Küchenhoff, H., &amp; Höhle, M.
+(2021). Nowcasting the <span>COVID</span>-19 pandemic in
+<span>Bavaria</span>. <em>Biometrical Journal</em>, <em>63</em>(3),
+490–502. <a href="https://doi.org/10.1002/bimj.202000112" class="external-link">https://doi.org/10.1002/bimj.202000112</a>
 </div>
 <div id="ref-hohle" class="csl-entry">
-2. Höhle, M., &amp; Heiden, M. an der. (2014). Bayesian nowcasting during the <span>STEC O104</span>:H4 outbreak in <span>Germany</span>, 2011. <em>Biometrics</em>, <em>70</em>(4), 993–1002. <a href="https://doi.org/10.1111/biom.12194" class="external-link">https://doi.org/10.1111/biom.12194</a>
+2. Höhle, M., &amp; Heiden, M. an der. (2014). Bayesian nowcasting
+during the <span>STEC O104</span>:H4 outbreak in <span>Germany</span>,
+2011. <em>Biometrics</em>, <em>70</em>(4), 993–1002. <a href="https://doi.org/10.1111/biom.12194" class="external-link">https://doi.org/10.1111/biom.12194</a>
 </div>
 <div id="ref-surveillance" class="csl-entry">
-3. Meyer, S., Held, L., &amp; Höhle, M. (2017). Spatio-temporal analysis of epidemic phenomena using the <span>R</span> package <span class="nocase">surveillance</span>. <em>Journal of Statistical Software</em>, <em>77</em>(11), 1–55. <a href="https://doi.org/10.18637/jss.v077.i11" class="external-link">https://doi.org/10.18637/jss.v077.i11</a>
+3. Meyer, S., Held, L., &amp; Höhle, M. (2017). Spatio-temporal analysis
+of epidemic phenomena using the <span>R</span> package <span class="nocase">surveillance</span>. <em>Journal of Statistical
+Software</em>, <em>77</em>(11), 1–55. <a href="https://doi.org/10.18637/jss.v077.i11" class="external-link">https://doi.org/10.18637/jss.v077.i11</a>
 </div>
 <div id="ref-stan" class="csl-entry">
-4. Team, S. D. (2021). <em>Stan modeling language users guide and reference manual, 2.28.1</em>.
+4. Team, S. D. (2021). <em>Stan modeling language users guide and
+reference manual, 2.28.1</em>.
 </div>
 <div id="ref-cmdstanr" class="csl-entry">
-5. Gabry, J., &amp; Češnovar, R. (2021). <em>Cmdstanr: R interface to ’CmdStan’</em>.
+5. Gabry, J., &amp; Češnovar, R. (2021). <em>Cmdstanr: R interface to
+’CmdStan’</em>.
 </div>
 <div id="ref-bastos" class="csl-entry">
-6. Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T. (2019). A modelling approach for correcting reporting delays in disease surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22), 4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a>
+6. Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M.,
+Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., &amp; Codeço, C. T.
+(2019). A modelling approach for correcting reporting delays in disease
+surveillance data. <em>Statistics in Medicine</em>, <em>38</em>(22),
+4363–4377. <a href="https://doi.org/10.1002/sim.8303" class="external-link">https://doi.org/10.1002/sim.8303</a>
 </div>
 <div id="ref-stan_prior_wiki" class="csl-entry">
 7. Team, S. D. (2020). <em>Prior choice recommendations</em>.
 </div>
 <div id="ref-R" class="csl-entry">
-8. R Core Team. (2019). <em>R: A language and environment for statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>
+8. R Core Team. (2019). <em>R: A language and environment for
+statistical computing</em>. R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="external-link">https://www.R-project.org/</a>
 </div>
 <div id="ref-scoringutils" class="csl-entry">
-9. Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a>
+9. Bosse, N. (2020). <em>Scoringutils: A collection of proper scoring
+rules and metrics to assess predictions</em>. <a href="https://github.com/epiforecasts/scoringutils" class="external-link">https://github.com/epiforecasts/scoringutils</a>
 </div>
 </div>
 </div>
