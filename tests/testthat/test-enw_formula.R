@@ -18,6 +18,11 @@ test_that("enw_formula can return a basic random effects formula", {
   expect_snapshot(enw_formula(~ 1 + (1 | age_group), data))
 })
 
+test_that("enw_formula can return a random effects formula with an internal
+           interaction", {
+  expect_snapshot(enw_formula(~ 1 + (1 | age_group:day_of_week), data))
+})
+
 test_that("enw_formula can return a model with a random effect and a random
            walk", {
   expect_snapshot(enw_formula(~ 1 + (1 | age_group) + rw(week), data))
