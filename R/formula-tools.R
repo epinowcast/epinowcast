@@ -423,12 +423,22 @@ construct_re <- function(re, data) {
   fixed <- strsplit(re$fixed, " \\+ ")[[1]]
   random <- strsplit(re$random, " \\+ ")[[1]]
 
+  for (i in random) {
+    current_random <- strsplit(i, ":")[[1]]
+    if (length(current_random) > 1) {
+      if (length(current_random) > 2) {
+        stop(
+          "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
+        )
+      }
+    }
+  }
   # detect if random effect interactions are present
   # loop through random effect interactions
   # make new random effects using unique values
   # add these new random effects to the data
   # add these new random effects to list of all random effects
-  
+
   # combine into fixed effects terms
   terms <- c()
   for (i in random) {
