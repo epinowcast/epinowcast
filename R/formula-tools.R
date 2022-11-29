@@ -423,6 +423,12 @@ construct_re <- function(re, data) {
   fixed <- strsplit(re$fixed, " \\+ ")[[1]]
   random <- strsplit(re$random, " \\+ ")[[1]]
 
+  # detect if random effect interactions are present
+  # loop through random effect interactions
+  # make new random effects using unique values
+  # add these new random effects to the data
+  # add these new random effects to list of all random effects
+  
   # combine into fixed effects terms
   terms <- c()
   for (i in random) {
