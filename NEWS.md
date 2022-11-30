@@ -16,6 +16,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Skipped tests that use `cmdstan` locally to improve the developer/contributor experience. See #147 by @seabbs and @adrian-lison.
 - Added a basic simulator function for missing reference data. See #147 by @seabbs and @adrian-lison.
 - Added a basic simulator function for missing reference data. See #147 by @seabbs and @adrian-lison.
+- Added support for right hand side interactions as syntax sugar for random effects. This allows the specification of, for example, independent random effects by day for each strata of another variable. See #169 by @seabbs.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
