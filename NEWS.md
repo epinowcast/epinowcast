@@ -24,13 +24,10 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Introduced two new delay likelihoods `delay_snap_lmpf` and `delay_group_lmpf`. These stratify by either snapshots or groups. This is helpful for some models (such as the missingness module). The ability to choose which function is used has been exposed to the user in `enw_fit_opts()` via the `likelihood_aggregation` argument. Both of these functions rely on a newly added `expected_obs_from_snaps` function which vectorises `expected_obs_from_index`. See #138 by @seabbs and @adrian-lison.
 - Added support for supplying missingness model parameters to the model as well as optional priors and effect estimation. See #138 by @seabbs and @adrian-lison.
 - Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
-<<<<<<< HEAD
 - Added support for modelling missing reference dates to the likelihood. See #147 by @seabbs and @adrian-lison.
-=======
 - Added additional functionality to `delay_group_lmpf` to support modelling observations missing reference dates. Also updated the generated quantities to support this mode. See #147 by @seabbs and @adrian-lison based on #64 by @adrian-lison.
 - Adds a flexible expectation process on the growth rate scale. The default expectation model has been updated to a group-wise random walk on the growth rate. See #152 by @seabbs.
 - Adds a deterministic  renewal equation, and latent reporting process. See #152 by @seabbs.
->>>>>>> fix merge issues
 
 ## Documentation
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
