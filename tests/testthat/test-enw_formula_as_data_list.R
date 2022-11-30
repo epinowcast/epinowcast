@@ -44,7 +44,7 @@ test_that("enw_formula_as_data_list produces expected default output", {
       prefix = "c"
     ),
     list(
-      c_fdesign = numeric(0), c_fnrow = 0, c_findex = numeric(0), c_fnindex = 0,
+      c_fdesign = numeric(0), c_fintercept = 0, c_fnrow = 0, c_findex = numeric(0), c_fnindex = 0,
       c_fncol = 0, c_rdesign = numeric(0), c_rncol = 0
     )
   )
