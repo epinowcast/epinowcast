@@ -74,6 +74,7 @@
     </div>
 
 <div id="contributing" class="section level1">
+
 <p>Development is a community effort, and we welcome participation. For more details on other forms of contribution please see our <a href="https://www.epinowcast.org/contribute.html" class="external-link">community contribution page</a>.</p>
 <div class="section level2">
 <h2 id="community">Community<a class="anchor" aria-label="anchor" href="#community"></a></h2>
@@ -93,7 +94,8 @@
 <ul><li>Before posting a new issue, please take a moment to search for existing similar issues in order to avoid duplication.</li>
 <li>For bug reports: if you can, please install the latest GitHub version of <code>epinowcast</code> (i.e. <code>remotes::install_github("epinowcast/epinowcast")</code>) and verify that the issue still persists.</li>
 <li>Describe your issue in prose as clearly and concisely as possible.</li>
-<li>For any problem you identify, post a <a href="https://www.tidyverse.org/help/" class="external-link">minimal reproducible example</a> like <a href="https://github.com/ropensci/targets/issues/256#issuecomment-754229683" class="external-link">this one</a> so other contributors and authors can troubleshoot. A reproducible example is:<ul><li>
+<li>For any problem you identify, post a <a href="https://www.tidyverse.org/help/" class="external-link">minimal reproducible example</a> like <a href="https://github.com/ropensci/targets/issues/256#issuecomment-754229683" class="external-link">this one</a> so other contributors and authors can troubleshoot. A reproducible example is:
+<ul><li>
 <strong>Runnable</strong>: post enough R code and data so any onlooker can create the error on their own computer.</li>
 <li>
 <strong>Minimal</strong>: reduce runtime wherever possible and remove complicated details that are irrelevant to the issue at hand.</li>
@@ -116,7 +118,7 @@
 <li>In general we aim to use <code>data.table</code> to manipulate data. However, if this is a barrier to contributing please use tools you are familiar with and raise this in your pull request. The reviewer will then work with you to refactor your contribution or if appropriate add the dependencies you require.</li>
 <li>If possible, keep contributions small enough to easily review manually. It is okay to split up your work into multiple pull requests.</li>
 <li>Format your code according to the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a> and check your formatting with the <code>lint_package()</code> function from the <a href="https://github.com/jimhester/lintr" class="external-link"><code>lintr</code></a> package.</li>
-<li>Check code coverage with <code><a href="http://covr.r-lib.org/reference/package_coverage.html" class="external-link">covr::package_coverage()</a></code>. Automated tests should cover all the new or changed functionality in your pull request.</li>
+<li>Check code coverage with <code>covr::package_coverage()</code>. Automated tests should cover all the new or changed functionality in your pull request.</li>
 <li>Run overall package checks with <code>devtools::check()</code> and <code>goodpractice::gp()</code>
 </li>
 <li>Describe your contribution in the project’s <a href="https://github.com/epinowcast/epinowcast/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a> file. Be sure to mention relevant GitHub issue numbers and your GitHub name as done in existing news entries.</li>
