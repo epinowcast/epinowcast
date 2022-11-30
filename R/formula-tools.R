@@ -448,11 +448,15 @@ construct_re <- function(re, data) {
 
   # combine into fixed effects terms
   terms <- c()
-  for (i in random) {
-    terms <- c(terms, paste0(fixed, ":", i))
+  terms_int <- c()
+  for (i in seq_along(random)) {
+    terms <- c(terms, paste0(fixed, ":", random[i]))
+    terms_int <- c(terms_int, rep(random_int[i], length(fixed)))
   }
+  names(terms_int) <- terms
   terms <- gsub("1:", "", terms)
   terms <- terms[!startsWith(terms, "0:")]
+  terms_int <- terms_int[!startsWith(terms, "0:")]
 
   # make all right hand side random effects factors
   data <- data[,
@@ -471,10 +475,10 @@ construct_re <- function(re, data) {
 
   # implement random effects structure
   for (i in seq_along(terms)) {
-    loc_terms <- strsplit(i, ":")[[1]]
+    loc_terms <- strsplit(terms[i], ":")[[1]]
     # expand right hand side random effect if its an interaction
     # and make a list to map to effects
-    if (random_int[i]) {
+    if (terms_int[i]) {
       expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
       expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
       j <- purrr::map(expanded_int, function(x) {
@@ -488,9 +492,12 @@ construct_re <- function(re, data) {
     }else {
       j <- list(loc_terms)
     }
+    # link random effects with fixed effects
+    # here we need to differentiate between random effects with
+    # and without rhs interactions
     for (k in j) {
       if (length(k) == 1) {
-          if (random_int[i]) {
+          if (terms_int[i]) {
             effects <- enw_add_pooling_effect(
               effects, strsplit(k, ":")[[1]], gsub(":", "__", k),
               finder_fn = function(effect, pattern) {
@@ -508,12 +515,12 @@ construct_re <- function(re, data) {
             )
           }
       } else {
-        if (random_int[i]) {
+        if (terms_int[i]) {
           effects <- enw_add_pooling_effect(
               effects, c(k[1], strsplit(k[-1], ":")[[1]]),
-              paste(gsub(":", "__", k, collapse = "__")),
+              paste(gsub(":", "__", k), collapse = "__"),
               finder_fn = function(effect, pattern) {
-                grepl(pattern[1], effect) & grepl(pattern[2], effect) & 
+                grepl(pattern[1], effect) & grepl(pattern[2], effect) &
                 grepl(pattern[3], effect)
             }
           )
