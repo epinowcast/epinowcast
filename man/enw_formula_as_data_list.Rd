@@ -19,6 +19,8 @@ in model modules where an intercept must be present/absent.}
 \value{
 A list defining the model formula. This includes:
 \itemize{
+\item \verb{prefix_fintercept:} Is an intercept present for the fixed effects design
+matrix.
 \item \code{prefix_fdesign}: The fixed effects design matrix
 \item \code{prefix_fnrow}: The number of rows of the fixed design matrix
 \item \code{prefix_findex}: The index linking design matrix rows to  observations
