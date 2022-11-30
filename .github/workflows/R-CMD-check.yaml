@@ -28,10 +28,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: macOS-latest,   r: 'release', rtools: ''}
+          - {os: windows-latest, r: 'release', rtools: '42'}
+          - {os: ubuntu-latest,   r: 'release', rtools: ''}
+          - {os: ubuntu-latest,   r: 'oldrel-1', rtools: ''}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -50,15 +50,6 @@ jobs:
         if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
 
       - uses: actions/checkout@v2
-
-      - name: Install Rtools42
-        if: runner.os == 'Windows'
-        run: |
-          $source = 'https://cran.r-project.org/bin/windows/Rtools/rtools42/files/rtools42-5253-5107.exe'
-          $destination = '../rtools42.exe'
-          Invoke-WebRequest -Uri $source -OutFile $destination
-          Start-Process -FilePath ../rtools42.exe -ArgumentList /VERYSILENT -NoNewWindow -Wait
-        shell: powershell
         
       - name: Install cmdstan Linux system dependencies
         if: runner.os == 'Linux'
@@ -75,6 +66,7 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          rtools-version: ${{ matrix.config.rtools }}
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
