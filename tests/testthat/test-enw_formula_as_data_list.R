@@ -13,6 +13,12 @@ test_that("enw_formula_as_data_list produces expected output using a simple
   )
   expect_snapshot(
     enw_formula_as_data_list(
+      enw_formula(~ 0 + (1 | cyl), mtcars),
+      prefix = "simple"
+    )
+  )
+  expect_snapshot(
+    enw_formula_as_data_list(
       enw_formula(~ 1 + (1 | cyl), mtcars),
       prefix = "simple", drop_intercept = TRUE
     )
