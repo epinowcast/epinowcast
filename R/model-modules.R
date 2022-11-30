@@ -272,7 +272,7 @@ enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = c(1),
       r_features,
       days = length(latent_reporting_delay) - 1, direction = "start"
     )
-    supressWarnings(enw_add_metaobs_features(r_features, ...))
+    suppressWarnings(enw_add_metaobs_features(r_features, ...))
   }
   r_features <- r_features[
     date >= (min(date) + length(generation_time))

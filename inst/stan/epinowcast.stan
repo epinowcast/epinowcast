@@ -49,9 +49,10 @@ data {
   // Model for growth rate process. Currently, 0 = none
   int expr_obs;
   int expr_fnindex;
+  int expr_fintercept; // Should an intercept be included
   int expr_fncol;
   int expr_rncol;
-  matrix[expr_fnindex, expr_fncol + 1] expr_fdesign;
+  matrix[expr_fnindex, expr_fncol + expr_fintercept] expr_fdesign;
   matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
   array[g] int expr_g; // starting time points for growth of each group
   // Priors for growth rate and initial log latent cases
@@ -148,7 +149,7 @@ parameters {
   // Expectation model
   // ---- Growth rate submodule ----
   matrix[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
-  real expr_r_int; // growth rate intercept
+  array[expr_fintercept ? 1 : 0] real expr_r_int; // growth rate intercept
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
   // ---- Latent case submodule ----
@@ -201,7 +202,8 @@ transformed parameters{
   profile("transformed_expected_final_observations") {
   // Get log growth rates and map to expected latent cases
   r = combine_effects(
-    expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 1
+    expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 
+    expr_fintercept
   );
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
@@ -211,7 +213,7 @@ transformed parameters{
   // observations
   if (expl_obs) {
     expl_prop = combine_effects(
-      0, expl_beta, expl_fdesign, expl_beta_sd, expl_rdesign, 1
+      {0}, expl_beta, expl_fdesign, expl_beta_sd, expl_rdesign, 1
     );
     exp_lobs = log_expected_obs_from_latent(
       exp_llatent, expl_lrd_n, expl_lrlrd, t, g, expl_prop
@@ -227,11 +229,15 @@ transformed parameters{
   if (model_refp) {
     // calculate sparse reference time effects
     profile("transformed_delay_reference_time_effects") {
-    refp_mean = combine_effects(refp_mean_int[1], refp_mean_beta, refp_fdesign,
-                                refp_mean_beta_sd, refp_rdesign, 1);
+    refp_mean = combine_effects(
+      refp_mean_int, refp_mean_beta, refp_fdesign, refp_mean_beta_sd,
+      refp_rdesign, 1
+    );
     if (model_refp > 1) {
-      refp_sd = combine_effects(log(refp_sd_int[1]), refp_sd_beta, refp_fdesign,
-                                refp_sd_beta_sd, refp_rdesign, 1); 
+      refp_sd = combine_effects(
+        log(refp_sd_int), refp_sd_beta, refp_fdesign, refp_sd_beta_sd,
+        refp_rdesign, 1
+      ); 
       refp_sd = exp(refp_sd);
     } 
     }
@@ -249,13 +255,15 @@ transformed parameters{
   // Report model
   profile("transformed_delay_reporting_time_effects") {
   srdlh =
-    combine_effects(0, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
+    combine_effects({0}, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
   }
 
   // Missing reference model
   if (model_miss) {
     miss_ref_lprop = log_inv_logit(
-      combine_effects(miss_int[1], miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1)
+      combine_effects(
+        miss_int, miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1
+      )
     );
   }
   
@@ -276,9 +284,14 @@ model {
   // Expectation model
   // ---- Growth rate submodule ----
   // intercept/initial latent cases (log)
-  to_vector(expr_lelatent_int) ~ normal(expr_lelatent_int_p[1], expr_lelatent_int_p[2]);
+  to_vector(expr_lelatent_int) ~ normal(
+    expr_lelatent_int_p[1], expr_lelatent_int_p[2]
+  );
   // intercept of growth rate
-  expr_r_int  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
+  if (expr_fintercept) {
+    expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
+  }
+  
   // growth rate effect priors
   effect_priors_lp(
     expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol

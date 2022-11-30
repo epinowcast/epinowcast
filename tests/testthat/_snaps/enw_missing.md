@@ -55,6 +55,9 @@
       attr(,"assign")
       [1] 0 1 2 3 4 5
       
+      $data$miss_fintercept
+      [1] 1
+      
       $data$miss_fnrow
       [1] 41
       
@@ -170,6 +173,9 @@
       $data
       $data$miss_fdesign
       numeric(0)
+      
+      $data$miss_fintercept
+      [1] 0
       
       $data$miss_fnrow
       [1] 0

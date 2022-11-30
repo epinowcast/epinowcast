@@ -140,6 +140,9 @@
       40                  0                    0
       41                  0                    0
       
+      $data$refp_fintercept
+      [1] 1
+      
       $data$refp_fnrow
       [1] 41
       
