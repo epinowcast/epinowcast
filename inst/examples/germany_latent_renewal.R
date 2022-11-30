@@ -54,7 +54,7 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 # ascertainment
 # - Day of week reporting effect
 expectation_module <- enw_expectation(
-  r = ~ rw(day),
+  r = ~ 0 + (1 | day),
   generation_time = c(0.1, 0.4, 0.4, 0.1),
   observation = ~ (1 | day_of_week),
   latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
