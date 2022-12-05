@@ -27,8 +27,8 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Refactored model generated quantities to be functional. See #138 by @seabbs and @adrian-lison.
 - Added support for modelling missing reference dates to the likelihood. See #147 by @seabbs and @adrian-lison.
 - Added additional functionality to `delay_group_lmpf` to support modelling observations missing reference dates. Also updated the generated quantities to support this mode. See #147 by @seabbs and @adrian-lison based on #64 by @adrian-lison.
-- Added a flexible expectation process on the growth rate scale. The default expectation model has been updated to a group-wise random walk on the growth rate. See #152 by @seabbs.
-- Added a deterministic  renewal equation, and latent reporting process. See #152 by @seabbs.
+- Added a flexible expectation process on the growth rate scale. The default expectation model has been updated to a group-wise random walk on the growth rate. See #152 by @seabbs and @adrian-lison.
+- Added a deterministic  renewal equation, and latent reporting process. See #152 by @seabbs and @adrian-lison.
 - Added support for no intercept in the expectation model and more general formula support to enable this as a feature in other modules going forward. See #170 by @seabbs.
 
 ## Documentation
