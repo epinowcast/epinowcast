@@ -32,6 +32,7 @@ dates
 }
 \seealso{
 Helper functions for model modules
-\code{\link{enw_reference_by_report}()}
+\code{\link{enw_reference_by_report}()},
+\code{\link{latest_obs_as_matrix}()}
 }
 \concept{modelmodulehelpers}

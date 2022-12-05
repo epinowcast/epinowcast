@@ -15,3 +15,9 @@ A matrix with each column being a group and each row a reference date
 \description{
 Convert latest observed data to a matrix
 }
+\seealso{
+Helper functions for model modules
+\code{\link{enw_reference_by_report}()},
+\code{\link{enw_reps_with_complete_refs}()}
+}
+\concept{modelmodulehelpers}
