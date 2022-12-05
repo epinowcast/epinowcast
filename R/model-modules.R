@@ -226,7 +226,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' by group. This parameterisation is highly flexible and so may not be the
 #' most appropriate choice when data is sparesely reported or reporting delays
 #' are substantially. These settings an alternative could be a group specific
-#' weekly random walk (specfied as `rw(week, by = .group`).
+#' weekly random walk (specified as `rw(week, by = .group`).
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
@@ -243,7 +243,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @param latent_reporting_delay A numeric vector that defaults to 1.
 #' Describes the weighting to apply to past and current latent expected
 #' observations (from most recent to least). This can be used both to convolve
-#' based on some assumed reporting delay and to rescale obserations (by
+#' based on some assumed reporting delay and to rescale observations (by
 #' multiplying a probability mass function by some fraction) to account
 #' ascertainment etc.
 #'

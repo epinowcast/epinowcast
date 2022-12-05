@@ -167,7 +167,7 @@ enw_add_metaobs_features <- function(metaobs,
 #' @description FUNCTION_DESCRIPTION
 #' @param metaobs PARAM_DESCRIPTION
 #' @param days PARAM_DESCRIPTION
-#' @param direction Should new dates be added at the begining or end of
+#' @param direction Should new dates be added at the beginning or end of
 #' the data. Default is "end" with "start" also available
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess

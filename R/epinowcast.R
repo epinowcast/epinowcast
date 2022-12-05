@@ -18,7 +18,7 @@
 #' effect by reference date for each group and thus weakly informed. Depending
 #' on your context (and in particular the density of data reporting) other
 #' choices that enforce more assumptions may be more appropriate (for example a
-#' weely random walk (specified using `rw(week, by = .group)`)).
+#' weekly random walk (specified using `rw(week, by = .group)`)).
 #'
 #' @param missing The missing reference date model specification as defined
 #' using [enw_missing()]. By default this is set to not be used.
