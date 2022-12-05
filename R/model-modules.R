@@ -222,8 +222,11 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @param r A formula (as implemented in [enw_formula()]) describing
 #' the generative process used for expected incidence. This can use features
 #' defined by reference date as defined in `metareference` as produced by
-#' [enw_preprocess_data()]. By default this is set to use a daily group
-#' specific random walk.
+#' [enw_preprocess_data()]. By default this is set to use a daily random effect
+#' by group. This parameterisation is highly flexible and so may not be the
+#' most appropriate choice when data is sparesely reported or reporting delays
+#' are substantially. These settings an alternative could be a group specific
+#' weekly random walk (specfied as `rw(week, by = .group`).
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
@@ -252,7 +255,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(r = ~ rw(day, by = .group), generation_time = c(1),
+enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
                             observation = ~1, latent_reporting_delay = c(1),
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
