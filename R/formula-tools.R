@@ -429,15 +429,24 @@ construct_re <- function(re, data) {
   random_int <- rep(FALSE, length(random))
   for (i in seq_along(random)) {
     current_random <- strsplit(random[i], ":")[[1]]
-    expanded_random <- c(expanded_random, current_random)
+
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
         stop(
           "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
         )
       }
-      random_int[i] <- TRUE
+      if (length(unique(data[[current_random[2]]])) < 2) {
+      message(
+        "A random effect using ", current_random[2],
+        " is not possible as this variable has fewer than 2 unique values."
+      )
+      random[i] <- current_random[1]
+      }else {
+        random_int[i] <- TRUE
+      }
     }
+    expanded_random <- c(expanded_random, current_random)
   }
   expanded_random <- unique(expanded_random)
   # detect if random effect interactions are present
