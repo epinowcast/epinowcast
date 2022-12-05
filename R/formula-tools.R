@@ -397,6 +397,7 @@ re <- function(formula) {
 #'
 #' @family formulatools
 #' @importFrom data.table as.data.table
+#' @importFrom purrr map
 #' @examples
 #' # Simple examples
 #' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
@@ -423,16 +424,44 @@ construct_re <- function(re, data) {
   fixed <- strsplit(re$fixed, " \\+ ")[[1]]
   random <- strsplit(re$random, " \\+ ")[[1]]
 
+  # expand random effects that are interactions
+  expanded_random <- c()
+  random_int <- rep(FALSE, length(random))
+  for (i in seq_along(random)) {
+    current_random <- strsplit(random[i], ":")[[1]]
+    expanded_random <- c(expanded_random, current_random)
+    if (length(current_random) > 1) {
+      if (length(current_random) > 2) {
+        stop(
+          "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
+        )
+      }
+      random_int[i] <- TRUE
+    }
+  }
+  expanded_random <- unique(expanded_random)
+  # detect if random effect interactions are present
+  # loop through random effect interactions
+  # make new random effects using unique values
+  # add these new random effects to the data
+  # add these new random effects to list of all random effects
+
   # combine into fixed effects terms
   terms <- c()
-  for (i in random) {
-    terms <- c(terms, paste0(fixed, ":", i))
+  terms_int <- c()
+  for (i in seq_along(random)) {
+    terms <- c(terms, paste0(fixed, ":", random[i]))
+    terms_int <- c(terms_int, rep(random_int[i], length(fixed)))
   }
+  names(terms_int) <- terms
   terms <- gsub("1:", "", terms)
   terms <- terms[!startsWith(terms, "0:")]
+  terms_int <- terms_int[!startsWith(terms, "0:")]
 
   # make all right hand side random effects factors
-  data <- data[, (random) := lapply(.SD, as.factor), .SDcols = random]
+  data <- data[,
+    (expanded_random) := lapply(.SD, as.factor), .SDcols = expanded_random
+  ]
 
   # make a fixed effects design matrix
   fixed <- enw_manual_formula(
@@ -445,22 +474,65 @@ construct_re <- function(re, data) {
   effects <- enw_effects_metadata(fixed)
 
   # implement random effects structure
-  for (i in terms) {
-    loc_terms <- strsplit(i, ":")[[1]]
-    if (length(loc_terms) == 1) {
-      effects <- enw_add_pooling_effect(
-        effects, i, i,
-        finder_fn = function(effect, pattern) {
-          grepl(pattern, effect) & !grepl(":", effect)
+  for (i in seq_along(terms)) {
+    loc_terms <- strsplit(terms[i], ":")[[1]]
+    # expand right hand side random effect if its an interaction
+    # and make a list to map to effects
+    if (terms_int[i]) {
+      expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
+      expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
+      j <- purrr::map(expanded_int, function(x) {
+        j <- c()
+        if (length(loc_terms) > 2) {
+          j <- loc_terms[1:(length(loc_terms) - 2)]
         }
-      )
-    } else {
-      effects <- enw_add_pooling_effect(
-        effects, rev(loc_terms), paste(loc_terms, collapse = "__"),
-        finder_fn = function(effect, pattern) {
-          grepl(pattern[1], effect) & grepl(pattern[2], effect)
+        j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
+        return(j)
+      })
+    }else {
+      j <- list(loc_terms)
+    }
+    # link random effects with fixed effects
+    # here we need to differentiate between random effects with
+    # and without rhs interactions
+    for (k in j) {
+      if (length(k) == 1) {
+          if (terms_int[i]) {
+            effects <- enw_add_pooling_effect(
+              effects, strsplit(k, ":")[[1]], gsub(":", "__", k),
+              finder_fn = function(effect, pattern) {
+                grepl(pattern[1], effect) &
+                grepl(pattern[2], effect, fixed = TRUE) &
+                lengths(regmatches(effect, gregexpr(":", effect))) == 1
+              }
+            )
+          }else {
+            effects <- enw_add_pooling_effect(
+              effects, k, k,
+              finder_fn = function(effect, pattern) {
+                grepl(pattern, effect) & !grepl(":", effect)
+              }
+            )
+          }
+      } else {
+        if (terms_int[i]) {
+          effects <- enw_add_pooling_effect(
+              effects, c(k[1], strsplit(k[-1], ":")[[1]]),
+              paste(gsub(":", "__", k), collapse = "__"),
+              finder_fn = function(effect, pattern) {
+                grepl(pattern[1], effect) & grepl(pattern[2], effect) &
+                grepl(pattern[3], effect)
+            }
+          )
+        }else {
+          effects <- enw_add_pooling_effect(
+            effects, rev(k), paste(k, collapse = "__"),
+            finder_fn = function(effect, pattern) {
+              grepl(pattern[1], effect) & grepl(pattern[2], effect)
+            }
+          )
         }
-      )
+      }
     }
   }
   return(list(data = data, terms = terms, effects = effects))
@@ -521,6 +593,10 @@ construct_re <- function(re, data) {
 #'
 #' # Model defined without a sparse fixed effects design matrix
 #' enw_formula(~1, data[1:20, ])
+#'
+#' # Model using an interaction in the right hand side of a random effect
+#' # to specify an independent random effect per strata.
+#' enw_formula(~ (1 + day | week:month), data = data)
 enw_formula <- function(formula, data, sparse = TRUE) {
   data <- data.table::as.data.table(data)
 
