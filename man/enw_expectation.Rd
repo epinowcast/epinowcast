@@ -19,7 +19,7 @@ the generative process used for expected incidence. This can use features
 defined by reference date as defined in \code{metareference} as produced by
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. By default this is set to use a daily random effect
 by group. This parameterisation is highly flexible and so may not be the
-most appropriate choice when data is sparesely reported or reporting delays
+most appropriate choice when data is sparsely reported or reporting delays
 are substantially. These settings an alternative could be a group specific
 weekly random walk (specified as \verb{rw(week, by = .group}).}
 
