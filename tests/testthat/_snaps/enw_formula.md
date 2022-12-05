@@ -1015,6 +1015,117 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
+# enw_formula can return a random effects formula with an internal
+           interaction with only one contrast by falling back to no interaction
+
+    Code
+      suppressMessages(enw_formula(~ 1 + (1 + month | day_of_week:age_group), data[
+        age_group == "00+"]))
+    Output
+      $formula
+      [1] "~1 + (1 + month | day_of_week:age_group)"
+      
+      $parsed_formula
+      $parsed_formula$fixed
+      [1] "1"
+      
+      $parsed_formula$random
+      $parsed_formula$random[[1]]
+      1 + month | day_of_week:age_group
+      
+      
+      $parsed_formula$rw
+      character(0)
+      
+      
+      $expanded_formula
+      [1] "~1 + day_of_week + month:day_of_week"
+      
+      $fixed
+      $fixed$formula
+      [1] "~1 + day_of_week + month:day_of_week"
+      
+      $fixed$design
+        (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
+      1           1                 0                 0                   0
+      2           1                 1                 0                   0
+      3           1                 0                 0                   1
+      4           1                 0                 0                   0
+      5           1                 0                 1                   0
+      6           1                 0                 0                   0
+      7           1                 0                 0                   0
+      8           1                 0                 0                   0
+        day_of_weekSunday day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
+      1                 0                   1                  0                    0
+      2                 0                   0                  0                    0
+      3                 0                   0                  0                    0
+      4                 1                   0                  0                    0
+      5                 0                   0                  0                    0
+      6                 0                   0                  1                    0
+      7                 0                   0                  0                    1
+      8                 0                   1                  0                    0
+        day_of_weekFriday:month day_of_weekMonday:month day_of_weekSaturday:month
+      1                       0                       0                         0
+      2                       1                       0                         0
+      3                       0                       0                         1
+      4                       0                       0                         0
+      5                       0                       1                         0
+      6                       0                       0                         0
+      7                       0                       0                         0
+      8                       0                       0                         0
+        day_of_weekSunday:month day_of_weekThursday:month day_of_weekTuesday:month
+      1                       0                         0                        0
+      2                       0                         0                        0
+      3                       0                         0                        0
+      4                       1                         0                        0
+      5                       0                         0                        0
+      6                       0                         0                        1
+      7                       0                         0                        0
+      8                       0                         1                        0
+        day_of_weekWednesday:month
+      1                          0
+      2                          0
+      3                          0
+      4                          0
+      5                          0
+      6                          0
+      7                          1
+      8                          0
+      
+      $fixed$index
+       [1] 1 2 3 4 5 6 7 8 2 3 4
+      
+      
+      $random
+      $random$formula
+      [1] "~0 + fixed + day_of_week + month__day_of_week"
+      
+      $random$design
+         fixed day_of_week month__day_of_week
+      1      0           1                  0
+      2      0           1                  0
+      3      0           1                  0
+      4      0           1                  0
+      5      0           1                  0
+      6      0           1                  0
+      7      0           1                  0
+      8      0           0                  1
+      9      0           0                  1
+      10     0           0                  1
+      11     0           0                  1
+      12     0           0                  1
+      13     0           0                  1
+      14     0           0                  1
+      attr(,"assign")
+      [1] 1 2 3
+      
+      $random$index
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+      
+      
+      attr(,"class")
+      [1] "enw_formula" "list"       
+
 # enw_formula can return a model with a random effect and a random
            walk
 
