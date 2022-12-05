@@ -100,8 +100,8 @@ case studies for example model specifications for different tasks.</p>
 <span>  reference <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_reference.html">enw_reference</a></span><span class="op">(</span>parametric <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>,</span>
 <span>    non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
 <span>  report <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_report.html">enw_report</a></span><span class="op">(</span>non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, structural <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
-<span>  expectation <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="op">~</span><span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">day</span>, <span class="va">.group</span><span class="op">)</span>, order <span class="op">=</span> <span class="fl">1</span>, data</span>
-<span>    <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span>r <span class="op">=</span> <span class="op">~</span><span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">:</span><span class="va">.group</span><span class="op">)</span>, generation_time</span>
+<span>    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, observation <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, latent_reporting_delay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
 <span>  missing <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_missing.html">enw_missing</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
 <span>  obs <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"negbin"</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="va"><a href="enw_sample.html">enw_sample</a></span>, nowcast <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span></span>
@@ -130,8 +130,11 @@ specification as defined using <code><a href="enw_report.html">enw_report()</a><
 
 <dt>expectation</dt>
 <dd><p>The expectation model specification as defined using
-<code><a href="enw_expectation.html">enw_expectation()</a></code>. By default this is set to be highly flexible and thus
-weakly informed. Other options are not yet supported.</p></dd>
+<code><a href="enw_expectation.html">enw_expectation()</a></code>. By default this is set to be a highly flexible random
+effect by reference date for each group and thus weakly informed. Depending
+on your context (and in particular the density of data reporting) other
+choices that enforce more assumptions may be more appropriate (for example a
+weekly random walk (specified using <code>rw(week, by = .group)</code>)).</p></dd>
 
 
 <dt>missing</dt>
