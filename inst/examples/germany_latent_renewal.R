@@ -48,7 +48,7 @@ reference_module <- enw_reference(~1, data = pobs)
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 
 # Expectation model:
-# - Weekly random walk on the growth rate
+# - Random walk on the log of expected cases
 # - Generation time with probability mass spread over 4 days
 # - latent reporting delay representing the incubation period and assumed
 # ascertainment
@@ -70,7 +70,8 @@ nowcast <- epinowcast(pobs,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
     iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.95, max_treedepth = 12
+    adapt_delta = 0.95, max_treedepth = 12,
+    show_messages = FALSE
   ),
   model = model
 )
