@@ -121,6 +121,14 @@ Construct a model with a random effect for the day of report using the metadata 
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
+Construct a model with a lognormal random walk on expected cases. See `enw_expectation()` for other suggested choices.
+
+```{r}
+expectation_module <- enw_expectation(
+  ~ 0 + (1 | day), data = pobs
+)
+```
+
 ### Model fitting
 
 First compile the model. This step can be left to `epinowcast` but here we want to use multiple cores per chain to speed up model fitting and so need to compile the model with this feature turned on.
@@ -134,6 +142,7 @@ We now fit the model and produce a nowcast using this fit. Note that here we use
 ```{r}
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
+  expectation = expectation_module,
   reference = reference_module,
   report = report_module,
   fit = enw_fit_opts(,

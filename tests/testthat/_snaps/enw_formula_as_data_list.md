@@ -10,6 +10,9 @@
       3           1    1    0    0
       5           1    0    0    1
       
+      $simple_fintercept
+      [1] 1
+      
       $simple_fnrow
       [1] 3
       
@@ -37,6 +40,44 @@
 ---
 
     Code
+      enw_formula_as_data_list(enw_formula(~ 0 + (1 | cyl), mtcars), prefix = "simple")
+    Output
+      $simple_fdesign
+        cyl4 cyl6 cyl8
+      1    0    1    0
+      3    1    0    0
+      5    0    0    1
+      
+      $simple_fintercept
+      [1] 0
+      
+      $simple_fnrow
+      [1] 3
+      
+      $simple_findex
+       [1] 1 1 2 1 3 1 3 2 2 1 1 3 3 3 3 3 3 2 2 2 2 3 3 3 3 2 2 2 3 1 3 2
+      
+      $simple_fnindex
+      [1] 32
+      
+      $simple_fncol
+      [1] 3
+      
+      $simple_rdesign
+        fixed cyl
+      1     0   1
+      2     0   1
+      3     0   1
+      attr(,"assign")
+      [1] 1 2
+      
+      $simple_rncol
+      [1] 1
+      
+
+---
+
+    Code
       enw_formula_as_data_list(enw_formula(~ 1 + (1 | cyl), mtcars), prefix = "simple",
       drop_intercept = TRUE)
     Output
@@ -45,6 +86,9 @@
       1           1    0    1    0
       3           1    1    0    0
       5           1    0    0    1
+      
+      $simple_fintercept
+      [1] 1
       
       $simple_fnrow
       [1] 3
@@ -110,6 +154,9 @@
       30           1 145.0    0    1    0         0         5         0  0.000  2.770
       31           1 301.0    0    0    1         0         0         5  0.000  3.570
       32           1 121.0    1    0    0         4         0         0  0.000  2.780
+      
+      $complex_fintercept
+      [1] 1
       
       $complex_fnrow
       [1] 31
@@ -181,6 +228,9 @@
       30           1 145.0    0    1    0         0         5         0  0.000  2.770
       31           1 301.0    0    0    1         0         0         5  0.000  3.570
       32           1 121.0    1    0    0         4         0         0  0.000  2.780
+      
+      $comple_fintercept
+      [1] 1
       
       $comple_fnrow
       [1] 31

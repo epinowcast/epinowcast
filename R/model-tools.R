@@ -10,6 +10,8 @@
 #' in model modules where an intercept must be present/absent.
 #'
 #' @return A list defining the model formula. This includes:
+#'  - `prefix_fintercept:` Is an intercept present for the fixed effects design
+#'     matrix.
 #'  - `prefix_fdesign`: The fixed effects design matrix
 #'  - `prefix_fnrow`: The number of rows of the fixed design matrix
 #'  - `prefix_findex`: The index linking design matrix rows to  observations
@@ -39,18 +41,25 @@ enw_formula_as_data_list <- function(formula, prefix,
         enw_formula"
       )
     }
+    fintercept <-  as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    )))
+
     data <- list()
     data[[paste_lab("fdesign")]] <- formula$fixed$design
+    data[[paste_lab("fintercept")]] <- fintercept
     data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
     data[[paste_lab("findex")]] <- formula$fixed$index
     data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
     data[[paste_lab("fncol")]] <-
-      ncol(formula$fixed$design) - as.numeric(drop_intercept)
+      ncol(formula$fixed$design) -
+      min(as.numeric(drop_intercept), as.numeric(fintercept))
     data[[paste_lab("rdesign")]] <- formula$random$design
     data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
   } else {
     data <- list()
     data[[paste_lab("fdesign")]] <- numeric(0)
+    data[[paste_lab("fintercept")]] <- 0
     data[[paste_lab("fnrow")]] <- 0
     data[[paste_lab("findex")]] <- numeric(0)
     data[[paste_lab("fnindex")]] <- 0
@@ -83,7 +92,7 @@ enw_priors_as_data_list <- function(priors) {
   priors[, variable := paste0(variable, "_p")]
   priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
-  priors <- purrr::map(priors, ~ as.vector(t(.)))
+  priors <- purrr::map(priors, ~ as.array(t(.)))
   return(priors)
 }
 

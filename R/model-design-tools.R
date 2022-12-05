@@ -3,7 +3,8 @@
 #' @param x PARAM_DESCRIPTION
 #' @return OUTPUT_DESCRIPTION
 #' @family utils
-is.Date <- function(x) { # nolint
+is.Date <- function(x) {
+  # nolint
   inherits(x, "Date")
 }
 
@@ -183,7 +184,8 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
       metaobs, model.matrix(as.formula(paste0("~ 0 + ", cfeature)), metaobs)
     )
     metaobs[, (cfeature) := NULL]
-    metaobs[, (paste0(cfeature, "0")) := NULL]
+    min_avail <- min(metaobs[, get(feature)])
+    metaobs[, (paste0(cfeature, as.character(min_avail))) := NULL]
     cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
     metaobs[,
       (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),

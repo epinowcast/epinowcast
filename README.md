@@ -183,6 +183,15 @@ metadata produced by `enw_preprocess_data()`.
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
+Construct a model with a lognormal random walk on expected cases. See
+`enw_expectation()` for other suggested choices.
+
+``` r
+expectation_module <- enw_expectation(
+  ~ 0 + (1 | day), data = pobs
+)
+```
+
 ### Model fitting
 
 First compile the model. This step can be left to `epinowcast` but here
@@ -205,6 +214,7 @@ short but in general this should not be done.
 ``` r
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
+  expectation = expectation_module,
   reference = reference_module,
   report = report_module,
   fit = enw_fit_opts(,
@@ -217,12 +227,12 @@ nowcast <- epinowcast(pobs,
 )
 #> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
 #> 
-#> Chain 1 finished in 122.9 seconds.
-#> Chain 2 finished in 126.5 seconds.
+#> Chain 2 finished in 70.7 seconds.
+#> Chain 1 finished in 86.2 seconds.
 #> 
 #> Both chains finished successfully.
-#> Mean chain execution time: 124.7 seconds.
-#> Total execution time: 126.6 seconds.
+#> Mean chain execution time: 78.5 seconds.
+#> Total execution time: 86.4 seconds.
 ```
 
 ### Results
@@ -239,11 +249,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[32]> <list[67]> <list[8]>    1000     1.02
+#> 1: <CmdStanMCMC[32]> <list[94]> <list[8]>    1000     1.02
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  39                0.039    126.6
+#> 1:                 136                0.136     86.4
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -265,26 +275,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.041     69 0.2033725 0.0000 69
-#>  3:                 1    37             0  47.073     47 0.2824018 0.0000 47
-#>  4:                 1    36             0  65.153     65 0.4046662 0.0000 65
-#>  5:                 1    35             0  50.228     50 0.5121311 0.0000 50
-#>  6:                 1    34             0  36.240     36 0.5125063 0.0000 36
-#>  7:                 1    33             0  94.490     94 0.7130276 0.0000 94
-#>  8:                 1    32             0  91.730     92 0.8876305 1.4826 91
-#>  9:                 1    31             0 100.023    100 1.0703348 1.4826 99
-#> 10:                 1    30             0  87.208     87 1.1781868 1.4826 86
-#>        q95      rhat  ess_bulk  ess_tail
-#>  1:  72.00        NA        NA        NA
-#>  2:  69.00 1.0022930  938.4902  934.0212
-#>  3:  48.00 0.9995475 1035.0728 1020.0972
-#>  4:  66.00 0.9983861  816.2412  871.2492
-#>  5:  51.00 1.0005008 1086.3247 1030.2163
-#>  6:  37.00 1.0019313  884.8056  811.0771
-#>  7:  96.00 0.9984331  869.4658  805.9687
-#>  8:  93.05 1.0016680  890.2365  905.6224
-#>  9: 102.00 1.0019187  874.0784  927.4327
-#> 10:  89.00 0.9988485  860.8845  953.3570
+#>  2:                 1    38             0  69.050     69 0.2225973 0.0000 69
+#>  3:                 1    37             0  47.090     47 0.3224965 0.0000 47
+#>  4:                 1    36             0  65.209     65 0.4555508 0.0000 65
+#>  5:                 1    35             0  50.253     50 0.4992397 0.0000 50
+#>  6:                 1    34             0  36.232     36 0.4964095 0.0000 36
+#>  7:                 1    33             0  94.471     94 0.7194975 0.0000 94
+#>  8:                 1    32             0  91.789     92 0.9441241 1.4826 91
+#>  9:                 1    31             0 100.076    100 1.0860034 1.4826 99
+#> 10:                 1    30             0  87.286     87 1.2481033 1.4826 86
+#>     q95      rhat  ess_bulk  ess_tail
+#>  1:  72        NA        NA        NA
+#>  2:  69 1.0000466  840.9457  821.2720
+#>  3:  48 0.9991100 1044.9388  900.7997
+#>  4:  66 0.9992275  942.2545  957.7864
+#>  5:  51 0.9987646 1189.1461 1067.9784
+#>  6:  37 0.9998786 1007.6330 1007.1109
+#>  7:  96 1.0006028  806.5940  814.1428
+#>  8:  94 1.0020128 1010.0212  943.4926
+#>  9: 102 1.0024267 1064.0544 1004.0852
+#> 10:  90 1.0001226 1004.7848  889.4063
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -333,17 +343,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    434
-#>     2:                 1    33             0      1          2     2    433
-#>     3:                 1    33             0      1          3     3    436
-#>     4:                 1    33             0      1          4     4    433
+#>     1:                 1    33             0      1          1     1    436
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    435
 #>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2122
-#> 33997:                 1     0             1      2        497   997   2295
-#> 33998:                 1     0             1      2        498   998   1935
-#> 33999:                 1     0             1      2        499   999   2387
-#> 34000:                 1     0             1      2        500  1000   2079
+#> 33996:                 1     0             1      2        496   996   2239
+#> 33997:                 1     0             1      2        497   997   1936
+#> 33998:                 1     0             1      2        498   998   2233
+#> 33999:                 1     0             1      2        499   999   2170
+#> 34000:                 1     0             1      2        500  1000   2115
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -362,8 +372,8 @@ enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 
 The package has extensive documentation as well as vignettes describing
 the underlying methodology, and several case studies. Please see [the
-package site](https://package.epinowcast.org) for details. Note that
-the development version of the package also has supporting documentation
+package site](https://package.epinowcast.org) for details. Note that the
+development version of the package also has supporting documentation
 which are available [here](https://package.epinowcast.org/dev).
 
 ## Citation
@@ -390,8 +400,8 @@ following,
 ## How to make a bug report or feature request
 
 Please briefly describe your problem and what output you expect in an
-[issue](https://github.com/epinowcast/epinowcast/issues). If you have
-a question, please don’t open an issue. Instead, ask on our [Q and A
+[issue](https://github.com/epinowcast/epinowcast/issues). If you have a
+question, please don’t open an issue. Instead, ask on our [Q and A
 page](https://github.com/epinowcast/epinowcast/discussions/categories/q-a).
 See our [contributing
 guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
@@ -401,8 +411,8 @@ for more information.
 
 We welcome contributions and new contributors\! We particularly
 appreciate help on priority problems in the
-[issues](https://github.com/epinowcast/epinowcast/issues). Please
-check and add to the issues, and/or add a [pull
+[issues](https://github.com/epinowcast/epinowcast/issues). Please check
+and add to the issues, and/or add a [pull
 request](https://github.com/epinowcast/epinowcast/pulls). See our
 [contributing
 guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)

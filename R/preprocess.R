@@ -166,20 +166,31 @@ enw_add_metaobs_features <- function(metaobs,
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param metaobs PARAM_DESCRIPTION
-#' @param max_delay PARAM_DESCRIPTION, Default: 20
+#' @param days PARAM_DESCRIPTION
+#' @param direction Should new dates be added at the beginning or end of
+#' the data. Default is "end" with "start" also available
 #' @return OUTPUT_DESCRIPTION
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy data.table rbindlist setkeyv
 #' @importFrom purrr map
-enw_extend_date <- function(metaobs, max_delay = 20) {
+enw_extend_date <- function(metaobs, days = 20, direction = "end") {
+  direction <- match.arg(direction, choices = c("start", "end"))
+
+  new_days <- 1:days
+  if (direction %in% "start") {
+    new_days <- -new_days
+    filt_fn <- min
+  } else {
+    filt_fn <- max
+  }
   exts <- data.table::copy(metaobs)
-  exts <- exts[, .SD[date == max(date)], by = .group]
+  exts <- exts[, .SD[date == filt_fn(date)], by = .group]
   exts <- split(exts, by = ".group")
   exts <- purrr::map(
     exts,
     ~ data.table::data.table(
-      extend_date = .$date + 1:(max_delay - 1),
+      extend_date = .$date + new_days,
       .
     )
   )
@@ -921,7 +932,10 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
 
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(reference_available, target_date = "report_date")
-  metareport <- enw_extend_date(metareport, max_delay = max_delay)
+  metareport <- enw_extend_date(
+    metareport,
+    days = max_delay - 1, direction = "end"
+  )
   metareport <- enw_add_metaobs_features(metareport, ...)
 
   # extract and add features for reference date

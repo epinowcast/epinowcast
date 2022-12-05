@@ -1,6 +1,9 @@
 functions {
+#include functions/utils.stan
 #include functions/zero_truncated_normal.stan
 #include functions/regression.stan
+#include functions/log_expected_latent_from_r.stan
+#include functions/log_expected_obs_from_latent.stan
 #include functions/discretised_logit_hazard.stan
 #include functions/hazard.stan
 #include functions/expected_obs.stan
@@ -36,8 +39,41 @@ data {
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
-  array[2] real eobs_lsd_p; // standard deviation for expected final obs
- 
+  // ---- Growth rate submodule ----
+  int expr_r_seed; // number of time points with seeded/initial latent cases
+  int expr_gt_n; // maximum generation time
+  int expr_t; // number of time points with modeled growth rate
+  int expr_ft; // number of time points with latent cases (expr_r_seed + expr_t)
+  // PMF of the generation time distribution (reversed and on log scale)
+  vector[expr_gt_n] expr_lrgt; 
+  // Model for growth rate process. Currently, 0 = none
+  int expr_obs;
+  int expr_fnindex;
+  int expr_fintercept; // Should an intercept be included
+  int expr_fncol;
+  int expr_rncol;
+  matrix[expr_fnindex, expr_fncol + expr_fintercept] expr_fdesign;
+  matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
+  array[g] int expr_g; // starting time points for growth of each group
+  // Priors for growth rate and initial log latent cases
+  array[2, g * expr_r_seed] real expr_lelatent_int_p; 
+  array[2, 1] real expr_r_int_p;
+  array[2, 1] real expr_beta_sd_p;
+  // ---- Latent case submodule ----
+  int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
+  // Partial PMF of latent delay distribution (reversed and on log scale)
+  vector[expl_lrd_n] expl_lrlrd; 
+  // Model for latent-to-obs proportion. Currently, 0 = none
+  // --> proportion of latent cases that will become observations
+  // --> e.g.: infection fatality rate for death data
+  int expl_obs;
+  int expl_fnindex;
+  int expl_fncol;
+  int expl_rncol;
+  matrix[expl_fnindex, expl_fncol + 1] expl_fdesign;
+  matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
+  array[2, 1] real expl_beta_sd_p;
+
   // Reference time model
   int model_refp;
   int refp_fnrow;
@@ -46,10 +82,10 @@ data {
   matrix[refp_fnrow, refp_fncol + 1] refp_fdesign;
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
-  array[2] real refp_mean_int_p;
-  array[2] real refp_sd_int_p;
-  array[2] real refp_mean_beta_sd_p;
-  array[2] real refp_sd_beta_sd_p; 
+  array[2, 1] real refp_mean_int_p;
+  array[2, 1] real refp_sd_int_p;
+  array[2, 1] real refp_mean_beta_sd_p;
+  array[2, 1] real refp_sd_beta_sd_p; 
 
   // Reporting time model
   int model_rep;
@@ -60,7 +96,7 @@ data {
   matrix[rep_fnrow, rep_fncol + 1] rep_fdesign;
   int rep_rncol; 
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
-  array[2] real rep_beta_sd_p;
+  array[2, 1] real rep_beta_sd_p;
 
   // Missing reference time model
   int model_miss;
@@ -71,39 +107,37 @@ data {
   matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
   // Observations reported without a reference time (by reporting time)
-  // Note: Since the first dmax-1 obs are not used here, the reporting time
-  // starts at dmax, not at 1
+  // --> Since the first dmax-1 obs are not used here, the reporting time
+  // --> starts at dmax, not at 1
   array[miss_obs] int missing_reference;
   // Lookup for the obs index by reference time of entries in missing_reference:
-  // If observations from entry i of missing_reference had a reporting delay
-  // of d, their index in the flat vector of obs by reference time (e.g. flat_obs)
-  // would be: obs_by_report[i, d] 
+  // --> If observations from entry i of missing_reference had a reporting
+  // --> delay of d, their index in the flat vector of obs by reference time
+  // --> (e.g. flat_obs) would be: obs_by_report[i, d]
   array[miss_obs, dmax] int obs_by_report;
-  // observations by group (and cumulative) for missing_reference and
+  // Observations by group (and cumulative) for missing_reference and
   // obs_by_report
   array[miss_obs ? g : 0] int miss_st;
   array[miss_obs ? g : 0] int miss_cst;
-  array[2] real miss_int_p;
-  array[2] real miss_beta_sd_p;
+  array[2, 1] real miss_int_p;
+  array[2, 1] real miss_beta_sd_p;
 
   // Observation model
   int model_obs; // control parameter for the observation model
-  array[2] real sqrt_phi_p; // 1/sqrt (overdispersion)
+  array[2, 1] real sqrt_phi_p; // 1/sqrt (overdispersion)
 
   // Control parameters
-  int debug; // should debug information be shown
-  int likelihood; // should the likelihood be included
+  int debug; // should debug information be shown?
+  int likelihood; // should the likelihood be included?
   // type of aggregation scheme (0 = snaps, 1 = groups)
   int likelihood_aggregation;
-  int pp; // should posterior predictions be produced
-  int cast; // should a nowcast be produced
-  int ologlik; // should the pointwise log likelihood be calculated
+  int pp; // should posterior predictions be produced?
+  int cast; // should a nowcast be produced?
+  int ologlik; // should the pointwise log likelihood be calculated?
 }
 
 transformed data{
-  real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bounds
-  // prior mean of cases based on thoose observed
-  vector[g] eobs_init = log(to_vector(latest_obs[1, 1:g]) + 1);
+  real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bound
   // if no reporting time effects use native probability for reference time
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
@@ -113,10 +147,15 @@ transformed data{
 
 parameters {
   // Expectation model
-  array[g] real leobs_init; // First time point for expected obs
-  vector<lower=0>[g] eobs_lsd; // standard deviation of rw for primary obs
-  array[g] vector[t - 1] leobs_resids; // unscaled rw for primary obs
-
+  // ---- Growth rate submodule ----
+  matrix[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
+  array[expr_fintercept ? 1 : 0] real expr_r_int; // growth rate intercept
+  vector[expr_fncol] expr_beta;
+  vector<lower=0>[expr_rncol] expr_beta_sd;
+  // ---- Latent case submodule ----
+  vector[expl_fncol] expl_beta;
+  vector<lower=0>[expl_rncol] expl_beta_sd;
+    
   // Reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
@@ -135,19 +174,25 @@ parameters {
   vector<lower=0>[miss_rncol] miss_beta_sd; 
 
   // Observation model
-  array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // Overall dispersion
+  array[model_obs > 0 ? 1 : 0] real<lower=0> sqrt_phi; // overdispersion
 }
 
 transformed parameters{
   // Expectation model
-  array[g] vector[t] imp_obs; // Expected final observations
+  vector[expr_t] r; // growth rate of observations (log)
+  array[g] vector[expr_ft]  exp_llatent; // expected latent cases (log)
+  vector[expl_obs ? expl_fnindex : 0] expl_prop; // latent-to-obs proportion
+  array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
+  
   // Reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
-  // Missing model
+  
+  // Missing reference time model
   vector[miss_fnindex] miss_ref_lprop;
 
   // Observation model
@@ -155,12 +200,28 @@ transformed parameters{
 
   // Expectation model
   profile("transformed_expected_final_observations") {
-  for (k in 1:g) {
-    real llast_obs;
-    imp_obs[k][1] = leobs_init[k];
-    imp_obs[k][2:t] = 
-      leobs_init[k] + eobs_lsd[k] * cumulative_sum(leobs_resids[k]);
+  // Get log growth rates and map to expected latent cases
+  r = combine_effects(
+    expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 
+    expr_fintercept
+  );
+  exp_llatent = log_expected_latent_from_r(
+    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+    expr_ft, g
+  );
+  // Get latent-to-obs proportions and map expected latent cases to expected
+  // observations
+  if (expl_obs) {
+    expl_prop = combine_effects(
+      {0}, expl_beta, expl_fdesign, expl_beta_sd, expl_rdesign, 1
+    );
+    exp_lobs = log_expected_obs_from_latent(
+      exp_llatent, expl_lrd_n, expl_lrlrd, t, g, expl_prop
+    );
+  } else {
+    exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
+
   }
 
   // Reference model
@@ -168,13 +229,17 @@ transformed parameters{
   if (model_refp) {
     // calculate sparse reference time effects
     profile("transformed_delay_reference_time_effects") {
-    refp_mean = combine_effects(refp_mean_int[1], refp_mean_beta, refp_fdesign,
-                                refp_mean_beta_sd, refp_rdesign, 1);
+    refp_mean = combine_effects(
+      refp_mean_int, refp_mean_beta, refp_fdesign, refp_mean_beta_sd,
+      refp_rdesign, 1
+    );
     if (model_refp > 1) {
-      refp_sd = combine_effects(log(refp_sd_int[1]), refp_sd_beta, refp_fdesign,
-                                refp_sd_beta_sd, refp_rdesign, 1); 
+      refp_sd = combine_effects(
+        log(refp_sd_int), refp_sd_beta, refp_fdesign, refp_sd_beta_sd,
+        refp_rdesign, 1
+      ); 
       refp_sd = exp(refp_sd);
-    }
+    } 
     }
     // calculate reference time logit hazards (unless no reporting effects)
     profile("transformed_delay_reference_time_hazards") {
@@ -190,13 +255,15 @@ transformed parameters{
   // Report model
   profile("transformed_delay_reporting_time_effects") {
   srdlh =
-    combine_effects(0, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
+    combine_effects({0}, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
   }
 
   // Missing reference model
   if (model_miss) {
     miss_ref_lprop = log_inv_logit(
-      combine_effects(miss_int[1], miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1)
+      combine_effects(
+        miss_int, miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1
+      )
     );
   }
   
@@ -214,14 +281,28 @@ transformed parameters{
   
 model {
   profile("model_priors") {
-  // priors for unobserved expected reported cases
-  leobs_init ~ normal(eobs_init, 1);
-  eobs_lsd ~ zero_truncated_normal(eobs_lsd_p[1], eobs_lsd_p[2]);
-  for (i in 1:g) {
-    leobs_resids[i] ~ std_normal();
+  // Expectation model
+  // ---- Growth rate submodule ----
+  // intercept/initial latent cases (log)
+  to_vector(expr_lelatent_int) ~ normal(
+    expr_lelatent_int_p[1], expr_lelatent_int_p[2]
+  );
+  // intercept of growth rate
+  if (expr_fintercept) {
+    expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
   }
-
-  // priors for the intercept of the log mean truncation distribution
+  
+  // growth rate effect priors
+  effect_priors_lp(
+    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
+  );
+  // ---- Latent case submodule ----
+  // latent-to-obs proportion
+  effect_priors_lp(
+    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
+  );
+  
+  // Reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
@@ -238,36 +319,38 @@ model {
       );
     }
   }
-  // priors and scaling for time of report effects
+  // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
-  // priors for missing reference time effects
+  // Missing reference time model
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
       miss_beta, miss_beta_sd, miss_beta_sd_p, miss_fncol, miss_rncol
     );
   }
-
-  // reporting overdispersion (1/sqrt)
-  if (model_obs) {
-    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,];
+  
+  // Observation model
+  // overdispersion (1/sqrt)
+  if (model_obs) {   
+    sqrt_phi[1] ~ normal(sqrt_phi_p[1], sqrt_phi_p[2]) T[0,]; 
   }
+  
   }
-  // log density: observed vs model
+  // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
     profile("model_likelihood") {
     if (ll_aggregation) {
       target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, imp_obs, t, sg, ts, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, exp_lobs, t, sg, ts,
+        st, rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst
       );
     } else {
       target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, sl, csl, imp_obs, sg, st, rep_findex,
-        srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi,
-        model_obs
+        delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
+        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs
       );
     }
     }
@@ -289,7 +372,7 @@ generated quantities {
     // Posterior predictions for observations
     profile("generated_obs") {
     log_exp_obs = expected_obs_from_snaps(
-      1, s, imp_obs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
+      1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
     );
     

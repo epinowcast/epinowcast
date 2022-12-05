@@ -1,4 +1,3 @@
-
 #' Identify report dates with complete (i.e up to the maximum delay) reference
 #' dates
 #'
@@ -68,4 +67,16 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     value.var = ".id"
   )
   return(refs_by_report[])
+}
+#' Convert latest observed data to a matrix
+#'
+#' @param latest `latest` data.frame output from [enw_preprocess_data()].
+#'
+#' @return A matrix with each column being a group and each row a reference date
+latest_obs_as_matrix <- function(latest) {
+  latest_matrix <- data.table::dcast(
+    latest, reference_date ~ .group,
+    value.var = "confirm"
+  )
+  latest_matrix <- as.matrix(latest_matrix[, -1])
 }

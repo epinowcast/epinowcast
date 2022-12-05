@@ -4,7 +4,7 @@
 // includes effect pooling used a second design matrix in which
 // the first row indicates no scaling (i.e  independent effects).
 // 
-// @param intercept The regression intercept
+// @param intercept The regression intercept as an array of length one
 // 
 // @param beta A Vector of effects. In general these should be specified
 // on the unit scale as they may be rescaled (and hence pooled) using the
@@ -44,7 +44,7 @@
 // Check function works with no effects
 // combine_effects(intercept, as.double(c()), design, beta_sd, sd_design)
 // # 1 1 1 1
-vector combine_effects(real intercept, vector beta, matrix design,
+vector combine_effects(array[] real intercept, vector beta, matrix design,
                        vector beta_sd, matrix sd_design, int add_intercept) {
   int nobs = rows(design);
   int neffs = num_elements(beta);
@@ -55,22 +55,22 @@ vector combine_effects(real intercept, vector beta, matrix design,
   if (neffs) {
     ext_beta_sd[2:(sds+1)] = beta_sd;
       if (add_intercept) {
-        scaled_beta[1] = intercept;
+        scaled_beta[1] = intercept[1];
       }
     scaled_beta[(1+add_intercept):(neffs+add_intercept)] =
       beta .* (sd_design * ext_beta_sd);
     return(design * scaled_beta);
   }else{
-    return(rep_vector(intercept, nobs));
+    return(rep_vector(intercept[1], nobs));
   }
 }
 
-void effect_priors_lp(vector beta, vector beta_sd, array[] real beta_sd_p,
+void effect_priors_lp(vector beta, vector beta_sd, array[,] real beta_sd_p,
                     int fixed, int random) {
   if (fixed) {
     beta ~ std_normal();
     if (random) {
-      beta_sd ~ zero_truncated_normal(beta_sd_p[1], beta_sd_p[2]);
+      beta_sd ~ zero_truncated_normal(beta_sd_p[1, 1], beta_sd_p[2, 1]);
     }
   }
 }

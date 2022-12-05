@@ -14,8 +14,11 @@
 #' specification as defined using [enw_report()].
 #'
 #' @param expectation The expectation model specification as defined using
-#' [enw_expectation()]. By default this is set to be highly flexible and thus
-#' weakly informed. Other options are not yet supported.
+#' [enw_expectation()]. By default this is set to be a highly flexible random
+#' effect by reference date for each group and thus weakly informed. Depending
+#' on your context (and in particular the density of data reporting) other
+#' choices that enforce more assumptions may be more appropriate (for example a
+#' weekly random walk (specified using `rw(week, by = .group)`)).
 #'
 #' @param missing The missing reference date model specification as defined
 #' using [enw_missing()]. By default this is set to not be used.
@@ -111,8 +114,10 @@ epinowcast <- function(data,
                          data = data
                        ),
                        expectation = epinowcast::enw_expectation(
-                         formula = ~ rw(day, .group),
-                         order = 1,
+                         r = ~ 0 + (1 | day:.group),
+                         generation_time = c(1),
+                         observation = ~1,
+                         latent_reporting_delay = c(1),
                          data = data
                        ),
                        missing = epinowcast::enw_missing(
@@ -157,12 +162,9 @@ epinowcast <- function(data,
     enw_priors_as_data_list(priors)
   )
 
-  if (!expectation$formula$expectation %in% "~rw(day, .group)") {
-    stop("A flexible expectation model has not yet been implemented")
-  }
-
-  if (expectation$data$exp_order != 1) {
-    stop("Only first order expectation models are currently supported")
+  if (!missing$formula %in% "~0") {
+    warning("The missing data model is highly experimental. There is a
+     significant likelihood that bugs are present in its implementation.")
   }
 
   if (!missing$formula %in% "~0") {
