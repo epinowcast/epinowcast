@@ -22,7 +22,8 @@
 		"github.vscode-pull-request-github",
 		"formulahendry.code-runner",
 		"mutantdino.resourcemonitor",
-		"searking.preview-vscode"
+		"searking.preview-vscode",
+		"shd101wyy.markdown-preview-enhanced"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

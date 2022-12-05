@@ -121,11 +121,11 @@ Construct a model with a random effect for the day of report using the metadata 
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
-Construct a model with a fixed underlying growth rate for the final expected number of cases by reference date.
+Construct a model with a lognormal random walk on expected cases. See `enw_expectation()` for other suggested choices.
 
 ```{r}
 expectation_module <- enw_expectation(
-  ~ 1, data = pobs
+  ~ 0 + (1 | day), data = pobs
 )
 ```
 
