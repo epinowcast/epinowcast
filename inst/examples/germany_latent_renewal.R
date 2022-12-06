@@ -54,7 +54,7 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 # ascertainment
 # - Day of week reporting effect
 expectation_module <- enw_expectation(
-  r = ~ 0 + (1 | day),
+  r = ~ rw(week),
   generation_time = c(0.1, 0.4, 0.4, 0.1),
   observation = ~ (1 | day_of_week),
   latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
@@ -68,9 +68,9 @@ nowcast <- epinowcast(pobs,
   report = report_module,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 2, threads_per_chain = 2,
+    chains = 20, threads_per_chain = 2,
     iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.95, max_treedepth = 12,
+    adapt_delta = 0.9,
     show_messages = FALSE
   ),
   model = model
