@@ -299,9 +299,15 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' @param stanc_options A list of options to pass to the `stanc_options` of
 #' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
-#' users may wish to pass optimisation flags for example.See the documentation
+#' users may wish to pass optimisation flags for example. See the documentation
 #' for [cmdstanr::cmdstan_model()] for further details.
 #'
+#' @param cpp_options A list of options to pass to the `cpp_options` of
+#' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
+#' users may wish to pass optimisation flags for example. See the documentation
+#' for [cmdstanr::cmdstan_model()] for further details. Note that the `threads`
+#' argument replaces `stan_threads`.
+#' 
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
 #' @return A `cmdstanr` model.
@@ -317,7 +323,8 @@ enw_model <- function(model = system.file(
                       ),
                       include = system.file("stan", package = "epinowcast"),
                       compile = TRUE, threads = FALSE, profile = FALSE,
-                      stanc_options = list(), verbose = TRUE,
+                      stanc_options = list(), cpp_options = list(),
+                      verbose = TRUE,
                       ...) {
   if (verbose) {
     message(sprintf("Using model %s.", model))
@@ -337,13 +344,12 @@ enw_model <- function(model = system.file(
         return(x)
       }
     }
+    cpp_options$stan_threads <- threads
     model <- monitor(cmdstanr::cmdstan_model(
       model,
       include_paths = include,
       stanc_options = stanc_options,
-      cpp_options = list(
-        stan_threads = threads
-      ),
+      cpp_options = cpp_options,
       ...
     ))
   }
