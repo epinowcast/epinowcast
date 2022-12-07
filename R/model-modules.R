@@ -335,7 +335,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
 
   # Add the sparse matrix representation
   sparse_rrd <- rstan::extract_sparse_parts(obs_list$rrd)
-  obs_list <- c(obs_list, 
+  obs_list <- c(obs_list,
     list(
       rrd_nw = length(sparse_rrd$w),
       rrd_w = sparse_rrd$w,

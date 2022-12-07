@@ -3,9 +3,6 @@ library(epinowcast)
 library(data.table)
 library(ggplot2)
 
-# Use 2 cores
-options(mc.cores = 2)
-
 # Load and filter germany hospitalisations
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
@@ -25,14 +22,14 @@ retro_nat_germany <- enw_filter_report_dates(
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
-  include_days = 40
+  include_days = 60
 )
 
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 40, include_days = 20
+  remove_days = 40, include_days = 60
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
