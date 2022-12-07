@@ -307,7 +307,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' users may wish to pass optimisation flags for example. See the documentation
 #' for [cmdstanr::cmdstan_model()] for further details. Note that the `threads`
 #' argument replaces `stan_threads`.
-#' 
+#'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
 #' @return A `cmdstanr` model.
