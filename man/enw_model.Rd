@@ -11,6 +11,7 @@ enw_model(
   threads = FALSE,
   profile = FALSE,
   stanc_options = list(),
+  cpp_options = list(),
   verbose = TRUE,
   ...
 )
@@ -35,8 +36,14 @@ For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profil
 
 \item{stanc_options}{A list of options to pass to the \code{stanc_options} of
 \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default nothing is passed but potentially
-users may wish to pass optimisation flags for example.See the documentation
+users may wish to pass optimisation flags for example. See the documentation
 for \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}} for further details.}
+
+\item{cpp_options}{A list of options to pass to the \code{cpp_options} of
+\code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default nothing is passed but potentially
+users may wish to pass optimisation flags for example. See the documentation
+for \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}} for further details. Note that the \code{threads}
+argument replaces \code{stan_threads}.}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}
