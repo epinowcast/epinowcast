@@ -252,6 +252,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
+#' @importFrom rstan extract_sparse_parts
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
@@ -329,6 +330,19 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
     lrlrd = log(rev(latent_reporting_delay)),
     rrd = convolution_matrix(
       rev(latent_reporting_delay), r_list$ft, include_partial = FALSE
+    )
+  )
+
+  # Add the sparse matrix representation
+  sparse_rrd <- rstan::extract_sparse_parts(obs_list$rrd)
+  obs_list <- c(obs_list, 
+    list(
+      rrd_nw = length(sparse_rrd$w),
+      rrd_w = sparse_rrd$w,
+      rrd_nv = length(sparse_rrd$v),
+      rrd_v = sparse_rrd$v,
+      rrd_nu = length(sparse_rrd$u),
+      rrd_u = sparse_rrd$u
     )
   )
   obs_list$obs <- ifelse(

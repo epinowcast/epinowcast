@@ -63,8 +63,13 @@ data {
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
   // Partial PMF of latent delay distribution (reversed and on log scale)
   vector[expl_lrd_n] expl_lrlrd; 
-  // Partial PMF of the latent delay distribution as a convolution matrix
-  matrix[expr_ft, expr_ft] expl_rrd;
+  // Partial PMF of the latent delay distribution as a sparse convolution matrix
+  int expl_rrd_nw;
+  vector[expl_rrd_nw] expl_rrd_w;
+  int expl_rrd_nv;
+  array[expl_rrd_nv] int expl_rrd_v;
+  int expl_rrd_nu;
+  array[expl_rrd_nu] int expl_rrd_u;
   // Model for latent-to-obs proportion. Currently, 0 = none
   // --> proportion of latent cases that will become observations
   // --> e.g.: infection fatality rate for death data
@@ -218,7 +223,8 @@ transformed parameters{
       {0}, expl_beta, expl_fdesign, expl_beta_sd, expl_rdesign, 1
     );
     exp_lobs = log_expected_obs_from_latent(
-      exp_llatent, expl_lrd_n, expl_lrlrd, expl_rrd, t, g, expl_prop
+      exp_llatent, expl_lrd_n, expl_lrlrd, expl_rrd_w, expl_rrd_v, expl_rrd_u,
+      t, g, expl_prop
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
