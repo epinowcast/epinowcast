@@ -281,7 +281,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
     date >= (min(date) + length(generation_time))
   ]
 
-  # Growth rate indicator variables
+  # Growth rate indicator variables & generation time terms
   r_list <- list(
     r_seed = length(generation_time),
     gt_n = length(generation_time),
@@ -306,10 +306,30 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
     prefix = "expr", drop_intercept = TRUE
   )
 
+  convolution_matrix <- function(dist, t, include_partial = FALSE) {
+      ldist <- length(dist)
+      conv <- matrix(0, nrow = t, ncol = t)
+      for (s in 1:t) {
+        l <- max(1, s - ldist + 1)
+        if (include_partial) {
+          conv[s, l:s] <- tail(dist, min(s, ldist))
+        } else {
+          if (s >= ldist) {
+            conv[s, l:s] <- tail(dist, ldist)
+          }
+        }
+      }
+      return(conv)
+  }
+
+
   # Observation indicator variables
   obs_list <- list(
     lrd_n = length(latent_reporting_delay),
-    lrlrd = log(rev(latent_reporting_delay))
+    lrlrd = log(rev(latent_reporting_delay)),
+    rrd = convolution_matrix(
+      rev(latent_reporting_delay), r_list$ft, include_partial = FALSE
+    )
   )
   obs_list$obs <- ifelse(
     sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
