@@ -138,15 +138,46 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
   return(conv)
 }
 
-add_pmfs <- function(pmf, pmf2) {
-  lpmf <- length(pmf)
-  lpmf2 <- length(pmf2)
-  l <- lpmf + lpmf2
+# Sample and analytical PMFs for two Poisson distributions
+x <- rpois(10000, 5)
+xpmf <- dpois(0:20, 5)
+y <- rpois(10000, 7)
+ypmf <- dpois(0:20, 7)
+# Add sampled Poisson distributions up to get combined distribution
+z <- x + y
+# Analytical convolution of PMFs
+conv_pmf <- add_pmfs(list(xpmf, ypmf))
+conv_cdf <- cumsum(conv_pmf)
+# Empirical convolution of PMFs
+cdf <- ecdf(z)(0:42)
+# Compare sampled and analytical CDFs
+plot(conv_cdf)
+lines(cdf, col = "black")
+
+
+add_pmfs <- function(pmfs) {
+  d <- length(pmfs)
+  if (d == 1) {
+    return(pmfs[[1]])
+  }
+  if (!is.list(pmfs)){
+    return(pmfs)
+  }
+  lpmfs <- purrr::map_dbl(pmfs, length)
+  l <- sum(lpmfs)
   conv <- rep(0, l)
-  for (i in 1:lpmf) {
-    for (j in 1:(min(l - i + 1, lpmf2))) {
-      conv[i + j - 1] <- conv[i + j - 1] + pmf[i] * pmf2[j]
+  conv[1:lpmfs[1]] <- pmfs[[1]]
+  for (s in 2:d) {
+    # P(Z = z) = sum_over_x(P(X = x) * P(Y = z - x))
+    proc <- rep(0, l)
+    for (i in 1:l) {
+      for (j in 1:lpmfs[s]) {
+        if (i >= j) {
+          proc[i] <- proc[i] + pmfs[[s]][j] * conv[i - j + 1]
+        }
+      }
     }
+    conv <- proc
   }
   return(conv)
 }
