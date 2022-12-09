@@ -32,7 +32,9 @@ dates
 }
 \seealso{
 Helper functions for model modules
+\code{\link{convolution_matrix}()},
 \code{\link{enw_reference_by_report}()},
+\code{\link{extract_sparse_matrix}()},
 \code{\link{latest_obs_as_matrix}()}
 }
 \concept{modelmodulehelpers}

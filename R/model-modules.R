@@ -307,23 +307,6 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
     prefix = "expr", drop_intercept = TRUE
   )
 
-  convolution_matrix <- function(dist, t, include_partial = FALSE) {
-      ldist <- length(dist)
-      conv <- matrix(0, nrow = t, ncol = t)
-      for (s in 1:t) {
-        l <- max(1, s - ldist + 1)
-        if (include_partial) {
-          conv[s, l:s] <- tail(dist, min(s, ldist))
-        } else {
-          if (s >= ldist) {
-            conv[s, l:s] <- tail(dist, ldist)
-          }
-        }
-      }
-      return(conv)
-  }
-
-
   # Observation indicator variables
   obs_list <- list(
     lrd_n = length(latent_reporting_delay),
@@ -334,17 +317,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
   )
 
   # Add the sparse matrix representation
-  sparse_rrd <- rstan::extract_sparse_parts(obs_list$rrd)
-  obs_list <- c(obs_list,
-    list(
-      rrd_nw = length(sparse_rrd$w),
-      rrd_w = sparse_rrd$w,
-      rrd_nv = length(sparse_rrd$v),
-      rrd_v = sparse_rrd$v,
-      rrd_nu = length(sparse_rrd$u),
-      rrd_u = sparse_rrd$u
-    )
-  )
+  obs_list <- c(obs_list, extract_sparse_matrix(obs_list$rrd, prefix = "rrd"))
+  
   obs_list$obs <- ifelse(
     sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
       as_string_formula(observation) %in% "~1",
