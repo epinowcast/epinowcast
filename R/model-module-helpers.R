@@ -82,11 +82,6 @@ latest_obs_as_matrix <- function(latest) {
   latest_matrix <- as.matrix(latest_matrix[, -1])
 }
 
-
-
-
-
-
 #' Construct a convolution matrix
 #'
 #' This function allows the construction of convoluton matrices which can be
@@ -138,6 +133,19 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (!include_partial) {
     if (ldist[1] > 1) {
       conv[1:(ldist[1] - 1), ] <- 0
+    }
+  }
+  return(conv)
+}
+
+add_pmfs <- function(pmf, pmf2) {
+  lpmf <- length(pmf)
+  lpmf2 <- length(pmf2)
+  l <- lpmf + lpmf2
+  conv <- rep(0, l)
+  for (i in 1:lpmf) {
+    for (j in 1:(min(l - i + 1, lpmf2))) {
+      conv[i + j - 1] <- conv[i + j - 1] + pmf[i] * pmf2[j]
     }
   }
   return(conv)
