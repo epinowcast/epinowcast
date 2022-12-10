@@ -245,7 +245,9 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' observations (from most recent to least). This can be used both to convolve
 #' based on some assumed reporting delay and to rescale observations (by
 #' multiplying a probability mass function by some fraction) to account
-#' ascertainment etc.
+#' ascertainment etc. A list of PMFs can be provided to allow for time-varying
+#' PMFs. This should be the same length as the modelled time period plus the
+#' length of the generation time if supplied.
 #'
 #' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
 #' same arguments as passed to `enw_preprocess_data()` should be used here.
@@ -309,16 +311,18 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
 
   # Observation indicator variables
   obs_list <- list(
-    lrd_n = length(latent_reporting_delay),
-    lrlrd = log(rev(latent_reporting_delay)),
-    rrd = convolution_matrix(
-      rev(latent_reporting_delay), r_list$ft, include_partial = FALSE
+    lrd_n = ifelse(is.list(latent_reporting_delay),
+      length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
+    ),
+    lrd = convolution_matrix(
+      latent_reporting_delay, r_list$ft, include_partial = FALSE
     )
   )
 
   # Add the sparse matrix representation
-  obs_list <- c(obs_list, extract_sparse_matrix(obs_list$rrd, prefix = "rrd"))
-  
+  obs_list <- c(obs_list, extract_sparse_matrix(obs_list$lrd, prefix = "lrd"))
+  obs_list$lrd <- NULL
+
   obs_list$obs <- ifelse(
     sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
       as_string_formula(observation) %in% "~1",

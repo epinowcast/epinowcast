@@ -22,14 +22,14 @@ retro_nat_germany <- enw_filter_report_dates(
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
-  include_days = 120
+  include_days = 40
 )
 
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 40, include_days = 120
+  remove_days = 40, include_days = 40
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
@@ -51,7 +51,7 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 # ascertainment
 # - Day of week reporting effect
 expectation_module <- enw_expectation(
-  r = ~ rw(week),
+  r = ~ 0 + (1 | day),
   generation_time = c(0.1, 0.4, 0.4, 0.1),
   observation = ~ (1 | day_of_week),
   latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
@@ -65,8 +65,8 @@ nowcast <- epinowcast(pobs,
   report = report_module,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
-    chains = 50, threads_per_chain = 1,
-    parallel_chains = 16,
+    chains = 2, threads_per_chain = 2,
+    parallel_chains = 2,
     iter_warmup = 1000, iter_sampling = 1000,
     adapt_delta = 0.95,
     show_messages = FALSE
