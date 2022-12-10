@@ -1,6 +1,3 @@
-mat <- matrix(1:9, nrow = 3)
-extract_sparse_matrix(mat)
-
 test_that("extract_sparse_matrix can extract a sparse matrix", {
   mat <- matrix(1:9, nrow = 3)
   sparse_mat <- extract_sparse_matrix(mat)
