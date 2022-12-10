@@ -138,29 +138,44 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
   return(conv)
 }
 
-# Sample and analytical PMFs for two Poisson distributions
-x <- rpois(10000, 5)
-xpmf <- dpois(0:20, 5)
-y <- rpois(10000, 7)
-ypmf <- dpois(0:20, 7)
-# Add sampled Poisson distributions up to get combined distribution
-z <- x + y
-# Analytical convolution of PMFs
-conv_pmf <- add_pmfs(list(xpmf, ypmf))
-conv_cdf <- cumsum(conv_pmf)
-# Empirical convolution of PMFs
-cdf <- ecdf(z)(0:42)
-# Compare sampled and analytical CDFs
-plot(conv_cdf)
-lines(cdf, col = "black")
-
-
+#' Add probability mass functions
+#'
+#' This function allows the addition of probability mass functions (PMFs) to
+#' produce a new PMF. This is useful for example in the context of reporting
+#' delays where the PMF of the sum of two Poisson distributions is the
+#' convolution of the PMFs.
+#'
+#' @param pmfs A list of vectors describing the probability mass functions to
+#'
+#' @return A vector describing the probability mass function of the sum of the
+#'
+#' @export
+#' @importFrom stats ecdf
+#' @importFrom purrr map_dbl
+#' @importFrom stats cumsum
+#' @family modelmodulehelpers
+#' @examples
+#' # Sample and analytical PMFs for two Poisson distributions
+#' x <- rpois(10000, 5)
+#' xpmf <- dpois(0:20, 5)
+#' y <- rpois(10000, 7)
+#' ypmf <- dpois(0:20, 7)
+#' # Add sampled Poisson distributions up to get combined distribution
+#' z <- x + y
+#' # Analytical convolution of PMFs
+#' conv_pmf <- add_pmfs(list(xpmf, ypmf))
+#' conv_cdf <- cumsum(conv_pmf)
+#'# Empirical convolution of PMFs
+#' cdf <- ecdf(z)(0:42)
+#' # Compare sampled and analytical CDFs
+#' plot(conv_cdf)
+#' lines(cdf, col = "black")
 add_pmfs <- function(pmfs) {
   d <- length(pmfs)
   if (d == 1) {
     return(pmfs[[1]])
   }
-  if (!is.list(pmfs)){
+  if (!is.list(pmfs)) {
     return(pmfs)
   }
   lpmfs <- purrr::map_dbl(pmfs, length)
@@ -168,7 +183,7 @@ add_pmfs <- function(pmfs) {
   conv <- rep(0, l)
   conv[1:lpmfs[1]] <- pmfs[[1]]
   for (s in 2:d) {
-    # P(Z = z) = sum_over_x(P(X = x) * P(Y = z - x))
+    # P(Z = z) = sum_over_x(P(X = x) * P(Y = z - x)) # nolint
     proc <- rep(0, l)
     for (i in 1:l) {
       for (j in 1:lpmfs[s]) {

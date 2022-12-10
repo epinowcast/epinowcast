@@ -38,6 +38,7 @@ convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4,5,6))), 11)
 }
 \seealso{
 Helper functions for model modules
+\code{\link{add_pmfs}()},
 \code{\link{enw_reference_by_report}()},
 \code{\link{enw_reps_with_complete_refs}()},
 \code{\link{extract_sparse_matrix}()},
