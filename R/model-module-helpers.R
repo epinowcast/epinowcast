@@ -152,7 +152,6 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
 #' @export
 #' @importFrom stats ecdf
 #' @importFrom purrr map_dbl
-#' @importFrom stats cumsum
 #' @family modelmodulehelpers
 #' @examples
 #' # Sample and analytical PMFs for two Poisson distributions
