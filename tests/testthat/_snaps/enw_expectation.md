@@ -18,7 +18,6 @@
       
       $data_raw
       $data_raw$r
-      Key: <.group, date>
                 date .group location age_group delay day_of_week day week month
        1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
        2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
@@ -63,7 +62,6 @@
                 date .group location age_group delay day_of_week day week month
       
       $data_raw$observation
-      Key: <.group, date>
                 date .group location age_group delay day_of_week day week month
        1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0
        2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
@@ -582,7 +580,6 @@
       
       $data_raw
       $data_raw$r
-      Key: <.group, date>
                 date .group location age_group delay day_of_week day week month
        1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
        2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
@@ -627,7 +624,6 @@
                 date .group location age_group delay day_of_week day week month
       
       $data_raw$observation
-      Key: <.group, date>
                 date .group location age_group delay day_of_week day week month
        1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0
        2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
