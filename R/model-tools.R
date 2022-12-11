@@ -314,6 +314,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' @family modeltools
 #' @export
+#' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
@@ -323,16 +324,17 @@ enw_model <- function(model = system.file(
                       ),
                       include = system.file("stan", package = "epinowcast"),
                       compile = TRUE, threads = FALSE, profile = FALSE,
-                      stanc_options = list(), cpp_options = list(),
-                      verbose = TRUE,
-                      ...) {
+                      target_dir = tempdir(), stanc_options = list(),
+                      cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
     message(sprintf("Using model %s.", model))
     message(sprintf("include is %s.", paste(include, collapse = ", ")))
   }
 
   if (!profile) {
-    stan_no_profile <- write_stan_files_no_profile(model, include)
+    stan_no_profile <- write_stan_files_no_profile(
+      model, include, target_dir =  target_dir
+    )
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths
   }
