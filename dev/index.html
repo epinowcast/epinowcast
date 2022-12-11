@@ -189,6 +189,7 @@
 <span>  <span class="fu"><a href="reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">retro_nat_germany</span></span>
 <span><span class="co">#&gt;      reference_date location age_group confirm report_date</span></span>
+<span><span class="co">#&gt;              &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
 <span><span class="co">#&gt;   1:     2021-07-13       DE       00+      21  2021-07-13</span></span>
 <span><span class="co">#&gt;   2:     2021-07-14       DE       00+      22  2021-07-14</span></span>
 <span><span class="co">#&gt;   3:     2021-07-15       DE       00+      28  2021-07-15</span></span>
@@ -206,6 +207,7 @@
 <span>  <span class="fu"><a href="reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>remove_days <span class="op">=</span> <span class="fl">40</span>, include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date location age_group confirm report_date</span></span>
+<span><span class="co">#&gt;             &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
 <span><span class="co">#&gt;  1:     2021-07-13       DE       00+      60  2021-10-01</span></span>
 <span><span class="co">#&gt;  2:     2021-07-14       DE       00+      74  2021-10-01</span></span>
 <span><span class="co">#&gt;  3:     2021-07-15       DE       00+      69  2021-10-01</span></span>
@@ -225,11 +227,14 @@
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
 <span><span class="co">#&gt;                    obs          new_confirm              latest</span></span>
+<span><span class="co">#&gt;                 &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x10]&gt;</span></span>
 <span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference          metareport</span></span>
+<span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;              &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[41x42]&gt; &lt;data.table[41x9]&gt; &lt;data.table[80x12]&gt;</span></span>
-<span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22</span></span></code></pre></div>
+<span><span class="co">#&gt;             metadelay  time snapshots     by groups max_delay   max_date</span></span>
+<span><span class="co">#&gt;                &lt;list&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;  &lt;int&gt;     &lt;num&gt;     &lt;IDat&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;    41        41             1        40 2021-08-22</span></span></code></pre></div>
 <p>Construct a parametric lognormal intercept only model for the date of reference using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix for parametric delay distributions to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
@@ -265,12 +270,12 @@
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 70.7 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 86.2 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 45.3 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 46.6 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 78.5 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 86.4 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; Mean chain execution time: 45.9 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 46.8 seconds.</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="results">Results<a class="anchor" aria-label="anchor" href="#results"></a>
@@ -279,23 +284,33 @@
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span></span>
 <span><span class="co">#&gt;                    obs          new_confirm              latest</span></span>
+<span><span class="co">#&gt;                 &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x10]&gt;</span></span>
 <span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference          metareport</span></span>
+<span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;              &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[41x42]&gt; &lt;data.table[41x9]&gt; &lt;data.table[80x12]&gt;</span></span>
-<span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22</span></span>
-<span><span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[32]&gt; &lt;list[94]&gt; &lt;list[8]&gt;    1000     1.02</span></span>
-<span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
-<span><span class="co">#&gt; 1:                     0                         0             8</span></span>
-<span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                 136                0.136     86.4</span></span></code></pre></div>
+<span><span class="co">#&gt;             metadelay  time snapshots     by groups max_delay   max_date</span></span>
+<span><span class="co">#&gt;                &lt;list&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;  &lt;int&gt;     &lt;num&gt;     &lt;IDat&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;    41        41             1        40 2021-08-22</span></span>
+<span><span class="co">#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          fit</span></span>
+<span><span class="co">#&gt;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       &lt;list&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;CmdStanMCMC&gt;\n  Inherits from: &lt;CmdStanFit&gt;\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    hessian: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    init: function () \n    init_model_methods: function (seed = 0, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    loo: function (variables = "log_lik", r_eff = TRUE, ...) \n    lp: function () \n    metadata: function () \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1472.68 -1480.46 -1483.15 -1481.61 -1475.92 -1473.17 -1 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    sampler_diagnostics_: 7 7 7 7 8 7 8 7 7 7 7 7 7 7 7 7 7 7 7 8 7 7 7 8 7 8 7 8  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL</span></span>
+<span><span class="co">#&gt;          data  fit_args samples max_rhat divergent_transitions</span></span>
+<span><span class="co">#&gt;        &lt;list&gt;    &lt;list&gt;   &lt;int&gt;    &lt;num&gt;                 &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;list[99]&gt; &lt;list[8]&gt;    1000     1.03                     0</span></span>
+<span><span class="co">#&gt;    per_divergent_transitions max_treedepth no_at_max_treedepth</span></span>
+<span><span class="co">#&gt;                        &lt;num&gt;         &lt;num&gt;               &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:                         0             8                 190</span></span>
+<span><span class="co">#&gt;    per_at_max_treedepth run_time</span></span>
+<span><span class="co">#&gt;                   &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                 0.19     46.8</span></span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date report_date .group max_confirm location age_group confirm</span></span>
+<span><span class="co">#&gt;             &lt;IDat&gt;      &lt;IDat&gt;  &lt;num&gt;       &lt;int&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;</span></span>
 <span><span class="co">#&gt;  1:     2021-07-14  2021-08-22      1          72       DE       00+      72</span></span>
 <span><span class="co">#&gt;  2:     2021-07-15  2021-08-22      1          69       DE       00+      69</span></span>
 <span><span class="co">#&gt;  3:     2021-07-16  2021-08-22      1          47       DE       00+      47</span></span>
@@ -306,28 +321,30 @@
 <span><span class="co">#&gt;  8:     2021-07-21  2021-08-22      1          91       DE       00+      91</span></span>
 <span><span class="co">#&gt;  9:     2021-07-22  2021-08-22      1          99       DE       00+      99</span></span>
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
-<span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
-<span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.050     69 0.2225973 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.090     47 0.3224965 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.209     65 0.4555508 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.253     50 0.4992397 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.232     36 0.4964095 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.471     94 0.7194975 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.789     92 0.9441241 1.4826 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.076    100 1.0860034 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.286     87 1.2481033 1.4826 86</span></span>
-<span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
-<span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  69 1.0000466  840.9457  821.2720</span></span>
-<span><span class="co">#&gt;  3:  48 0.9991100 1044.9388  900.7997</span></span>
-<span><span class="co">#&gt;  4:  66 0.9992275  942.2545  957.7864</span></span>
-<span><span class="co">#&gt;  5:  51 0.9987646 1189.1461 1067.9784</span></span>
-<span><span class="co">#&gt;  6:  37 0.9998786 1007.6330 1007.1109</span></span>
-<span><span class="co">#&gt;  7:  96 1.0006028  806.5940  814.1428</span></span>
-<span><span class="co">#&gt;  8:  94 1.0020128 1010.0212  943.4926</span></span>
-<span><span class="co">#&gt;  9: 102 1.0024267 1064.0544 1004.0852</span></span>
-<span><span class="co">#&gt; 10:  90 1.0001226 1004.7848  889.4063</span></span></code></pre></div>
+<span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad    q5</span></span>
+<span><span class="co">#&gt;                 &lt;num&gt; &lt;num&gt;         &lt;num&gt;   &lt;num&gt;  &lt;num&gt;     &lt;num&gt;  &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000    72</span></span>
+<span><span class="co">#&gt;  2:                 1    38             0  69.058     69 0.2582687 0.0000    69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.084     47 0.3115141 0.0000    47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.199     65 0.4578303 0.0000    65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.237     50 0.5010809 0.0000    50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.221     36 0.4943717 0.0000    36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.473     94 0.7333545 0.0000    94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.731     92 0.9140429 1.4826    91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.082    100 1.0716457 1.4826    99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.188     87 1.1661972 1.4826    86</span></span>
+<span><span class="co">#&gt;       q95      rhat  ess_bulk  ess_tail</span></span>
+<span><span class="co">#&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt;  1:    72        NA        NA        NA</span></span>
+<span><span class="co">#&gt;  2:    70 1.0011355  918.9261  889.6518</span></span>
+<span><span class="co">#&gt;  3:    48 0.9986122  983.1341  956.9033</span></span>
+<span><span class="co">#&gt;  4:    66 1.0018708  847.5928  829.2765</span></span>
+<span><span class="co">#&gt;  5:    51 0.9981939  940.7106  982.9728</span></span>
+<span><span class="co">#&gt;  6:    37 1.0003449  964.9386  688.1506</span></span>
+<span><span class="co">#&gt;  7:    96 0.9996765  933.6563  862.0788</span></span>
+<span><span class="co">#&gt;  8:    93 1.0020911 1029.4539 1042.8840</span></span>
+<span><span class="co">#&gt;  9:   102 1.0034394  885.0471  905.0852</span></span>
+<span><span class="co">#&gt; 10:    89 0.9991941 1092.2618 1028.0614</span></span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
@@ -348,6 +365,7 @@
 <span>  .SDcols <span class="op">=</span> <span class="va">cols</span>, by <span class="op">=</span> <span class="st">".draw"</span></span>
 <span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sample</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;        reference_date report_date .group max_confirm location age_group confirm</span></span>
+<span><span class="co">#&gt;                &lt;IDat&gt;      &lt;IDat&gt;  &lt;num&gt;       &lt;int&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;</span></span>
 <span><span class="co">#&gt;     1:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
 <span><span class="co">#&gt;     2:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
 <span><span class="co">#&gt;     3:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
@@ -360,17 +378,18 @@
 <span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    436</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    435</span></span>
+<span><span class="co">#&gt;                    &lt;num&gt; &lt;num&gt;         &lt;num&gt;  &lt;int&gt;      &lt;int&gt; &lt;int&gt;  &lt;num&gt;</span></span>
+<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    434</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    433</span></span>
 <span><span class="co">#&gt;     3:                 1    33             0      1          3     3    434</span></span>
 <span><span class="co">#&gt;     4:                 1    33             0      1          4     4    435</span></span>
-<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    434</span></span>
+<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    435</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2239</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   1936</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2233</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2170</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2115</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2302</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2496</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2143</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2136</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   1983</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>

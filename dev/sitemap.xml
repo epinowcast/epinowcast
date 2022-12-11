@@ -31,6 +31,9 @@
     <loc>package.epinowcast.org/dev/news/index.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/add_pmfs.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/as_string_formula.html</loc>
   </url>
   <url>
@@ -59,6 +62,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/convert_cmdstan_to_rstan.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/convolution_matrix.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_add_cumulative_membership.html</loc>
@@ -230,6 +236,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/expose_stan_fns.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/extract_sparse_matrix.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/germany_covid19_hosp.html</loc>
