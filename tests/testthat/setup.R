@@ -6,6 +6,10 @@ if (not_on_cran() & FALSE) {
   )
 }
 
+# Set data.table print options for compatibility
+options(datatable.print.class = FALSE)
+options(datatable.print.keys = FALSE)
+
 # Toy example data
 toy_incidence <- data.table::data.table(
   reference_date = data.table::as.IDate("2021-10-01"),

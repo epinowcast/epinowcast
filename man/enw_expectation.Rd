@@ -40,7 +40,9 @@ Describes the weighting to apply to past and current latent expected
 observations (from most recent to least). This can be used both to convolve
 based on some assumed reporting delay and to rescale observations (by
 multiplying a probability mass function by some fraction) to account
-ascertainment etc.}
+ascertainment etc. A list of PMFs can be provided to allow for time-varying
+PMFs. This should be the same length as the modelled time period plus the
+length of the generation time if supplied.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 

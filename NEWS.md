@@ -11,12 +11,13 @@ This is an experimental release that adds a large number of new features that re
 a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.
  - #151 also corrects a subtle error previously underlying the addition of `week`s and `month`s as metadata. The intent of those columns was to capture time since start of the series, denominated in weeks and months. The previous implementation used the `lubridate::week` and `lubridate::month` functions; however, those return the week- or month-of-year (1-53 or 1-12). That approach suffices if the data do not cross a year boundary, but fails when they do.
  - #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`.
- - Changed the style of using `match.arg` for validating inputs. Briefly, the preference is now to define options via function arguments and validate with automatic `match.arg` idiom with corresponding enumerated documentation of the options. For this idiom, the first item in the definition is the default. This approach only applies to string-based arguments; different types of arguments cannot be matched this way, nor can arguments that allow for vector-valued options (e.g., if `somearg = c("option1", "option2")` were a legal argument indicating to use both options). See #162 by @pearsonca addressing issue #156 by @Bisaloo
+ - Changed the style of using `match.arg` for validating inputs. Briefly, the preference is now to define options via function arguments and validate with automatic `match.arg` idiom with corresponding enumerated documentation of the options. For this idiom, the first item in the definition is the default. This approach only applies to string-based arguments; different types of arguments cannot be matched this way, nor can arguments that allow for vector-valued options (e.g., if `somearg = c("option1", "option2")` were a legal argument indicating to use both options). See #162 by @pearsonca addressing issue #156 by @Bisaloo.
 - Refined the use of data ordering throughout the preprocessing functions. See #147 by @seabbs.
 - Skipped tests that use `cmdstan` locally to improve the developer/contributor experience. See #147 by @seabbs and @adrian-lison.
 - Added a basic simulator function for missing reference data. See #147 by @seabbs and @adrian-lison.
 - Added support for right hand side interactions as syntax sugar for random effects. This allows the specification of, for example, independent random effects by day for each strata of another variable. See #169 by @seabbs.
 - Added support for passing `cpp_options` to `cmdstanr::cmdstan_model()`. See #182 by @seabbs.
+- Add functions for combining probability mass functions and constructing convolution matrices. See #183 by @seabbs.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
@@ -29,7 +30,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Added support for modelling missing reference dates to the likelihood. See #147 by @seabbs and @adrian-lison.
 - Added additional functionality to `delay_group_lmpf` to support modelling observations missing reference dates. Also updated the generated quantities to support this mode. See #147 by @seabbs and @adrian-lison based on #64 by @adrian-lison.
 - Added a flexible expectation process on the growth rate scale. The default expectation model has been updated to a group-wise random walk on the growth rate. See #152 by @seabbs and @adrian-lison.
-- Added a deterministic  renewal equation, and latent reporting process. See #152 by @seabbs and @adrian-lison.
+- Added a deterministic  renewal equation, and latent reporting process. See #152 and #183 by @seabbs and @adrian-lison.
 - Added support for no intercept in the expectation model and more general formula support to enable this as a feature in other modules going forward. See #170 by @seabbs.
 
 ## Documentation
