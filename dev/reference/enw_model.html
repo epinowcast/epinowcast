@@ -86,6 +86,7 @@
 <span>  compile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  threads <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  profile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  target_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  stanc_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cpp_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -120,6 +121,13 @@ and <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
 <dt>profile</dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should the model be profiled?
 For more on profiling see the <a href="https://mc-stan.org/cmdstanr/articles/profiling.html" class="external-link"><code>cmdstanr</code> documentation</a>. # nolint</p></dd>
+
+
+<dt>target_dir</dt>
+<dd><p>The path to a directory in which the manipulated .stan
+files without profiling statements should be stored. To avoid overriding of
+the original .stan files, this should be different from the directory of the
+original model and the <code>include_paths</code>.</p></dd>
 
 
 <dt>stanc_options</dt>
