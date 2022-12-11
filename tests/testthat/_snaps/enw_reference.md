@@ -182,22 +182,19 @@
       
       $priors
                   variable
-                    <char>
       1:     refp_mean_int
       2:       refp_sd_int
       3: refp_mean_beta_sd
       4:   refp_sd_beta_sd
                                                             description
-                                                                 <char>
       1:         Log mean intercept for parametric reference date delay
       2: Log standard deviation for the parametric reference date delay
       3:    Standard deviation of scaled pooled parametric mean effects
       4:      Standard deviation of scaled pooled parametric sd effects
-                  distribution  mean    sd
-                        <char> <num> <num>
-      1:                Normal   1.0     1
-      2: Zero truncated normal   0.5     1
-      3: Zero truncated normal   0.0     1
-      4: Zero truncated normal   0.0     1
+                  distribution mean sd
+      1:                Normal  1.0  1
+      2: Zero truncated normal  0.5  1
+      3: Zero truncated normal  0.0  1
+      4: Zero truncated normal  0.0  1
       
 

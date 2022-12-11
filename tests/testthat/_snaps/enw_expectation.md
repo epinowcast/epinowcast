@@ -19,96 +19,94 @@
       $data_raw
       $data_raw$r
       Key: <.group, date>
-                date .group location age_group delay day_of_week   day  week month
-              <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
-       1: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0
-       2: 2021-07-15      1       DE       00+     0    Thursday     2     0     0
-       3: 2021-07-16      1       DE       00+     0      Friday     3     0     0
-       4: 2021-07-17      1       DE       00+     0    Saturday     4     0     0
-       5: 2021-07-18      1       DE       00+     0      Sunday     5     0     0
-       6: 2021-07-19      1       DE       00+     0      Monday     6     0     0
-       7: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0
-       8: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0
-       9: 2021-07-22      1       DE       00+     0    Thursday     9     1     0
-      10: 2021-07-23      1       DE       00+     0      Friday    10     1     0
-      11: 2021-07-24      1       DE       00+     0    Saturday    11     1     0
-      12: 2021-07-25      1       DE       00+     0      Sunday    12     1     0
-      13: 2021-07-26      1       DE       00+     0      Monday    13     1     0
-      14: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0
-      15: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0
-      16: 2021-07-29      1       DE       00+     0    Thursday    16     2     0
-      17: 2021-07-30      1       DE       00+     0      Friday    17     2     0
-      18: 2021-07-31      1       DE       00+     0    Saturday    18     2     0
-      19: 2021-08-01      1       DE       00+     0      Sunday    19     2     1
-      20: 2021-08-02      1       DE       00+     0      Monday    20     2     1
-      21: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1
-      22: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1
-      23: 2021-08-05      1       DE       00+     0    Thursday    23     3     1
-      24: 2021-08-06      1       DE       00+     0      Friday    24     3     1
-      25: 2021-08-07      1       DE       00+     0    Saturday    25     3     1
-      26: 2021-08-08      1       DE       00+     0      Sunday    26     3     1
-      27: 2021-08-09      1       DE       00+     0      Monday    27     3     1
-      28: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1
-      29: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1
-      30: 2021-08-12      1       DE       00+     0    Thursday    30     4     1
-      31: 2021-08-13      1       DE       00+     0      Friday    31     4     1
-      32: 2021-08-14      1       DE       00+     0    Saturday    32     4     1
-      33: 2021-08-15      1       DE       00+     0      Sunday    33     4     1
-      34: 2021-08-16      1       DE       00+     0      Monday    34     4     1
-      35: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1
-      36: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1
-      37: 2021-08-19      1       DE       00+     0    Thursday    37     5     1
-      38: 2021-08-20      1       DE       00+     0      Friday    38     5     1
-      39: 2021-08-21      1       DE       00+     0    Saturday    39     5     1
-      40: 2021-08-22      1       DE       00+     0      Sunday    40     5     1
-                date .group location age_group delay day_of_week   day  week month
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       3: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       4: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       5: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       6: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       7: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       8: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+       9: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      10: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      11: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      12: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      13: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      14: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      15: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      16: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      17: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      18: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      19: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      20: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      21: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      22: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      23: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      24: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      25: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      26: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      27: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      28: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      29: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      30: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      31: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      32: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      33: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      34: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      35: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      36: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      37: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      38: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      39: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      40: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
       
       $data_raw$observation
       Key: <.group, date>
-                date .group location age_group delay day_of_week   day  week month
-              <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
-       1: 2021-07-13      1       DE       00+     0     Tuesday     0     0     0
-       2: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0
-       3: 2021-07-15      1       DE       00+     0    Thursday     2     0     0
-       4: 2021-07-16      1       DE       00+     0      Friday     3     0     0
-       5: 2021-07-17      1       DE       00+     0    Saturday     4     0     0
-       6: 2021-07-18      1       DE       00+     0      Sunday     5     0     0
-       7: 2021-07-19      1       DE       00+     0      Monday     6     0     0
-       8: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0
-       9: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0
-      10: 2021-07-22      1       DE       00+     0    Thursday     9     1     0
-      11: 2021-07-23      1       DE       00+     0      Friday    10     1     0
-      12: 2021-07-24      1       DE       00+     0    Saturday    11     1     0
-      13: 2021-07-25      1       DE       00+     0      Sunday    12     1     0
-      14: 2021-07-26      1       DE       00+     0      Monday    13     1     0
-      15: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0
-      16: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0
-      17: 2021-07-29      1       DE       00+     0    Thursday    16     2     0
-      18: 2021-07-30      1       DE       00+     0      Friday    17     2     0
-      19: 2021-07-31      1       DE       00+     0    Saturday    18     2     0
-      20: 2021-08-01      1       DE       00+     0      Sunday    19     2     1
-      21: 2021-08-02      1       DE       00+     0      Monday    20     2     1
-      22: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1
-      23: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1
-      24: 2021-08-05      1       DE       00+     0    Thursday    23     3     1
-      25: 2021-08-06      1       DE       00+     0      Friday    24     3     1
-      26: 2021-08-07      1       DE       00+     0    Saturday    25     3     1
-      27: 2021-08-08      1       DE       00+     0      Sunday    26     3     1
-      28: 2021-08-09      1       DE       00+     0      Monday    27     3     1
-      29: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1
-      30: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1
-      31: 2021-08-12      1       DE       00+     0    Thursday    30     4     1
-      32: 2021-08-13      1       DE       00+     0      Friday    31     4     1
-      33: 2021-08-14      1       DE       00+     0    Saturday    32     4     1
-      34: 2021-08-15      1       DE       00+     0      Sunday    33     4     1
-      35: 2021-08-16      1       DE       00+     0      Monday    34     4     1
-      36: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1
-      37: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1
-      38: 2021-08-19      1       DE       00+     0    Thursday    37     5     1
-      39: 2021-08-20      1       DE       00+     0      Friday    38     5     1
-      40: 2021-08-21      1       DE       00+     0    Saturday    39     5     1
-      41: 2021-08-22      1       DE       00+     0      Sunday    40     5     1
-                date .group location age_group delay day_of_week   day  week month
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0
+       2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       4: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       7: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+      10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      11: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      14: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      18: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      21: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      25: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      28: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      32: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      35: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      39: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
       
       
       $data
@@ -551,23 +549,20 @@
       
       $priors
                   variable dimension
-                    <char>     <num>
       1:        expr_r_int         1
       2:      expr_beta_sd         1
       3: expr_lelatent_int         1
       4:      expl_beta_sd         1
                                                                                 description
-                                                                                     <char>
       1:                                                   Intercept of the log growth rate
       2:                        Standard deviation of scaled pooled log growth rate effects
       3: Intercept for initial log observations (ordered by group and then\n          time)
       4:                        Standard deviation of scaled pooled log growth rate effects
-                  distribution  mean    sd
-                        <char> <num> <num>
-      1:                Normal   0.0   0.2
-      2: Zero truncated normal   0.0   1.0
-      3:                Normal   4.1   1.0
-      4: Zero truncated normal   0.0   1.0
+                  distribution mean  sd
+      1:                Normal  0.0 0.2
+      2: Zero truncated normal  0.0 1.0
+      3:                Normal  4.1 1.0
+      4: Zero truncated normal  0.0 1.0
       
 
 # enw_expectation supports custom expectation models
@@ -588,96 +583,94 @@
       $data_raw
       $data_raw$r
       Key: <.group, date>
-                date .group location age_group delay day_of_week   day  week month
-              <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
-       1: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0
-       2: 2021-07-15      1       DE       00+     0    Thursday     2     0     0
-       3: 2021-07-16      1       DE       00+     0      Friday     3     0     0
-       4: 2021-07-17      1       DE       00+     0    Saturday     4     0     0
-       5: 2021-07-18      1       DE       00+     0      Sunday     5     0     0
-       6: 2021-07-19      1       DE       00+     0      Monday     6     0     0
-       7: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0
-       8: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0
-       9: 2021-07-22      1       DE       00+     0    Thursday     9     1     0
-      10: 2021-07-23      1       DE       00+     0      Friday    10     1     0
-      11: 2021-07-24      1       DE       00+     0    Saturday    11     1     0
-      12: 2021-07-25      1       DE       00+     0      Sunday    12     1     0
-      13: 2021-07-26      1       DE       00+     0      Monday    13     1     0
-      14: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0
-      15: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0
-      16: 2021-07-29      1       DE       00+     0    Thursday    16     2     0
-      17: 2021-07-30      1       DE       00+     0      Friday    17     2     0
-      18: 2021-07-31      1       DE       00+     0    Saturday    18     2     0
-      19: 2021-08-01      1       DE       00+     0      Sunday    19     2     1
-      20: 2021-08-02      1       DE       00+     0      Monday    20     2     1
-      21: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1
-      22: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1
-      23: 2021-08-05      1       DE       00+     0    Thursday    23     3     1
-      24: 2021-08-06      1       DE       00+     0      Friday    24     3     1
-      25: 2021-08-07      1       DE       00+     0    Saturday    25     3     1
-      26: 2021-08-08      1       DE       00+     0      Sunday    26     3     1
-      27: 2021-08-09      1       DE       00+     0      Monday    27     3     1
-      28: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1
-      29: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1
-      30: 2021-08-12      1       DE       00+     0    Thursday    30     4     1
-      31: 2021-08-13      1       DE       00+     0      Friday    31     4     1
-      32: 2021-08-14      1       DE       00+     0    Saturday    32     4     1
-      33: 2021-08-15      1       DE       00+     0      Sunday    33     4     1
-      34: 2021-08-16      1       DE       00+     0      Monday    34     4     1
-      35: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1
-      36: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1
-      37: 2021-08-19      1       DE       00+     0    Thursday    37     5     1
-      38: 2021-08-20      1       DE       00+     0      Friday    38     5     1
-      39: 2021-08-21      1       DE       00+     0    Saturday    39     5     1
-      40: 2021-08-22      1       DE       00+     0      Sunday    40     5     1
-                date .group location age_group delay day_of_week   day  week month
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       3: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       4: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       5: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       6: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       7: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       8: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+       9: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      10: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      11: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      12: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      13: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      14: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      15: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      16: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      17: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      18: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      19: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      20: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      21: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      22: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      23: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      24: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      25: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      26: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      27: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      28: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      29: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      30: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      31: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      32: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      33: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      34: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      35: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      36: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      37: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      38: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      39: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      40: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
       
       $data_raw$observation
       Key: <.group, date>
-                date .group location age_group delay day_of_week   day  week month
-              <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
-       1: 2021-07-13      1       DE       00+     0     Tuesday     0     0     0
-       2: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0
-       3: 2021-07-15      1       DE       00+     0    Thursday     2     0     0
-       4: 2021-07-16      1       DE       00+     0      Friday     3     0     0
-       5: 2021-07-17      1       DE       00+     0    Saturday     4     0     0
-       6: 2021-07-18      1       DE       00+     0      Sunday     5     0     0
-       7: 2021-07-19      1       DE       00+     0      Monday     6     0     0
-       8: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0
-       9: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0
-      10: 2021-07-22      1       DE       00+     0    Thursday     9     1     0
-      11: 2021-07-23      1       DE       00+     0      Friday    10     1     0
-      12: 2021-07-24      1       DE       00+     0    Saturday    11     1     0
-      13: 2021-07-25      1       DE       00+     0      Sunday    12     1     0
-      14: 2021-07-26      1       DE       00+     0      Monday    13     1     0
-      15: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0
-      16: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0
-      17: 2021-07-29      1       DE       00+     0    Thursday    16     2     0
-      18: 2021-07-30      1       DE       00+     0      Friday    17     2     0
-      19: 2021-07-31      1       DE       00+     0    Saturday    18     2     0
-      20: 2021-08-01      1       DE       00+     0      Sunday    19     2     1
-      21: 2021-08-02      1       DE       00+     0      Monday    20     2     1
-      22: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1
-      23: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1
-      24: 2021-08-05      1       DE       00+     0    Thursday    23     3     1
-      25: 2021-08-06      1       DE       00+     0      Friday    24     3     1
-      26: 2021-08-07      1       DE       00+     0    Saturday    25     3     1
-      27: 2021-08-08      1       DE       00+     0      Sunday    26     3     1
-      28: 2021-08-09      1       DE       00+     0      Monday    27     3     1
-      29: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1
-      30: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1
-      31: 2021-08-12      1       DE       00+     0    Thursday    30     4     1
-      32: 2021-08-13      1       DE       00+     0      Friday    31     4     1
-      33: 2021-08-14      1       DE       00+     0    Saturday    32     4     1
-      34: 2021-08-15      1       DE       00+     0      Sunday    33     4     1
-      35: 2021-08-16      1       DE       00+     0      Monday    34     4     1
-      36: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1
-      37: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1
-      38: 2021-08-19      1       DE       00+     0    Thursday    37     5     1
-      39: 2021-08-20      1       DE       00+     0      Friday    38     5     1
-      40: 2021-08-21      1       DE       00+     0    Saturday    39     5     1
-      41: 2021-08-22      1       DE       00+     0      Sunday    40     5     1
-                date .group location age_group delay day_of_week   day  week month
+                date .group location age_group delay day_of_week day week month
+       1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0
+       2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0
+       3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0
+       4: 2021-07-16      1       DE       00+     0      Friday   3    0     0
+       5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0
+       6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0
+       7: 2021-07-19      1       DE       00+     0      Monday   6    0     0
+       8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0
+       9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0
+      10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0
+      11: 2021-07-23      1       DE       00+     0      Friday  10    1     0
+      12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0
+      13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0
+      14: 2021-07-26      1       DE       00+     0      Monday  13    1     0
+      15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0
+      16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0
+      17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0
+      18: 2021-07-30      1       DE       00+     0      Friday  17    2     0
+      19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0
+      20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1
+      21: 2021-08-02      1       DE       00+     0      Monday  20    2     1
+      22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1
+      23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1
+      24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1
+      25: 2021-08-06      1       DE       00+     0      Friday  24    3     1
+      26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1
+      27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1
+      28: 2021-08-09      1       DE       00+     0      Monday  27    3     1
+      29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1
+      30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1
+      31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1
+      32: 2021-08-13      1       DE       00+     0      Friday  31    4     1
+      33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1
+      34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1
+      35: 2021-08-16      1       DE       00+     0      Monday  34    4     1
+      36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1
+      37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1
+      38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1
+      39: 2021-08-20      1       DE       00+     0      Friday  38    5     1
+      40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1
+      41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1
+                date .group location age_group delay day_of_week day week month
       
       
       $data
@@ -971,22 +964,19 @@
       
       $priors
                   variable dimension
-                    <char>     <num>
       1:        expr_r_int         1
       2:      expr_beta_sd         1
       3: expr_lelatent_int         1
       4:      expl_beta_sd         1
                                                                                 description
-                                                                                     <char>
       1:                                                   Intercept of the log growth rate
       2:                        Standard deviation of scaled pooled log growth rate effects
       3: Intercept for initial log observations (ordered by group and then\n          time)
       4:                        Standard deviation of scaled pooled log growth rate effects
-                  distribution  mean    sd
-                        <char> <num> <num>
-      1:                Normal   0.0   0.2
-      2: Zero truncated normal   0.0   1.0
-      3:                Normal   4.1   1.0
-      4: Zero truncated normal   0.0   1.0
+                  distribution mean  sd
+      1:                Normal  0.0 0.2
+      2: Zero truncated normal  0.0 1.0
+      3:                Normal  4.1 1.0
+      4: Zero truncated normal  0.0 1.0
       
 

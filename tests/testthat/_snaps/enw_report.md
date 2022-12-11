@@ -76,10 +76,8 @@
       
       $priors
             variable                                             description
-              <char>                                                  <char>
       1: rep_beta_sd Standard deviation of scaled pooled report date effects
-                  distribution  mean    sd
-                        <char> <num> <num>
-      1: Zero truncated normal     0     1
+                  distribution mean sd
+      1: Zero truncated normal    0  1
       
 

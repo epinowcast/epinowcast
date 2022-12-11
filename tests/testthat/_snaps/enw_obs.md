@@ -97,10 +97,8 @@
       
       $priors
          variable                                              description
-           <char>                                                   <char>
       1: sqrt_phi One over the square root of the reporting overdispersion
-                  distribution  mean    sd
-                        <char> <num> <num>
-      1: Zero truncated normal     0     1
+                  distribution mean sd
+      1: Zero truncated normal    0  1
       
 
