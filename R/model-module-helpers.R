@@ -178,16 +178,17 @@ add_pmfs <- function(pmfs) {
   if (!is.list(pmfs)) {
     return(pmfs)
   }
-  conv <- Reduce(x = pmfs, f = function(conv, pmf) {
-    lc <- length(conv)
-    wd <- seq_len(lc) - 1
-    proc <- numeric(lc + length(pmf))
-    for (j in seq_along(pmf)) {
-      proc[j + wd] <- proc[j + wd] + pmf[j] * conv
-    }
-    proc
-  })
-  conv
+  return(
+    Reduce(x = pmfs, f = function(conv, pmf) {
+      lc <- length(conv)
+      wd <- seq_len(lc) - 1
+      proc <- numeric(lc + length(pmf))
+      for (j in seq_along(pmf)) {
+        proc[j + wd] <- proc[j + wd] + pmf[j] * conv
+      }
+      proc
+    })
+  )
 }
 
 #' Extract sparse matrix elements
