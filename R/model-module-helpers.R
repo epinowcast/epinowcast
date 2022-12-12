@@ -165,7 +165,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
 #' # Analytical convolution of PMFs
 #' conv_pmf <- add_pmfs(list(xpmf, ypmf))
 #' conv_cdf <- cumsum(conv_pmf)
-#'# Empirical convolution of PMFs
+#' # Empirical convolution of PMFs
 #' cdf <- ecdf(z)(0:42)
 #' # Compare sampled and analytical CDFs
 #' plot(conv_cdf)
@@ -178,23 +178,16 @@ add_pmfs <- function(pmfs) {
   if (!is.list(pmfs)) {
     return(pmfs)
   }
-  lpmfs <- purrr::map_dbl(pmfs, length)
-  l <- sum(lpmfs)
-  conv <- rep(0, l)
-  conv[1:lpmfs[1]] <- pmfs[[1]]
-  for (s in 2:d) {
-    # P(Z = z) = sum_over_x(P(X = x) * P(Y = z - x)) # nolint
-    proc <- rep(0, l)
-    for (i in 1:l) {
-      for (j in 1:lpmfs[s]) {
-        if (i >= j) {
-          proc[i] <- proc[i] + pmfs[[s]][j] * conv[i - j + 1]
-        }
-      }
+  conv <- Reduce(x = pmfs, f = function(conv, pmf) {
+    lc <- length(conv)
+    wd <- seq_len(lc) - 1
+    proc <- numeric(lc + length(pmf))
+    for (j in seq_along(pmf)) {
+      proc[j + wd] <- proc[j + wd] + pmf[j] * conv
     }
-    conv <- proc
-  }
-  return(conv)
+    proc
+  })
+  conv
 }
 
 #' Extract sparse matrix elements
