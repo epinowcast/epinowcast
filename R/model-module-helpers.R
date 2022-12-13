@@ -178,6 +178,7 @@ add_pmfs <- function(pmfs) {
   if (!is.list(pmfs)) {
     return(pmfs)
   }
+  # P(Z = z) = sum_over_x(P(X = x) * P(Y = z - x)) # nolint
   return(
     Reduce(x = pmfs, f = function(conv, pmf) {
       lc <- length(conv)
@@ -186,7 +187,7 @@ add_pmfs <- function(pmfs) {
       for (j in seq_along(pmf)) {
         proc[j + wd] <- proc[j + wd] + pmf[j] * conv
       }
-      proc
+      return(proc)
     })
   )
 }
