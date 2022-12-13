@@ -19,6 +19,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Added support for passing `cpp_options` to `cmdstanr::cmdstan_model()`. See #182 by @seabbs.
 - Add functions for combining probability mass functions and constructing convolution matrices. See #183 by @seabbs.
 - Add a pass through from `enw_model()` to `write_stan_files_no_profile()` for the `target_dir` argument. This allows users to compile the model once and then share the compiled model across sessions rather than having to recompile each time the temporary directory is cleared. See #185 by @seabbs.
+- Added `add_pmfs()`, to sum probability mass functions into a new probability mass function. Initial implementation by @seabbs, implemented by @pratikunterwegs in #187, following refactor suggested in issue #186 by @pearsonca.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
