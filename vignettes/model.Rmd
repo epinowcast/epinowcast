@@ -19,7 +19,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-In the following sections we provide methodological and implementation details for the nowcasting framework implemented in `epinowcast`. Our approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr] as well as a range of other model extensions.
+#TODO: Generalise introduction to stress modularity
+#TODO: Give a summary on currently supported modules and their origins
+#TODO: Mention that in future versions of the package this will be more flexible and new modules will allow for an even greater range of models to be fit.
+#TODO: Summarise regression like structure
+#TODO: Simplify the model to describe the default structure first.
+#TODO: Add a basic schematic
+
+In the following sections we provide methodological and implementation details for the modelling framework implemented in `epinowcast`. Our approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr] as well as a range of other model extensions.
 
 # Decomposition into expected final notifications and report delay components
 
@@ -37,7 +44,9 @@ An alternative approach, not explored here, would be to consider each $n_{g,t,d}
 
 # Expected final notifications
 
-Here we follow the approach of Günther et al.[@gunther2021] and specify the model for expected final notifications as a first order random walk. This model can in principle be any model such as a more complex time-series approach, a Gaussian process, or a mechanistic or semi-mechanistic compartmental model. Extending the flexibility of this model is an area of further work as is evaluating the benefits and tradeoffs of more complex approaches.
+## Default model
+
+Here we follow the approach of Günther et al.[@gunther2021] and specify the model for expected final notifications as a first order random walk. This simple model is highly flexible and so a good fit for nowcasting problems where the data is highly informative.
 
 \begin{align}
   \log (\lambda_{g,t}) &\sim \text{Normal}\left(\log (\lambda_{g,t-1}) , \sigma^{\lambda}_{g} \right) \\
@@ -46,15 +55,59 @@ Here we follow the approach of Günther et al.[@gunther2021] and specify the mod
 
 where $N_{g0}$, the first time point for expected observations in dataset $d$, is assumed to have been completely observed.
 
+## Generalise model
+
+In settings where data is sparse or where users want to understand the underlying generative process our flexible default model is likely not a good fit. In these settings our generic model offers a range of options that are context specific
+
+## Instantaneous reproduction number/growth rate
+
+We model the instantaneous reproduction number ($R_t$) on the log scale as a 
+as a random walk with a normal prior. When the generation time is fixed to be a day this can be interpreted as the instantaneous growth rate ($r_t$) defined as the difference in the log of the expected number of final notifications between time $t$ and $t-1$.
+
+\begin{equation}
+  \text{log} (R_{g,t}) = r_0 + \beta_{f,r} X_{r} + \beta_{r,r} Z_{r}
+\end{equation}
+
+where $r_0$ is the optional intercept, $X_{r}$ is the design matrix for fixed effects ($\beta_{f,r}$), and $Z_{r}$ is the design matrix for random effects ($\beta_{r,r}$. Within this specification the default model can be specified as a random effect on the day with no intercept.
+
+## Latent infections/notifications
+
+We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process. This model is a generalisation of the default model and can be used to model the expected number of latent notifications in a setting where the generation time is not fixed to be a day. An instantaneous daily growth rate model can be recovered by setting the generation time to be fixed at 1 day. The model is defined as follows,
+
+\begin{align}
+  \lambda^l_{g,t} &\sim \text{LogNormal}\left(\mu^{l}_{g,t}, \sigma^{l}_{g,t} \right),\ t \leq P \\
+  \lambda^l_{g,t} &= R_{g,t} \sum_{p = 1}^{P} G_{g}\left(p, t - p \right)  \lambda^l_{g, t-p},\ t \gt P  
+\end{align}
+
+## Latent reporting delay and ascertainment
+
+\begin{align}
+  \lambda_{g,t} &= \nu_{g,t} \sum_{\tau = 0}^{L - 1} F_{g}\left(\tau + 1, t - \tau \right)  \lambda^l_{g, t - \tau} \\
+  \nu_{g,t} &= \nu_0 + \beta_{f,\nu} X_{\nu} + \beta_{r,\nu} Z_{\nu}
+\end{align}
+
+
 # Delay distribution
 
-Again following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{g,t,d}$) using a discrete-time logistic hazard model
+## Default model
+
+In our default model we consider the delay distribution to follow a discretised log-normal as follows, 
+
+\begin{align}
+  p_{g,t,d} &\sim \text{LogNormal} \left(\mu^d, \sigma^d \right) \\
+  \mu^d &\sim \text{Normal} \left(0, 1 \right) \\
+  \sigma^d &\sim \text{Half-Normal} \left(0, 1 \right)
+\end{align}
+
+## Generalised model
+
+We generalise this model in order to support a range of delay distributions and reporting processes following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{g,t,d}$) using a discrete-time logistic hazard model
 $$
 h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{g,t,d}\right)
 $$
 but we extend this model to decompose $W_{g,t,d}$ into 3 components: hazard derived from a parametric delay distribution ($\gamma_{g,t,d}$) dependent on covariates at the time of reference, hazard not derived from a parametric distribution ($\delta_{g,t,d}$) dependent on covariates at the time of reference, and hazard dependent on covariates referenced to the time of report ($\epsilon_{g,t,d}$).
 
-The first component ($\gamma_{g,t,d}$) we estimate what would be the probability of reporting $p^{\prime}_{g,t,d}$ at a given time if it followed a parametric distribution, here implemented using a discretised log normal (with other distributions being available) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms),
+The first component ($\gamma_{g,t,d}$) we estimate what would be the probability of reporting $p^{\prime}_{g,t,d}$ at a given time if it followed a parametric distribution, here implemented using a discretised log normal (a range of other distributions are supported by the package) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms),
 
 \begin{align}
   p^{\prime}_{g,t,d} &\sim \text{LogNormal} \left(\mu_{g,t}, \upsilon_{g,t} \right) \\
