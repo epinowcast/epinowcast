@@ -55,7 +55,7 @@ Here we follow the approach of Günther et al.[@gunther2021] and specify the mod
 
 where $N_{g0}$, the first time point for expected observations in dataset $d$, is assumed to have been completely observed.
 
-## Generalise model
+## Generalised model
 
 In settings where data is sparse or where users want to understand the underlying generative process our flexible default model is likely not a good fit. In these settings our generic model offers a range of options that are context specific
 
