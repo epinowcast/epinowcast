@@ -505,6 +505,10 @@ enw_delay_filter <- function(obs, max_delay) {
     ],
     by = c("reference_date", ".group")
   ]
+  empircal_max_delay <- obs[, max(delay, na.rm = TRUE)]
+  if (empircal_max_delay < (max_delay - 1)) {
+    warning("Empirical max delay is less than the specified max delay.")
+  }
   return(obs[])
 }
 

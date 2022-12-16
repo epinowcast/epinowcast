@@ -128,7 +128,7 @@ epinowcast <- function(data,
                          family = "negbin", data = data
                        ),
                        fit = epinowcast::enw_fit_opts(
-                         fit = epinowcast::enw_sample,
+                         sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE,
                          likelihood = TRUE, debug = FALSE,
                          output_loglik = FALSE
