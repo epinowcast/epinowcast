@@ -29,6 +29,15 @@ due to the use of simpler methods like truncation. While the package has
 been designed with epidemiological applications in mind, it could be
 applied to any set of right-truncated time-series count data.
 
+## Getting started and learning more
+
+This README is a good place to get started with `epinowcast`, in particular the following installation and quick start sections. As you make use of the package, or if your problem requires a richer feature set than presented here, we also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.
+
+- [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies making use of the package.
+- [Organisation website](https://www.epinowcast.org/): This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.
+- [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package developemnt and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
+- [Community forum](https://community.epinowcast.org/): Our community forum is where development of tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
+
 ## Installation
 
 ### Installing the package
