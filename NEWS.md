@@ -20,6 +20,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Add a functon, `convolution_matrix()` for constructing convolution matrices. See #183 by @seabbs.
 - Add a pass through from `enw_model()` to `write_stan_files_no_profile()` for the `target_dir` argument. This allows users to compile the model once and then share the compiled model across sessions rather than having to recompile each time the temporary directory is cleared. See #185 by @seabbs.
 - Added `add_pmfs()`, to sum probability mass functions into a new probability mass function. Initial implementation by @seabbs in #183, refactored by @pratikunterwegs in #187, following a suggestion in issue #186 by @pearsonca.
+- Added a warning when the observed empirical maximum delay is less than the specified maximum delay. See #190 by @seabbs.
 
 ## Model
 - Added support for parametric log-logistic delay distributions. See #128 by @adrian-lison.
