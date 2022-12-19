@@ -39,7 +39,8 @@ convert_cmdstan_to_rstan <- function(functions) {
   # replace array syntax
   #   case 1a: array[] real x -> real[] x
   functions <- gsub(
-    "array\\[(,?)\\] ([^ ]*) ([a-z_]+)", "\\2[\\1] \\3", functions  )
+    "array\\[(,?)\\] ([^ ]*) ([a-z_]+)", "\\2[\\1] \\3", functions
+  )
   #   case 1b: array[n] real x -> real x[n], including the nested case
   functions <- gsub(
     "array\\[([a-z0-9_]+(\\[[^]]*\\])?)\\] ([^ ]*) ([a-z_]+)",
