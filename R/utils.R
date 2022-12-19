@@ -37,9 +37,13 @@ convert_cmdstan_to_rstan <- function(functions) {
   # replace lupmf with lpmf
   functions <- gsub("_lupmf", "_lpmf", functions)
   # replace array syntax
-  #   case 1: array[] real x -> real[] x
+  #   case 1a: array[] real x -> real[] x
   functions <- gsub(
-    "array\\[(,?)\\] (.*) ([a-z_]+)", "\\2[\\1] \\3", functions
+    "array\\[(,?)\\] ([^ ]*) ([a-z_]+)", "\\2[\\1] \\3", functions  )
+  #   case 1b: array[n] real x -> real x[n], including the nexted case
+  functions <- gsub(
+    "array\\[([a-z0-9_]+(\\[[^]]*\\])?)\\] ([^ ]*) ([a-z_]+)",
+    "\\3 \\4[\\1]", functions
   )
   #   case 2: array[n] real x -> real x[n]
   functions <- gsub(
