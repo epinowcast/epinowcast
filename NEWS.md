@@ -41,6 +41,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
 - Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
 - Update the model definition vignette to include the missing reference date model. See #147 by @seabbs and @adrian-lison.
+- Added the use of an expectation model to the "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany" vignette. See #193 by @seabbs.
 
 ## Bugs
 

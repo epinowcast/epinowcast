@@ -42,7 +42,7 @@ data {
   // ---- Growth rate submodule ----
   int expr_r_seed; // number of time points with seeded/initial latent cases
   int expr_gt_n; // maximum generation time
-  int expr_t; // number of time points with modeled growth rate
+  int expr_t; // number of time points with modeled growth rate per group
   int expr_ft; // number of time points with latent cases (expr_r_seed + expr_t)
   // PMF of the generation time distribution (reversed and on log scale)
   vector[expr_gt_n] expr_lrgt; 
@@ -184,7 +184,7 @@ parameters {
 
 transformed parameters{
   // Expectation model
-  vector[expr_t] r; // growth rate of observations (log)
+  vector[expr_t * g] r; // growth rate of observations (log)
   array[g] vector[expr_ft]  exp_llatent; // expected latent cases (log)
   vector[expl_obs ? expl_fnindex : 0] expl_prop; // latent-to-obs proportion
   array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
