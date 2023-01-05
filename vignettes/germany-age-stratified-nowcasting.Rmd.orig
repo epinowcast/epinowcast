@@ -110,7 +110,7 @@ fit <- enw_fit_opts(
 )
 nowcast <- epinowcast(pobs,
   fit = fit,
-  model = multithread_model,
+  model = multithread_model
 )
 ```
 
