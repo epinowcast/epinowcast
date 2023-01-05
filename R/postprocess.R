@@ -219,7 +219,7 @@ enw_pp_summary <- function(fit, diff_obs,
   )
 
   ord_obs <- data.table::copy(diff_obs)
-  data.table::setorderv(ord_obs, c("reference_date", ".group"))
+  data.table::setorderv(ord_obs, c(".group", "reference_date"))
   pp <- cbind(
     ord_obs,
     pp
