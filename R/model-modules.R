@@ -634,9 +634,12 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
         phi = numeric(0)
       )
       if (data$model_obs == 1) {
-        init$sqrt_phi <- array(abs(rnorm(
-          1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10
-        )))
+        init$sqrt_phi <- array(
+          max(
+            abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10)),
+            1e-4
+          )
+        )
         init$phi <- 1 / (init$sqrt_phi^2)
       }
       return(init)

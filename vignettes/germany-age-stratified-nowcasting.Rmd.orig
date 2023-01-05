@@ -38,10 +38,10 @@ library(scoringutils)
 library(knitr)
 ```
 
-This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 8 as we are using 2 MCMC chains and have 16 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
+This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 6 as we are using 2 MCMC chains and have 12 real cores available). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
 
 ```{r, eval  = TRUE}
-threads <- 8
+threads <- 6
 options(mc.cores = 2)
 ```
 
@@ -104,9 +104,9 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads, 
-  iter_sampling = 500, iter_warmup = 250,
+  iter_sampling = 500, iter_warmup = 500,
   show_messages = FALSE, refresh = 0,
-  adapt_delta = 0.95
+  adapt_delta = 0.98, max_treedepth = 15
 )
 nowcast <- epinowcast(pobs,
   fit = fit,
@@ -119,6 +119,20 @@ We first visualise the observations available to the model, the nowcast of final
 ```{r nowcast, height = 9, width = 9}
 plot(nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
+```
+
+## Using the inflated posterior as a prior
+
+To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
+
+```{r}
+priors <- summary(
+  nowcast,
+  type = "fit",
+  variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
+)
+priors[, sd := sd * 2]
+priors
 ```
 
 ## Reference day of the week effect
@@ -134,6 +148,7 @@ exp_nowcast <- epinowcast(pobs,
   expectation = expectation_module,
   fit = fit,
   model = multithread_model,
+  priors = priors
 )
 ```
 
@@ -160,18 +175,6 @@ As noted using the posterior predictions from the simple model fit above there a
 
 ```{r}
 report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
-```
-
-To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
-
-```{r}
-priors <- summary(
-  exp_nowcast,
-  type = "fit",
-  variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
-)
-priors[, sd := sd * 5]
-priors
 ```
 
 We now repeat the nowcasting step with the day of the week reporting model included.
@@ -240,6 +243,7 @@ week_nowcast <- epinowcast(pobs,
   expectation = expectation_module,
   fit = fit,
   model = multithread_model,
+
   priors = priors
 )
 ```
@@ -261,20 +265,14 @@ reference_module_week_by_age <- enw_reference(
 )
 ```
 
-We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.98 here to mitigate divergent transitions).
+We can now fit this model as before.
 
 ```{r}
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
   expectation = expectation_module,
-  fit = enw_fit_opts(
-    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-    chains = 2, threads_per_chain = threads, 
-    iter_sampling = 500, iter_warmup = 500,
-    show_messages = FALSE, refresh = 0,
-    adapt_delta = 0.98
-  ),
+  fit = fit,
   model = multithread_model,
   priors = priors
 )
