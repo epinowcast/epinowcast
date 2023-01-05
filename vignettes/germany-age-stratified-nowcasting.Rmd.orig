@@ -349,9 +349,9 @@ enw_plot_nowcast_quantiles(
 
 In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by `epinowcast`) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.
 
-There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. For example, we could explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
+There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. For example, we could explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely mechanisms.
 
-If interested in expanding the functionality of the underlying model to address some of these issues note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.
+If interested in expanding the functionality of the underlying model to address some of these issues note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.
 
 # Evaluation
 
@@ -428,23 +428,7 @@ score |>
   kable()
 ```
 
-Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
-
-```{r}
-score |>
-  summarise_scores(by = c("model", "age_group")) |>
-  kable()
-```
-
-Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend). 
-
-```{r}
-score |>
-  summarise_scores(by = c("model", "reference_date")) |>
-  kable()
-```
-
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
 
 ```{r performance, fig.width = 9, fig.height = 9}
 age_date_score <- score |>
