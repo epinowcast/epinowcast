@@ -301,7 +301,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
     reference = enw_reference(~ rw(week), data = pobs_ind),
     report = enw_report(~ (1 | day_of_week), data = pobs_ind),
     expectation = enw_expectation(
-      ~ 0 + (1 | day_of_week) + (1 | day_of_week), data = pobs_ind
+      ~ 0 + (1 | day_of_week) + (1 | day), data = pobs_ind
     ),
      ...
   )
@@ -325,7 +325,7 @@ independent_nowcast <- map(
   fit = enw_fit_opts(
     save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
     chains = 2, threads_per_chain = threads, 
-    iter_sampling = 500, iter_warmup = 250,
+    iter_sampling = 500, iter_warmup = 500,
     show_messages = FALSE, refresh = 0,
     adapt_delta = 0.95, max_treedepth = 12
   ),
