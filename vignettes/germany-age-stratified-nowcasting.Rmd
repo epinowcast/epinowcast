@@ -625,7 +625,7 @@ score |>
 |Reference: Age and week by age, Report: Day of week      |       6.797542|   3.034496|        1.942857|      1.8197802|          0.0215071| -0.1357143|  11.28571|
 |Independent by age, Reference: Week, Report: Day of week |       7.277953|   3.854562|        1.538305|      1.8845212|          0.0419152| -0.0591837|  12.26531|
 
-Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
 
 ```r
