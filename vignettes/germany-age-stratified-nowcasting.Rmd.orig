@@ -38,10 +38,10 @@ library(scoringutils)
 library(knitr)
 ```
 
-This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
+This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 8 as we are using 2 MCMC chains and have 16 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
 
 ```{r, eval  = TRUE}
-threads <- 2
+threads <- 8
 options(mc.cores = 2)
 ```
 
@@ -105,7 +105,8 @@ fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads, 
   iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  show_messages = FALSE, refresh = 0,
+  adapt_delta = 0.95
 )
 nowcast <- epinowcast(pobs,
   fit = fit,
@@ -120,16 +121,42 @@ plot(nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
+## Reference day of the week effect
+
+The underlying data we are trying to nowcast clearly has day of week periodicity. In our default model, a group specific random walk on the log of notified cases, this is not accounted for. Accounting for this, using a random effect on the day of the week is likely to improve nowcast performance and reduce the computation needed to fit the model. We can specify this using the `enw_expectation()` module and the formula interface as follows.
+
+```{r expectation_module}
+expectation_module <- enw_expectation(
+  ~ 0 + (1 | day_of_week) + (1 | day:.group), data = pobs
+)
+
+exp_nowcast <- epinowcast(pobs,
+  expectation = expectation_module,
+  fit = fit,
+  model = multithread_model,
+)
+```
+
+We again visualise the nowcasts
+
+```{r exp_nowcast, height = 9, width = 9}
+plot(exp_nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+## Posterior predictions
+
 In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is faceted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.
 
 ```{r simple_pp, fig.width = 36, fig.height = 36, warning = FALSE, message = FALSE}
-plot(nowcast, type = "posterior") +
+plot(exp_nowcast, type = "posterior") +
   facet_wrap(vars(age_group, reference_date), scales = "free")
 ```
 
+
 ## Reporting day of the week effect
 
-As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
+As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes for some modules so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
 
 ```{r}
 report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
@@ -139,7 +166,7 @@ To speed up model fitting we make use of posterior information from the previous
 
 ```{r}
 priors <- summary(
-  nowcast,
+  exp_nowcast,
   type = "fit",
   variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
@@ -152,6 +179,7 @@ We now repeat the nowcasting step with the day of the week reporting model inclu
 ```{r}
 dow_nowcast <- epinowcast(pobs,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = fit,
   model = multithread_model,
   priors = priors
@@ -179,6 +207,7 @@ We again nowcast this time using both the age adjusted reference date model and 
 age_nowcast <- epinowcast(pobs,
   reference = reference_module_age,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = fit,
   model = multithread_model,
   priors = priors
@@ -208,6 +237,7 @@ As before we fit the nowcasting model,
 week_nowcast <- epinowcast(pobs,
   reference = reference_module_age_week,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = fit,
   model = multithread_model,
   priors = priors
@@ -237,6 +267,7 @@ We can now fit this model as before (note that this model is quite complex and s
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = enw_fit_opts(
     save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
     chains = 2, threads_per_chain = threads, 
@@ -271,6 +302,9 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
     data = pobs_ind,
     reference = enw_reference(~ rw(week), data = pobs_ind),
     report = enw_report(~ (1 | day_of_week), data = pobs_ind),
+    expectation = enw_expectation(
+      ~ 0 + (1 | day_of_week) + (1 | day_of_week), data = pobs_ind
+    ),
      ...
   )
 
@@ -325,11 +359,11 @@ If interested in expanding the functionality of the underlying model to address 
 
 As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous but we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
 
-We first list all models and give them informative names,
+We first list all models (including the simplest case) and give them informative names,
 
 ```{r}
 nowcasts <- list(
-  "Reference: Fixed, Report: Fixed" = nowcast,
+  "Reference: Fixed, Report: Fixed" = exp_nowcast,
   "Reference: Fixed, Report: Day of week" = dow_nowcast,
   "Reference: Age, Report: Day of week" = age_nowcast,
   "Reference: Age and week, Report: Day of week" = week_nowcast,

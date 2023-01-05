@@ -289,11 +289,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
     r_seed = length(generation_time),
     gt_n = length(generation_time),
     lrgt = log(rev(generation_time)),
-    t = nrow(r_features),
+    t = nrow(r_features) / data$groups[[1]],
     obs = 0
   )
 
-  r_list$g <- cumsum(rep(r_list$t, data$groups[[1]])) - r_list$t
+  r_list$g <- cumsum(
+    rep(r_list$t, data$groups[[1]])
+  ) - r_list$t
   r_list$ft <- r_list$t + r_list$r_seed
 
   # Initial prior for seeding observations
