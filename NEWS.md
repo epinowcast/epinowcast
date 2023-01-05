@@ -41,7 +41,8 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Removed explicit links to authors and issues in the `NEWS.md` file. See #132 by @choi-hannah.
 - Added a new example using simulated data and the `enw_missing()` model module. See #138 by @seabbs and @adrian-lison.
 - Update the model definition vignette to include the missing reference date model. See #147 by @seabbs and @adrian-lison.
-- Added the use of an expectation model to the "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany" vignette. See # by @seabbs.
+- Added the use of an expectation model to the "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany" vignette. See #193 by @seabbs.
+
 ## Bugs
 
 - The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying `ref_as_p` in the stan code. There was an additional issue in that the `enw_report()` module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in #142 by @seabbs.
