@@ -19,11 +19,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-We provide a flexible semi-parametric model for the underlying transmission process similar to that implemented in other real-time modelling packages (such as `EpiNow2` and `epidemia`). This optionally includes a renewal process and latent reporting process with potentially group and time-varying generation times and reporting distributions. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
+We provide a flexible semi-parametric model for the underlying transmission process similar to that implemented in other real-time modelling packages [@EpiNow2; @epidemia]. This optionally includes a renewal process and latent reporting process with potentially group and time-varying generation times and reporting distributions. Combined with the appropriate generation time distribution this approach has been shown to correspond to a Susceptible-Exposed-Infected-Recovered (SEIR) model. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
 
 Our nowcasting approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr] as well as a range of other model extensions.
 
-In the following sections we provide further methodological and implementation details for the modular modelling framework implemented in `epinowcast`. Note that is framework has been designed to be extensible and so users are enabled to alter and extend our currently supported functionality.
+In the following sections we provide further methodological and implementation details for the modular modelling framework implemented in `epinowcast`. We present both our default model for each section as well as the extended generic model. Note that is framework has been designed to be extensible and so users are enabled to alter and extend our currently supported functionality.
 
 # Decomposition into expected final notifications and report delay components
 
@@ -58,7 +58,7 @@ In settings where data is sparse or where users want to understand the underlyin
 
 ## Instantaneous reproduction number/growth rate
 
-We model the instantaneous reproduction number ($R_t$) on the log scale (tohugh other links will be supported in the future). When the generation time is fixed to be a day this can be interpreted as the instantaneous growth rate ($r_t$) defined as the difference in the log of the expected number of final notifications between time $t$ and $t-1$.
+We model the instantaneous reproduction number ($R_t$) on the log scale (though other links will be supported in the future). When the generation time is fixed to be a day this can be interpreted as the instantaneous growth rate ($r_t$) defined as the difference in the log of the expected number of final notifications between time $t$ and $t-1$.
 
 \begin{equation}
   \text{log} (R_{g,t}) = r_0 + \beta_{f,r} X_{r} + \beta_{r,r} Z_{r}
@@ -175,6 +175,6 @@ As for cases with known reference dates other observation models are supported. 
 
 # Implementation
 
-The model is implemented in `stan` using `cmdstanr` with no defaults altered[@stan; @cmdstanr]. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
+The model is implemented in the probalistic programming language `stan` and we use `cmdstanr` to interact with the model [@stan; @cmdstanr]. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
 
 # References
