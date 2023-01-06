@@ -62,21 +62,21 @@ Below is a short list of current resources.
 
 ### Installing the package
 
-Install the stable development version of the package with:
+Install the latest released version of the package with:
 
 ``` r
 install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
-Alternatively, install the stable development from GitHub using the
-following,
+Alternatively, install the stable development version from GitHub
+using the following,
 
 ``` r
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
-The unstable development version can also be installed from GitHub using
-the following,
+The unstable development version can also be installed from GitHub
+using the following,
 
 ``` r
 remotes::install_github("epinowcast/epinowcast@develop", dependencies = TRUE)
