@@ -60,6 +60,10 @@ enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 
 # Model defined without a sparse fixed effects design matrix
 enw_formula(~1, data[1:20, ])
+
+# Model using an interaction in the right hand side of a random effect
+# to specify an independent random effect per strata.
+enw_formula(~ (1 + day | week:month), data = data)
 }
 \seealso{
 Functions used to help convert formulas into model designs

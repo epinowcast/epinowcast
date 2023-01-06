@@ -16,3 +16,5 @@ cache
 pkgdown
 /doc/
 /Meta/
+*.Rhistory
+.vscode

@@ -12,7 +12,7 @@ test_that("Observations can be returned as expected", {
   expect_data_table(enw_example(type = "observations"))
 })
 
-test_that("Scripts can be returned as expected", {
-  expect_type(enw_example(type = "s"), "character")
-  expect_error(readLines(enw_example(type = "s")), NA)
+test_that("Script can be returned as expected", {
+  expect_type(enw_example(type = "script"), "character")
+  expect_error(readLines(enw_example(type = "script")), NA)
 })

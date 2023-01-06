@@ -30,17 +30,26 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 
 Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.
 
+## Getting started and learning more
+
+This README is a good place to get started with `epinowcast`, in particular the following installation and quick start sections. As you make use of the package, or if your problem requires a richer feature set than presented here, we also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.
+
+- [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies making use of the package.
+- [Organisation website](https://www.epinowcast.org/): This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.
+- [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package developemnt and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
+- [Community forum](https://community.epinowcast.org/): Our community forum is where development of tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
+
 ## Installation
 
 ### Installing the package
 
-Install the stable development version of the package with:
+Install the latest released version of the package with:
 
 ```{r, eval = FALSE}
 install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
-Alternatively, install the stable development from GitHub using the following, 
+Alternatively, install the stable development version from GitHub using the following,
 
 ```{r, eval = FALSE}
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
@@ -121,6 +130,14 @@ Construct a model with a random effect for the day of report using the metadata 
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
+Construct a model with a lognormal random walk on expected cases. See `enw_expectation()` for other suggested choices.
+
+```{r}
+expectation_module <- enw_expectation(
+  ~ 0 + (1 | day), data = pobs
+)
+```
+
 ### Model fitting
 
 First compile the model. This step can be left to `epinowcast` but here we want to use multiple cores per chain to speed up model fitting and so need to compile the model with this feature turned on.
@@ -134,6 +151,7 @@ We now fit the model and produce a nowcast using this fit. Note that here we use
 ```{r}
 options(mc.cores = 2)
 nowcast <- epinowcast(pobs,
+  expectation = expectation_module,
   reference = reference_module,
   report = report_module,
   fit = enw_fit_opts(,

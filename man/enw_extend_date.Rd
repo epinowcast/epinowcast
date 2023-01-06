@@ -4,12 +4,15 @@
 \alias{enw_extend_date}
 \title{FUNCTION_TITLE}
 \usage{
-enw_extend_date(metaobs, max_delay = 20)
+enw_extend_date(metaobs, days = 20, direction = "end")
 }
 \arguments{
 \item{metaobs}{PARAM_DESCRIPTION}
 
-\item{max_delay}{PARAM_DESCRIPTION, Default: 20}
+\item{days}{PARAM_DESCRIPTION}
+
+\item{direction}{Should new dates be added at the beginning or end of
+the data. Default is "end" with "start" also available}
 }
 \value{
 OUTPUT_DESCRIPTION
@@ -25,14 +28,15 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
-\code{\link{enw_new_reports}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},
 \code{\link{enw_reporting_triangle}()}

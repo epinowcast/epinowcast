@@ -4,22 +4,50 @@
 \alias{enw_expectation}
 \title{Expectation model module}
 \usage{
-enw_expectation(formula = ~rw(day, .group), order = 1, data)
+enw_expectation(
+  r = ~0 + (1 | day:.group),
+  generation_time = c(1),
+  observation = ~1,
+  latent_reporting_delay = c(1),
+  data,
+  ...
+)
 }
 \arguments{
-\item{formula}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
+\item{r}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
 the generative process used for expected incidence. This can use features
 defined by reference date as defined in \code{metareference} as produced by
-\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. By default this is set to use a daily group
-specific random walk. Note that the daily group specific random walk is
-currently the only option supported by \code{\link[=epinowcast]{epinowcast()}}.}
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. By default this is set to use a daily random effect
+by group. This parameterisation is highly flexible and so may not be the
+most appropriate choice when data is sparsely reported or reporting delays
+are substantially. These settings an alternative could be a group specific
+weekly random walk (specified as \verb{rw(week, by = .group}).}
 
-\item{order}{Integer, defaults to 1. The order of the expectation process
-with 1 being a simple log scale generative process, 2 being a log scale
-generative process where each time point is offset by the log count from
-previous time points.}
+\item{generation_time}{A numeric vector that sums to 1 and defaults to 1.
+Describes the weighting to apply to previous generations (i.e as part of a
+renewal equation). When set to 1 (the default) this corresponds to modelling
+the daily growth rate.}
+
+\item{observation}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
+the modifiers used to adjust expected observations. This can use features
+defined by reference date as defined in \code{metareference} as produced by
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. By default no modifiers are used but a common choice
+might be to adjust for the day of the week. Note as the baseline is no
+modification an intercept is always used and it is set to 0.}
+
+\item{latent_reporting_delay}{A numeric vector that defaults to 1.
+Describes the weighting to apply to past and current latent expected
+observations (from most recent to least). This can be used both to convolve
+based on some assumed reporting delay and to rescale observations (by
+multiplying a probability mass function by some fraction) to account
+ascertainment etc. A list of PMFs can be provided to allow for time-varying
+PMFs. This should be the same length as the modelled time period plus the
+length of the generation time if supplied.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+
+\item{...}{Additional parameters passed to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}}. The
+same arguments as passed to \code{enw_preprocess_data()} should be used here.}
 }
 \value{
 A list containing the supplied formulas, data passed into a list

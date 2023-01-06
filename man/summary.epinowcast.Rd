@@ -4,20 +4,26 @@
 \alias{summary.epinowcast}
 \title{Summary method for epinowcast}
 \usage{
-\method{summary}{epinowcast}(object, type = "nowcast", ...)
+\method{summary}{epinowcast}(
+  object,
+  type = c("nowcast", "nowcast_samples", "fit", "posterior_prediction"),
+  ...
+)
 }
 \arguments{
 \item{object}{A \code{data.table} output from \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{type}{A character string indicating the type of summary to return.
-Currently supported options are "nowcast" which summaries the nowcast
-posterior using \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}}, "nowcast_samples" which returns
-posterior samples from the most recent nowcast, "fit" which returns the
-summarised \code{cmdstanr} fit using \code{\link[=enw_posterior]{enw_posterior()}}, and
-"posterior_prediction" which returns summarised posterior predictions for
-observations used in fitting (using \code{\link[=enw_pp_summary]{enw_pp_summary()}}).}
+\item{type}{Character string indicating the summary to return; enforced by
+\code{\link[base:match.arg]{base::match.arg()}}. Supported options are:
+\itemize{
+\item "nowcast" which summarises nowcast posterior with \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}},
+\item "nowcast_samples" which samples latest with \code{\link[=enw_nowcast_samples]{enw_nowcast_samples()}},
+\item "fit" which returns the summarised \code{cmdstanr} fit with \code{\link[=enw_posterior]{enw_posterior()}},
+\item "posterior_prediction" which returns summarised posterior predictions for
+the observations after fitting using \code{\link[=enw_pp_summary]{enw_pp_summary()}}.
+}}
 
-\item{...}{Pass additional arguments to summary functions.}
+\item{...}{Additional arguments passed to summary specified by \code{type}.}
 }
 \value{
 A summary data.frame

@@ -24,11 +24,18 @@ test_that("enw_reference supports parametric models", {
     )
   )
 
-  expect_equal(
-    enw_reference(distribution = "gamma", data = pobs)$data$model_refp, 3
-  )
+  default_ref <- enw_reference(data = pobs)
+  expect_equal(default_ref$data$model_refp, 2) # default is lognormal
   exp_ref <- enw_reference(distribution = "exponential", data = pobs)
   expect_equal(exp_ref$data$model_refp, 1)
+  lognormal_ref <- enw_reference(distribution = "lognormal", data = pobs)
+  expect_equal(lognormal_ref$data$model_refp, 2)
+  gamma_ref <- enw_reference(distribution = "gamma", data = pobs)
+  expect_equal(gamma_ref$data$model_refp, 3)
+  loglogistic_ref <- enw_reference(distribution = "loglogistic", data = pobs)
+  expect_equal(loglogistic_ref$data$model_refp, 4)
+  no_ref <- suppressWarnings(enw_reference(distribution = "none", data = pobs))
+  expect_equal(no_ref$data$model_refp, 0)
   expect_equal(
     exp_ref$init(exp_ref$data, exp_ref$priors)()$refp_sd_int, numeric(0)
   )

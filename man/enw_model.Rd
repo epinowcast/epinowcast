@@ -5,12 +5,14 @@
 \title{Load and compile the nowcasting model}
 \usage{
 enw_model(
-  model,
-  include,
+  model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
+  include = system.file("stan", package = "epinowcast"),
   compile = TRUE,
   threads = FALSE,
   profile = FALSE,
+  target_dir = tempdir(),
   stanc_options = list(),
+  cpp_options = list(),
   verbose = TRUE,
   ...
 )
@@ -33,10 +35,21 @@ and \code{\link[=epinowcast]{epinowcast()}}.}
 \item{profile}{Logical, defaults to \code{FALSE}. Should the model be profiled?
 For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{\code{cmdstanr} documentation}. # nolint}
 
+\item{target_dir}{The path to a directory in which the manipulated .stan
+files without profiling statements should be stored. To avoid overriding of
+the original .stan files, this should be different from the directory of the
+original model and the \code{include_paths}.}
+
 \item{stanc_options}{A list of options to pass to the \code{stanc_options} of
 \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default nothing is passed but potentially
-users may wish to pass optimisation flags for example.See the documentation
+users may wish to pass optimisation flags for example. See the documentation
 for \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}} for further details.}
+
+\item{cpp_options}{A list of options to pass to the \code{cpp_options} of
+\code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}. By default nothing is passed but potentially
+users may wish to pass optimisation flags for example. See the documentation
+for \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}} for further details. Note that the \code{threads}
+argument replaces \code{stan_threads}.}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}

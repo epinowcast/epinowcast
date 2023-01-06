@@ -10,6 +10,8 @@
 #' in model modules where an intercept must be present/absent.
 #'
 #' @return A list defining the model formula. This includes:
+#'  - `prefix_fintercept:` Is an intercept present for the fixed effects design
+#'     matrix.
 #'  - `prefix_fdesign`: The fixed effects design matrix
 #'  - `prefix_fnrow`: The number of rows of the fixed design matrix
 #'  - `prefix_findex`: The index linking design matrix rows to  observations
@@ -24,26 +26,47 @@
 #' @examples
 #' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
 #' enw_formula_as_data_list(f, "mtcars")
+#'
+#' # A missing formula produces the default list
+#' enw_formula_as_data_list(prefix = "missing")
 enw_formula_as_data_list <- function(formula, prefix,
                                      drop_intercept = FALSE) {
-  if (!("enw_formula" %in% class(formula))) {
-    stop(
-      "formula must be an object of class enw_formula as produced using
-       enw_formula"
-    )
-  }
   paste_lab <- function(string, lab = prefix) {
     paste0(lab, "_", string)
   }
-  data <- list()
-  data[[paste_lab("fdesign")]] <- formula$fixed$design
-  data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
-  data[[paste_lab("findex")]] <- formula$fixed$index
-  data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
-  data[[paste_lab("fncol")]] <-
-    ncol(formula$fixed$design) - as.numeric(drop_intercept)
-  data[[paste_lab("rdesign")]] <- formula$random$design
-  data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
+  if (!missing(formula)) {
+    if (!inherits(formula, "enw_formula")) {
+      stop(
+        "formula must be an object of class enw_formula as produced using
+        enw_formula"
+      )
+    }
+    fintercept <-  as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    )))
+
+    data <- list()
+    data[[paste_lab("fdesign")]] <- formula$fixed$design
+    data[[paste_lab("fintercept")]] <- fintercept
+    data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
+    data[[paste_lab("findex")]] <- formula$fixed$index
+    data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
+    data[[paste_lab("fncol")]] <-
+      ncol(formula$fixed$design) -
+      min(as.numeric(drop_intercept), as.numeric(fintercept))
+    data[[paste_lab("rdesign")]] <- formula$random$design
+    data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
+  } else {
+    data <- list()
+    data[[paste_lab("fdesign")]] <- numeric(0)
+    data[[paste_lab("fintercept")]] <- 0
+    data[[paste_lab("fnrow")]] <- 0
+    data[[paste_lab("findex")]] <- numeric(0)
+    data[[paste_lab("fnindex")]] <- 0
+    data[[paste_lab("fncol")]] <- 0
+    data[[paste_lab("rdesign")]] <- numeric(0)
+    data[[paste_lab("rncol")]] <- 0
+  }
   return(data)
 }
 
@@ -69,7 +92,7 @@ enw_priors_as_data_list <- function(priors) {
   priors[, variable := paste0(variable, "_p")]
   priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
-  priors <- purrr::map(priors, ~ as.vector(t(.)))
+  priors <- purrr::map(priors, ~ as.array(t(.)))
   return(priors)
 }
 
@@ -276,8 +299,14 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' @param stanc_options A list of options to pass to the `stanc_options` of
 #' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
-#' users may wish to pass optimisation flags for example.See the documentation
+#' users may wish to pass optimisation flags for example. See the documentation
 #' for [cmdstanr::cmdstan_model()] for further details.
+#'
+#' @param cpp_options A list of options to pass to the `cpp_options` of
+#' [cmdstanr::cmdstan_model()]. By default nothing is passed but potentially
+#' users may wish to pass optimisation flags for example. See the documentation
+#' for [cmdstanr::cmdstan_model()] for further details. Note that the `threads`
+#' argument replaces `stan_threads`.
 #'
 #' @param ... Additional arguments passed to [cmdstanr::cmdstan_model()].
 #'
@@ -285,47 +314,46 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' @family modeltools
 #' @export
+#' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
-enw_model <- function(model, include, compile = TRUE,
-                      threads = FALSE, profile = FALSE,
-                      stanc_options = list(), verbose = TRUE, ...) {
-  if (missing(model)) {
-    model <- "stan/epinowcast.stan"
-    model <- system.file(model, package = "epinowcast")
-  }
-  if (missing(include)) {
-    include <- system.file("stan", package = "epinowcast")
+enw_model <- function(model = system.file(
+                        "stan", "epinowcast.stan",
+                        package = "epinowcast"
+                      ),
+                      include = system.file("stan", package = "epinowcast"),
+                      compile = TRUE, threads = FALSE, profile = FALSE,
+                      target_dir = tempdir(), stanc_options = list(),
+                      cpp_options = list(), verbose = TRUE, ...) {
+  if (verbose) {
+    message(sprintf("Using model %s.", model))
+    message(sprintf("include is %s.", paste(include, collapse = ", ")))
   }
 
   if (!profile) {
-    stan_no_profile <- write_stan_files_no_profile(model, include)
+    stan_no_profile <- write_stan_files_no_profile(
+      model, include, target_dir =  target_dir
+    )
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths
   }
 
   if (compile) {
+    monitor <- suppressMessages
     if (verbose) {
-      model <- cmdstanr::cmdstan_model(model,
-        include_paths = include,
-        stanc_options = stanc_options,
-        cpp_options = list(
-          stan_threads = threads
-        ),
-        ...
-      )
-    } else {
-      suppressMessages(
-        model <- cmdstanr::cmdstan_model(model,
-          include_paths = include,
-          stanc_options = stanc_options,
-          cpp_options = list(
-            stan_threads = threads
-          ), ...
-        )
-      )
+      monitor <- function(x) {
+        return(x)
+      }
     }
+    cpp_options$stan_threads <- threads
+    model <- monitor(cmdstanr::cmdstan_model(
+      model,
+      include_paths = include,
+      stanc_options = stanc_options,
+      cpp_options = cpp_options,
+      ...
+    ))
   }
   return(model)
 }

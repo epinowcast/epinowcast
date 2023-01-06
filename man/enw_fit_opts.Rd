@@ -9,6 +9,7 @@ enw_fit_opts(
   nowcast = TRUE,
   pp = FALSE,
   likelihood = TRUE,
+  likelihood_aggregation = c("snapshots", "groups"),
   debug = FALSE,
   output_loglik = FALSE,
   ...
@@ -27,6 +28,20 @@ for observed data. Useful for evaluating the performance of the model.}
 
 \item{likelihood}{Logical, defaults to \code{TRUE}. Should the likelihood be
 included in the model}
+
+\item{likelihood_aggregation}{Character string, aggregation over which
+stratify the likelihood when \code{threads = TRUE}; enforced by
+\code{\link[base:match.arg]{base::match.arg()}}. Currently supported options:
+\itemize{
+\item "snapshots" which aggregates over report dates and groups (i.e the lowest
+level that observations are reported at),
+\item "groups" which aggregates across user defined groups.
+}
+
+Note that some model modules override this setting depending on model
+requirements. For example, the \code{\link[=enw_missing]{enw_missing()}} module model forces
+"groups" option. Generally, Users should typically want the default
+"snapshots" aggregation.}
 
 \item{debug}{Logical, defaults to \code{FALSE}. Should within model debug
 information be returned.}

@@ -20,6 +20,7 @@ Check Report and Reference Dates are present
 \seealso{
 Functions used for checking inputs
 \code{\link{check_group}()},
+\code{\link{check_modules_compatible}()},
 \code{\link{check_module}()},
 \code{\link{check_quantiles}()}
 }

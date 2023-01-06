@@ -24,7 +24,6 @@ discretised
 enw
 epidemia
 etc
-fns
 formulatools
 frac
 geq
@@ -34,8 +33,10 @@ gtD
 gtd
 heirarchical
 lme
+loglogistic
 mathbb
 modeldesign
+modelmodulehelpers
 modelmodules
 modeltools
 modelvalidation

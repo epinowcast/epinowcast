@@ -14,8 +14,14 @@
 #' specification as defined using [enw_report()].
 #'
 #' @param expectation The expectation model specification as defined using
-#' [enw_expectation()]. By default this is set to be highly flexible and thus
-#' weakly informed. Other options are not yet supported.
+#' [enw_expectation()]. By default this is set to be a highly flexible random
+#' effect by reference date for each group and thus weakly informed. Depending
+#' on your context (and in particular the density of data reporting) other
+#' choices that enforce more assumptions may be more appropriate (for example a
+#' weekly random walk (specified using `rw(week, by = .group)`)).
+#'
+#' @param missing The missing reference date model specification as defined
+#' using [enw_missing()]. By default this is set to not be used.
 #'
 #' @param obs The observation model as defined by [enw_obs()].
 #' Observations are also processed within this function for use in modelling.
@@ -34,9 +40,8 @@
 #' other similar model specification functions. Priors in this data.frame
 #' replace the default priors specified by each model component.
 #'
-#' @param ... Additional model modules to pass to `model`. Examples of supported
-#' options are [enw_missing()] for modelling data with missing reference dates.
-#' User modules may also be used after adapting the supplied `model`.
+#' @param ... Additional model modules to pass to `model`. User modules may
+#' be used but currently require the supplied `model` to be adapted.
 #'
 #' @return A object of the class "epinowcast" which inherits from
 #' [enw_preprocess_data()] and `data.table`, and combines the output from
@@ -106,18 +111,24 @@ epinowcast <- function(data,
                        report = epinowcast::enw_report(
                          non_parametric = ~0,
                          structural = ~0,
-                         data
+                         data = data
                        ),
                        expectation = epinowcast::enw_expectation(
-                         formula = ~ rw(day, .group),
-                         order = 1,
+                         r = ~ 0 + (1 | day:.group),
+                         generation_time = c(1),
+                         observation = ~1,
+                         latent_reporting_delay = c(1),
+                         data = data
+                       ),
+                       missing = epinowcast::enw_missing(
+                         formula = ~0,
                          data = data
                        ),
                        obs = epinowcast::enw_obs(
                          family = "negbin", data = data
                        ),
                        fit = epinowcast::enw_fit_opts(
-                         fit = epinowcast::enw_sample,
+                         sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE,
                          likelihood = TRUE, debug = FALSE,
                          output_loglik = FALSE
@@ -126,10 +137,11 @@ epinowcast <- function(data,
                        priors,
                        ...) {
   modules <- list(
-    reference, report, expectation, obs, fit, ...
+    expectation, reference, report, missing, obs, fit, ...
   )
   names(modules) <- as.character(seq_len(length(modules)))
   purrr::walk(modules, check_module)
+  check_modules_compatible(modules)
 
   modules <- purrr::transpose(modules)
   data_as_list <- purrr::flatten(modules$data)
@@ -150,18 +162,14 @@ epinowcast <- function(data,
     enw_priors_as_data_list(priors)
   )
 
-  if (is.null(data_as_list$model_missing)) {
-    model_missing <- 0
-  } else {
-    stop("The missingness model has not yet been implemented")
+  if (!missing$formula %in% "~0") {
+    warning("The missing data model is highly experimental. There is a
+     significant likelihood that bugs are present in its implementation.")
   }
 
-  if (!expectation$formula$expectation %in% "~rw(day, .group)") {
-    stop("A flexible expectation model has not yet been implemented")
-  }
-
-  if (expectation$data$exp_order != 1) {
-    stop("Only first order expectation models are currently supported")
+  if (!missing$formula %in% "~0") {
+    warning("The missing data model is highly experimental. There is a
+     significant likelihood that bugs are present in its implementation.")
   }
 
   inits <- purrr::compact(modules$inits)

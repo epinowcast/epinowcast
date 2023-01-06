@@ -11,10 +11,9 @@ test_that("enw_expectation produces the expected default model", {
   obs <- enw_obs(data = pobs)
   expect_named(
     exp$init(c(exp$data, obs$data), exp$priors)(),
-    c("exp_beta", "exp_beta_sd", "leobs_init", "eobs_lsd", "leobs_resids")
+    c("expr_beta", "expr_beta_sd", "expr_lelatent_int", "expr_r_int", 
+      "expl_beta", "expl_beta_sd")
   )
-  expect_equal(enw_expectation(order = 2, data = pobs)$data$exp_order, 2)
-  expect_error(enw_expectation(order = 3, data = pobs))
 })
 
 test_that("enw_expectation supports custom expectation models", {

@@ -29,6 +29,9 @@
       6                   0                  0                    0
       7                   0                  0                    0
       
+      $data$rep_fintercept
+      [1] 1
+      
       $data$rep_fnrow
       [1] 7
       

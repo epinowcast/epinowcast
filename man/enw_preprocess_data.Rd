@@ -8,8 +8,8 @@ enw_preprocess_data(
   obs,
   by = c(),
   max_delay = 20,
-  holidays = c(),
-  set_negatives_to_zero = TRUE
+  set_negatives_to_zero = TRUE,
+  ...
 )
 }
 \arguments{
@@ -29,14 +29,14 @@ setting so consider what maximum makes sense for your data carefully. Note
 that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 
-\item{holidays}{A vector of dates indicating when holidays occur used by
-\code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}} to treat holidays as sundays within the
-\code{day_of_week} variable it creates internally.}
-
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
+
+\item{...}{Other arguments to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}},
+e.g. \code{holidays}, which sets commonly used metadata
+(e.g. day of week, days since start of time series)}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -83,7 +83,7 @@ completed with \code{\link[=enw_complete_dates]{enw_complete_dates()}}.
 \examples{
 library(data.table)
 
-# Filter example hospitalisation data to be natioanl and over all ages
+# Filter example hospitalisation data to be national and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
 
@@ -99,15 +99,16 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
-\code{\link{enw_new_reports}()},
 \code{\link{enw_reporting_triangle_to_long}()},
 \code{\link{enw_reporting_triangle}()}
 }

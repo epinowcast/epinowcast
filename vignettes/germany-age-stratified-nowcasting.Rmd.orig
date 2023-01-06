@@ -38,10 +38,10 @@ library(scoringutils)
 library(knitr)
 ```
 
-This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 2 as we are using 2 MCMC chains and have 4 real cores). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
+This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 6 as we are using 2 MCMC chains and have 12 real cores available). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
 
 ```{r, eval  = TRUE}
-threads <- 2
+threads <- 6
 options(mc.cores = 2)
 ```
 
@@ -104,12 +104,13 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
   chains = 2, threads_per_chain = threads, 
-  iter_sampling = 500, iter_warmup = 250,
-  show_messages = FALSE, refresh = 0
+  iter_sampling = 500, iter_warmup = 500,
+  show_messages = FALSE, refresh = 0,
+  adapt_delta = 0.98, max_treedepth = 15
 )
 nowcast <- epinowcast(pobs,
   fit = fit,
-  model = multithread_model,
+  model = multithread_model
 )
 ```
 
@@ -120,20 +121,7 @@ plot(nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is faceted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.
-
-```{r simple_pp, fig.width = 36, fig.height = 36, warning = FALSE, message = FALSE}
-plot(nowcast, type = "posterior") +
-  facet_wrap(vars(age_group, reference_date), scales = "free")
-```
-
-## Reporting day of the week effect
-
-As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
-
-```{r}
-report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
-```
+## Using the inflated posterior as a prior
 
 To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
 
@@ -143,8 +131,50 @@ priors <- summary(
   type = "fit",
   variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
-priors[, sd := sd * 5]
+priors[, sd := sd * 2]
 priors
+```
+
+## Reference day of the week effect
+
+The underlying data we are trying to nowcast clearly has day of week periodicity. In our default model, a group specific random walk on the log of notified cases, this is not accounted for. Accounting for this, using a random effect on the day of the week is likely to improve nowcast performance and reduce the computation needed to fit the model. We can specify this using the `enw_expectation()` module and the formula interface as follows.
+
+```{r expectation_module}
+expectation_module <- enw_expectation(
+  ~ 0 + (1 | day_of_week) + (1 | day:.group), data = pobs
+)
+
+exp_nowcast <- epinowcast(pobs,
+  expectation = expectation_module,
+  fit = fit,
+  model = multithread_model,
+  priors = priors
+)
+```
+
+We again visualise the nowcasts
+
+```{r exp_nowcast, height = 9, width = 9}
+plot(exp_nowcast, latest_obs = latest_nat_germany) +
+  facet_wrap(vars(age_group), scales = "free_y")
+```
+
+## Posterior predictions
+
+In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is faceted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.
+
+```{r simple_pp, fig.width = 36, fig.height = 36, warning = FALSE, message = FALSE}
+plot(exp_nowcast, type = "posterior") +
+  facet_wrap(vars(age_group, reference_date), scales = "free")
+```
+
+
+## Reporting day of the week effect
+
+As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by `enw_preprocess_data()`. Note that `epinowcast` uses a sparse design matrix to reduce runtimes for some modules so the design matrix shows only unique rows with `index` containing the mapping to the full design matrix.
+
+```{r}
+report_module_dow <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
 We now repeat the nowcasting step with the day of the week reporting model included.
@@ -152,6 +182,7 @@ We now repeat the nowcasting step with the day of the week reporting model inclu
 ```{r}
 dow_nowcast <- epinowcast(pobs,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = fit,
   model = multithread_model,
   priors = priors
@@ -179,6 +210,7 @@ We again nowcast this time using both the age adjusted reference date model and 
 age_nowcast <- epinowcast(pobs,
   reference = reference_module_age,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = fit,
   model = multithread_model,
   priors = priors
@@ -208,8 +240,10 @@ As before we fit the nowcasting model,
 week_nowcast <- epinowcast(pobs,
   reference = reference_module_age_week,
   report = report_module_dow,
+  expectation = expectation_module,
   fit = fit,
   model = multithread_model,
+
   priors = priors
 )
 ```
@@ -231,19 +265,14 @@ reference_module_week_by_age <- enw_reference(
 )
 ```
 
-We can now fit this model as before (note that this model is quite complex and so may take some time to fit and that we have had to increase the `adapt_delta` setting to 0.98 here to mitigate divergent transitions).
+We can now fit this model as before.
 
 ```{r}
 age_week_nowcast <- epinowcast(pobs,
   reference = reference_module_week_by_age,
   report = report_module_dow,
-  fit = enw_fit_opts(
-    save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-    chains = 2, threads_per_chain = threads, 
-    iter_sampling = 500, iter_warmup = 500,
-    show_messages = FALSE, refresh = 0,
-    adapt_delta = 0.98
-  ),
+  expectation = expectation_module,
+  fit = fit,
   model = multithread_model,
   priors = priors
 )
@@ -271,6 +300,9 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
     data = pobs_ind,
     reference = enw_reference(~ rw(week), data = pobs_ind),
     report = enw_report(~ (1 | day_of_week), data = pobs_ind),
+    expectation = enw_expectation(
+      ~ 0 + (1 | day_of_week) + (1 | day), data = pobs_ind
+    ),
      ...
   )
 
@@ -293,7 +325,7 @@ independent_nowcast <- map(
   fit = enw_fit_opts(
     save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
     chains = 2, threads_per_chain = threads, 
-    iter_sampling = 500, iter_warmup = 250,
+    iter_sampling = 500, iter_warmup = 500,
     show_messages = FALSE, refresh = 0,
     adapt_delta = 0.95, max_treedepth = 12
   ),
@@ -317,19 +349,19 @@ enw_plot_nowcast_quantiles(
 
 In all the models defined above we have assumed that the delay distribution, aside from report day effects, is parametric and has a lognormal distribution. Both of these assumptions may be less than optimal. Alternatives include assuming a different distributional form (such as the gamma distribution which is also supported by `epinowcast`) or assuming that the report delay is fully non-parametric which is not yet supported but will be in future package versions.
 
-There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. For example, we could explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely censoring mechanisms.
+There are any number of additional models we could explore within the framework supported by `epinowcast` as well as a large number of alternative parameterisations that are not yet supported. For example, we could explore models with more complex reporting day effects, including holidays (supported in `epinowcast` either as a separate effect or by assuming they have the same reporting hazard as Sundays) and variation over time which would represent reporting delays changing independently of reference date (this would be similar to the time varying model we defined above but with this effect occurring in the report date model rather than in the reference date model). These choices are data dependent and domain knowledge needs to be used to assess the likely mechanisms.
 
-If interested in expanding the functionality of the underlying model to address some of these issues note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.
+If interested in expanding the functionality of the underlying model to address some of these issues note that `epinowcast` allows users to pass in their own models meaning that alternative parameterisations may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome as pull requests.
 
 # Evaluation
 
 As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous but we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions. 
 
-We first list all models and give them informative names,
+We first list all models (including the simplest case) and give them informative names,
 
 ```{r}
 nowcasts <- list(
-  "Reference: Fixed, Report: Fixed" = nowcast,
+  "Reference: Fixed, Report: Fixed" = exp_nowcast,
   "Reference: Fixed, Report: Day of week" = dow_nowcast,
   "Reference: Age, Report: Day of week" = age_nowcast,
   "Reference: Age and week, Report: Day of week" = week_nowcast,
@@ -396,23 +428,7 @@ score |>
   kable()
 ```
 
-Stratifying by age group we see that trends in performance are fairly consistent with some small variation in the ordering of which model out performs the others. 
-
-```{r}
-score |>
-  summarise_scores(by = c("model", "age_group")) |>
-  kable()
-```
-
-Stratifying by date we find that interestingly the more complex models appear to do better for earlier dates (for which more data is available) with the addition of age group appearing to be the factor that drives this increase in performance. Our finding from the overall summary that the simple model performed comparably appears to be largely driven by performance for the last nowcast target where this model significantly outperformed the others (this underlines the need to evaluate nowcasts from different dates as this single data point may be may anomalous or we may have identified a real trend). 
-
-```{r}
-score |>
-  summarise_scores(by = c("model", "reference_date")) |>
-  kable()
-```
-
-Finally we can look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear with only this model performing well for all days in the 35-59 year age group.
+Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
 ```{r performance, fig.width = 9, fig.height = 9}
 age_date_score <- score |>

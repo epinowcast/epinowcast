@@ -19,6 +19,8 @@ in model modules where an intercept must be present/absent.}
 \value{
 A list defining the model formula. This includes:
 \itemize{
+\item \verb{prefix_fintercept:} Is an intercept present for the fixed effects design
+matrix.
 \item \code{prefix_fdesign}: The fixed effects design matrix
 \item \code{prefix_fnrow}: The number of rows of the fixed design matrix
 \item \code{prefix_findex}: The index linking design matrix rows to  observations
@@ -36,6 +38,9 @@ Format formula data for use with stan
 \examples{
 f <- enw_formula(~ 1 + (1 | cyl), mtcars)
 enw_formula_as_data_list(f, "mtcars")
+
+# A missing formula produces the default list
+enw_formula_as_data_list(prefix = "missing")
 }
 \seealso{
 Functions used to help convert models into the format required for stan

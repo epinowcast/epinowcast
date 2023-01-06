@@ -10,7 +10,7 @@
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
-#' and "exponential" with the default being "lognormal".
+#' "exponential", and "loglogistic", with the default being "lognormal".
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
 #' describing the non-parametric logit hazard model. This can use features
@@ -30,8 +30,10 @@
 #' @export
 #' @examples
 #' enw_reference(data = enw_example("preprocessed"))
-enw_reference <- function(parametric = ~1, distribution = "lognormal",
-                          non_parametric = ~0, data) {
+enw_reference <- function(parametric = ~1, distribution = c(
+                            "lognormal", "none", "exponential", "gamma",
+                            "loglogistic"
+                          ), non_parametric = ~0, data) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
     parametric <- "~1"
@@ -39,9 +41,7 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
   if (!as_string_formula(non_parametric) %in% "~0") {
     stop("The non-parametric reference model has not yet been implemented")
   }
-  distribution <- match.arg(
-    distribution, c("none", "exponential", "lognormal", "gamma")
-  )
+  distribution <- match.arg(distribution)
   if (distribution %in% "none") {
     warning(
       "As non-parametric hazards have yet to be implemented a parametric hazard
@@ -52,7 +52,8 @@ enw_reference <- function(parametric = ~1, distribution = "lognormal",
     distribution %in% "none", 0,
     distribution %in% "exponential", 1,
     distribution %in% "lognormal", 2,
-    distribution %in% "gamma", 3
+    distribution %in% "gamma", 3,
+    distribution %in% "loglogistic", 4
   )
 
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
@@ -179,7 +180,9 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     )
   )
   data_list$rep_t <- data$time[[1]] + data$max_delay[[1]] - 1
-  data_list$model_rep <- as.numeric(!as_string_formula(formula) %in% "1")
+  data_list$model_rep <- as.numeric(
+    !as_string_formula(non_parametric) %in% "~1"
+  )
 
   out <- list()
   out$formula$non_parametric <- form$formula
@@ -216,76 +219,191 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 
 #' Expectation model module
 #'
-#' @param formula A formula (as implemented in [enw_formula()]) describing
+#' @param r A formula (as implemented in [enw_formula()]) describing
 #' the generative process used for expected incidence. This can use features
 #' defined by reference date as defined in `metareference` as produced by
-#' [enw_preprocess_data()]. By default this is set to use a daily group
-#' specific random walk. Note that the daily group specific random walk is
-#' currently the only option supported by [epinowcast()].
+#' [enw_preprocess_data()]. By default this is set to use a daily random effect
+#' by group. This parameterisation is highly flexible and so may not be the
+#' most appropriate choice when data is sparsely reported or reporting delays
+#' are substantially. These settings an alternative could be a group specific
+#' weekly random walk (specified as `rw(week, by = .group`).
 #'
-#' @param order Integer, defaults to 1. The order of the expectation process
-#' with 1 being a simple log scale generative process, 2 being a log scale
-#' generative process where each time point is offset by the log count from
-#' previous time points.
+#' @param generation_time A numeric vector that sums to 1 and defaults to 1.
+#' Describes the weighting to apply to previous generations (i.e as part of a
+#' renewal equation). When set to 1 (the default) this corresponds to modelling
+#' the daily growth rate.
 #'
+#' @param observation A formula (as implemented in [enw_formula()]) describing
+#' the modifiers used to adjust expected observations. This can use features
+#' defined by reference date as defined in `metareference` as produced by
+#' [enw_preprocess_data()]. By default no modifiers are used but a common choice
+#' might be to adjust for the day of the week. Note as the baseline is no
+#' modification an intercept is always used and it is set to 0.
+#'
+#' @param latent_reporting_delay A numeric vector that defaults to 1.
+#' Describes the weighting to apply to past and current latent expected
+#' observations (from most recent to least). This can be used both to convolve
+#' based on some assumed reporting delay and to rescale observations (by
+#' multiplying a probability mass function by some fraction) to account
+#' ascertainment etc. A list of PMFs can be provided to allow for time-varying
+#' PMFs. This should be the same length as the modelled time period plus the
+#' length of the generation time if supplied.
+#'
+#' @param ... Additional parameters passed to [enw_add_metaobs_features()]. The
+#' same arguments as passed to `enw_preprocess_data()` should be used here.
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
+#' @importFrom rstan extract_sparse_parts
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
-  if (as_string_formula(formula) %in% "~0") {
-    stop("An expectation model formula must be specified")
+enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
+                            observation = ~1, latent_reporting_delay = c(1),
+                            data, ...) {
+  if (as_string_formula(r) %in% "~0") {
+    stop("An expectation model formula for r must be specified")
   }
-  order <- match.arg(as.character(order), choices = c("1", "2"))
-  order <- as.integer(order)
+  if (as_string_formula(observation) %in% "~0") {
+    observation <- ~1
+  }
+  if (sum(generation_time) != 1) {
+    stop("The generation time must sum to 1")
+  }
 
-  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
-  data <- enw_formula_as_data_list(
-    form,
-    prefix = "exp", drop_intercept = order == 1
+  # Set up growth rate features
+  r_features <- data$metareference[[1]]
+  if (length(latent_reporting_delay) > 1) {
+    r_features <- enw_extend_date(
+      r_features,
+      days = length(latent_reporting_delay) - 1, direction = "start"
+    )
+    suppressWarnings(enw_add_metaobs_features(r_features, ...))
+  }
+  r_features <- r_features[
+    date >= (min(date) + length(generation_time))
+  ]
+
+  # Growth rate indicator variables & generation time terms
+  r_list <- list(
+    r_seed = length(generation_time),
+    gt_n = length(generation_time),
+    lrgt = log(rev(generation_time)),
+    t = nrow(r_features) / data$groups[[1]],
+    obs = 0
   )
-  data$exp_order <- as.numeric(order)
+
+  r_list$g <- cumsum(
+    rep(r_list$t, data$groups[[1]])
+  ) - r_list$t
+  r_list$ft <- r_list$t + r_list$r_seed
+
+  # Initial prior for seeding observations
+  latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
+  seed_obs <- latest_matrix[1, ] + 1
+  seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
+  seed_obs <- round(unlist(seed_obs), 1)
+
+  # Growth rate model formula
+  r_form <- enw_formula(r, r_features, sparse = FALSE)
+  r_data <- enw_formula_as_data_list(
+    r_form,
+    prefix = "expr", drop_intercept = TRUE
+  )
+
+  # Observation indicator variables
+  obs_list <- list(
+    lrd_n = ifelse(is.list(latent_reporting_delay),
+      length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
+    ),
+    lrd = convolution_matrix(
+      latent_reporting_delay, r_list$ft, include_partial = FALSE
+    )
+  )
+
+  # Add the sparse matrix representation
+  obs_list <- c(obs_list, extract_sparse_matrix(obs_list$lrd, prefix = "lrd"))
+  obs_list$lrd <- NULL
+
+  obs_list$obs <- ifelse(
+    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
+      as_string_formula(observation) %in% "~1",
+    0, 1
+  )
+  # Observation formula
+  obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
+  obs_data <- enw_formula_as_data_list(
+    obs_form,
+    prefix = "expl", drop_intercept = TRUE
+  )
 
   out <- list()
-  out$formula$expectation <- form$formula
-  out$data <- data
+  out$formula$r <- r_form$formula
+  out$formula$observation <- obs_form$formula
+  out$data_raw$r <- r_features
+  out$data_raw$observation <- data$metareference[[1]]
+
+  names(r_list) <- paste0("expr_", names(r_list))
+  names(obs_list) <- paste0("expl_", names(obs_list))
+  out$data <- c(r_list, r_data, obs_list, obs_data)
+
   out$priors <- data.table::data.table(
-    variable = c("exp_beta_sd", "eobs_lsd"),
-    description = c(
-      "Standard deviation of scaled pooled expectation effects",
-      "Standard deviation for expected final observations"
+    variable = c(
+      "expr_r_int", "expr_beta_sd",
+      rep("expr_lelatent_int", length(seed_obs)),
+      "expl_beta_sd"
     ),
-    distribution = c("Zero truncated normal", "Zero truncated normal"),
-    mean = rep(0, 2),
-    sd = rep(1, 2)
+    dimension = c(1, 1, seq_along(seed_obs), 1),
+    description = c(
+      "Intercept of the log growth rate",
+      "Standard deviation of scaled pooled log growth rate effects",
+      rep("Intercept for initial log observations (ordered by group and then
+          time)", length(seed_obs)),
+      "Standard deviation of scaled pooled log growth rate effects"
+    ),
+    distribution = c(
+      "Normal", "Zero truncated normal", rep("Normal", length(seed_obs)),
+      "Zero truncated normal"
+    ),
+    mean = c(0, 0, seed_obs, 0),
+    sd = c(0.2, 1, rep(1, length(seed_obs)), 1)
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
-        exp_beta = numeric(0),
-        exp_beta_sd = numeric(0),
-        leobs_init = array(purrr::map_dbl(
-          data$latest_obs[1, ] + 1,
-          ~ rnorm(1, log(.), 1)
+        expr_beta = numeric(0),
+        expr_beta_sd = numeric(0),
+        expr_lelatent_int = array(matrix(
+          rnorm(
+            1,
+            as.vector(priors$expr_lelatent_int_p[1]),
+            as.vector(priors$expr_lelatent_int_p[2]) * 0.1
+          ),
+          nrow = data$expr_gt_n
         )),
-        eobs_lsd = array(abs(rnorm(
-          data$g, priors$eobs_lsd_p[1], priors$eobs_lsd_p[2] / 10
-        ))),
-        leobs_resids = array(
-          rnorm((data$t - 1) * data$g, 0, 0.01),
-          dim = c(data$t - 1, data$g)
-        )
+        expr_r_int = rnorm(
+          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
+        ),
+        expl_beta = numeric(0),
+        expl_beta_sd = numeric(0)
       )
-      if (data$exp_fncol > 0) {
-        init$exp_beta <- rnorm(data$exp_fncol, 0, 0.01)
+      if (data$expr_fncol > 0) {
+        init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
       }
-      if (data$exp_rncol > 0) {
-        init$exp_beta_sd <- abs(rnorm(
-          data$exp_rncol, priors$exp_beta_sd_p[1],
-          priors$exp_beta_sd_p[2] / 10
+      if (data$expr_rncol > 0) {
+        init$expr_beta_sd <- abs(rnorm(
+          data$expr_rncol, priors$expr_beta_sd_p[1],
+          priors$expr_beta_sd_p[2] / 10
+        ))
+      }
+      if (data$expl_fncol > 0) {
+        init$expl_beta <- rnorm(data$expl_fncol, 0, 0.01)
+      }
+      if (data$expl_rncol > 0) {
+        init$expl_beta_sd <- abs(rnorm(
+          data$expl_rncol, priors$expl_beta_sd_p[1],
+          priors$expl_beta_sd_p[2] / 10
         ))
       }
       return(init)
@@ -300,67 +418,120 @@ enw_expectation <- function(formula = ~ rw(day, .group), order = 1, data) {
 #' @param formula A formula (as implemented in [enw_formula()]) describing
 #' the missing data proportion on the logit scale by reference date. This can
 #' use features defined by reference date as defined in `metareference` as
-#' produced by [enw_preprocess_data()].
+#' produced by [enw_preprocess_data()]. "~0" implies no model is required.
+#' Otherwise an intercept is always needed
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
+#' @importFrom data.table setorderv copy dcast
+#' @importFrom purrr map
 #' @export
 #' @examples
+#' # Missing model with a fixed intercept only
 #' enw_missing(data = enw_example("preprocessed"))
+#'
+#' # No missingness model specified
+#' enw_missing(~0, data = enw_example("preprocessed"))
 enw_missing <- function(formula = ~1, data) {
-  if (as_string_formula(formula) %in% "~0") {
-    stop("At least an intercept must be used if this module is in use.")
-  }
-  if (nrow(data$missing_reference[[1]]) == 0) {
-    stop("A missingness model has been specified but data on  the proportion of
+  if (nrow(data$missing_reference[[1]]) == 0 &&
+    !(as_string_formula(formula) %in% "~0")) {
+    stop("A missingness model has been specified but data on the proportion of
           observations without reference dates is not available.")
   }
 
-  form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
-  data_list <- enw_formula_as_data_list(
-    form,
-    prefix = "miss", drop_intercept = FALSE
-  )
-  missing_reference <- data.table::copy(data$missing_reference[[1]])
-  data.table::setorderv(missing_reference, c(".group", "report_date"))
-  missing_reference <- as.matrix(
-    data.table::dcast(
-      missing_reference, .group ~ report_date,
-      value.var = "confirm",
-      fill = 0
-    )[, -1]
-  )
-  data_list$missing_ref <- missing_reference
-  data_list$model_missing <- 1
+  if (as_string_formula(formula) %in% "~0") {
+    # empty data list required by stan
+    data_list <- enw_formula_as_data_list(
+      prefix = "miss", drop_intercept = FALSE
+    )
+    data_list$missing_reference <- numeric(0)
+    data_list$obs_by_report <- numeric(0)
+    data_list$miss_st <- numeric(0)
+    data_list$miss_cst <- numeric(0)
+    data_list$model_miss <- 0
+    data_list$miss_obs <- 0
+  } else {
+    # Make formula for effects
+    form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
+    data_list <- enw_formula_as_data_list(
+      form,
+      prefix = "miss",
+      drop_intercept = TRUE
+    )
+
+    # Get report dates that cover all reference dates up to the max delay
+    rep_w_complete_ref <- enw_reps_with_complete_refs(
+      data$new_confirm[[1]],
+      max_delay = data$max_delay[[1]],
+      by = ".group"
+    )
+
+    # Get the indexes for when grouped observations start and end
+    miss_lookup <- data.table::copy(rep_w_complete_ref)
+    data_list$miss_st <- miss_lookup[, n := 1:.N, by = ".group"]
+    data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
+    data_list$miss_cst <- miss_lookup[, n := 1:.N]
+    data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
+
+    # Get (and order) reported cases with a missing reference date
+    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    data.table::setkeyv(missing_reference, c(".group", "report_date"))
+    data_list$missing_reference <- data.table::copy(missing_reference)[
+      rep_w_complete_ref,
+      on = c("report_date", ".group")
+    ][, confirm]
+
+    # Build a look up between reports and reference dates
+    reference_by_report <- enw_reference_by_report(
+      missing_reference,
+      reps_with_complete_refs = rep_w_complete_ref,
+      metareference = data$metareference[[1]],
+      max_delay = data$max_delay[[1]]
+    )
+    data_list$obs_by_report <- as.matrix(reference_by_report[, -1])
+
+    # Add indicator and length/shape variables
+    data_list$model_miss <- 1
+    data_list$miss_obs <- length(data_list$missing_reference)
+  }
 
   out <- list()
   out$formula <- as_string_formula(formula)
   out$data <- data_list
+  # Define default priors
   out$priors <- data.table::data.table(
-    variable = c("miss_beta_sd"),
-    description = c("Standard deviation of scaled pooled logit missing
-        reference date effects"),
-    distribution = c("Zero truncated normal"),
-    mean = 0,
-    sd = 1
+    variable = c("miss_int", "miss_beta_sd"),
+    description = c(
+      "Intercept on the logit scale for the proportion missing reference dates",
+      "Standard deviation of scaled pooled logit missing reference date
+       effects"
+    ),
+    distribution = c("Normal", "Zero truncated normal"),
+    mean = c(0, 0),
+    sd = c(1, 1)
   )
+  # Define a function for sampling from the priors and data
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
+        miss_int = numeric(0),
         miss_beta = numeric(0),
         miss_beta_sd = numeric(0)
       )
-      if (data$miss_fncol > 0) {
-        init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
-      }
-      if (data$miss_rncol > 0) {
-        init$miss_beta_sd <- abs(rnorm(
-          data$miss_rncol, priors$miss_beta_sd_p[1],
-          priors$miss_beta_sd_p[2] / 10
-        ))
+      if (data$model_miss) {
+        init$miss_int <- rnorm(1, priors$miss_int_p[1], priors$miss_int_p[2])
+        if (data$miss_fncol > 0) {
+          init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
+        }
+        if (data$miss_rncol > 0) {
+          init$miss_beta_sd <- abs(rnorm(
+            data$miss_rncol, priors$miss_beta_sd_p[1],
+            priors$miss_beta_sd_p[2] / 10
+          ))
+        }
       }
       return(init)
     }
@@ -371,10 +542,11 @@ enw_missing <- function(formula = ~1, data) {
 
 #' Setup observation model and data
 #'
-#' @param family A character string describing the observation model to
-#' use in the likelihood. By default this is a negative binomial ("negbin")
-#' with Poisson ("poisson") also being available. Support for additional
-#' observation models is planned, please open an issue with suggestions.
+#' @param family Character string, the observation model to use in the
+#' likelihood; enforced by [base::match.arg()]. By default this is a
+#' negative binomial ("negbin") with Poisson ("poisson") also being
+#' available. Support for additional observation models is planned,
+#' please open an issue with suggestions.
 #'
 #' @param data Output from [enw_preprocess_data()].
 #'
@@ -383,8 +555,8 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
-enw_obs <- function(family = "negbin", data) {
-  family <- match.arg(family, c("negbin", "poisson"))
+enw_obs <- function(family = c("negbin", "poisson"), data) {
+  family <- match.arg(family)
 
   model_obs <- data.table::fcase(
     family %in% "poisson", 0,
@@ -392,16 +564,11 @@ enw_obs <- function(family = "negbin", data) {
   )
 
   # format latest matrix
-  latest_matrix <- data$latest[[1]]
-  latest_matrix <- data.table::dcast(
-    latest_matrix, reference_date ~ .group,
-    value.var = "confirm"
-  )
-  latest_matrix <- as.matrix(latest_matrix[, -1])
+  latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
 
   # get new confirm for processing
   new_confirm <- data.table::copy(data$new_confirm[[1]])
-  data.table::setorderv(new_confirm, c("reference_date", ".group", "delay"))
+  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
 
   # get flat observations
   flat_obs <- new_confirm$new_confirm
@@ -434,12 +601,15 @@ enw_obs <- function(family = "negbin", data) {
     t = data$time[[1]],
     s = data$snapshots[[1]],
     g = data$groups[[1]],
+    groups = 1:data$groups[[1]],
     st = snap_time,
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
     sg = unique(new_confirm[, .(reference_date, .group)])$.group,
     dmax = data$max_delay[[1]],
+    sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
+    csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
     obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
@@ -464,9 +634,12 @@ enw_obs <- function(family = "negbin", data) {
         phi = numeric(0)
       )
       if (data$model_obs == 1) {
-        init$sqrt_phi <- array(abs(rnorm(
-          1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10
-        )))
+        init$sqrt_phi <- array(
+          max(
+            abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10)),
+            1e-4
+          )
+        )
         init$phi <- 1 / (init$sqrt_phi^2)
       }
       return(init)
@@ -491,6 +664,18 @@ enw_obs <- function(family = "negbin", data) {
 #' @param likelihood Logical, defaults to `TRUE`. Should the likelihood be
 #' included in the model
 #'
+#' @param likelihood_aggregation Character string, aggregation over which
+#' stratify the likelihood when `threads = TRUE`; enforced by
+#' [base::match.arg()]. Currently supported options:
+#'  * "snapshots" which aggregates over report dates and groups (i.e the lowest
+#' level that observations are reported at),
+#'  * "groups" which aggregates across user defined groups.
+#'
+#' Note that some model modules override this setting depending on model
+#' requirements. For example, the [enw_missing()] module model forces
+#' "groups" option. Generally, Users should typically want the default
+#' "snapshots" aggregation.
+#'
 #' @param output_loglik Logical, defaults to `FALSE`. Should the
 #' log-likelihood be output. Disabling this will speed up fitting
 #' if evaluating the model fit is not required.
@@ -514,14 +699,22 @@ enw_obs <- function(family = "negbin", data) {
 #' enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE, likelihood = TRUE,
+                         likelihood_aggregation = c("snapshots", "groups"),
                          debug = FALSE, output_loglik = FALSE, ...) {
   if (pp) {
     nowcast <- TRUE
   }
+  likelihood_aggregation <- match.arg(likelihood_aggregation)
+  likelihood_aggregation <- fcase(
+    likelihood_aggregation %in% "snapshots", 0,
+    likelihood_aggregation %in% "groups", 1
+  )
+
   out <- list(sampler = sampler)
   out$data <- list(
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
+    likelihood_aggregation = likelihood_aggregation,
     pp = as.numeric(pp),
     cast = as.numeric(nowcast),
     ologlik = as.numeric(output_loglik)

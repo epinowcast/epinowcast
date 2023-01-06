@@ -97,3 +97,28 @@ check_module <- function(module) {
   }
   return(invisible(NULL))
 }
+
+#' Check that model modules have compatible specifications
+#'
+#' @param modules A list of model modules.
+#'
+#' @return NULL
+#'
+#' @family check
+check_modules_compatible <- function(modules) {
+  if (
+    modules[[4]]$data$model_miss &&
+      !modules[[6]]$data$likelihood_aggregation
+  ) {
+    warning(paste0(
+      "Incompatible model specification: A missingness model has ",
+      "been specified but likelihood aggregation is specified as ",
+      "by snapshot. Switching to likelihood aggregation by group.",
+      " This has no effect on the nowcast but limits the ",
+      "number of threads per chain to the number of groups. To ",
+      "silence this warning, set the `likelihood_aggregation` ",
+      "argument in `enw_fit_opts` to 'groups'."
+    ), immediate. = TRUE)
+  }
+  return(invisible(NULL))
+}
