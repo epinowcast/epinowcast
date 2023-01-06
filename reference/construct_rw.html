@@ -16,7 +16,7 @@ random effect structure.'><!-- Inform modern browsers that this page supports bo
       "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/5/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
     );
   }
-</script><title>Constructs random walk terms — construct_rw • epinowcast</title><!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png"><link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png"><link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png"><link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png"><link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Constructs random walk terms — construct_rw"><meta property="og:description" content='This function takes random walks as defined
+</script><title>Constructs random walk terms — construct_rw • epinowcast</title><!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png"><link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png"><link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png"><link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png"><link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Constructs random walk terms — construct_rw"><meta property="og:description" content='This function takes random walks as defined
 by rw(), produces the required additional variables
 (denoted using a "c" prefix and constructed using
 enw_add_cumulative_membership()), and then returns the
@@ -32,7 +32,7 @@ random effect structure.'><meta property="og:image" content="package.epinowcast.
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,91 +147,91 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday   3    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday   4    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday   5    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday   6    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday   3    0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday   6    0     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday  10    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday  11    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday  12    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday  13    2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday  10    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday  13    1     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday  17    3     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday  18    3     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday  19    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday  20    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday  17    2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday  20    2     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday  24    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday  25    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday  26    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday  27    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday  24    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday  27    3     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday  31    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday  32    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday  33    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday  34    5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday  31    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday  34    4     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday  38    6     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday  39    6     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday  40    6     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday  38    5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5 cweek6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      0      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:      0      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:      1      1      1      1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:      1      1      1      1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:      1      1      1      1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5 cweek6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cweek1" "cweek2" "cweek3" "cweek4" "cweek5" "cweek6"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cweek1" "cweek2" "cweek3" "cweek4" "cweek5"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    effects fixed week</span>
@@ -240,7 +240,6 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:  cweek3     0    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:  cweek4     0    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:  cweek5     0    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:  cweek6     0    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">construct_rw</span><span class="op">(</span><span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">day_of_week</span><span class="op">)</span>, <span class="va">data</span><span class="op">)</span></span></span>
@@ -249,92 +248,92 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday   3    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday   4    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday   5    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday   6    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday   3    0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday   6    0     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday  10    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday  11    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday  12    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday  13    2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday  10    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday  13    1     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday  17    3     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday  18    3     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday  19    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday  20    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday  17    2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday  20    2     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday  24    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday  25    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday  26    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday  27    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday  24    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday  27    3     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday  31    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday  32    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday  33    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday  34    5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday  31    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday  34    4     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday  38    6     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday  39    6     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday  40    6     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday  38    5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5 cweek6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      0      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:      0      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      1      0      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      1      1      0      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24:      1      1      1      0      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31:      1      1      1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:      1      1      1      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:      1      1      1      1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:      1      1      1      1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:      1      1      1      1      1      1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5 cweek6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41:      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "day_of_week:cweek1" "day_of_week:cweek2" "day_of_week:cweek3"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "day_of_week:cweek4" "day_of_week:cweek5" "day_of_week:cweek6"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "day_of_week:cweek4" "day_of_week:cweek5"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         effects fixed day_of_weekTuesday__week</span>
@@ -373,13 +372,6 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:  day_of_weekThursday:cweek5     0                        0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:   day_of_weekTuesday:cweek5     0                        1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35: day_of_weekWednesday:cweek5     0                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:    day_of_weekFriday:cweek6     0                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:    day_of_weekMonday:cweek6     0                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:  day_of_weekSaturday:cweek6     0                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:    day_of_weekSunday:cweek6     0                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:  day_of_weekThursday:cweek6     0                        0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:   day_of_weekTuesday:cweek6     0                        1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42: day_of_weekWednesday:cweek6     0                        0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         effects fixed day_of_weekTuesday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     day_of_weekWednesday__week day_of_weekThursday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                          0                         0</span>
@@ -417,13 +409,6 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:                          0                         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:                          0                         0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35:                          1                         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:                          0                         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:                          0                         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:                          0                         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:                          0                         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:                          0                         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:                          0                         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:                          1                         0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     day_of_weekWednesday__week day_of_weekThursday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     day_of_weekFriday__week day_of_weekSaturday__week day_of_weekSunday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                       1                         0                       0</span>
@@ -461,13 +446,6 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:                       0                         0                       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:                       0                         0                       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35:                       0                         0                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:                       1                         0                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:                       0                         0                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:                       0                         1                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:                       0                         0                       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:                       0                         0                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:                       0                         0                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:                       0                         0                       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     day_of_weekFriday__week day_of_weekSaturday__week day_of_weekSunday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     day_of_weekMonday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                       0</span>
@@ -505,13 +483,6 @@ effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 33:                       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:                       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35:                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36:                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37:                       1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38:                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39:                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40:                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41:                       0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42:                       0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     day_of_weekMonday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
@@ -521,11 +492,11 @@ effects.</p></li>
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 

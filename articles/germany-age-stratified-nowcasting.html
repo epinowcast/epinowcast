@@ -27,8 +27,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="../deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany">
 <meta property="og:description" content="A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.">
@@ -55,7 +55,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -151,12 +151,12 @@ performance.</p>
 <p>This vignette includes several models that take upwards of 30 minutes
 to fit to data on a moderately equipped laptop. To speed up model
 fitting if more CPUs are available set the number of threads used per
-chain to half the number of real cores available (here 2 as we are using
-2 MCMC chains and have 4 real cores). Note this may cause conflicts with
-other processes running on your computer and if this is an issue reduce
-the number of threads used.</p>
+chain to half the number of real cores available (here 6 as we are using
+2 MCMC chains and have 12 real cores available). Note this may cause
+conflicts with other processes running on your computer and if this is
+an issue reduce the number of threads used.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">threads</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<code class="sourceCode R"><span><span class="va">threads</span> <span class="op">&lt;-</span> <span class="fl">6</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -187,6 +187,7 @@ hospitalisations are adjusted.</p>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">retro_nat_germany</span></span>
 <span><span class="co">#&gt;       reference_date location age_group confirm report_date</span></span>
+<span><span class="co">#&gt;               &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
 <span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30  2021-07-23</span></span>
 <span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31  2021-07-24</span></span>
 <span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8  2021-07-25</span></span>
@@ -239,12 +240,18 @@ into total counts after fitting the model.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span>, by <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
-<span><span class="co">#&gt;                     obs           new_confirm               latest missing_reference   reporting_triangle</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt; &lt;data.table[287x10]&gt; &lt;data.table[0x6]&gt; &lt;data.table[287x42]&gt;</span></span>
-<span><span class="co">#&gt;          metareference           metareport          metadelay time snapshots        by groups max_delay</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[287x9]&gt; &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;   41       287 age_group      7        40</span></span>
-<span><span class="co">#&gt;      max_date</span></span>
-<span><span class="co">#&gt; 1: 2021-09-01</span></span></code></pre></div>
+<span><span class="co">#&gt;                     obs           new_confirm               latest</span></span>
+<span><span class="co">#&gt;                  &lt;list&gt;                &lt;list&gt;               &lt;list&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt; &lt;data.table[287x10]&gt;</span></span>
+<span><span class="co">#&gt;    missing_reference   reporting_triangle       metareference</span></span>
+<span><span class="co">#&gt;               &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
+<span><span class="co">#&gt;              metareport          metadelay  time snapshots        by groups</span></span>
+<span><span class="co">#&gt;                  &lt;list&gt;             &lt;list&gt; &lt;int&gt;     &lt;int&gt;    &lt;list&gt;  &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;    41       287 age_group      7</span></span>
+<span><span class="co">#&gt;    max_delay   max_date</span></span>
+<span><span class="co">#&gt;        &lt;num&gt;     &lt;IDat&gt;</span></span>
+<span><span class="co">#&gt; 1:        40 2021-09-01</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="models">Models<a class="anchor" aria-label="anchor" href="#models"></a>
@@ -264,7 +271,7 @@ also need to pass <code>threads_per_chain</code> to
 <code>epinowcast</code>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">multithread_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Note that here we use two chains each using 2 threads as a
+<p>Note that here we use two chains each using 6 threads as a
 demonstration but in general using 4 chains is recommended. Also note
 that warm-up and sampling iterations have been set below default values
 to reduce compute requirements but this may not be sufficient for many
@@ -275,28 +282,89 @@ be done.</p>
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>, </span>
-<span>  iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">250</span>,</span>
-<span>  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span></span>
+<span>  iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
+<span>  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  adapt_delta <span class="op">=</span> <span class="fl">0.98</span>, max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 251.2 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 253.0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 185.8 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 254.7 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 252.1 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 253.1 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; Mean chain execution time: 220.3 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 254.9 seconds.</span></span></code></pre></div>
 <p>We first visualise the observations available to the model, the
 nowcast of final reported hospitalisations and the actual reported
 observations.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/nowcast-1.png" title="plot of chunk nowcast" alt="plot of chunk nowcast" width="100%"></p>
+<p><img src="figures/nowcast-1.png" alt="plot of chunk nowcast" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="using-the-inflated-posterior-as-a-prior">Using the inflated posterior as a prior<a class="anchor" aria-label="anchor" href="#using-the-inflated-posterior-as-a-prior"></a>
+</h3>
+<p>To speed up model fitting we make use of posterior information from
+the previous model (with some inflation) for some parameters. Note that
+this is not a truly Bayesian approach and in some situations may be
+problematic.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
+<span>  <span class="va">nowcast</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"fit"</span>,</span>
+<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">2</span><span class="op">]</span></span>
+<span><span class="va">priors</span></span>
+<span><span class="co">#&gt;            variable      mean    median         sd        mad        q5       q20       q80       q95     rhat ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt;              &lt;char&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1216000 1.1195750 0.08808307 0.04474487 1.0478135 1.0855260 1.1585820 1.1935425 1.004192 1410.998 795.7473</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int[1] 1.7296920 1.7269600 0.09428034 0.04573080 1.6514915 1.6905040 1.7705580 1.8108135 1.008058 2130.656 879.3806</span></span>
+<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.5947632 0.5951165 0.03426963 0.01748208 0.5655864 0.5798324 0.6092524 0.6205295 1.000538 1246.998 795.8234</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="reference-day-of-the-week-effect">Reference day of the week effect<a class="anchor" aria-label="anchor" href="#reference-day-of-the-week-effect"></a>
+</h3>
+<p>The underlying data we are trying to nowcast clearly has day of week
+periodicity. In our default model, a group specific random walk on the
+log of notified cases, this is not accounted for. Accounting for this,
+using a random effect on the day of the week is likely to improve
+nowcast performance and reduce the computation needed to fit the model.
+We can specify this using the <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> module and
+the formula interface as follows.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">expectation_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
+<span>  <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">:</span><span class="va">.group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">exp_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
+<span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
+<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
+<span>  priors <span class="op">=</span> <span class="va">priors</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Chain 1 finished in 327.8 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 693.7 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Both chains finished successfully.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 510.7 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 693.9 seconds.</span></span></code></pre></div>
+<p>We again visualise the nowcasts</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="figures/exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%"></p>
+</div>
+<div class="section level3">
+<h3 id="posterior-predictions">Posterior predictions<a class="anchor" aria-label="anchor" href="#posterior-predictions"></a>
+</h3>
 <p>In order to identify areas where the current model is poorly
 reproducing the data we plot the posterior predictions against the data.
 This plot is faceted age group and reference data with the y axis
@@ -306,10 +374,10 @@ clearly oscillations in reported cases every 7 days which is expressed
 in the plot by oscillations in each facet that appear to move from left
 to right across facets. This indicates that some kind of week day
 adjustment may be needed.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span>, <span class="va">reference_date</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/simple_pp-1.png" title="plot of chunk simple_pp" alt="plot of chunk simple_pp" width="100%"></p>
+<p><img src="figures/simple_pp-1.png" alt="plot of chunk simple_pp" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="reporting-day-of-the-week-effect">Reporting day of the week effect<a class="anchor" aria-label="anchor" href="#reporting-day-of-the-week-effect"></a>
@@ -320,56 +388,38 @@ observations. To adjust for this we introduce a random effect for day of
 the week by date of report using the following helper function which
 uses the metadata produced by <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note
 that <code>epinowcast</code> uses a sparse design matrix to reduce
-runtimes so the design matrix shows only unique rows with
-<code>index</code> containing the mapping to the full design matrix.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+runtimes for some modules so the design matrix shows only unique rows
+with <code>index</code> containing the mapping to the full design
+matrix.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report_module_dow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
-<p>To speed up model fitting we make use of posterior information from
-the previous model (with some inflation) for some parameters. Note that
-this is not a truly Bayesian approach and in some situations may be
-problematic.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
-<span>  <span class="va">nowcast</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"fit"</span>,</span>
-<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">5</span><span class="op">]</span></span>
-<span><span class="va">priors</span></span>
-<span><span class="co">#&gt;            variable      mean    median         sd        mad        q5       q20       q80       q95      rhat</span></span>
-<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1182134 1.1192300 0.22315333 0.04652399 1.0442425 1.0811640 1.1577260 1.1866850 1.0000258</span></span>
-<span><span class="co">#&gt; 2:   refp_sd_int[1] 1.7316064 1.7293350 0.24315907 0.04947436 1.6545550 1.6901300 1.7717060 1.8180690 1.0031889</span></span>
-<span><span class="co">#&gt; 3:         sqrt_phi 0.5951404 0.5945985 0.09781829 0.01983052 0.5641209 0.5782652 0.6118532 0.6261347 0.9989904</span></span>
-<span><span class="co">#&gt;    ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt; 1: 1800.326 775.8310</span></span>
-<span><span class="co">#&gt; 2: 1680.222 834.0991</span></span>
-<span><span class="co">#&gt; 3: 1265.155 762.6747</span></span></code></pre></div>
 <p>We now repeat the nowcasting step with the day of the week reporting
 model included.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dow_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 420.2 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 433.9 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 690.6 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 774.6 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 427.0 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 433.7 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; Mean chain execution time: 732.6 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 774.8 seconds.</span></span></code></pre></div>
 <p>Nowcast performance looks visually improved but there is notable
 variation across age groups with the 35-59 year old nowcast appearing
 quite poor (and as a result the aggregate nowcast also not showing great
 performance). We could also plot the posterior predictions for this
 model in the same way as for the previous model.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dow_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/dow_nowcast-1.png" title="plot of chunk dow_nowcast" alt="plot of chunk dow_nowcast" width="100%"></p>
+<p><img src="figures/dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="age-group-variation">Age group variation<a class="anchor" aria-label="anchor" href="#age-group-variation"></a>
@@ -379,33 +429,34 @@ delay by age and that this may be driving the variation in nowcast
 performance noted for the last model. Here we model this using a random
 effect for 5 year age group (as these were the groups supplied in the
 data).</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 <p>We again nowcast this time using both the age adjusted reference date
 model and the day of the week adjusted report date model.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_age</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 541.0 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 550.5 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 851.4 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 966.5 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 545.8 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 550.3 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; Mean chain execution time: 909.0 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 966.7 seconds.</span></span></code></pre></div>
 <p>Fit looks slightly better with this adjustment though uncertainty has
 also increased for all age groups and performance for the final day of
 data may have reduced compared to the first model.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/age_nowcast-1.png" title="plot of chunk age_nowcast" alt="plot of chunk age_nowcast" width="100%"></p>
+<p><img src="figures/age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="variation-based-on-reference-date">Variation based on reference date<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date"></a>
@@ -418,34 +469,36 @@ number of report date distributions that need to be evaluated in the
 model to the number of weeks of data and as this is an expensive
 computational step using this approach to introducing a time-varying
 parameter limits the additional computational overhead.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_age_week</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>As before we fit the nowcasting model,</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_age_week</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
+<span></span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 935.6 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 959.5 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 1865.2 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 1903.2 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 947.6 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 959.1 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; Mean chain execution time: 1884.2 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 1903.4 seconds.</span></span></code></pre></div>
 <p>In comparison to the previous model it looks like the introduction of
 variation over time has introduce a slight improvement in capturing
 hospitalisations in some age groups.</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/week_nowcast-1.png" title="plot of chunk week_nowcast" alt="plot of chunk week_nowcast" width="100%"></p>
+<p><img src="figures/week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="variation-based-on-reference-date-stratified-by-age">Variation based on reference date stratified by age<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date-stratified-by-age"></a>
@@ -455,43 +508,35 @@ is evidence that reporting delays vary by week and age group jointly. In
 this scenario the assumption is that delays may evolve differently over
 time for each age group but reporting effects and measurement error are
 still shared across data sets.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_week_by_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, by <span class="op">=</span> <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>We can now fit this model as before (note that this model is quite
-complex and so may take some time to fit and that we have had to
-increase the <code>adapt_delta</code> setting to 0.98 here to mitigate
-divergent transitions).</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<p>We can now fit this model as before.</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_week_by_age</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
-<span>  fit <span class="op">=</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
-<span>    save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>, </span>
-<span>    iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>    show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>    adapt_delta <span class="op">=</span> <span class="fl">0.98</span></span>
-<span>  <span class="op">)</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
+<span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 2526.5 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 2605.0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 1936.7 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 2058.0 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 2565.7 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 2603.3 seconds.</span></span></code></pre></div>
+<span><span class="co">#&gt; Mean chain execution time: 1997.3 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 2058.3 seconds.</span></span></code></pre></div>
 <p>In comparison to the previous model it looks like the introduction of
 variation over time has introduce a slight improvement in capturing
 hospitalisations in some age groups.</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/age_week_nowcast-1.png" title="plot of chunk age_week_nowcast" alt="plot of chunk age_week_nowcast" width="100%"></p>
+<p><img src="figures/age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="independent-models-for-each-age-group-">Independent models for each age group.<a class="anchor" aria-label="anchor" href="#independent-models-for-each-age-group-"></a>
@@ -507,7 +552,7 @@ joint setting would likely lead to long fit times for no real benefit.
 Instead here we write a small helper function to preprocess our input
 data, define report and reference date models and then run a
 nowcast.</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">independent_epinowcast</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span> <span class="op">=</span> <span class="fl">40</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">pobs_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">obs</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span>
 <span></span>
@@ -515,6 +560,9 @@ nowcast.</p>
 <span>    data <span class="op">=</span> <span class="va">pobs_ind</span>,</span>
 <span>    reference <span class="op">=</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs_ind</span><span class="op">)</span>,</span>
 <span>    report <span class="op">=</span> <span class="fu"><a href="../reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs_ind</span><span class="op">)</span>,</span>
+<span>    expectation <span class="op">=</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
+<span>      <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs_ind</span></span>
+<span>    <span class="op">)</span>,</span>
 <span>     <span class="va">...</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
@@ -527,7 +575,7 @@ nowcast.</p>
 <p>We can now use this wrapper function on the data available for each
 age group, summarise the resulting nowcast, and then join these into a
 single data frame.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
@@ -536,75 +584,75 @@ single data frame.</p>
 <span>  fit <span class="op">=</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>    save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>, </span>
-<span>    iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>    iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>    show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>    adapt_delta <span class="op">=</span> <span class="fl">0.95</span>, max_treedepth <span class="op">=</span> <span class="fl">12</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 373.2 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 477.8 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 425.5 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 477.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 265.1 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 322.5 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 142.0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 160.4 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 293.8 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 368.4 seconds.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 151.2 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 160.7 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 197.0 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 207.0 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 202.0 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 207.1 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 523.5 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 656.2 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 78.9 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 93.3 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 589.9 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 656.0 seconds.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 86.1 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 93.6 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 477.0 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 513.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 495.4 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 513.6 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 318.7 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 392.0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 69.4 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 82.3 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 355.4 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 391.9 seconds.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 75.9 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 82.6 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 2 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 287.9 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 329.7 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 91.8 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 102.7 seconds.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 308.8 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 329.6 seconds.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 97.2 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 102.9 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Chain 2 finished in 137.2 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 142.7 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Both chains finished successfully.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 140.0 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 142.8 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Chain 2 finished in 91.3 seconds.</span></span>
+<span><span class="co">#&gt; Chain 1 finished in 99.8 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Both chains finished successfully.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 95.5 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 100.0 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Chain 1 finished in 89.0 seconds.</span></span>
+<span><span class="co">#&gt; Chain 2 finished in 99.6 seconds.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Both chains finished successfully.</span></span>
+<span><span class="co">#&gt; Mean chain execution time: 94.3 seconds.</span></span>
+<span><span class="co">#&gt; Total execution time: 99.8 seconds.</span></span>
 <span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
 <p>As we now have the summarised nowcasts rather than an object of class
 <code>epinowcast</code> we need to make use of the underlying plot
@@ -615,12 +663,12 @@ least as well as in the heirarchical models with only minor reductions
 in performance in other age groups. This suggests that for this dataset
 and nowcast date there may be relatively little benefit to jointly
 modelling age groups.</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
 <span>  <span class="va">independent_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/ind_nowcast-1.png" title="plot of chunk ind_nowcast" alt="plot of chunk ind_nowcast" width="100%"></p>
+<p><img src="figures/ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="alternative-models">Alternative models<a class="anchor" aria-label="anchor" href="#alternative-models"></a>
@@ -644,12 +692,11 @@ delays changing independently of reference date (this would be similar
 to the time varying model we defined above but with this effect
 occurring in the report date model rather than in the reference date
 model). These choices are data dependent and domain knowledge needs to
-be used to assess the likely censoring mechanisms.</p>
+be used to assess the likely mechanisms.</p>
 <p>If interested in expanding the functionality of the underlying model
 to address some of these issues note that <code>epinowcast</code> allows
 users to pass in their own models meaning that alternative
-parameterisations, for example altering the forecast model used for
-inferring expected observations, may be easily tested within the package
+parameterisations may be easily tested within the package
 infrastructure. Once this testing has been done alterations that
 increase the flexibility of the package model and improves its defaults
 are very welcome as pull requests.</p>
@@ -662,10 +709,11 @@ are very welcome as pull requests.</p>
 as we went, this evaluation is anything but complete or rigorous but we
 can give some examples of how we might evaluate performance more
 generally and potentially draw some useful initial conclusions.</p>
-<p>We first list all models and give them informative names,</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<p>We first list all models (including the simplest case) and give them
+informative names,</p>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Reference: Fixed, Report: Fixed"</span> <span class="op">=</span> <span class="va">nowcast</span>,</span>
+<span>  <span class="st">"Reference: Fixed, Report: Fixed"</span> <span class="op">=</span> <span class="va">exp_nowcast</span>,</span>
 <span>  <span class="st">"Reference: Fixed, Report: Day of week"</span> <span class="op">=</span> <span class="va">dow_nowcast</span>,</span>
 <span>  <span class="st">"Reference: Age, Report: Day of week"</span> <span class="op">=</span> <span class="va">age_nowcast</span>,</span>
 <span>  <span class="st">"Reference: Age and week, Report: Day of week"</span> <span class="op">=</span> <span class="va">week_nowcast</span>,</span>
@@ -673,7 +721,7 @@ generally and potentially draw some useful initial conclusions.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>and then summarise the nowcast posterior for each model and join into
 a tidy data frame to make further analysis easier.</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcasts</span>, <span class="va">summary</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.05</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">0.95</span>, <span class="fl">0.975</span><span class="op">)</span></span>
@@ -701,12 +749,12 @@ across models with uncertainty generally decreasing as model complexity
 increases. Some age groups are clearly better nowcast than others with
 the 35-59 year old age group in particular having poor nowcast
 coverage.</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
 <span>  <span class="va">summarised_nowcasts</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="figures/unnamed-chunk-20-1.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" width="100%"></p>
+<p><img src="figures/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%"></p>
 <p>As a crude measure of general out of sample performance we can use
 the leave one out information criterion as supplied by the
 <code>loo</code> package though note this is not typically appropriate
@@ -714,15 +762,15 @@ for time series data (<a href="https://cran.r-project.org/web//packages/loo/vign
 approximate LFO cross validation is likely to perform better</a>), the
 approximation used here to avoid refitting is likely to be poor, and we
 are not accounting for this by refitting the model as required.</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">loos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">nowcasts</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">loo</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                                     elpd_diff se_diff</span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week    0.0       0.0 </span></span>
-<span><span class="co">#&gt; Reference: Age and week, Report: Day of week         -15.9       8.0 </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                  -19.2       9.0 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -31.1      10.6 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -608.6      46.9</span></span></code></pre></div>
+<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0       0.0 </span></span>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week  -10.3       3.7 </span></span>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                  -11.0       5.5 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -48.6      10.2 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -609.5      45.1</span></span></code></pre></div>
 <p>We see that the most model which includes day of the week effects for
 the date of report substantially outperformed the baseline model with no
 adjustment and that the more complex models that adjusted for variation
@@ -744,7 +792,7 @@ models that include at least day of the week, age groups and variation
 by week performing comparably. Other performance characteristics are
 relatively similar across models (with all models being biased towards
 underprediction for example).</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span></span>
 <span> <span class="va">summarised_nowcasts</span>,</span>
 <span> <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span></span>
@@ -777,1099 +825,74 @@ underprediction for example).</p>
 <tbody>
 <tr class="odd">
 <td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="right">13.59748</td>
-<td align="right">3.742910</td>
-<td align="right">8.624898</td>
-<td align="right">1.2290424</td>
-<td align="right">-0.1072214</td>
-<td align="right">-0.2357143</td>
-<td align="right">23.58163</td>
+<td align="right">9.818798</td>
+<td align="right">3.139237</td>
+<td align="right">4.339090</td>
+<td align="right">2.3401256</td>
+<td align="right">-0.0930926</td>
+<td align="right">-0.0887755</td>
+<td align="right">16.24490</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="right">17.03306</td>
-<td align="right">2.465567</td>
-<td align="right">13.823407</td>
-<td align="right">0.7472527</td>
-<td align="right">-0.1715856</td>
-<td align="right">-0.3326531</td>
-<td align="right">25.03061</td>
+<td align="right">10.083115</td>
+<td align="right">2.355764</td>
+<td align="right">6.779435</td>
+<td align="right">0.9483516</td>
+<td align="right">-0.1323391</td>
+<td align="right">-0.2265306</td>
+<td align="right">15.54082</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age, Report: Day of week</td>
-<td align="right">14.08898</td>
-<td align="right">2.814904</td>
-<td align="right">10.263265</td>
-<td align="right">1.0163265</td>
-<td align="right">-0.1040816</td>
-<td align="right">-0.1959184</td>
-<td align="right">21.79592</td>
+<td align="right">8.562323</td>
+<td align="right">2.317488</td>
+<td align="right">5.592465</td>
+<td align="right">0.6524333</td>
+<td align="right">-0.1354788</td>
+<td align="right">-0.3581633</td>
+<td align="right">13.86735</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="right">13.46729</td>
-<td align="right">2.990330</td>
-<td align="right">9.387520</td>
-<td align="right">1.0909890</td>
-<td align="right">-0.0821036</td>
-<td align="right">-0.1704082</td>
-<td align="right">21.16327</td>
+<td align="right">7.569366</td>
+<td align="right">2.899246</td>
+<td align="right">1.156672</td>
+<td align="right">3.5136578</td>
+<td align="right">-0.0255887</td>
+<td align="right">0.1285714</td>
+<td align="right">12.42857</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age and week by age, Report: Day of
 week</td>
-<td align="right">14.68425</td>
-<td align="right">3.063155</td>
-<td align="right">10.799152</td>
-<td align="right">0.8200942</td>
-<td align="right">-0.0993721</td>
-<td align="right">-0.2244898</td>
-<td align="right">23.08163</td>
+<td align="right">6.797542</td>
+<td align="right">3.034496</td>
+<td align="right">1.942857</td>
+<td align="right">1.8197802</td>
+<td align="right">0.0215071</td>
+<td align="right">-0.1357143</td>
+<td align="right">11.28571</td>
 </tr>
 <tr class="even">
 <td align="left">Independent by age, Reference: Week, Report: Day of
 week</td>
-<td align="right">11.10881</td>
-<td align="right">3.573224</td>
-<td align="right">6.482575</td>
-<td align="right">1.0540031</td>
-<td align="right">-0.0161695</td>
-<td align="right">-0.2744898</td>
-<td align="right">18.35714</td>
+<td align="right">7.277953</td>
+<td align="right">3.854562</td>
+<td align="right">1.538305</td>
+<td align="right">1.8845212</td>
+<td align="right">0.0419152</td>
+<td align="right">-0.0591837</td>
+<td align="right">12.26531</td>
 </tr>
 </tbody>
 </table>
-<p>Stratifying by age group we see that trends in performance are fairly
-consistent with some small variation in the ordering of which model out
-performs the others.</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">score</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="34%">
-<col width="6%">
-<col width="9%">
-<col width="6%">
-<col width="9%">
-<col width="9%">
-<col width="11%">
-<col width="6%">
-<col width="6%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">model</th>
-<th align="left">age_group</th>
-<th align="right">interval_score</th>
-<th align="right">dispersion</th>
-<th align="right">underprediction</th>
-<th align="right">overprediction</th>
-<th align="right">coverage_deviation</th>
-<th align="right">bias</th>
-<th align="right">ae_median</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">00+</td>
-<td align="right">40.395824</td>
-<td align="right">12.8872527</td>
-<td align="right">23.9703297</td>
-<td align="right">3.5274725</td>
-<td align="right">-0.1967033</td>
-<td align="right">-0.4428571</td>
-<td align="right">75.928571</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">00+</td>
-<td align="right">52.469451</td>
-<td align="right">7.4687912</td>
-<td align="right">43.4962637</td>
-<td align="right">1.5274725</td>
-<td align="right">-0.3725275</td>
-<td align="right">-0.6642857</td>
-<td align="right">81.928571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">00+</td>
-<td align="right">40.295385</td>
-<td align="right">8.7615385</td>
-<td align="right">29.3164835</td>
-<td align="right">2.2549451</td>
-<td align="right">-0.1967033</td>
-<td align="right">-0.5285714</td>
-<td align="right">67.428571</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">00+</td>
-<td align="right">38.648791</td>
-<td align="right">9.2751648</td>
-<td align="right">26.9780220</td>
-<td align="right">2.4175824</td>
-<td align="right">-0.1527473</td>
-<td align="right">-0.4285714</td>
-<td align="right">64.714286</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">00+</td>
-<td align="right">41.927253</td>
-<td align="right">9.7698901</td>
-<td align="right">30.5951648</td>
-<td align="right">1.5494505</td>
-<td align="right">-0.1747253</td>
-<td align="right">-0.5428571</td>
-<td align="right">71.857143</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">00+</td>
-<td align="right">34.670769</td>
-<td align="right">11.0435165</td>
-<td align="right">20.1868132</td>
-<td align="right">3.4483516</td>
-<td align="right">-0.0428571</td>
-<td align="right">-0.3214286</td>
-<td align="right">57.142857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">00-04</td>
-<td align="right">1.733539</td>
-<td align="right">0.6566154</td>
-<td align="right">0.0000000</td>
-<td align="right">1.0769231</td>
-<td align="right">-0.0538462</td>
-<td align="right">0.5785714</td>
-<td align="right">2.571429</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">00-04</td>
-<td align="right">2.061868</td>
-<td align="right">0.6225275</td>
-<td align="right">0.0329670</td>
-<td align="right">1.4065934</td>
-<td align="right">-0.1417582</td>
-<td align="right">0.5357143</td>
-<td align="right">3.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">00-04</td>
-<td align="right">2.325495</td>
-<td align="right">0.6332967</td>
-<td align="right">0.0109890</td>
-<td align="right">1.6813187</td>
-<td align="right">-0.1857143</td>
-<td align="right">0.6142857</td>
-<td align="right">3.428571</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">00-04</td>
-<td align="right">2.357253</td>
-<td align="right">0.6980440</td>
-<td align="right">0.0109890</td>
-<td align="right">1.6483516</td>
-<td align="right">-0.1747253</td>
-<td align="right">0.6285714</td>
-<td align="right">3.571429</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">00-04</td>
-<td align="right">2.177846</td>
-<td align="right">0.6393846</td>
-<td align="right">0.0109890</td>
-<td align="right">1.5274725</td>
-<td align="right">-0.1637363</td>
-<td align="right">0.6214286</td>
-<td align="right">3.142857</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">00-04</td>
-<td align="right">1.005407</td>
-<td align="right">0.4779341</td>
-<td align="right">0.2857143</td>
-<td align="right">0.2417582</td>
-<td align="right">0.0560440</td>
-<td align="right">0.0285714</td>
-<td align="right">1.714286</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">05-14</td>
-<td align="right">1.206593</td>
-<td align="right">0.5032967</td>
-<td align="right">0.5604396</td>
-<td align="right">0.1428571</td>
-<td align="right">0.0890110</td>
-<td align="right">-0.2214286</td>
-<td align="right">2.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">05-14</td>
-<td align="right">1.321451</td>
-<td align="right">0.4758681</td>
-<td align="right">0.6917582</td>
-<td align="right">0.1538462</td>
-<td align="right">0.0340659</td>
-<td align="right">-0.2142857</td>
-<td align="right">2.142857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">05-14</td>
-<td align="right">1.277143</td>
-<td align="right">0.5298901</td>
-<td align="right">0.5274725</td>
-<td align="right">0.2197802</td>
-<td align="right">0.0670330</td>
-<td align="right">-0.0928571</td>
-<td align="right">2.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">05-14</td>
-<td align="right">1.293451</td>
-<td align="right">0.5253626</td>
-<td align="right">0.5483516</td>
-<td align="right">0.2197802</td>
-<td align="right">0.0670330</td>
-<td align="right">-0.0928571</td>
-<td align="right">2.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">05-14</td>
-<td align="right">1.318154</td>
-<td align="right">0.4829890</td>
-<td align="right">0.6153846</td>
-<td align="right">0.2197802</td>
-<td align="right">0.0670330</td>
-<td align="right">-0.0928571</td>
-<td align="right">2.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">05-14</td>
-<td align="right">1.557099</td>
-<td align="right">0.4800659</td>
-<td align="right">0.9670330</td>
-<td align="right">0.1098901</td>
-<td align="right">-0.0318681</td>
-<td align="right">-0.3571429</td>
-<td align="right">2.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">15-34</td>
-<td align="right">7.396484</td>
-<td align="right">2.8349451</td>
-<td align="right">2.2109890</td>
-<td align="right">2.3505495</td>
-<td align="right">-0.0868132</td>
-<td align="right">-0.1571429</td>
-<td align="right">13.142857</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">15-34</td>
-<td align="right">6.199231</td>
-<td align="right">2.1223077</td>
-<td align="right">2.6813187</td>
-<td align="right">1.3956044</td>
-<td align="right">-0.1087912</td>
-<td align="right">-0.3000000</td>
-<td align="right">11.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">15-34</td>
-<td align="right">5.712242</td>
-<td align="right">2.3825934</td>
-<td align="right">1.5494505</td>
-<td align="right">1.7802198</td>
-<td align="right">-0.0428571</td>
-<td align="right">-0.0571429</td>
-<td align="right">10.428571</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">15-34</td>
-<td align="right">5.824505</td>
-<td align="right">2.5293407</td>
-<td align="right">1.3296703</td>
-<td align="right">1.9665934</td>
-<td align="right">-0.0208791</td>
-<td align="right">-0.0285714</td>
-<td align="right">10.571429</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">15-34</td>
-<td align="right">6.134637</td>
-<td align="right">2.5632088</td>
-<td align="right">2.0285714</td>
-<td align="right">1.5428571</td>
-<td align="right">-0.0648352</td>
-<td align="right">-0.1428571</td>
-<td align="right">11.142857</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">15-34</td>
-<td align="right">6.215275</td>
-<td align="right">3.2262637</td>
-<td align="right">1.0329670</td>
-<td align="right">1.9560440</td>
-<td align="right">0.0230769</td>
-<td align="right">-0.0857143</td>
-<td align="right">10.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">35-59</td>
-<td align="right">31.341758</td>
-<td align="right">4.7378022</td>
-<td align="right">26.5116484</td>
-<td align="right">0.0989011</td>
-<td align="right">-0.3505495</td>
-<td align="right">-0.7071429</td>
-<td align="right">47.142857</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">35-59</td>
-<td align="right">41.807473</td>
-<td align="right">3.0267253</td>
-<td align="right">38.7802198</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.4384615</td>
-<td align="right">-0.8785714</td>
-<td align="right">53.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">35-59</td>
-<td align="right">35.731868</td>
-<td align="right">3.5010989</td>
-<td align="right">32.2197802</td>
-<td align="right">0.0109890</td>
-<td align="right">-0.4164835</td>
-<td align="right">-0.8142857</td>
-<td align="right">48.285714</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">35-59</td>
-<td align="right">33.608352</td>
-<td align="right">3.7272527</td>
-<td align="right">29.8236264</td>
-<td align="right">0.0439560</td>
-<td align="right">-0.3945055</td>
-<td align="right">-0.8000000</td>
-<td align="right">47.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">35-59</td>
-<td align="right">37.469451</td>
-<td align="right">3.7674725</td>
-<td align="right">33.7021978</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.3835165</td>
-<td align="right">-0.8285714</td>
-<td align="right">51.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">35-59</td>
-<td align="right">19.760659</td>
-<td align="right">5.3021978</td>
-<td align="right">13.5956044</td>
-<td align="right">0.8637363</td>
-<td align="right">-0.0648352</td>
-<td align="right">-0.4285714</td>
-<td align="right">32.642857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">60-79</td>
-<td align="right">7.776703</td>
-<td align="right">2.6556044</td>
-<td align="right">4.1648352</td>
-<td align="right">0.9560440</td>
-<td align="right">-0.0868132</td>
-<td align="right">-0.3071429</td>
-<td align="right">14.571429</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">60-79</td>
-<td align="right">9.655055</td>
-<td align="right">2.0280220</td>
-<td align="right">7.1538462</td>
-<td align="right">0.4725275</td>
-<td align="right">-0.0648352</td>
-<td align="right">-0.3357143</td>
-<td align="right">14.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">60-79</td>
-<td align="right">8.608198</td>
-<td align="right">2.2440220</td>
-<td align="right">5.5934066</td>
-<td align="right">0.7714286</td>
-<td align="right">0.0010989</td>
-<td align="right">-0.1857143</td>
-<td align="right">12.857143</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">60-79</td>
-<td align="right">7.991429</td>
-<td align="right">2.3859341</td>
-<td align="right">4.7604396</td>
-<td align="right">0.8461538</td>
-<td align="right">0.0560440</td>
-<td align="right">-0.1571429</td>
-<td align="right">12.142857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">60-79</td>
-<td align="right">8.719473</td>
-<td align="right">2.4207912</td>
-<td align="right">5.6945055</td>
-<td align="right">0.6043956</td>
-<td align="right">0.0010989</td>
-<td align="right">-0.2428571</td>
-<td align="right">13.428571</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">60-79</td>
-<td align="right">7.854088</td>
-<td align="right">2.7017802</td>
-<td align="right">4.4802198</td>
-<td align="right">0.6703297</td>
-<td align="right">0.0560440</td>
-<td align="right">-0.1642857</td>
-<td align="right">12.142857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">80+</td>
-<td align="right">5.331450</td>
-<td align="right">1.9248571</td>
-<td align="right">2.9560440</td>
-<td align="right">0.4505495</td>
-<td align="right">-0.0648352</td>
-<td align="right">-0.3928571</td>
-<td align="right">9.714286</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">80+</td>
-<td align="right">5.716923</td>
-<td align="right">1.5147253</td>
-<td align="right">3.9274725</td>
-<td align="right">0.2747253</td>
-<td align="right">-0.1087912</td>
-<td align="right">-0.4714286</td>
-<td align="right">9.857143</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">80+</td>
-<td align="right">4.672549</td>
-<td align="right">1.6518901</td>
-<td align="right">2.6252747</td>
-<td align="right">0.3956044</td>
-<td align="right">0.0450549</td>
-<td align="right">-0.3071429</td>
-<td align="right">8.142857</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">80+</td>
-<td align="right">4.547253</td>
-<td align="right">1.7912088</td>
-<td align="right">2.2615385</td>
-<td align="right">0.4945055</td>
-<td align="right">0.0450549</td>
-<td align="right">-0.3142857</td>
-<td align="right">7.857143</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">80+</td>
-<td align="right">5.042967</td>
-<td align="right">1.7983516</td>
-<td align="right">2.9472527</td>
-<td align="right">0.2967033</td>
-<td align="right">0.0230769</td>
-<td align="right">-0.3428571</td>
-<td align="right">9.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">80+</td>
-<td align="right">6.698396</td>
-<td align="right">1.7808132</td>
-<td align="right">4.8296703</td>
-<td align="right">0.0879121</td>
-<td align="right">-0.1087912</td>
-<td align="right">-0.5928571</td>
-<td align="right">12.285714</td>
-</tr>
-</tbody>
-</table>
-<p>Stratifying by date we find that interestingly the more complex
-models appear to do better for earlier dates (for which more data is
-available) with the addition of age group appearing to be the factor
-that drives this increase in performance. Our finding from the overall
-summary that the simple model performed comparably appears to be largely
-driven by performance for the last nowcast target where this model
-significantly outperformed the others (this underlines the need to
-evaluate nowcasts from different dates as this single data point may be
-may anomalous or we may have identified a real trend).</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">score</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
-<colgroup>
-<col width="33%">
-<col width="8%">
-<col width="8%">
-<col width="6%">
-<col width="9%">
-<col width="8%">
-<col width="11%">
-<col width="6%">
-<col width="5%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">model</th>
-<th align="left">reference_date</th>
-<th align="right">interval_score</th>
-<th align="right">dispersion</th>
-<th align="right">underprediction</th>
-<th align="right">overprediction</th>
-<th align="right">coverage_deviation</th>
-<th align="right">bias</th>
-<th align="right">ae_median</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-08-26</td>
-<td align="right">12.322637</td>
-<td align="right">2.084396</td>
-<td align="right">10.2285714</td>
-<td align="right">0.0109890</td>
-<td align="right">-0.1087912</td>
-<td align="right">-0.6071429</td>
-<td align="right">19.714286</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-08-26</td>
-<td align="right">14.433516</td>
-<td align="right">1.647055</td>
-<td align="right">12.7516484</td>
-<td align="right">0.0329670</td>
-<td align="right">-0.1747253</td>
-<td align="right">-0.5928571</td>
-<td align="right">19.714286</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-08-26</td>
-<td align="right">8.592374</td>
-<td align="right">1.961385</td>
-<td align="right">6.4571429</td>
-<td align="right">0.1758242</td>
-<td align="right">-0.0428571</td>
-<td align="right">-0.3285714</td>
-<td align="right">14.285714</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-08-26</td>
-<td align="right">7.974615</td>
-<td align="right">2.113736</td>
-<td align="right">5.6725275</td>
-<td align="right">0.1868132</td>
-<td align="right">0.0010989</td>
-<td align="right">-0.2857143</td>
-<td align="right">13.428571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-08-26</td>
-<td align="right">8.186835</td>
-<td align="right">2.429692</td>
-<td align="right">5.6153846</td>
-<td align="right">0.1428571</td>
-<td align="right">0.0010989</td>
-<td align="right">-0.2857143</td>
-<td align="right">14.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-08-26</td>
-<td align="right">5.986945</td>
-<td align="right">2.299912</td>
-<td align="right">3.6879121</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.0648352</td>
-<td align="right">-0.7000000</td>
-<td align="right">11.428571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-08-27</td>
-<td align="right">11.093846</td>
-<td align="right">2.269890</td>
-<td align="right">8.7142857</td>
-<td align="right">0.1098901</td>
-<td align="right">-0.2186813</td>
-<td align="right">-0.5428571</td>
-<td align="right">18.571429</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-08-27</td>
-<td align="right">11.722857</td>
-<td align="right">1.764308</td>
-<td align="right">9.8056044</td>
-<td align="right">0.1538462</td>
-<td align="right">-0.2626374</td>
-<td align="right">-0.5000000</td>
-<td align="right">17.571429</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-08-27</td>
-<td align="right">7.732791</td>
-<td align="right">2.151033</td>
-<td align="right">5.3054945</td>
-<td align="right">0.2769231</td>
-<td align="right">-0.1527473</td>
-<td align="right">-0.3500000</td>
-<td align="right">13.285714</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-08-27</td>
-<td align="right">7.578352</td>
-<td align="right">2.202352</td>
-<td align="right">5.1890110</td>
-<td align="right">0.1868132</td>
-<td align="right">-0.1307692</td>
-<td align="right">-0.4071429</td>
-<td align="right">12.500000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-08-27</td>
-<td align="right">8.913429</td>
-<td align="right">2.343758</td>
-<td align="right">6.4164835</td>
-<td align="right">0.1538462</td>
-<td align="right">-0.1527473</td>
-<td align="right">-0.4357143</td>
-<td align="right">14.214286</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-08-27</td>
-<td align="right">5.456484</td>
-<td align="right">2.713516</td>
-<td align="right">2.6769231</td>
-<td align="right">0.0659341</td>
-<td align="right">-0.0098901</td>
-<td align="right">-0.4428571</td>
-<td align="right">10.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-08-28</td>
-<td align="right">12.629451</td>
-<td align="right">2.540000</td>
-<td align="right">9.7281319</td>
-<td align="right">0.3626374</td>
-<td align="right">-0.2406593</td>
-<td align="right">-0.5142857</td>
-<td align="right">22.642857</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-08-28</td>
-<td align="right">10.471319</td>
-<td align="right">2.174725</td>
-<td align="right">7.8131868</td>
-<td align="right">0.4835165</td>
-<td align="right">-0.1637363</td>
-<td align="right">-0.4142857</td>
-<td align="right">17.571429</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-08-28</td>
-<td align="right">7.749451</td>
-<td align="right">2.456044</td>
-<td align="right">4.7208791</td>
-<td align="right">0.5714286</td>
-<td align="right">-0.0758242</td>
-<td align="right">-0.3142857</td>
-<td align="right">13.571429</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-08-28</td>
-<td align="right">8.477143</td>
-<td align="right">2.543736</td>
-<td align="right">5.4060440</td>
-<td align="right">0.5274725</td>
-<td align="right">-0.0758242</td>
-<td align="right">-0.3142857</td>
-<td align="right">15.142857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-08-28</td>
-<td align="right">10.191231</td>
-<td align="right">2.267055</td>
-<td align="right">7.4406593</td>
-<td align="right">0.4835165</td>
-<td align="right">-0.1637363</td>
-<td align="right">-0.4142857</td>
-<td align="right">17.428571</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-08-28</td>
-<td align="right">4.538506</td>
-<td align="right">3.169714</td>
-<td align="right">1.2571429</td>
-<td align="right">0.1098901</td>
-<td align="right">0.0890110</td>
-<td align="right">-0.2857143</td>
-<td align="right">7.428571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-08-29</td>
-<td align="right">13.520242</td>
-<td align="right">2.703319</td>
-<td align="right">10.5758242</td>
-<td align="right">0.2417582</td>
-<td align="right">-0.0978022</td>
-<td align="right">-0.4000000</td>
-<td align="right">22.428571</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-08-29</td>
-<td align="right">13.445714</td>
-<td align="right">2.190659</td>
-<td align="right">10.8373626</td>
-<td align="right">0.4175824</td>
-<td align="right">-0.1527473</td>
-<td align="right">-0.3357143</td>
-<td align="right">20.642857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-08-29</td>
-<td align="right">10.712418</td>
-<td align="right">2.492747</td>
-<td align="right">7.7692308</td>
-<td align="right">0.4505495</td>
-<td align="right">-0.0868132</td>
-<td align="right">-0.2142857</td>
-<td align="right">17.714286</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-08-29</td>
-<td align="right">10.977582</td>
-<td align="right">2.611978</td>
-<td align="right">7.8956044</td>
-<td align="right">0.4725275</td>
-<td align="right">-0.0868132</td>
-<td align="right">-0.2142857</td>
-<td align="right">17.928571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-08-29</td>
-<td align="right">12.220110</td>
-<td align="right">2.623846</td>
-<td align="right">9.1582418</td>
-<td align="right">0.4395604</td>
-<td align="right">-0.1087912</td>
-<td align="right">-0.2428571</td>
-<td align="right">20.285714</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-08-29</td>
-<td align="right">6.071451</td>
-<td align="right">3.212110</td>
-<td align="right">2.7934066</td>
-<td align="right">0.0659341</td>
-<td align="right">0.1000000</td>
-<td align="right">-0.3142857</td>
-<td align="right">11.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-08-30</td>
-<td align="right">9.853407</td>
-<td align="right">3.294066</td>
-<td align="right">0.0000000</td>
-<td align="right">6.5593407</td>
-<td align="right">-0.2406593</td>
-<td align="right">0.8214286</td>
-<td align="right">17.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-08-30</td>
-<td align="right">6.316615</td>
-<td align="right">2.239692</td>
-<td align="right">0.0329670</td>
-<td align="right">4.0439560</td>
-<td align="right">-0.1747253</td>
-<td align="right">0.7071429</td>
-<td align="right">11.000000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-08-30</td>
-<td align="right">7.882220</td>
-<td align="right">2.483780</td>
-<td align="right">0.0000000</td>
-<td align="right">5.3978022</td>
-<td align="right">-0.2626374</td>
-<td align="right">0.8142857</td>
-<td align="right">13.142857</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-08-30</td>
-<td align="right">8.512198</td>
-<td align="right">2.567824</td>
-<td align="right">0.0000000</td>
-<td align="right">5.9446154</td>
-<td align="right">-0.2626374</td>
-<td align="right">0.8142857</td>
-<td align="right">14.428571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-08-30</td>
-<td align="right">7.042747</td>
-<td align="right">2.702088</td>
-<td align="right">0.0000000</td>
-<td align="right">4.3406593</td>
-<td align="right">-0.2076923</td>
-<td align="right">0.7642857</td>
-<td align="right">11.285714</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-08-30</td>
-<td align="right">9.866857</td>
-<td align="right">3.202681</td>
-<td align="right">0.0000000</td>
-<td align="right">6.6637363</td>
-<td align="right">-0.1527473</td>
-<td align="right">0.7571429</td>
-<td align="right">17.285714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-08-31</td>
-<td align="right">6.657275</td>
-<td align="right">5.074857</td>
-<td align="right">0.2747253</td>
-<td align="right">1.3076923</td>
-<td align="right">0.1659341</td>
-<td align="right">0.1142857</td>
-<td align="right">9.714286</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-08-31</td>
-<td align="right">6.528571</td>
-<td align="right">2.795604</td>
-<td align="right">3.6329670</td>
-<td align="right">0.0989011</td>
-<td align="right">0.0010989</td>
-<td align="right">-0.4642857</td>
-<td align="right">11.571429</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-08-31</td>
-<td align="right">5.409670</td>
-<td align="right">3.200000</td>
-<td align="right">1.9670330</td>
-<td align="right">0.2417582</td>
-<td align="right">0.1109890</td>
-<td align="right">-0.3000000</td>
-<td align="right">8.571429</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-08-31</td>
-<td align="right">5.206418</td>
-<td align="right">3.558945</td>
-<td align="right">1.3395604</td>
-<td align="right">0.3076923</td>
-<td align="right">0.1659341</td>
-<td align="right">-0.1714286</td>
-<td align="right">5.785714</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-08-31</td>
-<td align="right">6.042308</td>
-<td align="right">3.647802</td>
-<td align="right">2.2142857</td>
-<td align="right">0.1802198</td>
-<td align="right">0.1329670</td>
-<td align="right">-0.2857143</td>
-<td align="right">10.071429</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-08-31</td>
-<td align="right">5.577275</td>
-<td align="right">4.341011</td>
-<td align="right">0.7637363</td>
-<td align="right">0.4725275</td>
-<td align="right">0.1000000</td>
-<td align="right">-0.2428571</td>
-<td align="right">5.500000</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="left">2021-09-01</td>
-<td align="right">29.105494</td>
-<td align="right">8.233846</td>
-<td align="right">20.8527473</td>
-<td align="right">0.0109890</td>
-<td align="right">-0.0098901</td>
-<td align="right">-0.5214286</td>
-<td align="right">55.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="left">2021-09-01</td>
-<td align="right">56.312857</td>
-<td align="right">4.446923</td>
-<td align="right">51.8901099</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.2736264</td>
-<td align="right">-0.7285714</td>
-<td align="right">77.142857</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age, Report: Day of week</td>
-<td align="left">2021-09-01</td>
-<td align="right">50.543956</td>
-<td align="right">4.959341</td>
-<td align="right">45.6230769</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.2186813</td>
-<td align="right">-0.6785714</td>
-<td align="right">72.000000</td>
-</tr>
-<tr class="even">
-<td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="left">2021-09-01</td>
-<td align="right">45.544725</td>
-<td align="right">5.333736</td>
-<td align="right">40.2098901</td>
-<td align="right">0.0109890</td>
-<td align="right">-0.1857143</td>
-<td align="right">-0.6142857</td>
-<td align="right">68.928571</td>
-</tr>
-<tr class="odd">
-<td align="left">Reference: Age and week by age, Report: Day of
-week</td>
-<td align="left">2021-09-01</td>
-<td align="right">50.193121</td>
-<td align="right">5.427846</td>
-<td align="right">44.7490110</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.1967033</td>
-<td align="right">-0.6714286</td>
-<td align="right">74.285714</td>
-</tr>
-<tr class="even">
-<td align="left">Independent by age, Reference: Week, Report: Day of
-week</td>
-<td align="left">2021-09-01</td>
-<td align="right">40.264176</td>
-<td align="right">6.073626</td>
-<td align="right">34.1989011</td>
-<td align="right">0.0000000</td>
-<td align="right">-0.1747253</td>
-<td align="right">-0.6928571</td>
-<td align="right">65.285714</td>
-</tr>
-</tbody>
-</table>
-<p>Finally we can look across all scores relative to the simple model
-with no variation. This nicely captures the role of the last data point
-on performance but also highlights more variation across reference dates
+<p>Finally we look across all scores relative to the simple model with
+no variation. This nicely captures the role of the last data point on
+performance but also highlights more variation across reference dates
 and age groups between models. The difference in performance between the
 hierarchical by age models and the model that treats age groups
-independently is also very clear with only this model performing well
-for all days in the 35-59 year age group.</p>
+independently is also very clear.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_date_score</span> <span class="op">&lt;-</span> <span class="va">score</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span></span>
@@ -1897,7 +920,7 @@ for all days in the 35-59 year age group.</p>
 <span>       y <span class="op">=</span> <span class="st">"Weighted interval score (relative to Reference: Fixed, Report: Fixed model)"</span><span class="op">)</span> <span class="op">+</span> <span class="co"># nolint</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>col <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Model"</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">plot</span></span></code></pre></div>
-<p><img src="figures/performance-1.png" title="plot of chunk performance" alt="plot of chunk performance" width="100%"></p>
+<p><img src="figures/performance-1.png" alt="plot of chunk performance" width="100%"></p>
 </div>
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
@@ -1942,12 +965,12 @@ more important to nowcast correctly than groups with smaller counts
 
     <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk.</p>
+<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 

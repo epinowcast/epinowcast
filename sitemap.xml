@@ -34,6 +34,9 @@
     <loc>package.epinowcast.org/news/index.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/add_pmfs.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/as_string_formula.html</loc>
   </url>
   <url>
@@ -46,7 +49,13 @@
     <loc>package.epinowcast.org/reference/check_module.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/check_modules_compatible.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/check_quantiles.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/coerce_date.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/construct_re.html</loc>
@@ -56,6 +65,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/reference/convert_cmdstan_to_rstan.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/convolution_matrix.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_add_cumulative_membership.html</loc>
@@ -83,6 +95,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_construct_data.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/enw_cumulative_to_incidence.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_dates_to_factors.html</loc>
@@ -124,6 +139,9 @@
     <loc>package.epinowcast.org/reference/enw_formula_as_data_list.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/enw_incidence_to_cumulative.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/enw_latest_data.html</loc>
   </url>
   <url>
@@ -140,9 +158,6 @@
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_model.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/reference/enw_new_reports.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_nowcast_samples.html</loc>
@@ -187,6 +202,9 @@
     <loc>package.epinowcast.org/reference/enw_reference.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/enw_reference_by_report.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/enw_replace_priors.html</loc>
   </url>
   <url>
@@ -199,10 +217,16 @@
     <loc>package.epinowcast.org/reference/enw_reporting_triangle_to_long.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/enw_reps_with_complete_refs.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/enw_sample.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_score_nowcast.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/enw_simulate_missing_reference.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_summarise_samples.html</loc>
@@ -217,6 +241,9 @@
     <loc>package.epinowcast.org/reference/expose_stan_fns.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/extract_sparse_matrix.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/germany_covid19_hosp.html</loc>
   </url>
   <url>
@@ -224,6 +251,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/reference/is.Date.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/latest_obs_as_matrix.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/parse_formula.html</loc>
