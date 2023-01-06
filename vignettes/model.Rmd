@@ -23,11 +23,13 @@ knitr::opts_chunk$set(
 
 The `epinowcast` package aims to be a modular toolbox for real-time infectious disease surveillance both in outbreak and routine contexts. As such we provide a modular modelling framework that is optimised for a range of common surveillance tasks whilst maintaining flexibility and supporting user extension.
 
-We provide a flexible semi-parametric model for the underlying generative process similar to that implemented in other real-time infectious disease modelling packages [@EpiNow2; @epidemia]. This optionally includes a renewal process [@Fraser2007; @Cori2013] and latent reporting process [@EpiNow2; @bhatt2020]. Combined with the appropriate generation time distribution this approach has been shown to correspond to a Susceptible-Exposed-Infected-Recovered (SEIR) model [@@champredon]. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
+We provide a flexible semi-parametric model for the underlying generative process similar to that implemented in other real-time infectious disease modelling packages [@EpiNow2; @epidemia]. This optionally includes a renewal process [@Fraser2007; @Cori2013] and latent reporting process [@EpiNow2; @Abbott2020; @Bhatt2020]. Combined with the appropriate generation time distribution this approach has been shown to correspond to a Susceptible-Exposed-Infected-Recovered (SEIR) model [@champredon] with the addition of reporting delays. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
 
 Our nowcasting approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates.
 
-Our modelling framework is immplemented in the `stan` probalistic programming language via `cmdstanr` [@stan; @cmdstanr] with a focus on computational efficiency and robustness.
+We also support flexible joint modelling of missing data by assuming that the reporting delay is consistent between reported and unreported observations following the methodology of Lison et al. [@Lison2022].
+
+Our modelling framework is implemented in the `stan` probalistic programming language via `cmdstanr` [@stan; @cmdstanr] with a focus on computational efficiency and robustness.
 
 In the following sections we outline our modelling methodolgy and current feature set stratified by module. For each module we present both our default implementation as well as the more generic framework we support. Note that extensions to this methodology are warmly welcomed with our [community site](https://community.epinowcast.org/) being a good first point of contact.
 
@@ -60,21 +62,21 @@ where $N_{g0}$, the first time point for expected observations in dataset $d$, i
 
 ## Generalised model
 
-In settings where data is sparse or where users want to understand the underlying generative process our flexible default model is likely not a good choice. In these settings our generic model offers a range of options that are context specific.
+In settings where data is sparse or where users want to understand the underlying generative process our flexible default model is likely not a good choice. In these settings our generic model offers a range of options that are context specific. Our generic model is currently based on a renewal process [@Fraser2007; @Cori2013] with additional latent reporting delays [@EpiNow2; @Abbott2020; @Bhatt2020]. As previously noted [@champredon], this corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when appropriate generation time is specified [@champredon]
 
 ## Instantaneous reproduction number/growth rate
 
-We model the instantaneous reproduction number ($R_t$) on the log scale (though other links will be supported in the future). When the generation time is fixed to be a day this can be interpreted as the instantaneous growth rate ($r_t$) defined as the difference in the log of the expected number of final notifications between time $t$ and $t-1$.
+We model the instantaneous reproduction number ($R_t$) on the log scale (though support for other link functions is planned). When the generation time is fixed to be a day this can be interpreted as the instantaneous growth rate ($r_t$) defined as the difference in the log of the expected number of final notifications between time $t$ and $t-1$.
 
 \begin{equation}
   \text{log} (R_{g,t}) = r_0 + \beta_{f,r} X_{r} + \beta_{r,r} Z_{r}
 \end{equation}
 
-where $r_0$ is the optional intercept, $X_{r}$ is the design matrix for fixed effects ($\beta_{f,r}$), and $Z_{r}$ is the design matrix for random effects ($\beta_{r,r}$. Within this specification the default model can be specified as a random effect on the day with no intercept.
+where $r_0$ is the optional intercept, $X_{r}$ is the design matrix for fixed effects ($\beta_{f,r}$), and $Z_{r}$ is the design matrix for random effects ($\beta_{r,r}$. Within this specification the default model can be specified as a random effect on the day with no intercept. Alternative specifications that may be of interest include a weekly random walk (specifed as `~ 1 + rw(week)`), a piecewise linear model (specified as `~ 1 + day:week`), and a group specific random effect (specified as `~ 1 + (1 | .group)`).
 
 ## Latent infections/notifications
 
-We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process. This model is a generalisation of the default model and can be used to model the expected number of latent notifications in a setting where the generation time is not fixed to be a day. An instantaneous daily growth rate model can be recovered by setting the generation time to be fixed at 1 day. The model is defined as follows,
+We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process [@Fraser2007; @Cori2013]. This model is a generalisation of the default model and can be used to model the expected number of latent notifications in a setting where the generation time is not fixed to be a day. It implies that current infections/notifications are dependent on past infections/notifications based on a kernal (usually interpreted as the generation time or serial interval). An instantaneous daily growth rate model can be recovered by setting the generation time to be fixed at 1 day. The model is defined as follows,
 
 \begin{align}
   \lambda^l_{g,t} &\sim \text{LogNormal}\left(\mu^{l}_{g,t}, \sigma^{l}_{g,t} \right),\ t \leq P \\
@@ -83,7 +85,7 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
 
 ## Latent reporting delay and ascertainment
 
-In some settings there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset. For these settings we support modelling "latent" reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in `EpiNow2` and `epidemia` as well as other similar models. In addition to this we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).
+In some settings there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset. For these settings we support modelling "latent" reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in `EpiNow2` and `epidemia` as well as other similar models  [@EpiNow2; @Abbott2020; @Bhatt2020; @Lison2022]. In addition to this we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).
 
 \begin{align}
   \lambda_{g,t} &= \nu_{g,t} \sum_{\tau = 0}^{L - 1} F_{g}\left(\tau + 1, t - \tau \right)  \lambda^l_{g, t - \tau} \\
@@ -94,11 +96,11 @@ Where $\nu_{g,t}$ is the inferred ascertainment and is modelled flexibly using a
 
 # Delay distribution
 
-Where data is available on the report date for a given individual we can estimate the delay distribution directly and jointly rather than relying on estimates from other sources (though we may course wish to augment our priors with these estimates). In the following section we describe our default parametric delay distribution model as well as our highly flexible discrete time to event based generic model.
+Where data is available on the report date for a given individual we can estimate the delay distribution directly and jointly rather than relying on estimates from other sources (though we may wish to augment our priors with these estimates). In the following section we describe our default parametric delay distribution model as well as our highly flexible discrete time to event based generic model.
 
 ## Default model
 
-In our default model we consider the delay distribution to follow a discretised log-normal as follows, 
+In our default model we consider the delay distribution to follow a discretised log-normal as follows,
 
 \begin{align}
   p_{g,t,d} &\sim \text{LogNormal} \left(\mu^d, \sigma^d \right) \\
@@ -119,7 +121,7 @@ The first component ($\gamma_{g,t,d}$) we estimate what would be the probability
 \begin{align}
   p^{\prime}_{g,t,d} &\sim \text{LogNormal} \left(\mu_{g,t}, \upsilon_{g,t} \right) \\
   \mu_{g,t} &= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu} Z_{\gamma} \\
-  \text{log} (\upsilon_{g,t}) &= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma} 
+  \text{log} (\upsilon_{g,t}) &= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}
 
 Note we normalise this distribution so that it sums to 1. The parametric logit hazard (i.e. the probability of report at a given time conditional on not already having reported) for this component of the model is then,
@@ -161,11 +163,11 @@ Expected notifications by time of reference ($t$) and reporting delay can now be
 
 Where $\alpha_{g,t}$ is the proportion of cases by reference date that will not report their reference date. By default this is not modelled and is set to zero , see the accounting for reported cases with a missing reference date section for further defaults. Other observation models such as the Poisson distribution are also supported. See the documentation `enw_obs()` for details.
 
-In order to make best use of observed data when nowcasting we use observations where available and where they have not been reported for a given report and reference date we use the posterior prediction from the observation model above. This means that as nowcast dates become increasingly truncated they depend more on modelled estimates whereas when they are more complete the majority of the final count is known.
+In order to make best use of observed data when nowcasting we use observations where available and where they have not been reported for a given report and reference date we use the posterior prediction from the observation model above. This means that as nowcast dates become increasingly truncated they depend more on modelled estimates whereas when they are more complete the majority of the final count is known. Depending on your use case the posterior predictions alone may also be of interest.
 
 # Accounting for reported cases with a missing reference date
 
-In real-world settings observations may be reported without a linked reference date. A common example of this is cases by date of symptom onset where report date is often known but onset date may not be. To account for this we support modelling this missing process by assuming that cases with a missing reference date have the same reporting delay distribution as cases with a known reference date and that processes that drive the probability of having a missing reference date ($\alpha_{g,t}) are linked to the unknown date of reference rather than the date of report. We model this probability flexibly on a logit scale as follows,
+In real-world settings observations may be reported without a linked reference date. A common example of this is cases by date of symptom onset where report date is often known but onset date may not be. To account for this we support modelling this missing process by assuming that cases with a missing reference date have the same reporting delay distribution as cases with a known reference date and that processes that drive the probability of having a missing reference date ($\alpha_{g,t}) are linked to the unknown date of reference rather than the date of report based on Lison et al. [@Lison2022]. We model this probability flexibly on a logit scale as follows,
 
 \begin{equation}
   \text{logit} (\alpha_{g,t}) = \alpha_0 + \beta_{f,\alpha} X_{\alpha} + \beta_{r,\alpha} Z_{\alpha}
