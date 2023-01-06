@@ -19,11 +19,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-We provide a flexible semi-parametric model for the underlying transmission process similar to that implemented in other real-time modelling packages [@EpiNow2; @epidemia]. This optionally includes a renewal process and latent reporting process with potentially group and time-varying generation times and reporting distributions. Combined with the appropriate generation time distribution this approach has been shown to correspond to a Susceptible-Exposed-Infected-Recovered (SEIR) model. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
+# Introduction
 
-Our nowcasting approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates, and an efficient implementation in `stan` which makes use of sparse design matrices and within chain parallelisation to reduce runtimes [@stan; @cmdstanr] as well as a range of other model extensions.
+The `epinowcast` package aims to be a modular toolbox for real-time infectious disease surveillance both in outbreak and routine contexts. As such we provide a modular modelling framework that is optimised for a range of common surveillance tasks whilst maintaining flexibility and supporting user extension.
 
-In the following sections we provide further methodological and implementation details for the modular modelling framework implemented in `epinowcast`. We present both our default model for each section as well as the extended generic model. Note that is framework has been designed to be extensible and so users are enabled to alter and extend our currently supported functionality.
+We provide a flexible semi-parametric model for the underlying generative process similar to that implemented in other real-time infectious disease modelling packages [@EpiNow2; @epidemia]. This optionally includes a renewal process [@Fraser2007; @Cori2013] and latent reporting process [@EpiNow2; @bhatt2020]. Combined with the appropriate generation time distribution this approach has been shown to correspond to a Susceptible-Exposed-Infected-Recovered (SEIR) model [@@champredon]. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
+
+Our nowcasting approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates.
+
+Our modelling framework is immplemented in the `stan` probalistic programming language via `cmdstanr` [@stan; @cmdstanr] with a focus on computational efficiency and robustness.
+
+In the following sections we outline our modelling methodolgy and current feature set stratified by module. For each module we present both our default implementation as well as the more generic framework we support. Note that extensions to this methodology are warmly welcomed with our [community site](https://community.epinowcast.org/) being a good first point of contact.
 
 # Decomposition into expected final notifications and report delay components
 
