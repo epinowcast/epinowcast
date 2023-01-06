@@ -39,18 +39,17 @@ This README is a good place to get started with `epinowcast`, in particular the 
 - [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package developemnt and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
 - [Community forum](https://community.epinowcast.org/): Our community forum is where development of tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
 
-
 ## Installation
 
 ### Installing the package
 
-Install the stable development version of the package with:
+Install the latest released version of the package with:
 
 ```{r, eval = FALSE}
 install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
-Alternatively, install the stable development from GitHub using the following, 
+Alternatively, install the stable development version from GitHub using the following,
 
 ```{r, eval = FALSE}
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
