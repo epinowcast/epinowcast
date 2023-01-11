@@ -25,13 +25,13 @@ The `epinowcast` package aims to be a modular toolbox for real-time infectious d
 
 We provide a flexible semi-parametric model for the underlying generative process similar to that implemented in other real-time infectious disease modelling packages [@EpiNow2; @epidemia]. This optionally includes a renewal process [@Fraser2007; @Cori2013] and latent reporting process [@EpiNow2; @Abbott2020; @Bhatt2020]. Combined with the appropriate generation time distribution this approach has been shown to correspond to a Susceptible-Exposed-Infected-Recovered (SEIR) model [@champredon] with the addition of reporting delays. Howover, our default model contains minimal mechanism in order to more flexibly fit highly informative data.
 
-Our nowcasting approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, an optional parametric assumption for the underlying reporting delay, the ability to flexibly data with missing reference dates.
+Our nowcasting approach is an extension of that proposed by Günther et al.[@gunther2021] which was itself an extension of the model proposed by Höhle and Heiden[@hohle] and implemented in the `surveillance` R package[@surveillance]. Compared to the model proposed in Günther et al.[@gunther2021], `epinowcast` adds support for jointly nowcasting multiple related datasets, a flexible formula interface allowing for the specification of a large range of models, and an optional parametric assumption for the underlying reporting delay.
 
 We also support flexible joint modelling of missing data by assuming that the reporting delay is consistent between reported and unreported observations following the methodology of Lison et al. [@Lison2022].
 
 Our modelling framework is implemented in the `stan` probalistic programming language via `cmdstanr` [@stan; @cmdstanr] with a focus on computational efficiency and robustness.
 
-In the following sections we outline our modelling methodolgy and current feature set stratified by module. For each module we present both our default implementation as well as the more generic framework we support. Note that extensions to this methodology are warmly welcomed with our [community site](https://community.epinowcast.org/) being a good first point of contact.
+In the following sections we outline our modelling methodolgy, current feature set stratified by module, and highlight implementation details. For each module we present both our default implementation as well as the more generic framework we support. Note that extensions to this methodology are warmly welcomed with our [community site](https://community.epinowcast.org/) being a good first point of contact.
 
 # Decomposition into expected final notifications and report delay components
 
