@@ -24,7 +24,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/epinowcast/blob/master/LICENSE.md/)
-[![GitHub contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)](https://github.com/epinowcast/epinowcast/graphs/contributors) 
+[![GitHub contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)](https://github.com/epinowcast/epinowcast/graphs/contributors)
 
 [![DOI](https://zenodo.org/badge/422611952.svg)](https://zenodo.org/badge/latestdoi/422611952)
 
@@ -34,7 +34,7 @@ Tools to enable flexible and efficient hierarchical nowcasting of right-truncate
 
 This README is a good place to get started with `epinowcast`, in particular the following installation and quick start sections. As you make use of the package, or if your problem requires a richer feature set than presented here, we also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.
 
-- [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies making use of the package.
+- [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies making use of the package. The development version of our documentation (corresponding to our `develop` branch) is available [here](https://package.epinowcast.org/dev/).
 - [Organisation website](https://www.epinowcast.org/): This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.
 - [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package developemnt and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
 - [Community forum](https://community.epinowcast.org/): Our community forum is where development of tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
@@ -217,10 +217,6 @@ sum_across_last_7_days <- enw_summarise_samples(samples)
 enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 ```
 
-## Learning more
-
-The package has extensive documentation as well as vignettes describing the underlying methodology, and several case studies. Please see [the package site](https://package.epinowcast.org) for details. Note that the development version of the package also has supporting documentation which are available [here](https://package.epinowcast.org/dev).
-
 ## Citation
 
 If using `epinowcast` in your work please consider citing it using the following,
@@ -228,6 +224,8 @@ If using `epinowcast` in your work please consider citing it using the following
 ```{r, echo = FALSE}
 citation("epinowcast")
 ```
+
+If making use of our methodology or the methodology on which ours is based please cite the relevant papers from our [model outline](https://package.epinowcast.org/articles/model.html).
 
 ## How to make a bug report or feature request
 
