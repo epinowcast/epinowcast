@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,21 +149,20 @@ extension of the model proposed by Höhle and Heiden<span class="citation"><sup>
 in Günther et al.<span class="citation"><sup>[8]</sup></span>,
 <code>epinowcast</code> adds support for jointly nowcasting multiple
 related datasets, a flexible formula interface allowing for the
-specification of a large range of models, an optional parametric
-assumption for the underlying reporting delay, the ability to flexibly
-data with missing reference dates.</p>
+specification of a large range of models, and an optional parametric
+assumption for the underlying reporting delay.</p>
 <p>We also support flexible joint modelling of missing data by assuming
 that the reporting delay is consistent between reported and unreported
 observations following the methodology of Lison et al.<span class="citation"><sup>[11]</sup></span>.</p>
 <p>Our modelling framework is implemented in the <code>stan</code>
 probalistic programming language via <code>cmdstanr</code><span class="citation"><sup>[12,13]</sup></span> with a focus on computational
 efficiency and robustness.</p>
-<p>In the following sections we outline our modelling methodolgy and
-current feature set stratified by module. For each module we present
-both our default implementation as well as the more generic framework we
-support. Note that extensions to this methodology are warmly welcomed
-with our <a href="https://community.epinowcast.org/" class="external-link">community site</a>
-being a good first point of contact.</p>
+<p>In the following sections we outline our modelling methodolgy,
+current feature set stratified by module, and highlight implementation
+details. For each module we present both our default implementation as
+well as the more generic framework we support. Note that extensions to
+this methodology are warmly welcomed with our <a href="https://community.epinowcast.org/" class="external-link">community site</a> being a good
+first point of contact.</p>
 </div>
 <div class="section level2">
 <h2 id="decomposition-into-expected-final-notifications-and-report-delay-components">Decomposition into expected final notifications and report delay
