@@ -1,3 +1,4 @@
+# TODO: Add passing of non-parametric features
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sl, array[] int csl, array[] vector imp_obs,
                      array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix ref_lh, array[] int dpmfs, int ref_p,
@@ -6,9 +7,11 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   // Where am I?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
   array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
+  # TODO: Likely want to add filtering of non-parametric features if going for a full vector approach (vs sparse approach)
   vector[n[3]] log_exp_obs;
 
   // combine expected final obs and time effects to get expected obs
+  # TODO: Add passing of non-parametric features
   log_exp_obs = expected_obs_from_snaps(
     start, end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p,
     sl, csl, sg, st, n[3]
@@ -20,7 +23,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   }
   return(tar);
 }
-
+# TODO: Add passing of non-parametric features
 real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int sl, array[] int csl, array[] vector imp_obs,
                       int t, array[] int sg, array[,] int ts, array[] int st,
@@ -37,6 +40,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   int i_end = ts[t, end];
   array[3] int n = filt_obs_indexes(i_start, i_end, csl, sl);
   array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
+  # TODO: Likely want to add filtering of non-parametric features if going for a full vector approach (vs sparse approach)
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
   vector[model_miss ? miss_obs : 0]  log_exp_obs_miss;
@@ -50,6 +54,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     vector[f[3]] log_exp_all;
 
     // Calculate all expected observations
+    # TODO: Add passing of non-parametric features
     log_exp_all = expected_obs_from_snaps(
       i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3]
     );
@@ -72,6 +77,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
       );
     }
   }else{
+    # TODO: Add passing of non-parametric features
     log_exp_obs = expected_obs_from_snaps(
       i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3]
     );

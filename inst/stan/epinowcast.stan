@@ -79,7 +79,12 @@ data {
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
 
+<<<<<<< HEAD
   // Reference date model
+=======
+  // Reference time model
+  # TODO: Add that this is the parameteric reference model
+>>>>>>> dd56c0db (plan out required changes for adding the non-parametric model)
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -90,7 +95,8 @@ data {
   array[2, 1] real refp_mean_int_p;
   array[2, 1] real refp_sd_int_p;
   array[2, 1] real refp_mean_beta_sd_p;
-  array[2, 1] real refp_sd_beta_sd_p; 
+  array[2, 1] real refp_sd_beta_sd_p;
+  # TODO: Add duplicate non-parametric entries for the reference model
 
   // Reporting time model
   int model_rep;
@@ -162,12 +168,14 @@ parameters {
   vector<lower=0>[expl_rncol] expl_beta_sd;
     
   // Reference model
+  # TODO: Add that this is for the parametric model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
+  # TODO: Add duplicate non-parametric entries for the reference model
 
   // Report model
   vector[rep_fncol] rep_beta;
@@ -190,9 +198,12 @@ transformed parameters{
   array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
   
   // Reference model
+  # TODO: Add that this is for the parametric reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
+  # TODO: Consider changing the name to reference the parametric model
   matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  # TODO: Add a non-parametric refence model hazard
   
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
@@ -231,6 +242,7 @@ transformed parameters{
   }
 
   // Reference model
+  # TODO: Add that this is for the parametric reference model
   profile("transformed_delay_reference_time_total") {
   if (model_refp) {
     // calculate sparse reference date effects
@@ -257,6 +269,7 @@ transformed parameters{
     }
   }  
   }
+  # TODO: Add non-parametric component combination
 
   // Report model
   profile("transformed_delay_reporting_time_effects") {
@@ -309,6 +322,7 @@ model {
   );
   
   // Reference model
+  # TODO: Add that this is for the parametric reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
@@ -325,6 +339,7 @@ model {
       );
     }
   }
+  # TODO: Add effects for the non-parametric reference model
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
@@ -344,6 +359,7 @@ model {
   
   }
   // Log-Likelihood either by snapshot or group depending on settings/model
+  # TODO: Add passing of non-parametric reference model parameters to likelihood
   if (likelihood) {
     profile("model_likelihood") {
     if (ll_aggregation) {
@@ -377,6 +393,7 @@ generated quantities {
 
     // Posterior predictions for observations
     profile("generated_obs") {
+    # TODO: Add passing of non-parametric reference model parameters to expected observation calc function
     log_exp_obs = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]

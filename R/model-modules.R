@@ -30,6 +30,7 @@
 #' @export
 #' @examples
 #' enw_reference(data = enw_example("preprocessed"))
+# TODO: Consider if we wish to change the package default. If we do this it needs to be very clearly sign posted, and all the documentation needs to be reviewed.
 enw_reference <- function(parametric = ~1, distribution = c(
                             "lognormal", "none", "exponential", "gamma",
                             "loglogistic"
@@ -38,10 +39,12 @@ enw_reference <- function(parametric = ~1, distribution = c(
     distribution <- "none"
     parametric <- "~1"
   }
+  # TODO: Remove this error when non-parametric models are implemented into the interface.
   if (!as_string_formula(non_parametric) %in% "~0") {
     stop("The non-parametric reference model has not yet been implemented")
   }
   distribution <- match.arg(distribution)
+  # TODO: Remove this warning when non-parametric models are implemented into the interface.
   if (distribution %in% "none") {
     warning(
       "As non-parametric hazards have yet to be implemented a parametric hazard
@@ -55,7 +58,8 @@ enw_reference <- function(parametric = ~1, distribution = c(
     distribution %in% "gamma", 3,
     distribution %in% "loglogistic", 4
   )
-
+  # TODO: Replicate parametric formula structure for non-parametric model
+  # TODO: Make a combined delay and reference date data.frame for model building. Need to check preprocessing to see which object makes the most sense.
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
   pdata <- enw_formula_as_data_list(
     pform,

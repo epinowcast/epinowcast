@@ -1,3 +1,4 @@
+# TODO: Pass non-parametric features
 vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh,
                              matrix ref_lh, array[] int dpmfs, int ref_p,
                              int rep_h, int g, int t, int l) {
@@ -8,6 +9,7 @@ vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh,
   }else{
     lh = rep_vector(0, l);
   }
+  # TODO: Add if/else passing for non-parametric features
   // allocate reporting time effects
   if (rep_h) {
     vector[l] rlh = srdlh[rdlurd[g, t:(t + l - 1)]];
