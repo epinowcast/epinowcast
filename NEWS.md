@@ -1,3 +1,7 @@
+# epinowcast 0.3.0
+
+This is release is in development. It is not yet ready for production use.
+
 # epinowcast 0.2.0
 
 This release adds several extensions to our modelling framework including modelling missing data, flexible modelling of generative process, an optional renewal-equation generative process (enabling joint estimation of the effective reproduction number), convolution-based latent reporting delays (enabling modelling both directly observed and unobserved delays as well as partial ascertainment). Much of the methodology used in these extensions is based on [work done by Adrian Lison](https://github.com/adrian-lison/nowcast-transmission) and is currently being evaluated.
