@@ -87,9 +87,9 @@ rt <- cbind(
 
 ggplot(rt) +
   aes(x = date) +
-  geom_line(aes(y = median), size = 1, alpha = 0.6) +
+  geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
   geom_line(aes(y = mean), linetype = 2) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   geom_hline(yintercept = 1, linetype = 2) +
   theme_bw() +
@@ -115,9 +115,9 @@ latent_exp_cases <- cbind(
 
 ggplot(latent_exp_cases) +
   aes(x = date) +
-  geom_line(aes(y = median), size = 1, alpha = 0.6) +
+  geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
   geom_line(aes(y = mean), linetype = 2) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   theme_bw() +
   labs(
@@ -144,9 +144,9 @@ exp_cases <- enw_latest_data(nat_germany_hosp)[, date := reference_date][
 ggplot(exp_cases) +
   aes(x = date) +
   geom_point(aes(y = confirm)) +
-  geom_line(aes(y = median), size = 1, alpha = 0.6) +
+  geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
   geom_line(aes(y = mean), linetype = 2) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   theme_bw() +
   labs(
