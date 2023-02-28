@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,7 +118,7 @@
 <li>In general we aim to use <code>data.table</code> to manipulate data. However, if this is a barrier to contributing please use tools you are familiar with and raise this in your pull request. The reviewer will then work with you to refactor your contribution or if appropriate add the dependencies you require.</li>
 <li>If possible, keep contributions small enough to easily review manually. It is okay to split up your work into multiple pull requests.</li>
 <li>Format your code according to the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>. That formatting can achieved by running <code>style_pkg()</code> from <a href="https://github.com/r-lib/styler" class="external-link"><code>styler</code></a> (which rewrites the files) and <code>lint_package()</code> from <a href="https://github.com/jimhester/lintr" class="external-link"><code>lintr</code></a> (which provides a list of complaints for you to resolve). Note: <code>styler::style_pkg()</code> does not examine roxygen content i.e. <code>@examples</code> so you will need to check that manually.</li>
-<li>Check code coverage with <code><a href="http://covr.r-lib.org/reference/package_coverage.html" class="external-link">covr::package_coverage()</a></code>. Automated tests should cover all the new or changed functionality in your pull request.</li>
+<li>Check code coverage with <code>covr::package_coverage()</code>. Automated tests should cover all the new or changed functionality in your pull request.</li>
 <li>Run overall package checks with <code>devtools::check()</code> and <code>goodpractice::gp()</code>
 </li>
 <li>Describe your contribution in the project’s <a href="https://github.com/epinowcast/epinowcast/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a> file. Be sure to mention relevant GitHub issue numbers and your GitHub name as done in existing news entries.</li>
