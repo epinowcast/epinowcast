@@ -43,6 +43,11 @@ with `epinowcast` summarised posterior estimates due to the new use of the `pill
 - Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and self-reviewed.
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
 
+
+## Package
+
+- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk.
+
 # epinowcast 0.2.0
 
 This release adds several extensions to our modelling framework including modelling missing data, flexible modelling of generative process, an optional renewal-equation generative process (enabling joint estimation of the effective reproduction number), convolution-based latent reporting delays (enabling modelling both directly observed and unobserved delays as well as partial ascertainment). Much of the methodology used in these extensions is based on [work done by Adrian Lison](https://github.com/adrian-lison/nowcast-transmission) and is currently being evaluated.
