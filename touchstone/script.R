@@ -2,8 +2,7 @@
 # interactively
 
 # benchmarks.
-touchstone::pin_assets("inst/examples")
-
+touchstone::pin_assets(c("touchstone", "inst/examples"))
 
 # installs branches to benchmark
 touchstone::branch_install()
