@@ -1,30 +1,41 @@
 # see `help(run_script, package = 'touchstone')` on how to run this
 # interactively
 
-# TODO OPTIONAL Add directories you want to be available in this file or during the
 # benchmarks.
-# touchstone::pin_assets("some/dir")
+touchstone::pin_assets("inst/examples")
+
 
 # installs branches to benchmark
 touchstone::branch_install()
 
-# benchmark a function call from your package (two calls per branch)
+# run benchmarks
 touchstone::benchmark_run(
-  # expr_before_benchmark = source("dir/data.R"), #<-- TODO OTPIONAL setup before benchmark
-  random_test = yourpkg::f(), #<- TODO put the call you want to benchmark here
-  n = 2
+  simple = {
+    source(path_pinned_asset("inst/examples/germany_simple.R"))
+  },
+  n = 3
 )
 
-# TODO OPTIONAL benchmark any R expression (six calls per branch)
-# touchstone::benchmark_run(
-#   more = {
-#     if (TRUE) {
-#       y <- yourpkg::f2(x = 3)
-#     }
-#   }, #<- TODO put the call you want to benchmark here
-#   n = 6
-# )
+touchstone::benchmark_run(
+  day_of_week = {
+    source(path_pinned_asset("inst/examples/germany_dow.R"))
+  },
+  n = 3
+)
 
+touchstone::benchmark_run(
+  missingness = {
+    source(path_pinned_asset("inst/examples/germany_missing.R"))
+  },
+  n = 3
+)
+
+touchstone::benchmark_run(
+  latent_renewal = {
+    source(path_pinned_asset("inst/examples/germany_latent_renewal.R"))
+  },
+  n = 3
+)
 
 # create artifacts used downstream in the GitHub Action
 touchstone::benchmark_analyze()
