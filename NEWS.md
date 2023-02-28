@@ -6,6 +6,11 @@ This is release is in development. It is not yet ready for production use. If yo
 
 - Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implict type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
 
+
+## Package
+
+- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk.
+
 # epinowcast 0.2.0
 
 This release adds several extensions to our modelling framework including modelling missing data, flexible modelling of generative process, an optional renewal-equation generative process (enabling joint estimation of the effective reproduction number), convolution-based latent reporting delays (enabling modelling both directly observed and unobserved delays as well as partial ascertainment). Much of the methodology used in these extensions is based on [work done by Adrian Lison](https://github.com/adrian-lison/nowcast-transmission) and is currently being evaluated.
