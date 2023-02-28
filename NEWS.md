@@ -1,4 +1,4 @@
-# epinowcast 0.3.0
+# epinowcast 0.2.0.1000
 
 This is release is in development. It is not yet ready for production use.
 
