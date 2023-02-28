@@ -5,6 +5,7 @@
 # See `?touchstone::pr_comment`
 link <- "https://lorenzwalthert.github.io/touchstone/articles/inference.html"
 glue::glue(
-  "\nFurther explanation regarding interpretation and",
-  " methodology can be found in the [documentation]({link})."
+  "\nThese benchmarks are based on package examples\n
+     which are available\n
+    [here](https://github.com/epinowcast/epinowcast/tree/main/inst/examples).\n"
 )
