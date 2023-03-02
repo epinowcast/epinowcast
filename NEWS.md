@@ -1,4 +1,4 @@
-# epinowcast 0.2.0.2000
+# epinowcast 0.2.0.3000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
 
@@ -8,7 +8,7 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Package
 
-- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk.
+- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk. See #200 by @seabbs and reviewed b @adrian-lison.
 
 # epinowcast 0.2.0
 
