@@ -22,6 +22,7 @@ touchstone::benchmark_run(
   n = 3
 )
 
+
 touchstone::benchmark_run(
   missingness = {
     source(path_pinned_asset("inst/examples/germany_missing.R"))
