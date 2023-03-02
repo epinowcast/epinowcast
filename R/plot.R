@@ -90,9 +90,9 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = TRUE, ...) {
   plot <- enw_plot_obs(posterior, latest_obs = latest_obs, log = log, ...)
 
   plot <- plot +
-    geom_line(aes(y = median), size = 1, alpha = 0.6) +
+    geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
     geom_line(aes(y = mean), linetype = 2) +
-    geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+    geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
     geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2)
   return(plot)
 }
