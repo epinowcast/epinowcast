@@ -45,7 +45,7 @@ with `epinowcast` summarised posterior estimates due to the new use of the `pill
 
 ## Package
 
-- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk.
+- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk. See #200 by @seabbs and reviewed b @adrian-lison.
 
 # epinowcast 0.2.0
 
