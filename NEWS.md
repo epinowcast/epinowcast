@@ -1,6 +1,10 @@
-# epinowcast 0.2.0.1000
+# epinowcast 0.2.0.2000
 
-This is release is in development. It is not yet ready for production use.
+This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
+
+## Bugs
+
+- Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implict type conversion (see [here]()). See #201 by @seabbs.
 
 # epinowcast 0.2.0
 
