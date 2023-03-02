@@ -71,12 +71,12 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     long_nowcast[, (cols) := purrr::map(.SD, ~ log(. + 0.01)), .SDcols = cols]
   }
 
+  long_nowcast[, prediction := as.numeric(prediction)]
+  long_nowcast[, true_value := as.numeric(true_value)]
+
   if (check) {
     scoringutils::check_forecasts(long_nowcast)
   }
-
-  long_nowcast[, prediction := as.numeric(prediction)]
-  long_nowcast[, true_value := as.numeric(true_value)]
 
   scores <- scoringutils::score(long_nowcast, ...)
   numeric_cols <- colnames(scores)[sapply(scores, is.numeric)]
