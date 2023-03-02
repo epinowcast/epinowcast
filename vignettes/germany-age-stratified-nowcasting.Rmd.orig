@@ -445,8 +445,8 @@ age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
 age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
 plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
-  geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +
-  geom_line(linewidth = 1.1, alpha = 0.6) +
+  geom_hline(yintercept = 1, linetype = 2, size = 1.2, alpha = 0.5) +
+  geom_line(size = 1.1, alpha = 0.6) +
   geom_point(size = 1.2) +
   facet_wrap(vars(age_group)) +
   scale_color_brewer(palette = "Dark2") +
