@@ -12,7 +12,7 @@ on:
     branches:
       - main
       - master
-      - develop
+      #- develop
   workflow_dispatch:
   
 name: R-CMD-as-cran-check
