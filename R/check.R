@@ -31,6 +31,7 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #' @importFrom data.table as.data.table copy
 #' @family check
 check_dates <- function(obs) {
+  
   obs <- data.table::as.data.table(obs)
   obs <- data.table::copy(obs)
   if (is.null(obs$reference_date) && is.null(obs$report_date)) {
