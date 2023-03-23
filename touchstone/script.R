@@ -1,7 +1,7 @@
 # see `help(run_script, package = 'touchstone')` on how to run this
 # interactively
 
-# benchmarks.
+# benchmarks
 touchstone::pin_assets("touchstone", "inst/examples")
 
 # installs branches to benchmark
