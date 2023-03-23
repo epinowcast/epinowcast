@@ -2,18 +2,18 @@
 % Please edit documentation in R/model-design-tools.R
 \name{is.Date}
 \alias{is.Date}
-\title{FUNCTION_TITLE}
+\title{Check a vector is a Date}
 \usage{
 is.Date(x)
 }
 \arguments{
-\item{x}{PARAM_DESCRIPTION}
+\item{x}{A vector}
 }
 \value{
-OUTPUT_DESCRIPTION
+A logical
 }
 \description{
-FUNCTION_DESCRIPTION
+Checks that a vector is a date
 }
 \seealso{
 Utility functions

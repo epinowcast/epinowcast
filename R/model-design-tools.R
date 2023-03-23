@@ -16,13 +16,15 @@ is.Date <- function(x) {
 #' @family modeldesign
 #' @export
 #' @importFrom data.table as.data.table
+#' @examples
+#' data <- data.frame(date = as.Date("2019-01-01") + 0:2, x = 1:3)
+#' enw_dates_to_factors(data)
 enw_dates_to_factors <- function(data) {
   data <- data.table::as.data.table(data)
   cols <- colnames(data)[sapply(data, is.Date)]
   data <- data[, lapply(.SD, factor), .SDcols = cols]
   return(data[])
 }
-
 
 #' FUNCTION_TITLE
 #'

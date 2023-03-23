@@ -2,18 +2,23 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_dates_to_factors}
 \alias{enw_dates_to_factors}
-\title{FUNCTION_TITLE}
+\title{Convert all Dates to Factors}
 \usage{
 enw_dates_to_factors(data)
 }
 \arguments{
-\item{data}{PARAM_DESCRIPTION}
+\item{data}{A \code{data.frame}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A \code{data.frame} with all Date variables converted to factors.
 }
 \description{
-FUNCTION_DESCRIPTION
+Converts all Date columns to factors
+in a \code{data.frame}.
+}
+\examples{
+data <- data.frame(date = as.Date("2019-01-01") + 0:2, x = 1:3)
+enw_dates_to_factors(data)
 }
 \seealso{
 Functions used to formulate models

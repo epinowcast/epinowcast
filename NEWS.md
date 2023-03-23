@@ -1,6 +1,10 @@
-# epinowcast 0.2.0.2000
+# epinowcast 0.2.0.3000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
+
+## Package
+
+- Extended documentation, examples, and tests for internal and preprocessing functions. See #202 by @seabbs.
 
 ## Bugs
 
