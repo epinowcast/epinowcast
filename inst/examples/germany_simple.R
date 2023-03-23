@@ -3,7 +3,7 @@ library(epinowcast)
 library(data.table)
 
 # Set cmdstan path
-set_cmdstan_path()
+cmdstanr::set_cmdstan_path()
 
 # Use 2 cores
 options(mc.cores = 2)
