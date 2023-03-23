@@ -1,17 +1,18 @@
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param x PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' @title Check a vector is a Date
+#' @description Checks that a vector is a date
+#' @param x A vector
+#' @return A logical
 #' @family utils
 is.Date <- function(x) {
   # nolint
   inherits(x, "Date")
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param data PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' @title Convert all Dates to Factors
+#' @description Converts all Date columns to factors
+#' in a `data.frame`.
+#' @param data A `data.frame`.
+#' @return A `data.frame` with all Date variables converted to factors.
 #' @family modeldesign
 #' @export
 #' @importFrom data.table as.data.table
