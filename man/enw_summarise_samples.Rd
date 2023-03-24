@@ -19,7 +19,7 @@ enw_summarise_samples(
 \item{by}{DESCRIPTION}
 }
 \value{
-RETURN_DESCRIPTION
+OUTPUT_DESCRIPTION
 }
 \description{
 FUNCTION_DESCRIPTION

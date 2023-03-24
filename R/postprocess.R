@@ -138,7 +138,7 @@ enw_nowcast_samples <- function(fit, obs) {
 #'
 #' @param by DESCRIPTION
 #'
-#' @return RETURN_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
 #' @inheritParams enw_nowcast_summary
 #' @importFrom posterior mad
 #' @importFrom purrr reduce

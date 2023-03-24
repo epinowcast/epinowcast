@@ -151,7 +151,7 @@ rw_terms <- function(formula) {
 #' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
 #'
 #' @inheritParams split_formula_to_terms
-#' @return RETURN_DESCRIPTION
+#' @return A formula object with the random walk terms removed.
 #' @family formulatools
 #' @examples
 #' epinowcast:::remove_rw_terms(~ 1 + age_group + location)
