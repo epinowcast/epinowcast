@@ -59,24 +59,42 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
   ))
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param formula PARAM_DESCRIPTION
+#' A helper function to construct a design matrix from a formula
+#' 
+#' @description This function is a wrapper around `model.matrix` that can
+#' optionally return a sparse design matrix defined as the unique
+#' number of rows in the design matrix and an index vector that
+#' allows the full design matrix to be reconstructed. This is useful
+#' for models that have many repeated rows in the design matrix and that
+#' are computationally expensive to fit. This function also allows
+#' for the specification of contrasts for categorical variables.
 #'
-#' @param data PARAM_DESCRIPTION
+#' @param formula An R formula.
 #'
-#' @param no_contrasts PARAM_DESCRIPTION, Default: FALSE
+#' @param data A data frame containing the variables in the formula.
 #'
-#' @param sparse PARAM_DESCRIPTION, Default: TRUE
+#' @param no_contrasts A vector of variable names that should not be
+#' converted to contrasts. If `no_contrasts = FALSE` then all categorical
+#' variables will use contrasts. If `no_contrasts = TRUE` then
+#' no categorical variables will use contrasts.
 #'
-#' @param ... PARAM_DESCRIPTION
+#' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
+#' TRUE.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @param ... Additional arguments passed to `model.matrix`.
+#'
+#' @return A list containing the formula, the design matrix, and the index.
 #' @family modeldesign
 #' @export
 #' @importFrom data.table as.data.table
 #' @importFrom stats terms contrasts model.matrix
 #' @importFrom purrr map
+#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+#' enw_design(a ~ b + c, data)
+#' enw_design(a ~ b + c, data, no_contrasts = TRUE)
+#' enw_design(a ~ b + c, data, no_contrasts = c("b"))
+#' enw_design(a ~ c, data, sparse = TRUE)
+#' enw_design(a ~ c, data, sparse = FALSE)
 enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
                        ...) {
   # make data.table and copy
