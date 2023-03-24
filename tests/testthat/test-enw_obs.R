@@ -1,5 +1,4 @@
 test_that("enw_obs produces the expected output", {
-  library(data.table)
 
   # Load and filter germany hospitalisations
   nat_germany_hosp <-
