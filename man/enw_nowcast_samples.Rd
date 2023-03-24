@@ -7,7 +7,7 @@
 enw_nowcast_samples(fit, obs)
 }
 \arguments{
-\item{fit}{PARAM_DESCRIPTION}
+\item{fit}{A \code{cmdstanr} fit object.}
 
 \item{obs}{PARAM_DESCRIPTION}
 }

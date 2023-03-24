@@ -13,8 +13,10 @@ enw_summarise_samples(
 \arguments{
 \item{samples}{DESCRIPTION.}
 
-\item{probs}{PARAM_DESCRIPTION, Default: c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8,
-0.95)}
+\item{probs}{A vector of numeric probabilities to produce
+quantile summaries for. By default these are the 5\%, 20\%, 80\%,
+and 95\% quantiles which are also the minimum set required for
+plotting functions to work.}
 
 \item{by}{DESCRIPTION}
 }
