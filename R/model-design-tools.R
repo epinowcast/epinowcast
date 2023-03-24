@@ -153,12 +153,12 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' and returns a data.table with the following columns:
 #' - effects: the name of the effect
 #' - fixed: a logical indicating whether the effect is fixed (1) or random (0).
-#' 
+#'
 #' It automatically drops the intercept (defined as "(Intercept)").
-#' 
+#'
 #' This function is useful for constructing a model design object for random 
 #' effects when used in combination with `ewn_add_pooling_effect`.
-#' 
+#'
 #' @param design A design matrix as returned by `model.matrix`.
 #'
 #' @return A data.table with the following columns:
@@ -225,19 +225,37 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd",
   return(effects[])
 }
 
-#' @title FUNCTION_TITLE
+#' @title Add a cumulative membership effect to a data frame
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description This function adds a cumulative membership effect to a data
+#' frame. This is useful for specifying models such as random walks (using
+#' [rw()]) where these features can be used in the design matrix with the
+#' appropriate formula. Supports grouping via the optional `.group` column.
+#' Note that cumulative membership is indexed to start with zero (i.e. the
+#' first observation is assigned a cumulative membership of zero).
 #'
-#' @param metaobs PARAM_DESCRIPTION
+#' @param metaobs A data frame with a column named `feature` that contains
+#' a numeric vector of values.
 #'
-#' @param feature PARAM_DESCRIPTION
+#' @param feature The name of the column in `metaobs` that contains the
+#' numeric vector of values.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @return A data frame with a new columns `cfeature$` that contain the
+#' cumulative membership effect for each value of `feature`.
+#'
 #' @family modeldesign
 #' @export
+#' @examples
+#' metaobs <- data.frame(week = 1:3)
+#' enw_add_cumulative_membership(metaobs, "week")
+#'
+#' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
+#' enw_add_cumulative_membership(metaobs, "week")
 enw_add_cumulative_membership <- function(metaobs, feature) {
   metaobs <- data.table::as.data.table(metaobs)
+  if (is.null(metaobs[[".group"]])) {
+    metaobs[, .group := 1]
+  }
   cfeature <- paste0("c", feature)
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (is.null(metaobs[[feature]])) {
