@@ -89,6 +89,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' @importFrom data.table as.data.table
 #' @importFrom stats terms contrasts model.matrix
 #' @importFrom purrr map
+#' @examples
 #' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
 #' enw_design(a ~ b + c, data)
 #' enw_design(a ~ b + c, data, no_contrasts = TRUE)
@@ -146,17 +147,31 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   }
 }
 
-#' @title FUNCTION_TITLE
+#' @title Extracts metadata from a design matrix
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description This function extracts metadata from a design matrix
+#' and returns a data.table with the following columns:
+#' - effects: the name of the effect
+#' - fixed: a logical indicating whether the effect is fixed (1) or random (0).
+#' 
+#' It automatically drops the intercept (defined as "(Intercept)").
+#' 
+#' This function is useful for constructing a model design object for random 
+#' effects when used in combination with `ewn_add_pooling_effect`.
+#' 
+#' @param design A design matrix as returned by `model.matrix`.
 #'
-#' @param design PARAM_DESCRIPTION
-#'
-#' @return OUTPUT_DESCRIPTION
+#' @return A data.table with the following columns:
+#' - effects: the name of the effect
+#' - fixed: a logical indicating whether the effect is fixed (1) or random (0)
 #'
 #' @family modeldesign
 #' @export
 #' @importFrom data.table data.table
+#' @examples
+#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+#' design <- enw_design(a ~ b + c, data)$design
+#' enw_effects_metadata(design)
 enw_effects_metadata <- function(design) {
   dt <- data.table::data.table(effects = colnames(design), fixed = 1)
   dt <- dt[!effects %in% "(Intercept)"]
