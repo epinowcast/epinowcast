@@ -26,17 +26,23 @@ enw_dates_to_factors <- function(data) {
   return(data[])
 }
 
-#' FUNCTION_TITLE
+#' Construct a design matrix from a formula
 #'
-#' FUNCTION_DESCRIPTION
+#' This function is a wrapper around `model.matrix` that can 
+#' optionally return a sparse design matrix defined as the unique
+#' number of rows in the design matrix and an index vector that
+#' allows the full design matrix to be reconstructed. This is useful
+#' for models that have many repeated rows in the design matrix and that
+#' are computationally expensive to fit.
 #'
-#' @param formula DESCRIPTION.
-#' @param data DESCRIPTION.
-#' @param sparse DESCRIPTION.
-#' @param ... DESCRIPTION.
+#' @param formula An R formula.
+#' @param data A data frame containing the variables in the formula.
+#' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
+#' TRUE.
+#' @param ... Additional arguments passed to `model.matrix`.
 #' @keywords internal
 #' @noRd
-#' @return RETURN_DESCRIPTION
+#' @return A list containing the formula, the design matrix, and the index.
 mod_matrix <- function(formula, data, sparse = TRUE, ...) {
   design <- model.matrix(formula, data, ...)
   if (sparse) {
