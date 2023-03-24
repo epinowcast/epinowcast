@@ -1,24 +1,53 @@
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#' @param target_date PARAM_DESCRIPTION, Default: 'reference_date'
-#' @return OUTPUT_DESCRIPTION
+#' @title Extract metadata from raw data
+#'
+#' @description Extract metadata from raw data, either
+#' by reference or by report date. For the target date chosen
+#' (reference or report), confirm, max_confirm, and cum_prop_reported
+#' are dropped and the first observation for each group and date is retained.
+#'
+#' @param obs A data.frame or data.table with columns:
+#' * `reference_date`, a [Date] column
+#' * and/or `report_date`, a [Date] column
+#' * `.group`, a grouping column
+#' * `date`, a [Date] column
+#'
+#' @param target_date A character string, either "reference_date" or
+#' "report_date". The column corresponding to this string will be used
+#' as the target date for metadata extraction.
+#'
+#' @return A data.table with columns:
+#' * `date`, a [Date] column
+#' * `.group`, a grouping column
+#'
+#' and the first observation for each group and date.
+#' The data.table is sorted by `.group` and `date`.
+#'
 #' @family preprocess
 #' @importFrom data.table setkeyv
 #' @export
 #' @importFrom data.table as.data.table
+#' @examples
+#' obs <- data.frame(reference_date = as.Date("2021-01-01"), x = 1:10)
+#' enw_metadata(obs, target_date = "reference_date")
 enw_metadata <- function(obs, target_date = c(
                            "reference_date", "report_date"
                          )) {
+  obs <- data.table::as.data.table(obs)
   choices <- c("reference_date", "report_date")
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
+  if (is.null(obs[[".group"]])) {
+    obs <- obs[, .group := 1]
+  }
+
   metaobs <- setnames(data.table::as.data.table(obs), target_date, "date")
-  metaobs[
-    ,
-    c(date_to_drop, "confirm", "max_confirm", "cum_prop_reported") := NULL
-  ]
+  suppressWarnings(
+    metaobs[
+      ,
+      c(date_to_drop, "confirm", "max_confirm", "cum_prop_reported") := NULL
+    ]
+  )
   metaobs <- metaobs[, .SD[1, ], by = c("date", ".group")]
   data.table::setkeyv(metaobs, c(".group", "date"))
   return(metaobs[])

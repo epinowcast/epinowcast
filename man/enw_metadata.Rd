@@ -2,20 +2,42 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_metadata}
 \alias{enw_metadata}
-\title{FUNCTION_TITLE}
+\title{Extract metadata from raw data}
 \usage{
 enw_metadata(obs, target_date = c("reference_date", "report_date"))
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data.frame or data.table with columns:
+\itemize{
+\item \code{reference_date}, a \link{Date} column
+\item and/or \code{report_date}, a \link{Date} column
+\item \code{.group}, a grouping column
+\item \code{date}, a \link{Date} column
+}}
 
-\item{target_date}{PARAM_DESCRIPTION, Default: 'reference_date'}
+\item{target_date}{A character string, either "reference_date" or
+"report_date". The column corresponding to this string will be used
+as the target date for metadata extraction.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with columns:
+\itemize{
+\item \code{date}, a \link{Date} column
+\item \code{.group}, a grouping column
+}
+
+and the first observation for each group and date.
+The data.table is sorted by \code{.group} and \code{date}.
 }
 \description{
-FUNCTION_DESCRIPTION
+Extract metadata from raw data, either
+by reference or by report date. For the target date chosen
+(reference or report), confirm, max_confirm, and cum_prop_reported
+are dropped and the first observation for each group and date is retained.
+}
+\examples{
+obs <- data.frame(reference_date = as.Date("2021-01-01"), x = 1:10)
+enw_metadata(obs, target_date = "reference_date")
 }
 \seealso{
 Preprocessing functions
