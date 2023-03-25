@@ -27,6 +27,10 @@ A dataframe summarising the model posterior.
 A generic wrapper around \code{\link[posterior:draws_summary]{posterior::summarise_draws()}} with
 opinionated defaults.
 }
+\examples{
+fit <- enw_example("nowcast")
+enw_posterior(fit$fit[[1]], variables = "expr_beta")
+}
 \seealso{
 Functions used for postprocessing of model fits
 \code{\link{enw_add_latest_obs_to_nowcast}()},

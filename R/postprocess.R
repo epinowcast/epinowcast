@@ -23,6 +23,9 @@
 #' @importFrom purrr reduce
 #' @importFrom posterior quantile2 default_convergence_measures
 #' @importFrom data.table .SD .N :=
+#' @examples
+#' fit <- enw_example("nowcast")
+#' enw_posterior(fit$fit[[1]], variables = "expr_beta")
 enw_posterior <- function(fit, variables = NULL,
                           probs = c(0.05, 0.2, 0.8, 0.95), ...) {
   # order probs
@@ -274,6 +277,10 @@ enw_pp_summary <- function(fit, diff_obs,
 #'
 #' @family postprocess
 #' @export
+#' @examples
+#' fit <- enw_example("nowcast")
+#' posterior <- enw_posterior(fit$fit[[1]], var = "expr_lelatent_int[1,1]")
+#' enw_quantiles_to_long(posterior)
 enw_quantiles_to_long <- function(posterior) {
   long <- melt(posterior,
     measure.vars = patterns("^q[0-9]"),
