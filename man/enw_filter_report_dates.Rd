@@ -29,7 +29,7 @@ observed data. Users may wish to combine this function with
 \examples{
 # Filter by date
 enw_filter_report_dates(germany_covid19_hosp, latest_date = "2021-09-01")
-#
+
 # Filter by days
 enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 }
