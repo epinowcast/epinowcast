@@ -28,7 +28,7 @@ enw_dates_to_factors <- function(data) {
 
 #' Construct a design matrix from a formula
 #'
-#' This function is a wrapper around `model.matrix` that can 
+#' This function is a wrapper around `model.matrix` that can
 #' optionally return a sparse design matrix defined as the unique
 #' number of rows in the design matrix and an index vector that
 #' allows the full design matrix to be reconstructed. This is useful
@@ -60,7 +60,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 }
 
 #' A helper function to construct a design matrix from a formula
-#' 
+#'
 #' @description This function is a wrapper around `model.matrix` that can
 #' optionally return a sparse design matrix defined as the unique
 #' number of rows in the design matrix and an index vector that
@@ -156,7 +156,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #'
 #' It automatically drops the intercept (defined as "(Intercept)").
 #'
-#' This function is useful for constructing a model design object for random 
+#' This function is useful for constructing a model design object for random
 #' effects when used in combination with `ewn_add_pooling_effect`.
 #'
 #' @param design A design matrix as returned by `model.matrix`.
