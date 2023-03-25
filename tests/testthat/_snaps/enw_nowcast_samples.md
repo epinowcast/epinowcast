@@ -1,7 +1,7 @@
 # enw_nowcast_samples can extract nowcast samples as expected
 
     Code
-      enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])[1:10]
+      round_numeric(enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])[1:10])
     Output
           reference_date report_date .group max_confirm location age_group confirm
        1:     2021-08-03  2021-08-22      1         149       DE       00+     149
