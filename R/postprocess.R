@@ -157,27 +157,41 @@ enw_nowcast_samples <- function(fit, obs) {
   return(nowcast[])
 }
 
-#' FUNCTION_TITLE
+#' @title Summarise posterior samples
 #'
-#' FUNCTION_DESCRIPTION
+#' @description This function summarises posterior samples for arbitrary
+#' strata. It optionally holds out the observed data (variables that are not
+#'  ".draw", ".iteration", ".sample", ".chain" ) joins this to the summarised
+#' posterior.
 #'
-#' @param samples DESCRIPTION.
+#' @param samples A dataframe of posterior samples with at least a numeric
+#' sample variable.
 #'
-#' @param by DESCRIPTION
+#' @param by A character vector of variables to summarise by. Defaults to
+#' `c("reference_date", ".group")`.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @param link_with_obs Logical, should the observed data be linked to the
+#' posterior summary? This is useful for plotting the posterior against the
+#' observed data. Defaults to `TRUE`.
+#'
+#' @return A dataframe summarising the posterior samples.
 #' @inheritParams enw_nowcast_summary
 #' @importFrom posterior mad
 #' @importFrom purrr reduce
 #' @export
 #' @family postprocess
+#' @examples
+#' fit <- enw_example("nowcast")
+#' samples <- summary(fit, type = "nowcast_sample")
+#' enw_summarise_samples(samples, probs = c(0.05, 0.5, 0.95))
 enw_summarise_samples <- function(samples, probs = c(
                                     0.05, 0.2, 0.35, 0.5,
                                     0.65, 0.8, 0.95
                                   ),
-                                  by = c("reference_date", ".group")) {
+                                  by = c("reference_date", ".group"),
+                                  link_with_obs = TRUE) {
   obs <- samples[.draw == min(.draw)]
-  obs[, c(".draw", ".iteration", "sample", ".chain") := NULL]
+  suppressWarnings(obs[, c(".draw", ".iteration", "sample", ".chain") := NULL])
 
   summary <- samples[,
     .(
@@ -196,10 +210,12 @@ enw_summarise_samples <- function(samples, probs = c(
     by = by
   ][, sample := NULL])
 
-  summary <- purrr::reduce(
-    list(obs, summary, quantiles), merge,
-    by = by
-  )
+  if (link_with_obs) {
+    dts <- list(obs, summary, quantiles)
+  } else {
+    dts <- list(summary, quantiles)
+  }
+  summary <- purrr::reduce(dts, merge, by = by)
   return(summary[])
 }
 
