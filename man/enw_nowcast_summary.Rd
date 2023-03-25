@@ -2,14 +2,18 @@
 % Please edit documentation in R/postprocess.R
 \name{enw_nowcast_summary}
 \alias{enw_nowcast_summary}
-\title{FUNCTION_TITLE}
+\title{Summarise the posterior nowcast prediction}
 \usage{
 enw_nowcast_summary(fit, obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
 }
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
 
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{An observation data frame containing \code{reference_date}
+columns of the same length as the number of rows in the posterior and the
+most up to date observation for each date. This is used to align the
+posterior with the observations. The easiest source of this data is the
+output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,
@@ -17,12 +21,24 @@ and 95\% quantiles which are also the minimum set required for
 plotting functions to work.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A dataframe summarising the model posterior nowcast prediction.
+This uses observed data where available and the posterior prediction
+where not.
 }
 \description{
-FUNCTION_DESCRIPTION
+A generic wrapper around \code{\link[=enw_posterior]{enw_posterior()}} with
+opinionated defaults to extract the posterior prediction for the
+nowcast (\code{"pp_inf_obs"} from the \code{stan} code). The functionality of
+this function can be used directly on the output of \code{\link[=epinowcast]{epinowcast()}} using
+the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
+}
+\examples{
+fit <- enw_example("nowcast")
+enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
 }
 \seealso{
+\code{\link[=summary.epinowcast]{summary.epinowcast()}}
+
 Functions used for postprocessing of model fits
 \code{\link{enw_add_latest_obs_to_nowcast}()},
 \code{\link{enw_nowcast_samples}()},

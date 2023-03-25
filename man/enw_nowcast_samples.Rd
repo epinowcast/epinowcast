@@ -9,7 +9,11 @@ enw_nowcast_samples(fit, obs)
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
 
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{An observation data frame containing \code{reference_date}
+columns of the same length as the number of rows in the posterior and the
+most up to date observation for each date. This is used to align the
+posterior with the observations. The easiest source of this data is the
+output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
 \value{
 OUTPUT_DESCRIPTION

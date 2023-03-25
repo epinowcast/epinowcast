@@ -55,17 +55,32 @@ enw_posterior <- function(fit, variables = NULL,
 }
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' @title Summarise the posterior nowcast prediction
 #'
-#' @param obs PARAM_DESCRIPTION
+#' @description A generic wrapper around [enw_posterior()] with
+#' opinionated defaults to extract the posterior prediction for the
+#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of 
+#' this function can be used directly on the output of [epinowcast()] using
+#' the supplied [summary.epinowcast()] method.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @param obs An observation data frame containing \code{reference_date}
+#' columns of the same length as the number of rows in the posterior and the
+#' most up to date observation for each date. This is used to align the
+#' posterior with the observations. The easiest source of this data is the
+#' output of latest output of [enw_preprocess_data()].
 #'
+#' @return A dataframe summarising the model posterior nowcast prediction.
+#' This uses observed data where available and the posterior prediction
+#' where not.
+#'
+#' @seealso [summary.epinowcast()]
 #' @inheritParams enw_posterior
 #' @family postprocess
 #' @export
 #' @importFrom data.table as.data.table copy setorderv
+#' @examples
+#' fit <- enw_example("nowcast")
+#' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
 enw_nowcast_summary <- function(fit, obs,
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
