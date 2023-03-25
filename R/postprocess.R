@@ -254,16 +254,25 @@ enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
   return(out[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' @title Posterior predictive summary
 #'
-#' @param diff_obs PARAM_DESCRIPTION
+#' @description This function summarises posterior predictives
+#' for observed data (by report and reference date). The functionality of
+#' this function can be used directly on the output of [epinowcast()] using
+#' the supplied [summary.epinowcast()] method.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @param diff_obs A dataframe of observed data with at least a date variable
+#' `reference_date`, and a grouping variable `.group`.
+#'
+#' @return A data.table summarising the posterior predictions.
+#'
 #' @inheritParams enw_posterior
 #' @family postprocess
 #' @export
 #' @importFrom data.table as.data.table copy setorderv
+#' @examples
+#' fit <- enw_example("nowcast")
+#' enw_pp_summary(fit$fit[[1]], fit$new_confirm[[1]], probs = c(0.5))
 enw_pp_summary <- function(fit, diff_obs,
                            probs = c(
                              0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
