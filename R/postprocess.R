@@ -55,7 +55,7 @@ enw_posterior <- function(fit, variables = NULL,
 }
 
 
-#' @title 
+#' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #'
 #' @param obs PARAM_DESCRIPTION

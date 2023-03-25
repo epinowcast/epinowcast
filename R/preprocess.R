@@ -191,19 +191,33 @@ enw_add_metaobs_features <- function(metaobs,
 }
 
 #' @title Extend a time series with additional dates
+#'
 #' @description Extend a time series with additional dates. This is useful
 #' when extending the report dates of a time series to include future dates
 #' for nowcasting purposes or to include additional dates for backcasting
 #' when using a renewal process as the expectation model.
+#'
 #' @param metaobs A data.table with a `date` column.
-#' @param days PARAM_DESCRIPTION
+#'
+#' @param days Number of days to add to the time series. Defaults to 20.
+#'
 #' @param direction Should new dates be added at the beginning or end of
-#' the data. Default is "end" with "start" also available
-#' @return OUTPUT_DESCRIPTION
+#' the data. Default is "end" with "start" also available.
+#'
+#' @return A data.table with the same columns as `metaobs` but with
+#' additional rows for each date in the range of `date` to `date + days`
+#' (or `date - days` if `direction = "start"`). An additiional variable
+#' observed is added with a value of FALSE for all new dates and TRUE
+#' for all existing dates.
+#'
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy data.table rbindlist setkeyv
 #' @importFrom purrr map
+#' @examples
+#' metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
+#' enw_extend_date(metaobs, days = 2)
+#' enw_extend_date(metaobs, days = 2, direction = "start")
 enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   direction <- match.arg(direction, choices = c("start", "end"))
 
@@ -214,8 +228,9 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   } else {
     filt_fn <- max
   }
-  exts <- data.table::copy(metaobs)
-  exts <- exts[, .SD[date == filt_fn(date)], by = .group]
+  metaobs <- data.table::as.data.table(metaobs)
+  metaobs <- add_group(metaobs)
+  exts <- metaobs[, .SD[date == filt_fn(date)], by = .group]
   exts <- split(exts, by = ".group")
   exts <- purrr::map(
     exts,
@@ -229,7 +244,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   exts[, observed := FALSE]
 
   exts <- rbind(
-    data.table::copy(metaobs)[, observed := TRUE],
+    metaobs[, observed := TRUE],
     exts[, observed := FALSE]
   )
   data.table::setkeyv(exts, c(".group", "date"))
@@ -245,17 +260,20 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 #' @export
 #' @importFrom data.table as.data.table copy
 enw_assign_group <- function(obs, by = c()) {
-  if (".group" %in% names(obs)) {
-    stop("Dataset cannot have a column called '.group'.")
+  if (!is.null(obs[[".group"]])) {
+    stop(
+      "The `.group` column is reserved for internal use. Please remove it ",
+      "from your data before calling `enw_assign_group`."
+    )
   }
-  obs <- data.table::as.data.table(obs)
-  if (length(by) == 0) {
-    obs <- obs[, .group := 1]
-  } else {
+  if (length(by) != 0) {
+    obs <- data.table::as.data.table(obs)
     groups_index <- data.table::copy(obs)
     groups_index <- unique(groups_index[, ..by])
     groups_index[, .group := 1:.N]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
+  } else {
+    obs <- add_group(obs)
   }
   data.table::setkeyv(obs, union(".group", data.table::key(obs)))
   return(obs = obs[])
@@ -286,6 +304,7 @@ enw_add_delay <- function(obs) {
 #' @importFrom data.table copy
 enw_add_max_reported <- function(obs) {
   obs <- check_dates(obs)
+  obs <- add_group(obs)
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
     ,
@@ -528,7 +547,8 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_delay_filter(obs, max_delay = 2)
 enw_delay_filter <- function(obs, max_delay) {
-  obs <- data.table::copy(obs)
+  obs <- data.table::as.data.table(obs)
+  obs <- add_group(obs)
   obs <- obs[,
     .SD[
       report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
@@ -560,6 +580,7 @@ enw_delay_filter <- function(obs, max_delay) {
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
   obs <- data.table::as.data.table(obs)
+  obs <- add_group(obs)
   if (any(obs$new_confirm < 0)) {
     warning(
       "Negative new confirmed cases found. This is not yet supported in
@@ -588,6 +609,8 @@ enw_reporting_triangle <- function(obs) {
 #' rt <- enw_reporting_triangle(obs)
 #' enw_reporting_triangle_to_long(rt)
 enw_reporting_triangle_to_long <- function(obs) {
+  obs <- data.table::as.data.table(obs)
+  obs <- add_group(obs)
   reports_long <- data.table::melt(
     obs,
     id.vars = c("reference_date", ".group"),
@@ -625,6 +648,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
                                missing_reference = TRUE) {
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
+  check_group(obs)
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)
@@ -704,6 +728,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
   obs <- check_dates(obs)
+  obs <- add_group(obs)
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
     .(.confirm_avail = sum(new_confirm)),

@@ -1,4 +1,3 @@
-
 #' Define a model manually using fixed and random effects
 #'
 #' @description For most typical use cases [enw_formula()] should

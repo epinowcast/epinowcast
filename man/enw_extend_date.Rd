@@ -9,19 +9,28 @@ enw_extend_date(metaobs, days = 20, direction = "end")
 \arguments{
 \item{metaobs}{A data.table with a \code{date} column.}
 
-\item{days}{PARAM_DESCRIPTION}
+\item{days}{Number of days to add to the time series. Defaults to 20.}
 
 \item{direction}{Should new dates be added at the beginning or end of
-the data. Default is "end" with "start" also available}
+the data. Default is "end" with "start" also available.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with the same columns as \code{metaobs} but with
+additional rows for each date in the range of \code{date} to \code{date + days}
+(or \code{date - days} if \code{direction = "start"}). An additiional variable
+observed is added with a value of FALSE for all new dates and TRUE
+for all existing dates.
 }
 \description{
 Extend a time series with additional dates. This is useful
 when extending the report dates of a time series to include future dates
 for nowcasting purposes or to include additional dates for backcasting
 when using a renewal process as the expectation model.
+}
+\examples{
+metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
+enw_extend_date(metaobs, days = 2)
+enw_extend_date(metaobs, days = 2, direction = "start")
 }
 \seealso{
 Preprocessing functions
