@@ -4,7 +4,12 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Package
 
-- Extended documentation, examples, and tests for internal and preprocessing functions. See #202 by @seabbs.
+- Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs.
+- Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See #208 by @seabbs.
+
+## Documentation
+
+- Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs.
 
 ## Bugs
 
