@@ -27,6 +27,6 @@ skip_on_local <- function() {
 
 round_numeric <- function(dt) {
   cols <- colnames(dt)[purrr::map_lgl(dt, is.numeric)]
-  dt <- dt[, (cols) := lapply(.SD, round, 1), .SDcols = cols]
+  dt <- dt[, (cols) := lapply(.SD, round, 0), .SDcols = cols]
   return(dt)
 }
