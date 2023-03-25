@@ -304,7 +304,7 @@ enw_assign_group <- function(obs, by = c()) {
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table copy
-#' @examlples
+#' @examples
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
@@ -314,16 +314,28 @@ enw_add_delay <- function(obs) {
   return(obs = obs[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' @title Add the maximum number of cases reported on a given day
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @description Add the maximum number of cases reported on a given day
+#' to the data set. This is useful for calculating the proportion of
+#' cases reported on a given day which is also done in this function.
+#'
+#' @return A data.table with a `max_confirm` and `cum_prop_reported`
+#' columns added. `max_confirm` is the maximum number of cases reported
+#' on a given day. `cum_prop_reported` is the proportion of cases
+#' reported on a given day relative to the maximum number of cases
+#' reported on a given day.
 #'
 #' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_latest_data
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy
+#' @examples
+#' obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
+#' obs$reference_date <- as.Date("2021-01-01")
+#' obs$confirm <- 1:3
+#' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs) {
   obs <- check_dates(obs)
   obs <- add_group(obs)

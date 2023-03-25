@@ -19,6 +19,11 @@ A data.table with a \code{delay} column added.
 Add a delay variable based on the numeric difference
 between the \code{report_date} and \code{reference_date} columns.
 }
+\examples{
+obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
+obs$reference_date <- as.Date("2021-01-01")
+enw_add_delay(obs)
+}
 \seealso{
 Preprocessing functions
 \code{\link{enw_add_max_reported}()},

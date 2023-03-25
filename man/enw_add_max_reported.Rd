@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_max_reported}
 \alias{enw_add_max_reported}
-\title{FUNCTION_TITLE}
+\title{Add the maximum number of cases reported on a given day}
 \usage{
 enw_add_max_reported(obs)
 }
@@ -13,10 +13,22 @@ observations), and \code{confirm} (cumulative observations by reference and repo
 date).}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with a \code{max_confirm} and \code{cum_prop_reported}
+columns added. \code{max_confirm} is the maximum number of cases reported
+on a given day. \code{cum_prop_reported} is the proportion of cases
+reported on a given day relative to the maximum number of cases
+reported on a given day.
 }
 \description{
-FUNCTION_DESCRIPTION
+Add the maximum number of cases reported on a given day
+to the data set. This is useful for calculating the proportion of
+cases reported on a given day which is also done in this function.
+}
+\examples{
+obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
+obs$reference_date <- as.Date("2021-01-01")
+obs$confirm <- 1:3
+enw_add_max_reported(obs)
 }
 \seealso{
 Preprocessing functions
