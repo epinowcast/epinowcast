@@ -105,16 +105,25 @@ enw_nowcast_summary <- function(fit, obs,
   return(nowcast[])
 }
 
-#' @title FUNCTION_TITLE
+#' @title Extract posterior samples for the nowcast prediction
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description A generic wrapper around [posterior::draws_df()] with
+#' opinionated defaults to extract the posterior samples for the
+#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of
+#' this function can be used directly on the output of [epinowcast()] using
+#' the supplied [summary.epinowcast()] method.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @return A dataframe of posterior samples for the nowcast prediction.
+#' This uses observed data where available and the posterior prediction
+#' where not.
 #'
 #' @inheritParams enw_nowcast_summary
 #' @family postprocess
 #' @export
 #' @importFrom data.table as.data.table copy setorderv
+#' @examples
+#' fit <- enw_example("nowcast")
+#' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])
 enw_nowcast_samples <- function(fit, obs) {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
