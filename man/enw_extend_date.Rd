@@ -2,12 +2,12 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_extend_date}
 \alias{enw_extend_date}
-\title{FUNCTION_TITLE}
+\title{Extend a time series with additional dates}
 \usage{
 enw_extend_date(metaobs, days = 20, direction = "end")
 }
 \arguments{
-\item{metaobs}{PARAM_DESCRIPTION}
+\item{metaobs}{A data.table with a \code{date} column.}
 
 \item{days}{PARAM_DESCRIPTION}
 
@@ -18,7 +18,10 @@ the data. Default is "end" with "start" also available}
 OUTPUT_DESCRIPTION
 }
 \description{
-FUNCTION_DESCRIPTION
+Extend a time series with additional dates. This is useful
+when extending the report dates of a time series to include future dates
+for nowcasting purposes or to include additional dates for backcasting
+when using a renewal process as the expectation model.
 }
 \seealso{
 Preprocessing functions

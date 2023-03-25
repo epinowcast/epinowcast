@@ -76,6 +76,20 @@ check_group <- function(obs) {
   return(invisible(NULL))
 }
 
+#' Add a reserved grouping variable if missing
+#'
+#' @param x A data frame or data table
+#'
+#' @return A data table with a `.group` variable
+#' @family check
+add_group <- function(x) {
+  if (is.null(x[[".group"]])) {
+    x <- data.table::as.data.table(x)
+    x <- x[, .group := 1]
+  }
+  return(x[])
+}
+
 #' Check a model module contains the required components
 #'
 #' @param module A model module. For example [enw_expectation()].

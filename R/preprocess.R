@@ -37,9 +37,7 @@ enw_metadata <- function(obs, target_date = c(
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
-  if (is.null(obs[[".group"]])) {
-    obs <- obs[, .group := 1]
-  }
+  obs <- add_group(obs)
 
   metaobs <- setnames(data.table::as.data.table(obs), target_date, "date")
   suppressWarnings(
@@ -192,9 +190,12 @@ enw_add_metaobs_features <- function(metaobs,
   return(metaobs[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param metaobs PARAM_DESCRIPTION
+#' @title Extend a time series with additional dates
+#' @description Extend a time series with additional dates. This is useful
+#' when extending the report dates of a time series to include future dates
+#' for nowcasting purposes or to include additional dates for backcasting
+#' when using a renewal process as the expectation model.
+#' @param metaobs A data.table with a `date` column.
 #' @param days PARAM_DESCRIPTION
 #' @param direction Should new dates be added at the beginning or end of
 #' the data. Default is "end" with "start" also available
