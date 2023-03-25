@@ -251,14 +251,27 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   return(exts[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#' @param by PARAM_DESCRIPTION, Default: c()
-#' @return OUTPUT_DESCRIPTION
+#' @title Assign a group to each row of a data.table
+#' @description Assign a group to each row of a data.table. If `by` is
+#' specified, then each unique combination of the columns in `by` will
+#' be assigned a unique group. If `by` is not specified, then all rows
+#' will be assigned to the same group.
+#'
+#' @param obs A data.table or data.frame without a `.group` column.
+#'
+#' @param by A character vector of column names to group by. Defaults to
+#' an empty vector.
+#'
+#' @return A data.table with a `.group` column added ordered by `.group`
+#' and the existing key of `obs`.
+#'
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table copy
+#' @examples
+#' obs <- data.frame(x = 1:3, y = 1:3)
+#' enw_assign_group(obs)
+#' enw_assign_group(obs, by = "x")
 enw_assign_group <- function(obs, by = c()) {
   if (!is.null(obs[[".group"]])) {
     stop(

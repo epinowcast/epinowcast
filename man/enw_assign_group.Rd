@@ -2,20 +2,30 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_assign_group}
 \alias{enw_assign_group}
-\title{FUNCTION_TITLE}
+\title{Assign a group to each row of a data.table}
 \usage{
 enw_assign_group(obs, by = c())
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A data.table or data.frame without a \code{.group} column.}
 
-\item{by}{PARAM_DESCRIPTION, Default: c()}
+\item{by}{A character vector of column names to group by. Defaults to
+an empty vector.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with a \code{.group} column added ordered by \code{.group}
+and the existing key of \code{obs}.
 }
 \description{
-FUNCTION_DESCRIPTION
+Assign a group to each row of a data.table. If \code{by} is
+specified, then each unique combination of the columns in \code{by} will
+be assigned a unique group. If \code{by} is not specified, then all rows
+will be assigned to the same group.
+}
+\examples{
+obs <- data.frame(x = 1:3, y = 1:3)
+enw_assign_group(obs)
+enw_assign_group(obs, by = "x")
 }
 \seealso{
 Preprocessing functions
