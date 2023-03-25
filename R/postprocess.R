@@ -67,7 +67,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' columns of the same length as the number of rows in the posterior and the
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the
-#' output of latest output of [enw_preprocess_data()].
+#' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
 #'
 #' @return A dataframe summarising the model posterior nowcast prediction.
 #' This uses observed data where available and the posterior prediction
@@ -173,7 +173,7 @@ enw_summarise_samples <- function(samples, probs = c(
                                     0.65, 0.8, 0.95
                                   ),
                                   by = c("reference_date", ".group")) {
-  obs <- samples[.draw == 1]
+  obs <- samples[.draw == min(.draw)]
   obs[, c(".draw", ".iteration", "sample", ".chain") := NULL]
 
   summary <- samples[,
@@ -200,16 +200,29 @@ enw_summarise_samples <- function(samples, probs = c(
   return(summary[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param nowcast PARAM_DESCRIPTION
-#' @param obs PARAM_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' @title Add latest observations to nowcast output
+#'
+#' @description Add the latest observations to the nowcast output.
+#' This is useful for plotting the nowcast against the latest
+#' observations.
+#'
+#' @param nowcast A dataframe of nowcast output from [enw_nowcast_summary()].
+#'
+#' @inheritParams enw_nowcast_summary
+#'
+#' @return A dataframe of nowcast output with the latest observations
+#' added.
 #' @family postprocess
 #' @export
 #' @importFrom data.table as.data.table setcolorder
+#' @examples
+#' fit <- enw_example("nowcast")
+#' obs <- enw_example("obs")
+#' nowcast <- enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
+#' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
   obs <- data.table::as.data.table(obs)
+  obs <- add_group(obs)
   obs <- obs[, .(reference_date, .group, latest_confirm = confirm)]
   out <- merge(
     nowcast, obs,
