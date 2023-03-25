@@ -13,7 +13,7 @@ enw_nowcast_summary(fit, obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
 columns of the same length as the number of rows in the posterior and the
 most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
-output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,

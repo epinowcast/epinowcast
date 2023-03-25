@@ -2,20 +2,33 @@
 % Please edit documentation in R/postprocess.R
 \name{enw_add_latest_obs_to_nowcast}
 \alias{enw_add_latest_obs_to_nowcast}
-\title{FUNCTION_TITLE}
+\title{Add latest observations to nowcast output}
 \usage{
 enw_add_latest_obs_to_nowcast(nowcast, obs)
 }
 \arguments{
-\item{nowcast}{PARAM_DESCRIPTION}
+\item{nowcast}{A dataframe of nowcast output from \code{\link[=enw_nowcast_summary]{enw_nowcast_summary()}}.}
 
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{An observation data frame containing \code{reference_date}
+columns of the same length as the number of rows in the posterior and the
+most up to date observation for each date. This is used to align the
+posterior with the observations. The easiest source of this data is the
+output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A dataframe of nowcast output with the latest observations
+added.
 }
 \description{
-FUNCTION_DESCRIPTION
+Add the latest observations to the nowcast output.
+This is useful for plotting the nowcast against the latest
+observations.
+}
+\examples{
+fit <- enw_example("nowcast")
+obs <- enw_example("obs")
+nowcast <- summary(fit, type = "nowcast")
+enw_add_latest_obs_to_nowcast(nowcast, obs)
 }
 \seealso{
 Functions used for postprocessing of model fits

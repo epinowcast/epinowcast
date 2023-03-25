@@ -218,7 +218,7 @@ enw_summarise_samples <- function(samples, probs = c(
 #' @examples
 #' fit <- enw_example("nowcast")
 #' obs <- enw_example("obs")
-#' nowcast <- enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
+#' nowcast <- summary(fit, type = "nowcast")
 #' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
   obs <- data.table::as.data.table(obs)

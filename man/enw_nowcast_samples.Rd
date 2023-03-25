@@ -2,7 +2,7 @@
 % Please edit documentation in R/postprocess.R
 \name{enw_nowcast_samples}
 \alias{enw_nowcast_samples}
-\title{FUNCTION_TITLE}
+\title{Extract posterior samples for the nowcast prediction}
 \usage{
 enw_nowcast_samples(fit, obs)
 }
@@ -13,13 +13,23 @@ enw_nowcast_samples(fit, obs)
 columns of the same length as the number of rows in the posterior and the
 most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
-output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A dataframe of posterior samples for the nowcast prediction.
+This uses observed data where available and the posterior prediction
+where not.
 }
 \description{
-FUNCTION_DESCRIPTION
+A generic wrapper around \code{\link[posterior:draws_df]{posterior::draws_df()}} with
+opinionated defaults to extract the posterior samples for the
+nowcast (\code{"pp_inf_obs"} from the \code{stan} code). The functionality of
+this function can be used directly on the output of \code{\link[=epinowcast]{epinowcast()}} using
+the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
+}
+\examples{
+fit <- enw_example("nowcast")
+enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])
 }
 \seealso{
 Functions used for postprocessing of model fits
