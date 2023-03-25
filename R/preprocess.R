@@ -252,6 +252,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 }
 
 #' @title Assign a group to each row of a data.table
+#' 
 #' @description Assign a group to each row of a data.table. If `by` is
 #' specified, then each unique combination of the columns in `by` will
 #' be assigned a unique group. If `by` is not specified, then all rows
@@ -292,13 +293,21 @@ enw_assign_group <- function(obs, by = c()) {
   return(obs = obs[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @return OUTPUT_DESCRIPTION
+#' @title Add a delay variable
+#'
+#' @description Add a delay variable based on the numeric difference
+#' between the `report_date` and `reference_date` columns.
+#'
+#' @return A data.table with a `delay` column added.
+#'
 #' @inheritParams enw_cumulative_to_incidence
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table copy
+#' @examlples
+#' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
+#' obs$reference_date <- as.Date("2021-01-01")
+#' enw_add_delay(obs)
 enw_add_delay <- function(obs) {
   obs <- check_dates(obs)
   obs[, delay := as.numeric(report_date - reference_date)]

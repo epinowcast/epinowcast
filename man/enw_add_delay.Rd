@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_delay}
 \alias{enw_add_delay}
-\title{FUNCTION_TITLE}
+\title{Add a delay variable}
 \usage{
 enw_add_delay(obs)
 }
@@ -13,10 +13,11 @@ observations), and \code{confirm} (cumulative observations by reference and repo
 date).}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with a \code{delay} column added.
 }
 \description{
-FUNCTION_DESCRIPTION
+Add a delay variable based on the numeric difference
+between the \code{report_date} and \code{reference_date} columns.
 }
 \seealso{
 Preprocessing functions
