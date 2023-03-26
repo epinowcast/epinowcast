@@ -26,7 +26,7 @@ Empirical reporting distributions are also added.}
 
 \item{latest}{The latest available observations.}
 
-\item{missing_reference}{A data.frame of reported observations that are
+\item{missing_reference}{A`data.frame`of reported observations that are
 missing the reference date.}
 
 \item{reporting_triangle}{Incident observations by report and reference

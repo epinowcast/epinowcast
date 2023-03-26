@@ -70,7 +70,7 @@ enw_formula_as_data_list <- function(formula, prefix,
   return(data)
 }
 
-#' Convert prior data.frame to list
+#' Convert prior`data.frame`to list
 #'
 #' Converts priors defined in a `data.frame` into a list
 #' format for use by stan. In addition it adds "_p" to all
@@ -104,12 +104,12 @@ enw_priors_as_data_list <- function(priors) {
 #' use would be extracting the posterior from a previous [epinowcast()]
 #' run (using `summary(nowcast, type = fit)`) and using this a prior.
 #'
-#' @param priors A data.frame with the following variables:
+#' @param priors A`data.frame`with the following variables:
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions.
 #'
-#' @param custom_priors A data.frame with the following variables:
+#' @param custom_priors A`data.frame`with the following variables:
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame

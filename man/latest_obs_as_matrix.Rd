@@ -7,7 +7,7 @@
 latest_obs_as_matrix(latest)
 }
 \arguments{
-\item{latest}{\code{latest} data.frame output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+\item{latest}{\code{latest}`data.frame`output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
 \value{
 A matrix with each column being a group and each row a reference date

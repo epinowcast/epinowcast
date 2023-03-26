@@ -9,7 +9,7 @@ enw_design(formula, data, no_contrasts = FALSE, sparse = TRUE, ...)
 \arguments{
 \item{formula}{An R formula.}
 
-\item{data}{A data.frame containing the variables in the formula.}
+\item{data}{A`data.frame`containing the variables in the formula.}
 
 \item{no_contrasts}{A vector of variable names that should not be
 converted to contrasts. If \code{no_contrasts = FALSE} then all categorical

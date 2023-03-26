@@ -21,7 +21,7 @@ plotting functions to work.}
 \item{...}{Additional arguments that may be passed but will not be used.}
 }
 \value{
-A data.frame summarising the model posterior.
+A`data.frame`summarising the model posterior.
 }
 \description{
 A generic wrapper around \code{\link[posterior:draws_summary]{posterior::summarise_draws()}} with

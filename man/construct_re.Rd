@@ -10,7 +10,7 @@ construct_re(re, data)
 \item{re}{A random effect as defined using \code{\link[=re]{re()}} which itself takes
 random effects specified in a model formula using the \link{lme4} syntax.}
 
-\item{data}{A data.frame of observations used to define the
+\item{data}{A`data.frame`of observations used to define the
 random effects. Must contain the variables specified in the
 \code{\link[=re]{re()}} term.}
 }

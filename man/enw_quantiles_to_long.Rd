@@ -7,10 +7,10 @@
 enw_quantiles_to_long(posterior)
 }
 \arguments{
-\item{posterior}{A data.frame as output by \code{\link[=enw_posterior]{enw_posterior()}}.}
+\item{posterior}{A`data.frame`as output by \code{\link[=enw_posterior]{enw_posterior()}}.}
 }
 \value{
-A data.frame of quantiles in long format.
+A`data.frame`of quantiles in long format.
 }
 \description{
 Convert summarised quantiles from wide to long format

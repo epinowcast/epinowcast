@@ -1,6 +1,6 @@
 #' Check Quantiles Required are Present
 #'
-#' @param posterior A data.frame containing quantiles identified using
+#' @param posterior A`data.frame`containing quantiles identified using
 #' the `q5` naming scheme. Default: No default.
 #'
 #' @param req_probs A numeric vector of required probabilities. Default:
@@ -22,10 +22,10 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 
 #' Check Report and Reference Dates are present
 #'
-#' @param obs An observation data.frame containing \code{report_date} and
+#' @param obs An observation`data.frame`containing \code{report_date} and
 #' \code{reference_date} columns.
 #'
-#' @return Returns the input data.frame with dates converted to date format
+#' @return Returns the input`data.frame`with dates converted to date format
 #' if not already.
 #'
 #' @importFrom data.table as.data.table copy
@@ -50,7 +50,7 @@ check_dates <- function(obs) {
 
 #' Check Observations for reserved grouping variables
 #'
-#' @param obs An observation data.frame that does not contain `.group`,
+#' @param obs An observation`data.frame`that does not contain `.group`,
 #' `.old_group`, or `.new_group` as these are reserved variables.
 #'
 #' @return NULL

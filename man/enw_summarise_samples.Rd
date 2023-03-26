@@ -12,7 +12,7 @@ enw_summarise_samples(
 )
 }
 \arguments{
-\item{samples}{A data.frame of posterior samples with at least a numeric
+\item{samples}{A`data.frame`of posterior samples with at least a numeric
 sample variable.}
 
 \item{probs}{A vector of numeric probabilities to produce
@@ -28,7 +28,7 @@ posterior summary? This is useful for plotting the posterior against the
 observed data. Defaults to \code{TRUE}.}
 }
 \value{
-A data.frame summarising the posterior samples.
+A`data.frame`summarising the posterior samples.
 }
 \description{
 This function summarises posterior samples for arbitrary

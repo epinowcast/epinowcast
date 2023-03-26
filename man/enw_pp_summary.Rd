@@ -9,7 +9,7 @@ enw_pp_summary(fit, diff_obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
 
-\item{diff_obs}{A data.frame of observed data with at least a date variable
+\item{diff_obs}{A`data.frame`of observed data with at least a date variable
 \code{reference_date}, and a grouping variable \code{.group}.}
 
 \item{probs}{A vector of numeric probabilities to produce

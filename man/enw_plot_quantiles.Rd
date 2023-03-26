@@ -12,7 +12,7 @@ containing at least a \code{confirm} count column a date variable,
 quantile estimates for the 5\%, 20\%, 80\%, and 95\% quantiles and the
 mean and median.}
 
-\item{latest_obs}{A data.frame of observed data containing at least a
+\item{latest_obs}{A`data.frame`of observed data containing at least a
 \code{confirm} count variable and the same date variable as in the main data.frame
 used for plotting.}
 

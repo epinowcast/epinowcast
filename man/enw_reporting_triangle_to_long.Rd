@@ -7,10 +7,10 @@
 enw_reporting_triangle_to_long(obs)
 }
 \arguments{
-\item{obs}{A data.frame in the format produced by \code{\link[=enw_reporting_triangle]{enw_reporting_triangle()}}.}
+\item{obs}{A`data.frame`in the format produced by \code{\link[=enw_reporting_triangle]{enw_reporting_triangle()}}.}
 }
 \value{
-A long format reporting triangle as a data.frame with additional
+A long format reporting triangle as a`data.frame`with additional
 variables \code{new_confirm} and \code{delay}.
 }
 \description{
