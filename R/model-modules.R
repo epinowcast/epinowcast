@@ -14,7 +14,7 @@
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
 #' describing the non-parametric logit hazard model. This can use features
-#' defined by reference date and by delay. It draws on a linked  `data.frame`
+#' defined by reference date and by delay. It draws on a linked `data.frame`
 #' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
 #' When an effect per delay is specified this approximates the cox proportional
 #' hazard model in discrete time with a single strata. Note that this model is
