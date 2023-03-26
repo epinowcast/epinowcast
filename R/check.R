@@ -78,7 +78,7 @@ check_group <- function(obs) {
 
 #' Check by variables are present in the data
 #'
-#' @param obs An observation `data.frame``.
+#' @param obs An observation `data.frame`.
 #'
 #' @param by A character vector of variables to group by.
 #'
