@@ -2,21 +2,27 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_delay}
 \alias{enw_add_delay}
-\title{FUNCTION_TITLE}
+\title{Add a delay variable}
 \usage{
 enw_add_delay(obs)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with a \code{delay} column added.
 }
 \description{
-FUNCTION_DESCRIPTION
+Add a delay variable based on the numeric difference
+between the \code{report_date} and \code{reference_date} columns.
+}
+\examples{
+obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
+obs$reference_date <- as.Date("2021-01-01")
+enw_add_delay(obs)
 }
 \seealso{
 Preprocessing functions

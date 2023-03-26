@@ -1,14 +1,15 @@
 #' Identify report dates with complete (i.e up to the maximum delay) reference
 #' dates
 #'
-#' @param new_confirm `new_confirm` data.frame output from
+#' @param new_confirm `new_confirm` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
-#' @return A data frame containing a `report_date` variable, and grouping
+#' @return A `data.frame` containing a `report_date` variable, and grouping
 #' variables specified for report dates that have complete reporting.
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
+  check_by(new_confirm, by = by)
   rep_with_complete_ref <- data.table::as.data.table(new_confirm)
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
@@ -20,23 +21,23 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
 
 #' Construct a lookup of references dates by report
 #'
-#' @param missing_reference `missing_reference` data.frame output from
+#' @param missing_reference `missing_reference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
 #' @param reps_with_complete_refs A `data.frame` of report dates with complete
 #' (i.e fully reported) reference dates as produced using
 #' [enw_reps_with_complete_refs()].
 #'
-#' @param metareference `metareference` data.frame output from
+#' @param metareference `metareference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
-#' @return A wide data frame with each row being a complete report date and'
+#' @return A wide `data.frame` with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
-  # Make a complete data frame of all possible reference and report dates
+  # Make a complete data.frame of all possible reference and report dates
   miss_lk <- data.table::copy(metareference)[
     ,
     .(reference_date = date, .group)
@@ -70,7 +71,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
 }
 #' Convert latest observed data to a matrix
 #'
-#' @param latest `latest` data.frame output from [enw_preprocess_data()].
+#' @param latest `latest` `data.frame` output from [enw_preprocess_data()].
 #'
 #' @return A matrix with each column being a group and each row a reference date
 #' @family modelmodulehelpers

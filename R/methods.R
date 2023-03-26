@@ -50,6 +50,7 @@ summary.epinowcast <- function(object, type = c(
   return(s)
 }
 
+
 #' Plot method for epinowcast
 #'
 #' @description `plot` method for class "epinowcast".

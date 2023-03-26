@@ -25,13 +25,12 @@
       [1] "~1 + age_group"
       
       $fixed$design
-         (Intercept) age_group05-14 age_group15-34
-      1            1              0              0
-      12           1              1              0
-      23           1              0              1
+        (Intercept) age_group15-34
+      1           1              0
+      5           1              1
       
       $fixed$index
-       [1] 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3
+      [1] 1 1 1 1 2 2 2 2
       
       
       $random
@@ -41,12 +40,11 @@
       $random$design
         (Intercept)
       1           1
-      2           1
       attr(,"assign")
       [1] 0
       
       $random$index
-      [1] 1 2
+      [1] 1
       
       
       attr(,"class")
@@ -81,13 +79,12 @@
       [1] "~1 + age_group"
       
       $fixed$design
-         (Intercept) age_group00+ age_group05-14 age_group15-34
-      1            1            1              0              0
-      12           1            0              1              0
-      23           1            0              0              1
+        (Intercept) age_group00+ age_group15-34
+      1           1            1              0
+      5           1            0              1
       
       $fixed$index
-       [1] 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3
+      [1] 1 1 1 1 2 2 2 2
       
       
       $random
@@ -98,19 +95,17 @@
         fixed age_group
       1     0         1
       2     0         1
-      3     0         1
       attr(,"assign")
       [1] 1 2
       
       $random$index
-      [1] 1 2 3
+      [1] 1 2
       
       
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a random effects formula with an internal
-           interaction
+# enw_formula can return a random effects formula with an internal interaction
 
     Code
       enw_formula(~ 1 + (1 + month | day_of_week:age_group), data)
@@ -139,382 +134,43 @@
       [1] "~1 + day_of_week:age_group + month:day_of_week:age_group"
       
       $fixed$design
-         (Intercept) day_of_weekFriday:age_group00+ day_of_weekMonday:age_group00+
-      1            1                              0                              0
-      2            1                              1                              0
-      3            1                              0                              0
-      4            1                              0                              0
-      5            1                              0                              1
-      6            1                              0                              0
-      7            1                              0                              0
-      8            1                              0                              0
-      12           1                              0                              0
-      13           1                              0                              0
-      14           1                              0                              0
-      15           1                              0                              0
-      16           1                              0                              0
-      17           1                              0                              0
-      18           1                              0                              0
-      19           1                              0                              0
-      23           1                              0                              0
-      24           1                              0                              0
-      25           1                              0                              0
-      26           1                              0                              0
-      27           1                              0                              0
-      28           1                              0                              0
-      29           1                              0                              0
-      30           1                              0                              0
-         day_of_weekSaturday:age_group00+ day_of_weekSunday:age_group00+
-      1                                 0                              0
-      2                                 0                              0
-      3                                 1                              0
-      4                                 0                              1
-      5                                 0                              0
-      6                                 0                              0
-      7                                 0                              0
-      8                                 0                              0
-      12                                0                              0
-      13                                0                              0
-      14                                0                              0
-      15                                0                              0
-      16                                0                              0
-      17                                0                              0
-      18                                0                              0
-      19                                0                              0
-      23                                0                              0
-      24                                0                              0
-      25                                0                              0
-      26                                0                              0
-      27                                0                              0
-      28                                0                              0
-      29                                0                              0
-      30                                0                              0
-         day_of_weekThursday:age_group00+ day_of_weekTuesday:age_group00+
-      1                                 1                               0
-      2                                 0                               0
-      3                                 0                               0
-      4                                 0                               0
-      5                                 0                               0
-      6                                 0                               1
-      7                                 0                               0
-      8                                 1                               0
-      12                                0                               0
-      13                                0                               0
-      14                                0                               0
-      15                                0                               0
-      16                                0                               0
-      17                                0                               0
-      18                                0                               0
-      19                                0                               0
-      23                                0                               0
-      24                                0                               0
-      25                                0                               0
-      26                                0                               0
-      27                                0                               0
-      28                                0                               0
-      29                                0                               0
-      30                                0                               0
-         day_of_weekWednesday:age_group00+ day_of_weekFriday:age_group05-14
-      1                                  0                                0
-      2                                  0                                0
-      3                                  0                                0
-      4                                  0                                0
-      5                                  0                                0
-      6                                  0                                0
-      7                                  1                                0
-      8                                  0                                0
-      12                                 0                                0
-      13                                 0                                1
-      14                                 0                                0
-      15                                 0                                0
-      16                                 0                                0
-      17                                 0                                0
-      18                                 0                                0
-      19                                 0                                0
-      23                                 0                                0
-      24                                 0                                0
-      25                                 0                                0
-      26                                 0                                0
-      27                                 0                                0
-      28                                 0                                0
-      29                                 0                                0
-      30                                 0                                0
-         day_of_weekMonday:age_group05-14 day_of_weekSaturday:age_group05-14
-      1                                 0                                  0
-      2                                 0                                  0
-      3                                 0                                  0
-      4                                 0                                  0
-      5                                 0                                  0
-      6                                 0                                  0
-      7                                 0                                  0
-      8                                 0                                  0
-      12                                0                                  0
-      13                                0                                  0
-      14                                0                                  1
-      15                                0                                  0
-      16                                1                                  0
-      17                                0                                  0
-      18                                0                                  0
-      19                                0                                  0
-      23                                0                                  0
-      24                                0                                  0
-      25                                0                                  0
-      26                                0                                  0
-      27                                0                                  0
-      28                                0                                  0
-      29                                0                                  0
-      30                                0                                  0
-         day_of_weekSunday:age_group05-14 day_of_weekThursday:age_group05-14
-      1                                 0                                  0
-      2                                 0                                  0
-      3                                 0                                  0
-      4                                 0                                  0
-      5                                 0                                  0
-      6                                 0                                  0
-      7                                 0                                  0
-      8                                 0                                  0
-      12                                0                                  1
-      13                                0                                  0
-      14                                0                                  0
-      15                                1                                  0
-      16                                0                                  0
-      17                                0                                  0
-      18                                0                                  0
-      19                                0                                  1
-      23                                0                                  0
-      24                                0                                  0
-      25                                0                                  0
-      26                                0                                  0
-      27                                0                                  0
-      28                                0                                  0
-      29                                0                                  0
-      30                                0                                  0
-         day_of_weekTuesday:age_group05-14 day_of_weekWednesday:age_group05-14
-      1                                  0                                   0
-      2                                  0                                   0
-      3                                  0                                   0
-      4                                  0                                   0
-      5                                  0                                   0
-      6                                  0                                   0
-      7                                  0                                   0
-      8                                  0                                   0
-      12                                 0                                   0
-      13                                 0                                   0
-      14                                 0                                   0
-      15                                 0                                   0
-      16                                 0                                   0
-      17                                 1                                   0
-      18                                 0                                   1
-      19                                 0                                   0
-      23                                 0                                   0
-      24                                 0                                   0
-      25                                 0                                   0
-      26                                 0                                   0
-      27                                 0                                   0
-      28                                 0                                   0
-      29                                 0                                   0
-      30                                 0                                   0
-         day_of_weekFriday:age_group15-34 day_of_weekMonday:age_group15-34
-      1                                 0                                0
-      2                                 0                                0
-      3                                 0                                0
-      4                                 0                                0
-      5                                 0                                0
-      6                                 0                                0
-      7                                 0                                0
-      8                                 0                                0
-      12                                0                                0
-      13                                0                                0
-      14                                0                                0
-      15                                0                                0
-      16                                0                                0
-      17                                0                                0
-      18                                0                                0
-      19                                0                                0
-      23                                0                                0
-      24                                1                                0
-      25                                0                                0
-      26                                0                                0
-      27                                0                                1
-      28                                0                                0
-      29                                0                                0
-      30                                0                                0
-         day_of_weekSaturday:age_group15-34 day_of_weekSunday:age_group15-34
-      1                                   0                                0
-      2                                   0                                0
-      3                                   0                                0
-      4                                   0                                0
-      5                                   0                                0
-      6                                   0                                0
-      7                                   0                                0
-      8                                   0                                0
-      12                                  0                                0
-      13                                  0                                0
-      14                                  0                                0
-      15                                  0                                0
-      16                                  0                                0
-      17                                  0                                0
-      18                                  0                                0
-      19                                  0                                0
-      23                                  0                                0
-      24                                  0                                0
-      25                                  1                                0
-      26                                  0                                1
-      27                                  0                                0
-      28                                  0                                0
-      29                                  0                                0
-      30                                  0                                0
-         day_of_weekThursday:age_group15-34 day_of_weekTuesday:age_group15-34
-      1                                   0                                 0
-      2                                   0                                 0
-      3                                   0                                 0
-      4                                   0                                 0
-      5                                   0                                 0
-      6                                   0                                 0
-      7                                   0                                 0
-      8                                   0                                 0
-      12                                  0                                 0
-      13                                  0                                 0
-      14                                  0                                 0
-      15                                  0                                 0
-      16                                  0                                 0
-      17                                  0                                 0
-      18                                  0                                 0
-      19                                  0                                 0
-      23                                  1                                 0
-      24                                  0                                 0
-      25                                  0                                 0
-      26                                  0                                 0
-      27                                  0                                 0
-      28                                  0                                 1
-      29                                  0                                 0
-      30                                  1                                 0
-         day_of_weekWednesday:age_group15-34 day_of_weekFriday:age_group00+:month
-      1                                    0                                    0
-      2                                    0                                    1
-      3                                    0                                    0
-      4                                    0                                    0
-      5                                    0                                    0
-      6                                    0                                    0
-      7                                    0                                    0
-      8                                    0                                    0
-      12                                   0                                    0
-      13                                   0                                    0
-      14                                   0                                    0
-      15                                   0                                    0
-      16                                   0                                    0
-      17                                   0                                    0
-      18                                   0                                    0
-      19                                   0                                    0
-      23                                   0                                    0
-      24                                   0                                    0
-      25                                   0                                    0
-      26                                   0                                    0
-      27                                   0                                    0
-      28                                   0                                    0
-      29                                   1                                    0
-      30                                   0                                    0
-         day_of_weekMonday:age_group00+:month day_of_weekSaturday:age_group00+:month
-      1                                     0                                      0
-      2                                     0                                      0
-      3                                     0                                      1
-      4                                     0                                      0
-      5                                     1                                      0
-      6                                     0                                      0
-      7                                     0                                      0
-      8                                     0                                      0
-      12                                    0                                      0
-      13                                    0                                      0
-      14                                    0                                      0
-      15                                    0                                      0
-      16                                    0                                      0
-      17                                    0                                      0
-      18                                    0                                      0
-      19                                    0                                      0
-      23                                    0                                      0
-      24                                    0                                      0
-      25                                    0                                      0
-      26                                    0                                      0
-      27                                    0                                      0
-      28                                    0                                      0
-      29                                    0                                      0
-      30                                    0                                      0
-         day_of_weekSunday:age_group00+:month day_of_weekThursday:age_group00+:month
-      1                                     0                                      0
-      2                                     0                                      0
-      3                                     0                                      0
-      4                                     1                                      0
-      5                                     0                                      0
-      6                                     0                                      0
-      7                                     0                                      0
-      8                                     0                                      1
-      12                                    0                                      0
-      13                                    0                                      0
-      14                                    0                                      0
-      15                                    0                                      0
-      16                                    0                                      0
-      17                                    0                                      0
-      18                                    0                                      0
-      19                                    0                                      0
-      23                                    0                                      0
-      24                                    0                                      0
-      25                                    0                                      0
-      26                                    0                                      0
-      27                                    0                                      0
-      28                                    0                                      0
-      29                                    0                                      0
-      30                                    0                                      0
-         day_of_weekTuesday:age_group00+:month
+        (Intercept) day_of_weekMonday:age_group00+ day_of_weekTuesday:age_group00+
+      1           1                              1                               0
+      2           1                              0                               1
+      3           1                              1                               0
+      4           1                              0                               1
+      5           1                              0                               0
+      6           1                              0                               0
+      7           1                              0                               0
+      8           1                              0                               0
+        day_of_weekMonday:age_group15-34 day_of_weekTuesday:age_group15-34
+      1                                0                                 0
+      2                                0                                 0
+      3                                0                                 0
+      4                                0                                 0
+      5                                1                                 0
+      6                                0                                 1
+      7                                1                                 0
+      8                                0                                 1
+        day_of_weekMonday:age_group00+:month day_of_weekTuesday:age_group00+:month
+      1                                    0                                     0
+      2                                    0                                     0
+      3                                    1                                     0
+      4                                    0                                     1
+      5                                    0                                     0
+      6                                    0                                     0
+      7                                    0                                     0
+      8                                    0                                     0
+        day_of_weekMonday:age_group15-34:month
       1                                      0
       2                                      0
       3                                      0
       4                                      0
       5                                      0
-      6                                      1
-      7                                      0
+      6                                      0
+      7                                      1
       8                                      0
-      12                                     0
-      13                                     0
-      14                                     0
-      15                                     0
-      16                                     0
-      17                                     0
-      18                                     0
-      19                                     0
-      23                                     0
-      24                                     0
-      25                                     0
-      26                                     0
-      27                                     0
-      28                                     0
-      29                                     0
-      30                                     0
-         day_of_weekWednesday:age_group00+:month
-      1                                        0
-      2                                        0
-      3                                        0
-      4                                        0
-      5                                        0
-      6                                        0
-      7                                        1
-      8                                        0
-      12                                       0
-      13                                       0
-      14                                       0
-      15                                       0
-      16                                       0
-      17                                       0
-      18                                       0
-      19                                       0
-      23                                       0
-      24                                       0
-      25                                       0
-      26                                       0
-      27                                       0
-      28                                       0
-      29                                       0
-      30                                       0
-         day_of_weekFriday:age_group05-14:month
+        day_of_weekTuesday:age_group15-34:month
       1                                       0
       2                                       0
       3                                       0
@@ -522,501 +178,46 @@
       5                                       0
       6                                       0
       7                                       0
-      8                                       0
-      12                                      0
-      13                                      1
-      14                                      0
-      15                                      0
-      16                                      0
-      17                                      0
-      18                                      0
-      19                                      0
-      23                                      0
-      24                                      0
-      25                                      0
-      26                                      0
-      27                                      0
-      28                                      0
-      29                                      0
-      30                                      0
-         day_of_weekMonday:age_group05-14:month
-      1                                       0
-      2                                       0
-      3                                       0
-      4                                       0
-      5                                       0
-      6                                       0
-      7                                       0
-      8                                       0
-      12                                      0
-      13                                      0
-      14                                      0
-      15                                      0
-      16                                      1
-      17                                      0
-      18                                      0
-      19                                      0
-      23                                      0
-      24                                      0
-      25                                      0
-      26                                      0
-      27                                      0
-      28                                      0
-      29                                      0
-      30                                      0
-         day_of_weekSaturday:age_group05-14:month
-      1                                         0
-      2                                         0
-      3                                         0
-      4                                         0
-      5                                         0
-      6                                         0
-      7                                         0
-      8                                         0
-      12                                        0
-      13                                        0
-      14                                        1
-      15                                        0
-      16                                        0
-      17                                        0
-      18                                        0
-      19                                        0
-      23                                        0
-      24                                        0
-      25                                        0
-      26                                        0
-      27                                        0
-      28                                        0
-      29                                        0
-      30                                        0
-         day_of_weekSunday:age_group05-14:month
-      1                                       0
-      2                                       0
-      3                                       0
-      4                                       0
-      5                                       0
-      6                                       0
-      7                                       0
-      8                                       0
-      12                                      0
-      13                                      0
-      14                                      0
-      15                                      1
-      16                                      0
-      17                                      0
-      18                                      0
-      19                                      0
-      23                                      0
-      24                                      0
-      25                                      0
-      26                                      0
-      27                                      0
-      28                                      0
-      29                                      0
-      30                                      0
-         day_of_weekThursday:age_group05-14:month
-      1                                         0
-      2                                         0
-      3                                         0
-      4                                         0
-      5                                         0
-      6                                         0
-      7                                         0
-      8                                         0
-      12                                        0
-      13                                        0
-      14                                        0
-      15                                        0
-      16                                        0
-      17                                        0
-      18                                        0
-      19                                        1
-      23                                        0
-      24                                        0
-      25                                        0
-      26                                        0
-      27                                        0
-      28                                        0
-      29                                        0
-      30                                        0
-         day_of_weekTuesday:age_group05-14:month
-      1                                        0
-      2                                        0
-      3                                        0
-      4                                        0
-      5                                        0
-      6                                        0
-      7                                        0
-      8                                        0
-      12                                       0
-      13                                       0
-      14                                       0
-      15                                       0
-      16                                       0
-      17                                       1
-      18                                       0
-      19                                       0
-      23                                       0
-      24                                       0
-      25                                       0
-      26                                       0
-      27                                       0
-      28                                       0
-      29                                       0
-      30                                       0
-         day_of_weekWednesday:age_group05-14:month
-      1                                          0
-      2                                          0
-      3                                          0
-      4                                          0
-      5                                          0
-      6                                          0
-      7                                          0
-      8                                          0
-      12                                         0
-      13                                         0
-      14                                         0
-      15                                         0
-      16                                         0
-      17                                         0
-      18                                         1
-      19                                         0
-      23                                         0
-      24                                         0
-      25                                         0
-      26                                         0
-      27                                         0
-      28                                         0
-      29                                         0
-      30                                         0
-         day_of_weekFriday:age_group15-34:month
-      1                                       0
-      2                                       0
-      3                                       0
-      4                                       0
-      5                                       0
-      6                                       0
-      7                                       0
-      8                                       0
-      12                                      0
-      13                                      0
-      14                                      0
-      15                                      0
-      16                                      0
-      17                                      0
-      18                                      0
-      19                                      0
-      23                                      0
-      24                                      1
-      25                                      0
-      26                                      0
-      27                                      0
-      28                                      0
-      29                                      0
-      30                                      0
-         day_of_weekMonday:age_group15-34:month
-      1                                       0
-      2                                       0
-      3                                       0
-      4                                       0
-      5                                       0
-      6                                       0
-      7                                       0
-      8                                       0
-      12                                      0
-      13                                      0
-      14                                      0
-      15                                      0
-      16                                      0
-      17                                      0
-      18                                      0
-      19                                      0
-      23                                      0
-      24                                      0
-      25                                      0
-      26                                      0
-      27                                      1
-      28                                      0
-      29                                      0
-      30                                      0
-         day_of_weekSaturday:age_group15-34:month
-      1                                         0
-      2                                         0
-      3                                         0
-      4                                         0
-      5                                         0
-      6                                         0
-      7                                         0
-      8                                         0
-      12                                        0
-      13                                        0
-      14                                        0
-      15                                        0
-      16                                        0
-      17                                        0
-      18                                        0
-      19                                        0
-      23                                        0
-      24                                        0
-      25                                        1
-      26                                        0
-      27                                        0
-      28                                        0
-      29                                        0
-      30                                        0
-         day_of_weekSunday:age_group15-34:month
-      1                                       0
-      2                                       0
-      3                                       0
-      4                                       0
-      5                                       0
-      6                                       0
-      7                                       0
-      8                                       0
-      12                                      0
-      13                                      0
-      14                                      0
-      15                                      0
-      16                                      0
-      17                                      0
-      18                                      0
-      19                                      0
-      23                                      0
-      24                                      0
-      25                                      0
-      26                                      1
-      27                                      0
-      28                                      0
-      29                                      0
-      30                                      0
-         day_of_weekThursday:age_group15-34:month
-      1                                         0
-      2                                         0
-      3                                         0
-      4                                         0
-      5                                         0
-      6                                         0
-      7                                         0
-      8                                         0
-      12                                        0
-      13                                        0
-      14                                        0
-      15                                        0
-      16                                        0
-      17                                        0
-      18                                        0
-      19                                        0
-      23                                        0
-      24                                        0
-      25                                        0
-      26                                        0
-      27                                        0
-      28                                        0
-      29                                        0
-      30                                        1
-         day_of_weekTuesday:age_group15-34:month
-      1                                        0
-      2                                        0
-      3                                        0
-      4                                        0
-      5                                        0
-      6                                        0
-      7                                        0
-      8                                        0
-      12                                       0
-      13                                       0
-      14                                       0
-      15                                       0
-      16                                       0
-      17                                       0
-      18                                       0
-      19                                       0
-      23                                       0
-      24                                       0
-      25                                       0
-      26                                       0
-      27                                       0
-      28                                       1
-      29                                       0
-      30                                       0
-         day_of_weekWednesday:age_group15-34:month
-      1                                          0
-      2                                          0
-      3                                          0
-      4                                          0
-      5                                          0
-      6                                          0
-      7                                          0
-      8                                          0
-      12                                         0
-      13                                         0
-      14                                         0
-      15                                         0
-      16                                         0
-      17                                         0
-      18                                         0
-      19                                         0
-      23                                         0
-      24                                         0
-      25                                         0
-      26                                         0
-      27                                         0
-      28                                         0
-      29                                         1
-      30                                         0
+      8                                       1
       
       $fixed$index
-       [1]  1  2  3  4  5  6  7  8  2  3  4  9 10 11 12 13 14 15 16 10 11 12 17 18 19
-      [26] 20 21 22 23 24 18 19 20
+      [1] 1 2 3 4 5 6 7 8
       
       
       $random
       $random$formula
-      [1] "~0 + fixed + `day_of_week__age_group00+` + `day_of_week__age_group05-14` + `day_of_week__age_group15-34` + `month__day_of_week__age_group00+` + `month__day_of_week__age_group05-14` + `month__day_of_week__age_group15-34`"
+      [1] "~0 + fixed + `day_of_week__age_group00+` + `day_of_week__age_group15-34` + `month__day_of_week__age_group00+` + `month__day_of_week__age_group15-34`"
       
       $random$design
-         fixed `day_of_week__age_group00+` `day_of_week__age_group05-14`
-      1      0                           1                             0
-      2      0                           1                             0
-      3      0                           1                             0
-      4      0                           1                             0
-      5      0                           1                             0
-      6      0                           1                             0
-      7      0                           1                             0
-      8      0                           0                             1
-      9      0                           0                             1
-      10     0                           0                             1
-      11     0                           0                             1
-      12     0                           0                             1
-      13     0                           0                             1
-      14     0                           0                             1
-      15     0                           0                             0
-      16     0                           0                             0
-      17     0                           0                             0
-      18     0                           0                             0
-      19     0                           0                             0
-      20     0                           0                             0
-      21     0                           0                             0
-      22     0                           0                             0
-      23     0                           0                             0
-      24     0                           0                             0
-      25     0                           0                             0
-      26     0                           0                             0
-      27     0                           0                             0
-      28     0                           0                             0
-      29     0                           0                             0
-      30     0                           0                             0
-      31     0                           0                             0
-      32     0                           0                             0
-      33     0                           0                             0
-      34     0                           0                             0
-      35     0                           0                             0
-      36     0                           0                             0
-      37     0                           0                             0
-      38     0                           0                             0
-      39     0                           0                             0
-      40     0                           0                             0
-      41     0                           0                             0
-      42     0                           0                             0
-         `day_of_week__age_group15-34` `month__day_of_week__age_group00+`
-      1                              0                                  0
-      2                              0                                  0
-      3                              0                                  0
-      4                              0                                  0
-      5                              0                                  0
-      6                              0                                  0
-      7                              0                                  0
-      8                              0                                  0
-      9                              0                                  0
-      10                             0                                  0
-      11                             0                                  0
-      12                             0                                  0
-      13                             0                                  0
-      14                             0                                  0
-      15                             1                                  0
-      16                             1                                  0
-      17                             1                                  0
-      18                             1                                  0
-      19                             1                                  0
-      20                             1                                  0
-      21                             1                                  0
-      22                             0                                  1
-      23                             0                                  1
-      24                             0                                  1
-      25                             0                                  1
-      26                             0                                  1
-      27                             0                                  1
-      28                             0                                  1
-      29                             0                                  0
-      30                             0                                  0
-      31                             0                                  0
-      32                             0                                  0
-      33                             0                                  0
-      34                             0                                  0
-      35                             0                                  0
-      36                             0                                  0
-      37                             0                                  0
-      38                             0                                  0
-      39                             0                                  0
-      40                             0                                  0
-      41                             0                                  0
-      42                             0                                  0
-         `month__day_of_week__age_group05-14` `month__day_of_week__age_group15-34`
-      1                                     0                                    0
-      2                                     0                                    0
-      3                                     0                                    0
-      4                                     0                                    0
-      5                                     0                                    0
-      6                                     0                                    0
-      7                                     0                                    0
-      8                                     0                                    0
-      9                                     0                                    0
-      10                                    0                                    0
-      11                                    0                                    0
-      12                                    0                                    0
-      13                                    0                                    0
-      14                                    0                                    0
-      15                                    0                                    0
-      16                                    0                                    0
-      17                                    0                                    0
-      18                                    0                                    0
-      19                                    0                                    0
-      20                                    0                                    0
-      21                                    0                                    0
-      22                                    0                                    0
-      23                                    0                                    0
-      24                                    0                                    0
-      25                                    0                                    0
-      26                                    0                                    0
-      27                                    0                                    0
-      28                                    0                                    0
-      29                                    1                                    0
-      30                                    1                                    0
-      31                                    1                                    0
-      32                                    1                                    0
-      33                                    1                                    0
-      34                                    1                                    0
-      35                                    1                                    0
-      36                                    0                                    1
-      37                                    0                                    1
-      38                                    0                                    1
-      39                                    0                                    1
-      40                                    0                                    1
-      41                                    0                                    1
-      42                                    0                                    1
+        fixed `day_of_week__age_group00+` `day_of_week__age_group15-34`
+      1     0                           1                             0
+      2     0                           1                             0
+      3     0                           0                             1
+      4     0                           0                             1
+      5     0                           0                             0
+      6     0                           0                             0
+      7     0                           0                             0
+      8     0                           0                             0
+        `month__day_of_week__age_group00+` `month__day_of_week__age_group15-34`
+      1                                  0                                    0
+      2                                  0                                    0
+      3                                  0                                    0
+      4                                  0                                    0
+      5                                  1                                    0
+      6                                  1                                    0
+      7                                  0                                    1
+      8                                  0                                    1
       attr(,"assign")
-      [1] 1 2 3 4 5 6 7
+      [1] 1 2 3 4 5
       
       $random$index
-       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-      [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42
+      [1] 1 2 3 4 5 6 7 8
       
       
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a random effects formula with an internal
-           interaction with only one contrast by falling back to no interaction
+# enw_formula can return a random effects formula with an internal interaction with only one contrast by falling back to no interaction
 
     Code
       suppressMessages(enw_formula(~ 1 + (1 + month | day_of_week:age_group), data[
@@ -1046,54 +247,19 @@
       [1] "~1 + day_of_week + month:day_of_week"
       
       $fixed$design
-        (Intercept) day_of_weekFriday day_of_weekMonday day_of_weekSaturday
-      1           1                 0                 0                   0
-      2           1                 1                 0                   0
-      3           1                 0                 0                   1
-      4           1                 0                 0                   0
-      5           1                 0                 1                   0
-      6           1                 0                 0                   0
-      7           1                 0                 0                   0
-      8           1                 0                 0                   0
-        day_of_weekSunday day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
-      1                 0                   1                  0                    0
-      2                 0                   0                  0                    0
-      3                 0                   0                  0                    0
-      4                 1                   0                  0                    0
-      5                 0                   0                  0                    0
-      6                 0                   0                  1                    0
-      7                 0                   0                  0                    1
-      8                 0                   1                  0                    0
-        day_of_weekFriday:month day_of_weekMonday:month day_of_weekSaturday:month
-      1                       0                       0                         0
-      2                       1                       0                         0
-      3                       0                       0                         1
-      4                       0                       0                         0
-      5                       0                       1                         0
-      6                       0                       0                         0
-      7                       0                       0                         0
-      8                       0                       0                         0
-        day_of_weekSunday:month day_of_weekThursday:month day_of_weekTuesday:month
-      1                       0                         0                        0
-      2                       0                         0                        0
-      3                       0                         0                        0
-      4                       1                         0                        0
-      5                       0                         0                        0
-      6                       0                         0                        1
-      7                       0                         0                        0
-      8                       0                         1                        0
-        day_of_weekWednesday:month
-      1                          0
-      2                          0
-      3                          0
-      4                          0
-      5                          0
-      6                          0
-      7                          1
-      8                          0
+        (Intercept) day_of_weekMonday day_of_weekTuesday day_of_weekMonday:month
+      1           1                 1                  0                       0
+      2           1                 0                  1                       0
+      3           1                 1                  0                       1
+      4           1                 0                  1                       0
+        day_of_weekTuesday:month
+      1                        0
+      2                        0
+      3                        0
+      4                        1
       
       $fixed$index
-       [1] 1 2 3 4 5 6 7 8 2 3 4
+      [1] 1 2 3 4
       
       
       $random
@@ -1101,33 +267,22 @@
       [1] "~0 + fixed + day_of_week + month__day_of_week"
       
       $random$design
-         fixed day_of_week month__day_of_week
-      1      0           1                  0
-      2      0           1                  0
-      3      0           1                  0
-      4      0           1                  0
-      5      0           1                  0
-      6      0           1                  0
-      7      0           1                  0
-      8      0           0                  1
-      9      0           0                  1
-      10     0           0                  1
-      11     0           0                  1
-      12     0           0                  1
-      13     0           0                  1
-      14     0           0                  1
+        fixed day_of_week month__day_of_week
+      1     0           1                  0
+      2     0           1                  0
+      3     0           0                  1
+      4     0           0                  1
       attr(,"assign")
       [1] 1 2 3
       
       $random$index
-       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14
+      [1] 1 2 3 4
       
       
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a model with a random effect and a random
-           walk
+# enw_formula can return a model with a random effect and a random walk
 
     Code
       enw_formula(~ 1 + (1 | age_group) + rw(week), data)
@@ -1156,16 +311,14 @@
       [1] "~1 + cweek1 + age_group"
       
       $fixed$design
-         (Intercept) cweek1 age_group00+ age_group05-14 age_group15-34
-      1            1      0            1              0              0
-      8            1      1            1              0              0
-      12           1      0            0              1              0
-      19           1      1            0              1              0
-      23           1      0            0              0              1
-      30           1      1            0              0              1
+        (Intercept) cweek1 age_group00+ age_group15-34
+      1           1      0            1              0
+      3           1      1            1              0
+      5           1      0            0              1
+      7           1      1            0              1
       
       $fixed$index
-       [1] 1 1 1 1 1 1 1 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 5 5 5 5 5 5 5 6 6 6 6
+      [1] 1 1 2 2 3 3 4 4
       
       
       $random
@@ -1176,20 +329,18 @@
         fixed age_group week
       1     0         1    0
       2     0         1    0
-      3     0         1    0
-      4     0         0    1
+      3     0         0    1
       attr(,"assign")
       [1] 1 2 3
       
       $random$index
-      [1] 1 2 3 4
+      [1] 1 2 3
       
       
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a model with a random effect
-           and a random walk by group
+# enw_formula can return a model with a random effect and a random walk by group
 
     Code
       enw_formula(~ 1 + (1 | age_group) + rw(week, age_group), data)
@@ -1218,56 +369,42 @@
       [1] "~1 + age_group:cweek1 + age_group"
       
       $fixed$design
-         (Intercept) age_group00+ age_group05-14 age_group15-34 age_group00+:cweek1
-      1            1            1              0              0                   0
-      8            1            1              0              0                   1
-      12           1            0              1              0                   0
-      19           1            0              1              0                   0
-      23           1            0              0              1                   0
-      30           1            0              0              1                   0
-         age_group05-14:cweek1 age_group15-34:cweek1
-      1                      0                     0
-      8                      0                     0
-      12                     0                     0
-      19                     1                     0
-      23                     0                     0
-      30                     0                     1
+        (Intercept) age_group00+ age_group15-34 age_group00+:cweek1
+      1           1            1              0                   0
+      3           1            1              0                   1
+      5           1            0              1                   0
+      7           1            0              1                   0
+        age_group15-34:cweek1
+      1                     0
+      3                     0
+      5                     0
+      7                     1
       
       $fixed$index
-       [1] 1 1 1 1 1 1 1 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 5 5 5 5 5 5 5 6 6 6 6
+      [1] 1 1 2 2 3 3 4 4
       
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + `age_group00+__week` + `age_group05-14__week` + `age_group15-34__week`"
+      [1] "~0 + fixed + age_group + `age_group00+__week` + `age_group15-34__week`"
       
       $random$design
-        fixed age_group `age_group00+__week` `age_group05-14__week`
+        fixed age_group `age_group00+__week` `age_group15-34__week`
       1     0         1                    0                      0
       2     0         1                    0                      0
-      3     0         1                    0                      0
-      4     0         0                    1                      0
-      5     0         0                    0                      1
-      6     0         0                    0                      0
-        `age_group15-34__week`
-      1                      0
-      2                      0
-      3                      0
-      4                      0
-      5                      0
-      6                      1
+      3     0         0                    1                      0
+      4     0         0                    0                      1
       attr(,"assign")
-      [1] 1 2 3 4 5
+      [1] 1 2 3 4
       
       $random$index
-      [1] 1 2 3 4 5 6
+      [1] 1 2 3 4
       
       
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a model with a fixed effect, random effect
-           and a random walk
+# enw_formula can return a model with a fixed effect, random effect and a random walk
 
     Code
       enw_formula(~ 1 + day_of_week + (1 | age_group) + rw(week), data)
@@ -1296,112 +433,18 @@
       [1] "~1 + day_of_week + cweek1 + age_group"
       
       $fixed$design
-         (Intercept) day_of_weekMonday day_of_weekSaturday day_of_weekSunday
-      1            1                 0                   0                 0
-      2            1                 0                   0                 0
-      3            1                 0                   1                 0
-      4            1                 0                   0                 1
-      5            1                 1                   0                 0
-      6            1                 0                   0                 0
-      7            1                 0                   0                 0
-      8            1                 0                   0                 0
-      9            1                 0                   0                 0
-      10           1                 0                   1                 0
-      11           1                 0                   0                 1
-      12           1                 0                   0                 0
-      13           1                 0                   0                 0
-      14           1                 0                   1                 0
-      15           1                 0                   0                 1
-      16           1                 1                   0                 0
-      17           1                 0                   0                 0
-      18           1                 0                   0                 0
-      19           1                 0                   0                 0
-      20           1                 0                   0                 0
-      21           1                 0                   1                 0
-      22           1                 0                   0                 1
-      23           1                 0                   0                 0
-      24           1                 0                   0                 0
-      25           1                 0                   1                 0
-      26           1                 0                   0                 1
-      27           1                 1                   0                 0
-      28           1                 0                   0                 0
-      29           1                 0                   0                 0
-      30           1                 0                   0                 0
-      31           1                 0                   0                 0
-      32           1                 0                   1                 0
-      33           1                 0                   0                 1
-         day_of_weekThursday day_of_weekTuesday day_of_weekWednesday cweek1
-      1                    1                  0                    0      0
-      2                    0                  0                    0      0
-      3                    0                  0                    0      0
-      4                    0                  0                    0      0
-      5                    0                  0                    0      0
-      6                    0                  1                    0      0
-      7                    0                  0                    1      0
-      8                    1                  0                    0      1
-      9                    0                  0                    0      1
-      10                   0                  0                    0      1
-      11                   0                  0                    0      1
-      12                   1                  0                    0      0
-      13                   0                  0                    0      0
-      14                   0                  0                    0      0
-      15                   0                  0                    0      0
-      16                   0                  0                    0      0
-      17                   0                  1                    0      0
-      18                   0                  0                    1      0
-      19                   1                  0                    0      1
-      20                   0                  0                    0      1
-      21                   0                  0                    0      1
-      22                   0                  0                    0      1
-      23                   1                  0                    0      0
-      24                   0                  0                    0      0
-      25                   0                  0                    0      0
-      26                   0                  0                    0      0
-      27                   0                  0                    0      0
-      28                   0                  1                    0      0
-      29                   0                  0                    1      0
-      30                   1                  0                    0      1
-      31                   0                  0                    0      1
-      32                   0                  0                    0      1
-      33                   0                  0                    0      1
-         age_group00+ age_group05-14 age_group15-34
-      1             1              0              0
-      2             1              0              0
-      3             1              0              0
-      4             1              0              0
-      5             1              0              0
-      6             1              0              0
-      7             1              0              0
-      8             1              0              0
-      9             1              0              0
-      10            1              0              0
-      11            1              0              0
-      12            0              1              0
-      13            0              1              0
-      14            0              1              0
-      15            0              1              0
-      16            0              1              0
-      17            0              1              0
-      18            0              1              0
-      19            0              1              0
-      20            0              1              0
-      21            0              1              0
-      22            0              1              0
-      23            0              0              1
-      24            0              0              1
-      25            0              0              1
-      26            0              0              1
-      27            0              0              1
-      28            0              0              1
-      29            0              0              1
-      30            0              0              1
-      31            0              0              1
-      32            0              0              1
-      33            0              0              1
+        (Intercept) day_of_weekTuesday cweek1 age_group00+ age_group15-34
+      1           1                  0      0            1              0
+      2           1                  1      0            1              0
+      3           1                  0      1            1              0
+      4           1                  1      1            1              0
+      5           1                  0      0            0              1
+      6           1                  1      0            0              1
+      7           1                  0      1            0              1
+      8           1                  1      1            0              1
       
       $fixed$index
-       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25
-      [26] 26 27 28 29 30 31 32 33
+      [1] 1 2 3 4 5 6 7 8
       
       
       $random
@@ -1409,22 +452,16 @@
       [1] "~0 + fixed + age_group + week"
       
       $random$design
-         fixed age_group week
-      1      1         0    0
-      2      1         0    0
-      3      1         0    0
-      4      1         0    0
-      5      1         0    0
-      6      1         0    0
-      7      0         1    0
-      8      0         1    0
-      9      0         1    0
-      10     0         0    1
+        fixed age_group week
+      1     1         0    0
+      2     0         1    0
+      3     0         1    0
+      4     0         0    1
       attr(,"assign")
       [1] 1 2 3
       
       $random$index
-       [1]  1  2  3  4  5  6  7  8  9 10
+      [1] 1 2 3 4
       
       
       attr(,"class")
@@ -1485,11 +522,10 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can handle formulas that do not have sparse fixed
-           effects
+# enw_formula can handle formulas that do not have sparse fixed effects
 
     Code
-      enw_formula(~1, data[1:20, ], sparse = FALSE)
+      enw_formula(~1, data[1:5, ], sparse = FALSE)
     Output
       $formula
       [1] "~1"
@@ -1513,32 +549,17 @@
       [1] "~1"
       
       $fixed$design
-         (Intercept)
-      1            1
-      2            1
-      3            1
-      4            1
-      5            1
-      6            1
-      7            1
-      8            1
-      9            1
-      10           1
-      11           1
-      12           1
-      13           1
-      14           1
-      15           1
-      16           1
-      17           1
-      18           1
-      19           1
-      20           1
+        (Intercept)
+      1           1
+      2           1
+      3           1
+      4           1
+      5           1
       attr(,"assign")
       [1] 0
       
       $fixed$index
-       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+      [1] 1 2 3 4 5
       
       
       $random

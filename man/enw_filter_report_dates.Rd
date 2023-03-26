@@ -7,7 +7,7 @@
 enw_filter_report_dates(obs, latest_date, remove_days)
 }
 \arguments{
-\item{obs}{An observation data frame containing \code{report_date} and
+\item{obs}{An observation \code{data.frame} containing \code{report_date} and
 \code{reference_date} columns.}
 
 \item{latest_date}{Date, the latest report date to include in the
@@ -29,7 +29,7 @@ observed data. Users may wish to combine this function with
 \examples{
 # Filter by date
 enw_filter_report_dates(germany_covid19_hosp, latest_date = "2021-09-01")
-#
+
 # Filter by days
 enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 }

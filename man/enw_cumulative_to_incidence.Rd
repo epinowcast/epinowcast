@@ -7,7 +7,7 @@
 enw_cumulative_to_incidence(obs, set_negatives_to_zero = TRUE, by = c())
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
@@ -23,8 +23,8 @@ when modelling multiple time series in order to identify them for
 downstream modelling}
 }
 \value{
-The input data frame with a new variable \code{new_confirm}. If
-\code{max_confirm} was present in the data frame then the proportion
+The input \code{data.frame} with a new variable \code{new_confirm}. If
+\code{max_confirm} was present in the \code{data.frame} then the proportion
 reported on each day (\code{prop_reported}) is also added.
 }
 \description{

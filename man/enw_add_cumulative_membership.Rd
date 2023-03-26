@@ -2,20 +2,37 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_add_cumulative_membership}
 \alias{enw_add_cumulative_membership}
-\title{FUNCTION_TITLE}
+\title{Add a cumulative membership effect to a \code{data.frame}}
 \usage{
 enw_add_cumulative_membership(metaobs, feature)
 }
 \arguments{
-\item{metaobs}{PARAM_DESCRIPTION}
+\item{metaobs}{A \code{data.frame} with a column named \code{feature} that contains
+a numeric vector of values.}
 
-\item{feature}{PARAM_DESCRIPTION}
+\item{feature}{The name of the column in \code{metaobs} that contains the
+numeric vector of values.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A \code{data.frame} with a new columns \verb{cfeature$} that contain the
+cumulative membership effect for each value of \code{feature}. For example if the
+original \code{feature} was \code{week} (with numeric entries \verb{1, 2, 3}) then the new
+columns will be \code{cweek1}, \code{cweek2}, and \code{cweek3}.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function adds a cumulative membership effect to a data
+frame. This is useful for specifying models such as random walks (using
+\code{\link[=rw]{rw()}}) where these features can be used in the design matrix with the
+appropriate formula. Supports grouping via the optional \code{.group} column.
+Note that cumulative membership is indexed to start with zero (i.e. the
+first observation is assigned a cumulative membership of zero).
+}
+\examples{
+metaobs <- data.frame(week = 1:3)
+enw_add_cumulative_membership(metaobs, "week")
+
+metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
+enw_add_cumulative_membership(metaobs, "week")
 }
 \seealso{
 Functions used to formulate models

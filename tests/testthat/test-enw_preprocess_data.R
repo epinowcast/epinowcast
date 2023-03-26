@@ -1,4 +1,3 @@
-library(data.table)
 
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]

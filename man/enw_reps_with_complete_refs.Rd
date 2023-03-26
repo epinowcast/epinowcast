@@ -8,7 +8,7 @@ dates}
 enw_reps_with_complete_refs(new_confirm, max_delay, by = c())
 }
 \arguments{
-\item{new_confirm}{\code{new_confirm} data.frame output from
+\item{new_confirm}{\code{new_confirm} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{max_delay}{Numeric defaults to 20. The maximum number of days to
@@ -23,7 +23,7 @@ when modelling multiple time series in order to identify them for
 downstream modelling}
 }
 \value{
-A data frame containing a \code{report_date} variable, and grouping
+A \code{data.frame} containing a \code{report_date} variable, and grouping
 variables specified for report dates that have complete reporting.
 }
 \description{

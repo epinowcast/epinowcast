@@ -202,11 +202,11 @@ test_that("epinowcast can fit a simple missing data model", {
     refresh = 0, show_messages = FALSE
   )
   # Fit missing data model
-  nowcast <- suppressMessages(epinowcast(pobs,
+  nowcast <- suppressWarnings(suppressMessages(epinowcast(pobs,
     missing = enw_missing(~ (1 | week), data = pobs),
     fit = fit,
     model = model
-  ))
+  )))
   # Comparison nowcast without missingness
   no_missing_nowcast <- suppressMessages(epinowcast(pobs,
     fit = fit, model = model

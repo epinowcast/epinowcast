@@ -14,7 +14,7 @@ mean and median. This function is wrapped in
 \code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}} and \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}} with sensible
 default labels.}
 
-\item{latest_obs}{A data frame of observed data containing at least a
+\item{latest_obs}{A \code{data.frame} of observed data containing at least a
 \code{confirm} count variable and the same date variable as in the main data.frame
 used for plotting.}
 

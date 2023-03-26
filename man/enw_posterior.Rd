@@ -21,11 +21,15 @@ plotting functions to work.}
 \item{...}{Additional arguments that may be passed but will not be used.}
 }
 \value{
-A dataframe summarising the model posterior.
+A \code{data.frame} summarising the model posterior.
 }
 \description{
 A generic wrapper around \code{\link[posterior:draws_summary]{posterior::summarise_draws()}} with
 opinionated defaults.
+}
+\examples{
+fit <- enw_example("nowcast")
+enw_posterior(fit$fit[[1]], variables = "expr_beta")
 }
 \seealso{
 Functions used for postprocessing of model fits

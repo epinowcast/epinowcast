@@ -1,15 +1,20 @@
-# epinowcast 0.2.0.2000
+# epinowcast 0.2.0.3000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
 
 ## Package
 
-- Added tests for  `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs.
-- Added examples for all plot functions and added tests for `enw_plot_obs()` which was not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs.
+- Added tests for `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs and reviewed by @pearsonca.
+- Added tests for `enw_plot_obs()` where not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs and reviewed by @pearsonca.
+- Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs and reviewed by @pearsonca.
+- Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See #208 by @seabbs and reviewed by @pearsonca.
+- Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
 
 ## Documentation
 
-- Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs.
+- Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs and reviewed by @pearsonca.
+- Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs and reviewed by @pearsonca.
+- Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
 
 ## Bugs
 
@@ -60,7 +65,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Added support for modelling missing reference dates to the likelihood. See #147 by @seabbs and @adrian-lison.
 - Added additional functionality to `delay_group_lmpf` to support modelling observations missing reference dates. Also updated the generated quantities to support this mode. See #147 by @seabbs and @adrian-lison based on #64 by @adrian-lison.
 - Added a flexible expectation process on the growth rate scale. The default expectation model has been updated to a group-wise random walk on the growth rate. See #152 by @seabbs and @adrian-lison.
-- Added a deterministic  renewal equation, and latent reporting process. See #152 and #183 by @seabbs and @adrian-lison.
+- Added a deterministic renewal equation, and latent reporting process. See #152 and #183 by @seabbs and @adrian-lison.
 - Added support for no intercept in the expectation model and more general formula support to enable this as a feature in other modules going forward. See #170 by @seabbs.
 
 ## Documentation
@@ -104,9 +109,9 @@ This release contains multiple breaking changes. If needing the old interface pl
 ## Package
 
 * Renamed the package and updated the description to give more clarity about the problem space it focusses on. See #110 by @seabbs.
-* A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for #4 where this data frame will be combined with the reference metadata in order to build non-parametric hazard reference and delay-based models. In addition to adding this function, it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See #80 by @seabbs.
+* A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for #4 where this `data.frame` will be combined with the reference metadata in order to build non-parametric hazard reference and delay-based models. In addition to adding this function, it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See #80 by @seabbs.
 * Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. Note that by definition it is assumed that a report date for a given reference date must be equal or greater (i.e a report cannot happen before the event being reported occurs). See #82 by @sbfnk and @seabbs.
-* The internal grouping variables have been refactored to reduce the chance of clashes with columns in the data frames supplied by the user. There will also be an error thrown in case of a variable clash, making preprocessing safer. See #102 by @adrian-lison and @seabbs, which solves #99.
+* The internal grouping variables have been refactored to reduce the chance of clashes with columns in the data.frames supplied by the user. There will also be an error thrown in case of a variable clash, making preprocessing safer. See #102 by @adrian-lison and @seabbs, which solves #99.
 * Support for preprocessing observations with missing reference dates has been added along with a new data object returned by `enw_preprocess_data()` that highlights this information to the user (alternatively can be accessed by users using `enw_missing_reference()`). In addition, these missing observations have been setup to be passed to stan in order to allow their use in modelling. This feature is in preparation of adding full support for missing observations (see #43). See 
 #106 by @adrian-lison and @seabbs.
 * The discretised reporting probability function has been extended to handle delays beyond the maximum delay in three different ways: ignore, add to maximum, or normalize. The nowcasting model uses "normalise" though work on this is ongoing. See #113 by @adrian-lison and #121 by @seabbs.
@@ -144,7 +149,7 @@ This release contains multiple breaking changes. If needing the old interface pl
 * Adds vectorisation of zero truncated normal distributions (see #38 by @seabbs)
 * `hazard_to_prob` has been optimised using vectorisation (see #53 by @adrian-lison and @seabbs).
 * `prob_to_hazard` has been optimised so that only required cumulative probabilities are calculated (see #53 by @adrian-lison and @seabbs).
-* Updated to use  the `inv_sqrt` stan function (see #60 by @seabbs).
+* Updated to use the `inv_sqrt` stan function (see #60 by @seabbs).
 * Added support for `scoringutils 1.0.0` (see #61 by @seabbs). 
 * Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see #61 by @seabbs).
 
