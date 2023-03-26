@@ -558,7 +558,7 @@ construct_re <- function(re, data) {
 #' effects, random effects using [lme4] syntax (see [re()]), and random walks
 #' defined using the [rw()] helper function.
 #'
-#' @param data A  `data.frame` of observations. It must include all
+#' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
 #'
 #' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design
