@@ -7,7 +7,7 @@
 enw_plot_quantiles(posterior, latest_obs = NULL, log = FALSE, ...)
 }
 \arguments{
-\item{posterior}{A  \code{data.frame} of summarised posterior estimates
+\item{posterior}{A \code{data.frame} of summarised posterior estimates
 containing at least a \code{confirm} count column a date variable,
 quantile estimates for the 5\%, 20\%, 80\%, and 95\% quantiles and the
 mean and median. This function is wrapped in

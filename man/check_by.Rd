@@ -7,7 +7,7 @@
 check_by(obs, by = c())
 }
 \arguments{
-\item{obs}{An observation `data.frame``.}
+\item{obs}{An observation \code{data.frame}.}
 
 \item{by}{A character vector of variables to group by.}
 }

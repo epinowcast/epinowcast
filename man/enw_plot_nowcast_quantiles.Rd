@@ -7,7 +7,7 @@
 enw_plot_nowcast_quantiles(nowcast, latest_obs = NULL, log = FALSE, ...)
 }
 \arguments{
-\item{nowcast}{A  \code{data.frame} of summarised posterior nowcast
+\item{nowcast}{A \code{data.frame} of summarised posterior nowcast
 estimates containing at least a \code{confirm} count column and a
 \code{reference_date} date variable.}
 

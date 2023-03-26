@@ -17,7 +17,7 @@ A named list with each entry specifying a prior as a length
 two vector (specifying the mean and standard deviation of the prior).
 }
 \description{
-Converts priors defined in a  \code{data.frame} into a list
+Converts priors defined in a \code{data.frame} into a list
 format for use by stan. In addition it adds "_p" to all
 variable names in order too allow them to be distinguished from
 their standard usage within modelling code.

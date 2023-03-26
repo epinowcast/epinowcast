@@ -15,12 +15,12 @@ enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 supplied by the user.}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
-be returned as a  \code{data.frame}.}
+be returned as a \code{data.frame}.}
 
 \item{...}{Additional parameters passed to the \code{sample} method of \code{cmdstanr}.}
 }
 \value{
-A  \code{data.frame} containing the \code{cmdstanr} fit, the input data, the
+A \code{data.frame} containing the \code{cmdstanr} fit, the input data, the
 fitting arguments, and optionally summary diagnostics.
 }
 \description{

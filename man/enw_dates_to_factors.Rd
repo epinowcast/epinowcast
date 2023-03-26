@@ -7,15 +7,15 @@
 enw_dates_to_factors(data)
 }
 \arguments{
-\item{data}{A  \code{data.frame}.}
+\item{data}{A \code{data.frame}.}
 }
 \value{
-A  \code{data.frame} with all \code{Date} variables converted to \code{Factor}s and
+A \code{data.frame} with all \code{Date} variables converted to \code{factor}s and
 all other columns dropped.
 }
 \description{
 Converts all \code{Date} columns to \code{Factor}s.
-in a  \code{data.frame}.
+in a \code{data.frame}.
 }
 \examples{
 data <- data.frame(date = as.Date("2019-01-01") + 0:2, x = 1:3)

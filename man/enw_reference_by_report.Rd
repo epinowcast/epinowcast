@@ -15,7 +15,7 @@ enw_reference_by_report(
 \item{missing_reference}{\code{missing_reference} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{reps_with_complete_refs}{A  \code{data.frame} of report dates with complete
+\item{reps_with_complete_refs}{A \code{data.frame} of report dates with complete
 (i.e fully reported) reference dates as produced using
 \code{\link[=enw_reps_with_complete_refs]{enw_reps_with_complete_refs()}}.}
 

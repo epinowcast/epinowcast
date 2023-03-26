@@ -7,7 +7,7 @@
 enw_plot_obs(obs, latest_obs = NULL, log = TRUE, ...)
 }
 \arguments{
-\item{obs}{A  \code{data.frame} of summarised posterior estimates
+\item{obs}{A \code{data.frame} of summarised posterior estimates
 containing at least a \code{confirm} count column and a date variable}
 
 \item{latest_obs}{A \code{data.frame} of observed data containing at least a

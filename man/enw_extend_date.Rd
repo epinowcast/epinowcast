@@ -7,7 +7,7 @@
 enw_extend_date(metaobs, days = 20, direction = "end")
 }
 \arguments{
-\item{metaobs}{A  \code{data.frame} with a \code{date} column.}
+\item{metaobs}{A \code{data.frame} with a \code{date} column.}
 
 \item{days}{Number of days to add to the time series. Defaults to 20.}
 

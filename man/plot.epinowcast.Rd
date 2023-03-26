@@ -15,7 +15,7 @@
 \arguments{
 \item{x}{A \code{data.table} of output as produced by \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{latest_obs}{A  \code{data.frame} of observed data which may be passed to
+\item{latest_obs}{A \code{data.frame} of observed data which may be passed to
 lower level methods.}
 
 \item{type}{Character string indicating the plot required; enforced by

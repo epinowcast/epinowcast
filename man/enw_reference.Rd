@@ -26,7 +26,7 @@ distribution to use. Current options are: "none", "lognormal", "gamma",
 
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
 describing the non-parametric logit hazard model. This can use features
-defined by reference date and by delay. It draws on a linked  \code{data.frame}
+defined by reference date and by delay. It draws on a linked \code{data.frame}
 using \code{metareference} and \code{metadelay} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
 When an effect per delay is specified this approximates the cox proportional
 hazard model in discrete time with a single strata. Note that this model is
