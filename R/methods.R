@@ -19,6 +19,20 @@
 #' @method summary epinowcast
 #' @return A summary data.frame
 #' @export
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#'
+#' # Summarise nowcast posterior
+#' summary(nowcast, type = "nowcast")
+#'
+#' # Nowcast posterior samples
+#' summary(nowcast, type = "nowcast_samples")
+#'
+#' # Nowcast model fit
+#' summary(nowcast, type = "fit")
+#'
+#' # Posterior predictions
+#' summary(nowcast, type = "posterior_prediction")
 summary.epinowcast <- function(object, type = c(
                                  "nowcast", "nowcast_samples",
                                  "fit", "posterior_prediction"
@@ -61,6 +75,16 @@ summary.epinowcast <- function(object, type = c(
 #' @inheritParams enw_plot_nowcast_quantiles
 #' @return `ggplot2` object
 #' @export
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#' latest_obs <- enw_example("obs")
+#'
+#' # Plot nowcast
+#' plot(nowcast, latest_obs = latest_obs, type = "nowcast")
+#'
+#' # Plot posterior predictions by reference date
+#' plot(nowcast, type = "posterior_prediction") +
+#'  ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
 plot.epinowcast <- function(x, latest_obs = NULL, type = c(
                               "nowcast", "posterior_prediction"
                             ), log = FALSE, ...) {

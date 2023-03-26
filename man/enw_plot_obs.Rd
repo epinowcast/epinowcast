@@ -26,6 +26,16 @@ A \code{ggplot2} plot.
 \description{
 Generic quantile plot
 }
+\examples{
+nowcast <- enw_example("nowcast")
+obs <- enw_example("obs")
+
+# Plot observed data by reference date
+enw_plot_obs(obs, x = reference_date)
+
+# Plot observed data by reference date with more recent data
+enw_plot_obs(nowcast$latest[[1]], obs, x = reference_date)
+}
 \seealso{
 Plotting functions
 \code{\link{enw_plot_nowcast_quantiles}()},

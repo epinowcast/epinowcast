@@ -4,17 +4,22 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Package
 
+- Added tests for  `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs and reviewed by @pearsonca.
+- Added tests for `enw_plot_obs()` where not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs and reviewed by @pearsonca.
 - Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs and reviewed by @pearsonca.
 - Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See #208 by @seabbs and reviewed by @pearsonca.
 - Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
 
 ## Documentation
 
+- Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs and reviewed by @pearsonca.
 - Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs and reviewed by @pearsonca.
+- Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
 
 ## Bugs
 
 - Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implict type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
+- Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs.
 
 # epinowcast 0.2.0
 

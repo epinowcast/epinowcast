@@ -39,6 +39,17 @@ scale.}
 \description{
 \code{plot} method for class "epinowcast".
 }
+\examples{
+nowcast <- enw_example("nowcast")
+latest_obs <- enw_example("obs")
+
+# Plot nowcast
+plot(nowcast, latest_obs = latest_obs, type = "nowcast")
+
+# Plot posterior predictions by reference date
+plot(nowcast, type = "posterior_prediction") +
+ ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
+}
 \seealso{
 Other epinowcast: 
 \code{\link{epinowcast}()},

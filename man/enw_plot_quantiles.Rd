@@ -4,13 +4,15 @@
 \alias{enw_plot_quantiles}
 \title{Generic quantile plot}
 \usage{
-enw_plot_quantiles(posterior, latest_obs = NULL, log = TRUE, ...)
+enw_plot_quantiles(posterior, latest_obs = NULL, log = FALSE, ...)
 }
 \arguments{
 \item{posterior}{A \code{data.frame} of summarised posterior estimates
 containing at least a \code{confirm} count column a date variable,
 quantile estimates for the 5\%, 20\%, 80\%, and 95\% quantiles and the
-mean and median.}
+mean and median. This function is wrapped in
+\code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}} and \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}} with sensible
+default labels.}
 
 \item{latest_obs}{A\code{data.frame}of observed data containing at least a
 \code{confirm} count variable and the same date variable as in the main data.frame
@@ -28,7 +30,14 @@ A \code{ggplot2} plot.
 \description{
 Generic quantile plot
 }
+\examples{
+nowcast <- enw_example("nowcast")
+nowcast <- summary(nowcast, probs = c(0.05, 0.2, 0.8, 0.95))
+enw_plot_quantiles(nowcast, x = reference_date)
+}
 \seealso{
+\code{\link[=enw_plot_nowcast_quantiles]{enw_plot_nowcast_quantiles()}}, \code{\link[=enw_plot_pp_quantiles]{enw_plot_pp_quantiles()}}
+
 Plotting functions
 \code{\link{enw_plot_nowcast_quantiles}()},
 \code{\link{enw_plot_obs}()},
