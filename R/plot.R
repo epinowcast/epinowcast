@@ -114,7 +114,7 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
 
 #' Plot nowcast quantiles
 #'
-#' @param nowcast A  `data.frame` of summarised posterior nowcast
+#' @param nowcast A `data.frame` of summarised posterior nowcast
 #' estimates containing at least a `confirm` count column and a
 #' `reference_date` date variable.
 #'
