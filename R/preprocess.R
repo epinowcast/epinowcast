@@ -6,8 +6,7 @@
 #' are dropped and the first observation for each group and date is retained.
 #'
 #' @param obs A data.frame or data.table with columns:
-#' * `reference_date`, a [Date] column
-#' * and/or `report_date`, a [Date] column
+#' * `reference_date` and/or `report_date`; at least one must be provided. [Date] column(s)
 #' * `.group`, a grouping column
 #' * `date`, a [Date] column
 #'
