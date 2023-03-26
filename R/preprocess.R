@@ -239,7 +239,6 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   )
   exts <- data.table::rbindlist(exts)
   exts[, date := extend_date][, extend_date := NULL]
-  exts[, observed := FALSE]
 
   exts <- rbind(
     metaobs[, observed := TRUE],
@@ -250,7 +249,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 }
 
 #' @title Assign a group to each row of a data.table
-#' 
+#'
 #' @description Assign a group to each row of a data.table. If `by` is
 #' specified, then each unique combination of the columns in `by` will
 #' be assigned a unique group. If `by` is not specified, then all rows
