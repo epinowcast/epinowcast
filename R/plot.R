@@ -142,7 +142,7 @@ enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
 
 #' Plot posterior prediction quantiles
 #'
-#' @param pp A  `data.frame` of summarised posterior predictions
+#' @param pp A `data.frame` of summarised posterior predictions
 #' estimates containing at least a `confirm` count column and a
 #' `report_date` date variable.
 #'
