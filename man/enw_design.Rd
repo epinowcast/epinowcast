@@ -25,8 +25,8 @@ TRUE.}
 A list containing the formula, the design matrix, and the index.
 }
 \description{
-This function is a wrapper around \code{\link[stats:model.matrix]{stats::model.matrix()}} that can
-optionally return a sparse design matrix defined as the unique
+This function is a wrapper around \code{\link[stats:model.matrix]{stats::model.matrix()}} that
+can optionally return a sparse design matrix defined as the unique
 number of rows in the design matrix and an index vector that
 allows the full design matrix to be reconstructed. This is useful
 for models that have many repeated rows in the design matrix and that

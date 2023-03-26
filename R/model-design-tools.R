@@ -52,8 +52,8 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 
 #' A helper function to construct a design matrix from a formula
 #'
-#' @description This function is a wrapper around [stats::model.matrix()] that can
-#' optionally return a sparse design matrix defined as the unique
+#' @description This function is a wrapper around [stats::model.matrix()] that
+#'  can optionally return a sparse design matrix defined as the unique
 #' number of rows in the design matrix and an index vector that
 #' allows the full design matrix to be reconstructed. This is useful
 #' for models that have many repeated rows in the design matrix and that
@@ -232,7 +232,9 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd",
 #' numeric vector of values.
 #'
 #' @return A`data.frame`with a new columns `cfeature$` that contain the
-#' cumulative membership effect for each value of `feature`.
+#' cumulative membership effect for each value of `feature`. For example if the
+#' original `feature` was `week` (with numeric entries `1, 2, 3`) then the new
+#' columns will be `cweek1`, `cweek2`, and `cweek3`.
 #'
 #' @family modeldesign
 #' @export

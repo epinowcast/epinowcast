@@ -15,7 +15,9 @@ numeric vector of values.}
 }
 \value{
 A\code{data.frame}with a new columns \verb{cfeature$} that contain the
-cumulative membership effect for each value of \code{feature}.
+cumulative membership effect for each value of \code{feature}. For example if the
+original \code{feature} was \code{week} (with numeric entries \verb{1, 2, 3}) then the new
+columns will be \code{cweek1}, \code{cweek2}, and \code{cweek3}.
 }
 \description{
 This function adds a cumulative membership effect to a data
