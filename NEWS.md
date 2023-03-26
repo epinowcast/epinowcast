@@ -5,6 +5,7 @@ This is release is in development. It is not yet ready for production use. If yo
 ## Package
 
 - Added tests for  `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs.
+- Added examples for all plot functions and added tests for `enw_plot_obs()` which was not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs.
 
 ## Documentation
 
