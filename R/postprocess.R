@@ -210,10 +210,9 @@ enw_summarise_samples <- function(samples, probs = c(
     by = by
   ][, sample := NULL])
 
+  dts <- list(summary, quantiles)
   if (link_with_obs) {
-    dts <- list(obs, summary, quantiles)
-  } else {
-    dts <- list(summary, quantiles)
+    dts <- c(list(obs), dts)
   }
   summary <- purrr::reduce(dts, merge, by = by)
   return(summary[])
