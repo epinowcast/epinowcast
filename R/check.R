@@ -78,13 +78,12 @@ check_group <- function(obs) {
 
 #' Add a reserved grouping variable if missing
 #'
-#' @param x A data.frame or data table
+#' @param x A data.table
 #'
 #' @return A data table with a `.group` variable
 #' @family check
 add_group <- function(x) {
   if (is.null(x[[".group"]])) {
-    x <- data.table::as.data.table(x)
     x <- x[, .group := 1]
   }
   return(x[])
