@@ -39,6 +39,9 @@ enw_plot_theme <- function(plot) {
 #' obs <- enw_example("obs")
 #'
 #' # Plot observed data by reference date
+#' enw_plot_obs(obs, x = reference_date)
+#' 
+#' # Plot observed data by reference date with more recent data
 #' enw_plot_obs(nowcast$latest[[1]], obs, x = reference_date)
 enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   plot <- ggplot(obs) +
