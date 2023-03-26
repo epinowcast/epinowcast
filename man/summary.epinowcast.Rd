@@ -31,6 +31,21 @@ A summary data.frame
 \description{
 \code{summary} method for class "epinowcast".
 }
+\examples{
+nowcast <- enw_example("nowcast")
+
+# Summarise nowcast posterior
+summary(nowcast, type = "nowcast")
+
+# Nowcast posterior samples
+summary(nowcast, type = "nowcast_samples")
+
+# Nowcast model fit
+summary(nowcast, type = "fit")
+
+# Posterior predictions
+summary(nowcast, type = "posterior_prediction")
+}
 \seealso{
 summary epinowcast
 
