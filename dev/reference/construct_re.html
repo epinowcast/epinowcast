@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.5000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -91,7 +91,7 @@ random effects specified in a model formula using the lme4 syntax.</p></dd>
 
 
 <dt>data</dt>
-<dd><p>A data.frame of observations used to define the
+<dd><p>A <code>data.frame</code> of observations used to define the
 random effects. Must contain the variables specified in the
 <code><a href="re.html">re()</a></code> term.</p></dd>
 
@@ -101,7 +101,7 @@ random effects. Must contain the variables specified in the
     
 
 <p>A list containing the transformed data ("data"),
-fixed effects terms ("terms") and a <code>data.frame</code> specifying
+fixed effects terms ("terms") and a  <code>data.frame</code> specifying
 the random effect structure between these terms (<code>effects</code>). Note
 that if the specified random effect was not a factor it will have been
 converted into one.</p>

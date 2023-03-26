@@ -50,7 +50,7 @@ completed with enw_complete_dates()."><meta property="og:image" content="package
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.5000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,7 +134,7 @@ completed with <code><a href="enw_complete_dates.html">enw_complete_dates()</a><
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>obs</dt>
-<dd><p>A data frame containing at least the following variables:
+<dd><p>A <code>data.frame</code> containing at least the following variables:
 <code>reference date</code> (index date of interest), <code>report_date</code> (report date for
 observations), <code>confirm</code> (cumulative observations by reference and report
 date).</p></dd>
@@ -173,7 +173,7 @@ e.g. <code>holidays</code>, which sets commonly used metadata
     
 
 <p>A data.table containing processed observations as a series of nested
-data frames as well as variables containing metadata. These are:</p><ul><li><p><code>obs</code>: (observations with the addition of empirical reporting proportions
+data.frames as well as variables containing metadata. These are:</p><ul><li><p><code>obs</code>: (observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay).</p></li>
 <li><p><code>new_confirm</code>: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.</p></li>

@@ -32,7 +32,7 @@ random effect structure.'><meta property="og:image" content="package.epinowcast.
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.5000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,7 +89,7 @@ random effect structure.'><meta property="og:image" content="package.epinowcast.
 by <code><a href="rw.html">rw()</a></code>, produces the required additional variables
 (denoted using a "c" prefix and constructed using
 <code><a href="enw_add_cumulative_membership.html">enw_add_cumulative_membership()</a></code>), and then returns the
-extended data.frame along with the new fixed effects and the
+extended <code>data.frame</code> along with the new fixed effects and the
 random effect structure.</p>
     </div>
 
@@ -105,7 +105,7 @@ random effect structure.</p>
 
 
 <dt>data</dt>
-<dd><p>A data.frame of observations used to define the
+<dd><p>A <code>data.frame</code> of observations used to define the
 random walk term. Must contain the time and grouping variables
 defined in the <code><a href="rw.html">rw()</a></code> term specified.</p></dd>
 
@@ -114,13 +114,13 @@ defined in the <code><a href="rw.html">rw()</a></code> term specified.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A list containing the following:</p><ul><li><p><code>data</code>: The input data.frame with the addition of the new variables
+<p>A list containing the following:</p><ul><li><p><code>data</code>: The input <code>data.frame</code> with the addition of the new variables
 required by the specified random walk. These are added using
 <code><a href="enw_add_cumulative_membership.html">enw_add_cumulative_membership()</a></code>.
 -<code>terms</code>: A character vector of new fixed effects terms to add to a model
 formula.</p></li>
-<li><p><code>effects</code>: A data.frame describing the random effect structure of the new
-effects.</p></li>
+<li><p><code>effects</code>: A <code>data.frame</code> describing the random effect structure of the
+new effects.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

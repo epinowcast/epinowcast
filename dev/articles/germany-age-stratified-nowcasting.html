@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.5000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -575,7 +575,7 @@ nowcast.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>We can now use this wrapper function on the data available for each
 age group, summarise the resulting nowcast, and then join these into a
-single data frame.</p>
+single data.frame.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
@@ -721,7 +721,7 @@ informative names,</p>
 <span>  <span class="st">"Reference: Age and week by age, Report: Day of week"</span> <span class="op">=</span> <span class="va">age_week_nowcast</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>and then summarise the nowcast posterior for each model and join into
-a tidy data frame to make further analysis easier.</p>
+a tidy <code>data.frame</code> to make further analysis easier.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcasts</span>, <span class="va">summary</span>,</span>

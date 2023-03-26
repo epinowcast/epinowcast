@@ -30,7 +30,7 @@ enw_filter_reference_dates()."><meta property="og:image" content="package.epinow
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.5000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,7 +98,7 @@ observed data. Users may wish to combine this function with
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>obs</dt>
-<dd><p>An observation data frame containing <code>report_date</code> and
+<dd><p>An observation <code>data.frame</code> containing <code>report_date</code> and
 <code>reference_date</code> columns.</p></dd>
 
 
@@ -157,7 +157,7 @@ of report dates to remove, starting from the latest date included.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1058741:     2021-06-10    DE-TH       80+       1  2021-08-30</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1058742:     2021-06-11    DE-TH       80+       0  2021-08-31</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1058743:     2021-06-12    DE-TH       80+       2  2021-09-01</span>
-<span class="r-in"><span><span class="co">#</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Filter by days</span></span></span>
 <span class="r-in"><span><span class="fu">enw_filter_report_dates</span><span class="op">(</span><span class="va">germany_covid19_hosp</span>, remove_days <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          reference_date location age_group confirm report_date</span>

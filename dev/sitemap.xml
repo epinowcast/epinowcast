@@ -31,10 +31,16 @@
     <loc>package.epinowcast.org/dev/news/index.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/add_group.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/add_pmfs.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/as_string_formula.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_by.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_dates.html</loc>

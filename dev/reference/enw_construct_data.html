@@ -30,7 +30,7 @@ of enw_preprocess_data() for more on the expected inputs."><meta property="og:im
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.5000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -123,7 +123,7 @@ Empirical reporting distributions are also added.</p></dd>
 
 
 <dt>missing_reference</dt>
-<dd><p>A data frame of reported observations that are
+<dd><p>A <code>data.frame</code> of reported observations that are
 missing the reference date.</p></dd>
 
 
@@ -165,7 +165,7 @@ that this is zero indexed and so includes the reference date and
     
 
 <p>A data.table containing processed observations as a series of nested
-data frames as well as variables containing metadata. These are:</p><ul><li><p><code>obs</code>: (observations with the addition of empirical reporting proportions
+data.frames as well as variables containing metadata. These are:</p><ul><li><p><code>obs</code>: (observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay).</p></li>
 <li><p><code>new_confirm</code>: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.</p></li>
