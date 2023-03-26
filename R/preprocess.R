@@ -195,7 +195,7 @@ enw_add_metaobs_features <- function(metaobs,
 #' for nowcasting purposes or to include additional dates for backcasting
 #' when using a renewal process as the expectation model.
 #'
-#' @param metaobs A data.table with a `date` column.
+#' @param metaobs A `data.frame` with a `date` column.
 #'
 #' @param days Number of days to add to the time series. Defaults to 20.
 #'
@@ -204,7 +204,7 @@ enw_add_metaobs_features <- function(metaobs,
 #'
 #' @return A data.table with the same columns as `metaobs` but with
 #' additional rows for each date in the range of `date` to `date + days`
-#' (or `date - days` if `direction = "start"`). An additiional variable
+#' (or `date - days` if `direction = "start"`). An additional variable
 #' observed is added with a value of FALSE for all new dates and TRUE
 #' for all existing dates.
 #'

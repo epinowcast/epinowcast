@@ -7,7 +7,7 @@
 enw_filter_report_dates(obs, latest_date, remove_days)
 }
 \arguments{
-\item{obs}{An observation`data.frame`containing \code{report_date} and
+\item{obs}{An observation\code{data.frame}containing \code{report_date} and
 \code{reference_date} columns.}
 
 \item{latest_date}{Date, the latest report date to include in the

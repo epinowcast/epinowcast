@@ -9,19 +9,19 @@ construct_rw(rw, data)
 \arguments{
 \item{rw}{A random walk term as defined by \code{\link[=rw]{rw()}}.}
 
-\item{data}{A`data.frame`of observations used to define the
+\item{data}{A\code{data.frame}of observations used to define the
 random walk term. Must contain the time and grouping variables
 defined in the \code{\link[=rw]{rw()}} term specified.}
 }
 \value{
 A list containing the following:
 \itemize{
-\item \code{data}: The input`data.frame`with the addition of the new variables
+\item \code{data}: The input\code{data.frame}with the addition of the new variables
 required by the specified random walk. These are added using
 \code{\link[=enw_add_cumulative_membership]{enw_add_cumulative_membership()}}.
 -\code{terms}: A character vector of new fixed effects terms to add to a model
 formula.
-\item \code{effects}: A`data.frame`describing the random effect structure of the new
+\item \code{effects}: A\code{data.frame}describing the random effect structure of the new
 effects.
 }
 }
@@ -30,7 +30,7 @@ This function takes random walks as defined
 by \code{\link[=rw]{rw()}}, produces the required additional variables
 (denoted using a "c" prefix and constructed using
 \code{\link[=enw_add_cumulative_membership]{enw_add_cumulative_membership()}}), and then returns the
-extended`data.frame`along with the new fixed effects and the
+extended\code{data.frame}along with the new fixed effects and the
 random effect structure.
 }
 \examples{

@@ -7,14 +7,14 @@
 enw_add_cumulative_membership(metaobs, feature)
 }
 \arguments{
-\item{metaobs}{A`data.frame`with a column named \code{feature} that contains
+\item{metaobs}{A\code{data.frame}with a column named \code{feature} that contains
 a numeric vector of values.}
 
 \item{feature}{The name of the column in \code{metaobs} that contains the
 numeric vector of values.}
 }
 \value{
-A`data.frame`with a new columns \verb{cfeature$} that contain the
+A\code{data.frame}with a new columns \verb{cfeature$} that contain the
 cumulative membership effect for each value of \code{feature}.
 }
 \description{

@@ -7,7 +7,7 @@
 enw_metadata(obs, target_date = c("reference_date", "report_date"))
 }
 \arguments{
-\item{obs}{A`data.frame`or data.table with columns: \code{reference_date} and/or
+\item{obs}{A\code{data.frame}or data.table with columns: \code{reference_date} and/or
 \code{report_date}; at least one must be provided, \code{.group}, a grouping column
 and a \code{date}, a \link{Date} column.}
 

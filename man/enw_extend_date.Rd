@@ -7,7 +7,7 @@
 enw_extend_date(metaobs, days = 20, direction = "end")
 }
 \arguments{
-\item{metaobs}{A data.table with a \code{date} column.}
+\item{metaobs}{A \code{data.frame} with a \code{date} column.}
 
 \item{days}{Number of days to add to the time series. Defaults to 20.}
 
@@ -17,7 +17,7 @@ the data. Default is "end" with "start" also available.}
 \value{
 A data.table with the same columns as \code{metaobs} but with
 additional rows for each date in the range of \code{date} to \code{date + days}
-(or \code{date - days} if \code{direction = "start"}). An additiional variable
+(or \code{date - days} if \code{direction = "start"}). An additional variable
 observed is added with a value of FALSE for all new dates and TRUE
 for all existing dates.
 }

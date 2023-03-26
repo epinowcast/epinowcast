@@ -7,7 +7,7 @@
 check_quantiles(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8))
 }
 \arguments{
-\item{posterior}{A`data.frame`containing quantiles identified using
+\item{posterior}{A\code{data.frame}containing quantiles identified using
 the \code{q5} naming scheme. Default: No default.}
 
 \item{req_probs}{A numeric vector of required probabilities. Default:
