@@ -7,7 +7,7 @@ test_that("add_group adds a group as expected", {
 
 test_that("add_group doesn't add a group when one is present", {
   expect_equal(
-    epinowcast:::add_group(data.frame(x = 1, .group = 1)),
-    data.frame(x = 1, .group = 1)
+    epinowcast:::add_group(data.frame(x = 1, .group = 4)),
+    data.frame(x = 1, .group = 4)
   )
 })
