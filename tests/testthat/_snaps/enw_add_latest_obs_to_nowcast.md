@@ -1,7 +1,7 @@
 # enw_add_latest_obs_to_nowcast can link nowcasts with more recent observations
 
     Code
-      round_numeric(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
+      round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
     Output
           reference_date .group latest_confirm confirm report_date max_confirm
        1:     2021-08-03      1            156     149  2021-08-22         149

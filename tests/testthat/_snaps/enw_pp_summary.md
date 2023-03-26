@@ -1,7 +1,7 @@
 # enw_pp_summary summarises posterior prediction as expected
 
     Code
-      round_numeric(summary[1:10][, c("rhat", "ess_bulk", "ess_tail") := NULL][])
+      round_numerics(summary[1:10][, c("rhat", "ess_bulk", "ess_tail") := NULL][])
     Output
           reference_date report_date .group max_confirm location age_group confirm
        1:     2021-07-13  2021-07-13      1          59       DE       00+      21

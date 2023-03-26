@@ -1,7 +1,7 @@
 # enw_nowcast_summary can extract the summarised nowcast as expected
 
     Code
-      round_numeric(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
+      round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
     Output
           reference_date report_date .group max_confirm location age_group confirm
        1:     2021-08-03  2021-08-22      1         149       DE       00+     149
@@ -70,7 +70,7 @@
 # enw_nowcast_summary can extract the summarised nowcast with custom quantiles
 
     Code
-      round_numeric(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
+      round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
     Output
           reference_date report_date .group max_confirm location age_group confirm
        1:     2021-08-03  2021-08-22      1         149       DE       00+     149
