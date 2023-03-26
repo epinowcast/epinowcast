@@ -22,6 +22,14 @@ A \code{ggplot2} plot.
 \description{
 Plot posterior prediction quantiles
 }
+\examples{
+nowcast <- enw_example("nowcast")
+nowcast <- summary(
+ nowcast, type = "posterior_prediction", probs = c(0.05, 0.2, 0.8, 0.95)
+)
+enw_plot_pp_quantiles(nowcast) +
+ ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
+}
 \seealso{
 Plotting functions
 \code{\link{enw_plot_nowcast_quantiles}()},
