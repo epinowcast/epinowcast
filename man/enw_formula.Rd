@@ -11,7 +11,7 @@ enw_formula(formula, data, sparse = TRUE)
 effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), and random walks
 defined using the \code{\link[=rw]{rw()}} helper function.}
 
-\item{data}{A \code{data.frame} of observations. It must include all
+\item{data}{A  \code{data.frame} of observations. It must include all
 variables used in the supplied formula.}
 
 \item{sparse}{Logical, defaults to  \code{TRUE}. Should the fixed effects design

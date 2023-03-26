@@ -10,13 +10,13 @@ construct_re(re, data)
 \item{re}{A random effect as defined using \code{\link[=re]{re()}} which itself takes
 random effects specified in a model formula using the \link{lme4} syntax.}
 
-\item{data}{A\code{data.frame}of observations used to define the
+\item{data}{A \code{data.frame} of observations used to define the
 random effects. Must contain the variables specified in the
 \code{\link[=re]{re()}} term.}
 }
 \value{
 A list containing the transformed data ("data"),
-fixed effects terms ("terms") and a \code{data.frame} specifying
+fixed effects terms ("terms") and a  \code{data.frame} specifying
 the random effect structure between these terms (\code{effects}). Note
 that if the specified random effect was not a factor it will have been
 converted into one.

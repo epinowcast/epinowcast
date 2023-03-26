@@ -14,7 +14,7 @@ enw_manual_formula(
 )
 }
 \arguments{
-\item{data}{A \code{data.frame} of observations. It must include all
+\item{data}{A  \code{data.frame} of observations. It must include all
 variables used in the supplied formula.}
 
 \item{fixed}{A character vector of fixed effects.}

@@ -7,7 +7,7 @@
 enw_plot_pp_quantiles(pp, log = FALSE, ...)
 }
 \arguments{
-\item{pp}{A \code{data.frame} of summarised posterior predictions
+\item{pp}{A  \code{data.frame} of summarised posterior predictions
 estimates containing at least a \code{confirm} count column and a
 \code{report_date} date variable.}
 

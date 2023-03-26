@@ -2,12 +2,12 @@
 % Please edit documentation in R/model-tools.R
 \name{enw_priors_as_data_list}
 \alias{enw_priors_as_data_list}
-\title{Convert prior\code{data.frame}to list}
+\title{Convert prior \code{data.frame} to list}
 \usage{
 enw_priors_as_data_list(priors)
 }
 \arguments{
-\item{priors}{A\code{data.frame}with the following variables:
+\item{priors}{A \code{data.frame} with the following variables:
 \code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions.}
@@ -17,7 +17,7 @@ A named list with each entry specifying a prior as a length
 two vector (specifying the mean and standard deviation of the prior).
 }
 \description{
-Converts priors defined in a \code{data.frame} into a list
+Converts priors defined in a  \code{data.frame} into a list
 format for use by stan. In addition it adds "_p" to all
 variable names in order too allow them to be distinguished from
 their standard usage within modelling code.

@@ -17,7 +17,7 @@ enw_score_nowcast(
 \item{nowcast}{A posterior nowcast or posterior prediction as returned by
 \code{\link[=summary.epinowcast]{summary.epinowcast()}}, when used on the output of \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{latest_obs}{A\code{data.frame}of the latest available observations as
+\item{latest_obs}{A \code{data.frame} of the latest available observations as
 produced by \code{\link[=enw_latest_data]{enw_latest_data()}} or otherwise.}
 
 \item{log}{Logical, defaults to FALSE. Should scores be calculated on the

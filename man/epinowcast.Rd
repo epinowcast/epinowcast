@@ -50,7 +50,7 @@ further details.}
 \item{model}{The model to use within \code{fit}. By default this uses
 \code{\link[=enw_model]{enw_model()}}.}
 
-\item{priors}{A\code{data.frame}with the following variables:
+\item{priors}{A \code{data.frame} with the following variables:
 \code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions. Priors in this data.frame

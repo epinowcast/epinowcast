@@ -50,13 +50,14 @@ summary.epinowcast <- function(object, type = c(
   return(s)
 }
 
+
 #' Plot method for epinowcast
 #'
 #' @description `plot` method for class "epinowcast".
 #'
 #' @param x A `data.table` of output as produced by [epinowcast()].
 #'
-#' @param latest_obs A `data.frame` of observed data which may be passed to
+#' @param latest_obs A  `data.frame` of observed data which may be passed to
 #' lower level methods.
 #'
 #' @param type Character string indicating the plot required; enforced by

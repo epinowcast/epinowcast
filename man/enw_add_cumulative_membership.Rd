@@ -2,19 +2,19 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_add_cumulative_membership}
 \alias{enw_add_cumulative_membership}
-\title{Add a cumulative membership effect to a data.frame}
+\title{Add a cumulative membership effect to a \code{data.frame}}
 \usage{
 enw_add_cumulative_membership(metaobs, feature)
 }
 \arguments{
-\item{metaobs}{A\code{data.frame}with a column named \code{feature} that contains
+\item{metaobs}{A \code{data.frame} with a column named \code{feature} that contains
 a numeric vector of values.}
 
 \item{feature}{The name of the column in \code{metaobs} that contains the
 numeric vector of values.}
 }
 \value{
-A\code{data.frame}with a new columns \verb{cfeature$} that contain the
+A \code{data.frame} with a new columns \verb{cfeature$} that contain the
 cumulative membership effect for each value of \code{feature}. For example if the
 original \code{feature} was \code{week} (with numeric entries \verb{1, 2, 3}) then the new
 columns will be \code{cweek1}, \code{cweek2}, and \code{cweek3}.

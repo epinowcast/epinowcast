@@ -5,7 +5,7 @@
 #' (reference or report), `confirm`, `max_confirm``, and `cum_prop_reported`
 #' are dropped and the first observation for each group and date is retained.
 #'
-#' @param obs A`data.frame`or data.table with columns: `reference_date` and/or
+#' @param obs A `data.frame` or data.table with columns: `reference_date` and/or
 #' `report_date`; at least one must be provided, `.group`, a grouping column
 #' and a `date`, a [Date] column.
 #'
@@ -195,7 +195,7 @@ enw_add_metaobs_features <- function(metaobs,
 #' for nowcasting purposes or to include additional dates for backcasting
 #' when using a renewal process as the expectation model.
 #'
-#' @param metaobs A `data.frame` with a `date` column.
+#' @param metaobs A  `data.frame` with a `date` column.
 #'
 #' @param days Number of days to add to the time series. Defaults to 20.
 #'
@@ -255,7 +255,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 #' be assigned a unique group. If `by` is not specified, then all rows
 #' will be assigned to the same group.
 #'
-#' @param obs A data.table or`data.frame`without a `.group` column.
+#' @param obs A data.table or `data.frame` without a `.group` column.
 #'
 #' @param by A character vector of column names to group by. Defaults to
 #' an empty vector.
@@ -464,7 +464,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
 #' for the maximum report date in all cases as data may only be updated
 #' up to some maximum number of days.
 #'
-#' @return A`data.frame`of observations filtered for the latest available data
+#' @return A `data.frame` of observations filtered for the latest available data
 #' for each reference date.
 #'
 #' @inheritParams check_dates
@@ -486,7 +486,7 @@ enw_latest_data <- function(obs) {
 
 #' Calculate incidence of new reports from cumulative reports
 #'
-#' @param obs A`data.frame`containing at least the following variables:
+#' @param obs A `data.frame` containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
 #' observations), and `confirm` (cumulative observations by reference and report
 #' date).
@@ -496,8 +496,8 @@ enw_latest_data <- function(obs) {
 #' downstream modelling does not support negative counts and so setting must be
 #' TRUE if intending to use [epinowcast()].
 #'
-#' @return The input`data.frame`with a new variable `new_confirm`. If
-#' `max_confirm` was present in the`data.frame`then the proportion
+#' @return The input `data.frame` with a new variable `new_confirm`. If
+#' `max_confirm` was present in the `data.frame` then the proportion
 #' reported on each day (`prop_reported`) is also added.
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
@@ -538,12 +538,12 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 
 #' Calculate cumulative reported cases from incidence of new reports
 #'
-#' @param obs A`data.frame`containing at least the following variables:
+#' @param obs A `data.frame` containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
 #' observations), and `new_confirm` (incident observations by reference and
 #' report date).
 #'
-#' @return The input`data.frame`with a new variable `confirm`.
+#' @return The input `data.frame` with a new variable `confirm`.
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
@@ -569,7 +569,7 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 
 #' Filter observations to restrict the maximum reporting delay
 #'
-#' @return A`data.frame`filtered so that dates by report are less than or equal
+#' @return A `data.frame` filtered so that dates by report are less than or equal
 #' the reference date plus the maximum delay.
 #'
 #' @inheritParams enw_cumulative_to_incidence
@@ -601,11 +601,11 @@ enw_delay_filter <- function(obs, max_delay) {
 #' Constructs the reporting triangle with each row representing a reference date
 #' and columns being observations by report date
 #'
-#' @param obs A`data.frame`as produced by [enw_cumulative_to_incidence()]. Must
-#' contain the following variables: `reference_date`, `.group`, `delay`.
+#' @param obs A `data.frame` as produced by [enw_cumulative_to_incidence()].
+#' Must contain the following variables: `reference_date`, `.group`, `delay`.
 #'
-#' @return A`data.frame`with each row being a reference date, and columns being
-#' observations by reporting delay.
+#' @return A `data.frame` with each row being a reference date, and columns
+#' being observations by reporting delay.
 #' @family preprocess
 #' @export
 #' @importFrom data.table as.data.table dcast setorderv
@@ -631,9 +631,10 @@ enw_reporting_triangle <- function(obs) {
 
 #' Recast the reporting triangle from wide to long format
 #'
-#' @param obs A`data.frame`in the format produced by [enw_reporting_triangle()].
+#' @param obs A `data.frame` in the format produced by
+#' [enw_reporting_triangle()].
 #'
-#' @return A long format reporting triangle as a`data.frame`with additional
+#' @return A long format reporting triangle as a `data.frame` with additional
 #' variables `new_confirm` and `delay`.
 #' @family preprocess
 #' @export
@@ -738,9 +739,9 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
 #' Returns reports with missing reference dates as well as calculating
 #' the proportion of reports for a given reference date that were missing.
 #'
-#' @param obs A`data.frame`as produced by [enw_cumulative_to_incidence()]. Must
-#'  contain the following variables: `report_date`, `reference_date`, `.group`,
-#'  and `confirm`, and `new_confirm`.
+#' @param obs A `data.frame` as produced by [enw_cumulative_to_incidence()].
+#' Must contain the following variables: `report_date`, `reference_date`,
+#' `.group`, and `confirm`, and `new_confirm`.
 #'
 #' @return A `data.table` of missing counts and proportions by report date and
 #' group.
@@ -790,13 +791,13 @@ enw_missing_reference <- function(obs) {
 #' Calculate delay metadata based on the supplied maximum delay and independent
 #' of other metadata or date indexing. These data are meant to be used in
 #' conjunction with metadata on the date of reference. Users can build
-#' additional features this `data.frame` or regenerate it using this function
+#' additional features this  `data.frame`  or regenerate it using this function
 #' in the output of `enw_preprocess_data()`.
 #'
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
 #' constructing a categorised version of numeric delays.
 #'
-#' @return A `data.frame` of delay metadata. This includes:
+#' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
 #'  - `delay_week`: The numeric week since the delay was reported. This again
@@ -844,7 +845,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'
 #' @param latest The latest available observations.
 #'
-#' @param missing_reference A`data.frame`of reported observations that are
+#' @param missing_reference A `data.frame` of reported observations that are
 #' missing the reference date.
 #'
 #' @param reporting_triangle Incident observations by report and reference
@@ -916,7 +917,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' or report dates are suspected to occur in your data then these need to be
 #' completed with [enw_complete_dates()].
 #'
-#' @param obs A`data.frame`containing at least the following variables:
+#' @param obs A `data.frame` containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
 #' observations), `confirm` (cumulative observations by reference and report
 #' date).

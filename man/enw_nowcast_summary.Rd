@@ -9,7 +9,7 @@ enw_nowcast_summary(fit, obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
 
-\item{obs}{An observation\code{data.frame}containing \code{reference_date}
+\item{obs}{An observation \code{data.frame} containing \code{reference_date}
 columns of the same length as the number of rows in the posterior and the
 most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
@@ -21,7 +21,7 @@ and 95\% quantiles which are also the minimum set required for
 plotting functions to work.}
 }
 \value{
-A\code{data.frame}summarising the model posterior nowcast prediction.
+A \code{data.frame} summarising the model posterior nowcast prediction.
 This uses observed data where available and the posterior prediction
 where not.
 }

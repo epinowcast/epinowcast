@@ -7,7 +7,7 @@
 enw_assign_group(obs, by = c())
 }
 \arguments{
-\item{obs}{A data.table or\code{data.frame}without a \code{.group} column.}
+\item{obs}{A data.table or \code{data.frame} without a \code{.group} column.}
 
 \item{by}{A character vector of column names to group by. Defaults to
 an empty vector.}

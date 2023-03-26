@@ -16,10 +16,10 @@ enw_plot_theme <- function(plot) {
 
 #' Generic quantile plot
 #'
-#' @param obs A `data.frame` of summarised posterior estimates
+#' @param obs A  `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column and a date variable
 #'
-#' @param latest_obs A`data.frame`of observed data containing at least a
+#' @param latest_obs A `data.frame` of observed data containing at least a
 #' `confirm` count variable and the same date variable as in the main data.frame
 #' used for plotting.
 #'
@@ -83,7 +83,7 @@ enw_plot_obs_by_report <- function(obs, log = TRUE, ...) {
 
 #' Generic quantile plot
 #'
-#' @param posterior A `data.frame` of summarised posterior estimates
+#' @param posterior A  `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column a date variable,
 #' quantile estimates for the 5%, 20%, 80%, and 95% quantiles and the
 #' mean and median. This function is wrapped in
@@ -114,7 +114,7 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
 
 #' Plot nowcast quantiles
 #'
-#' @param nowcast A `data.frame` of summarised posterior nowcast
+#' @param nowcast A  `data.frame` of summarised posterior nowcast
 #' estimates containing at least a `confirm` count column and a
 #' `reference_date` date variable.
 #'
@@ -142,7 +142,7 @@ enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
 
 #' Plot posterior prediction quantiles
 #'
-#' @param pp A `data.frame` of summarised posterior predictions
+#' @param pp A  `data.frame` of summarised posterior predictions
 #' estimates containing at least a `confirm` count column and a
 #' `report_date` date variable.
 #'

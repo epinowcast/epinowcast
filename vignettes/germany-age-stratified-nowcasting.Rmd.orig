@@ -369,7 +369,7 @@ nowcasts <- list(
 )
 ```
 
-and then summarise the nowcast posterior for each model and join into a tidy`data.frame`to make further analysis easier.
+and then summarise the nowcast posterior for each model and join into a tidy `data.frame` to make further analysis easier.
 
 ```{r}
 summarised_nowcasts <- map(

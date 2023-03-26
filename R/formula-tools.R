@@ -269,23 +269,23 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' by [rw()], produces the required additional variables
 #' (denoted using a "c" prefix and constructed using
 #' [enw_add_cumulative_membership()]), and then returns the
-#' extended`data.frame`along with the new fixed effects and the
+#' extended `data.frame` along with the new fixed effects and the
 #' random effect structure.
 #'
 #' @param rw A random walk term as defined by [rw()].
 #'
-#' @param data A`data.frame`of observations used to define the
+#' @param data A `data.frame` of observations used to define the
 #' random walk term. Must contain the time and grouping variables
 #' defined in the [rw()] term specified.
 #'
 #' @return A list containing the following:
-#'  - `data`: The input`data.frame`with the addition of the new variables
+#'  - `data`: The input `data.frame` with the addition of the new variables
 #' required by the specified random walk. These are added using
 #' [enw_add_cumulative_membership()].
 #'  -`terms`: A character vector of new fixed effects terms to add to a model
 #' formula.
-#'  - `effects`: A`data.frame`describing the random effect structure of the new
-#'  effects.
+#'  - `effects`: A `data.frame` describing the random effect structure of the
+#' new effects.
 #' @importFrom data.table copy
 #' @family formulatools
 #' @examples
@@ -384,12 +384,12 @@ re <- function(formula) {
 #' @param re A random effect as defined using [re()] which itself takes
 #' random effects specified in a model formula using the [lme4] syntax.
 #'
-#' @param data A`data.frame`of observations used to define the
+#' @param data A `data.frame` of observations used to define the
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
 #' @return A list containing the transformed data ("data"),
-#' fixed effects terms ("terms") and a `data.frame` specifying
+#' fixed effects terms ("terms") and a  `data.frame` specifying
 #' the random effect structure between these terms (`effects`). Note
 #' that if the specified random effect was not a factor it will have been
 #' converted into one.
@@ -558,7 +558,7 @@ construct_re <- function(re, data) {
 #' effects, random effects using [lme4] syntax (see [re()]), and random walks
 #' defined using the [rw()] helper function.
 #'
-#' @param data A `data.frame` of observations. It must include all
+#' @param data A  `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
 #'
 #' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design

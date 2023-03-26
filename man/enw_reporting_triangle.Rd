@@ -7,12 +7,12 @@
 enw_reporting_triangle(obs)
 }
 \arguments{
-\item{obs}{A\code{data.frame}as produced by \code{\link[=enw_cumulative_to_incidence]{enw_cumulative_to_incidence()}}. Must
-contain the following variables: \code{reference_date}, \code{.group}, \code{delay}.}
+\item{obs}{A \code{data.frame} as produced by \code{\link[=enw_cumulative_to_incidence]{enw_cumulative_to_incidence()}}.
+Must contain the following variables: \code{reference_date}, \code{.group}, \code{delay}.}
 }
 \value{
-A\code{data.frame}with each row being a reference date, and columns being
-observations by reporting delay.
+A \code{data.frame} with each row being a reference date, and columns
+being observations by reporting delay.
 }
 \description{
 Constructs the reporting triangle with each row representing a reference date
