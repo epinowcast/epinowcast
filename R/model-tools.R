@@ -233,7 +233,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #'
 #' @param ... Additional parameters passed to the `sample` method of `cmdstanr`.
 #'
-#' @return A  `data.frame` containing the `cmdstanr` fit, the input data, the
+#' @return A `data.frame` containing the `cmdstanr` fit, the input data, the
 #' fitting arguments, and optionally summary diagnostics.
 #'
 #' @family modeltools
