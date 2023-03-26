@@ -229,7 +229,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' supplied by the user.
 #'
 #' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
-#' be returned as a  `data.frame`.
+#' be returned as a `data.frame`.
 #'
 #' @param ... Additional parameters passed to the `sample` method of `cmdstanr`.
 #'
