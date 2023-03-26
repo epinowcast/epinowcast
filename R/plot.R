@@ -83,7 +83,7 @@ enw_plot_obs_by_report <- function(obs, log = TRUE, ...) {
 
 #' Generic quantile plot
 #'
-#' @param posterior A  `data.frame` of summarised posterior estimates
+#' @param posterior A `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column a date variable,
 #' quantile estimates for the 5%, 20%, 80%, and 95% quantiles and the
 #' mean and median. This function is wrapped in
