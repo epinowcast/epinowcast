@@ -1,8 +1,8 @@
 #' @title Convert all `Date`s to `Factor`s
 #' @description Converts all `Date` columns to `Factor`s.
-#' in a  `data.frame`.
-#' @param data A  `data.frame`.
-#' @return A  `data.frame` with all `Date` variables converted to `Factor`s and
+#' in a `data.frame`.
+#' @param data A `data.frame`.
+#' @return A `data.frame` with all `Date` variables converted to `factor`s and
 #' all other columns dropped.
 #' @family modeldesign
 #' @export
