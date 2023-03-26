@@ -255,7 +255,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 #' be assigned a unique group. If `by` is not specified, then all rows
 #' will be assigned to the same group.
 #'
-#' @param obs A data.table or `data.frame` without a `.group` column.
+#' @param obs A `data.table` or `data.frame` without a `.group` column.
 #'
 #' @param by A character vector of column names to group by. Defaults to
 #' an empty vector.
