@@ -24,7 +24,7 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
 #' @param missing_reference `missing_reference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
-#' @param reps_with_complete_refs A  `data.frame` of report dates with complete
+#' @param reps_with_complete_refs A `data.frame` of report dates with complete
 #' (i.e fully reported) reference dates as produced using
 #' [enw_reps_with_complete_refs()].
 #'
