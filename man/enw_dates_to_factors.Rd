@@ -10,7 +10,8 @@ enw_dates_to_factors(data)
 \item{data}{A \code{data.frame}.}
 }
 \value{
-A \code{data.frame} with all \code{Date} variables converted to \code{Factor}s.
+A \code{data.frame} with all \code{Date} variables converted to \code{Factor}s and
+all other columns dropped.
 }
 \description{
 Converts all \code{Date} columns to \code{Factor}s.
