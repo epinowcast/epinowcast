@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.2000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.4000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,8 +77,18 @@
 <h2 class="pkg-version" data-toc-text="0.2.0.2000" id="epinowcast-0202000">epinowcast 0.2.0.2000<a class="anchor" aria-label="anchor" href="#epinowcast-0202000"></a></h2>
 <p>This is release is in development. It is not yet ready for production use. If you notice problems please report them on the <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issue tracker</a>.</p>
 <div class="section level3">
+<h3 id="package-0-2-0-2000">Package<a class="anchor" aria-label="anchor" href="#package-0-2-0-2000"></a></h3>
+<ul><li>Added tests for <code><a href="../reference/summary.epinowcast.html">summary.epinowcast()</a></code> and <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> methods. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<li>Added examples for all plot functions and added tests for <code><a href="../reference/enw_plot_obs.html">enw_plot_obs()</a></code> which was not otherwise covered by <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> tests. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-0-2000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0-2000"></a></h3>
+<ul><li>Added examples for <code><a href="../reference/summary.epinowcast.html">summary.epinowcast()</a></code> and <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> methods to the documentation. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="bugs-0-2-0-2000">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-0-2000"></a></h3>
 <ul><li>Fixed an issue (<a href="https://github.com/epinowcast/epinowcast/issues/198" class="external-link">#198</a>) with the interface for <code>scoringutils</code>. For an unknown reason our example data contained <code>pillar</code> classes (likely due to an upstream change). This caused an issue with internal <code>scoringutils</code> that was using implict type conversion (see <a href="https://github.com/epiforecasts/scoringutils/pull/274" class="external-link">here</a>). See <a href="https://github.com/epinowcast/epinowcast/issues/201" class="external-link">#201</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
+<li>Fixed a bug in <code><a href="../reference/enw_plot_quantiles.html">enw_plot_quantiles()</a></code> where the documented default for <code>log</code> was <code>FALSE</code> but the actual default was <code>TRUE</code>. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 </ul></div>
 </div>
     <div class="section level2">
