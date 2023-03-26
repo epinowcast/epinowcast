@@ -72,7 +72,7 @@ enw_formula_as_data_list <- function(formula, prefix,
 
 #' Convert prior `data.frame` to list
 #'
-#' Converts priors defined in a  `data.frame` into a list
+#' Converts priors defined in a `data.frame` into a list
 #' format for use by stan. In addition it adds "_p" to all
 #' variable names in order too allow them to be distinguished from
 #' their standard usage within modelling code.
