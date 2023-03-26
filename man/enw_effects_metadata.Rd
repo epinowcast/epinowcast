@@ -7,7 +7,7 @@
 enw_effects_metadata(design)
 }
 \arguments{
-\item{design}{A design matrix as returned by \code{model.matrix}.}
+\item{design}{A design matrix as returned by \code{\link[stats:model.matrix]{stats::model.matrix()}}.}
 }
 \value{
 A data.table with the following columns:

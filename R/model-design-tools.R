@@ -1,8 +1,8 @@
-#' @title Convert all Dates to Factors
-#' @description Converts all Date columns to factors
+#' @title Convert all `Date`s to `Factor`s
+#' @description Converts all `Date` columns to `Factor`s.
 #' in a `data.frame`.
 #' @param data A `data.frame`.
-#' @return A `data.frame` with all Date variables converted to factors.
+#' @return A `data.frame` with all `Date` variables converted to `Factor`s.
 #' @family modeldesign
 #' @export
 #' @importFrom data.table as.data.table
@@ -18,7 +18,7 @@ enw_dates_to_factors <- function(data) {
 
 #' Construct a design matrix from a formula
 #'
-#' This function is a wrapper around `model.matrix` that can
+#' This function is a wrapper around [stats::model.matrix()] that can
 #' optionally return a sparse design matrix defined as the unique
 #' number of rows in the design matrix and an index vector that
 #' allows the full design matrix to be reconstructed. This is useful
@@ -29,7 +29,7 @@ enw_dates_to_factors <- function(data) {
 #' @param data A data.frame containing the variables in the formula.
 #' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
 #' TRUE.
-#' @param ... Additional arguments passed to `model.matrix`.
+#' @param ... Additional arguments passed to [stats::model.matrix()].
 #' @keywords internal
 #' @noRd
 #' @return A list containing the formula, the design matrix, and the index.
@@ -51,7 +51,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 
 #' A helper function to construct a design matrix from a formula
 #'
-#' @description This function is a wrapper around `model.matrix` that can
+#' @description This function is a wrapper around [stats::model.matrix()] that can
 #' optionally return a sparse design matrix defined as the unique
 #' number of rows in the design matrix and an index vector that
 #' allows the full design matrix to be reconstructed. This is useful
@@ -71,7 +71,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
 #' TRUE.
 #'
-#' @param ... Additional arguments passed to `model.matrix`.
+#' @param ... Additional arguments passed to [stats::model.matrix()].
 #'
 #' @return A list containing the formula, the design matrix, and the index.
 #' @family modeldesign
@@ -149,7 +149,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' This function is useful for constructing a model design object for random
 #' effects when used in combination with `ewn_add_pooling_effect`.
 #'
-#' @param design A design matrix as returned by `model.matrix`.
+#' @param design A design matrix as returned by [stats::model.matrix()].
 #'
 #' @return A data.table with the following columns:
 #' - effects: the name of the effect

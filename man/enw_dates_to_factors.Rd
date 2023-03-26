@@ -2,7 +2,7 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_dates_to_factors}
 \alias{enw_dates_to_factors}
-\title{Convert all Dates to Factors}
+\title{Convert all \code{Date}s to \code{Factor}s}
 \usage{
 enw_dates_to_factors(data)
 }
@@ -10,10 +10,10 @@ enw_dates_to_factors(data)
 \item{data}{A \code{data.frame}.}
 }
 \value{
-A \code{data.frame} with all Date variables converted to factors.
+A \code{data.frame} with all \code{Date} variables converted to \code{Factor}s.
 }
 \description{
-Converts all Date columns to factors
+Converts all \code{Date} columns to \code{Factor}s.
 in a \code{data.frame}.
 }
 \examples{

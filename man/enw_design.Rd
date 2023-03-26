@@ -19,13 +19,13 @@ no categorical variables will use contrasts.}
 \item{sparse}{Logical, if TRUE return a sparse design matrix. Defaults to
 TRUE.}
 
-\item{...}{Additional arguments passed to \code{model.matrix}.}
+\item{...}{Additional arguments passed to \code{\link[stats:model.matrix]{stats::model.matrix()}}.}
 }
 \value{
 A list containing the formula, the design matrix, and the index.
 }
 \description{
-This function is a wrapper around \code{model.matrix} that can
+This function is a wrapper around \code{\link[stats:model.matrix]{stats::model.matrix()}} that can
 optionally return a sparse design matrix defined as the unique
 number of rows in the design matrix and an index vector that
 allows the full design matrix to be reconstructed. This is useful
