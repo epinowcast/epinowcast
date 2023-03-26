@@ -5,7 +5,7 @@
 #' (reference or report), `confirm`, `max_confirm``, and `cum_prop_reported`
 #' are dropped and the first observation for each group and date is retained.
 #'
-#' @param obs A `data.frame` or data.table with columns: `reference_date` and/or
+#' @param obs A `data.frame` or `data.table` with columns: `reference_date` and/or
 #' `report_date`; at least one must be provided, `.group`, a grouping column
 #' and a `date`, a [Date] column.
 #'
