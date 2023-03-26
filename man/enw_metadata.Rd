@@ -7,13 +7,9 @@
 enw_metadata(obs, target_date = c("reference_date", "report_date"))
 }
 \arguments{
-\item{obs}{A data.frame or data.table with columns:
-\itemize{
-\item \code{reference_date}, a \link{Date} column
-\item and/or \code{report_date}, a \link{Date} column
-\item \code{.group}, a grouping column
-\item \code{date}, a \link{Date} column
-}}
+\item{obs}{A data.frame or data.table with columns: \code{reference_date} and/or
+\code{report_date}; at least one must be provided, \code{.group}, a grouping column
+and a \code{date}, a \link{Date} column.}
 
 \item{target_date}{A character string, either "reference_date" or
 "report_date". The column corresponding to this string will be used
@@ -32,7 +28,7 @@ The data.table is sorted by \code{.group} and \code{date}.
 \description{
 Extract metadata from raw data, either
 by reference or by report date. For the target date chosen
-(reference or report), confirm, max_confirm, and cum_prop_reported
+(reference or report), \code{confirm}, \verb{max_confirm``, and }cum_prop_reported`
 are dropped and the first observation for each group and date is retained.
 }
 \examples{

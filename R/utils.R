@@ -4,6 +4,16 @@
 #' @importFrom stats median rnorm
 NULL
 
+#' @title Check a vector is a Date
+#' @description Checks that an object is a date
+#' @param x An object
+#' @return A logical
+#' @family utils
+is.Date <- function(x) {
+  # nolint
+  inherits(x, "Date")
+}
+
 #' Read in a stan function file as a character string
 #'
 #' @inheritParams expose_stan_fns

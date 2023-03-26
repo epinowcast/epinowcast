@@ -1,13 +1,3 @@
-#' @title Check a vector is a Date
-#' @description Checks that a vector is a date
-#' @param x A vector
-#' @return A logical
-#' @family utils
-is.Date <- function(x) {
-  # nolint
-  inherits(x, "Date")
-}
-
 #' @title Convert all Dates to Factors
 #' @description Converts all Date columns to factors
 #' in a `data.frame`.

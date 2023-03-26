@@ -2,13 +2,12 @@
 #'
 #' @description Extract metadata from raw data, either
 #' by reference or by report date. For the target date chosen
-#' (reference or report), confirm, max_confirm, and cum_prop_reported
+#' (reference or report), `confirm`, `max_confirm``, and `cum_prop_reported`
 #' are dropped and the first observation for each group and date is retained.
 #'
-#' @param obs A data.frame or data.table with columns:
-#' * `reference_date` and/or `report_date`; at least one must be provided. [Date] column(s)
-#' * `.group`, a grouping column
-#' * `date`, a [Date] column
+#' @param obs A data.frame or data.table with columns: `reference_date` and/or
+#' `report_date`; at least one must be provided, `.group`, a grouping column
+#' and a `date`, a [Date] column.
 #'
 #' @param target_date A character string, either "reference_date" or
 #' "report_date". The column corresponding to this string will be used
