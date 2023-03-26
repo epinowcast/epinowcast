@@ -76,6 +76,31 @@ check_group <- function(obs) {
   return(invisible(NULL))
 }
 
+#' Check by variables are present in the data
+#'
+#' @param obs An observation data.frame.
+#'
+#' @param by A character vector of variables to group by.
+#'
+#' @return NULL
+#'
+#' @family check
+check_by <- function(obs, by = c()) {
+  if (length(by) > 0) {
+    if (!is.character(by)) {
+      stop("`by` must be a character vector")
+    }
+    if (!all(by %in% colnames(obs))) {
+      stop(
+        "`by` must be a subset of the columns in `obs`. \n",
+        paste0(paste(by[!(by %in% colnames(obs))], collapse = ", "),
+        " are not present in `obs`")
+      )
+    }
+  }
+  return(invisible(NULL))
+}
+
 #' Add a reserved grouping variable if missing
 #'
 #' @param x A data.table

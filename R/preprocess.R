@@ -277,6 +277,7 @@ enw_assign_group <- function(obs, by = c()) {
       "from your data before calling `enw_assign_group`."
     )
   }
+  check_by(obs, by = by)
   obs <- data.table::as.data.table(obs)
   if (length(by) != 0) {
     groups_index <- data.table::copy(obs)
@@ -513,6 +514,7 @@ enw_latest_data <- function(obs) {
 #' enw_cumulative_to_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
                                         by = c()) {
+  check_by(obs)
   reports <- check_dates(obs)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
@@ -556,6 +558,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = c()) {
   obs <- check_dates(obs)
+  check_by(obs)
 
   obs <- obs[!is.na(reference_date)]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
@@ -680,6 +683,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
   check_group(obs)
+  check_by(obs)
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)

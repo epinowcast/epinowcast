@@ -17,6 +17,7 @@ Add a reserved grouping variable if missing
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{check_by}()},
 \code{\link{check_dates}()},
 \code{\link{check_group}()},
 \code{\link{check_modules_compatible}()},

@@ -9,6 +9,7 @@
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
+  check_by(new_confirm, by = by)
   rep_with_complete_ref <- data.table::as.data.table(new_confirm)
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
