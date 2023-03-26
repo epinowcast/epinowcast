@@ -7,7 +7,7 @@
 enw_delay_filter(obs, max_delay)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A data.frame containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
@@ -19,7 +19,7 @@ that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 }
 \value{
-A data frame filtered so that dates by report are less than or equal
+A data.frame filtered so that dates by report are less than or equal
 the reference date plus the maximum delay.
 }
 \description{

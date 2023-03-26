@@ -4,7 +4,7 @@
 #' @param new_confirm `new_confirm` data.frame output from
 #' [enw_preprocess_data()].
 #'
-#' @return A data frame containing a `report_date` variable, and grouping
+#' @return A data.frame containing a `report_date` variable, and grouping
 #' variables specified for report dates that have complete reporting.
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
@@ -30,13 +30,13 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
 #' @param metareference `metareference` data.frame output from
 #' [enw_preprocess_data()].
 #'
-#' @return A wide data frame with each row being a complete report date and'
+#' @return A wide data.frame with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
-  # Make a complete data frame of all possible reference and report dates
+  # Make a complete data.frame of all possible reference and report dates
   miss_lk <- data.table::copy(metareference)[
     ,
     .(reference_date = date, .group)

@@ -7,7 +7,7 @@
 add_group(x)
 }
 \arguments{
-\item{x}{A data frame or data table}
+\item{x}{A data.frame or data table}
 }
 \value{
 A data table with a \code{.group} variable

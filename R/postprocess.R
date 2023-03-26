@@ -16,7 +16,7 @@
 #'
 #' @param ... Additional arguments that may be passed but will not be used.
 #'
-#' @return A dataframe summarising the model posterior.
+#' @return A data.frame summarising the model posterior.
 #'
 #' @family postprocess
 #' @export
@@ -66,13 +66,13 @@ enw_posterior <- function(fit, variables = NULL,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param obs An observation data frame containing \code{reference_date}
+#' @param obs An observation data.frame containing \code{reference_date}
 #' columns of the same length as the number of rows in the posterior and the
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
 #'
-#' @return A dataframe summarising the model posterior nowcast prediction.
+#' @return A data.frame summarising the model posterior nowcast prediction.
 #' This uses observed data where available and the posterior prediction
 #' where not.
 #'
@@ -116,7 +116,7 @@ enw_nowcast_summary <- function(fit, obs,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @return A dataframe of posterior samples for the nowcast prediction.
+#' @return A data.frame of posterior samples for the nowcast prediction.
 #' This uses observed data where available and the posterior prediction
 #' where not.
 #'
@@ -164,7 +164,7 @@ enw_nowcast_samples <- function(fit, obs) {
 #'  ".draw", ".iteration", ".sample", ".chain" ) joins this to the summarised
 #' posterior.
 #'
-#' @param samples A dataframe of posterior samples with at least a numeric
+#' @param samples A data.frame of posterior samples with at least a numeric
 #' sample variable.
 #'
 #' @param by A character vector of variables to summarise by. Defaults to
@@ -174,7 +174,7 @@ enw_nowcast_samples <- function(fit, obs) {
 #' posterior summary? This is useful for plotting the posterior against the
 #' observed data. Defaults to `TRUE`.
 #'
-#' @return A dataframe summarising the posterior samples.
+#' @return A data.frame summarising the posterior samples.
 #' @inheritParams enw_nowcast_summary
 #' @importFrom posterior mad
 #' @importFrom purrr reduce
@@ -225,11 +225,11 @@ enw_summarise_samples <- function(samples, probs = c(
 #' This is useful for plotting the nowcast against the latest
 #' observations.
 #'
-#' @param nowcast A dataframe of nowcast output from [enw_nowcast_summary()].
+#' @param nowcast A data.frame of nowcast output from [enw_nowcast_summary()].
 #'
 #' @inheritParams enw_nowcast_summary
 #'
-#' @return A dataframe of nowcast output with the latest observations
+#' @return A data.frame of nowcast output with the latest observations
 #' added.
 #' @family postprocess
 #' @export
@@ -261,7 +261,7 @@ enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param diff_obs A dataframe of observed data with at least a date variable
+#' @param diff_obs A data.frame of observed data with at least a date variable
 #' `reference_date`, and a grouping variable `.group`.
 #'
 #' @return A data.table summarising the posterior predictions.
@@ -296,9 +296,9 @@ enw_pp_summary <- function(fit, diff_obs,
 
 #' Convert summarised quantiles from wide to long format
 #'
-#' @param posterior A dataframe as output by [enw_posterior()].
+#' @param posterior A data.frame as output by [enw_posterior()].
 #'
-#' @return A data frame of quantiles in long format.
+#' @return A data.frame of quantiles in long format.
 #'
 #' @family postprocess
 #' @export

@@ -23,7 +23,7 @@ when modelling multiple time series in order to identify them for
 downstream modelling}
 }
 \value{
-A data frame containing a \code{report_date} variable, and grouping
+A data.frame containing a \code{report_date} variable, and grouping
 variables specified for report dates that have complete reporting.
 }
 \description{

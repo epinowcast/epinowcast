@@ -7,7 +7,7 @@
 enw_missing_reference(obs)
 }
 \arguments{
-\item{obs}{A data frame as produced by \code{\link[=enw_cumulative_to_incidence]{enw_cumulative_to_incidence()}}. Must
+\item{obs}{A data.frame as produced by \code{\link[=enw_cumulative_to_incidence]{enw_cumulative_to_incidence()}}. Must
 contain the following variables: \code{report_date}, \code{reference_date}, \code{.group},
 and \code{confirm}, and \code{new_confirm}.}
 }

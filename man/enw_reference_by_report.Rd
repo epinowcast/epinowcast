@@ -29,7 +29,7 @@ that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 }
 \value{
-A wide data frame with each row being a complete report date and'
+A wide data.frame with each row being a complete report date and'
 the columns being the observation index for each reporting delay
 }
 \description{

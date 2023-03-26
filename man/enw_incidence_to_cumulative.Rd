@@ -7,7 +7,7 @@
 enw_incidence_to_cumulative(obs, by = c())
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A data.frame containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{new_confirm} (incident observations by reference and
 report date).}
@@ -18,7 +18,7 @@ when modelling multiple time series in order to identify them for
 downstream modelling}
 }
 \value{
-The input data frame with a new variable \code{confirm}.
+The input data.frame with a new variable \code{confirm}.
 }
 \description{
 Calculate cumulative reported cases from incidence of new reports

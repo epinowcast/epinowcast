@@ -314,7 +314,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
 }
 ```
 
-We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data frame.
+We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data.frame.
 
 ```{r}
 options(mc.cores = 2)
@@ -369,7 +369,7 @@ nowcasts <- list(
 )
 ```
 
-and then summarise the nowcast posterior for each model and join into a tidy data frame to make further analysis easier.
+and then summarise the nowcast posterior for each model and join into a tidy data.frame to make further analysis easier.
 
 ```{r}
 summarised_nowcasts <- map(

@@ -13,7 +13,7 @@ enw_preprocess_data(
 )
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A data.frame containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
 date).}
@@ -40,7 +40,7 @@ e.g. \code{holidays}, which sets commonly used metadata
 }
 \value{
 A data.table containing processed observations as a series of nested
-data frames as well as variables containing metadata. These are:
+data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay).

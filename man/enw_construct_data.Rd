@@ -26,7 +26,7 @@ Empirical reporting distributions are also added.}
 
 \item{latest}{The latest available observations.}
 
-\item{missing_reference}{A data frame of reported observations that are
+\item{missing_reference}{A data.frame of reported observations that are
 missing the reference date.}
 
 \item{reporting_triangle}{Incident observations by report and reference
@@ -52,7 +52,7 @@ that this is zero indexed and so includes the reference date and
 }
 \value{
 A data.table containing processed observations as a series of nested
-data frames as well as variables containing metadata. These are:
+data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay).

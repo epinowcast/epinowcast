@@ -7,7 +7,7 @@
 enw_latest_data(obs)
 }
 \arguments{
-\item{obs}{An observation data frame containing \code{report_date} and
+\item{obs}{An observation data.frame containing \code{report_date} and
 \code{reference_date} columns.}
 }
 \value{

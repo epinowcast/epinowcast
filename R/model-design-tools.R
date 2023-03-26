@@ -36,7 +36,7 @@ enw_dates_to_factors <- function(data) {
 #' are computationally expensive to fit.
 #'
 #' @param formula An R formula.
-#' @param data A data frame containing the variables in the formula.
+#' @param data A data.frame containing the variables in the formula.
 #' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
 #' TRUE.
 #' @param ... Additional arguments passed to `model.matrix`.
@@ -71,7 +71,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #'
 #' @param formula An R formula.
 #'
-#' @param data A data frame containing the variables in the formula.
+#' @param data A data.frame containing the variables in the formula.
 #'
 #' @param no_contrasts A vector of variable names that should not be
 #' converted to contrasts. If `no_contrasts = FALSE` then all categorical
@@ -225,7 +225,7 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd",
   return(effects[])
 }
 
-#' @title Add a cumulative membership effect to a data frame
+#' @title Add a cumulative membership effect to a data.frame
 #'
 #' @description This function adds a cumulative membership effect to a data
 #' frame. This is useful for specifying models such as random walks (using
@@ -234,13 +234,13 @@ enw_add_pooling_effect <- function(effects, string, var_name = "sd",
 #' Note that cumulative membership is indexed to start with zero (i.e. the
 #' first observation is assigned a cumulative membership of zero).
 #'
-#' @param metaobs A data frame with a column named `feature` that contains
+#' @param metaobs A data.frame with a column named `feature` that contains
 #' a numeric vector of values.
 #'
 #' @param feature The name of the column in `metaobs` that contains the
 #' numeric vector of values.
 #'
-#' @return A data frame with a new columns `cfeature$` that contain the
+#' @return A data.frame with a new columns `cfeature$` that contain the
 #' cumulative membership effect for each value of `feature`.
 #'
 #' @family modeldesign
@@ -260,7 +260,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
     if (is.null(metaobs[[feature]])) {
       stop(
         "Requested variable ", feature,
-        " is not present in the supplied data frame."
+        " is not present in the supplied data.frame."
       )
     }
     metaobs[, (cfeature) := as.factor(get(feature))]

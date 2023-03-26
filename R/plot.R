@@ -19,7 +19,7 @@ enw_plot_theme <- function(plot) {
 #' @param obs A `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column and a date variable
 #'
-#' @param latest_obs A data frame of observed data containing at least a
+#' @param latest_obs A data.frame of observed data containing at least a
 #' `confirm` count variable and the same date variable as in the main data.frame
 #' used for plotting.
 #'

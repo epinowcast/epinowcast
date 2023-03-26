@@ -11,7 +11,7 @@ enw_plot_nowcast_quantiles(nowcast, latest_obs = NULL, log = FALSE, ...)
 estimates containing at least a \code{confirm} count column and a
 \code{reference_date} date variable.}
 
-\item{latest_obs}{A data frame of observed data containing at least a
+\item{latest_obs}{A data.frame of observed data containing at least a
 \code{confirm} count variable and the same date variable as in the main data.frame
 used for plotting.}
 
