@@ -277,8 +277,8 @@ enw_assign_group <- function(obs, by = c()) {
       "from your data before calling `enw_assign_group`."
     )
   }
+  obs <- data.table::as.data.table(obs)
   if (length(by) != 0) {
-    obs <- data.table::as.data.table(obs)
     groups_index <- data.table::copy(obs)
     groups_index <- unique(groups_index[, ..by])
     groups_index[, .group := 1:.N]
