@@ -4,7 +4,7 @@
 #' @importFrom stats median rnorm
 NULL
 
-#' @title Check a vector is a Date
+#' @title Check an object is a Date
 #' @description Checks that an object is a date
 #' @param x An object
 #' @return A logical

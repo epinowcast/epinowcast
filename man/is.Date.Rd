@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{is.Date}
 \alias{is.Date}
-\title{Check a vector is a Date}
+\title{Check an object is a Date}
 \usage{
 is.Date(x)
 }
