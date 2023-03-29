@@ -57,7 +57,6 @@ enw_add_pooling_effect(effects, "b")
 \seealso{
 Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
-\code{\link{enw_dates_to_factors}()},
 \code{\link{enw_design}()},
 \code{\link{enw_effects_metadata}()}
 }
