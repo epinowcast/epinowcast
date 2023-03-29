@@ -1,22 +1,3 @@
-#' @title Convert all `Date`s to `Factor`s
-#' @description Converts all `Date` columns to `Factor`s.
-#' in a `data.frame`.
-#' @param data A `data.frame`.
-#' @return A `data.frame` with all `Date` variables converted to `factor`s and
-#' all other columns dropped.
-#' @family modeldesign
-#' @export
-#' @importFrom data.table as.data.table
-#' @examples
-#' data <- data.frame(date = as.Date("2019-01-01") + 0:2, x = 1:3)
-#' enw_dates_to_factors(data)
-enw_dates_to_factors <- function(data) {
-  data <- data.table::as.data.table(data)
-  cols <- colnames(data)[sapply(data, is.Date)]
-  data <- data[, lapply(.SD, factor), .SDcols = cols]
-  return(data[])
-}
-
 #' Construct a design matrix from a formula
 #'
 #' This function is a wrapper around [stats::model.matrix()] that can
