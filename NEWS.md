@@ -58,7 +58,7 @@ Full details on the changes in this release can be found in the following sectio
 
 - Added `.Rhistory` to the `.gitignore` file. See #132 by @choi-hannah.
 - Fixed indentations for authors and contributors in the `DESCRIPTION` file. See #132 by @choi-hannah.
-- Renamed `enw_new_reports()` to `enw_cumulative_to_incidence()` and added the reverse function `enw_incidence_to_cumulative()` both functions use a `by` argument to allow specification of variable groupings. See #157 by @seabbs.
+- Renamed `enw_new_reports()` to `enw_add_incidence()` and added the reverse function `enw_add_cumulative()` both functions use a `by` argument to allow specification of variable groupings. See #157 by @seabbs.
 - Switched class checking to `inherits(x, "class")` rather than `class(x) %in% "class"`. See #155 by @Bisaloo.
 - Changed `enw_add_metaobs_features()` interface to have `holidays` argument as
 a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to `enw_add_metaobs_features()`. Interface changes come with internal rewrite and unit tests. As part of internal rewrite, introduces `coerce_date()` to `R/utils.R`, which wraps `data.table::as.IDate()` with error handling. See #151 by @pearsonca.

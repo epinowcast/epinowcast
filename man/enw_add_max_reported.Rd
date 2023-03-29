@@ -11,9 +11,6 @@ enw_add_max_reported(obs, copy = TRUE)
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
-
-\item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
-modifies \code{obs} in place.}
 }
 \value{
 A data.table with a \code{max_confirm} and \code{cum_prop_reported}
@@ -40,13 +37,11 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
