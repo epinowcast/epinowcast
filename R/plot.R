@@ -70,17 +70,6 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   return(plot)
 }
 
-enw_plot_obs_by_reference <- function(obs, latest_obs, log = TRUE, ...) {
-  enw_plot_obs(obs, latest_obs, log = log, ...) +
-    labs(y = "Notifications", x = "Reference date")
-}
-
-enw_plot_obs_by_report <- function(obs, log = TRUE, ...) {
-  enw_plot_obs(obs, log = log, ...) +
-    labs(y = "Notifications", x = "Report date")
-}
-
-
 #' Generic quantile plot
 #'
 #' @param posterior A `data.frame` of summarised posterior estimates
