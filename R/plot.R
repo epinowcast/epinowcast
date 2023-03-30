@@ -76,7 +76,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
 #' containing at least a `confirm` count column a date variable,
 #' quantile estimates for the 5%, 20%, 80%, and 95% quantiles and the
 #' mean and median. This function is wrapped in
-#' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible 
+#' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible
 #' default labels.
 #'
 #' @return A `ggplot2` plot.
