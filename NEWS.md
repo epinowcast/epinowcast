@@ -10,7 +10,8 @@ This is release is in development. It is not yet ready for production use. If yo
 - Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See #208 by @seabbs and reviewed by @pearsonca.
 - Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
 - Deprecated and removed `enw_dates_to_factors` as no longer needed. See #216 by @seabbs and reviewed by @adrian-lison.
-
+- Removed unused internal plot helpers. See #216 by @seabbs and reviewed by @adrian-lison.
+- Added tests for all internal `check_` functions used to check inputs. See #216 by @seabbs and reviewed by @adrian-lison.
 ## Documentation
 
 - Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs and reviewed by @pearsonca.

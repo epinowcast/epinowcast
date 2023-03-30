@@ -11,7 +11,7 @@
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   cols <- colnames(posterior)
-  if (sum(cols %in% c("q5", "q95", "q20", "q80")) != 4) {
+  if (sum(cols %in% paste0("q", req_probs * 100)) != length(req_probs)) {
     stop(
       "Following quantiles must be present (set with probs): ",
       paste(req_probs, collapse = ", ")
