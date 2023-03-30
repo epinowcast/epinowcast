@@ -128,20 +128,68 @@ enw_linelist_to_incidence <- function(linelist, by = c(), max_delay) {
   return(complete_counts)
 }
 
+#' Calculate incidence of new reports from cumulative reports
+#'
+#' @description `r lifecycle::badge('deprecated')`
+#' 
+#' @param obs A `data.frame` containing at least the following variables:
+#' `reference date` (index date of interest), `report_date` (report date for
+#' observations), and `confirm` (cumulative observations by reference and report
+#' date).
+#'
+#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
+#' counts (for calculated incidence of observations) be set to zero. Currently
+#' downstream modelling does not support negative counts and so setting must be
+#' TRUE if intending to use [epinowcast()].
+#'
+#' @return The input `data.frame` with a new variable `new_confirm`. If
+#' `max_confirm` was present in the `data.frame` then the proportion
+#' reported on each day (`prop_reported`) is also added.
+#' @inheritParams enw_preprocess_data
+#' @family dataconverters
 #' @export
-#' @param ... Arguments passed to [enw_add_incidence()].
-enw_cumulative_to_incidence <- function(...) {
+#' @importFrom data.table shift
+#' @examples
+#' # Default reconstruct incidence
+#' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+#' enw_add_incidence(dt)
+#'
+#' # Make use of maximum reported to calculate empirical daily reporting
+#' dt <- enw_add_max_reported(dt)
+#' enw_add_incidence(dt)
+enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
+                                        by = c()) {
   lifecycle::deprecate_warn(
     "0.2.1", "enw_cumulative_to_incidence()", "enw_add_incidence()"
   )
-  enw_add_incidence(...)
+  enw_add_incidence(obs, set_negatives_to_zero, by)
 }
 
+#' Calculate cumulative reported cases from incidence of new reports
+#'
+#' @description `r lifecycle::badge('deprecated')`
+#'
+#' @param obs A `data.frame` containing at least the following variables:
+#' `reference date` (index date of interest), `report_date` (report date for
+#' observations), and `new_confirm` (incident observations by reference and
+#' report date).
+#'
+#' @return The input `data.frame` with a new variable `confirm`.
+#' @inheritParams enw_preprocess_data
+#' @family dataconverters
 #' @export
-#' @param ... Arguments passed to [enw_add_cumulative()].
-enw_incidence_to_cumulative <- function(...) {
+#' @examples
+#' # Default reconstruct incidence
+#' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+#' dt <- enw_add_incidence(dt)
+#' dt <- dt[, confirm := NULL]
+#' enw_add_cumulative(dt)
+#'
+#' # Make use of maximum reported to calculate empirical daily reporting
+#' enw_add_cumulative(dt)
+enw_incidence_to_cumulative <- function(obs, by = c()) {
   lifecycle::deprecate_warn(
     "0.2.1", "enw_incidence_to_cumulative()", "enw_add_cumulative()"
   )
-  enw_add_cumulative(...)
+  enw_add_cumulative(obs, by = c())
 }
