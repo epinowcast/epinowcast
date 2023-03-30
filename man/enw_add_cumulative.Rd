@@ -26,7 +26,9 @@ Calculate cumulative reported cases from incidence of new reports
 \examples{
 # Default reconstruct incidence
 dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-enw_add_incidence(dt)
+dt <- enw_add_incidence(dt)
+dt <- dt[, confirm := NULL]
+enw_add_cumulative(dt)
 
 # Make use of maximum reported to calculate empirical daily reporting
 enw_add_cumulative(dt)

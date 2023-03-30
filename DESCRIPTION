@@ -64,7 +64,8 @@ Imports:
     posterior,
     purrr,
     rstan,
-    scales
+    scales,
+    lifecycle
 Suggests:
     loo (>= 2.4.1),
     knitr,

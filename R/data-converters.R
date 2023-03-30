@@ -12,7 +12,9 @@
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-#' enw_add_incidence(dt)
+#' dt <- enw_add_incidence(dt)
+#' dt <- dt[, confirm := NULL]
+#' enw_add_cumulative(dt)
 #'
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' enw_add_cumulative(dt)
@@ -87,14 +89,14 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = c()) {
 #' @param max_delay DESCRIPTION.
 #'
 #' @return RETURN_DESCRIPTION
-#' 
+#'
 #' @family dataconverters
+#' @export
 #' @examples
 #' linelist <- data.frame(
 #'   reference_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
 #'   report_date = as.Date(c("2021-01-03", "2021-01-05", "2021-01-04"))
 #' )
-
 #' enw_linelist_to_incidence(linelist)
 enw_linelist_to_incidence <- function(linelist, by = c(), max_delay) {
   check_by(linelist)
@@ -126,4 +128,20 @@ enw_linelist_to_incidence <- function(linelist, by = c(), max_delay) {
   return(complete_counts)
 }
 
+#' @export
+#' @param ... Arguments passed to [enw_add_incidence()].
+enw_cumulative_to_incidence <- function(...) {
+  lifecycle::deprecate_warn(
+    "0.2.1", "enw_cumulative_to_incidence()", "enw_add_incidence()"
+  )
+  enw_add_incidence(...)
+}
 
+#' @export
+#' @param ... Arguments passed to [enw_add_cumulative()].
+enw_incidence_to_cumulative <- function(...) {
+  lifecycle::deprecate_warn(
+    "0.2.1", "enw_incidence_to_cumulative()", "enw_add_cumulative()"
+  )
+  enw_add_cumulative(...)
+}
