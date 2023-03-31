@@ -244,16 +244,23 @@ enw_add_delay <- function(obs) {
   return(obs = obs[])
 }
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
+#' @title Add maximum number of reported cases for each reference_date
+#' 
+#' @description This is a helper function which adds the maximum (in the sense
+#' of latest observed) number of reported cases for each reference_date and
+#' computes the proportion of already reported cases for each combination of
+#' reference_date and report_date.
 #'
-#' @return OUTPUT_DESCRIPTION
+#' @return A data.table with new columns `max_confirm` and `cum_prop_reported`
 #'
 #' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_latest_data
 #' @family preprocess
 #' @export
 #' @importFrom data.table copy
+#' @examples
+#' Add `max_confirm` and `cum_prop_reported` to data
+#' enw_add_max_reported(germany_covid19_hosp)
 enw_add_max_reported <- function(obs) {
   obs <- check_dates(obs)
   orig_latest <- enw_latest_data(obs)
@@ -282,7 +289,7 @@ enw_add_max_reported <- function(obs) {
 #' of report dates to remove, starting from the latest date included.
 #'
 #' @inheritParams check_dates
-#' @return A data.table  filtered by report date
+#' @return A data.table filtered by report date
 #' @family preprocess
 #' @export
 #' @examples
