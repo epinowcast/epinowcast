@@ -10,6 +10,9 @@
 #'
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
+  if (any(req_probs <= 0) || any(req_probs >= 1)) {
+    stop("Please provide probabilities as numbers between 0 and 1.")
+  }
   cols <- colnames(posterior)
   if (sum(cols %in% paste0("q", req_probs * 100)) != length(req_probs)) {
     stop(

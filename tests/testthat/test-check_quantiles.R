@@ -4,4 +4,5 @@ test_that("check_quantiles works as expected", {
   expect_equal(epinowcast:::check_quantiles(dt, req_probs = 0.2), NULL)
   expect_error(epinowcast:::check_quantiles(dt, req_probs = 0.35))
   expect_error(epinowcast:::check_quantiles(dt, req_probs =c(0.2, 0.35)))
+  expect_error(epinowcast:::check_quantiles(dt, req_probs = 35))
 })
