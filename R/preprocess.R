@@ -306,11 +306,12 @@ enw_add_delay <- function(obs, copy = TRUE) {
   return(obs[])
 }
 
-#' @title Add the maximum number of cases reported on a given day
+#' @title Add the maximum number of reported cases for each reference_date
 #'
-#' @description Add the maximum number of cases reported on a given day
-#' to the data set. This is useful for calculating the proportion of
-#' cases reported on a given day which is also done in this function.
+#' @description This is a helper function which adds the maximum (in the sense
+#' of latest observed) number of reported cases for each reference_date and
+#' computes the proportion of already reported cases for each combination of
+#' reference_date and report_date.
 #'
 #' @return A data.table with a `max_confirm` and `cum_prop_reported`
 #' columns added. `max_confirm` is the maximum number of cases reported
