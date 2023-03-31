@@ -70,24 +70,13 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   return(plot)
 }
 
-enw_plot_obs_by_reference <- function(obs, latest_obs, log = TRUE, ...) {
-  enw_plot_obs(obs, latest_obs, log = log, ...) +
-    labs(y = "Notifications", x = "Reference date")
-}
-
-enw_plot_obs_by_report <- function(obs, log = TRUE, ...) {
-  enw_plot_obs(obs, log = log, ...) +
-    labs(y = "Notifications", x = "Report date")
-}
-
-
 #' Generic quantile plot
 #'
 #' @param posterior A `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column a date variable,
 #' quantile estimates for the 5%, 20%, 80%, and 95% quantiles and the
 #' mean and median. This function is wrapped in
-#' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible 
+#' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible
 #' default labels.
 #'
 #' @return A `ggplot2` plot.
