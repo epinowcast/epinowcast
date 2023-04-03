@@ -317,7 +317,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
       length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
     ),
     lrd = convolution_matrix(
-      latent_reporting_delay, r_list$ft, include_partial = FALSE
+      latent_reporting_delay, r_list$ft,
+      include_partial = FALSE
     )
   )
 

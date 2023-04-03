@@ -5,9 +5,9 @@
 #' (reference or report), `confirm`, `max_confirm``, and `cum_prop_reported`
 #' are dropped and the first observation for each group and date is retained.
 #'
-#' @param obs A `data.frame` or `data.table` with columns: `reference_date` and/or
-#' `report_date`; at least one must be provided, `.group`, a grouping column
-#' and a `date`, a [Date] column.
+#' @param obs A `data.frame` or `data.table` with columns: `reference_date`
+#' and/or `report_date`; at least one must be provided, `.group`, a grouping
+#' column and a `date`, a [Date] column.
 #'
 #' @param target_date A character string, either "reference_date" or
 #' "report_date". The column corresponding to this string will be used
@@ -569,8 +569,8 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 
 #' Filter observations to restrict the maximum reporting delay
 #'
-#' @return A `data.frame` filtered so that dates by report are less than or equal
-#' the reference date plus the maximum delay.
+#' @return A `data.frame` filtered so that dates by report are less than or
+#' equal the reference date plus the maximum delay.
 #'
 #' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_preprocess_data

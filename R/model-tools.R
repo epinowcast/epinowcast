@@ -333,7 +333,8 @@ enw_model <- function(model = system.file(
 
   if (!profile) {
     stan_no_profile <- write_stan_files_no_profile(
-      model, include, target_dir =  target_dir
+      model, include,
+      target_dir = target_dir
     )
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths

@@ -111,9 +111,9 @@ latest_obs_as_matrix <- function(latest) {
 #' # Include partially reported convolutions
 #' convolution_matrix(c(1, 2, 3), 10, include_partial = TRUE)
 #' # Use a list of distributions
-#' convolution_matrix(rep(list(c(1, 2, 3)), 10),10)
+#' convolution_matrix(rep(list(c(1, 2, 3)), 10), 10)
 #' # Use a time-varying list of distributions
-#' convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4,5,6))), 11)
+#' convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4, 5, 6))), 11)
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
@@ -123,7 +123,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     if (!all(ldist == ldist[1])) {
       stop("dist must be the same length for all t")
     }
-  }else {
+  } else {
     ldist <- rep(length(dist), t)
     dist <- rep(list(dist), t)
   }

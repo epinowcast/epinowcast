@@ -62,7 +62,7 @@ enw_posterior <- function(fit, variables = NULL,
 #'
 #' @description A generic wrapper around [enw_posterior()] with
 #' opinionated defaults to extract the posterior prediction for the
-#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of 
+#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'

@@ -439,12 +439,12 @@ construct_re <- function(re, data) {
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-      message(
-        "A random effect using ", current_random[2],
-        " is not possible as this variable has fewer than 2 unique values."
-      )
-      random[i] <- current_random[1]
-      }else {
+        message(
+          "A random effect using ", current_random[2],
+          " is not possible as this variable has fewer than 2 unique values."
+        )
+        random[i] <- current_random[1]
+      } else {
         random_int[i] <- TRUE
       }
     }
@@ -471,7 +471,8 @@ construct_re <- function(re, data) {
 
   # make all right hand side random effects factors
   data <- data[,
-    (expanded_random) := lapply(.SD, as.factor), .SDcols = expanded_random
+    (expanded_random) := lapply(.SD, as.factor),
+    .SDcols = expanded_random
   ]
 
   # make a fixed effects design matrix
@@ -513,8 +514,8 @@ construct_re <- function(re, data) {
               effects, var_name = gsub(":", "__", k),
               finder_fn = function(effect, pattern) {
                 grepl(pattern[1], effect) &
-                grepl(pattern[2], effect, fixed = TRUE) &
-                lengths(regmatches(effect, gregexpr(":", effect))) == 1
+                  grepl(pattern[2], effect, fixed = TRUE) &
+                  lengths(regmatches(effect, gregexpr(":", effect))) == 1
               },
               pattern = strsplit(k, ":")[[1]]
             )
