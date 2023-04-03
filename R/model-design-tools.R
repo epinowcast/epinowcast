@@ -74,7 +74,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   data <- data.table::as.data.table(data)
 
   # make all character variables factors
-  chars <- colnames(data)[sapply(data, function(x) is.character(x))]
+  chars <- colnames(data)[sapply(data, is.character)]
   data <- suppressWarnings(
     data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
   )
