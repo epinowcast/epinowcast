@@ -375,8 +375,6 @@ construct_rw <- function(rw, data) {
 #' re(form$random[[1]])
 re <- function(formula) {
   terms <- strsplit(as_string_formula(formula), " | ", fixed = TRUE)[[1]]
-  fixed <- terms[1]
-  random <- terms[2]
   out <- list(fixed = terms[1], random = terms[2])
   class(out) <- c("enw_re_term")
   return(out)

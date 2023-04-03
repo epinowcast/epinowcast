@@ -30,8 +30,6 @@ enw_posterior <- function(fit, variables = NULL,
                           probs = c(0.05, 0.2, 0.8, 0.95), ...) {
   # order probs
   probs <- probs[order(probs)]
-  # NULL out variables
-  variable <- type <- NULL
 
   # extract summary parameters of interest and join
   sfit <- list(

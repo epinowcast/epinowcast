@@ -700,7 +700,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by)
-  by_with_group_id <- c(".group", by)
+  by_with_group_id <- c(".group", by) # nolint: object_usage_linter
   groups <- unique(obs[, ..by_with_group_id])
 
   completion <- data.table::CJ(
