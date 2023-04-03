@@ -46,7 +46,7 @@ convert_cmdstan_to_rstan <- function(functions) {
   # replace bars in CDF with commas
   functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
   # replace lupmf with lpmf
-  functions <- gsub("_lupmf", "_lpmf", functions)
+  functions <- gsub("_lupmf", "_lpmf", functions, fixed = TRUE)
   # replace array syntax
   #   case 1a: array[] real x -> real[] x
   functions <- gsub(

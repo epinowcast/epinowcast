@@ -310,7 +310,7 @@ enw_quantiles_to_long <- function(posterior) {
     measure.vars = patterns("^q[0-9]"),
     value.name = "prediction", variable.name = "quantile"
   )
-  long[, quantile := gsub("q", "", quantile)]
+  long[, quantile := gsub("q", "", quantile, fixed = TRUE)]
   long[, quantile := as.numeric(quantile) / 100]
   return(long[])
 }

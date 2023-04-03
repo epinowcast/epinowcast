@@ -41,8 +41,9 @@ enw_formula_as_data_list <- function(formula, prefix,
         enw_formula"
       )
     }
-    fintercept <-  as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    fintercept <- as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design),
+      fixed = TRUE
     )))
 
     data <- list()
