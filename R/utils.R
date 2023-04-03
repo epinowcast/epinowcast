@@ -201,7 +201,7 @@ coerce_date <- function(dates) {
     )
   }, FUN.VALUE = data.table::as.IDate(0)))
 
-  if (any(is.na(res))) {
+  if (anyNA(res)) {
     bads <- is.na(res)
     stop(sprintf(
       "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
