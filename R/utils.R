@@ -43,8 +43,10 @@ stan_fns_as_string <- function(files, target_dir) {
 #' @return A character string of stan functions converted for use in `rstan`.
 #' @family utils
 convert_cmdstan_to_rstan <- function(functions) {
+  # nolint start: nonportable_path_linter
   # replace bars in CDF with commas
   functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
+  # nolint end
   # replace lupmf with lpmf
   functions <- gsub("_lupmf", "_lpmf", functions, fixed = TRUE)
   # replace array syntax
