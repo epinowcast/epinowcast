@@ -329,7 +329,7 @@ enw_model <- function(model = system.file(
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
     message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", paste(include, collapse = ", ")))
+    message(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {

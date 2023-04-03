@@ -205,8 +205,8 @@ coerce_date <- function(dates) {
     bads <- is.na(res)
     stop(sprintf(
       "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
-      paste(dates[bads], collapse = ", "),
-      paste(which(bads), collapse = ", ")
+      toString(dates[bads]),
+      toString(which(bads))
     ))
   } else {
     return(res)

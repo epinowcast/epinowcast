@@ -17,7 +17,7 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   if (sum(cols %in% paste0("q", req_probs * 100)) != length(req_probs)) {
     stop(
       "Following quantiles must be present (set with probs): ",
-      paste(req_probs, collapse = ", ")
+      toString(req_probs)
     )
   }
   return(invisible(NULL))
@@ -96,7 +96,7 @@ check_by <- function(obs, by = c()) {
     if (!all(by %in% colnames(obs))) {
       stop(
         "`by` must be a subset of the columns in `obs`. \n",
-        paste0(paste(by[!(by %in% colnames(obs))], collapse = ", "),
+        paste0(toString(by[!(by %in% colnames(obs))]),
         " are not present in `obs`")
       )
     }
