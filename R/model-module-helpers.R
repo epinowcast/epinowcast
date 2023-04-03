@@ -119,7 +119,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     if (length(dist) != t) {
       stop("dist must equal t or be the same for all t (i.e. length 1)")
     }
-    ldist <- purrr::map_dbl(dist, length)
+    ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
       stop("dist must be the same length for all t")
     }
