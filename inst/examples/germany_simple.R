@@ -1,7 +1,6 @@
 # Load packages
 library(epinowcast)
 library(data.table)
-library(ggplot2)
 
 # Use 2 cores
 options(mc.cores = 2)
