@@ -175,7 +175,7 @@ enw_effects_metadata <- function(design) {
 #' indicating whether the effects were matched.
 #'
 #' @param ... Additional arguments to `finder_fn`. E.g. for the
-#' `finder_fn = startsWith` default, this should be `string = "somestring"`.
+#' `finder_fn = startsWith` default, this should be `prefix = "somestring"`.
 #'
 #' @return A `data.table` with the following columns:
 #' - effects: the name of the effect
@@ -189,7 +189,7 @@ enw_effects_metadata <- function(design) {
 #' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
 #' design <- enw_design(a ~ b + c, data)$design
 #' effects <- enw_effects_metadata(design)
-#' enw_add_pooling_effect(effects, string = "b")
+#' enw_add_pooling_effect(effects, prefix = "b")
 enw_add_pooling_effect <- function(effects, var_name = "sd",
                                    finder_fn = startsWith, ...) {
   effects <- data.table::setDT(effects)

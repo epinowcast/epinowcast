@@ -72,7 +72,7 @@ enw_manual_formula <- function(data, fixed = c(), random = c(),
     random <- enw_design(~1, effects, sparse = FALSE)
   } else {
     for (i in random) {
-      effects <- enw_add_pooling_effect(effects, var_name = i, string = i)
+      effects <- enw_add_pooling_effect(effects, var_name = i, prefix = i)
     }
     rand_form <- c("0", "fixed", random)
     rand_form <- as.formula(paste0("~ ", paste(rand_form, collapse = " + ")))
@@ -339,17 +339,17 @@ construct_rw <- function(rw, data) {
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(
-      effects, var_name = rw$time, string = ctime
+      effects, var_name = rw$time, prefix = ctime
     )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
         effects, var_name = paste0(nby, "__", rw$time),
-        finder_fn = function(effect, pattern, string) {
-          grepl(pattern, effect) & startsWith(effect, string)
+        finder_fn = function(effect, pattern, prefix) {
+          grepl(pattern, effect) & startsWith(effect, prefix)
         },
-        pattern = ctime, string = paste0(rw$by, i)
+        pattern = ctime, prefix = paste0(rw$by, i)
       )
     }
   }
@@ -516,7 +516,7 @@ construct_re <- function(re, data) {
                 grepl(pattern[2], effect, fixed = TRUE) &
                 lengths(regmatches(effect, gregexpr(":", effect))) == 1
               },
-              pattern = strsplit(k, ":")[[1]],
+              pattern = strsplit(k, ":")[[1]]
             )
           } else {
             effects <- enw_add_pooling_effect(
@@ -535,7 +535,7 @@ construct_re <- function(re, data) {
                 grepl(pattern[1], effect) & grepl(pattern[2], effect) &
                 grepl(pattern[3], effect)
             },
-            pattern = c(k[1], strsplit(k[-1], ":")[[1]]),
+            pattern = c(k[1], strsplit(k[-1], ":")[[1]])
           )
         } else {
           effects <- enw_add_pooling_effect(

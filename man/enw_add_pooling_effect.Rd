@@ -26,7 +26,7 @@ and then any other other arguments in \code{...} and returns a logical vector
 indicating whether the effects were matched.}
 
 \item{...}{Additional arguments to \code{finder_fn}. E.g. for the
-\code{finder_fn = startsWith} default, this should be \code{string = "somestring"}.}
+\code{finder_fn = startsWith} default, this should be \code{prefix = "somestring"}.}
 }
 \value{
 A \code{data.table} with the following columns:
@@ -48,7 +48,7 @@ adding a new column \code{var_name} that is 1 for the effects that match the
 data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
 design <- enw_design(a ~ b + c, data)$design
 effects <- enw_effects_metadata(design)
-enw_add_pooling_effect(effects, string = "b")
+enw_add_pooling_effect(effects, prefix = "b")
 }
 \seealso{
 Functions used to formulate models
