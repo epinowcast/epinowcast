@@ -1,5 +1,15 @@
 linters: linters_with_tags(
-    tags = NULL # include all linters
+    tags = NULL, # include all linters
+    implicit_integer_linter = NULL,
+    extraction_operator_linter = NULL,
+    undesirable_function_linter = NULL,
+    function_argument_linter = NULL,
+    indentation_linter = NULL,
+    object_name_linter = NULL,
+    cyclocomp_linter(25L)
   )
-exclusions: c(list.files(path = "tests/", recursive = T, full.names = T),
-    "vignettes/germany-age-stratified-nowcasting.Rmd.orig")
+exclusions: c(
+    list.files("tests", recursive = TRUE, full.names = TRUE),
+    list.files("inst", recursive = TRUE, full.names = TRUE),
+    "vignettes/germany-age-stratified-nowcasting.Rmd.orig"
+  )
