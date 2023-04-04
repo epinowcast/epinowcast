@@ -85,11 +85,11 @@ latest_obs_as_matrix <- function(latest) {
 
 #' Construct a convolution matrix
 #'
-#' This function allows the construction of convoluton matrices which can be
+#' This function allows the construction of convolution matrices which can be
 #' be combined with a vector of primary events to produce a vector of secondary
 #' events for example in the form of a renewal equation or to simulate
 #' reporting delays. Time-varying delays are supported as well as distribution
-#' padding (to allow for use in renewal equation like aproaches).
+#' padding (to allow for use in renewal equation like approaches).
 #'
 #' @param dist A vector of list of vectors describing the distribution to be
 #' convolved as a probability mass function.
