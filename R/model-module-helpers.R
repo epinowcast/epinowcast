@@ -132,10 +132,8 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     l <- min(t - s + 1, ldist[s])
     conv[s:(s + l - 1), s] <- head(dist[[s]], l)
   }
-  if (!include_partial) {
-    if (ldist[1] > 1) {
-      conv[1:(ldist[1] - 1), ] <- 0
-    }
+  if (!include_partial && ldist[1] > 1) {
+    conv[1:(ldist[1] - 1), ] <- 0
   }
   return(conv)
 }
