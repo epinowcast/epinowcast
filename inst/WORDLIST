@@ -8,6 +8,7 @@ CmdStanR’s
 Cmdstan
 Codecov
 Höhle
+IDate
 ImperialCollegeLondon
 LFO
 Lifecycle
@@ -15,9 +16,11 @@ LogNormal
 Nowcast
 Nowcasting
 ORCID
-PARAM
+PMF
+PMFs
 Poisson
 Rstan
+SEIR
 ae
 com
 discretised
@@ -29,9 +32,8 @@ frac
 geq
 github
 gt
-gtD
-gtd
 heirarchical
+leq
 lme
 loglogistic
 mathbb
@@ -43,6 +45,7 @@ modelvalidation
 negbin
 nolint
 nowcast
+nowcastable
 nowcasting
 nowcasts
 overprediction
@@ -50,14 +53,12 @@ parameterisations
 poisson
 postprocess
 postprocessing
+predictives
 runtimes
 rw
 sd
 sim
 st
 stan
-startsWith
-sundays
 th
-tradeoffs
 underprediction
