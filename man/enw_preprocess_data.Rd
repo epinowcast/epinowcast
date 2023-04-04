@@ -6,7 +6,7 @@
 \usage{
 enw_preprocess_data(
   obs,
-  by = c(),
+  by = NULL,
   max_delay = 20,
   set_negatives_to_zero = TRUE,
   ...

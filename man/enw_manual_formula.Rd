@@ -6,9 +6,9 @@
 \usage{
 enw_manual_formula(
   data,
-  fixed = c(),
-  random = c(),
-  custom_random = c(),
+  fixed = NULL,
+  random = NULL,
+  custom_random = NULL,
   no_contrasts = FALSE,
   add_intercept = TRUE
 )

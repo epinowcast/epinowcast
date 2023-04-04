@@ -4,7 +4,7 @@
 \alias{enw_complete_dates}
 \title{Complete missing reference and report dates}
 \usage{
-enw_complete_dates(obs, by = c(), max_delay, missing_reference = TRUE)
+enw_complete_dates(obs, by = NULL, max_delay, missing_reference = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
