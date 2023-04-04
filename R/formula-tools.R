@@ -72,7 +72,7 @@ enw_manual_formula <- function(data, fixed = c(), random = c(),
     random <- enw_design(~1, effects, sparse = FALSE)
   } else {
     for (i in random) {
-      effects <- enw_add_pooling_effect(effects, i, var_name = i)
+      effects <- enw_add_pooling_effect(effects, var_name = i, string = i)
     }
     rand_form <- c("0", "fixed", random)
     rand_form <- as.formula(paste0("~ ", paste(rand_form, collapse = " + ")))
@@ -338,15 +338,18 @@ construct_rw <- function(rw, data) {
 
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
-    effects <- enw_add_pooling_effect(effects, ctime, rw$time)
+    effects <- enw_add_pooling_effect(
+      effects, var_name = rw$time, string = ctime
+    )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
-        effects, c(ctime, paste0(rw$by, i)), paste0(nby, "__", rw$time),
-        finder_fn = function(effect, pattern) {
-          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-        }
+        effects, var_name = paste0(nby, "__", rw$time),
+        finder_fn = function(effect, pattern, string) {
+          grepl(pattern, effect) & startsWith(effect, string)
+        },
+        pattern = ctime, string = paste0(rw$by, i)
       )
     }
   }
@@ -497,7 +500,7 @@ construct_re <- function(re, data) {
         j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
         return(j)
       })
-    }else {
+    } else {
       j <- list(loc_terms)
     }
     # link random effects with fixed effects
@@ -507,37 +510,40 @@ construct_re <- function(re, data) {
       if (length(k) == 1) {
           if (terms_int[i]) {
             effects <- enw_add_pooling_effect(
-              effects, strsplit(k, ":")[[1]], gsub(":", "__", k),
+              effects, var_name = gsub(":", "__", k),
               finder_fn = function(effect, pattern) {
                 grepl(pattern[1], effect) &
                 grepl(pattern[2], effect, fixed = TRUE) &
                 lengths(regmatches(effect, gregexpr(":", effect))) == 1
-              }
+              },
+              pattern = strsplit(k, ":")[[1]],
             )
-          }else {
+          } else {
             effects <- enw_add_pooling_effect(
-              effects, k, k,
+              effects, var_name = k,
               finder_fn = function(effect, pattern) {
                 grepl(pattern, effect) & !grepl(":", effect)
-              }
+              },
+              pattern = k
             )
           }
       } else {
         if (terms_int[i]) {
           effects <- enw_add_pooling_effect(
-              effects, c(k[1], strsplit(k[-1], ":")[[1]]),
-              paste(gsub(":", "__", k), collapse = "__"),
+              effects, var_name = paste(gsub(":", "__", k), collapse = "__"),
               finder_fn = function(effect, pattern) {
                 grepl(pattern[1], effect) & grepl(pattern[2], effect) &
                 grepl(pattern[3], effect)
-            }
+            },
+            pattern = c(k[1], strsplit(k[-1], ":")[[1]]),
           )
-        }else {
+        } else {
           effects <- enw_add_pooling_effect(
-            effects, rev(k), paste(k, collapse = "__"),
+            effects, var_name = paste(k, collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & grepl(pattern[2], effect)
-            }
+            },
+            pattern = rev(k)
           )
         }
       }
