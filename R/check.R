@@ -96,8 +96,8 @@ check_by <- function(obs, by = c()) {
     if (!all(by %in% colnames(obs))) {
       stop(
         "`by` must be a subset of the columns in `obs`. \n",
-        paste0(toString(by[!(by %in% colnames(obs))]),
-        " are not present in `obs`")
+        toString(by[!(by %in% colnames(obs))]),
+        " are not present in `obs`"
       )
     }
   }
@@ -151,15 +151,16 @@ check_modules_compatible <- function(modules) {
     modules[[4]]$data$model_miss &&
       !modules[[6]]$data$likelihood_aggregation
   ) {
-    warning(paste0(
+    warning(
       "Incompatible model specification: A missingness model has ",
       "been specified but likelihood aggregation is specified as ",
       "by snapshot. Switching to likelihood aggregation by group.",
       " This has no effect on the nowcast but limits the ",
       "number of threads per chain to the number of groups. To ",
       "silence this warning, set the `likelihood_aggregation` ",
-      "argument in `enw_fit_opts` to 'groups'."
-    ), immediate. = TRUE)
+      "argument in `enw_fit_opts` to 'groups'.",
+      immediate. = TRUE
+    )
   }
   return(invisible(NULL))
 }
