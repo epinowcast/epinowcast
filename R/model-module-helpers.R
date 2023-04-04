@@ -51,7 +51,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
   data.table::setkeyv(miss_lk, c(".group", "reference_date", "report_date"))
 
   # Assign an index (this should link with the in model index)
-  miss_lk[, .id := 1:.N]
+  miss_lk[, .id := seq_len(.N)]
 
   # Link with reports with complete reference dates
   complete_miss_lk <- miss_lk[

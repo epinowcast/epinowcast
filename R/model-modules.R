@@ -470,9 +470,9 @@ enw_missing <- function(formula = ~1, data) {
 
     # Get the indexes for when grouped observations start and end
     miss_lookup <- data.table::copy(rep_w_complete_ref)
-    data_list$miss_st <- miss_lookup[, n := 1:.N, by = ".group"]
+    data_list$miss_st <- miss_lookup[, n := seq_len(.N), by = ".group"]
     data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
-    data_list$miss_cst <- miss_lookup[, n := 1:.N]
+    data_list$miss_cst <- miss_lookup[, n := seq_len(.N)]
     data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
 
     # Get (and order) reported cases with a missing reference date
@@ -582,7 +582,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # snap lookup
   snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
-  snap_lookup[, s := 1:.N]
+  snap_lookup[, s := seq_len(.N)]
   snap_lookup <- data.table::dcast(
     snap_lookup, reference_date ~ .group,
     value.var = "s"
@@ -591,7 +591,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # snap time
   snap_time <- unique(new_confirm[, .(reference_date, .group)])
-  snap_time[, t := 1:.N, by = ".group"]
+  snap_time[, t := seq_len(.N), by = ".group"]
   snap_time <- snap_time$t
 
   # Format indexing and observed data

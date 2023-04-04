@@ -282,7 +282,7 @@ enw_assign_group <- function(obs, by = NULL) {
   if (length(by) != 0) {
     groups_index <- data.table::copy(obs)
     groups_index <- unique(groups_index[, ..by])
-    groups_index[, .group := 1:.N]
+    groups_index[, .group := seq_len(.N)]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
   } else {
     obs <- add_group(obs)
