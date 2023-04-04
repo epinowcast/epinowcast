@@ -188,9 +188,9 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = c("rep_beta_sd"),
-    description = c("Standard deviation of scaled pooled report date effects"),
-    distribution = c("Zero truncated normal"),
+    variable = "rep_beta_sd",
+    description = "Standard deviation of scaled pooled report date effects",
+    distribution = "Zero truncated normal",
     mean = 0,
     sd = 1
   )
@@ -258,8 +258,8 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
-                            observation = ~1, latent_reporting_delay = c(1),
+enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
+                            observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
     stop("An expectation model formula for r must be specified")
@@ -610,7 +610,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
     dmax = data$max_delay[[1]],
     sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
     csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
-    obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
+    obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
     model_obs = model_obs
@@ -620,9 +620,9 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
   out$family <- family
   out$data <- data
   out$priors <- data.table::data.table(
-    variable = c("sqrt_phi"),
-    description = c("One over the square root of the reporting overdispersion"),
-    distribution = c("Zero truncated normal"),
+    variable = "sqrt_phi",
+    description = "One over the square root of the reporting overdispersion",
+    distribution = "Zero truncated normal",
     mean = 0,
     sd = 1
   )

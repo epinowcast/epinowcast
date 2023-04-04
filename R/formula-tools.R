@@ -36,14 +36,14 @@
 #' @examples
 #' data <- enw_example("prep")$metareference[[1]]
 #' enw_manual_formula(data, fixed = "week", random = "day_of_week")
-enw_manual_formula <- function(data, fixed = c(), random = c(),
-                               custom_random = c(), no_contrasts = FALSE,
+enw_manual_formula <- function(data, fixed = NULL, random = NULL,
+                               custom_random = NULL, no_contrasts = FALSE,
                                add_intercept = TRUE) {
   data <- data.table::copy(data)
   if (add_intercept) {
-    form <- c("1")
+    form <- "1"
   } else {
-    form <- c()
+    form <- NULL
   }
 
   cr_in_dt <- purrr::map(
@@ -259,7 +259,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
     by <- deparse(substitute(by))
   }
   out <- list(time = time, by = by, type = type)
-  class(out) <- c("enw_rw_term")
+  class(out) <- "enw_rw_term"
   return(out)
 }
 
@@ -376,7 +376,7 @@ construct_rw <- function(rw, data) {
 re <- function(formula) {
   terms <- strsplit(as_string_formula(formula), " | ", fixed = TRUE)[[1]]
   out <- list(fixed = terms[1], random = terms[2])
-  class(out) <- c("enw_re_term")
+  class(out) <- "enw_re_term"
   return(out)
 }
 
@@ -425,7 +425,7 @@ construct_re <- function(re, data) {
   random <- strsplit(re$random, " + ", fixed = TRUE)[[1]]
 
   # expand random effects that are interactions
-  expanded_random <- c()
+  expanded_random <- NULL
   random_int <- rep(FALSE, length(random))
   for (i in seq_along(random)) {
     current_random <- strsplit(random[i], ":", fixed = TRUE)[[1]]
@@ -456,8 +456,8 @@ construct_re <- function(re, data) {
   # add these new random effects to list of all random effects
 
   # combine into fixed effects terms
-  terms <- c()
-  terms_int <- c()
+  terms <- NULL
+  terms_int <- NULL
   for (i in seq_along(random)) {
     terms <- c(terms, paste0(fixed, ":", random[i]))
     terms_int <- c(terms_int, rep(random_int[i], length(fixed)))
@@ -492,7 +492,7 @@ construct_re <- function(re, data) {
       expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
       expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
       j <- purrr::map(expanded_int, function(x) {
-        j <- c()
+        j <- NULL
         if (length(loc_terms) > 2) {
           j <- loc_terms[1:(length(loc_terms) - 2)]
         }
@@ -637,7 +637,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     no_contrasts <- random_terms
   } else {
     no_contrasts <- FALSE
-    random_terms <- c()
+    random_terms <- NULL
     random_metadata <- NULL
   }
 
@@ -660,7 +660,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
       use.names = TRUE, fill = TRUE
     )
   } else {
-    rw_terms <- c()
+    rw_terms <- NULL
     rw_metadata <- NULL
   }
 

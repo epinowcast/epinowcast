@@ -88,7 +88,7 @@ check_group <- function(obs) {
 #' @return NULL
 #'
 #' @family check
-check_by <- function(obs, by = c()) {
+check_by <- function(obs, by = NULL) {
   if (length(by) > 0) {
     if (!is.character(by)) {
       stop("`by` must be a character vector")
