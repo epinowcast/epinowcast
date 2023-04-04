@@ -1,3 +1,9 @@
+# epinowcast 0.2.1
+
+## Package
+
+- *BREAKING* change to `enw_add_pooling_effect()`: replaced `string` argument with `...` argument, to enable passing arbitrary arguments to the `finder_fn`. The same general usage is supported, but now e.g. the default argument to supply is `prefix = "somevalue"` and argument positions have changed. See #222 by @pearsonca and reviewed by @seabbs.
+
 # epinowcast 0.2.0.6000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
