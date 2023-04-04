@@ -3,7 +3,7 @@ test_that("enw_add_pooling_effect can add a pooling effect", {
   design <- enw_design(a ~ b + c, data)$design
   effects <- enw_effects_metadata(design)
   expect_equal(
-    enw_add_pooling_effect(effects, "b"),
+    enw_add_pooling_effect(effects, string = "b"),
     data.table::data.table(
       effects = c("b2", "b3", "c"),
       fixed = c(0, 0, 1),
