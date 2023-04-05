@@ -57,7 +57,7 @@ the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{metadelay}: Metadata for reporting delays produced using
-\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
+\code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
@@ -103,12 +103,12 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_reporting_triangle_to_long}()},

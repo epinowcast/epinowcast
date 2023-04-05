@@ -5,7 +5,7 @@
 \alias{epinowcast-package}
 \title{epinowcast: Flexible Hierarchical Nowcasting}
 \description{
-\if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
 Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.
 }
@@ -27,6 +27,7 @@ Authors:
   \item Sebastian Funk \email{sebastian.funk@lshtm.ac.uk}
   \item Carl Pearson \email{carl.ab.pearson@gmail.com} (\href{https://orcid.org/0000-0003-0701-7860}{ORCID})
   \item Hugo Gruson \email{hugo.gruson@normalesup.org} (\href{https://orcid.org/0000-0002-4094-1476}{ORCID})
+  \item Felix Guenther \email{felixguenther1@gmx.de} (\href{https://orcid.org/0000-0001-6582-1174}{ORCID})
 }
 
 Other contributors:

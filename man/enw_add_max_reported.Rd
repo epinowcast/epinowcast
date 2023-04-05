@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_max_reported}
 \alias{enw_add_max_reported}
-\title{Add the maximum number of cases reported on a given day}
+\title{Add the maximum number of reported cases for each reference_date}
 \usage{
 enw_add_max_reported(obs, copy = TRUE)
 }
@@ -22,9 +22,10 @@ reported on a given day relative to the maximum number of cases
 reported on a given day.
 }
 \description{
-Add the maximum number of cases reported on a given day
-to the data set. This is useful for calculating the proportion of
-cases reported on a given day which is also done in this function.
+This is a helper function which adds the maximum (in the sense
+of latest observed) number of reported cases for each reference_date and
+computes the proportion of already reported cases for each combination of
+reference_date and report_date.
 }
 \examples{
 obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
@@ -39,12 +40,12 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},
