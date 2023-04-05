@@ -508,10 +508,6 @@ enw_filter_delay <- function(obs, max_delay) {
     ],
     by = c("reference_date", ".group")
   ]
-  empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
-  if (empirical_max_delay < (max_delay - 1)) {
-    warning("Observed maximum delay is less than the specified maximum delay.")
-  }
   return(obs[])
 }
 
@@ -994,6 +990,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   # extract latest data
   latest <- enw_latest_data(reference_available)
   latest[, new_confirm := NULL]
+  
+  # check maximum delay
+  check_max_delay(latest, max_delay)
 
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(reference_available, target_date = "report_date")
