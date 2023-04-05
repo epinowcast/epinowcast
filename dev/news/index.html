@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.6000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.7000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,27 +74,33 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0.6000" id="epinowcast-0206000">epinowcast 0.2.0.6000<a class="anchor" aria-label="anchor" href="#epinowcast-0206000"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.0.7000" id="epinowcast-0207000">epinowcast 0.2.0.7000<a class="anchor" aria-label="anchor" href="#epinowcast-0207000"></a></h2>
 <p>This is release is in development. It is not yet ready for production use. If you notice problems please report them on the <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issue tracker</a>.</p>
 <div class="section level3">
-<h3 id="package-0-2-0-6000">Package<a class="anchor" aria-label="anchor" href="#package-0-2-0-6000"></a></h3>
+<h3 id="potentially-breaking-changes-0-2-0-7000">Potentially breaking changes<a class="anchor" aria-label="anchor" href="#potentially-breaking-changes-0-2-0-7000"></a></h3>
+<ul><li>
+<code><a href="../reference/enw_add_pooling_effect.html">enw_add_pooling_effect()</a></code>: replaced <code>string</code> argument with <code>...</code> argument, to enable passing arbitrary arguments to the <code>finder_fn</code> argument. The same general usage is supported, but now e.g. the default argument to supply is <code>prefix = "somevalue"</code> vs <code>string = "somevalue</code> and argument positions have changed. This function is primarily for internal use and we expect only a small subset of advanced users who are creating models outside the currently supported formula interface to be impacted See <a href="https://github.com/epinowcast/epinowcast/issues/222" class="external-link">#222</a> by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<li>
+<code>enw_dates_to_factors()</code>: Deprecated and removed as no longer needed. We expect this function had little to no external use and so there should be little impact on users. See <a href="https://github.com/epinowcast/epinowcast/issues/216" class="external-link">#216</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="package-0-2-0-7000">Package<a class="anchor" aria-label="anchor" href="#package-0-2-0-7000"></a></h3>
 <ul><li>Added tests for <code><a href="../reference/summary.epinowcast.html">summary.epinowcast()</a></code> and <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> methods. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Added tests for <code><a href="../reference/enw_plot_obs.html">enw_plot_obs()</a></code> where not otherwise covered by <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> tests. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Made the <code>.group</code> variable optional for all preprocessing functions using a new <code><a href="../reference/add_group.html">add_group()</a></code> internal function. See <a href="https://github.com/epinowcast/epinowcast/issues/208" class="external-link">#208</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See <a href="https://github.com/epinowcast/epinowcast/issues/208" class="external-link">#208</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Added a new internal <code>check_by</code> function as suggested by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See <a href="https://github.com/epinowcast/epinowcast/issues/208" class="external-link">#208</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
-<li>Deprecated and removed <code>enw_dates_to_factors</code> as no longer needed. See <a href="https://github.com/epinowcast/epinowcast/issues/216" class="external-link">#216</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
 <li>Removed unused internal plot helpers. See <a href="https://github.com/epinowcast/epinowcast/issues/217" class="external-link">#217</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
 <li>Added tests for all internal <code>check_</code> functions used to check inputs. See <a href="https://github.com/epinowcast/epinowcast/issues/217" class="external-link">#217</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-0-2-0-6000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0-6000"></a></h3>
+<h3 id="documentation-0-2-0-7000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0-7000"></a></h3>
 <ul><li>Added examples for <code><a href="../reference/summary.epinowcast.html">summary.epinowcast()</a></code> and <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> methods to the documentation. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See <a href="https://github.com/epinowcast/epinowcast/issues/208" class="external-link">#208</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Added examples for all plot functions. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="bugs-0-2-0-6000">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-0-6000"></a></h3>
+<h3 id="bugs-0-2-0-7000">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-0-7000"></a></h3>
 <ul><li>Fixed an issue (<a href="https://github.com/epinowcast/epinowcast/issues/198" class="external-link">#198</a>) with the interface for <code>scoringutils</code>. For an unknown reason our example data contained <code>pillar</code> classes (likely due to an upstream change). This caused an issue with internal <code>scoringutils</code> that was using implict type conversion (see <a href="https://github.com/epiforecasts/scoringutils/pull/274" class="external-link">here</a>). See <a href="https://github.com/epinowcast/epinowcast/issues/201" class="external-link">#201</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Fixed a bug in <code><a href="../reference/enw_plot_quantiles.html">enw_plot_quantiles()</a></code> where the documented default for <code>log</code> was <code>FALSE</code> but the actual default was <code>TRUE</code>. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 </ul></div>
