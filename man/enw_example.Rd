@@ -24,7 +24,7 @@ Depending on \code{type}, a \code{data.table} of the requested output OR
 the file name(s) to generate these outputs (\code{type} = "script")
 }
 \description{
-Loads examples of nowcasts produce using example scripts. Used to streamline
+Loads examples of nowcasts produced using example scripts. Used to streamline
 examples, in package tests and to enable users to explore package
 functionality without needing to install \code{cmdstanr}.
 }

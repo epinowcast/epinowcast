@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_max_reported}
 \alias{enw_add_max_reported}
-\title{FUNCTION_TITLE}
+\title{Add maximum number of reported cases for each reference_date}
 \usage{
 enw_add_max_reported(obs)
 }
@@ -13,10 +13,17 @@ observations), and \code{confirm} (cumulative observations by reference and repo
 date).}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with new columns \code{max_confirm} and \code{cum_prop_reported}
 }
 \description{
-FUNCTION_DESCRIPTION
+This is a helper function which adds the maximum (in the sense
+of latest observed) number of reported cases for each reference_date and
+computes the proportion of already reported cases for each combination of
+reference_date and report_date.
+}
+\examples{
+Add `max_confirm` and `cum_prop_reported` to data
+enw_add_max_reported(germany_covid19_hosp)
 }
 \seealso{
 Preprocessing functions
@@ -26,13 +33,14 @@ Preprocessing functions
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
 \code{\link{enw_cumulative_to_incidence}()},
-\code{\link{enw_delay_filter}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
+\code{\link{enw_metadata_maxdelay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},

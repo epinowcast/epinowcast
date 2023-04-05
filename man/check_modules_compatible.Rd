@@ -16,6 +16,7 @@ Check that model modules have compatible specifications
 Functions used for checking inputs
 \code{\link{check_dates}()},
 \code{\link{check_group}()},
+\code{\link{check_max_delay}()},
 \code{\link{check_module}()},
 \code{\link{check_quantiles}()}
 }

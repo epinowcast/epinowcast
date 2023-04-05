@@ -4,7 +4,12 @@
 \alias{enw_nowcast_summary}
 \title{FUNCTION_TITLE}
 \usage{
-enw_nowcast_summary(fit, obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
+enw_nowcast_summary(
+  fit,
+  obs,
+  max_delay,
+  probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95)
+)
 }
 \arguments{
 \item{fit}{PARAM_DESCRIPTION}

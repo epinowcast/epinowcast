@@ -23,11 +23,13 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric defaults to 20. The maximum number of days to
-include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully. Note
-that this is zero indexed and so includes the reference date and
-\code{max_delay - 1} other days.}
+\item{max_delay}{Numeric, defaults to 20. The maximum number of days to
+include in the delay distribution. Observations with a delay larger than
+\code{max_delay} will be dropped from the analysis. The time required for model
+fitting increases non-linearly with this setting, so carefully choose a
+maximum that makes sense for your data. Note that delays use zero-based
+indexing, i.e. \code{max_delay} includes the reference date and \code{max_delay - 1}
+other days.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
@@ -53,13 +55,14 @@ the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{metadelay}: Metadata for reporting delays produced using
-\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
+\code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
-\item \code{max_delay}: Numeric, the maximum delay in the processed data
+\item \code{max_delay}: A \code{list}, with the (potentially different) maximum delays
+specified by the user, found in the data, and used by the model.
 \item \code{max_date}: The maximum available report date.
 }
 }
@@ -100,13 +103,14 @@ Preprocessing functions
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
 \code{\link{enw_cumulative_to_incidence}()},
-\code{\link{enw_delay_filter}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
+\code{\link{enw_metadata_maxdelay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_reporting_triangle_to_long}()},

@@ -4,7 +4,7 @@
 \alias{enw_nowcast_samples}
 \title{FUNCTION_TITLE}
 \usage{
-enw_nowcast_samples(fit, obs)
+enw_nowcast_samples(fit, obs, max_delay)
 }
 \arguments{
 \item{fit}{PARAM_DESCRIPTION}
