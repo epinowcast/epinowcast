@@ -82,7 +82,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
-enw_nowcast_summary <- function(fit, obs,
+enw_nowcast_summary <- function(fit, obs, max_delay,
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
                                 )) {
@@ -92,15 +92,30 @@ enw_nowcast_summary <- function(fit, obs,
     probs = probs
   )
 
-  max_delay <- nrow(nowcast) / max(obs$.group)
+  if (nrow(nowcast) / max(obs$.group) != max_delay$model) {
+    stop(
+      "Fitted maximum delay is not consistent with modeled maximum delay."
+      )
+  }
 
   ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay$spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
+  obs_head <- ord_obs[reference_date <= (max(reference_date) - max_delay$model)]
+  obs_tail <- ord_obs[reference_date > (max(reference_date) - max_delay$model)]
+
   nowcast <- cbind(
-    ord_obs,
+    obs_tail,
     nowcast
   )
+  nowcast <- rbind(obs_head, nowcast, fill = TRUE)
+
+  # add artificial summary statistics for not-modeled dates
+  nowcast[1:nrow(obs_head), c("mean", "median") := confirm]
+  cols_quantile <- colnames(nowcast)[grepl("q\\d+",colnames(nowcast))]
+  nowcast[1:nrow(obs_head), (cols_quantile) := confirm]
+  nowcast[1:nrow(obs_head), c("sd", "mad") := 0]
+
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL]
   return(nowcast[])
@@ -125,7 +140,7 @@ enw_nowcast_summary <- function(fit, obs,
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])
-enw_nowcast_samples <- function(fit, obs) {
+enw_nowcast_samples <- function(fit, obs, max_delay) {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
     format = "draws_df"
@@ -138,20 +153,31 @@ enw_nowcast_samples <- function(fit, obs) {
     value.name = "sample", variable.name = "variable",
     id.vars = c(".chain", ".iteration", ".draw")
   )
-  max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
+  
+  if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) != max_delay$model) {
+    stop(
+      "Fitted maximum delay is not consistent with modeled maximum delay."
+    )
+  }
 
   ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay$spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
     .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
   )
   ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
   ord_obs <- ord_obs[order(.group, reference_date)]
+  obs_head <- ord_obs[reference_date <= (max(reference_date) - max_delay$model)]
+  obs_tail <- ord_obs[reference_date > (max(reference_date) - max_delay$model)]
+  
   nowcast <- cbind(
-    ord_obs,
+    obs_tail,
     nowcast
   )
+  obs_head[, sample := confirm] # add artificial samples for not-modeled dates
+  nowcast <- rbind(obs_head, nowcast, fill = TRUE)
+  
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL][, .draws := NULL]
   return(nowcast[])
