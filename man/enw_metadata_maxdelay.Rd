@@ -38,6 +38,7 @@ means that observations with a delay larger than the specified maximum delay
 will be dropped from the analysis.
 }
 \examples{
+obs <- enw_example(type = "preprocessed_observations")$obs[[1]]
 enw_metadata_maxdelay(obs, max_delay = 20)
 }
 \seealso{
