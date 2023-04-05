@@ -112,7 +112,7 @@ expose_stan_fns <- function(files, target_dir, ...) {
 
 #' Load a package example
 #'
-#' Loads examples of nowcasts produce using example scripts. Used to streamline
+#' Loads examples of nowcasts produced using example scripts. Used to streamline
 #' examples, in package tests and to enable users to explore package
 #' functionality without needing to install `cmdstanr`.
 #'
