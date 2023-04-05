@@ -503,8 +503,8 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 #' @importFrom data.table copy
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
-#' enw_delay_filter(obs, max_delay = 2)
-enw_delay_filter <- function(obs, max_delay) {
+#' enw_filter_delay(obs, max_delay = 2)
+enw_filter_delay <- function(obs, max_delay) {
   obs <- data.table::copy(obs)
   obs <- obs[,
     .SD[
@@ -726,8 +726,9 @@ enw_missing_reference <- function(obs) {
 #' @family preprocess
 #' @export
 #' @examples
-#' enw_delay_metadata(20, breaks = 4)
-enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
+#' enw_metadata_delay(max_delay = 20, breaks = 4)
+enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
+  
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
   delays <- delays[, `:=`(
@@ -772,7 +773,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #' @param metareport Metadata for report dates.
 #'
 #' @param metadelay Metadata for reporting delays produced using
-#'  [enw_delay_metadata()].
+#'  [enw_metadata_delay()].
 #
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
@@ -866,7 +867,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' - `metareference`: Metadata reference dates derived from observations.
 #' - `metrareport`: Metadata for report dates.
 #' - `metadelay`: Metadata for reporting delays produced using
-#'  [enw_delay_metadata()].
+#'  [enw_metadata_delay()].
 #' - `time`: Numeric, number of timepoints in the data.
 #' - `snapshots`: Numeric, number of available data snapshots to use for
 #'  nowcasting.
@@ -957,7 +958,7 @@ enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
-  metadelay <- enw_delay_metadata(max_delay, breaks = 4)
+  metadelay <- enw_metadata_delay(max_delay, breaks = 4)
 
   out <- enw_construct_data(
     obs = obs,
