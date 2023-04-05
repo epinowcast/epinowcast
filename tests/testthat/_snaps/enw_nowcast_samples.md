@@ -1,7 +1,8 @@
 # enw_nowcast_samples can extract nowcast samples as expected
 
     Code
-      round_numerics(enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])[1:10])
+      round_numerics(enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$
+      max_delay[[1]])[1:10])
     Output
           reference_date report_date .group max_confirm location age_group confirm
        1:     2021-08-03  2021-08-22      1         149       DE       00+     149
@@ -14,15 +15,15 @@
        8:     2021-08-03  2021-08-22      1         149       DE       00+     149
        9:     2021-08-03  2021-08-22      1         149       DE       00+     149
       10:     2021-08-03  2021-08-22      1         149       DE       00+     149
-          cum_prop_reported delay prop_reported .chain .iteration .draw sample
-       1:                 1    19             0      1          1     1    149
-       2:                 1    19             0      1          2     2    149
-       3:                 1    19             0      1          3     3    149
-       4:                 1    19             0      1          4     4    149
-       5:                 1    19             0      1          5     5    149
-       6:                 1    19             0      1          6     6    149
-       7:                 1    19             0      1          7     7    149
-       8:                 1    19             0      1          8     8    149
-       9:                 1    19             0      1          9     9    149
-      10:                 1    19             0      1         10    10    149
+          cum_prop_reported delay prop_reported sample .chain .iteration .draw
+       1:                 1    19             0    149      1          1     1
+       2:                 1    19             0    149      1          2     2
+       3:                 1    19             0    149      1          3     3
+       4:                 1    19             0    149      1          4     4
+       5:                 1    19             0    149      1          5     5
+       6:                 1    19             0    149      1          6     6
+       7:                 1    19             0    149      1          7     7
+       8:                 1    19             0    149      1          8     8
+       9:                 1    19             0    149      1          9     9
+      10:                 1    19             0    149      1         10    10
 
