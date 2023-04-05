@@ -123,7 +123,7 @@ check_modules_compatible <- function(modules) {
   return(invisible(NULL))
 }
 
-#' Compare maximum delays specified by user and observed in the data, and 
+#' Compare maximum delays specified by the user vs. observed in the data, and 
 #' raise potential warnings.
 #'
 #' @param latest_obs The latest available observations.

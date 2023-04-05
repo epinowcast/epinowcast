@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_delay}
 \alias{enw_add_delay}
-\title{FUNCTION_TITLE}
+\title{Add a delay attribute to the observations}
 \usage{
 enw_add_delay(obs)
 }
@@ -13,10 +13,11 @@ observations), and \code{confirm} (cumulative observations by reference and repo
 date).}
 }
 \value{
-OUTPUT_DESCRIPTION
+A \code{data.frame} of observations with a new column \code{delay}.
 }
 \description{
-FUNCTION_DESCRIPTION
+This helper function takes a \code{data.frame} of observations and
+adds the delay between reference_date and report_date for each observation.
 }
 \seealso{
 Preprocessing functions
