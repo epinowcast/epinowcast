@@ -4,15 +4,10 @@
 \alias{enw_add_pooling_effect}
 \title{Add a pooling effect to model design metadata}
 \usage{
-enw_add_pooling_effect(
-  effects,
-  string,
-  var_name = "sd",
-  finder_fn = startsWith
-)
+enw_add_pooling_effect(effects, var_name = "sd", finder_fn = startsWith, ...)
 }
 \arguments{
-\item{effects}{A data.table with the following columns:
+\item{effects}{A \code{data.table} with the following columns:
 \itemize{
 \item effects: the name of the effect
 \item fixed: a logical indicating whether the effect is fixed (1) or random (0).
@@ -20,20 +15,21 @@ enw_add_pooling_effect(
 
 This is the output of \code{\link[=enw_effects_metadata]{enw_effects_metadata()}}.}
 
-\item{string}{A string that will be used to identify the effects that
-should be pooled. This can be a regular expression.}
-
 \item{var_name}{The name of the new column that will be added to the
 \code{effects} data.table. This column will be 1 for the effects that match the
 string and 0 otherwise. Defaults to 'sd'.}
 
 \item{finder_fn}{A function that will be used to find the effects that
-match the string. Defaults to \code{startsWith}. This can be any function that
-takes a data.table and a string as arguments and returns a logical vector
-indicating whether the string matches the effect names.}
+match the string. Defaults to \code{\link[=startsWith]{startsWith()}}. This can be any function that
+takes a \code{character} as it's first argument (the \code{effects$effects} column)
+and then any other other arguments in \code{...} and returns a logical vector
+indicating whether the effects were matched.}
+
+\item{...}{Additional arguments to \code{finder_fn}. E.g. for the
+\code{finder_fn = startsWith} default, this should be \code{prefix = "somestring"}.}
 }
 \value{
-A data.table with the following columns:
+A \code{data.table} with the following columns:
 \itemize{
 \item effects: the name of the effect
 \item fixed: a logical indicating whether the effect is fixed (1) or random (0).
@@ -52,7 +48,7 @@ adding a new column \code{var_name} that is 1 for the effects that match the
 data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
 design <- enw_design(a ~ b + c, data)$design
 effects <- enw_effects_metadata(design)
-enw_add_pooling_effect(effects, "b")
+enw_add_pooling_effect(effects, prefix = "b")
 }
 \seealso{
 Functions used to formulate models

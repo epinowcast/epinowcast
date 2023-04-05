@@ -158,25 +158,26 @@ enw_effects_metadata <- function(design) {
 #' adding a new column `var_name` that is 1 for the effects that match the
 #' `string` argument and 0 otherwise.
 #'
-#' @param effects A data.table with the following columns:
+#' @param effects A `data.table` with the following columns:
 #' - effects: the name of the effect
 #' - fixed: a logical indicating whether the effect is fixed (1) or random (0).
 #'
 #' This is the output of [enw_effects_metadata()].
-#'
-#' @param string A string that will be used to identify the effects that
-#' should be pooled. This can be a regular expression.
 #'
 #' @param var_name The name of the new column that will be added to the
 #' `effects` data.table. This column will be 1 for the effects that match the
 #' string and 0 otherwise. Defaults to 'sd'.
 #'
 #' @param finder_fn A function that will be used to find the effects that
-#' match the string. Defaults to `startsWith`. This can be any function that
-#' takes a data.table and a string as arguments and returns a logical vector
-#' indicating whether the string matches the effect names.
+#' match the string. Defaults to [startsWith()]. This can be any function that
+#' takes a `character` as it's first argument (the `effects$effects` column)
+#' and then any other other arguments in `...` and returns a logical vector
+#' indicating whether the effects were matched.
 #'
-#' @return A data.table with the following columns:
+#' @param ... Additional arguments to `finder_fn`. E.g. for the
+#' `finder_fn = startsWith` default, this should be `prefix = "somestring"`.
+#'
+#' @return A `data.table` with the following columns:
 #' - effects: the name of the effect
 #' - fixed: a logical indicating whether the effect is fixed (1) or random (0).
 #' - Argument supplied to `var_name`: a logical indicating whether the effect
@@ -188,12 +189,12 @@ enw_effects_metadata <- function(design) {
 #' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
 #' design <- enw_design(a ~ b + c, data)$design
 #' effects <- enw_effects_metadata(design)
-#' enw_add_pooling_effect(effects, "b")
-enw_add_pooling_effect <- function(effects, string, var_name = "sd",
-                                   finder_fn = startsWith) {
+#' enw_add_pooling_effect(effects, prefix = "b")
+enw_add_pooling_effect <- function(effects, var_name = "sd",
+                                   finder_fn = startsWith, ...) {
   effects <- data.table::setDT(effects)
-  effects[, (var_name) := ifelse(finder_fn(effects, string), 1, 0)]
-  effects[finder_fn(effects, string), fixed := 0]
+  effects[, (var_name) := ifelse(finder_fn(effects, ...), 1, 0)]
+  effects[finder_fn(effects, ...), fixed := 0]
   return(effects[])
 }
 
