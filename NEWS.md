@@ -9,6 +9,8 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Package
 
+- Added more non-default linters in `.lintr` configuration file. This file is used when `lintr::lint_package()` is run or in the new `lint-changed-files.yaml` GitHub Actions workflow. See #220 by @Bisaloo and reviewed by @pearsonca and @seeabs.
+- Switched to the `lint-changed-files.yaml` GitHub Actions workflow instead of the regular `lint.yaml` to avoid annotations unrelated to the changes made in the PR. See #220 by @Bisaloo and reviewed by @pearsonca and @seeabs.
 - Added tests for `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs and reviewed by @pearsonca.
 - Added tests for `enw_plot_obs()` where not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs and reviewed by @pearsonca.
 - Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs and reviewed by @pearsonca.
