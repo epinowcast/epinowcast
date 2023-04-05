@@ -1,4 +1,4 @@
-# epinowcast 0.2.0.7000
+# epinowcast 0.2.0.8000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
 
