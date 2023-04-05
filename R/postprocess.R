@@ -71,6 +71,9 @@ enw_posterior <- function(fit, variables = NULL,
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
+#' 
+#' @param max_delay Metadata for the maximum delay produced using 
+#' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
 #' This uses observed data where available and the posterior prediction
@@ -130,6 +133,9 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
+#' 
+#' @param max_delay Metadata for the maximum delay produced using 
+#' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` of posterior samples for the nowcast prediction.
 #' This uses observed data where available and the posterior prediction
