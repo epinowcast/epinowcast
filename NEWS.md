@@ -1,12 +1,11 @@
-# epinowcast 0.2.1
-
-## Package
-
-- *BREAKING* change to `enw_add_pooling_effect()`: replaced `string` argument with `...` argument, to enable passing arbitrary arguments to the `finder_fn`. The same general usage is supported, but now e.g. the default argument to supply is `prefix = "somevalue"` and argument positions have changed. See #222 by @pearsonca and reviewed by @seabbs.
-
-# epinowcast 0.2.0.6000
+# epinowcast 0.2.0.7000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
+
+## Potentially breaking changes
+
+- `enw_add_pooling_effect()`: replaced `string` argument with `...` argument, to enable passing arbitrary arguments to the `finder_fn` argument. The same general usage is supported, but now e.g. the default argument to supply is `prefix = "somevalue"` vs `string = "somevalue` and argument positions have changed. This function is primarily for internal use and we expect only a small subset of advanced users who are creating models outside the currently supported formula interface to be impacted See #222 by @pearsonca and reviewed by @seabbs.
+- `enw_dates_to_factors()`: Deprecated and removed as no longer needed. We expect this function had little to no external use and so there should be little impact on users. See #216 by @seabbs and reviewed by @adrian-lison.
 
 ## Package
 
@@ -15,7 +14,6 @@ This is release is in development. It is not yet ready for production use. If yo
 - Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs and reviewed by @pearsonca.
 - Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See #208 by @seabbs and reviewed by @pearsonca.
 - Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
-- Deprecated and removed `enw_dates_to_factors` as no longer needed. See #216 by @seabbs and reviewed by @adrian-lison.
 - Removed unused internal plot helpers. See #217 by @seabbs and reviewed by @adrian-lison.
 - Added tests for all internal `check_` functions used to check inputs. See #217 by @seabbs and reviewed by @adrian-lison.
 
