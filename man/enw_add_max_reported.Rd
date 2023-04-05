@@ -25,7 +25,6 @@ reported cases for each reference_date and compute the proportion of already
 reported cases for each combination of reference_date and report_date.
 }
 \examples{
-Add `max_confirm` and `cum_prop_reported` to data
 obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
 obs$reference_date <- as.Date("2021-01-01")
 obs$confirm <- 1:3
