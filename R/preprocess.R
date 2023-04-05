@@ -767,6 +767,7 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 #' @family preprocess
 #' @export
 #' @examples
+#' obs <- enw_example(type = "preprocessed_observations")$obs[[1]]
 #' enw_metadata_maxdelay(obs, max_delay = 20)
 enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- data.table::as.data.table(obs)
