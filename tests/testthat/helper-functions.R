@@ -24,3 +24,9 @@ skip_on_local <- function() {
   }
   skip("Not on CI")
 }
+
+round_numerics <- function(dt) {
+  cols <- colnames(dt)[purrr::map_lgl(dt, is.numeric)]
+  dt <- dt[, (cols) := lapply(.SD, round, 0), .SDcols = cols]
+  return(dt)
+}

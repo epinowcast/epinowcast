@@ -4,6 +4,16 @@
 #' @importFrom stats median rnorm
 NULL
 
+#' @title Check an object is a Date
+#' @description Checks that an object is a date
+#' @param x An object
+#' @return A logical
+#' @family utils
+is.Date <- function(x) {
+  # nolint
+  inherits(x, "Date")
+}
+
 #' Read in a stan function file as a character string
 #'
 #' @inheritParams expose_stan_fns
@@ -214,6 +224,6 @@ utils::globalVariables(
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
-    "formula", ".id", "n", ".confirm_avail"
+    "formula", ".id", "n", ".confirm_avail", "prediction", "true_value"
   )
 )

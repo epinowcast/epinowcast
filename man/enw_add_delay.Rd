@@ -2,22 +2,28 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_delay}
 \alias{enw_add_delay}
-\title{Add a delay attribute to the observations}
+\title{Add a delay variable to the observations}
 \usage{
 enw_add_delay(obs)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
 }
 \value{
-A \code{data.frame} of observations with a new column \code{delay}.
+A \code{data.table} of observations with a new column \code{delay}.
 }
 \description{
-This helper function takes a \code{data.frame} of observations and
-adds the delay between reference_date and report_date for each observation.
+This helper function takes a \code{data.table} of observations and
+adds the delay (numeric, in days) between reference_date and report_date
+for each observation.
+}
+\examples{
+obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
+obs$reference_date <- as.Date("2021-01-01")
+enw_add_delay(obs)
 }
 \seealso{
 Preprocessing functions

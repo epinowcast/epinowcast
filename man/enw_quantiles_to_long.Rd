@@ -7,13 +7,18 @@
 enw_quantiles_to_long(posterior)
 }
 \arguments{
-\item{posterior}{A dataframe as output by \code{\link[=enw_posterior]{enw_posterior()}}.}
+\item{posterior}{A \code{data.frame} as output by \code{\link[=enw_posterior]{enw_posterior()}}.}
 }
 \value{
-A data frame of quantiles in long format.
+A \code{data.frame} of quantiles in long format.
 }
 \description{
 Convert summarised quantiles from wide to long format
+}
+\examples{
+fit <- enw_example("nowcast")
+posterior <- enw_posterior(fit$fit[[1]], var = "expr_lelatent_int[1,1]")
+enw_quantiles_to_long(posterior)
 }
 \seealso{
 Functions used for postprocessing of model fits

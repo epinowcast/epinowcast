@@ -2,24 +2,42 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_effects_metadata}
 \alias{enw_effects_metadata}
-\title{FUNCTION_TITLE}
+\title{Extracts metadata from a design matrix}
 \usage{
 enw_effects_metadata(design)
 }
 \arguments{
-\item{design}{PARAM_DESCRIPTION}
+\item{design}{A design matrix as returned by \code{\link[stats:model.matrix]{stats::model.matrix()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with the following columns:
+\itemize{
+\item effects: the name of the effect
+\item fixed: a logical indicating whether the effect is fixed (1) or random (0)
+}
 }
 \description{
-FUNCTION_DESCRIPTION
+This function extracts metadata from a design matrix
+and returns a data.table with the following columns:
+\itemize{
+\item effects: the name of the effect
+\item fixed: a logical indicating whether the effect is fixed (1) or random (0).
+}
+
+It automatically drops the intercept (defined as "(Intercept)").
+
+This function is useful for constructing a model design object for random
+effects when used in combination with \code{ewn_add_pooling_effect}.
+}
+\examples{
+data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+design <- enw_design(a ~ b + c, data)$design
+enw_effects_metadata(design)
 }
 \seealso{
 Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_dates_to_factors}()},
 \code{\link{enw_design}()}
 }
 \concept{modeldesign}

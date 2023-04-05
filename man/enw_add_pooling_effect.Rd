@@ -2,34 +2,57 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_add_pooling_effect}
 \alias{enw_add_pooling_effect}
-\title{FUNCTION_TITLE}
+\title{Add a pooling effect to model design metadata}
 \usage{
-enw_add_pooling_effect(
-  effects,
-  string,
-  var_name = "sd",
-  finder_fn = startsWith
-)
+enw_add_pooling_effect(effects, var_name = "sd", finder_fn = startsWith, ...)
 }
 \arguments{
-\item{effects}{PARAM_DESCRIPTION}
+\item{effects}{A \code{data.table} with the following columns:
+\itemize{
+\item effects: the name of the effect
+\item fixed: a logical indicating whether the effect is fixed (1) or random (0).
+}
 
-\item{string}{PARAM_DESCRIPTION}
+This is the output of \code{\link[=enw_effects_metadata]{enw_effects_metadata()}}.}
 
-\item{var_name}{PARAM_DESCRIPTION, Default: 'sd'}
+\item{var_name}{The name of the new column that will be added to the
+\code{effects} data.table. This column will be 1 for the effects that match the
+string and 0 otherwise. Defaults to 'sd'.}
 
-\item{finder_fn}{PARAM_DESCRIPTION, Default: startsWith}
+\item{finder_fn}{A function that will be used to find the effects that
+match the string. Defaults to \code{\link[=startsWith]{startsWith()}}. This can be any function that
+takes a \code{character} as it's first argument (the \code{effects$effects} column)
+and then any other other arguments in \code{...} and returns a logical vector
+indicating whether the effects were matched.}
+
+\item{...}{Additional arguments to \code{finder_fn}. E.g. for the
+\code{finder_fn = startsWith} default, this should be \code{prefix = "somestring"}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A \code{data.table} with the following columns:
+\itemize{
+\item effects: the name of the effect
+\item fixed: a logical indicating whether the effect is fixed (1) or random (0).
+\item Argument supplied to \code{var_name}: a logical indicating whether the effect
+should be pooled (1) or not (0).
+}
 }
 \description{
-FUNCTION_DESCRIPTION
+This function adds a pooling effect to the metadata
+returned by \code{\link[=enw_effects_metadata]{enw_effects_metadata()}}. It does this updating the
+\code{fixed} column to 0 for the effects that match the \code{string} argument and
+adding a new column \code{var_name} that is 1 for the effects that match the
+\code{string} argument and 0 otherwise.
+}
+\examples{
+data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+design <- enw_design(a ~ b + c, data)$design
+effects <- enw_effects_metadata(design)
+enw_add_pooling_effect(effects, prefix = "b")
 }
 \seealso{
 Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
-\code{\link{enw_dates_to_factors}()},
 \code{\link{enw_design}()},
 \code{\link{enw_effects_metadata}()}
 }

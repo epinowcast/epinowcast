@@ -12,14 +12,14 @@ enw_reference_by_report(
 )
 }
 \arguments{
-\item{missing_reference}{\code{missing_reference} data.frame output from
+\item{missing_reference}{\code{missing_reference} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{reps_with_complete_refs}{A \code{data.frame} of report dates with complete
 (i.e fully reported) reference dates as produced using
 \code{\link[=enw_reps_with_complete_refs]{enw_reps_with_complete_refs()}}.}
 
-\item{metareference}{\code{metareference} data.frame output from
+\item{metareference}{\code{metareference} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
 \item{max_delay}{Numeric, defaults to 20. The maximum number of days to
@@ -31,7 +31,7 @@ indexing, i.e. \code{max_delay} includes the reference date and the
 \code{max_delay - 1} following days.}
 }
 \value{
-A wide data frame with each row being a complete report date and'
+A wide \code{data.frame} with each row being a complete report date and'
 the columns being the observation index for each reporting delay
 }
 \description{

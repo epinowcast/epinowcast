@@ -7,7 +7,7 @@
 check_group(obs)
 }
 \arguments{
-\item{obs}{An observation data frame that does not contain \code{.group},
+\item{obs}{An observation \code{data.frame} that does not contain \code{.group},
 \code{.old_group}, or \code{.new_group} as these are reserved variables.}
 }
 \description{
@@ -15,6 +15,8 @@ Check Observations for reserved grouping variables
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{add_group}()},
+\code{\link{check_by}()},
 \code{\link{check_dates}()},
 \code{\link{check_max_delay}()},
 \code{\link{check_modules_compatible}()},

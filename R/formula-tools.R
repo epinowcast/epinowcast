@@ -1,4 +1,3 @@
-
 #' Define a model manually using fixed and random effects
 #'
 #' @description For most typical use cases [enw_formula()] should
@@ -73,7 +72,7 @@ enw_manual_formula <- function(data, fixed = c(), random = c(),
     random <- enw_design(~1, effects, sparse = FALSE)
   } else {
     for (i in random) {
-      effects <- enw_add_pooling_effect(effects, i, var_name = i)
+      effects <- enw_add_pooling_effect(effects, var_name = i, prefix = i)
     }
     rand_form <- c("0", "fixed", random)
     rand_form <- as.formula(paste0("~ ", paste(rand_form, collapse = " + ")))
@@ -151,7 +150,7 @@ rw_terms <- function(formula) {
 #' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
 #'
 #' @inheritParams split_formula_to_terms
-#' @return RETURN_DESCRIPTION
+#' @return A formula object with the random walk terms removed.
 #' @family formulatools
 #' @examples
 #' epinowcast:::remove_rw_terms(~ 1 + age_group + location)
@@ -270,23 +269,23 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' by [rw()], produces the required additional variables
 #' (denoted using a "c" prefix and constructed using
 #' [enw_add_cumulative_membership()]), and then returns the
-#' extended data.frame along with the new fixed effects and the
+#' extended `data.frame` along with the new fixed effects and the
 #' random effect structure.
 #'
 #' @param rw A random walk term as defined by [rw()].
 #'
-#' @param data A data.frame of observations used to define the
+#' @param data A `data.frame` of observations used to define the
 #' random walk term. Must contain the time and grouping variables
 #' defined in the [rw()] term specified.
 #'
 #' @return A list containing the following:
-#'  - `data`: The input data.frame with the addition of the new variables
+#'  - `data`: The input `data.frame` with the addition of the new variables
 #' required by the specified random walk. These are added using
 #' [enw_add_cumulative_membership()].
 #'  -`terms`: A character vector of new fixed effects terms to add to a model
 #' formula.
-#'  - `effects`: A data.frame describing the random effect structure of the new
-#'  effects.
+#'  - `effects`: A `data.frame` describing the random effect structure of the
+#' new effects.
 #' @importFrom data.table copy
 #' @family formulatools
 #' @examples
@@ -339,15 +338,18 @@ construct_rw <- function(rw, data) {
 
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
-    effects <- enw_add_pooling_effect(effects, ctime, rw$time)
+    effects <- enw_add_pooling_effect(
+      effects, var_name = rw$time, prefix = ctime
+    )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
-        effects, c(ctime, paste0(rw$by, i)), paste0(nby, "__", rw$time),
-        finder_fn = function(effect, pattern) {
-          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-        }
+        effects, var_name = paste0(nby, "__", rw$time),
+        finder_fn = function(effect, pattern, prefix) {
+          grepl(pattern, effect) & startsWith(effect, prefix)
+        },
+        pattern = ctime, prefix = paste0(rw$by, i)
       )
     }
   }
@@ -385,12 +387,12 @@ re <- function(formula) {
 #' @param re A random effect as defined using [re()] which itself takes
 #' random effects specified in a model formula using the [lme4] syntax.
 #'
-#' @param data A data.frame of observations used to define the
+#' @param data A `data.frame` of observations used to define the
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
 #' @return A list containing the transformed data ("data"),
-#' fixed effects terms ("terms") and a `data.frame` specifying
+#' fixed effects terms ("terms") and a  `data.frame` specifying
 #' the random effect structure between these terms (`effects`). Note
 #' that if the specified random effect was not a factor it will have been
 #' converted into one.
@@ -498,7 +500,7 @@ construct_re <- function(re, data) {
         j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
         return(j)
       })
-    }else {
+    } else {
       j <- list(loc_terms)
     }
     # link random effects with fixed effects
@@ -508,37 +510,40 @@ construct_re <- function(re, data) {
       if (length(k) == 1) {
           if (terms_int[i]) {
             effects <- enw_add_pooling_effect(
-              effects, strsplit(k, ":")[[1]], gsub(":", "__", k),
+              effects, var_name = gsub(":", "__", k),
               finder_fn = function(effect, pattern) {
                 grepl(pattern[1], effect) &
                 grepl(pattern[2], effect, fixed = TRUE) &
                 lengths(regmatches(effect, gregexpr(":", effect))) == 1
-              }
+              },
+              pattern = strsplit(k, ":")[[1]]
             )
-          }else {
+          } else {
             effects <- enw_add_pooling_effect(
-              effects, k, k,
+              effects, var_name = k,
               finder_fn = function(effect, pattern) {
                 grepl(pattern, effect) & !grepl(":", effect)
-              }
+              },
+              pattern = k
             )
           }
       } else {
         if (terms_int[i]) {
           effects <- enw_add_pooling_effect(
-              effects, c(k[1], strsplit(k[-1], ":")[[1]]),
-              paste(gsub(":", "__", k), collapse = "__"),
+              effects, var_name = paste(gsub(":", "__", k), collapse = "__"),
               finder_fn = function(effect, pattern) {
                 grepl(pattern[1], effect) & grepl(pattern[2], effect) &
                 grepl(pattern[3], effect)
-            }
+            },
+            pattern = c(k[1], strsplit(k[-1], ":")[[1]])
           )
-        }else {
+        } else {
           effects <- enw_add_pooling_effect(
-            effects, rev(k), paste(k, collapse = "__"),
+            effects, var_name = paste(k, collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & grepl(pattern[2], effect)
-            }
+            },
+            pattern = rev(k)
           )
         }
       }

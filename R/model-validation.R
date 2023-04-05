@@ -8,7 +8,7 @@
 #' @param nowcast A posterior nowcast or posterior prediction as returned by
 #' [summary.epinowcast()], when used on the output of [epinowcast()].
 #'
-#' @param latest_obs A data frame of the latest available observations as
+#' @param latest_obs A `data.frame` of the latest available observations as
 #' produced by [enw_latest_data()] or otherwise.
 #'
 #' @param log Logical, defaults to FALSE. Should scores be calculated on the
@@ -70,6 +70,9 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     cols <- c("true_value", "prediction")
     long_nowcast[, (cols) := purrr::map(.SD, ~ log(. + 0.01)), .SDcols = cols]
   }
+
+  long_nowcast[, prediction := as.numeric(prediction)]
+  long_nowcast[, true_value := as.numeric(true_value)]
 
   if (check) {
     scoringutils::check_forecasts(long_nowcast)

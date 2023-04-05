@@ -11,7 +11,7 @@ enw_plot_nowcast_quantiles(nowcast, latest_obs = NULL, log = FALSE, ...)
 estimates containing at least a \code{confirm} count column and a
 \code{reference_date} date variable.}
 
-\item{latest_obs}{A data frame of observed data containing at least a
+\item{latest_obs}{A \code{data.frame} of observed data containing at least a
 \code{confirm} count variable and the same date variable as in the main data.frame
 used for plotting.}
 
@@ -25,6 +25,11 @@ A \code{ggplot2} plot.
 }
 \description{
 Plot nowcast quantiles
+}
+\examples{
+nowcast <- enw_example("nowcast")
+nowcast <- summary(nowcast, probs = c(0.05, 0.2, 0.8, 0.95))
+enw_plot_nowcast_quantiles(nowcast)
 }
 \seealso{
 Plotting functions

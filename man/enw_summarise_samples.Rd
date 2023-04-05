@@ -2,27 +2,44 @@
 % Please edit documentation in R/postprocess.R
 \name{enw_summarise_samples}
 \alias{enw_summarise_samples}
-\title{FUNCTION_TITLE}
+\title{Summarise posterior samples}
 \usage{
 enw_summarise_samples(
   samples,
   probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95),
-  by = c("reference_date", ".group")
+  by = c("reference_date", ".group"),
+  link_with_obs = TRUE
 )
 }
 \arguments{
-\item{samples}{DESCRIPTION.}
+\item{samples}{A \code{data.frame} of posterior samples with at least a numeric
+sample variable.}
 
-\item{probs}{PARAM_DESCRIPTION, Default: c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8,
-0.95)}
+\item{probs}{A vector of numeric probabilities to produce
+quantile summaries for. By default these are the 5\%, 20\%, 80\%,
+and 95\% quantiles which are also the minimum set required for
+plotting functions to work.}
 
-\item{by}{DESCRIPTION}
+\item{by}{A character vector of variables to summarise by. Defaults to
+\code{c("reference_date", ".group")}.}
+
+\item{link_with_obs}{Logical, should the observed data be linked to the
+posterior summary? This is useful for plotting the posterior against the
+observed data. Defaults to \code{TRUE}.}
 }
 \value{
-RETURN_DESCRIPTION
+A \code{data.frame} summarising the posterior samples.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function summarises posterior samples for arbitrary
+strata. It optionally holds out the observed data (variables that are not
+".draw", ".iteration", ".sample", ".chain" ) joins this to the summarised
+posterior.
+}
+\examples{
+fit <- enw_example("nowcast")
+samples <- summary(fit, type = "nowcast_sample")
+enw_summarise_samples(samples, probs = c(0.05, 0.5, 0.95))
 }
 \seealso{
 Functions used for postprocessing of model fits

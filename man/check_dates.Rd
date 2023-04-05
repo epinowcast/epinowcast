@@ -7,11 +7,11 @@
 check_dates(obs)
 }
 \arguments{
-\item{obs}{An observation data frame containing \code{report_date} and
+\item{obs}{An observation \code{data.frame} containing \code{report_date} and
 \code{reference_date} columns.}
 }
 \value{
-Returns the input data.frame with dates converted to date format
+Returns the input \code{data.frame} with dates converted to date format
 if not already.
 }
 \description{
@@ -19,6 +19,8 @@ Check Report and Reference Dates are present
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{add_group}()},
+\code{\link{check_by}()},
 \code{\link{check_group}()},
 \code{\link{check_max_delay}()},
 \code{\link{check_modules_compatible}()},

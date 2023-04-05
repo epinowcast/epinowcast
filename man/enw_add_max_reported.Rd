@@ -7,23 +7,29 @@
 enw_add_max_reported(obs)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
 }
 \value{
-A data.table with new columns \code{max_confirm} and \code{cum_prop_reported}
+A data.table with new columns \code{max_confirm} and \code{cum_prop_reported}.
+\code{max_confirm} is the maximum number of cases reported for a certain
+reference_date. \code{cum_prop_reported} is the proportion of cases for a certain
+reference_date that are reported until a given report_day, relative to all
+cases so far observed for this reference_date.
 }
 \description{
-This is a helper function which adds the maximum (in the sense
-of latest observed) number of reported cases for each reference_date and
-computes the proportion of already reported cases for each combination of
-reference_date and report_date.
+Add the maximum (in the sense of latest observed) number of
+reported cases for each reference_date and compute the proportion of already
+reported cases for each combination of reference_date and report_date.
 }
 \examples{
 Add `max_confirm` and `cum_prop_reported` to data
-enw_add_max_reported(germany_covid19_hosp)
+obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
+obs$reference_date <- as.Date("2021-01-01")
+obs$confirm <- 1:3
+enw_add_max_reported(obs)
 }
 \seealso{
 Preprocessing functions

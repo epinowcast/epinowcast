@@ -2,32 +2,49 @@
 % Please edit documentation in R/model-design-tools.R
 \name{enw_design}
 \alias{enw_design}
-\title{FUNCTION_TITLE}
+\title{A helper function to construct a design matrix from a formula}
 \usage{
 enw_design(formula, data, no_contrasts = FALSE, sparse = TRUE, ...)
 }
 \arguments{
-\item{formula}{PARAM_DESCRIPTION}
+\item{formula}{An R formula.}
 
-\item{data}{PARAM_DESCRIPTION}
+\item{data}{A \code{data.frame} containing the variables in the formula.}
 
-\item{no_contrasts}{PARAM_DESCRIPTION, Default: FALSE}
+\item{no_contrasts}{A vector of variable names that should not be
+converted to contrasts. If \code{no_contrasts = FALSE} then all categorical
+variables will use contrasts. If \code{no_contrasts = TRUE} then
+no categorical variables will use contrasts.}
 
-\item{sparse}{PARAM_DESCRIPTION, Default: TRUE}
+\item{sparse}{Logical, if TRUE return a sparse design matrix. Defaults to
+TRUE.}
 
-\item{...}{PARAM_DESCRIPTION}
+\item{...}{Additional arguments passed to \code{\link[stats:model.matrix]{stats::model.matrix()}}.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A list containing the formula, the design matrix, and the index.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function is a wrapper around \code{\link[stats:model.matrix]{stats::model.matrix()}} that
+can optionally return a sparse design matrix defined as the unique
+number of rows in the design matrix and an index vector that
+allows the full design matrix to be reconstructed. This is useful
+for models that have many repeated rows in the design matrix and that
+are computationally expensive to fit. This function also allows
+for the specification of contrasts for categorical variables.
+}
+\examples{
+data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+enw_design(a ~ b + c, data)
+enw_design(a ~ b + c, data, no_contrasts = TRUE)
+enw_design(a ~ b + c, data, no_contrasts = c("b"))
+enw_design(a ~ c, data, sparse = TRUE)
+enw_design(a ~ c, data, sparse = FALSE)
 }
 \seealso{
 Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_add_pooling_effect}()},
-\code{\link{enw_dates_to_factors}()},
 \code{\link{enw_effects_metadata}()}
 }
 \concept{modeldesign}

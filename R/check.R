@@ -1,6 +1,6 @@
 #' Check Quantiles Required are Present
 #'
-#' @param posterior A dataframe containing quantiles identified using
+#' @param posterior A `data.frame` containing quantiles identified using
 #' the `q5` naming scheme. Default: No default.
 #'
 #' @param req_probs A numeric vector of required probabilities. Default:
@@ -10,8 +10,11 @@
 #'
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
+  if (any(req_probs <= 0) || any(req_probs >= 1)) {
+    stop("Please provide probabilities as numbers between 0 and 1.")
+  }
   cols <- colnames(posterior)
-  if (sum(cols %in% c("q5", "q95", "q20", "q80")) != 4) {
+  if (sum(cols %in% paste0("q", req_probs * 100)) != length(req_probs)) {
     stop(
       "Following quantiles must be present (set with probs): ",
       paste(req_probs, collapse = ", ")
@@ -22,10 +25,10 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 
 #' Check report and reference dates are present in the observations.
 #'
-#' @param obs An observation data frame containing \code{report_date} and
+#' @param obs An observation `data.frame` containing \code{report_date} and
 #' \code{reference_date} columns.
 #'
-#' @return Returns the input data.frame with dates converted to date format
+#' @return Returns the input `data.frame` with dates converted to date format
 #' if not already.
 #'
 #' @importFrom data.table as.data.table copy
@@ -53,7 +56,7 @@ check_dates <- function(obs) {
 
 #' Check Observations for reserved grouping variables
 #'
-#' @param obs An observation data frame that does not contain `.group`,
+#' @param obs An observation `data.frame` that does not contain `.group`,
 #' `.old_group`, or `.new_group` as these are reserved variables.
 #'
 #' @return NULL
@@ -79,6 +82,44 @@ check_group <- function(obs) {
     )
   }
   return(invisible(NULL))
+}
+
+#' Check by variables are present in the data
+#'
+#' @param obs An observation `data.frame`.
+#'
+#' @param by A character vector of variables to group by.
+#'
+#' @return NULL
+#'
+#' @family check
+check_by <- function(obs, by = c()) {
+  if (length(by) > 0) {
+    if (!is.character(by)) {
+      stop("`by` must be a character vector")
+    }
+    if (!all(by %in% colnames(obs))) {
+      stop(
+        "`by` must be a subset of the columns in `obs`. \n",
+        paste0(paste(by[!(by %in% colnames(obs))], collapse = ", "),
+        " are not present in `obs`")
+      )
+    }
+  }
+  return(invisible(NULL))
+}
+
+#' Add a reserved grouping variable if missing
+#'
+#' @param x A data.table
+#'
+#' @return A data table with a `.group` variable
+#' @family check
+add_group <- function(x) {
+  if (is.null(x[[".group"]])) {
+    x <- x[, .group := 1]
+  }
+  return(x[])
 }
 
 #' Check a model module contains the required components

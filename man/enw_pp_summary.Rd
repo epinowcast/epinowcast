@@ -2,23 +2,33 @@
 % Please edit documentation in R/postprocess.R
 \name{enw_pp_summary}
 \alias{enw_pp_summary}
-\title{FUNCTION_TITLE}
+\title{Posterior predictive summary}
 \usage{
 enw_pp_summary(fit, diff_obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
 }
 \arguments{
-\item{fit}{PARAM_DESCRIPTION}
+\item{fit}{A \code{cmdstanr} fit object.}
 
-\item{diff_obs}{PARAM_DESCRIPTION}
+\item{diff_obs}{A \code{data.frame} of observed data with at least a date variable
+\code{reference_date}, and a grouping variable \code{.group}.}
 
-\item{probs}{PARAM_DESCRIPTION, Default: c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8,
-0.95)}
+\item{probs}{A vector of numeric probabilities to produce
+quantile summaries for. By default these are the 5\%, 20\%, 80\%,
+and 95\% quantiles which are also the minimum set required for
+plotting functions to work.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table summarising the posterior predictions.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function summarises posterior predictives
+for observed data (by report and reference date). The functionality of
+this function can be used directly on the output of \code{\link[=epinowcast]{epinowcast()}} using
+the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
+}
+\examples{
+fit <- enw_example("nowcast")
+enw_pp_summary(fit$fit[[1]], fit$new_confirm[[1]], probs = c(0.5))
 }
 \seealso{
 Functions used for postprocessing of model fits
