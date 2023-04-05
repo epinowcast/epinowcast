@@ -20,7 +20,7 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   return(invisible(NULL))
 }
 
-#' Check Report and Reference Dates are present
+#' Check report and reference dates are present in the observations.
 #'
 #' @param obs An observation data frame containing \code{report_date} and
 #' \code{reference_date} columns.
@@ -38,10 +38,13 @@ check_dates <- function(obs) {
       "Both reference_date and report_date must be present in order to use this
       function"
     )
-  } else if (is.null(obs$reference_date)) {
-    stop("reference_date must be present")
-  } else if (is.null(obs$report_date)) {
-    stop("report_date must be present")
+  } else {
+    if (is.null(obs$reference_date)) {
+      stop("reference_date must be present in order to use this function")
+    }
+    if (is.null(obs$report_date)) {
+      stop("report_date must be present in order to use this function")
+    }
   }
   obs[, report_date := as.IDate(report_date)]
   obs[, reference_date := as.IDate(reference_date)]
@@ -62,12 +65,14 @@ check_group <- function(obs) {
       ".group is a reserved variable and must not be present in the input
        data"
     )
-  } else if (!is.null(obs$.new_group)) {
+  }
+  if (!is.null(obs$.new_group)) {
     stop(
       ".new_group is a reserved variable and must not be present in the input
        data"
     )
-  } else if (!is.null(obs$.old_group)) {
+  }
+  if (!is.null(obs$.old_group)) {
     stop(
       ".old_group is a reserved variable and must not be present in the input
        data"

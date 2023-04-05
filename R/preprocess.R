@@ -96,7 +96,8 @@ enw_add_metaobs_features <- function(metaobs,
   metaobs <- data.table::as.data.table(metaobs)
   if (is.null(metaobs[[datecol]])) {
     stop(sprintf("metaobs does not have datecol '%s'.", datecol))
-  } else if (!is.Date(metaobs[[datecol]])) {
+  }
+  if (!is.Date(metaobs[[datecol]])) {
     stop(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
 
