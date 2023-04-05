@@ -1,5 +1,5 @@
 test_that("check_max_delay produces the expected warnings", {
-  latest_obs <- enw_example("nowcast")$latest[[1]]
+  latest_obs <- enw_example("preprocessed_observations")$latest[[1]]
   
   expect_warning(
     check_max_delay(latest_obs, list(spec = 20, obs = 10, model = 10)),

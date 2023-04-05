@@ -23,20 +23,25 @@ test_that("Preprocessing produces expected output with default settings", {
   expect_equal(pobs$time[[1]], 198)
   expect_equal(pobs$snapshots[[1]], 198)
   expect_equal(pobs$groups[[1]], 1)
-  expect_equal(pobs$max_delay[[1]], 20)
+  expect_equal(pobs$max_delay[[1]]$spec, 20)
+  expect_equal(pobs$max_delay[[1]]$obs, 82)
+  expect_equal(pobs$max_delay[[1]]$model[[1]], 20)
 })
 
 test_that("Preprocessing produces expected output when excluding and using a
   maximum delay of 10", {
-  pobs <- enw_preprocess_data(
+  expect_warning(
+    pobs <- enw_preprocess_data(
     nat_germany_hosp,
     max_delay = 10
-  )
+  ), regexp = "Consider using a larger maximum delay")
   expect_data_table(pobs)
   expect_equal(pobs$time[[1]], 198)
   expect_equal(pobs$snapshots[[1]], 198)
   expect_equal(pobs$groups[[1]], 1)
-  expect_equal(pobs$max_delay[[1]], 10)
+  expect_equal(pobs$max_delay[[1]]$spec, 10)
+  expect_equal(pobs$max_delay[[1]]$obs, 82)
+  expect_equal(pobs$max_delay[[1]]$model[[1]], 10)
 })
 
 test_that("Preprocessing handles groups as expected", {
@@ -49,7 +54,9 @@ test_that("Preprocessing handles groups as expected", {
   expect_equal(pobs$time[[1]], 198)
   expect_equal(pobs$snapshots[[1]], 23562)
   expect_equal(pobs$groups[[1]], 119)
-  expect_equal(pobs$max_delay[[1]], 20)
+  expect_equal(pobs$max_delay[[1]]$spec, 20)
+  expect_equal(pobs$max_delay[[1]]$obs, 82)
+  expect_equal(pobs$max_delay[[1]]$model[[1]], 20)
 })
 
 test_that("enw_preprocess_data hasn't changed compared to saved example data", {
