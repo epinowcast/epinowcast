@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_dates}
 \alias{check_dates}
-\title{Check Report and Reference Dates are present}
+\title{Check report and reference dates are present in the observations.}
 \usage{
 check_dates(obs)
 }
@@ -15,7 +15,7 @@ Returns the input \code{data.frame} with dates converted to date format
 if not already.
 }
 \description{
-Check Report and Reference Dates are present
+Check report and reference dates are present in the observations.
 }
 \seealso{
 Functions used for checking inputs

@@ -7,7 +7,7 @@
 enw_metadata_maxdelay(obs, max_delay = 20)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
 date).}
