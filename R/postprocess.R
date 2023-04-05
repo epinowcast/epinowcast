@@ -81,7 +81,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
-#' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
+#' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
 enw_nowcast_summary <- function(fit, obs, max_delay,
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
@@ -139,7 +139,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
-#' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])
+#' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
 enw_nowcast_samples <- function(fit, obs, max_delay) {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
