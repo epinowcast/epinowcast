@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_max_delay}
 \alias{check_max_delay}
-\title{Compare maximum delays specified by user and observed in the data, and
+\title{Compare maximum delays specified by the user vs. observed in the data, and
 raise potential warnings.}
 \usage{
 check_max_delay(latest_obs, max_delay)
@@ -14,7 +14,7 @@ check_max_delay(latest_obs, max_delay)
 \code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
 }
 \description{
-Compare maximum delays specified by user and observed in the data, and
+Compare maximum delays specified by the user vs. observed in the data, and
 raise potential warnings.
 }
 \seealso{

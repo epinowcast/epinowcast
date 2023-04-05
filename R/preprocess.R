@@ -732,7 +732,6 @@ enw_missing_reference <- function(obs) {
 #' @examples
 #' enw_metadata_delay(max_delay = 20, breaks = 4)
 enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
-  
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
   delays <- delays[, `:=`(
@@ -770,6 +769,8 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 #' @examples
 #' enw_metadata_maxdelay(obs, max_delay = 20)
 enw_metadata_maxdelay <- function(obs, max_delay = 20) {
+  obs <- data.table::as.data.table(obs)
+  obs <- enw_add_delay(obs)
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
   max_delay_model <- min(max_delay_obs, max_delay)
   max_delays = list(
@@ -886,8 +887,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' `max_delay` will be dropped from the analysis. The time required for model 
 #' fitting increases non-linearly with this setting, so carefully choose a 
 #' maximum that makes sense for your data. Note that delays use zero-based 
-#' indexing, i.e. `max_delay` includes the reference date and `max_delay - 1` 
-#' other days.
+#' indexing, i.e. `max_delay` includes the reference date and the 
+#' `max_delay - 1` following days.
 #'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata

@@ -206,7 +206,7 @@ coerce_dt <- function(
   }
 }
 
-#' Compare maximum delays specified by user and observed in the data, and 
+#' Compare maximum delays specified by the user vs. observed in the data, and 
 #' raise potential warnings.
 #'
 #' @param latest_obs The latest available observations.

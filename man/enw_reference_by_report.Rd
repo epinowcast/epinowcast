@@ -27,8 +27,8 @@ include in the delay distribution. Observations with a delay larger than
 \code{max_delay} will be dropped from the analysis. The time required for model
 fitting increases non-linearly with this setting, so carefully choose a
 maximum that makes sense for your data. Note that delays use zero-based
-indexing, i.e. \code{max_delay} includes the reference date and \code{max_delay - 1}
-other days.}
+indexing, i.e. \code{max_delay} includes the reference date and the
+\code{max_delay - 1} following days.}
 }
 \value{
 A wide \code{data.frame} with each row being a complete report date and'
