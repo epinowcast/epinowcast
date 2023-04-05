@@ -15,6 +15,7 @@ Check a model module contains the required components
 \seealso{
 Functions used for checking inputs
 \code{\link{check_group}()},
+\code{\link{check_max_delay}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_quantiles}()}
 }

@@ -13,8 +13,8 @@ enw_construct_data(
   metareport,
   metareference,
   metadelay,
-  by,
-  max_delay
+  max_delay,
+  by
 )
 }
 \arguments{
@@ -39,16 +39,13 @@ date in the standard reporting triangle matrix format.}
 \item{metadelay}{Metadata for reporting delays produced using
 \code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.}
 
+\item{max_delay}{Metadata for the maximum delay produced using
+\code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
+
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
-
-\item{max_delay}{Numeric defaults to 20. The maximum number of days to
-include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully. Note
-that this is zero indexed and so includes the reference date and
-\code{max_delay - 1} other days.}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -71,7 +68,8 @@ the standard reporting triangle matrix format.
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
-\item \code{max_delay}: Numeric, the maximum delay in the processed data
+\item \code{max_delay}: A \code{list}, with the (potentially different) maximum delays
+specified by the user, found in the data, and used by the model.
 \item \code{max_date}: The maximum available report date.
 }
 }
@@ -92,9 +90,9 @@ enw_construct_data(
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
-  metadelay = enw_delay_metadata(max_delay = 20),
-  by = c(),
-  max_delay = pobs$max_delay[[1]]
+  metadelay = pobs$metadelay[[1]],
+  max_delay = pobs$max_delay[[1]],
+  by = c()
 )
 }
 \seealso{
@@ -110,6 +108,7 @@ Preprocessing functions
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
+\code{\link{enw_metadata_maxdelay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},

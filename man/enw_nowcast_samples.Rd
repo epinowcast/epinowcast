@@ -4,7 +4,7 @@
 \alias{enw_nowcast_samples}
 \title{Extract posterior samples for the nowcast prediction}
 \usage{
-enw_nowcast_samples(fit, obs)
+enw_nowcast_samples(fit, obs, max_delay)
 }
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
