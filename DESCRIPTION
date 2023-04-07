@@ -38,7 +38,7 @@ Authors@R:
            family = "Gupte",
            role = c("ctb"),
            email = "pratik.gupte@lshtm.ac.uk",
-           comment = c(ORCID = "https://orcid.org/0000-0001-5294-7819")))
+           comment = c(ORCID = "0000-0001-5294-7819")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
