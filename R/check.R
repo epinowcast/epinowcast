@@ -206,39 +206,45 @@ coerce_dt <- function(
   }
 }
 
-#' Compare maximum delays specified by the user vs. observed in the data, and 
+#' Compare maximum delays specified by the user vs. observed in the data, and
 #' raise potential warnings.
 #'
 #' @param latest_obs The latest available observations.
 #'
-#' @param max_delay Metadata for the maximum delay produced using 
+#' @param max_delay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
+#' @param cum_coverage The cumulative coverage to use for the warning.
+#' Defaults to 0.8 (80%)
 #' @return NULL
 #'
 #' @family check
-check_max_delay <- function(latest_obs, max_delay) {
+check_max_delay <- function(latest_obs, max_delay, cum_coverage = 0.8) {
   if (max_delay$obs < max_delay$spec) {
     warning(
       "You specified a maximum delay of ",
       max_delay$spec, " days, ",
-      "but epinowcast will only model delays until the observed maximum delay ",
-      "(", max_delay$obs, " days). ",
-      "Consider adding unobserved delays to your data using ",
-      "`enw_complete_dates` to avoid truncated delay distributions.",
+      "but epinowcast will currently only model delays until the observed ",
+      "maximum delay  (", max_delay$obs, " days). ",
+      "Consider adding unobserved delays with zero reports to your data using ",
+      "`enw_complete_dates` to avoid truncated delay distributions if you
+      believe that these are truely zero. Otherwise consider opening an issue.",
       immediate. = TRUE
     )
   }
 
-  low_cum <- latest_obs[
-    ,sum(cum_prop_reported<0.8,na.rm=T)/sum(!is.na(cum_prop_reported))
+  low_cum <- latest_obs[,
+    sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
+     sum(!is.na(cum_prop_reported))
   ]
   if (low_cum > 0.5) {
     warning(
       "The currently specified maximum reporting delay ",
       "(", max_delay$spec, " days) ",
-      "covers less than 80% of cases for the majority of reference dates. ",
-      "Consider using a larger maximum delay to avoid model misspecification.",
+      "covers less than ", 100 * cum_coverage,
+      "% of cases for the majority of reference dates. ",
+      "Consider using a larger maximum delay to avoid potential model",
+      "misspecification.",
       immediate. = TRUE
     )
   }
