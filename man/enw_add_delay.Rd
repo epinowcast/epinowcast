@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_delay}
 \alias{enw_add_delay}
-\title{Add a delay variable}
+\title{Add a delay variable to the observations}
 \usage{
 enw_add_delay(obs, copy = TRUE)
 }
@@ -11,15 +11,14 @@ enw_add_delay(obs, copy = TRUE)
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
-
-\item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
-A data.table with a \code{delay} column added.
+A \code{data.table} of observations with a new column \code{delay}.
 }
 \description{
-Add a delay variable based on the numeric difference
-between the \code{report_date} and \code{reference_date} columns.
+This helper function takes a \code{data.frame} or \code{data.table} of
+observations and adds the delay (numeric, in days) between \code{reference_date}
+and \code{report_date} for each observation.
 }
 \examples{
 obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)

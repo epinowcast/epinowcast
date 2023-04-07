@@ -6,7 +6,7 @@
 #' are dropped and the first observation for each group and date is retained.
 #'
 #' @param obs A `data.frame` or `data.table` with columns: `reference_date`
-#' and/or `report_date`; at least one must be provided, `.group`, a grouping
+#' and / or `report_date`; at least one must be provided, `.group`, a grouping
 #' column and a `date`, a [Date] column.
 #'
 #' @param target_date A character string, either "reference_date" or
@@ -286,14 +286,14 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
   return(obs[])
 }
 
-#' @title Add a delay variable
+#' @title Add a delay variable to the observations
 #'
-#' @description Add a delay variable based on the numeric difference
-#' between the `report_date` and `reference_date` columns.
+#' @description This helper function takes a `data.frame` or `data.table` of
+#' observations and adds the delay (numeric, in days) between `reference_date`
+#' and `report_date` for each observation.
 #'
-#' @return A data.table with a `delay` column added.
-#'
-#' @inheritParams enw_add_incidence
+#' @return A `data.table` of observations with a new column `delay`.
+#' @inheritParams enw_cumulative_to_incidence
 #' @family preprocess
 #' @export
 #' @examples
@@ -306,7 +306,7 @@ enw_add_delay <- function(obs, copy = TRUE) {
   return(obs[])
 }
 
-#' @title Add the maximum number of reported cases for each reference_date
+#' @title Add the maximum number of reported cases for each `reference_date`
 #'
 #' @description This is a helper function which adds the maximum (in the sense
 #' of latest observed) number of reported cases for each reference_date and
@@ -749,15 +749,18 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
   return(delays[])
 }
 
-#' Calculate metadata on maximum reporting delay
+#' Calculate metadata for the maximum reporting delay
 #'
-#' The maximum reporting delay is used to make the modeling of reporting delays
-#' tractable by right-truncating the delay distribution at a reasonable number 
-#' of days. The maximum delay is specified by the user, and can be smaller or 
-#' larger than the maximum delay observed in the data. Importantly, epinowcast
-#' will always use the smaller one of the two maximum delays for modeling. This 
-#' means that observations with a delay larger than the specified maximum delay 
-#' will be dropped from the analysis.
+#' @description The maximum reporting delay is used to make the modeling of
+#' reporting delays tractable by right-truncating the delay distribution at a
+#' reasonable number of days. The maximum delay is specified by the user, and
+#' can be smaller or larger than the maximum delay observed in the data.
+#' Importantly, epinowcast will currently always use the smaller one of the two
+#' maximum delays for modeling. This means that observations with a delay
+#' larger than the specified maximum delay will be dropped from the analysis.
+#' In some settings, for example outbreaks where little data is available
+#' this may not be ideal. If this is an issue for you, please get in touch
+#' with the developers by opening an issue on GitHub.
 #'
 #' @return A `list` of maximum delays. These include:
 #'  - `spec`: The maximum delay specified by the user.
@@ -774,7 +777,7 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- enw_add_delay(obs)
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
   max_delay_model <- min(max_delay_obs, max_delay)
-  max_delays = list(
+  max_delays <- list(
     spec = max_delay, # user-specified maximum delay
     obs = max_delay_obs, # observed maximum delay
     model = max_delay_model # maximum delay used in model
@@ -810,8 +813,8 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
 #'
 #' @param metadelay Metadata for reporting delays produced using
 #'  [enw_metadata_delay()].
-#'  
-#' @param max_delay Metadata for the maximum delay produced using 
+#'
+#' @param max_delay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #
 #' @inheritParams enw_preprocess_data
@@ -884,11 +887,11 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' downstream modelling
 #'
 #' @param max_delay Numeric, defaults to 20. The maximum number of days to
-#' include in the delay distribution. Observations with a delay larger than 
-#' `max_delay` will be dropped from the analysis. The time required for model 
-#' fitting increases non-linearly with this setting, so carefully choose a 
-#' maximum that makes sense for your data. Note that delays use zero-based 
-#' indexing, i.e. `max_delay` includes the reference date and the 
+#' include in the delay distribution. Observations with a delay larger than
+#' `max_delay` will be dropped during preprocessing. The time required for model
+#' fitting increases non-linearly with this setting, so carefully choose a
+#' maximum that makes sense for your data. Note that delays use zero-based
+#' indexing, i.e. `max_delay` includes the reference date and the
 #' `max_delay - 1` following days.
 #'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
@@ -917,7 +920,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' nowcasting.
 #' - `groups`: Numeric, Number of groups/strata in the supplied observations 
 #' (set using `by`).
-#' - `max_delay`: A `list`, with the (potentially different) maximum delays 
+#' - `max_delay`: A `list`, with the (potentially different) maximum delays
 #' specified by the user, found in the data, and used by the model.
 #' - `max_date`: The maximum available report date.
 #'
@@ -992,7 +995,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   # extract latest data
   latest <- enw_latest_data(reference_available)
   latest[, new_confirm := NULL]
-  
+
   # check maximum delay
   check_max_delay(latest, max_delay)
 
