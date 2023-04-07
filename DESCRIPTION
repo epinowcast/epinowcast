@@ -15,6 +15,16 @@ Authors@R:
            family = "Funk",
            role = "aut",
            email = "sebastian.funk@lshtm.ac.uk"),
+    person(given = "Carl",
+           family = "Pearson",
+           role = "aut",
+           email = "carl.ab.pearson@gmail.com",
+           comment = c(ORCID = "0000-0003-0701-7860")),
+    person(given = "Hugo",
+           family = "Gruson",
+           role = c("aut"),
+           email = "hugo.gruson@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0002-4094-1476")),
     person(given = "Michael",
            family = "DeWitt",
            role = "ctb",
@@ -23,12 +33,7 @@ Authors@R:
     person(given = "Hannah",
            family = "Choi",
            role = "ctb",
-           email = "hannah.choi1@lshtm.ac.uk"),
-    person(given = "Carl",
-           family = "Pearson",
-           role = "aut",
-           email = "carl.ab.pearson@gmail.com",
-           comment = c(ORCID = "0000-0003-0701-7860")))
+           email = "hannah.choi1@lshtm.ac.uk"))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
