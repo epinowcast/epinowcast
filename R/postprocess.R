@@ -114,10 +114,10 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
   nowcast <- rbind(obs_head, nowcast, fill = TRUE)
 
   # add artificial summary statistics for not-modeled dates
-  nowcast[1:nrow(obs_head), c("mean", "median") := confirm]
-  cols_quantile <- colnames(nowcast)[grepl("q\\d+",colnames(nowcast))]
-  nowcast[1:nrow(obs_head), (cols_quantile) := confirm]
-  nowcast[1:nrow(obs_head), c("sd", "mad") := 0]
+  nowcast[seq_len(nrow(obs_head)), c("mean", "median") := confirm]
+  cols_quantile <- colnames(nowcast)[grepl("q\\d+", colnames(nowcast))]
+  nowcast[seq_len(nrow(obs_head)), (cols_quantile) := confirm]
+  nowcast[seq_len(nrow(obs_head)), c("sd", "mad") := 0]
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL]
@@ -131,7 +131,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
-#' 
+#'
 #' @param max_delay Metadata for the maximum delay produced using 
 #' [enw_metadata_maxdelay()].
 #'
@@ -159,7 +159,7 @@ enw_nowcast_samples <- function(fit, obs, max_delay) {
     value.name = "sample", variable.name = "variable",
     id.vars = c(".chain", ".iteration", ".draw")
   )
-  
+
   if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) != max_delay$model) {
     stop(
       "Fitted maximum delay is not consistent with modeled maximum delay."
@@ -176,14 +176,14 @@ enw_nowcast_samples <- function(fit, obs, max_delay) {
   ord_obs <- ord_obs[order(.group, reference_date)]
   obs_head <- ord_obs[reference_date <= (max(reference_date) - max_delay$model)]
   obs_tail <- ord_obs[reference_date > (max(reference_date) - max_delay$model)]
-  
+
   nowcast <- cbind(
     obs_tail,
     nowcast
   )
   obs_head[, sample := confirm] # add artificial samples for not-modeled dates
   nowcast <- rbind(obs_head, nowcast, fill = TRUE)
-  
+
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL][, .draws := NULL]
   return(nowcast[])
