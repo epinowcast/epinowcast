@@ -16,9 +16,9 @@ date).}
 A \code{data.table} of observations with a new column \code{delay}.
 }
 \description{
-This helper function takes a \code{data.table} of observations and
-adds the delay (numeric, in days) between reference_date and report_date
-for each observation.
+This helper function takes a \code{data.frame} or \code{data.table} of
+observations and adds the delay (numeric, in days) between \code{reference_date}
+and \code{report_date} for each observation.
 }
 \examples{
 obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)

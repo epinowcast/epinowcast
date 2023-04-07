@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_metadata_maxdelay}
 \alias{enw_metadata_maxdelay}
-\title{Calculate metadata on maximum reporting delay}
+\title{Calculate metadata for the maximum reporting delay}
 \usage{
 enw_metadata_maxdelay(obs, max_delay = 20)
 }
@@ -14,7 +14,7 @@ date).}
 
 \item{max_delay}{Numeric, defaults to 20. The maximum number of days to
 include in the delay distribution. Observations with a delay larger than
-\code{max_delay} will be dropped from the analysis. The time required for model
+\code{max_delay} will be dropped during preprocessing. The time required for model
 fitting increases non-linearly with this setting, so carefully choose a
 maximum that makes sense for your data. Note that delays use zero-based
 indexing, i.e. \code{max_delay} includes the reference date and the
@@ -29,13 +29,16 @@ A \code{list} of maximum delays. These include:
 }
 }
 \description{
-The maximum reporting delay is used to make the modeling of reporting delays
-tractable by right-truncating the delay distribution at a reasonable number
-of days. The maximum delay is specified by the user, and can be smaller or
-larger than the maximum delay observed in the data. Importantly, epinowcast
-will always use the smaller one of the two maximum delays for modeling. This
-means that observations with a delay larger than the specified maximum delay
-will be dropped from the analysis.
+The maximum reporting delay is used to make the modeling of
+reporting delays tractable by right-truncating the delay distribution at a
+reasonable number of days. The maximum delay is specified by the user, and
+can be smaller or larger than the maximum delay observed in the data.
+Importantly, epinowcast will currently always use the smaller one of the two
+maximum delays for modeling. This means that observations with a delay
+larger than the specified maximum delay will be dropped from the analysis.
+In some settings, for example outbreaks where little data is available
+this may not be ideal. If this is an issue for you, please get in touch
+with the developers by opening an issue on GitHub.
 }
 \examples{
 obs <- enw_example(type = "preprocessed_observations")$obs[[1]]

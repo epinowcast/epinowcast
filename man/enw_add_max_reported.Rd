@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_max_reported}
 \alias{enw_add_max_reported}
-\title{Add maximum number of reported cases for each reference_date}
+\title{Add maximum number of reported cases for each \code{reference_date}}
 \usage{
 enw_add_max_reported(obs)
 }

@@ -13,7 +13,7 @@ enw_reps_with_complete_refs(new_confirm, max_delay, by = c())
 
 \item{max_delay}{Numeric, defaults to 20. The maximum number of days to
 include in the delay distribution. Observations with a delay larger than
-\code{max_delay} will be dropped from the analysis. The time required for model
+\code{max_delay} will be dropped during preprocessing. The time required for model
 fitting increases non-linearly with this setting, so carefully choose a
 maximum that makes sense for your data. Note that delays use zero-based
 indexing, i.e. \code{max_delay} includes the reference date and the
