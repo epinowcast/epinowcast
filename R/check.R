@@ -227,8 +227,9 @@ check_max_delay <- function(latest_obs, max_delay, cum_coverage = 0.8) {
       "but epinowcast will currently only model delays until the observed ",
       "maximum delay  (", max_delay$obs, " days). ",
       "Consider adding unobserved delays with zero reports to your data using ",
-      "`enw_complete_dates` to avoid truncated delay distributions if you
-      believe that these are truely zero. Otherwise consider opening an issue.",
+      "`enw_complete_dates` to avoid truncated delay distributions if you ",
+      "believe that these are truely zero. Otherwise consider opening an ",
+      " issue.",
       immediate. = TRUE
     )
   }
