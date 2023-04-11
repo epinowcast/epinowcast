@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.7000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.8000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,7 +139,7 @@ reporting process<span class="citation"><sup>[1,5,6]</sup></span>.
 Combined with the appropriate generation time distribution this approach
 has been shown to correspond to a Susceptible-Exposed-Infected-Recovered
 (SEIR) model<span class="citation"><sup>[7]</sup></span> with the
-addition of reporting delays. Howover, our default model contains
+addition of reporting delays. However, our default model contains
 minimal mechanism in order to more flexibly fit highly informative
 data.</p>
 <p>Our nowcasting approach is an extension of that proposed by Günther
@@ -155,9 +155,9 @@ assumption for the underlying reporting delay.</p>
 that the reporting delay is consistent between reported and unreported
 observations following the methodology of Lison et al.<span class="citation"><sup>[11]</sup></span>.</p>
 <p>Our modelling framework is implemented in the <code>stan</code>
-probalistic programming language via <code>cmdstanr</code><span class="citation"><sup>[12,13]</sup></span> with a focus on computational
+probabilistic programming language via <code>cmdstanr</code><span class="citation"><sup>[12,13]</sup></span> with a focus on computational
 efficiency and robustness.</p>
-<p>In the following sections we outline our modelling methodolgy,
+<p>In the following sections we outline our modelling methodology,
 current feature set stratified by module, and highlight implementation
 details. For each module we present both our default implementation as
 well as the more generic framework we support. Note that extensions to
@@ -254,7 +254,7 @@ matrix for fixed effects (<span class="math inline">\(\beta_{f,r}\)</span>), and
 effects (<span class="math inline">\(\beta_{r,r}\)</span>. Within this
 specification the default model can be specified as a random effect on
 the day with no intercept. Alternative specifications that may be of
-interest include a weekly random walk (specifed as
+interest include a weekly random walk (specified as
 <code>~ 1 + rw(week)</code>), a piecewise linear model (specified as
 <code>~ 1 + day:week</code>), and a group specific random effect
 (specified as <code>~ 1 + (1 | .group)</code>).</p>
@@ -269,7 +269,7 @@ generalisation of the default model and can be used to model the
 expected number of latent notifications in a setting where the
 generation time is not fixed to be a day. It implies that current
 infections/notifications are dependent on past infections/notifications
-based on a kernal (usually interpreted as the generation time or serial
+based on a kernel (usually interpreted as the generation time or serial
 interval). An instantaneous daily growth rate model can be recovered by
 setting the generation time to be fixed at 1 day. The model is defined
 as follows,</p>
@@ -473,7 +473,7 @@ supported. For further implementation details see
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in the probalistic programming language
+<p>The model is implemented in the probabilistic programming language
 <code>stan</code> and we use <code>cmdstanr</code> to interact with the
 model<span class="citation"><sup>[12,13]</sup></span>. Optional within
 chain parallelisation is available across times of reference to reduce
