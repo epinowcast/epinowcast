@@ -41,8 +41,9 @@ enw_formula_as_data_list <- function(formula, prefix,
         enw_formula"
       )
     }
-    fintercept <-  as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    fintercept <- as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design),
+      fixed = TRUE
     )))
 
     data <- list()
@@ -328,12 +329,13 @@ enw_model <- function(model = system.file(
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
     message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", paste(include, collapse = ", ")))
+    message(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {
     stan_no_profile <- write_stan_files_no_profile(
-      model, include, target_dir =  target_dir
+      model, include,
+      target_dir = target_dir
     )
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths

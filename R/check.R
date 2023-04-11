@@ -17,7 +17,7 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   if (sum(cols %in% paste0("q", req_probs * 100)) != length(req_probs)) {
     stop(
       "Following quantiles must be present (set with probs): ",
-      paste(req_probs, collapse = ", ")
+      toString(req_probs)
     )
   }
   return(invisible(NULL))
@@ -88,7 +88,7 @@ check_group <- function(obs) {
 #' @return NULL
 #'
 #' @family check
-check_by <- function(obs, by = c()) {
+check_by <- function(obs, by = NULL) {
   if (length(by) > 0) {
     if (!is.character(by)) {
       stop("`by` must be a character vector")
@@ -96,8 +96,8 @@ check_by <- function(obs, by = c()) {
     if (!all(by %in% colnames(obs))) {
       stop(
         "`by` must be a subset of the columns in `obs`. \n",
-        paste0(paste(by[!(by %in% colnames(obs))], collapse = ", "),
-        " are not present in `obs`")
+        toString(by[!(by %in% colnames(obs))]),
+        " are not present in `obs`"
       )
     }
   }
@@ -151,15 +151,16 @@ check_modules_compatible <- function(modules) {
     modules[[4]]$data$model_miss &&
       !modules[[6]]$data$likelihood_aggregation
   ) {
-    warning(paste0(
+    warning(
       "Incompatible model specification: A missingness model has ",
       "been specified but likelihood aggregation is specified as ",
       "by snapshot. Switching to likelihood aggregation by group.",
       " This has no effect on the nowcast but limits the ",
       "number of threads per chain to the number of groups. To ",
       "silence this warning, set the `likelihood_aggregation` ",
-      "argument in `enw_fit_opts` to 'groups'."
-    ), immediate. = TRUE)
+      "argument in `enw_fit_opts` to 'groups'.",
+      immediate. = TRUE
+    )
   }
   return(invisible(NULL))
 }

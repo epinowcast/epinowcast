@@ -4,7 +4,7 @@
 \alias{check_by}
 \title{Check by variables are present in the data}
 \usage{
-check_by(obs, by = c())
+check_by(obs, by = NULL)
 }
 \arguments{
 \item{obs}{An observation \code{data.frame}.}

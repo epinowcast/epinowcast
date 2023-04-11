@@ -36,7 +36,7 @@
 #'   nat_germany_hosp,
 #'   proportion = 0.35, by = c("location", "age_group")
 #' )
-enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = c()) {
+enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = NULL) {
   obs <- enw_cumulative_to_incidence(obs, by = by)
 
   obs[, missing := purrr::map2_dbl(

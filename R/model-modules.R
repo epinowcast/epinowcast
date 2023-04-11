@@ -188,9 +188,9 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = c("rep_beta_sd"),
-    description = c("Standard deviation of scaled pooled report date effects"),
-    distribution = c("Zero truncated normal"),
+    variable = "rep_beta_sd",
+    description = "Standard deviation of scaled pooled report date effects",
+    distribution = "Zero truncated normal",
     mean = 0,
     sd = 1
   )
@@ -258,8 +258,8 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
-                            observation = ~1, latent_reporting_delay = c(1),
+enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
+                            observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
     stop("An expectation model formula for r must be specified")
@@ -317,7 +317,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
       length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
     ),
     lrd = convolution_matrix(
-      latent_reporting_delay, r_list$ft, include_partial = FALSE
+      latent_reporting_delay, r_list$ft,
+      include_partial = FALSE
     )
   )
 
@@ -325,10 +326,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
   obs_list <- c(obs_list, extract_sparse_matrix(obs_list$lrd, prefix = "lrd"))
   obs_list$lrd <- NULL
 
-  obs_list$obs <- ifelse(
-    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
-      as_string_formula(observation) %in% "~1",
-    0, 1
+  obs_list$obs <- as.numeric(
+    sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
+      !as_string_formula(observation) %in% "~1"
   )
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
@@ -470,9 +470,9 @@ enw_missing <- function(formula = ~1, data) {
 
     # Get the indexes for when grouped observations start and end
     miss_lookup <- data.table::copy(rep_w_complete_ref)
-    data_list$miss_st <- miss_lookup[, n := 1:.N, by = ".group"]
+    data_list$miss_st <- miss_lookup[, n := seq_len(.N), by = ".group"]
     data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
-    data_list$miss_cst <- miss_lookup[, n := 1:.N]
+    data_list$miss_cst <- miss_lookup[, n := seq_len(.N)]
     data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
 
     # Get (and order) reported cases with a missing reference date
@@ -582,7 +582,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # snap lookup
   snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
-  snap_lookup[, s := 1:.N]
+  snap_lookup[, s := seq_len(.N)]
   snap_lookup <- data.table::dcast(
     snap_lookup, reference_date ~ .group,
     value.var = "s"
@@ -591,7 +591,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # snap time
   snap_time <- unique(new_confirm[, .(reference_date, .group)])
-  snap_time[, t := 1:.N, by = ".group"]
+  snap_time[, t := seq_len(.N), by = ".group"]
   snap_time <- snap_time$t
 
   # Format indexing and observed data
@@ -610,7 +610,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
     dmax = data$max_delay[[1]],
     sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
     csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
-    obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
+    obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
     model_obs = model_obs
@@ -620,9 +620,9 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
   out$family <- family
   out$data <- data
   out$priors <- data.table::data.table(
-    variable = c("sqrt_phi"),
-    description = c("One over the square root of the reporting overdispersion"),
-    distribution = c("Zero truncated normal"),
+    variable = "sqrt_phi",
+    description = "One over the square root of the reporting overdispersion",
+    distribution = "Zero truncated normal",
     mean = 0,
     sd = 1
   )

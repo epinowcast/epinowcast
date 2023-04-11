@@ -5,9 +5,9 @@
 #' (reference or report), `confirm`, `max_confirm``, and `cum_prop_reported`
 #' are dropped and the first observation for each group and date is retained.
 #'
-#' @param obs A `data.frame` or `data.table` with columns: `reference_date` and/or
-#' `report_date`; at least one must be provided, `.group`, a grouping column
-#' and a `date`, a [Date] column.
+#' @param obs A `data.frame` or `data.table` with columns: `reference_date`
+#' and/or `report_date`; at least one must be provided, `.group`, a grouping
+#' column and a `date`, a [Date] column.
 #'
 #' @param target_date A character string, either "reference_date" or
 #' "report_date". The column corresponding to this string will be used
@@ -114,7 +114,7 @@ enw_metadata <- function(obs, target_date = c(
 #' holidaymeta
 #' subset(holidaymeta, day_of_week == "Holiday")
 enw_add_metaobs_features <- function(metaobs,
-                                     holidays = c(),
+                                     holidays = NULL,
                                      holidays_to = "Sunday",
                                      datecol = "date") {
   # localize and check metaobs input
@@ -270,7 +270,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 #' obs <- data.frame(x = 1:3, y = 1:3)
 #' enw_assign_group(obs)
 #' enw_assign_group(obs, by = "x")
-enw_assign_group <- function(obs, by = c()) {
+enw_assign_group <- function(obs, by = NULL) {
   if (!is.null(obs[[".group"]])) {
     stop(
       "The `.group` column is reserved for internal use. Please remove it ",
@@ -282,7 +282,7 @@ enw_assign_group <- function(obs, by = c()) {
   if (length(by) != 0) {
     groups_index <- data.table::copy(obs)
     groups_index <- unique(groups_index[, ..by])
-    groups_index[, .group := 1:.N]
+    groups_index[, .group := seq_len(.N)]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
   } else {
     obs <- add_group(obs)
@@ -478,7 +478,7 @@ enw_latest_data <- function(obs) {
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date)) | is.na(reference_date)],
-    by = c("reference_date")
+    by = "reference_date"
   ]
   latest_data <- latest_data[!is.na(reference_date)]
   return(latest_data[])
@@ -513,7 +513,7 @@ enw_latest_data <- function(obs) {
 #' dt <- enw_add_max_reported(dt)
 #' enw_cumulative_to_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
-                                        by = c()) {
+                                        by = NULL) {
   check_by(obs)
   reports <- check_dates(obs)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
@@ -556,7 +556,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' dt <- enw_assign_group(dt)
 #' dt <- enw_add_max_reported(dt)
 #' enw_cumulative_to_incidence(dt)
-enw_incidence_to_cumulative <- function(obs, by = c()) {
+enw_incidence_to_cumulative <- function(obs, by = NULL) {
   obs <- check_dates(obs)
   check_by(obs)
 
@@ -569,8 +569,8 @@ enw_incidence_to_cumulative <- function(obs, by = c()) {
 
 #' Filter observations to restrict the maximum reporting delay
 #'
-#' @return A `data.frame` filtered so that dates by report are less than or equal
-#' the reference date plus the maximum delay.
+#' @return A `data.frame` filtered so that dates by report are less than or
+#' equal the reference date plus the maximum delay.
 #'
 #' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_preprocess_data
@@ -679,7 +679,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'   confirm = 1
 #' )
 #' enw_complete_dates(obs)
-enw_complete_dates <- function(obs, by = c(), max_delay,
+enw_complete_dates <- function(obs, by = NULL, max_delay,
                                missing_reference = TRUE) {
   obs <- data.table::as.data.table(obs)
   obs <- check_dates(obs)
@@ -700,7 +700,7 @@ enw_complete_dates <- function(obs, by = c(), max_delay,
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by)
-  by_with_group_id <- c(".group", by)
+  by_with_group_id <- c(".group", by) # nolint: object_usage_linter
   groups <- unique(obs[, ..by_with_group_id])
 
   completion <- data.table::CJ(
@@ -973,7 +973,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-enw_preprocess_data <- function(obs, by = c(), max_delay = 20,
+enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 set_negatives_to_zero = TRUE,
                                 ...) {
   obs <- check_dates(obs)

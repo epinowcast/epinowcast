@@ -74,7 +74,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   data <- data.table::as.data.table(data)
 
   # make all character variables factors
-  chars <- colnames(data)[sapply(data, function(x) is.character(x))]
+  chars <- colnames(data)[sapply(data, is.character)]
   data <- suppressWarnings(
     data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
   )
@@ -193,7 +193,7 @@ enw_effects_metadata <- function(design) {
 enw_add_pooling_effect <- function(effects, var_name = "sd",
                                    finder_fn = startsWith, ...) {
   effects <- data.table::setDT(effects)
-  effects[, (var_name) := ifelse(finder_fn(effects, ...), 1, 0)]
+  effects[, (var_name) := as.numeric(finder_fn(effects, ...))]
   effects[finder_fn(effects, ...), fixed := 0]
   return(effects[])
 }
@@ -247,7 +247,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
     metaobs[, (paste0(cfeature, as.character(min_avail))) := NULL]
     cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
     metaobs[,
-      (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),
+      (cfeatures) := purrr::map(.SD, ~ as.numeric(cumsum(.) > 0)),
       .SDcols = cfeatures, by = ".group"
     ]
   }

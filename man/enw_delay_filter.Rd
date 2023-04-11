@@ -19,8 +19,8 @@ that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 }
 \value{
-A \code{data.frame} filtered so that dates by report are less than or equal
-the reference date plus the maximum delay.
+A \code{data.frame} filtered so that dates by report are less than or
+equal the reference date plus the maximum delay.
 }
 \description{
 Filter observations to restrict the maximum reporting delay

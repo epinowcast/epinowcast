@@ -8,7 +8,7 @@
 #' variables specified for report dates that have complete reporting.
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
-enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
+enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = NULL) {
   check_by(new_confirm, by = by)
   rep_with_complete_ref <- data.table::as.data.table(new_confirm)
   rep_with_complete_ref <- rep_with_complete_ref[,
@@ -51,7 +51,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
   data.table::setkeyv(miss_lk, c(".group", "reference_date", "report_date"))
 
   # Assign an index (this should link with the in model index)
-  miss_lk[, .id := 1:.N]
+  miss_lk[, .id := seq_len(.N)]
 
   # Link with reports with complete reference dates
   complete_miss_lk <- miss_lk[
@@ -111,19 +111,19 @@ latest_obs_as_matrix <- function(latest) {
 #' # Include partially reported convolutions
 #' convolution_matrix(c(1, 2, 3), 10, include_partial = TRUE)
 #' # Use a list of distributions
-#' convolution_matrix(rep(list(c(1, 2, 3)), 10),10)
+#' convolution_matrix(rep(list(c(1, 2, 3)), 10), 10)
 #' # Use a time-varying list of distributions
-#' convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4,5,6))), 11)
+#' convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4, 5, 6))), 11)
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
       stop("dist must equal t or be the same for all t (i.e. length 1)")
     }
-    ldist <- purrr::map_dbl(dist, length)
+    ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
       stop("dist must be the same length for all t")
     }
-  }else {
+  } else {
     ldist <- rep(length(dist), t)
     dist <- rep(list(dist), t)
   }
@@ -132,10 +132,8 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     l <- min(t - s + 1, ldist[s])
     conv[s:(s + l - 1), s] <- head(dist[[s]], l)
   }
-  if (!include_partial) {
-    if (ldist[1] > 1) {
-      conv[1:(ldist[1] - 1), ] <- 0
-    }
+  if (!include_partial && ldist[1] > 1) {
+    conv[1:(ldist[1] - 1), ] <- 0
   }
   return(conv)
 }

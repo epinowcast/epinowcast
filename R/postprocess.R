@@ -29,9 +29,7 @@
 enw_posterior <- function(fit, variables = NULL,
                           probs = c(0.05, 0.2, 0.8, 0.95), ...) {
   # order probs
-  probs <- probs[order(probs)]
-  # NULL out variables
-  variable <- type <- NULL
+  probs <- sort(probs, na.last = TRUE)
 
   # extract summary parameters of interest and join
   sfit <- list(
@@ -62,7 +60,7 @@ enw_posterior <- function(fit, variables = NULL,
 #'
 #' @description A generic wrapper around [enw_posterior()] with
 #' opinionated defaults to extract the posterior prediction for the
-#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of 
+#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
@@ -310,7 +308,7 @@ enw_quantiles_to_long <- function(posterior) {
     measure.vars = patterns("^q[0-9]"),
     value.name = "prediction", variable.name = "quantile"
   )
-  long[, quantile := gsub("q", "", quantile)]
+  long[, quantile := gsub("q", "", quantile, fixed = TRUE)]
   long[, quantile := as.numeric(quantile) / 100]
   return(long[])
 }

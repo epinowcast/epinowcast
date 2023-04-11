@@ -6,7 +6,7 @@
 \usage{
 enw_add_metaobs_features(
   metaobs,
-  holidays = c(),
+  holidays = NULL,
   holidays_to = "Sunday",
   datecol = "date"
 )

@@ -1,7 +1,6 @@
 # Load packages
 library(epinowcast)
 library(data.table)
-library(purrr)
 library(ggplot2)
 
 # Use 4 cores

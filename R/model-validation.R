@@ -58,7 +58,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   }
   long_nowcast <- enw_quantiles_to_long(nowcast)
   if (!is.null(long_nowcast[["mad"]])) {
-    long_nowcast[, c("mad") := NULL]
+    long_nowcast[, "mad" := NULL]
   }
   latest_obs <- data.table::copy(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
