@@ -7,6 +7,12 @@ This is release is in development. It is not yet ready for production use. If yo
 - `enw_add_pooling_effect()`: replaced `string` argument with `...` argument, to enable passing arbitrary arguments to the `finder_fn` argument. The same general usage is supported, but now e.g. the default argument to supply is `prefix = "somevalue"` vs `string = "somevalue` and argument positions have changed. This function is primarily for internal use and we expect only a small subset of advanced users who are creating models outside the currently supported formula interface to be impacted See #222 by @pearsonca and reviewed by @seabbs.
 - `enw_dates_to_factors()`: Deprecated and removed as no longer needed. We expect this function had little to no external use and so there should be little impact on users. See #216 by @seabbs and reviewed by @adrian-lison.
 
+## Bugs
+
+- Fixed a bug first highlighted by @Gulfa in #166 and localised during investigation for #223 where random effects and random walks were being improperly constructed  in `enw_formula()` so that their variances parameters were not shared between the correct parameters when used together. This only impacts models that used formulas with both random effects and random walks and for these models likely led to increased run-times, fitting issues, and potentially unreliable posterior estimates. We suggest refitting these models and comparing the output to understand the impact on your usage. See #228 by @seabbs and self-reviewed.
+- Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implicit type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
+- Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs and self-reviewed.
+
 ## Package
 
 - Fixed some typos in `README.md`, `NEWS.md`, the `model.Rmd` vignette and `convolution_matrix()` documentation. The `WORDLIST` used by spelling has also been updated by eliminate false positives. See #221 by @Bisaloo and reviewed by @seabbs and @adrian-lison.
@@ -19,19 +25,16 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
 - Removed unused internal plot helpers. See #217 by @seabbs and reviewed by @adrian-lison.
 - Added tests for all internal `check_` functions used to check inputs. See #217 by @seabbs and reviewed by @adrian-lison.
+<<<<<<< HEAD
 - Removed the problematic double specification of default arguments for `target_date` in `enw_metadata()` as flagged in #212 by @pearsonca using `formals()` to instead detect the default values from the function specification. See #232 by @seabbs and self-reviewed.
 - In the words of Jenny Bryan: "there is no else, there is only if." Having else after `return()` of `stop()` increases the number of branches in the code, which makes it harder to read. It also translates into a higher cyclomatic complexity. We have removed all else statements after `return()` and `stop()` in the package. See #229 by @Bisaloo and reviewed by @seabbs.
+- Removed the internal definition of `no_contrasts` in `enw_formula()` as this was unused. Identified by @bisaloo in #220 and raised in #223. See #228 by @seabbs and self-reviewed.
 
 ## Documentation
 
 - Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs and reviewed by @pearsonca.
 - Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs and reviewed by @pearsonca.
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
-
-## Bugs
-
-- Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implicit type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
-- Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs.
 
 # epinowcast 0.2.0
 
