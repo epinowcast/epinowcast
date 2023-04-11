@@ -304,18 +304,18 @@
       
       
       $expanded_formula
-      [1] "~1 + cweek1 + age_group"
+      [1] "~1 + age_group + cweek1"
       
       $fixed
       $fixed$formula
-      [1] "~1 + cweek1 + age_group"
+      [1] "~1 + age_group + cweek1"
       
       $fixed$design
-        (Intercept) cweek1 age_group00+ age_group15-34
-      1           1      0            1              0
-      3           1      1            1              0
-      5           1      0            0              1
-      7           1      1            0              1
+        (Intercept) age_group00+ age_group15-34 cweek1
+      1           1            1              0      0
+      3           1            1              0      1
+      5           1            0              1      0
+      7           1            0              1      1
       
       $fixed$index
       [1] 1 1 2 2 3 3 4 4
@@ -362,11 +362,11 @@
       
       
       $expanded_formula
-      [1] "~1 + age_group:cweek1 + age_group"
+      [1] "~1 + age_group + age_group:cweek1"
       
       $fixed
       $fixed$formula
-      [1] "~1 + age_group:cweek1 + age_group"
+      [1] "~1 + age_group + age_group:cweek1"
       
       $fixed$design
         (Intercept) age_group00+ age_group15-34 age_group00+:cweek1
@@ -426,22 +426,22 @@
       
       
       $expanded_formula
-      [1] "~1 + day_of_week + cweek1 + age_group"
+      [1] "~1 + day_of_week + age_group + cweek1"
       
       $fixed
       $fixed$formula
-      [1] "~1 + day_of_week + cweek1 + age_group"
+      [1] "~1 + day_of_week + age_group + cweek1"
       
       $fixed$design
-        (Intercept) day_of_weekTuesday cweek1 age_group00+ age_group15-34
-      1           1                  0      0            1              0
-      2           1                  1      0            1              0
-      3           1                  0      1            1              0
-      4           1                  1      1            1              0
-      5           1                  0      0            0              1
-      6           1                  1      0            0              1
-      7           1                  0      1            0              1
-      8           1                  1      1            0              1
+        (Intercept) day_of_weekTuesday age_group00+ age_group15-34 cweek1
+      1           1                  0            1              0      0
+      2           1                  1            1              0      0
+      3           1                  0            1              0      1
+      4           1                  1            1              0      1
+      5           1                  0            0              1      0
+      6           1                  1            0              1      0
+      7           1                  0            0              1      1
+      8           1                  1            0              1      1
       
       $fixed$index
       [1] 1 2 3 4 5 6 7 8
