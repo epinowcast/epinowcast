@@ -531,7 +531,7 @@ construct_re <- function(re, data) {
       } else {
         if (terms_int[i]) {
           effects <- enw_add_pooling_effect(
-            effects, 
+            effects,
             var_name = paste(gsub(":", "__", k, fixed = TRUE), collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & grepl(pattern[2], effect) &
