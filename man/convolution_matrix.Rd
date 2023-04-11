@@ -20,11 +20,11 @@ A matrix with each column indicating a primary event and each row
 indicating a secondary event.
 }
 \description{
-This function allows the construction of convoluton matrices which can be
+This function allows the construction of convolution matrices which can be
 be combined with a vector of primary events to produce a vector of secondary
 events for example in the form of a renewal equation or to simulate
 reporting delays. Time-varying delays are supported as well as distribution
-padding (to allow for use in renewal equation like aproaches).
+padding (to allow for use in renewal equation like approaches).
 }
 \examples{
 # Simple convolution matrix with a static distribution

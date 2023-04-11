@@ -9,6 +9,7 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Package
 
+- Fixed some typos in `README.md`, `NEWS.md`, the `model.Rmd` vignette and `convolution_matrix()` documentation. The `WORDLIST` used by spelling has also been updated by eliminate false positives. See #221 by @Bisaloo and reviewed by @seabbs and @adrian-lison.
 - Added more non-default linters in `.lintr` configuration file. This file is used when `lintr::lint_package()` is run or in the new `lint-changed-files.yaml` GitHub Actions workflow. See #220 by @Bisaloo and reviewed by @pearsonca and @seeabs.
 - Switched to the `lint-changed-files.yaml` GitHub Actions workflow instead of the regular `lint.yaml` to avoid annotations unrelated to the changes made in the PR. See #220 by @Bisaloo and reviewed by @pearsonca and @seeabs.
 - Added tests for `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs and reviewed by @pearsonca.
@@ -27,7 +28,7 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Bugs
 
-- Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implict type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
+- Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implicit type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
 - Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs.
 
 # epinowcast 0.2.0
@@ -36,7 +37,7 @@ This release adds several extensions to our modelling framework including modell
 
 On top of model extensions this release also adds a range of quality of life features, such as a helper functions for constructing convolution matrices and combining probability mass functions. It also adds multiple features which improve computational efficiency, including refactoring all use of hazards to on the log scale and extending the parallelisation of the likelihood to be optimised based on the structure of the input data. We have also extended the package documentation and streamlined the contribution process.
 
-As a large-scale project, the package remains in an experimental state, though it is sufficiently stable for both research and production usage. More core development is needed to improve post-proccessing, pre-processing, documentation coverage, and evaluate optimal configurations in different settings) please see our [community site](https://community.epinowcast.org/), [contributing guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md), and list of [issues/proposed features](https://github.com/epinowcast/epinowcast/issues) if interested in being involved (any scale of contribution is warmly welcomed including user feedback, requests to extend our functionality to cover your setting, and evaluating the package for your context). This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance.
+As a large-scale project, the package remains in an experimental state, though it is sufficiently stable for both research and production usage. More core development is needed to improve post-processing, pre-processing, documentation coverage, and evaluate optimal configurations in different settings) please see our [community site](https://community.epinowcast.org/), [contributing guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md), and list of [issues/proposed features](https://github.com/epinowcast/epinowcast/issues) if interested in being involved (any scale of contribution is warmly welcomed including user feedback, requests to extend our functionality to cover your setting, and evaluating the package for your context). This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance.
 
 We thank @adrian-lison, @choi-hannah, @sbfnk, @Bisaloo, @seabbs, @pearsonca, and @pratikunterwegs for code contributions to this release. We also thank all [community members](https://community.epinowcast.org/) for their contributions including @jhellewell14, @FelixGuenther, @parksw3, and @jbracher.
 
@@ -56,7 +57,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 - Added a basic simulator function for missing reference data. See #147 by @seabbs and @adrian-lison.
 - Added support for right hand side interactions as syntax sugar for random effects. This allows the specification of, for example, independent random effects by day for each strata of another variable. See #169 by @seabbs.
 - Added support for passing `cpp_options` to `cmdstanr::cmdstan_model()`. See #182 by @seabbs.
-- Add a functon, `convolution_matrix()` for constructing convolution matrices. See #183 by @seabbs.
+- Add a function, `convolution_matrix()` for constructing convolution matrices. See #183 by @seabbs.
 - Add a pass through from `enw_model()` to `write_stan_files_no_profile()` for the `target_dir` argument. This allows users to compile the model once and then share the compiled model across sessions rather than having to recompile each time the temporary directory is cleared. See #185 by @seabbs.
 - Added `add_pmfs()`, to sum probability mass functions into a new probability mass function. Initial implementation by @seabbs in #183, refactored by @pratikunterwegs in #187, following a suggestion in issue #186 by @pearsonca.
 - Added a warning when the observed empirical maximum delay is less than the specified maximum delay. See #190 by @seabbs.
