@@ -634,9 +634,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
       random$effects,
       use.names = TRUE, fill = TRUE
     )
-    no_contrasts <- random_terms
   } else {
-    no_contrasts <- FALSE
     random_terms <- NULL
     random_metadata <- NULL
   }
