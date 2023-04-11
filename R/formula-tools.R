@@ -665,7 +665,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Make fixed design matrix using all fixed effects from all components
   # this should include new variables added by the random effects
   # need to make sure all random effects don't have contrasts
-  terms <- c(parsed_formula$fixed, rw_terms, random_terms)
+  terms <- c(parsed_formula$fixed, random_terms, rw_terms)
   expanded_formula <- as.formula(paste0("~ ", paste(terms, collapse = " + ")))
   fixed <- enw_design(
     formula = expanded_formula,
