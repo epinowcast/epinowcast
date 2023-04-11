@@ -128,7 +128,7 @@ enw_priors_as_data_list <- function(priors) {
 enw_replace_priors <- function(priors, custom_priors) {
   custom_priors <- data.table::as.data.table(custom_priors)[
     ,
-    .(variable, mean, sd)
+    .(variable, mean = as.numeric(mean), sd = as.numeric(sd))
   ]
   custom_priors <- custom_priors[
     ,
