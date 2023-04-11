@@ -23,7 +23,7 @@ Authors@R:
     person(given = "Hugo",
            family = "Gruson",
            role = c("aut"),
-           email = "hugo.gruson@lshtm.ac.uk",
+           email = "hugo.gruson@normalesup.org",
            comment = c(ORCID = "0000-0002-4094-1476")),
     person(given = "Michael",
            family = "DeWitt",
