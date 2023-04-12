@@ -30,9 +30,24 @@ use would be extracting the posterior from a previous \code{\link[=epinowcast]{e
 run (using \code{summary(nowcast, type = fit)}) and using this a prior.
 }
 \examples{
+# Update priors from a data.frame
 priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
 custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
 enw_replace_priors(priors, custom_priors)
+
+# Update priors from a previous model fit
+default_priors <- enw_reference(
+ distribution = "lognormal", data = obs
+)$priors
+print(default_priors)
+
+fit_priors <- summary(
+ enw_example("nowcast"), type = "fit",
+ variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+)
+fit_priors
+
+enw_replace_priors(default_priors, fit_priors)
 }
 \seealso{
 Functions used to help convert models into the format required for stan
