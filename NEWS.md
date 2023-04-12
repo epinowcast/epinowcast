@@ -9,7 +9,13 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Bugs
 
+<<<<<<< HEAD
 - Fixed a bug first highlighted by @Gulfa in #166 and localised during investigation for #223 where random effects and random walks were being improperly constructed  in `enw_formula()` so that their variances parameters were not shared between the correct parameters when used together. This only impacts models that used formulas with both random effects and random walks and for these models likely led to increased run-times, fitting issues, and potentially unreliable posterior estimates. We suggest refitting these models and comparing the output to understand the impact on your usage. See #228 by @seabbs and self-reviewed.
+=======
+- Fixed a bug first highlighted by @Gulfa in #166 and localised during investigation for #223 where random effects and random walks were being improperly constructed  in `enw_formula()` so that their variances parameters were not shared between the correct parameters when used together. This only impacts models that used formulas with both random effects and random walks and for these models likely led to increased run-times, fitting issues, and potentially unreliable posterior estimates. We suggest refitting these models and comparing the output to understand the impact on your usage. See #228 by @seabbs and reviewed by.
+- Fixed a bug in `enw_replace_priors()` where the function could not deal
+with `epinowcast` summarised posterior estimates due to the new use of the `pillar` class. Added tests to catch if this issue reoccurs in the future. See #228 by @seabbs and reviewed by.
+>>>>>>> 2066adc (update news with examples and test changes)
 - Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implicit type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
 - Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs and self-reviewed.
 
@@ -26,15 +32,21 @@ This is release is in development. It is not yet ready for production use. If yo
 - Removed unused internal plot helpers. See #217 by @seabbs and reviewed by @adrian-lison.
 - Added tests for all internal `check_` functions used to check inputs. See #217 by @seabbs and reviewed by @adrian-lison.
 <<<<<<< HEAD
+<<<<<<< HEAD
 - Removed the problematic double specification of default arguments for `target_date` in `enw_metadata()` as flagged in #212 by @pearsonca using `formals()` to instead detect the default values from the function specification. See #232 by @seabbs and self-reviewed.
 - In the words of Jenny Bryan: "there is no else, there is only if." Having else after `return()` of `stop()` increases the number of branches in the code, which makes it harder to read. It also translates into a higher cyclomatic complexity. We have removed all else statements after `return()` and `stop()` in the package. See #229 by @Bisaloo and reviewed by @seabbs.
 - Removed the internal definition of `no_contrasts` in `enw_formula()` as this was unused. Identified by @bisaloo in #220 and raised in #223. See #228 by @seabbs and self-reviewed.
+=======
+- Removed the internal definition of `no_contrasts` in `enw_formula()` as this was unused. Identified by @bisaloo in #220 and raised in #223. See #228 by @seabbs and reviewed by.
+- Added tests for `enw_replace_priors()` to check that it can handle `epinowcast` summarised posterior estimates. See #228 by @seabbs and reviewed by.
+>>>>>>> 2066adc (update news with examples and test changes)
 
 ## Documentation
 
 - Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs and reviewed by @pearsonca.
 - Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs and reviewed by @pearsonca.
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
+- Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and reviewed by.
 
 # epinowcast 0.2.0
 
