@@ -339,13 +339,13 @@ construct_rw <- function(rw, data) {
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(
-      effects, var_name = rw$time, prefix = ctime
+      effects, var_name = paste0("rw__", rw$time), prefix = ctime
     )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
-        effects, var_name = paste0(nby, "__", rw$time),
+        effects, var_name = paste0("rw__", nby, "__", rw$time),
         finder_fn = function(effect, pattern, prefix) {
           grepl(pattern, effect) & startsWith(effect, prefix)
         },

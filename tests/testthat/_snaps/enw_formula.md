@@ -323,13 +323,13 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + week"
+      [1] "~0 + fixed + age_group + rw__week"
       
       $random$design
-        fixed age_group week
-      1     0         1    0
-      2     0         1    0
-      3     0         0    1
+        fixed age_group rw__week
+      1     0         1        0
+      2     0         1        0
+      3     0         0        1
       attr(,"assign")
       [1] 1 2 3
       
@@ -386,14 +386,14 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + `age_group00+__week` + `age_group15-34__week`"
+      [1] "~0 + fixed + age_group + `rw__age_group00+__week` + `rw__age_group15-34__week`"
       
       $random$design
-        fixed age_group `age_group00+__week` `age_group15-34__week`
-      1     0         1                    0                      0
-      2     0         1                    0                      0
-      3     0         0                    1                      0
-      4     0         0                    0                      1
+        fixed age_group `rw__age_group00+__week` `rw__age_group15-34__week`
+      1     0         1                        0                          0
+      2     0         1                        0                          0
+      3     0         0                        1                          0
+      4     0         0                        0                          1
       attr(,"assign")
       [1] 1 2 3 4
       
@@ -449,14 +449,14 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + week"
+      [1] "~0 + fixed + age_group + rw__week"
       
       $random$design
-        fixed age_group week
-      1     1         0    0
-      2     0         1    0
-      3     0         1    0
-      4     0         0    1
+        fixed age_group rw__week
+      1     1         0        0
+      2     0         1        0
+      3     0         1        0
+      4     0         0        1
       attr(,"assign")
       [1] 1 2 3
       
