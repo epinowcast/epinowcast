@@ -129,7 +129,8 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' # Update priors from a previous model fit
 #' default_priors <- enw_reference(
-#'  distribution = "lognormal", data = obs
+#'  distribution = "lognormal",
+#'  data = enw_example("preprocessed"),
 #' )$priors
 #' print(default_priors)
 #'

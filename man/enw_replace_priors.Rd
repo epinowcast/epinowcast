@@ -37,7 +37,8 @@ enw_replace_priors(priors, custom_priors)
 
 # Update priors from a previous model fit
 default_priors <- enw_reference(
- distribution = "lognormal", data = obs
+ distribution = "lognormal",
+ data = enw_example("preprocessed"),
 )$priors
 print(default_priors)
 
