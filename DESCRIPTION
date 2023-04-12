@@ -22,7 +22,7 @@ Authors@R:
            comment = c(ORCID = "0000-0003-0701-7860")),
     person(given = "Hugo",
            family = "Gruson",
-           role = c("aut"),
+           role = "aut",
            email = "hugo.gruson@normalesup.org",
            comment = c(ORCID = "0000-0002-4094-1476")),
     person(given = "Michael",
@@ -36,7 +36,7 @@ Authors@R:
            email = "hannah.choi1@lshtm.ac.uk"),
     person(given = "Pratik",
            family = "Gupte",
-           role = c("ctb"),
+           role = "ctb",
            email = "pratik.gupte@lshtm.ac.uk",
            comment = c(ORCID = "0000-0001-5294-7819")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
