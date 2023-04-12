@@ -673,3 +673,59 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
+# enw_formula supports random effects and random walks for the same variable
+
+    Code
+      enw_formula(~ 1 + (1 | week) + rw(week), data)
+    Output
+      $formula
+      [1] "~1 + (1 | week) + rw(week)"
+      
+      $parsed_formula
+      $parsed_formula$fixed
+      [1] "1"
+      
+      $parsed_formula$random
+      $parsed_formula$random[[1]]
+      1 | week
+      
+      
+      $parsed_formula$rw
+      [1] "rw(week)"
+      
+      
+      $expanded_formula
+      [1] "~1 + week + cweek1"
+      
+      $fixed
+      $fixed$formula
+      [1] "~1 + week + cweek1"
+      
+      $fixed$design
+        (Intercept) week0 week1 cweek1
+      1           1     1     0      0
+      3           1     0     1      1
+      
+      $fixed$index
+      [1] 1 1 2 2 1 1 2 2
+      
+      
+      $random
+      $random$formula
+      [1] "~0 + fixed + week + rw__week"
+      
+      $random$design
+        fixed week rw__week
+      1     0    1        0
+      2     0    1        0
+      3     0    0        1
+      attr(,"assign")
+      [1] 1 2 3
+      
+      $random$index
+      [1] 1 2 3
+      
+      
+      attr(,"class")
+      [1] "enw_formula" "list"       
+

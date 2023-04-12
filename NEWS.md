@@ -32,6 +32,8 @@ with `epinowcast` summarised posterior estimates due to the new use of the `pill
 - Removed the internal definition of `no_contrasts` in `enw_formula()` as this was unused. Identified by @bisaloo in #220 and raised in #223. See #228 by @seabbs and reviewed by.
 - Added tests for `enw_replace_priors()` to check that it can handle `epinowcast` summarised posterior estimates. See #228 by @seabbs and reviewed by.
 - Added a prefix (`rw__`) in `enw_formula() and `construct_rw()` to indicate when a random effect variance is a random walk versus a random effect. See #228 by @seabbs and reviewed by.
+- Added support for using the same variable as both a random effect and a random walk. In most settings this is not advised. See #228 by @seabbs and reviewed by.
+- Added an error message to `construct_rw()` when a random walk is specified for a variable that is not a numeric variable. See #228 by @seabbs and reviewed by.
 
 ## Documentation
 
