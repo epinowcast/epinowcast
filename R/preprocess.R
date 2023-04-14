@@ -31,7 +31,7 @@ enw_metadata <- function(obs, target_date = c(
                            "reference_date", "report_date"
                          )) {
   obs <- data.table::as.data.table(obs)
-  choices <- c("reference_date", "report_date")
+  choices <- eval(formals()$target_date)
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
