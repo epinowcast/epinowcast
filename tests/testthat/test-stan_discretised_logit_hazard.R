@@ -69,3 +69,41 @@ test_that("discretised_logit_hazard returns the same thing in both log
   expect_equal_prob(2, 1, 4)
   expect_equal_prob(3, 0.2, 4)
 })
+
+# Discretisation for double censoring
+double_censored_pmf <- function(n, alpha, beta, fun = plnorm) {
+  cdf <- fun(0:(n+1), alpha, beta)
+  m <- n + 1 
+  pmf <- vector(length = m)
+  pmf[1] <-  cdf[1]
+  pmf[2] <- 2 * cdf[2] - 2 * cdf[1]
+  pmf[3:m] <- 3:(m+1) * cdf[1:(m+1)] - 2 * (2:m) * cdf[2:m] + (1:(m-1)) * cdf[1:(m-1)]
+  return(pmf)
+}
+double_censored_pmf(10, 0.6, 0.5)
+# Compare stan vs R - they should be the same
+!(sum(abs((plnorm(c(1:11), 0.6, 0.5) - plnorm(c(0, 0:9), 0.6, 0.5)) / 2 -
+  exp(discretised_logit_hazard(0.6, 0.5, 11, 2, 2, 1)))) > 1e-3)
+
+
+simulate_double_censored_pmf <- function(
+  alpha, beta, max, fun = rlnorm, n = 1000
+) {
+  primary <- runif(n, 0, 1)
+  secondary <- primary + runif(n, 0, 1) + fun(n, alpha, beta)
+  delay <- floor(secondary) - floor(primary)
+  cdf <- ecdf(delay)(0:max)
+  pmf <- c(cdf[1], diff(cdf))
+  return(pmf)
+}
+sim <- simulate_double_censored_pmf(0.6, 0.5, 10, rlnorm, 1000)
+
+# Compare simulation to continuous pmf
+print(sim - dlnorm(0:10, 0.6, 0.5))
+
+# Compare to naive discretisation
+print(sim - (plnorm(1:11, 0.6, 0.5) - plnorm(c(0:10), 0.6, 0.5)))
+
+# Compare to window of 2 discretisation
+print(sim - (plnorm(c(1:11), 0.6, 0.5) - plnorm(c(0, 0:9), 0.6, 0.5)) / 2)
+
