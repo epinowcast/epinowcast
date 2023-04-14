@@ -51,9 +51,11 @@ vector normalise_lcdf_as_uniform_double_censored(vector lcdf, int n,
     // both n and n-1 are in the denominator to account for 2 day width of the
     // interval period
     // If n were infinite this would be equivalent to dividing by 2.
-    adjusted_lcdf = lcdf - lcdf[n];
+    if (n == 1) {
+      adjusted_lcdf = lcdf - lcdf[1];
+    }
     if (n > 1) {
-      adjusted_lcdf = adjusted_lcdf - lcdf[n-1];
+      adjusted_lcdf = lcdf - log_sum_exp(lcdf[n], lcdf[n-1]);
     }
   } else {
     reject("Unknown strategy to handle probability mass beyond the maximum value.");
