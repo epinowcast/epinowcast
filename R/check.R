@@ -149,7 +149,7 @@ check_module <- function(module) {
 #'
 #' @return NULL
 #'
-#' @family check
+#' @family check 
 check_modules_compatible <- function(modules) {
   if (
     modules[[4]]$data$model_miss &&
