@@ -34,6 +34,7 @@ with `epinowcast` summarised posterior estimates due to the new use of the `pill
 - Added a prefix (`rw__`) in `enw_formula()` and `construct_rw()` to indicate when a random effect variance is a random walk versus a random effect. See #228 by @seabbs and reviewed by.
 - Added support for using the same variable as both a random effect and a random walk. In most settings this is not advised. See #228 by @seabbs and self-reviewed.
 - Added an error message to `construct_rw()` when a random walk is specified for a variable that is not a numeric variable. See #228 by @seabbs and self-reviewed.
+- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk. See #200 by @seabbs and @adrian-lison and self-reviewed.
 
 ## Documentation
 
@@ -42,10 +43,6 @@ with `epinowcast` summarised posterior estimates due to the new use of the `pill
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
 - Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and self-reviewed.
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
-
-## Package
-
-- Added support for model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk. See #200 by @seabbs and reviewed b @adrian-lison.
 
 # epinowcast 0.2.0
 
