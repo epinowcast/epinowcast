@@ -25,17 +25,16 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 
 #' Check Report and Reference Dates are present
 #'
-#' @param obs An observation `data.frame` containing \code{report_date} and
-#' \code{reference_date} columns.
+#' @param obs An observation `data.frame` containing `report_date` and
+#' `reference_date` columns.
 #'
-#' @return Returns the input `data.frame` with dates converted to date format
-#' if not already.
+#' @return a copy `data.table` version of `obs` with `report_date` and
+#' `reference_date` as [IDateTime] format.
 #'
-#' @importFrom data.table as.data.table copy
+#' @importFrom data.table as.data.table
 #' @family check
 check_dates <- function(obs) {
   obs <- data.table::as.data.table(obs)
-  obs <- data.table::copy(obs)
   if (is.null(obs$reference_date) && is.null(obs$report_date)) {
     stop(
       "Both reference_date and report_date must be present in order to use this
