@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.8000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,6 +95,7 @@
 <li>Added a new internal <code>check_by</code> function as suggested by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See <a href="https://github.com/epinowcast/epinowcast/issues/208" class="external-link">#208</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Removed unused internal plot helpers. See <a href="https://github.com/epinowcast/epinowcast/issues/217" class="external-link">#217</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
 <li>Added tests for all internal <code>check_</code> functions used to check inputs. See <a href="https://github.com/epinowcast/epinowcast/issues/217" class="external-link">#217</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
+<li>Removed the problematic double specification of default arguments for <code>target_date</code> in <code><a href="../reference/enw_metadata.html">enw_metadata()</a></code> as flagged in <a href="https://github.com/epinowcast/epinowcast/issues/212" class="external-link">#212</a> by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a> using <code><a href="https://rdrr.io/r/base/formals.html" class="external-link">formals()</a></code> to instead detect the default values from the function specification. See <a href="https://github.com/epinowcast/epinowcast/issues/232" class="external-link">#232</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-2-0-8000">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0-8000"></a></h3>
