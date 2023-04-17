@@ -300,6 +300,17 @@ construct_rw <- function(rw, data) {
   }
   data <- data.table::copy(data)
 
+  if (!is.numeric(data[[rw$time]])) {
+    stop(
+      "The time variable ", rw$time, " is not numeric but must be to be used ",
+      "as a random walk term."
+    )
+  }
+
+  if (anyNA(data[[rw$time]])) {
+    stop("The time variable ", rw$time, " contains non-numeric values.")
+  }
+
   # add new cumulative features to use for the random walk
   data <- enw_add_cumulative_membership(
     data,
@@ -339,13 +350,13 @@ construct_rw <- function(rw, data) {
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(
-      effects, var_name = rw$time, prefix = ctime
+      effects, var_name = paste0("rw__", rw$time), prefix = ctime
     )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
-        effects, var_name = paste0(nby, "__", rw$time),
+        effects, var_name = paste0("rw__", nby, "__", rw$time),
         finder_fn = function(effect, pattern, prefix) {
           grepl(pattern, effect) & startsWith(effect, prefix)
         },
@@ -619,28 +630,6 @@ enw_formula <- function(formula, data, sparse = TRUE) {
   # Parse formula
   parsed_formula <- parse_formula(formula)
 
-  # Get random effects for all specified random effects
-  if (length(parsed_formula$random) > 0) {
-    random <- purrr::map(parsed_formula$random, re)
-    for (i in seq_along(random)) {
-      random[[i]] <- construct_re(random[[i]], data)
-      data <- random[[i]]$data
-      random[[i]]$data <- NULL
-    }
-    random <- purrr::transpose(random)
-
-    random_terms <- unlist(random$terms)
-    random_metadata <- data.table::rbindlist(
-      random$effects,
-      use.names = TRUE, fill = TRUE
-    )
-    no_contrasts <- random_terms
-  } else {
-    no_contrasts <- FALSE
-    random_terms <- NULL
-    random_metadata <- NULL
-  }
-
   # Get random walk effects by iteratively looping through (as variables are
   # created in input data so need to use iteratively)
   if (length(parsed_formula$rw) > 0) {
@@ -664,10 +653,39 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     rw_metadata <- NULL
   }
 
+  # Get random effects for all specified random effects
+  # Happens last as converts all RHS variables to factors (which can interact)
+  # with other formula terms (i.e. random walks)
+  if (length(parsed_formula$random) > 0) {
+    random <- purrr::map(parsed_formula$random, re)
+    for (i in seq_along(random)) {
+      random[[i]] <- construct_re(random[[i]], data)
+      data <- random[[i]]$data
+      random[[i]]$data <- NULL
+    }
+    random <- purrr::transpose(random)
+
+    random_terms <- unlist(random$terms)
+    # Check that the user hasn't specified the same fixed and random effect
+    if (any(random_terms %in% parsed_formula$fixed)) {
+      stop(
+        "Random effect terms must not be included in the fixed effects formula",
+        call. = FALSE
+      )
+    }
+    random_metadata <- data.table::rbindlist(
+      random$effects,
+      use.names = TRUE, fill = TRUE
+    )
+  } else {
+    random_terms <- NULL
+    random_metadata <- NULL
+  }
+
   # Make fixed design matrix using all fixed effects from all components
   # this should include new variables added by the random effects
   # need to make sure all random effects don't have contrasts
-  terms <- c(parsed_formula$fixed, rw_terms, random_terms)
+  terms <- c(parsed_formula$fixed, random_terms, rw_terms)
   expanded_formula <- as.formula(paste0("~ ", paste(terms, collapse = " + ")))
   fixed <- enw_design(
     formula = expanded_formula,

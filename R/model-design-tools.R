@@ -238,6 +238,13 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
         " is not present in the supplied data.frame."
       )
     }
+    if (!is.numeric(metaobs[[feature]])) {
+      stop(
+        "Requested variable ", feature,
+        " is not numeric. Cumulative membership effects are only defined for ",
+        "numeric variables."
+      )
+    }
     metaobs[, (cfeature) := as.factor(get(feature))]
     metaobs <- cbind(
       metaobs, model.matrix(as.formula(paste0("~ 0 + ", cfeature)), metaobs)

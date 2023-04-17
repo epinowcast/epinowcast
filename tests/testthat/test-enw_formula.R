@@ -79,5 +79,29 @@ test_that("enw_formula can handle complex combined formulas", {
 })
 
 test_that("enw_formula fails when incorrect random walks are defined", {
-  expect_error(enw_formula(~ 1 + rw(day), data = mtcars))
+  expect_error(
+    enw_formula(~ 1 + rw(day), data = mtcars),
+    regexp = "The time variable day is not numeric but must be to be"
+  )
+})
+
+test_that("enw_formula fails when non-numeric random walks are defined", {
+  expect_error(
+    enw_formula(~ 1 + rw(age_group), data = data),
+    regexp = "The time variable age_group is not numeric"
+  )
+})
+
+test_that("enw_formula supports random effects and random walks for the same variable", {
+  expect_snapshot(
+    enw_formula(~ 1 + (1 | week) + rw(week), data)
+  )
+})
+
+
+test_that("enw_formula does not allow the same fixed and random effect", {
+  expect_error(
+    enw_formula(~ 1 + age_group + (1 | age_group), data),
+    regexp = "Random effect terms must not be included in the fixed effects"
+  )
 })
