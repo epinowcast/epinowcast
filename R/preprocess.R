@@ -25,13 +25,16 @@
 #' @export
 #' @importFrom data.table as.data.table
 #' @examples
-#' obs <- data.frame(reference_date = as.Date("2021-01-01"), x = 1:10)
+#' obs <- data.frame(
+#'  reference_date = as.Date("2021-01-01"),
+#'  report_date = as.Date("2022-01-01"), x = 1:10
+#' )
 #' enw_metadata(obs, target_date = "reference_date")
 enw_metadata <- function(obs, target_date = c(
                            "reference_date", "report_date"
                          )) {
   obs <- data.table::as.data.table(obs)
-  choices <- c("reference_date", "report_date")
+  choices <- eval(formals()$target_date)
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
