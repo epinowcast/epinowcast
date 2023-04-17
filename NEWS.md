@@ -41,6 +41,7 @@ with `epinowcast` summarised posterior estimates due to the new use of the `pill
 - Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs and reviewed by @pearsonca.
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
 - Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and reviewed by.
+- Updated the package citation and documentation to include all new authors as of the `0.2.1` release. See #236 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.0
 
