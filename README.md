@@ -276,7 +276,7 @@ nowcast
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 248                0.248       48
+#> 1:                 223                0.223       48
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -298,26 +298,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.040     69 0.1960572 0.0000 69
-#>  3:                 1    37             0  47.083     47 0.3003351 0.0000 47
-#>  4:                 1    36             0  65.194     65 0.4522926 0.0000 65
-#>  5:                 1    35             0  50.256     50 0.5145180 0.0000 50
-#>  6:                 1    34             0  36.242     36 0.5056597 0.0000 36
-#>  7:                 1    33             0  94.500     94 0.7214711 0.0000 94
-#>  8:                 1    32             0  91.703     91 0.8435061 0.0000 91
-#>  9:                 1    31             0 100.054    100 1.0527071 1.4826 99
-#> 10:                 1    30             0  87.156     87 1.0811257 1.4826 86
+#>  2:                 1    38             0  69.040     69 0.2010981 0.0000 69
+#>  3:                 1    37             0  47.098     47 0.3201539 0.0000 47
+#>  4:                 1    36             0  65.193     65 0.4493918 0.0000 65
+#>  5:                 1    35             0  50.247     50 0.5081823 0.0000 50
+#>  6:                 1    34             0  36.213     36 0.4897661 0.0000 36
+#>  7:                 1    33             0  94.439     94 0.6773018 0.0000 94
+#>  8:                 1    32             0  91.696     91 0.8731245 0.0000 91
+#>  9:                 1    31             0 100.016    100 1.0577631 1.4826 99
+#> 10:                 1    30             0  87.198     87 1.1384604 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 1.0003600 1089.3330 1089.3330
-#>  3:  48 0.9998897  975.0014  969.6167
-#>  4:  66 1.0007393  924.7324  770.2941
-#>  5:  51 0.9984415  818.0679  808.6161
-#>  6:  37 0.9996104  927.9105  590.9052
-#>  7:  96 1.0056459  635.9692  610.3269
-#>  8:  93 0.9986757  832.3371  832.6675
-#>  9: 102 1.0030927  906.6866  909.8412
-#> 10:  89 0.9994359 1007.8336  951.0141
+#>  2:  69 0.9993628 1028.7509 1014.8826
+#>  3:  48 1.0017209  800.8692  788.7778
+#>  4:  66 0.9984950  929.2068  829.2287
+#>  5:  51 0.9983571  863.3922  859.1843
+#>  6:  37 0.9995919  781.9900  829.4605
+#>  7:  96 1.0131604  750.5999  699.0742
+#>  8:  93 1.0019323  712.3780  845.1180
+#>  9: 102 1.0004630  984.9557  914.8867
+#> 10:  89 1.0002847  917.9605  994.8352
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -366,17 +366,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    434
-#>     2:                 1    33             0      1          2     2    435
+#>     1:                 1    33             0      1          1     1    435
+#>     2:                 1    33             0      1          2     2    433
 #>     3:                 1    33             0      1          3     3    435
-#>     4:                 1    33             0      1          4     4    434
+#>     4:                 1    33             0      1          4     4    435
 #>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2027
-#> 33997:                 1     0             1      2        497   997   2078
-#> 33998:                 1     0             1      2        498   998   1986
-#> 33999:                 1     0             1      2        499   999   2023
-#> 34000:                 1     0             1      2        500  1000   2171
+#> 33996:                 1     0             1      2        496   996   2017
+#> 33997:                 1     0             1      2        497   997   2703
+#> 33998:                 1     0             1      2        498   998   2122
+#> 33999:                 1     0             1      2        499   999   2564
+#> 34000:                 1     0             1      2        500  1000   1844
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -397,20 +397,22 @@ If using `epinowcast` in your work please consider citing it using the
 following,
 
     #> 
-    #> To cite epinowcast in publications use:
+    #> To cite package 'epinowcast' in publications use:
     #> 
-    #>   Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, and Hugo
-    #>   Gruson (2021). epinowcast: Flexible hierarchical nowcasting, DOI:
-    #>   10.5281/zenodo.5637165
+    #>   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:
+    #>   Flexible hierarchical nowcasting." _Zenodo_.
+    #>   doi:10.5281/zenodo.5637165 <https://doi.org/10.5281/zenodo.5637165>,
+    #>   <https://github.com/epinowcast/epinowcast>.
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 
     #>   @Article{,
     #>     title = {epinowcast: Flexible hierarchical nowcasting},
     #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},
-    #>     journal = {Zenodo},
     #>     year = {2021},
+    #>     journal = {Zenodo},
     #>     doi = {10.5281/zenodo.5637165},
+    #>     url = {https://github.com/epinowcast/epinowcast},
     #>   }
 
 If making use of our methodology or the methodology on which ours is

@@ -1,20 +1,9 @@
-citHeader("To cite epinowcast in publications use:")
-
-citEntry(entry = "Article",
-  title        = "epinowcast: Flexible hierarchical nowcasting", # nolint
-  author       = personList(as.person("Sam Abbott"), as.person("Adrian Lison"),
-                 as.person("Sebastian Funk"), as.person("Carl Pearson"), 
-                 as.person("Hugo Gruson")),
-  journal      = "Zenodo",
-  year         = "2021",
-  volume       = "",
-  number       = "",
-  pages        = "",
-  doi          = "10.5281/zenodo.5637165",
-
-  textVersion  =
-  paste(
-    " Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, and Hugo Gruson (2021).", # nolint
-    "epinowcast: Flexible hierarchical nowcasting, ", # nolint
-    "DOI: 10.5281/zenodo.5637165")
+bibentry(
+  "Article",
+  title = "epinowcast: Flexible hierarchical nowcasting",
+  author = "Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson",
+  year = 2021,
+  journal = "Zenodo",
+  doi = "10.5281/zenodo.5637165",
+  url = "https://github.com/epinowcast/epinowcast"
 )
