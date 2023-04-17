@@ -38,27 +38,27 @@ set than presented here, we also provide a range of other documentation,
 case studies, and spaces for the community to interact with each other.
 Below is a short list of current resources.
 
-- [Package website](https://package.epinowcast.org/): This includes a
-  function reference, model outline, and case studies making use of the
-  package. The development version of our documentation (corresponding
-  to our `develop` branch) is available
-  [here](https://package.epinowcast.org/dev/).
-- [Organisation website](https://www.epinowcast.org/): This includes
-  links to our other resources as well as guest posts from community
-  members and schedules for any related seminars being run by community
-  members.
-- [Directory of example
-  scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
-  Not as fleshed out as our complete case studies these scripts are used
-  during package development and each showcase a subset of package
-  functionality. Often newly introduced features will be explored here
-  before surfacing in other areas of our documentation.
-- [Community forum](https://community.epinowcast.org/): Our community
-  forum is where development of tools is discussed, along with related
-  research from our members and discussions between users. If you are
-  interested in real-time analysis of infectious disease this is likely
-  a good place to start regardless of if you end up making use of
-  `epinowcast`.
+  - [Package website](https://package.epinowcast.org/): This includes a
+    function reference, model outline, and case studies making use of
+    the package. The development version of our documentation
+    (corresponding to our `develop` branch) is available
+    [here](https://package.epinowcast.org/dev/).
+  - [Organisation website](https://www.epinowcast.org/): This includes
+    links to our other resources as well as guest posts from community
+    members and schedules for any related seminars being run by
+    community members.
+  - [Directory of example
+    scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
+    Not as fleshed out as our complete case studies these scripts are
+    used during package development and each showcase a subset of
+    package functionality. Often newly introduced features will be
+    explored here before surfacing in other areas of our documentation.
+  - [Community forum](https://community.epinowcast.org/): Our community
+    forum is where development of tools is discussed, along with related
+    research from our members and discussions between users. If you are
+    interested in real-time analysis of infectious disease this is
+    likely a good place to start regardless of if you end up making use
+    of `epinowcast`.
 
 ## Installation
 
@@ -272,11 +272,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.03
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  15                0.015     36.9
+#> 1:                 248                0.248       48
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -298,26 +298,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.035     69 0.1892374 0.0000 69
-#>  3:                 1    37             0  47.079     47 0.2912797 0.0000 47
-#>  4:                 1    36             0  65.196     65 0.4514286 0.0000 65
-#>  5:                 1    35             0  50.236     50 0.5104553 0.0000 50
-#>  6:                 1    34             0  36.213     36 0.4731330 0.0000 36
-#>  7:                 1    33             0  94.459     94 0.6933973 0.0000 94
-#>  8:                 1    32             0  91.697     91 0.8876818 0.0000 91
-#>  9:                 1    31             0 100.024    100 1.1422472 1.4826 99
-#> 10:                 1    30             0  87.094     87 1.1001702 1.4826 86
+#>  2:                 1    38             0  69.040     69 0.1960572 0.0000 69
+#>  3:                 1    37             0  47.083     47 0.3003351 0.0000 47
+#>  4:                 1    36             0  65.194     65 0.4522926 0.0000 65
+#>  5:                 1    35             0  50.256     50 0.5145180 0.0000 50
+#>  6:                 1    34             0  36.242     36 0.5056597 0.0000 36
+#>  7:                 1    33             0  94.500     94 0.7214711 0.0000 94
+#>  8:                 1    32             0  91.703     91 0.8435061 0.0000 91
+#>  9:                 1    31             0 100.054    100 1.0527071 1.4826 99
+#> 10:                 1    30             0  87.156     87 1.0811257 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 0.9994571 1018.4110 1016.5266
-#>  3:  48 1.0011423  973.3458  978.9435
-#>  4:  66 0.9983964 1040.0012 1028.9234
-#>  5:  51 0.9981407  991.4194  964.0542
-#>  6:  37 1.0004015 1023.7948  982.4490
-#>  7:  96 0.9997144  997.2166 1007.2685
-#>  8:  93 1.0035405  808.3135  820.8541
-#>  9: 102 1.0032082  908.0431  741.1890
-#> 10:  89 0.9992380  898.3611  881.5727
+#>  2:  69 1.0003600 1089.3330 1089.3330
+#>  3:  48 0.9998897  975.0014  969.6167
+#>  4:  66 1.0007393  924.7324  770.2941
+#>  5:  51 0.9984415  818.0679  808.6161
+#>  6:  37 0.9996104  927.9105  590.9052
+#>  7:  96 1.0056459  635.9692  610.3269
+#>  8:  93 0.9986757  832.3371  832.6675
+#>  9: 102 1.0030927  906.6866  909.8412
+#> 10:  89 0.9994359 1007.8336  951.0141
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -367,16 +367,16 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>     1:                 1    33             0      1          1     1    434
-#>     2:                 1    33             0      1          2     2    434
-#>     3:                 1    33             0      1          3     3    433
-#>     4:                 1    33             0      1          4     4    437
-#>     5:                 1    33             0      1          5     5    434
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    435
+#>     4:                 1    33             0      1          4     4    434
+#>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   1978
-#> 33997:                 1     0             1      2        497   997   2094
-#> 33998:                 1     0             1      2        498   998   2010
-#> 33999:                 1     0             1      2        499   999   2489
-#> 34000:                 1     0             1      2        500  1000   2122
+#> 33996:                 1     0             1      2        496   996   2027
+#> 33997:                 1     0             1      2        497   997   2078
+#> 33998:                 1     0             1      2        498   998   1986
+#> 33999:                 1     0             1      2        499   999   2023
+#> 34000:                 1     0             1      2        500  1000   2171
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -399,14 +399,15 @@ following,
     #> 
     #> To cite epinowcast in publications use:
     #> 
-    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast:
-    #>   Flexible hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
+    #>   Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, and Hugo
+    #>   Gruson (2021). epinowcast: Flexible hierarchical nowcasting, DOI:
+    #>   10.5281/zenodo.5637165
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 
     #>   @Article{,
     #>     title = {epinowcast: Flexible hierarchical nowcasting},
-    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk},
+    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},
     #>     journal = {Zenodo},
     #>     year = {2021},
     #>     doi = {10.5281/zenodo.5637165},
@@ -428,7 +429,7 @@ for more information.
 
 ## Contributing
 
-We welcome contributions and new contributors! We particularly
+We welcome contributions and new contributors\! We particularly
 appreciate help on priority problems in the
 [issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull
