@@ -41,9 +41,11 @@ check_dates <- function(obs) {
       "Both reference_date and report_date must be present in order to use this
       function"
     )
-  } else if (is.null(obs$reference_date)) {
+  }
+  if (is.null(obs$reference_date)) {
     stop("reference_date must be present")
-  } else if (is.null(obs$report_date)) {
+  }
+  if (is.null(obs$report_date)) {
     stop("report_date must be present")
   }
   obs[, report_date := as.IDate(report_date)]
@@ -65,12 +67,14 @@ check_group <- function(obs) {
       ".group is a reserved variable and must not be present in the input
        data"
     )
-  } else if (!is.null(obs$.new_group)) {
+  }
+  if (!is.null(obs$.new_group)) {
     stop(
       ".new_group is a reserved variable and must not be present in the input
        data"
     )
-  } else if (!is.null(obs$.old_group)) {
+  }
+  if (!is.null(obs$.old_group)) {
     stop(
       ".old_group is a reserved variable and must not be present in the input
        data"

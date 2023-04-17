@@ -10,8 +10,8 @@ This is release is in development. It is not yet ready for production use. If yo
 ## Package
 
 - Fixed some typos in `README.md`, `NEWS.md`, the `model.Rmd` vignette and `convolution_matrix()` documentation. The `WORDLIST` used by spelling has also been updated by eliminate false positives. See #221 by @Bisaloo and reviewed by @seabbs and @adrian-lison.
-- Added more non-default linters in `.lintr` configuration file. This file is used when `lintr::lint_package()` is run or in the new `lint-changed-files.yaml` GitHub Actions workflow. See #220 by @Bisaloo and reviewed by @pearsonca and @seeabs.
-- Switched to the `lint-changed-files.yaml` GitHub Actions workflow instead of the regular `lint.yaml` to avoid annotations unrelated to the changes made in the PR. See #220 by @Bisaloo and reviewed by @pearsonca and @seeabs.
+- Added more non-default linters in `.lintr` configuration file. This file is used when `lintr::lint_package()` is run or in the new `lint-changed-files.yaml` GitHub Actions workflow. See #220 by @Bisaloo and reviewed by @pearsonca and @seabbs.
+- Switched to the `lint-changed-files.yaml` GitHub Actions workflow instead of the regular `lint.yaml` to avoid annotations unrelated to the changes made in the PR. See #220 by @Bisaloo and reviewed by @pearsonca and @seabbs.
 - Added tests for `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs and reviewed by @pearsonca.
 - Added tests for `enw_plot_obs()` where not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs and reviewed by @pearsonca.
 - Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs and reviewed by @pearsonca.
@@ -20,6 +20,7 @@ This is release is in development. It is not yet ready for production use. If yo
 - Removed unused internal plot helpers. See #217 by @seabbs and reviewed by @adrian-lison.
 - Added tests for all internal `check_` functions used to check inputs. See #217 by @seabbs and reviewed by @adrian-lison.
 - Removed the problematic double specification of default arguments for `target_date` in `enw_metadata()` as flagged in #212 by @pearsonca using `formals()` to instead detect the default values from the function specification. See #232 by @seabbs and self-reviewed.
+- In the words of Jenny Bryan: "there is no else, there is only if." Having else after `return()` of `stop()` increases the number of branches in the code, which makes it harder to read. It also translates into a higher cyclomatic complexity. We have removed all else statements after `return()` and `stop()` in the package. See #229 by @Bisaloo and reviewed by @seabbs.
 
 ## Documentation
 
