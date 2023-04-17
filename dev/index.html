@@ -296,7 +296,7 @@
 <span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
 <span><span class="co">#&gt; 1:                     0                         0             8</span></span>
 <span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                 248                0.248       48</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:                 223                0.223       48</span></span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
@@ -315,26 +315,26 @@
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
 <span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
 <span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.040     69 0.1960572 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.083     47 0.3003351 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.194     65 0.4522926 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.256     50 0.5145180 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.242     36 0.5056597 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.500     94 0.7214711 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.703     91 0.8435061 0.0000 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.054    100 1.0527071 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.156     87 1.0811257 1.4826 86</span></span>
+<span><span class="co">#&gt;  2:                 1    38             0  69.040     69 0.2010981 0.0000 69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.098     47 0.3201539 0.0000 47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.193     65 0.4493918 0.0000 65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.247     50 0.5081823 0.0000 50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.213     36 0.4897661 0.0000 36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.439     94 0.6773018 0.0000 94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.696     91 0.8731245 0.0000 91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.016    100 1.0577631 1.4826 99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.198     87 1.1384604 1.4826 86</span></span>
 <span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
 <span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  69 1.0003600 1089.3330 1089.3330</span></span>
-<span><span class="co">#&gt;  3:  48 0.9998897  975.0014  969.6167</span></span>
-<span><span class="co">#&gt;  4:  66 1.0007393  924.7324  770.2941</span></span>
-<span><span class="co">#&gt;  5:  51 0.9984415  818.0679  808.6161</span></span>
-<span><span class="co">#&gt;  6:  37 0.9996104  927.9105  590.9052</span></span>
-<span><span class="co">#&gt;  7:  96 1.0056459  635.9692  610.3269</span></span>
-<span><span class="co">#&gt;  8:  93 0.9986757  832.3371  832.6675</span></span>
-<span><span class="co">#&gt;  9: 102 1.0030927  906.6866  909.8412</span></span>
-<span><span class="co">#&gt; 10:  89 0.9994359 1007.8336  951.0141</span></span></code></pre></div>
+<span><span class="co">#&gt;  2:  69 0.9993628 1028.7509 1014.8826</span></span>
+<span><span class="co">#&gt;  3:  48 1.0017209  800.8692  788.7778</span></span>
+<span><span class="co">#&gt;  4:  66 0.9984950  929.2068  829.2287</span></span>
+<span><span class="co">#&gt;  5:  51 0.9983571  863.3922  859.1843</span></span>
+<span><span class="co">#&gt;  6:  37 0.9995919  781.9900  829.4605</span></span>
+<span><span class="co">#&gt;  7:  96 1.0131604  750.5999  699.0742</span></span>
+<span><span class="co">#&gt;  8:  93 1.0019323  712.3780  845.1180</span></span>
+<span><span class="co">#&gt;  9: 102 1.0004630  984.9557  914.8867</span></span>
+<span><span class="co">#&gt; 10:  89 1.0002847  917.9605  994.8352</span></span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
@@ -367,17 +367,17 @@
 <span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    434</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    435</span></span>
+<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    435</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    433</span></span>
 <span><span class="co">#&gt;     3:                 1    33             0      1          3     3    435</span></span>
-<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    434</span></span>
+<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    435</span></span>
 <span><span class="co">#&gt;     5:                 1    33             0      1          5     5    433</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2027</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2078</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1986</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2023</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2171</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2017</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2703</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2122</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2564</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   1844</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -396,21 +396,23 @@
 </h2>
 <p>If using <code>epinowcast</code> in your work please consider citing it using the following,</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To cite epinowcast in publications use:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To cite package 'epinowcast' in publications use:</span></span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, and Hugo</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Gruson (2021). epinowcast: Flexible hierarchical nowcasting, DOI:</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   10.5281/zenodo.5637165</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   @Article{,</span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     title = {epinowcast: Flexible hierarchical nowcasting},</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     journal = {Zenodo},</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Flexible hierarchical nowcasting." _Zenodo_.</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doi:10.5281/zenodo.5637165 &lt;https://doi.org/10.5281/zenodo.5637165&gt;,</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;https://github.com/epinowcast/epinowcast&gt;.</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   @Article{,</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     title = {epinowcast: Flexible hierarchical nowcasting},</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},</span></span>
 <span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     year = {2021},</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     doi = {10.5281/zenodo.5637165},</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   }</span></span></code></pre></div>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     journal = {Zenodo},</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     doi = {10.5281/zenodo.5637165},</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     url = {https://github.com/epinowcast/epinowcast},</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   }</span></span></code></pre></div>
 <p>If making use of our methodology or the methodology on which ours is based please cite the relevant papers from our <a href="https://package.epinowcast.org/articles/model.html">model outline</a>.</p>
 </div>
 <div class="section level2">
