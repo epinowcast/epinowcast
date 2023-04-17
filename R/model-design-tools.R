@@ -58,7 +58,6 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' @return A list containing the formula, the design matrix, and the index.
 #' @family modeldesign
 #' @export
-#' @importFrom data.table as.data.table
 #' @importFrom stats terms contrasts model.matrix
 #' @importFrom purrr map
 #' @examples
@@ -71,7 +70,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
                        ...) {
   # make data.table and copy
-  data <- data.table::as.data.table(data)
+  data <- coerce_dt(data)
 
   # make all character variables factors
   chars <- colnames(data)[sapply(data, is.character)]
@@ -227,7 +226,7 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
 #' enw_add_cumulative_membership(metaobs, "week")
 enw_add_cumulative_membership <- function(metaobs, feature) {
-  metaobs <- data.table::as.data.table(metaobs)
+  metaobs <- coerce_dt(metaobs)
   metaobs <- add_group(metaobs)
 
   cfeature <- paste0("c", feature)

@@ -31,10 +31,9 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #' @return a copy `data.table` version of `obs` with `report_date` and
 #' `reference_date` as [IDateTime] format.
 #'
-#' @importFrom data.table as.data.table
 #' @family check
 check_dates <- function(obs) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   if (is.null(obs$reference_date) && is.null(obs$report_date)) {
     stop(
       "Both reference_date and report_date must be present in order to use this
@@ -109,9 +108,9 @@ check_by <- function(obs, by = NULL) {
 
 #' Add a reserved grouping variable if missing
 #'
-#' @param x A data.table
+#' @param x A `data.table`, optionally with a `.group` variable
 #'
-#' @return A data table with a `.group` variable
+#' @return `x`, definitely with a `.group` variable
 #' @family check
 add_group <- function(x) {
   if (is.null(x[[".group"]])) {
@@ -166,4 +165,38 @@ check_modules_compatible <- function(modules) {
     )
   }
   return(invisible(NULL))
+}
+
+#' @title Coerce `data.table`s
+#'
+#' @description Provides consistent coercion of inputs to [data.table]
+#' with error handling
+#'
+#' @param data any of the types supported by [data.table::as.data.table()]
+#'
+#' @param new logical; if `TRUE` (default), a new `data.table` is returned
+#'
+#' @param required_cols character vector of required columns
+#' 
+#' @param forbidden_cols character vector of forbidden columns
+#' 
+#' @return a `data.table`; if `data` is a `data.table`, the returned object
+#' will have a new address, unless `new = FALSE`.
+#' i.e. be distinct from the original and not cause any side effects with
+#' changes.
+#'
+#' @details TODO
+#'
+#' @importFrom data.table as.data.table
+#' @family utils
+coerce_dt <- function(
+  data, required_cols, forbidden_cols, new = TRUE
+) {
+  if (!new && inherits(data, "data.table")) {
+    dt <- data
+  } else {
+    dt <- data.table::as.data.table(data)
+  }
+
+  return(dt[])
 }

@@ -30,7 +30,6 @@
 #'
 #' @inheritParams enw_formula
 #' @family formulatools
-#' @importFrom data.table copy
 #' @importFrom stats as.formula
 #' @export
 #' @examples
@@ -39,7 +38,7 @@
 enw_manual_formula <- function(data, fixed = NULL, random = NULL,
                                custom_random = NULL, no_contrasts = FALSE,
                                add_intercept = TRUE) {
-  data <- data.table::copy(data)
+  data <- coerce_dt(data)
   if (add_intercept) {
     form <- "1"
   } else {
@@ -286,7 +285,6 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' formula.
 #'  - `effects`: A `data.frame` describing the random effect structure of the
 #' new effects.
-#' @importFrom data.table copy
 #' @family formulatools
 #' @examples
 #' data <- enw_example("preproc")$metareference[[1]]
@@ -298,7 +296,7 @@ construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
   }
-  data <- data.table::copy(data)
+  data <- coerce_dt(data)
 
   if (!is.numeric(data[[rw$time]])) {
     stop(
@@ -318,7 +316,7 @@ construct_rw <- function(rw, data) {
   )
   ctime <- paste0("c", rw$time)
   terms <- grep(ctime, colnames(data), value = TRUE)
-  fdata <- data.table::copy(data)
+  fdata <- coerce_dt(data)
   fdata <- fdata[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
@@ -407,7 +405,6 @@ re <- function(formula) {
 #' converted into one.
 #'
 #' @family formulatools
-#' @importFrom data.table as.data.table
 #' @importFrom purrr map
 #' @examples
 #' # Simple examples
@@ -429,7 +426,7 @@ construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
-  data <- data.table::as.data.table(data)
+  data <- coerce_dt(data)
 
   # extract random and fixed effects
   fixed <- strsplit(re$fixed, " + ", fixed = TRUE)[[1]]
@@ -597,7 +594,7 @@ construct_re <- function(re, data) {
 #' @family formulatools
 #' @export
 #' @importFrom purrr map transpose
-#' @importFrom data.table as.data.table rbindlist setnafill
+#' @importFrom data.table rbindlist setnafill
 #' @examples
 #' # Use meta data for references dates from the Germany COVID-19
 #' # hospitalisation data.
@@ -625,7 +622,7 @@ construct_re <- function(re, data) {
 #' # to specify an independent random effect per strata.
 #' enw_formula(~ (1 + day | week:month), data = data)
 enw_formula <- function(formula, data, sparse = TRUE) {
-  data <- data.table::as.data.table(data)
+  data <- coerce_dt(data)
 
   # Parse formula
   parsed_formula <- parse_formula(formula)

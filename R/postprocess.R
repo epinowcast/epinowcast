@@ -78,7 +78,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' @inheritParams enw_posterior
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table copy setorderv
+#' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
@@ -94,7 +94,7 @@ enw_nowcast_summary <- function(fit, obs,
 
   max_delay <- nrow(nowcast) / max(obs$.group)
 
-  ord_obs <- data.table::copy(obs)
+  ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   nowcast <- cbind(
@@ -121,7 +121,7 @@ enw_nowcast_summary <- function(fit, obs,
 #' @inheritParams enw_nowcast_summary
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table copy setorderv
+#' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])
@@ -138,7 +138,7 @@ enw_nowcast_samples <- function(fit, obs) {
   )
   max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
 
-  ord_obs <- data.table::copy(obs)
+  ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
@@ -230,14 +230,14 @@ enw_summarise_samples <- function(samples, probs = c(
 #' added.
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table setcolorder
+#' @importFrom data.table setcolorder
 #' @examples
 #' fit <- enw_example("nowcast")
 #' obs <- enw_example("obs")
 #' nowcast <- summary(fit, type = "nowcast")
 #' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   obs <- add_group(obs)
   obs <- obs[, .(reference_date, .group, latest_confirm = confirm)]
   out <- merge(
@@ -266,7 +266,7 @@ enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
 #' @inheritParams enw_posterior
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table copy setorderv
+#' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_pp_summary(fit$fit[[1]], fit$new_confirm[[1]], probs = c(0.5))
@@ -280,7 +280,7 @@ enw_pp_summary <- function(fit, diff_obs,
     probs = probs
   )
 
-  ord_obs <- data.table::copy(diff_obs)
+  ord_obs <- coerce_dt(diff_obs)
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   pp <- cbind(
     ord_obs,

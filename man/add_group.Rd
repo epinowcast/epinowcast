@@ -7,10 +7,10 @@
 add_group(x)
 }
 \arguments{
-\item{x}{A data.table}
+\item{x}{A \code{data.table}, optionally with a \code{.group} variable}
 }
 \value{
-A data table with a \code{.group} variable
+\code{x}, definitely with a \code{.group} variable
 }
 \description{
 Add a reserved grouping variable if missing

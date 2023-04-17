@@ -82,14 +82,13 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' two vector (specifying the mean and standard deviation of the prior).
 #' @family modeltools
 #' @inheritParams enw_replace_priors
-#' @importFrom data.table copy
 #' @importFrom purrr map
 #' @export
 #' @examples
 #' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- data.table::as.data.table(priors)
+  priors <- coerce_dt(priors)
   priors[, variable := paste0(variable, "_p")]
   priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
@@ -120,7 +119,6 @@ enw_priors_as_data_list <- function(priors) {
 #' @return A data.table of prior definitions (variable, mean and sd).
 #' @family modeltools
 #' @export
-#' @importFrom data.table as.data.table
 #' @examples
 #' # Update priors from a data.frame
 #' priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
@@ -142,16 +140,13 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
-  custom_priors <- data.table::as.data.table(custom_priors)[
+  custom_priors <- coerce_dt(custom_priors)[
     ,
-    .(variable, mean = as.numeric(mean), sd = as.numeric(sd))
-  ]
-  custom_priors <- custom_priors[
-    ,
-    variable := gsub("\\[([^]]*)\\]", "", variable)
+    .(variable = gsub("\\[([^]]*)\\]", "", variable),
+      mean = as.numeric(mean), sd = as.numeric(sd))
   ]
   variables <- custom_priors$variable
-  priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
+  priors <- coerce_dt(priors)[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])
 }

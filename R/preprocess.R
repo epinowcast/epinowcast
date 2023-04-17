@@ -23,7 +23,6 @@
 #' @family preprocess
 #' @importFrom data.table setkeyv
 #' @export
-#' @importFrom data.table as.data.table
 #' @examples
 #' obs <- data.frame(
 #'  reference_date = as.Date("2021-01-01"),
@@ -33,14 +32,14 @@
 enw_metadata <- function(obs, target_date = c(
                            "reference_date", "report_date"
                          )) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   choices <- eval(formals()$target_date)
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
   obs <- add_group(obs)
 
-  metaobs <- setnames(data.table::as.data.table(obs), target_date, "date")
+  metaobs <- setnames(coerce_dt(obs), target_date, "date")
   suppressWarnings(
     metaobs[
       ,
@@ -121,7 +120,7 @@ enw_add_metaobs_features <- function(metaobs,
                                      holidays_to = "Sunday",
                                      datecol = "date") {
   # localize and check metaobs input
-  metaobs <- data.table::as.data.table(metaobs)
+  metaobs <- coerce_dt(metaobs)
   if (is.null(metaobs[[datecol]])) {
     stop(sprintf("metaobs does not have datecol '%s'.", datecol))
   }
@@ -214,7 +213,7 @@ enw_add_metaobs_features <- function(metaobs,
 #'
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy data.table rbindlist setkeyv
+#' @importFrom data.table data.table rbindlist setkeyv
 #' @importFrom purrr map
 #' @examples
 #' metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
@@ -230,7 +229,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   } else {
     filt_fn <- max
   }
-  metaobs <- data.table::as.data.table(metaobs)
+  metaobs <- coerce_dt(metaobs)
   metaobs <- add_group(metaobs)
   exts <- metaobs[, .SD[date == filt_fn(date)], by = .group]
   exts <- split(exts, by = ".group")
@@ -269,7 +268,6 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 #'
 #' @family preprocess
 #' @export
-#' @importFrom data.table as.data.table copy
 #' @examples
 #' obs <- data.frame(x = 1:3, y = 1:3)
 #' enw_assign_group(obs)
@@ -281,10 +279,10 @@ enw_assign_group <- function(obs, by = NULL) {
       "from your data before calling `enw_assign_group`."
     )
   }
-  check_by(obs, by = by)
-  obs <- data.table::as.data.table(obs)
+  check_by(obs, by = by) # TODO: order? should ensure a dt first or ...?
+  obs <- coerce_dt(obs)
   if (length(by) != 0) {
-    groups_index <- data.table::copy(obs)
+    groups_index <- coerce_dt(obs)
     groups_index <- unique(groups_index[, ..by])
     groups_index[, .group := seq_len(.N)]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
@@ -305,7 +303,6 @@ enw_assign_group <- function(obs, by = NULL) {
 #' @inheritParams enw_cumulative_to_incidence
 #' @family preprocess
 #' @export
-#' @importFrom data.table as.data.table copy
 #' @examples
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
 #' obs$reference_date <- as.Date("2021-01-01")
@@ -332,7 +329,6 @@ enw_add_delay <- function(obs) {
 #' @inheritParams enw_latest_data
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy
 #' @examples
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
 #' obs$reference_date <- as.Date("2021-01-01")
@@ -580,12 +576,11 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
-#' @importFrom data.table copy
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_delay_filter(obs, max_delay = 2)
 enw_delay_filter <- function(obs, max_delay) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   obs <- add_group(obs)
   obs <- obs[,
     .SD[
@@ -612,12 +607,12 @@ enw_delay_filter <- function(obs, max_delay) {
 #' being observations by reporting delay.
 #' @family preprocess
 #' @export
-#' @importFrom data.table as.data.table dcast setorderv
+#' @importFrom data.table dcast setorderv
 #' @examples
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   obs <- add_group(obs)
   if (any(obs$new_confirm < 0)) {
     warning(
@@ -648,7 +643,7 @@ enw_reporting_triangle <- function(obs) {
 #' rt <- enw_reporting_triangle(obs)
 #' enw_reporting_triangle_to_long(rt)
 enw_reporting_triangle_to_long <- function(obs) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   obs <- add_group(obs)
   reports_long <- data.table::melt(
     obs,
@@ -675,7 +670,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @inheritParams enw_preprocess_data
 #' @export
-#' @importFrom data.table as.data.table CJ
+#' @importFrom data.table CJ
 #' @family preprocess
 #' @examples
 #' obs <- data.frame(
@@ -685,7 +680,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' enw_complete_dates(obs)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
                                missing_reference = TRUE) {
-  obs <- data.table::as.data.table(obs)
+  obs <- coerce_dt(obs)
   obs <- check_dates(obs)
   check_group(obs)
   check_by(obs)
@@ -751,7 +746,6 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' group.
 #'
 #' @export
-#' @importFrom data.table as.data.table
 #' @family preprocess
 #' @examples
 #' obs <- data.frame(
@@ -966,7 +960,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @family preprocess
 #' @inheritParams enw_cumulative_to_incidence
 #' @export
-#' @importFrom data.table as.data.table data.table
+#' @importFrom data.table data.table
 #' @examples
 #' library(data.table)
 #'

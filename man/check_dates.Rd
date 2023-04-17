@@ -11,8 +11,8 @@ check_dates(obs)
 \code{reference_date} columns.}
 }
 \value{
-Returns the input \code{data.frame} with dates converted to date format
-if not already.
+a copy \code{data.table} version of \code{obs} with \code{report_date} and
+\code{reference_date} as \link{IDateTime} format.
 }
 \description{
 Check Report and Reference Dates are present

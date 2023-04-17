@@ -425,7 +425,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
-#' @importFrom data.table setorderv copy dcast
+#' @importFrom data.table setorderv dcast
 #' @importFrom purrr map
 #' @export
 #' @examples
@@ -469,16 +469,16 @@ enw_missing <- function(formula = ~1, data) {
     )
 
     # Get the indexes for when grouped observations start and end
-    miss_lookup <- data.table::copy(rep_w_complete_ref)
+    miss_lookup <- coerce_dt(rep_w_complete_ref)
     data_list$miss_st <- miss_lookup[, n := seq_len(.N), by = ".group"]
     data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
     data_list$miss_cst <- miss_lookup[, n := seq_len(.N)]
     data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
 
     # Get (and order) reported cases with a missing reference date
-    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    missing_reference <- coerce_dt(data$missing_reference[[1]])
     data.table::setkeyv(missing_reference, c(".group", "report_date"))
-    data_list$missing_reference <- data.table::copy(missing_reference)[
+    data_list$missing_reference <- coerce_dt(missing_reference)[
       rep_w_complete_ref,
       on = c("report_date", ".group")
     ][, confirm]
@@ -567,7 +567,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
 
   # get new confirm for processing
-  new_confirm <- data.table::copy(data$new_confirm[[1]])
+  new_confirm <- coerce_dt(data$new_confirm[[1]])
   data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
 
   # get flat observations

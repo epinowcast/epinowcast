@@ -10,7 +10,7 @@
 #' @family modelmodulehelpers
 enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = NULL) {
   check_by(new_confirm, by = by)
-  rep_with_complete_ref <- data.table::as.data.table(new_confirm)
+  rep_with_complete_ref <- coerce_dt(new_confirm)
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
     by = c(by, "report_date")
@@ -38,7 +38,7 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = NULL) {
 enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
   # Make a complete data.frame of all possible reference and report dates
-  miss_lk <- data.table::copy(metareference)[
+  miss_lk <- coerce_dt(metareference)[
     ,
     .(reference_date = date, .group)
   ]
