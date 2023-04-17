@@ -19,7 +19,7 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
 - Removed unused internal plot helpers. See #217 by @seabbs and reviewed by @adrian-lison.
 - Added tests for all internal `check_` functions used to check inputs. See #217 by @seabbs and reviewed by @adrian-lison.
-- Removed the problematic double specification of default arguments for `target_date` in `enw_metadata()` as flagged in #212 by @pearsonca using `formals()` to instead detect the default values from the function specification. See by @seabbs and reviewed by @pearsonca.
+- Removed the problematic double specification of default arguments for `target_date` in `enw_metadata()` as flagged in #212 by @pearsonca using `formals()` to instead detect the default values from the function specification. See #232 by @seabbs and self-reviewed.
 
 ## Documentation
 
