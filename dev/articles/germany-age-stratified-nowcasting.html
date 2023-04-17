@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.10000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.12000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -188,7 +188,6 @@ hospitalisations are adjusted.</p>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">retro_nat_germany</span></span>
 <span><span class="co">#&gt;       reference_date location age_group confirm report_date</span></span>
-<span><span class="co">#&gt;               &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
 <span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30  2021-07-23</span></span>
 <span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31  2021-07-24</span></span>
 <span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8  2021-07-25</span></span>
@@ -242,16 +241,12 @@ into total counts after fitting the model.</p>
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span>, by <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
 <span><span class="co">#&gt;                     obs           new_confirm               latest</span></span>
-<span><span class="co">#&gt;                  &lt;list&gt;                &lt;list&gt;               &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt; &lt;data.table[287x10]&gt;</span></span>
 <span><span class="co">#&gt;    missing_reference   reporting_triangle       metareference</span></span>
-<span><span class="co">#&gt;               &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
-<span><span class="co">#&gt;              metareport          metadelay  time snapshots        by groups</span></span>
-<span><span class="co">#&gt;                  &lt;list&gt;             &lt;list&gt; &lt;int&gt;     &lt;int&gt;    &lt;list&gt;  &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;    41       287 age_group      7</span></span>
+<span><span class="co">#&gt;              metareport          metadelay time snapshots        by groups</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;   41       287 age_group      7</span></span>
 <span><span class="co">#&gt;    max_delay   max_date</span></span>
-<span><span class="co">#&gt;        &lt;num&gt;     &lt;IDat&gt;</span></span>
 <span><span class="co">#&gt; 1:        40 2021-09-01</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -289,16 +284,8 @@ be done.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 185.8 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 254.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 220.3 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 254.9 seconds.</span></span></code></pre></div>
+<span>  model <span class="op">=</span> <span class="va">multithread_model</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>We first visualise the observations available to the model, the
 nowcast of final reported hospitalisations and the actual reported
 observations.</p>
@@ -322,11 +309,14 @@ problematic.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">priors</span></span>
-<span><span class="co">#&gt;            variable      mean    median         sd        mad        q5       q20       q80       q95     rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt;              &lt;char&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1216000 1.1195750 0.08808307 0.04474487 1.0478135 1.0855260 1.1585820 1.1935425 1.004192 1410.998 795.7473</span></span>
-<span><span class="co">#&gt; 2:   refp_sd_int[1] 1.7296920 1.7269600 0.09428034 0.04573080 1.6514915 1.6905040 1.7705580 1.8108135 1.008058 2130.656 879.3806</span></span>
-<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.5947632 0.5951165 0.03426963 0.01748208 0.5655864 0.5798324 0.6092524 0.6205295 1.000538 1246.998 795.8234</span></span></code></pre></div>
+<span><span class="co">#&gt;            variable      mean    median         sd        mad        q5</span></span>
+<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1207624 1.1204600 0.09072471 0.04619040 1.0462980</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int[1] 1.7311648 1.7296850 0.09567793 0.04728753 1.6547720</span></span>
+<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.5955124 0.5953265 0.03710977 0.01839165 0.5659246</span></span>
+<span><span class="co">#&gt;          q20      q80       q95      rhat ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt; 1: 1.0818620 1.158388 1.1980045 0.9996327 1851.653 663.5543</span></span>
+<span><span class="co">#&gt; 2: 1.6903560 1.772894 1.8116325 0.9991851 2428.449 756.0963</span></span>
+<span><span class="co">#&gt; 3: 0.5804142 0.611261 0.6269922 0.9989755 1151.603 747.4970</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="reference-day-of-the-week-effect">Reference day of the week effect<a class="anchor" aria-label="anchor" href="#reference-day-of-the-week-effect"></a>
@@ -348,15 +338,7 @@ the formula interface as follows.</p>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 327.8 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 693.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 510.7 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 693.9 seconds.</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p>We again visualise the nowcasts</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
@@ -403,15 +385,7 @@ model included.</p>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 690.6 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 774.6 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 732.6 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 774.8 seconds.</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Nowcast performance looks visually improved but there is notable
 variation across age groups with the 35-59 year old nowcast appearing
 quite poor (and as a result the aggregate nowcast also not showing great
@@ -442,15 +416,7 @@ model and the day of the week adjusted report date model.</p>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 851.4 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 966.5 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 909.0 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 966.7 seconds.</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Fit looks slightly better with this adjustment though uncertainty has
 also increased for all age groups and performance for the final day of
 data may have reduced compared to the first model.</p>
@@ -484,15 +450,7 @@ parameter limits the additional computational overhead.</p>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span></span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 1865.2 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 1903.2 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 1884.2 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 1903.4 seconds.</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p>In comparison to the previous model it looks like the introduction of
 variation over time has introduce a slight improvement in capturing
 hospitalisations in some age groups.</p>
@@ -522,15 +480,7 @@ still shared across data sets.</p>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 1936.7 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 2058.0 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 1997.3 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 2058.3 seconds.</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 <p>In comparison to the previous model it looks like the introduction of
 variation over time has introduce a slight improvement in capturing
 hospitalisations in some age groups.</p>
@@ -592,68 +542,6 @@ single data.frame.</p>
 <span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 142.0 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 160.4 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 151.2 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 160.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 78.9 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 93.3 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 86.1 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 93.6 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 69.4 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 82.3 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 75.9 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 82.6 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 91.8 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 102.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 97.2 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 102.9 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 137.2 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 142.7 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 140.0 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 142.8 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 2 finished in 91.3 seconds.</span></span>
-<span><span class="co">#&gt; Chain 1 finished in 99.8 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 95.5 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 100.0 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Running MCMC with 2 parallel chains, with 6 thread(s) per chain...</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Chain 1 finished in 89.0 seconds.</span></span>
-<span><span class="co">#&gt; Chain 2 finished in 99.6 seconds.</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Both chains finished successfully.</span></span>
-<span><span class="co">#&gt; Mean chain execution time: 94.3 seconds.</span></span>
-<span><span class="co">#&gt; Total execution time: 99.8 seconds.</span></span>
 <span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
 <p>As we now have the summarised nowcasts rather than an object of class
 <code>epinowcast</code> we need to make use of the underlying plot
@@ -768,10 +656,10 @@ are not accounting for this by refitting the model as required.</p>
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                                     elpd_diff se_diff</span></span>
 <span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0       0.0 </span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week  -10.3       3.7 </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                  -11.0       5.5 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -48.6      10.2 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -609.5      45.1</span></span></code></pre></div>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                  -11.1       5.2 </span></span>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week  -11.7       3.3 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -50.7      10.5 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -611.9      45.2</span></span></code></pre></div>
 <p>We see that the most model which includes day of the week effects for
 the date of report substantially outperformed the baseline model with no
 adjustment and that the more complex models that adjusted for variation
@@ -826,65 +714,65 @@ underprediction for example).</p>
 <tbody>
 <tr class="odd">
 <td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="right">9.818798</td>
-<td align="right">3.139237</td>
-<td align="right">4.339090</td>
-<td align="right">2.3401256</td>
-<td align="right">-0.0930926</td>
-<td align="right">-0.0887755</td>
-<td align="right">16.24490</td>
+<td align="right">9.786248</td>
+<td align="right">3.158477</td>
+<td align="right">4.225981</td>
+<td align="right">2.4019466</td>
+<td align="right">-0.1087912</td>
+<td align="right">-0.1020408</td>
+<td align="right">16.29592</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="right">10.083115</td>
-<td align="right">2.355764</td>
-<td align="right">6.779435</td>
-<td align="right">0.9483516</td>
-<td align="right">-0.1323391</td>
-<td align="right">-0.2265306</td>
-<td align="right">15.54082</td>
+<td align="right">10.100157</td>
+<td align="right">2.326279</td>
+<td align="right">6.827567</td>
+<td align="right">0.9466248</td>
+<td align="right">-0.1386185</td>
+<td align="right">-0.2428571</td>
+<td align="right">15.48980</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age, Report: Day of week</td>
-<td align="right">8.562323</td>
-<td align="right">2.317488</td>
-<td align="right">5.592465</td>
-<td align="right">0.6524333</td>
-<td align="right">-0.1354788</td>
-<td align="right">-0.3581633</td>
-<td align="right">13.86735</td>
+<td align="right">8.630703</td>
+<td align="right">2.267425</td>
+<td align="right">5.730863</td>
+<td align="right">0.6326531</td>
+<td align="right">-0.1417582</td>
+<td align="right">-0.3673469</td>
+<td align="right">13.91837</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="right">7.569366</td>
-<td align="right">2.899246</td>
-<td align="right">1.156672</td>
-<td align="right">3.5136578</td>
-<td align="right">-0.0255887</td>
-<td align="right">0.1285714</td>
-<td align="right">12.42857</td>
+<td align="right">7.314954</td>
+<td align="right">2.790201</td>
+<td align="right">1.396860</td>
+<td align="right">3.1275510</td>
+<td align="right">-0.0193093</td>
+<td align="right">0.0826531</td>
+<td align="right">12.02041</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age and week by age, Report: Day of
 week</td>
-<td align="right">6.797542</td>
-<td align="right">3.034496</td>
-<td align="right">1.942857</td>
-<td align="right">1.8197802</td>
-<td align="right">0.0215071</td>
-<td align="right">-0.1357143</td>
-<td align="right">11.28571</td>
+<td align="right">6.887651</td>
+<td align="right">3.004575</td>
+<td align="right">2.028258</td>
+<td align="right">1.8546939</td>
+<td align="right">0.0058085</td>
+<td align="right">-0.1387755</td>
+<td align="right">11.29592</td>
 </tr>
 <tr class="even">
 <td align="left">Independent by age, Reference: Week, Report: Day of
 week</td>
-<td align="right">7.277953</td>
-<td align="right">3.854562</td>
-<td align="right">1.538305</td>
-<td align="right">1.8845212</td>
-<td align="right">0.0419152</td>
-<td align="right">-0.0591837</td>
-<td align="right">12.26531</td>
+<td align="right">7.292314</td>
+<td align="right">3.869724</td>
+<td align="right">1.583673</td>
+<td align="right">1.8387755</td>
+<td align="right">0.0340659</td>
+<td align="right">-0.0622449</td>
+<td align="right">12.31633</td>
 </tr>
 </tbody>
 </table>
