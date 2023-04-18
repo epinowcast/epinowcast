@@ -15,3 +15,12 @@ test_that("add_group doesn't add a group when one is present", {
 test_that("add_group fails when passed a data.frame", {
   expect_error(epinowcast:::add_group(data.frame(x = 1)))
 })
+
+test_that("`add_group` maintains the same `data.table` object", {
+  dummy <- data.table::data.table(dummy = 1:10)
+  dummy_addr <- data.table::address(dummy)
+  add_group(dummy)
+  expect_equal(dummy_addr, data.table::address(dummy))
+  dummy <- add_group(dummy)
+  expect_equal(dummy_addr, data.table::address(dummy))
+})

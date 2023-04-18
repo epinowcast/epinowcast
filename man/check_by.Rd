@@ -11,6 +11,9 @@ check_by(obs, by = NULL)
 
 \item{by}{A character vector of variables to group by.}
 }
+\value{
+\code{obs}, unmodified
+}
 \description{
 Check by variables are present in the data
 }

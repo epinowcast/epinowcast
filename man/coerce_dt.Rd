@@ -4,14 +4,22 @@
 \alias{coerce_dt}
 \title{Coerce \code{data.table}s}
 \usage{
-coerce_dt(data, required_cols, forbidden_cols, new = TRUE)
+coerce_dt(
+  data,
+  select = NULL,
+  required_cols = select,
+  forbidden_cols = NULL,
+  new = TRUE
+)
 }
 \arguments{
 \item{data}{any of the types supported by \code{\link[data.table:as.data.table]{data.table::as.data.table()}}}
 
-\item{required_cols}{character vector of required columns}
+\item{select}{optional character vector of columns to return; \emph{unchecked}}
 
-\item{forbidden_cols}{character vector of forbidden columns}
+\item{required_cols}{optional character vector of required columns; checked}
+
+\item{forbidden_cols}{optional character vector of forbidden columns; checked}
 
 \item{new}{logical; if \code{TRUE} (default), a new \code{data.table} is returned}
 }
@@ -23,7 +31,7 @@ changes.
 }
 \description{
 Provides consistent coercion of inputs to \link{data.table}
-with error handling
+with error handling, column checking, and optional selection.
 }
 \details{
 TODO

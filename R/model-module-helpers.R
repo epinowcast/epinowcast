@@ -9,8 +9,7 @@
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = NULL) {
-  check_by(new_confirm, by = by)
-  rep_with_complete_ref <- coerce_dt(new_confirm)
+  rep_with_complete_ref <- coerce_dt(new_confirm, required_cols = by)
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
     by = c(by, "report_date")

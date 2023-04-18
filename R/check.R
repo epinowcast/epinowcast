@@ -33,19 +33,7 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #'
 #' @family check
 check_dates <- function(obs) {
-  obs <- coerce_dt(obs)
-  if (is.null(obs$reference_date) && is.null(obs$report_date)) {
-    stop(
-      "Both reference_date and report_date must be present in order to use this
-      function"
-    )
-  }
-  if (is.null(obs$reference_date)) {
-    stop("reference_date must be present")
-  }
-  if (is.null(obs$report_date)) {
-    stop("report_date must be present")
-  }
+  obs <- coerce_dt(obs, required_cols = c("report_date", "reference_date"))
   obs[, report_date := as.IDate(report_date)]
   obs[, reference_date := as.IDate(reference_date)]
   return(obs[])
@@ -87,7 +75,7 @@ check_group <- function(obs) {
 #'
 #' @param by A character vector of variables to group by.
 #'
-#' @return NULL
+#' @return `obs`, unmodified
 #'
 #' @family check
 check_by <- function(obs, by = NULL) {
@@ -103,7 +91,7 @@ check_by <- function(obs, by = NULL) {
       )
     }
   }
-  return(invisible(NULL))
+  return(obs)
 }
 
 #' Add a reserved grouping variable if missing
@@ -170,16 +158,18 @@ check_modules_compatible <- function(modules) {
 #' @title Coerce `data.table`s
 #'
 #' @description Provides consistent coercion of inputs to [data.table]
-#' with error handling
+#' with error handling, column checking, and optional selection.
 #'
 #' @param data any of the types supported by [data.table::as.data.table()]
 #'
 #' @param new logical; if `TRUE` (default), a new `data.table` is returned
 #'
-#' @param required_cols character vector of required columns
-#' 
-#' @param forbidden_cols character vector of forbidden columns
-#' 
+#' @param select optional character vector of columns to return; *unchecked*
+#'
+#' @param required_cols optional character vector of required columns; checked
+#'
+#' @param forbidden_cols optional character vector of forbidden columns; checked
+#'
 #' @return a `data.table`; if `data` is a `data.table`, the returned object
 #' will have a new address, unless `new = FALSE`.
 #' i.e. be distinct from the original and not cause any side effects with
@@ -190,13 +180,42 @@ check_modules_compatible <- function(modules) {
 #' @importFrom data.table as.data.table
 #' @family utils
 coerce_dt <- function(
-  data, required_cols, forbidden_cols, new = TRUE
+  data, select = NULL, required_cols = select,
+  forbidden_cols = NULL, new = TRUE
 ) {
-  if (!new && inherits(data, "data.table")) {
-    dt <- data
-  } else {
+  if (!new) { # if we want to keep the original data.table ...
+    dt <- data.table::setDT(data)
+  } else {    # ... otherwise, make a copy
     dt <- data.table::as.data.table(data)
   }
-
-  return(dt[])
+  # check for required columns
+  if ((length(required_cols) > 0)) {
+    if (!is.character(required_cols)) {
+      stop("`required_cols` must be a character vector")
+    }
+    if (!all(required_cols %in% colnames(dt))) {
+      stop(
+        "The following columns are required: ",
+        toString(required_cols[!(required_cols %in% colnames(dt))])
+      )
+    }
+  }
+  # check for forbidden columns
+  if ((length(forbidden_cols) > 0)) {
+    if (!is.character(forbidden_cols)) {
+      stop("`required_cols` must be a character vector")
+    }
+    if (any(forbidden_cols %in% colnames(dt))) {
+      stop(
+        "The following columns are forbidden: ",
+        toString(forbidden_cols[forbidden_cols %in% colnames(dt)])
+      )
+    }
+  }
+  # extract the desired columns
+  if (length(select) > 0) {
+    return(dt[, .SD, .SDcols = c(select)])
+  } else {
+    return(dt[])
+  }
 }

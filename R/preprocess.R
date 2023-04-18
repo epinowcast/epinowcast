@@ -32,14 +32,15 @@
 enw_metadata <- function(obs, target_date = c(
                            "reference_date", "report_date"
                          )) {
-  obs <- coerce_dt(obs)
   choices <- eval(formals()$target_date)
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
-  obs <- add_group(obs)
+  metaobs <- setnames(
+    coerce_dt(obs, required_cols = target_date), target_date, "date"
+  )
+  metaobs <- add_group(metaobs)
 
-  metaobs <- setnames(coerce_dt(obs), target_date, "date")
   suppressWarnings(
     metaobs[
       ,
@@ -120,10 +121,7 @@ enw_add_metaobs_features <- function(metaobs,
                                      holidays_to = "Sunday",
                                      datecol = "date") {
   # localize and check metaobs input
-  metaobs <- coerce_dt(metaobs)
-  if (is.null(metaobs[[datecol]])) {
-    stop(sprintf("metaobs does not have datecol '%s'.", datecol))
-  }
+  metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
     stop(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
@@ -279,8 +277,7 @@ enw_assign_group <- function(obs, by = NULL) {
       "from your data before calling `enw_assign_group`."
     )
   }
-  check_by(obs, by = by) # TODO: order? should ensure a dt first or ...?
-  obs <- coerce_dt(obs)
+  obs <- coerce_dt(obs, required_cols = by)
   if (length(by) != 0) {
     groups_index <- coerce_dt(obs)
     groups_index <- unique(groups_index[, ..by])
@@ -514,7 +511,7 @@ enw_latest_data <- function(obs) {
 #' enw_cumulative_to_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
                                         by = NULL) {
-  check_by(obs)
+  check_by(obs) # TODO: no-op?
   reports <- check_dates(obs)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
@@ -558,7 +555,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = NULL) {
   obs <- check_dates(obs)
-  check_by(obs)
+  check_by(obs) # TODO: no-op?
 
   obs <- obs[!is.na(reference_date)]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
@@ -683,7 +680,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   obs <- coerce_dt(obs)
   obs <- check_dates(obs)
   check_group(obs)
-  check_by(obs)
+  check_by(obs) # TODO: no-op?
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)

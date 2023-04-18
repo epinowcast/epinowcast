@@ -296,7 +296,6 @@ construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
   }
-  data <- coerce_dt(data)
 
   if (!is.numeric(data[[rw$time]])) {
     stop(
@@ -316,8 +315,7 @@ construct_rw <- function(rw, data) {
   )
   ctime <- paste0("c", rw$time)
   terms <- grep(ctime, colnames(data), value = TRUE)
-  fdata <- coerce_dt(data)
-  fdata <- fdata[, c(terms, rw$by), with = FALSE]
+  fdata <- data[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
       stop(
