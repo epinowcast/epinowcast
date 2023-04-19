@@ -226,10 +226,9 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
 #' enw_add_cumulative_membership(metaobs, "week")
 enw_add_cumulative_membership <- function(metaobs, feature) {
-  metaobs <- coerce_dt(metaobs)
-  metaobs <- add_group(metaobs)
-
+  metaobs <- coerce_dt(metaobs, required_cols = feature, group = TRUE)
   cfeature <- paste0("c", feature)
+
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (is.null(metaobs[[feature]])) {
       stop(

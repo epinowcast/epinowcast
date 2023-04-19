@@ -33,7 +33,9 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #'
 #' @family check
 check_dates <- function(obs) {
-  obs <- coerce_dt(obs, required_cols = c("report_date", "reference_date"))
+  obs <- coerce_dt(
+    obs, required_cols = c("report_date", "reference_date"), new = FALSE
+  )
   obs[, report_date := as.IDate(report_date)]
   obs[, reference_date := as.IDate(reference_date)]
   return(obs[])
@@ -44,67 +46,13 @@ check_dates <- function(obs) {
 #' @param obs An observation `data.frame` that does not contain `.group`,
 #' `.old_group`, or `.new_group` as these are reserved variables.
 #'
-#' @return NULL
+#' @return The `obs` object
 #'
 #' @family check
 check_group <- function(obs) {
-  if (!is.null(obs$.group)) {
-    stop(
-      ".group is a reserved variable and must not be present in the input
-       data"
-    )
-  }
-  if (!is.null(obs$.new_group)) {
-    stop(
-      ".new_group is a reserved variable and must not be present in the input
-       data"
-    )
-  }
-  if (!is.null(obs$.old_group)) {
-    stop(
-      ".old_group is a reserved variable and must not be present in the input
-       data"
-    )
-  }
-  return(invisible(NULL))
-}
-
-#' Check by variables are present in the data
-#'
-#' @param obs An observation `data.frame`.
-#'
-#' @param by A character vector of variables to group by.
-#'
-#' @return `obs`, unmodified
-#'
-#' @family check
-check_by <- function(obs, by = NULL) {
-  if (length(by) > 0) {
-    if (!is.character(by)) {
-      stop("`by` must be a character vector")
-    }
-    if (!all(by %in% colnames(obs))) {
-      stop(
-        "`by` must be a subset of the columns in `obs`. \n",
-        toString(by[!(by %in% colnames(obs))]),
-        " are not present in `obs`"
-      )
-    }
-  }
-  return(obs)
-}
-
-#' Add a reserved grouping variable if missing
-#'
-#' @param x A `data.table`, optionally with a `.group` variable
-#'
-#' @return `x`, definitely with a `.group` variable
-#' @family check
-add_group <- function(x) {
-  if (is.null(x[[".group"]])) {
-    x <- x[, .group := 1]
-  }
-  return(x[])
+  return(coerce_dt(
+    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), new = FALSE
+  ))
 }
 
 #' Check a model module contains the required components
@@ -165,23 +113,34 @@ check_modules_compatible <- function(modules) {
 #' @param new logical; if `TRUE` (default), a new `data.table` is returned
 #'
 #' @param select optional character vector of columns to return; *unchecked*
+#' n.b. it is an error to include ".group"; use `group` argument for that
 #'
 #' @param required_cols optional character vector of required columns; checked
 #'
 #' @param forbidden_cols optional character vector of forbidden columns; checked
+#'
+#' @param group logical; ensure the presence of a `.group` column?
 #'
 #' @return a `data.table`; if `data` is a `data.table`, the returned object
 #' will have a new address, unless `new = FALSE`.
 #' i.e. be distinct from the original and not cause any side effects with
 #' changes.
 #'
-#' @details TODO
+#' @details This function provides one-stop shopping for getting a "local"
+#' version of data provided by the user, in the internally used `data.table`
+#' format. It also enables selectively copying vs not, as well as checking
+#' for the presence and/or absence of various columns.
+#'
+#' While it is intended to address garbage in from the *user*, it does not
+#' generally attempt to address garbage in from the *developer* - e.g. if asking
+#' for overlapping required and forbidden columns (though that will lead to an
+#' always-error condition).
 #'
 #' @importFrom data.table as.data.table
 #' @family utils
 coerce_dt <- function(
   data, select = NULL, required_cols = select,
-  forbidden_cols = NULL, new = TRUE
+  forbidden_cols = NULL, group = FALSE, new = TRUE
 ) {
   if (!new) { # if we want to keep the original data.table ...
     dt <- data.table::setDT(data)
@@ -212,6 +171,16 @@ coerce_dt <- function(
       )
     }
   }
+
+  if (group) {
+    if (is.null(dt[[".group"]])) {
+      dt <- dt[, .group := 1]
+    }
+    if (!is.null(select)) {
+      select <- c(select, ".group")
+    }
+  }
+
   # extract the desired columns
   if (length(select) > 0) {
     return(dt[, .SD, .SDcols = c(select)])
