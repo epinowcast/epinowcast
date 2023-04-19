@@ -34,7 +34,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #' @family check
 check_dates <- function(obs) {
   obs <- coerce_dt(
-    obs, required_cols = c("report_date", "reference_date"), new = FALSE
+    obs, required_cols = c("report_date", "reference_date"),
+    copy = FALSE
   )
   obs[, report_date := as.IDate(report_date)]
   obs[, reference_date := as.IDate(reference_date)]
@@ -51,7 +52,7 @@ check_dates <- function(obs) {
 #' @family check
 check_group <- function(obs) {
   return(coerce_dt(
-    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), new = FALSE
+    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE
   ))
 }
 
@@ -140,9 +141,9 @@ check_modules_compatible <- function(modules) {
 #' @family utils
 coerce_dt <- function(
   data, select = NULL, required_cols = select,
-  forbidden_cols = NULL, group = FALSE, new = TRUE
+  forbidden_cols = NULL, group = FALSE, copy = TRUE
 ) {
-  if (!new) { # if we want to keep the original data.table ...
+  if (!copy) { # if we want to keep the original data.table ...
     dt <- data.table::setDT(data)
   } else {    # ... otherwise, make a copy
     dt <- data.table::as.data.table(data)

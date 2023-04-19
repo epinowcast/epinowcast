@@ -299,6 +299,7 @@ enw_assign_group <- function(obs, by = NULL) {
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
 enw_add_delay <- function(obs) {
+  obs <- coerce_dt(obs)
   obs <- check_dates(obs)
   obs[, delay := as.numeric(report_date - reference_date)]
   return(obs = obs[])
@@ -364,11 +365,13 @@ enw_add_max_reported <- function(obs) {
 #' # Filter by days
 #' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 enw_filter_report_dates <- function(obs, latest_date, remove_days) {
-  filt_obs <- check_dates(obs)
-  if (!missing(remove_days)) {
-    if (!missing(latest_date)) {
-      stop("`remove_days` and `latest_date` can't both be specified.")
-    }
+  stopifnot(
+    "exactly one of `remove_days` and `latest_date` must be specified." =
+      xor(missing(remove_days), missing(latest_date))
+  )
+  filt_obs <- coerce_dt(obs)
+  filt_obs <- check_dates(filt_obs)
+  if (missing(latest_date)) {
     latest_date <- max(filt_obs$report_date) - remove_days
   }
   filt_obs <- filt_obs[report_date <= as.Date(latest_date)]
@@ -418,7 +421,8 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' )
 enw_filter_reference_dates <- function(obs, earliest_date, include_days,
                                        latest_date, remove_days) {
-  filt_obs <- check_dates(obs)
+  filt_obs <- coerce_dt(obs)
+  filt_obs <- check_dates(filt_obs)
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
       stop("`remove_days` and `latest_date` can't both be specified.")
@@ -465,7 +469,8 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
 #' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
 enw_latest_data <- function(obs) {
-  latest_data <- check_dates(obs)
+  latest_data <- coerce_dt(obs)
+  latest_data <- check_dates(latest_data)
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date)) | is.na(reference_date)],
@@ -505,7 +510,8 @@ enw_latest_data <- function(obs) {
 #' enw_cumulative_to_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
                                         by = NULL) {
-  reports <- check_dates(obs)
+  reports <- coerce_dt(obs)
+  reports <- check_dates(reports)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
     by = c("reference_date", by)
@@ -547,8 +553,9 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' dt <- enw_add_max_reported(dt)
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = NULL) {
+  
+  obs <- coerce_dt(obs)
   obs <- check_dates(obs)
-
   obs <- obs[!is.na(reference_date)]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
 
@@ -959,6 +966,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 set_negatives_to_zero = TRUE,
                                 ...) {
+  obs <- coerce_dt(obs)
   obs <- check_dates(obs)
   check_group(obs)
   data.table::setkeyv(obs, "reference_date")
