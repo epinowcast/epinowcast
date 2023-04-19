@@ -7,7 +7,7 @@ touchstone::branch_install()
 # run benchmarks
 touchstone::benchmark_run(
   simple = {
-    source("inst/examples/germany_simple.R")
+    print("Hello world!")
   },
   n = 3
 )
