@@ -505,7 +505,6 @@ enw_latest_data <- function(obs) {
 #' enw_cumulative_to_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
                                         by = NULL) {
-  check_by(obs) # TODO: no-op?
   reports <- check_dates(obs)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
@@ -549,7 +548,6 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = NULL) {
   obs <- check_dates(obs)
-  check_by(obs) # TODO: no-op?
 
   obs <- obs[!is.na(reference_date)]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
@@ -671,7 +669,6 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   obs <- coerce_dt(obs)
   obs <- check_dates(obs)
   check_group(obs)
-  check_by(obs) # TODO: no-op?
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)

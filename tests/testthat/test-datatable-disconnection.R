@@ -30,3 +30,17 @@ test_that("`coerce_dt` selects `select`", {
   expect_true("present" %in% colnames(present))
   expect_false("absent" %in% colnames(present))  
 })
+
+test_that("`coerce_dt` ensures a group if asked", {
+  dummy <- data.table::data.table(dummy = 1:10)
+  cdummy <- coerce_dt(dummy)
+  expect_true(".group" %in% colnames(cdummy))
+  expect_true(all(cdummy$.group == 1))
+})
+
+test_that("`coerce_dt` ensures a group if asked, but doesn't overwrite one", {
+  dummy <- data.table::data.table(dummy = 1:10, .group := 4)
+  cdummy <- coerce_dt(dummy)
+  expect_true(".group" %in% colnames(cdummy))
+  expect_true(all(cdummy$.group == 4))
+})
