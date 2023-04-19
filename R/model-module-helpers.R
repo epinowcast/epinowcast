@@ -8,8 +8,12 @@
 #' variables specified for report dates that have complete reporting.
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
-enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = NULL) {
-  rep_with_complete_ref <- coerce_dt(new_confirm, required_cols = by)
+enw_reps_with_complete_refs <- function(
+  new_confirm, max_delay, by = NULL, copy = TRUE
+) {
+  rep_with_complete_ref <- coerce_dt(
+    new_confirm, select = c(by, "report_date"), copy = copy
+  )
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
     by = c(by, "report_date")
@@ -30,20 +34,23 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = NULL) {
 #' @param metareference `metareference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
+#' @param copy A logical; make a copy of `metareference` or allow it to be
+#' modified?
+#'
 #' @return A wide `data.frame` with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
-                                    metareference, max_delay) {
-  # Make a complete data.frame of all possible reference and report dates
-  miss_lk <- coerce_dt(metareference)[
-    ,
-    .(reference_date = date, .group)
-  ]
-  miss_lk[, delay := list(0:(max_delay - 1))]
+                                    metareference, max_delay, copy = TRUE) {
+  # Make a complete data.table of all possible reference and report dates
+  miss_lk <- coerce_dt(
+    metareference, select = "date", group = TRUE, copy = copy
+  )
+  data.table::setnames(miss_lk, "date", "reference_date")
+  
   miss_lk <- miss_lk[,
-    .(delay = unlist(delay)),
+    .(delay = 0:(max_delay - 1)),
     by = c("reference_date", ".group")
   ]
   miss_lk[, report_date := reference_date + delay]

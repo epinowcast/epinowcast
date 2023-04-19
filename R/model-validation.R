@@ -24,7 +24,10 @@
 #' @param round_to Integer defaults to 3. Number of digits to round scoring
 #' output to.
 #'
-#' @param ... Additional arguments passed to [scoringutils::score()].
+#' @inheritDotParams scoringutils::score
+#'
+#' @param copy A logical; make a copy of `latest_obs` or allow it to be
+#' modified?
 #'
 #' @return A `data.table` as returned by [scoringutils::score()].
 #' @family modelvalidation
@@ -52,7 +55,7 @@
 #' log_scores <- enw_score_nowcast(summarised_nowcast, obs, log = TRUE)
 #' summarise_scores(log_scores, by = "location")
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
-                              check = FALSE, round_to = 3, ...) {
+                              check = FALSE, round_to = 3, ..., copy = TRUE) {
   if (!requireNamespace("scoringutils")) {
     stop("scoringutils is required for this function to work")
   }
@@ -60,7 +63,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   if (!is.null(long_nowcast[["mad"]])) {
     long_nowcast[, "mad" := NULL]
   }
-  latest_obs <- coerce_dt(latest_obs)
+  latest_obs <- coerce_dt(latest_obs, copy = copy)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
   latest_obs[, report_date := NULL]
   cols <- intersect(colnames(nowcast), colnames(latest_obs))

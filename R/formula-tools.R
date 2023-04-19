@@ -37,8 +37,8 @@
 #' enw_manual_formula(data, fixed = "week", random = "day_of_week")
 enw_manual_formula <- function(data, fixed = NULL, random = NULL,
                                custom_random = NULL, no_contrasts = FALSE,
-                               add_intercept = TRUE) {
-  data <- coerce_dt(data)
+                               add_intercept = TRUE, copy = TRUE) {
+  data <- coerce_dt(data, copy = copy)
   if (add_intercept) {
     form <- "1"
   } else {
@@ -396,6 +396,8 @@ re <- function(formula) {
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
+#' @param copy A logical; make a copy of `data` or allow it to be modified?
+#'
 #' @return A list containing the transformed data ("data"),
 #' fixed effects terms ("terms") and a  `data.frame` specifying
 #' the random effect structure between these terms (`effects`). Note
@@ -420,11 +422,11 @@ re <- function(formula) {
 #'
 #' random_effect2 <- re(form$random[[2]])
 #' epinowcast:::construct_re(random_effect2, mtcars)
-construct_re <- function(re, data) {
+construct_re <- function(re, data, copy = TRUE) {
   if (!inherits(re, "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
-  data <- coerce_dt(data)
+  data <- coerce_dt(data, copy = copy)
 
   # extract random and fixed effects
   fixed <- strsplit(re$fixed, " + ", fixed = TRUE)[[1]]
@@ -578,6 +580,8 @@ construct_re <- function(re, data) {
 #' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design
 #' matrix be sparely defined.
 #'
+#' @param copy A logical; make a copy of `data` or allow it to be modified?
+#'
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
@@ -619,8 +623,8 @@ construct_re <- function(re, data) {
 #' # Model using an interaction in the right hand side of a random effect
 #' # to specify an independent random effect per strata.
 #' enw_formula(~ (1 + day | week:month), data = data)
-enw_formula <- function(formula, data, sparse = TRUE) {
-  data <- coerce_dt(data)
+enw_formula <- function(formula, data, sparse = TRUE, copy = TRUE) {
+  data <- coerce_dt(data, copy = copy)
 
   # Parse formula
   parsed_formula <- parse_formula(formula)

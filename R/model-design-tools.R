@@ -53,7 +53,9 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
 #' TRUE.
 #'
-#' @param ... Additional arguments passed to [stats::model.matrix()].
+#' @inheritDotParams stats::model.matrix
+#'
+#' @param copy A logical; make a copy of `data` or allow it to be modified?
 #'
 #' @return A list containing the formula, the design matrix, and the index.
 #' @family modeldesign
@@ -68,9 +70,9 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' enw_design(a ~ c, data, sparse = TRUE)
 #' enw_design(a ~ c, data, sparse = FALSE)
 enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
-                       ...) {
+                       ..., copy = TRUE) {
   # make data.table and copy
-  data <- coerce_dt(data)
+  data <- coerce_dt(data, copy = copy)
 
   # make all character variables factors
   chars <- colnames(data)[sapply(data, is.character)]
@@ -225,8 +227,10 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #'
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
 #' enw_add_cumulative_membership(metaobs, "week")
-enw_add_cumulative_membership <- function(metaobs, feature) {
-  metaobs <- coerce_dt(metaobs, required_cols = feature, group = TRUE)
+enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
+  metaobs <- coerce_dt(
+    metaobs, required_cols = feature, group = TRUE, copy = copy
+  )
   cfeature <- paste0("c", feature)
 
   if (!any(grepl(cfeature, colnames(metaobs)))) {
