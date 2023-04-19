@@ -1,0 +1,152 @@
+name: 'receive'
+description: 'Action to run {touchstone} benchmarks and upload the results.'
+inputs:
+  force_upstream:
+    description: 'Always compare against the upstream base branch when benchmarking PRs in forked repositories.'
+    required: false
+    default: false
+  benchmarking_repo:
+    description: 'Additional repository required for benchmarking.'
+    required: false
+  benchmarking_ref:
+    description: 'Ref of benchmarking repository.'
+    required: false
+  benchmarking_path:
+    description: 'Path to check out benchmarking repository to.'
+    required: false
+  cache-version:
+    description: 'Integer to use as cache version. Increment to use new cache.'
+    required: true
+    default: 1
+  touchstone_ref:
+    description: 'Which branch or tag of {touchstone} should be used. Mainly for debugging.'
+    required: true
+    default: '@v1'
+    
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/github-script@v5
+      id: get-pull
+      with:
+        script: |
+          var pr = await github.rest.pulls.get({
+                            owner: context.repo.owner,
+                            repo: context.repo.repo,
+                            pull_number: context.issue.number
+                          })
+          pr = pr.data
+
+          var is_fork = pr.head.repo.fork && 
+                        (pr.base.repo.clone_url !== pr.head.repo.clone_url || 
+                         ${{ inputs.force_upstream }})
+
+          if (is_fork) {
+            var head_repo = await github.rest.repos.get({
+                                    owner: pr.head.repo.owner.login,
+                                    repo: pr.head.repo.name
+                                  })
+            head_repo = head_repo.data
+            pr.base.repo.clone_url = head_repo.parent.clone_url
+          }
+
+          var pull = {
+            head_repo: pr.head.repo.full_name,
+            head_ref: pr.head.ref,
+            is_fork: is_fork,
+            base_git: pr.base.repo.clone_url,
+            base_ref: pr.base.ref
+          }
+
+          console.log(pull)
+          return pull
+    - name: Set envvars
+      shell: bash
+      run: |
+        echo "GITHUB_HEAD_REF=${{ fromJSON(steps.get-pull.outputs.result).head_ref }}" >> $GITHUB_ENV
+        echo "GITHUB_BASE_REF=${{ fromJSON(steps.get-pull.outputs.result).base_ref }}" >> $GITHUB_ENV
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+         repository: ${{ fromJSON(steps.get-pull.outputs.result).head_repo }}
+         ref: ${{ fromJSON(steps.get-pull.outputs.result).head_ref }}
+         fetch-depth: 0
+    - name: Set up git user
+      run: |
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@github.com"
+      shell: bash
+    - name: Get base branch
+      shell: bash
+      run: |
+        REMOTE=origin
+        ! git branch -D ${{ env.GITHUB_BASE_REF }}
+        if ${{ fromJSON(steps.get-pull.outputs.result).is_fork }}; then
+          git remote add touchstone_base ${{ fromJSON(steps.get-pull.outputs.result).base_git }}
+          git fetch touchstone_base
+          REMOTE=touchstone_base
+        fi
+        git switch -c ${{ env.GITHUB_BASE_REF }} $REMOTE/${{ env.GITHUB_BASE_REF }}
+    - name: Setup R
+      uses: r-lib/actions/setup-r@v2
+    - name: Install dependencies
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        cache-version: ${{ inputs.cache_version }}
+        extra-packages: |
+          any::ggplot2
+          any::dplyr
+          any::gert
+          any::glue
+          github::lorenzwalthert/touchstone${{ inputs.touchstone_ref}}
+    - name: Install cmdstan
+      run: |
+        print(list.files("C:/rtools42"))
+        cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+        cmdstanr::install_cmdstan(cores = 2)
+      shell: Rscript {0}
+    - name: Remove global installation
+      run: |
+        pkg <- unlist(read.dcf('DESCRIPTION')[, 'Package'])
+        if (pkg %in% rownames(installed.packages())) {
+          remove.packages(pkg)
+          cat('removed package ', pkg, '.', sep = "")
+        }
+      shell: Rscript {0}
+    - name: Checkout benchmarking repo
+      if: ${{ inputs.benchmarking_repo != ''}}
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ inputs.benchmarking_repo }}
+        ref: ${{ inputs.benchmarking_ref }}
+        path: ${{ inputs.benchmarking_path }}
+    - name: Run benchmarks
+      run: |
+        Sys.setenv(
+          GITHUB_BASE_REF = "${{ env.GITHUB_BASE_REF }}",
+          GITHUB_HEAD_REF = "${{ env.GITHUB_HEAD_REF }}"
+        )
+        touchstone::run_script("touchstone/script.R")
+      shell: Rscript {0}
+    - name: Uploading Results
+      run: |
+        echo ${{ github.event.number }} > ./touchstone/pr-comment/NR
+      shell: bash
+    - uses: actions/upload-artifact@v2
+      with:
+        name: visual-benchmarks
+        path: touchstone/plots/
+    - uses: actions/upload-artifact@v2
+      with:
+        name: results
+        path: touchstone/pr-comment
+    - uses: actions/download-artifact@v2
+      with:
+        name: results
+    - name: comment PR
+      run: cat touchstone/pr-comment/info.txt
+      shell: bash
+    - uses: actions/upload-artifact@v2
+      with:
+        name: pr
+        path: touchstone/pr-comment/
