@@ -21,7 +21,7 @@
 #' The data.table is sorted by `.group` and `date`.
 #'
 #' @family preprocess
-#' @importFrom data.table setkeyv
+#' @importFrom data.table setkeyv setnames
 #' @export
 #' @examples
 #' obs <- data.frame(
@@ -36,10 +36,10 @@ enw_metadata <- function(obs, target_date = c(
   target_date <- match.arg(target_date)
   date_to_drop <- setdiff(choices, target_date)
 
-  metaobs <- setnames(
-    coerce_dt(obs, required_cols = target_date), target_date, "date"
+  metaobs <- data.table::setnames(
+    coerce_dt(obs, required_cols = target_date, group = TRUE),
+    target_date, "date"
   )
-  metaobs <- add_group(metaobs)
 
   suppressWarnings(
     metaobs[
@@ -217,8 +217,8 @@ enw_add_metaobs_features <- function(metaobs,
 #' metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
 #' enw_extend_date(metaobs, days = 2)
 #' enw_extend_date(metaobs, days = 2, direction = "start")
-enw_extend_date <- function(metaobs, days = 20, direction = "end") {
-  direction <- match.arg(direction, choices = c("start", "end"))
+enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
+  direction <- match.arg(direction)
 
   new_days <- 1:days
   if (direction %in% "start") {
@@ -227,8 +227,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
   } else {
     filt_fn <- max
   }
-  metaobs <- coerce_dt(metaobs)
-  metaobs <- add_group(metaobs)
+  metaobs <- coerce_dt(metaobs, group = TRUE)
   exts <- metaobs[, .SD[date == filt_fn(date)], by = .group]
   exts <- split(exts, by = ".group")
   exts <- purrr::map(
@@ -271,20 +270,15 @@ enw_extend_date <- function(metaobs, days = 20, direction = "end") {
 #' enw_assign_group(obs)
 #' enw_assign_group(obs, by = "x")
 enw_assign_group <- function(obs, by = NULL) {
-  if (!is.null(obs[[".group"]])) {
-    stop(
-      "The `.group` column is reserved for internal use. Please remove it ",
-      "from your data before calling `enw_assign_group`."
-    )
-  }
-  obs <- coerce_dt(obs, required_cols = by)
+  obs <- coerce_dt(
+    obs, required_cols = by, forbidden_cols = ".group",
+    group = (length(by) == 0)
+  )
   if (length(by) != 0) {
     groups_index <- coerce_dt(obs)
     groups_index <- unique(groups_index[, ..by])
     groups_index[, .group := seq_len(.N)]
     obs <- merge(obs, groups_index, by = by, all.x = TRUE)
-  } else {
-    obs <- add_group(obs)
   }
   data.table::setkeyv(obs, union(".group", data.table::key(obs)))
   return(obs = obs[])
@@ -332,8 +326,8 @@ enw_add_delay <- function(obs) {
 #' obs$confirm <- 1:3
 #' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs) {
+  obs <- coerce_dt(obs, group = TRUE)
   obs <- check_dates(obs)
-  obs <- add_group(obs)
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
     ,
@@ -577,8 +571,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_delay_filter(obs, max_delay = 2)
 enw_delay_filter <- function(obs, max_delay) {
-  obs <- coerce_dt(obs)
-  obs <- add_group(obs)
+  obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
   obs <- obs[,
     .SD[
       report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
@@ -609,8 +602,7 @@ enw_delay_filter <- function(obs, max_delay) {
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
-  obs <- coerce_dt(obs)
-  obs <- add_group(obs)
+  obs <- coerce_dt(obs, group = TRUE)
   if (any(obs$new_confirm < 0)) {
     warning(
       "Negative new confirmed cases found. This is not yet supported in
@@ -640,8 +632,7 @@ enw_reporting_triangle <- function(obs) {
 #' rt <- enw_reporting_triangle(obs)
 #' enw_reporting_triangle_to_long(rt)
 enw_reporting_triangle_to_long <- function(obs) {
-  obs <- coerce_dt(obs)
-  obs <- add_group(obs)
+  obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
   reports_long <- data.table::melt(
     obs,
     id.vars = c("reference_date", ".group"),
@@ -758,8 +749,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' obs <- enw_cumulative_to_incidence(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
+  obs <- coerce_dt(obs, group = TRUE)
   obs <- check_dates(obs)
-  obs <- add_group(obs)
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
     .(.confirm_avail = sum(new_confirm)),

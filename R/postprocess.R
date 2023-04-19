@@ -237,9 +237,8 @@ enw_summarise_samples <- function(samples, probs = c(
 #' nowcast <- summary(fit, type = "nowcast")
 #' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
-  obs <- coerce_dt(obs)
-  obs <- add_group(obs)
-  obs <- obs[, .(reference_date, .group, latest_confirm = confirm)]
+  obs <- coerce_dt(obs, select = c("reference_date", "confirm"), group = true)
+  data.table::setnames(obs, "confirm", "latest_confirm")
   out <- merge(
     nowcast, obs,
     by = c("reference_date", ".group"), all.x = TRUE
