@@ -4,14 +4,13 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Potentially breaking changes
 
-- `enw_add_pooling_effect()`: replaced `string` argument with `...` argument, to enable passing arbitrary arguments to the `finder_fn` argument. The same general usage is supported, but now e.g. the default argument to supply is `prefix = "somevalue"` vs `string = "somevalue` and argument positions have changed. This function is primarily for internal use and we expect only a small subset of advanced users who are creating models outside the currently supported formula interface to be impacted See #222 by @pearsonca and reviewed by @seabbs.
+- `enw_add_pooling_effect()`: replaced `string` argument with `...` argument, to enable passing arbitrary arguments to the `finder_fn` argument. The same general usage is supported, but now e.g. the default argument to supply is `prefix = "somevalue"` vs `string = "somevalue"` and argument positions have changed. This function is primarily for internal use and we expect only a small subset of advanced users who are creating models outside the currently supported formula interface to be impacted See #222 by @pearsonca and reviewed by @seabbs.
 - `enw_dates_to_factors()`: Deprecated and removed as no longer needed. We expect this function had little to no external use and so there should be little impact on users. See #216 by @seabbs and reviewed by @adrian-lison.
 
 ## Bugs
 
 - Fixed a bug first highlighted by @Gulfa in #166 and localised during the investigation for #223 where random effects and random walks were being improperly constructed  in `enw_formula()` so that their variances parameters were not shared between the correct parameters when used together. This only impacts models that used formulas with both random effects and random walks and for these models appears to have led to increased run-times, fitting issues, and potentially unreliable posterior estimates but to have had a less significant  impact on actual nowcasts. We suggest refitting these models and comparing the output to previous fits in order to understand the impact on your usage. See #228 by @seabbs and self-reviewed.
-- Fixed a bug in `enw_replace_priors()` where the function could not deal
-with `epinowcast` summarised posterior estimates due to the new use of the `pillar` class. Added tests to catch if this issue reoccurs in the future. See #228 by @seabbs and self-reviewed.
+- Fixed a bug in `enw_replace_priors()` where the function could not deal with `epinowcast` summarised posterior estimates due to the new use of the `pillar` class. Added tests to catch if this issue reoccurs in the future. See #228 by @seabbs and self-reviewed.
 - Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implicit type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
 - Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs and self-reviewed.
 
