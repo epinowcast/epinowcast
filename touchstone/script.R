@@ -4,9 +4,6 @@
 # installs branches to benchmark
 touchstone::branch_install()
 
-# benchmarks.
-touchstone::pin_assets("inst/examples")
-
 # run benchmarks
 touchstone::benchmark_run(
   simple = {
@@ -21,7 +18,6 @@ touchstone::benchmark_run(
   },
   n = 3
 )
-
 
 touchstone::benchmark_run(
   missingness = {
