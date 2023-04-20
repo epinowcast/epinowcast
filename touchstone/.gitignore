@@ -4,3 +4,5 @@
 !.gitignore
 !header.R
 !footer.R
+!setup.R
+!missing-setup.R
