@@ -4,8 +4,6 @@
 # installs branches to benchmark
 touchstone::branch_install()
 
-touchstone::pin_assets("touchstone")
-
 # run benchmarks
 touchstone::benchmark_run(
   expr_before_benchmark = { source("touchstone/setup.R") },
