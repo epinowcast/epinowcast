@@ -4,7 +4,7 @@
 \alias{enw_assign_group}
 \title{Assign a group to each row of a data.table}
 \usage{
-enw_assign_group(obs, by = NULL)
+enw_assign_group(obs, by = NULL, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.table} or \code{data.frame} without a \code{.group} column.}

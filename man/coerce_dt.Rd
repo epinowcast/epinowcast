@@ -9,23 +9,27 @@ coerce_dt(
   select = NULL,
   required_cols = select,
   forbidden_cols = NULL,
-  new = TRUE
+  group = FALSE,
+  copy = TRUE
 )
 }
 \arguments{
-\item{data}{any of the types supported by \code{\link[data.table:as.data.table]{data.table::as.data.table()}}}
+\item{data}{Any of the types supported by \code{\link[data.table:as.data.table]{data.table::as.data.table()}}}
 
-\item{select}{optional character vector of columns to return; \emph{unchecked}}
+\item{select}{An optional character vector of columns to return; \emph{unchecked}
+n.b. it is an error to include ".group"; use \code{group} argument for that}
 
-\item{required_cols}{optional character vector of required columns; checked}
+\item{required_cols}{An optional character vector of required columns}
 
-\item{forbidden_cols}{optional character vector of forbidden columns; checked}
+\item{forbidden_cols}{An optional character vector of forbidden columns}
 
-\item{new}{logical; if \code{TRUE} (default), a new \code{data.table} is returned}
+\item{group}{A logical; ensure the presence of a \code{.group} column?}
+
+\item{copy}{A logical; if \code{TRUE} (default), a new \code{data.table} is returned}
 }
 \value{
 a \code{data.table}; if \code{data} is a \code{data.table}, the returned object
-will have a new address, unless \code{new = FALSE}.
+will have a new address, unless \code{copy = FALSE}.
 i.e. be distinct from the original and not cause any side effects with
 changes.
 }
@@ -34,7 +38,15 @@ Provides consistent coercion of inputs to \link{data.table}
 with error handling, column checking, and optional selection.
 }
 \details{
-TODO
+This function provides a single-point function for getting a "local"
+version of data provided by the user, in the internally used \code{data.table}
+format. It also enables selectively copying versus not, as well as checking
+for the presence and/or absence of various columns.
+
+While it is intended to address garbage in from the \emph{user}, it does not
+generally attempt to address garbage in from the \emph{developer} - e.g. if asking
+for overlapping required and forbidden columns (though that will lead to an
+always-error condition).
 }
 \seealso{
 Utility functions

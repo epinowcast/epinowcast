@@ -4,7 +4,14 @@
 \alias{enw_design}
 \title{A helper function to construct a design matrix from a formula}
 \usage{
-enw_design(formula, data, no_contrasts = FALSE, sparse = TRUE, ...)
+enw_design(
+  formula,
+  data,
+  no_contrasts = FALSE,
+  sparse = TRUE,
+  ...,
+  copy = TRUE
+)
 }
 \arguments{
 \item{formula}{An R formula.}
@@ -19,7 +26,14 @@ no categorical variables will use contrasts.}
 \item{sparse}{Logical, if TRUE return a sparse design matrix. Defaults to
 TRUE.}
 
-\item{...}{Additional arguments passed to \code{\link[stats:model.matrix]{stats::model.matrix()}}.}
+\item{...}{
+  Arguments passed on to \code{\link[stats:model.matrix]{stats::model.matrix}}
+  \describe{
+    \item{\code{object}}{an object of an appropriate class.  For the default
+    method, a model \link[stats]{formula} or a \code{\link[stats]{terms}} object.}
+  }}
+
+\item{copy}{A logical; make a copy of \code{data} or allow it to be modified?}
 }
 \value{
 A list containing the formula, the design matrix, and the index.

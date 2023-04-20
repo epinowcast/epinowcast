@@ -89,8 +89,8 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' @examples
 #' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
-enw_priors_as_data_list <- function(priors, copy = TRUE) {
-  priors <- coerce_dt(priors, select = c("variable", "mean", "sd"), copy = copy)
+enw_priors_as_data_list <- function(priors) {
+  priors <- coerce_dt(priors, select = c("variable", "mean", "sd"))
   priors[, variable := paste0(variable, "_p")]
   priors <- split(priors, by = "variable", keep.by = FALSE)
   priors <- purrr::map(priors, ~ as.array(t(.)))

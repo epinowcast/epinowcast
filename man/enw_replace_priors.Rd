@@ -4,7 +4,7 @@
 \alias{enw_replace_priors}
 \title{Replace default priors with user specified priors}
 \usage{
-enw_replace_priors(priors, custom_priors)
+enw_replace_priors(priors, custom_priors, copy = TRUE)
 }
 \arguments{
 \item{priors}{A \code{data.frame} with the following variables:
@@ -18,6 +18,9 @@ appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}}
 other similar model specification functions. Priors in this data.frame
 replace the default priors. Note that currently vectorised prior names
 (i.e those of the form \code{variable[n]} will be treated as \code{variable}).}
+
+\item{copy}{A logical; make a copy of \code{priors} and \code{custom_priors} or allow
+them to be modified?}
 }
 \value{
 A data.table of prior definitions (variable, mean and sd).

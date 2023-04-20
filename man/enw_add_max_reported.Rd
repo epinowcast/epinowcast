@@ -4,7 +4,7 @@
 \alias{enw_add_max_reported}
 \title{Add the maximum number of cases reported on a given day}
 \usage{
-enw_add_max_reported(obs)
+enw_add_max_reported(obs, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:

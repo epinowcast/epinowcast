@@ -47,8 +47,8 @@ enw_posterior <- function(fit, variables = NULL,
     )
   )
   cbind_custom <- function(x, y) {
-    x <- setDT(x)
-    y <- setDT(y)[, variable := NULL]
+    x <- data.table::setDT(x)
+    y <- data.table::setDT(y)[, variable := NULL]
     cbind(x, y)
   }
   sfit <- purrr::reduce(sfit, cbind_custom)
@@ -130,7 +130,9 @@ enw_nowcast_samples <- function(fit, obs) {
     variables = "pp_inf_obs",
     format = "draws_df"
   )
-  nowcast <- data.table::setDT(nowcast)
+  nowcast <- coerce_dt(
+    nowcast, required_cols = c(".chain", ".iteration", ".draw")
+  )
   nowcast <- melt(
     nowcast,
     value.name = "sample", variable.name = "variable",
@@ -237,7 +239,7 @@ enw_summarise_samples <- function(samples, probs = c(
 #' nowcast <- summary(fit, type = "nowcast")
 #' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
-  obs <- coerce_dt(obs, select = c("reference_date", "confirm"), group = true)
+  obs <- coerce_dt(obs, select = c("reference_date", "confirm"), group = TRUE)
   data.table::setnames(obs, "confirm", "latest_confirm")
   out <- merge(
     nowcast, obs,

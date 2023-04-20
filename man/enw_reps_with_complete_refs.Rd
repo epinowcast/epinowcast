@@ -5,7 +5,7 @@
 \title{Identify report dates with complete (i.e up to the maximum delay) reference
 dates}
 \usage{
-enw_reps_with_complete_refs(new_confirm, max_delay, by = NULL)
+enw_reps_with_complete_refs(new_confirm, max_delay, by = NULL, copy = TRUE)
 }
 \arguments{
 \item{new_confirm}{\code{new_confirm} \code{data.frame} output from

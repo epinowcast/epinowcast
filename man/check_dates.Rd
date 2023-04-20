@@ -2,25 +2,23 @@
 % Please edit documentation in R/check.R
 \name{check_dates}
 \alias{check_dates}
-\title{Check Report and Reference Dates are present}
+\title{Check for and Format Report and Reference Dates}
 \usage{
 check_dates(obs)
 }
 \arguments{
-\item{obs}{An observation \code{data.frame} containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{A \code{data.frame} containing \code{report_date} and \code{reference_date}
+columns.}
 }
 \value{
-a copy \code{data.table} version of \code{obs} with \code{report_date} and
-\code{reference_date} as \link{IDateTime} format.
+The \code{obs} object, potentially modified, where \code{report_date} and
+\code{reference_date} cast via \link{IDateTime} format.
 }
 \description{
-Check Report and Reference Dates are present
+Check for and Format Report and Reference Dates
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{add_group}()},
-\code{\link{check_by}()},
 \code{\link{check_group}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_module}()},

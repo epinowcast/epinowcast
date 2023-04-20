@@ -4,7 +4,7 @@
 \alias{enw_add_delay}
 \title{Add a delay variable}
 \usage{
-enw_add_delay(obs)
+enw_add_delay(obs, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:

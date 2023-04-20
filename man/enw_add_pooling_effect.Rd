@@ -4,7 +4,13 @@
 \alias{enw_add_pooling_effect}
 \title{Add a pooling effect to model design metadata}
 \usage{
-enw_add_pooling_effect(effects, var_name = "sd", finder_fn = startsWith, ...)
+enw_add_pooling_effect(
+  effects,
+  var_name = "sd",
+  finder_fn = startsWith,
+  ...,
+  copy = TRUE
+)
 }
 \arguments{
 \item{effects}{A \code{data.table} with the following columns:

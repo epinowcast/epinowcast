@@ -4,7 +4,7 @@
 \alias{enw_extend_date}
 \title{Extend a time series with additional dates}
 \usage{
-enw_extend_date(metaobs, days = 20, direction = "end")
+enw_extend_date(metaobs, days = 20, direction = c("end", "start"))
 }
 \arguments{
 \item{metaobs}{A \code{data.frame} with a \code{date} column.}

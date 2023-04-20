@@ -70,9 +70,9 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' enw_design(a ~ c, data, sparse = TRUE)
 #' enw_design(a ~ c, data, sparse = FALSE)
 enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
-                       ..., copy = TRUE) {
+                       ...) {
   # make data.table and copy
-  data <- coerce_dt(data, copy = copy)
+  data <- coerce_dt(data)
 
   # make all character variables factors
   chars <- colnames(data)[sapply(data, is.character)]
@@ -192,8 +192,8 @@ enw_effects_metadata <- function(design) {
 #' effects <- enw_effects_metadata(design)
 #' enw_add_pooling_effect(effects, prefix = "b")
 enw_add_pooling_effect <- function(effects, var_name = "sd",
-                                   finder_fn = startsWith, ...) {
-  effects <- data.table::setDT(effects)
+                                   finder_fn = startsWith, ..., copy = TRUE) {
+  effects <- coerce_dt(effects, copy = copy)
   effects[, (var_name) := as.numeric(finder_fn(effects, ...))]
   effects[finder_fn(effects, ...), fixed := 0]
   return(effects[])
@@ -213,6 +213,8 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #'
 #' @param feature The name of the column in `metaobs` that contains the
 #' numeric vector of values.
+#'
+#' @param copy Should `metaobs` be copied (default) or modified in place?
 #'
 #' @return A `data.frame` with a new columns `cfeature$` that contain the
 #' cumulative membership effect for each value of `feature`. For example if the
@@ -234,12 +236,6 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
   cfeature <- paste0("c", feature)
 
   if (!any(grepl(cfeature, colnames(metaobs)))) {
-    if (is.null(metaobs[[feature]])) {
-      stop(
-        "Requested variable ", feature,
-        " is not present in the supplied data.frame."
-      )
-    }
     if (!is.numeric(metaobs[[feature]])) {
       stop(
         "Requested variable ", feature,

@@ -580,8 +580,6 @@ construct_re <- function(re, data, copy = TRUE) {
 #' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design
 #' matrix be sparely defined.
 #'
-#' @param copy A logical; make a copy of `data` or allow it to be modified?
-#'
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
@@ -623,8 +621,8 @@ construct_re <- function(re, data, copy = TRUE) {
 #' # Model using an interaction in the right hand side of a random effect
 #' # to specify an independent random effect per strata.
 #' enw_formula(~ (1 + day | week:month), data = data)
-enw_formula <- function(formula, data, sparse = TRUE, copy = TRUE) {
-  data <- coerce_dt(data, copy = copy)
+enw_formula <- function(formula, data, sparse = TRUE) {
+  data <- coerce_dt(data)
 
   # Parse formula
   parsed_formula <- parse_formula(formula)

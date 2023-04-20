@@ -269,19 +269,18 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
 #' obs <- data.frame(x = 1:3, y = 1:3)
 #' enw_assign_group(obs)
 #' enw_assign_group(obs, by = "x")
-enw_assign_group <- function(obs, by = NULL) {
-  obs <- coerce_dt(
+enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
+  obs <- coerce_dt( # must have by (if present), cannot initially have .group
     obs, required_cols = by, forbidden_cols = ".group",
-    group = (length(by) == 0)
+    group = (length(by) == 0), # ... but should add .group, if by is empty
+    copy = copy
   )
-  if (length(by) != 0) {
-    groups_index <- coerce_dt(obs)
-    groups_index <- unique(groups_index[, ..by])
-    groups_index[, .group := seq_len(.N)]
-    obs <- merge(obs, groups_index, by = by, all.x = TRUE)
+  if (length(by) != 0) {       # if by is not empty, add more complex .group
+    obs[, .group := .GRP, by = by]
   }
+  # update or set key to include .group
   data.table::setkeyv(obs, union(".group", data.table::key(obs)))
-  return(obs = obs[])
+  return(obs[])
 }
 
 #' @title Add a delay variable
@@ -298,11 +297,11 @@ enw_assign_group <- function(obs, by = NULL) {
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
-enw_add_delay <- function(obs) {
-  obs <- coerce_dt(obs)
+enw_add_delay <- function(obs, copy = TRUE) {
+  obs <- coerce_dt(obs, copy = copy)
   obs <- check_dates(obs)
   obs[, delay := as.numeric(report_date - reference_date)]
-  return(obs = obs[])
+  return(obs[])
 }
 
 #' @title Add the maximum number of cases reported on a given day
@@ -326,8 +325,8 @@ enw_add_delay <- function(obs) {
 #' obs$reference_date <- as.Date("2021-01-01")
 #' obs$confirm <- 1:3
 #' enw_add_max_reported(obs)
-enw_add_max_reported <- function(obs) {
-  obs <- coerce_dt(obs, group = TRUE)
+enw_add_max_reported <- function(obs, copy = TRUE) {
+  obs <- coerce_dt(obs, group = TRUE, copy = copy)
   obs <- check_dates(obs)
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
@@ -690,7 +689,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   dates <- seq.Date(min_date, max_date, by = 1)
   dates <- as.IDate(dates)
 
-  obs <- enw_assign_group(obs, by = by)
+  obs <- enw_assign_group(obs, by = by, copy = FALSE)
   by_with_group_id <- c(".group", by) # nolint: object_usage_linter
   groups <- unique(obs[, ..by_with_group_id])
 
@@ -714,14 +713,15 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   }
   # join completion with groups and original obs
   completion <- completion[groups, on = ".group"]
-  obs <- obs[completion, on = c("reference_date", "report_date", names(groups))]
+  obs <- obs[completion, on = c(names(groups), "reference_date", "report_date")]
   # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", ".group")
   ]
   obs[, .group := NULL]
-  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
+  data.table::setkeyv(obs, c(by, "report_date", "reference_date"))
+  data.table::setcolorder(obs)
   return(obs[])
 }
 
@@ -971,9 +971,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   check_group(obs)
   data.table::setkeyv(obs, "reference_date")
 
-  obs <- enw_assign_group(obs, by = by)
-  obs <- enw_add_max_reported(obs)
-  obs <- enw_add_delay(obs)
+  obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  obs <- enw_add_max_reported(obs, copy = FALSE)
+  obs <- enw_add_delay(obs, copy = FALSE)
 
   obs <- enw_delay_filter(obs, max_delay = max_delay)
 

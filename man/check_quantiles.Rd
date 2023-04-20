@@ -18,8 +18,6 @@ Check Quantiles Required are Present
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{add_group}()},
-\code{\link{check_by}()},
 \code{\link{check_dates}()},
 \code{\link{check_group}()},
 \code{\link{check_modules_compatible}()},

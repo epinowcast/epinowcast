@@ -23,28 +23,29 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   return(invisible(NULL))
 }
 
-#' Check Report and Reference Dates are present
+#' Check for and Format Report and Reference Dates
 #'
-#' @param obs An observation `data.frame` containing `report_date` and
-#' `reference_date` columns.
+#' @param obs A `data.frame` containing `report_date` and `reference_date`
+#' columns.
 #'
-#' @return a copy `data.table` version of `obs` with `report_date` and
-#' `reference_date` as [IDateTime] format.
+#' @return The `obs` object, potentially modified, where `report_date` and
+#' `reference_date` cast via [IDateTime] format.
 #'
 #' @family check
+#' @importFrom data.table as.IDate
 check_dates <- function(obs) {
-  obs <- coerce_dt(
+  return(coerce_dt( # check for required columns (coerce_dt), but don't copy
     obs, required_cols = c("report_date", "reference_date"),
     copy = FALSE
-  )
-  obs[, report_date := as.IDate(report_date)]
-  obs[, reference_date := as.IDate(reference_date)]
-  return(obs[])
+  )[,               # cast-in-place to IDateTime (as.IDate)
+    c("report_date", "reference_date") := .(
+      as.IDate(report_date), as.IDate(reference_date)
+  )][])
 }
 
-#' Check Observations for reserved grouping variables
+#' Check Observations for Reserved Grouping Variables
 #'
-#' @param obs An observation `data.frame` that does not contain `.group`,
+#' @param obs An observation `data.table` that does not contain `.group`,
 #' `.old_group`, or `.new_group` as these are reserved variables.
 #'
 #' @return The `obs` object
@@ -109,27 +110,25 @@ check_modules_compatible <- function(modules) {
 #' @description Provides consistent coercion of inputs to [data.table]
 #' with error handling, column checking, and optional selection.
 #'
-#' @param data any of the types supported by [data.table::as.data.table()]
+#' @param data Any of the types supported by [data.table::as.data.table()]
 #'
-#' @param new logical; if `TRUE` (default), a new `data.table` is returned
+#' @param copy A logical; if `TRUE` (default), a new `data.table` is returned
 #'
-#' @param select optional character vector of columns to return; *unchecked*
+#' @param select An optional character vector of columns to return; *unchecked*
 #' n.b. it is an error to include ".group"; use `group` argument for that
 #'
-#' @param required_cols optional character vector of required columns; checked
+#' @param required_cols An optional character vector of required columns
 #'
-#' @param forbidden_cols optional character vector of forbidden columns; checked
+#' @param forbidden_cols An optional character vector of forbidden columns
 #'
-#' @param group logical; ensure the presence of a `.group` column?
+#' @param group A logical; ensure the presence of a `.group` column?
 #'
-#' @return a `data.table`; if `data` is a `data.table`, the returned object
-#' will have a new address, unless `new = FALSE`.
-#' i.e. be distinct from the original and not cause any side effects with
-#' changes.
+#' @return A `data.table`; the returned object will be a copy, unless
+#' `copy = FALSE`, in which case modifications are made in-place
 #'
-#' @details This function provides one-stop shopping for getting a "local"
+#' @details This function provides a single-point function for getting a "local"
 #' version of data provided by the user, in the internally used `data.table`
-#' format. It also enables selectively copying vs not, as well as checking
+#' format. It also enables selectively copying versus not, as well as checking
 #' for the presence and/or absence of various columns.
 #'
 #' While it is intended to address garbage in from the *user*, it does not
@@ -137,7 +136,7 @@ check_modules_compatible <- function(modules) {
 #' for overlapping required and forbidden columns (though that will lead to an
 #' always-error condition).
 #'
-#' @importFrom data.table as.data.table
+#' @importFrom data.table as.data.table setDT
 #' @family utils
 coerce_dt <- function(
   data, select = NULL, required_cols = select,
@@ -145,14 +144,15 @@ coerce_dt <- function(
 ) {
   if (!copy) { # if we want to keep the original data.table ...
     dt <- data.table::setDT(data)
-  } else {    # ... otherwise, make a copy
+  } else {     # ... otherwise, make a copy
     dt <- data.table::as.data.table(data)
   }
-  # check for required columns
-  if ((length(required_cols) > 0)) {
-    if (!is.character(required_cols)) {
+
+  if ((length(required_cols) > 0)) {     # if we have required columns ...
+    if (!is.character(required_cols)) {  # ... check they are check-able
       stop("`required_cols` must be a character vector")
     }
+    # check that all required columns are present
     if (!all(required_cols %in% colnames(dt))) {
       stop(
         "The following columns are required: ",
@@ -160,11 +160,12 @@ coerce_dt <- function(
       )
     }
   }
-  # check for forbidden columns
-  if ((length(forbidden_cols) > 0)) {
-    if (!is.character(forbidden_cols)) {
+
+  if ((length(forbidden_cols) > 0)) {    # if we have forbidden columns ...
+    if (!is.character(forbidden_cols)) { # ... check they are check-able
       stop("`required_cols` must be a character vector")
     }
+    # check that no forbidden columns are present
     if (any(forbidden_cols %in% colnames(dt))) {
       stop(
         "The following columns are forbidden: ",
@@ -173,17 +174,16 @@ coerce_dt <- function(
     }
   }
 
-  if (group) {
-    if (is.null(dt[[".group"]])) {
-      dt <- dt[, .group := 1]
+  if (group) {                      # if we want to ensure a .group column ...
+    if (is.null(dt[[".group"]])) {  # ... check it's presence
+      dt <- dt[, .group := 1]       # ... and add it if it's not there
     }
-    if (!is.null(select)) {
-      select <- c(select, ".group")
+    if (!is.null(select)) {         # if we have a select list ...
+      select <- c(select, ".group") # ... add ".group" to it
     }
   }
 
-  # extract the desired columns
-  if (length(select) > 0) {
+  if (length(select) > 0) {         # if selecting particular list ...
     return(dt[, .SD, .SDcols = c(select)])
   } else {
     return(dt[])
