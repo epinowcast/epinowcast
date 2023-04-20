@@ -8,12 +8,14 @@ on:
   pull_request:
     paths:
       # Directories with source code and benchmarking code
-      - "inst/**"
+      - "inst/stan/**"
       - "R/**"
       - "src/**"
       - "touchstone/**"
       # Benchmarking config file
       - ".github/workflows/touchstone-*.yaml"
+      # Benchmarking action
+      - ".github/actions/touchstone-recieve/**"
       # Package metadata
       - DESCRIPTION
 
@@ -50,7 +52,7 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: epinowcast/epinowcast/.github/actions/touchstone-recieve@seabbs/issue199
+      - uses: epinowcast/epinowcast/.github/actions/touchstone-recieve@develop
         with:
           cache-version: 1
           benchmarking_repo: ${{ matrix.config.benchmarking_repo }}
