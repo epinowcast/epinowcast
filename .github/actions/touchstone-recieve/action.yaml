@@ -103,7 +103,7 @@ runs:
       run: |
         print(list.files("C:/rtools42"))
         cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-        cmdstanr::install_cmdstan(cores = 2)
+        cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
       shell: Rscript {0}
     - name: Remove global installation
       run: |
@@ -126,6 +126,9 @@ runs:
           GITHUB_BASE_REF = "${{ env.GITHUB_BASE_REF }}",
           GITHUB_HEAD_REF = "${{ env.GITHUB_HEAD_REF }}"
         )
+        getwd()
+        list.dirs()
+        list.files("touchstone")
         touchstone::run_script("touchstone/script.R")
       shell: Rscript {0}
     - name: Uploading Results

@@ -60,4 +60,4 @@ COPY DESCRIPTION /tmp/package/DESCRIPTION
 RUN Rscript -e "devtools::install_deps('/tmp/package', dependencies = c( 'Depends', 'Imports', 'LinkingTo', 'Suggests'))"
 
 # install cmdstan
-RUN Rscript -e "cmdstanr::install_cmdstan()"
+RUN Rscript -e "cmdstanr::install_cmdstan(quiet = TRUE)"
