@@ -7,7 +7,7 @@ touchstone::branch_install()
 # run benchmarks
 touchstone::benchmark_run(
   preprocessing = { source("touchstone/setup.R") },
-  n = 5
+  n = 3
 )
 
 touchstone::benchmark_run(
@@ -22,7 +22,7 @@ touchstone::benchmark_run(
     obs = enw_obs(family = "poisson", data = pobs),
     model = enw_model(threads = TRUE)
   ) },
-  n = 5
+  n = 3
 )
 
 touchstone::benchmark_run(
@@ -37,7 +37,7 @@ touchstone::benchmark_run(
     obs = enw_obs(family = "negbin", data = pobs),
     model = enw_model(threads = FALSE)
   ) },
-  n = 5
+  n = 3
 )
 
 
