@@ -47,3 +47,6 @@ latest_obs <- enw_filter_reference_dates(
 
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
+
+# Compile the model for use outside of the benchmark
+model <- enw_model(threads = FALSE, target_dir = "touchstone")
