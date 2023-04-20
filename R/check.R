@@ -128,7 +128,7 @@ add_group <- function(x) {
 #' @return NULL
 #'
 #' @family check
-check_module <- function(module) {
+check_module <- function(module) { 
   if (!"data" %in% names(module)) {
     stop(
       "Must contain a list component specifying the data requirements for
