@@ -6,7 +6,7 @@ touchstone::branch_install()
 
 # run benchmarks
 touchstone::benchmark_run(
-  expr_before_benchmark = { source("touchstone/setup.R") },
+  expr_before_benchmark = { source("setup.R") },
   simple = { epinowcast(
     data = pobs,
     expectation = enw_expectation(~1, data = pobs),
