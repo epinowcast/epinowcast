@@ -39,6 +39,3 @@ latest_obs <- enw_filter_reference_dates(
 
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
-
-# Compile nowcasting model using multi-threading
-model <- enw_model(threads = TRUE)

@@ -19,7 +19,8 @@ touchstone::benchmark_run(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
     ),
-    obs = enw_obs(family = "poisson", data = pobs)
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = enw_model(threads = TRUE)
   ) },
   n = 5
 )
@@ -33,7 +34,8 @@ touchstone::benchmark_run(
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
     ),
-    obs = enw_obs(family = "negbin", data = pobs)
+    obs = enw_obs(family = "negbin", data = pobs),
+    model = enw_model(threads = FALSE)
   ) },
   n = 5
 )
@@ -48,7 +50,8 @@ touchstone::benchmark_run(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 250,
     ),
-    obs = enw_obs(family = "poisson", data = pobs)
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = enw_model(threads = FALSE)
   ) },
   n = 3
 )
@@ -63,7 +66,8 @@ touchstone::benchmark_run(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 250,
     ),
-    obs = enw_obs(family = "poisson", data = pobs)
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = enw_model(threads = FALSE)
   ) },
   n = 3
 )
@@ -85,7 +89,8 @@ touchstone::benchmark_run(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 250,
     ),
-    obs = enw_obs(family = "poisson", data = pobs)
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = enw_model(threads = TRUE)
   ) },
   n = 3
 )
