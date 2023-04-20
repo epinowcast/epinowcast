@@ -18,6 +18,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
+      threads_per_chain = 2, parallel_chains = 1
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = enw_model(threads = TRUE)
@@ -87,10 +88,10 @@ touchstone::benchmark_run(
     report = enw_report(~(1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 500, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 250
     ),
     obs = enw_obs(family = "poisson", data = pobs),
-    model = enw_model(threads = TRUE)
+    model = enw_model(threads = FALSE)
   ) },
   n = 3
 )
