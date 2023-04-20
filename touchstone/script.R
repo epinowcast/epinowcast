@@ -6,7 +6,6 @@ touchstone::branch_install()
 
 # run benchmarks
 touchstone::benchmark_run(
-  expr_before_benchmark = { source("touchstone/setup.R") },
   preprocessing = { source("touchstone/setup.R") },
   n = 5
 )
