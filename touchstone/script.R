@@ -17,7 +17,7 @@ touchstone::benchmark_run(
     expectation = enw_expectation(~1, data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      chains = 2, iter_warmup = 250, iter_sampling = 250,
       threads_per_chain = 2, parallel_chains = 1
     ),
     obs = enw_obs(family = "poisson", data = pobs),
@@ -33,7 +33,8 @@ touchstone::benchmark_run(
     expectation = enw_expectation(~1, data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 500, iter_sampling = 500,
+      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model
@@ -49,7 +50,8 @@ touchstone::benchmark_run(
     report = enw_report(~(1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 500, iter_sampling = 250,
+      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -65,7 +67,8 @@ touchstone::benchmark_run(
     report = enw_report(~ (1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 500, iter_sampling = 250,
+      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -88,9 +91,10 @@ touchstone::benchmark_run(
     report = enw_report(~(1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 500, iter_sampling = 250
+      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      parallel_chains = 2
     ),
-    obs = enw_obs(family = "poisson", data = pobs),
+    obs = enw_obs(family = "negbin", data = pobs),
     model = model
   ) },
   n = 3
