@@ -6,12 +6,12 @@ touchstone::branch_install()
 
 # run benchmarks
 touchstone::benchmark_run(
-  preprocessing = { source("touchstone/setup.R") },
+  preprocessing = { source("touchstone/preprocessing.R") },
   n = 3
 )
 
 touchstone::benchmark_run(
-  expr_before_benchmark = { source("touchstone/setup.R") },
+  expr_before_benchmark = { source("touchstone/threaded-setup.R") },
   simple_model = { epinowcast(
     data = pobs,
     expectation = enw_expectation(~1, data = pobs),
@@ -21,7 +21,7 @@ touchstone::benchmark_run(
       threads_per_chain = 2, parallel_chains = 1
     ),
     obs = enw_obs(family = "poisson", data = pobs),
-    model = enw_model(threads = TRUE)
+    model = model
   ) },
   n = 3
 )
@@ -36,7 +36,7 @@ touchstone::benchmark_run(
       chains = 2, iter_warmup = 500, iter_sampling = 500,
     ),
     obs = enw_obs(family = "negbin", data = pobs),
-    model = enw_model(threads = FALSE)
+    model = model
   ) },
   n = 3
 )
@@ -52,7 +52,7 @@ touchstone::benchmark_run(
       chains = 2, iter_warmup = 500, iter_sampling = 250,
     ),
     obs = enw_obs(family = "poisson", data = pobs),
-    model = enw_model(threads = FALSE)
+    model = model
   ) },
   n = 3
 )
@@ -68,7 +68,7 @@ touchstone::benchmark_run(
       chains = 2, iter_warmup = 500, iter_sampling = 250,
     ),
     obs = enw_obs(family = "poisson", data = pobs),
-    model = enw_model(threads = FALSE)
+    model = model
   ) },
   n = 3
 )
@@ -91,7 +91,7 @@ touchstone::benchmark_run(
       chains = 2, iter_warmup = 500, iter_sampling = 250
     ),
     obs = enw_obs(family = "poisson", data = pobs),
-    model = enw_model(threads = FALSE)
+    model = model
   ) },
   n = 3
 )

@@ -6,3 +6,5 @@
 !footer.R
 !setup.R
 !missing-setup.R
+!preprocessing.R
+!threaded-setup.R
