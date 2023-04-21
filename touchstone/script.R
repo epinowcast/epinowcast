@@ -67,7 +67,7 @@ touchstone::benchmark_run(
     report = enw_report(~ (1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
