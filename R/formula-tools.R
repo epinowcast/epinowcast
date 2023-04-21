@@ -396,8 +396,6 @@ re <- function(formula) {
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
-#' @param copy A logical; make a copy of `data` or allow it to be modified?
-#'
 #' @return A list containing the transformed data ("data"),
 #' fixed effects terms ("terms") and a  `data.frame` specifying
 #' the random effect structure between these terms (`effects`). Note
@@ -422,11 +420,10 @@ re <- function(formula) {
 #'
 #' random_effect2 <- re(form$random[[2]])
 #' epinowcast:::construct_re(random_effect2, mtcars)
-construct_re <- function(re, data, copy = TRUE) {
+construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
-  data <- coerce_dt(data, copy = copy)
 
   # extract random and fixed effects
   fixed <- strsplit(re$fixed, " + ", fixed = TRUE)[[1]]
@@ -476,7 +473,7 @@ construct_re <- function(re, data, copy = TRUE) {
   terms_int <- terms_int[!startsWith(terms, "0:")]
 
   # make all right hand side random effects factors
-  data <- data[,
+  data <- coerce_dt(data, required_cols = expanded_random)[,
     (expanded_random) := lapply(.SD, as.factor),
     .SDcols = expanded_random
   ]

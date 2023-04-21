@@ -10,6 +10,7 @@ coerce_dt(
   required_cols = select,
   forbidden_cols = NULL,
   group = FALSE,
+  dates = FALSE,
   copy = TRUE
 )
 }
@@ -24,6 +25,10 @@ n.b. it is an error to include ".group"; use \code{group} argument for that}
 \item{forbidden_cols}{An optional character vector of forbidden columns}
 
 \item{group}{A logical; ensure the presence of a \code{.group} column?}
+
+\item{dates}{A logical; ensure the presence of \code{report_date} and
+\code{reference_date}? If \code{TRUE} (default), those columns will be coerced with
+\code{\link[data.table:IDateTime]{data.table::as.IDate()}}.}
 
 \item{copy}{A logical; if \code{TRUE} (default), a new \code{data.table} is returned}
 }

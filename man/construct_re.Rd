@@ -4,7 +4,7 @@
 \alias{construct_re}
 \title{Constructs random effect terms}
 \usage{
-construct_re(re, data, copy = TRUE)
+construct_re(re, data)
 }
 \arguments{
 \item{re}{A random effect as defined using \code{\link[=re]{re()}} which itself takes
@@ -13,8 +13,6 @@ random effects specified in a model formula using the \link{lme4} syntax.}
 \item{data}{A \code{data.frame} of observations used to define the
 random effects. Must contain the variables specified in the
 \code{\link[=re]{re()}} term.}
-
-\item{copy}{A logical; make a copy of \code{data} or allow it to be modified?}
 }
 \value{
 A list containing the transformed data ("data"),

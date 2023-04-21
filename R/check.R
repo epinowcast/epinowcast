@@ -1,7 +1,7 @@
 #' Check Quantiles Required are Present
 #'
-#' @param posterior An object that will be [coerce_dt()]d in place; must contain
-#' quantiles identified using the `q5` naming scheme.
+#' @param posterior A `data.table` that will be [coerce_dt()]d in place; must
+#' contain quantiles identified using the `q5` naming scheme.
 #'
 #' @param req_probs A numeric vector of required probabilities. Default:
 #' c(0.5, 0.95, 0.2, 0.8).
@@ -18,26 +18,6 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
     posterior, required_cols = sprintf("q%g", req_probs * 100),
     copy = FALSE
   ))
-}
-
-#' Check for and Format Report and Reference Dates
-#'
-#' @param obs An object that will be [coerce_dt()]d in place; must have
-#' `report_date` and `reference_date` columns.
-#'
-#' @return The `obs` object, modified in place (if necessary), where
-#' `report_date` and `reference_date` are cast via [data.table::as.IDate()].
-#'
-#' @family check
-#' @importFrom data.table as.IDate
-check_dates <- function(obs) {
-  return(coerce_dt( # check for required columns (coerce_dt), but don't copy
-    obs, required_cols = c("report_date", "reference_date"),
-    copy = FALSE
-  )[,               # cast-in-place to IDateTime (as.IDate)
-    c("report_date", "reference_date") := .(
-      as.IDate(report_date), as.IDate(reference_date)
-  )][])
 }
 
 #' Check Observations for Reserved Grouping Variables
@@ -120,6 +100,10 @@ check_modules_compatible <- function(modules) {
 #'
 #' @param group A logical; ensure the presence of a `.group` column?
 #'
+#' @param dates A logical; ensure the presence of `report_date` and
+#' `reference_date`? If `TRUE` (default), those columns will be coerced with
+#' [data.table::as.IDate()].
+#'
 #' @return A `data.table`; the returned object will be a copy, unless
 #' `copy = FALSE`, in which case modifications are made in-place
 #'
@@ -137,12 +121,20 @@ check_modules_compatible <- function(modules) {
 #' @family utils
 coerce_dt <- function(
   data, select = NULL, required_cols = select,
-  forbidden_cols = NULL, group = FALSE, copy = TRUE
+  forbidden_cols = NULL, group = FALSE,
+  dates = FALSE, copy = TRUE
 ) {
   if (!copy) { # if we want to keep the original data.table ...
     dt <- data.table::setDT(data)
   } else {     # ... otherwise, make a copy
     dt <- data.table::as.data.table(data)
+  }
+
+  if (dates) {
+    required_cols <- c(required_cols, c("report_date", "reference_date"))
+    if (length(select) > 0) { 
+      select <- c(select, c("report_date", "reference_date"))
+    }
   }
 
   if ((length(required_cols) > 0)) {     # if we have required columns ...
@@ -153,7 +145,12 @@ coerce_dt <- function(
     if (!all(required_cols %in% colnames(dt))) {
       stop(
         "The following columns are required: ",
-        toString(required_cols[!(required_cols %in% colnames(dt))])
+        toString(required_cols[!(required_cols %in% colnames(dt))]),
+        " but are not present among ",
+        toString(colnames(dt)),
+        "\n(all `required_cols`: ",
+        toString(required_cols),
+        ")"
       )
     }
   }
@@ -166,7 +163,12 @@ coerce_dt <- function(
     if (any(forbidden_cols %in% colnames(dt))) {
       stop(
         "The following columns are forbidden: ",
-        toString(forbidden_cols[forbidden_cols %in% colnames(dt)])
+        toString(forbidden_cols[forbidden_cols %in% colnames(dt)]),
+        " but are present among ",
+        toString(colnames(dt)),
+        "\n(all `forbidden_cols`: ",
+        toString(forbidden_cols),
+        ")"
       )
     }
   }
@@ -175,13 +177,21 @@ coerce_dt <- function(
     if (is.null(dt[[".group"]])) {  # ... check it's presence
       dt <- dt[, .group := 1]       # ... and add it if it's not there
     }
-    if (!is.null(select)) {         # if we have a select list ...
+    if (length(select) > 0) {         # if we have a select list ...
       select <- c(select, ".group") # ... add ".group" to it
     }
   }
 
+  if (dates) {
+    dt[,               # cast-in-place to IDateTime (as.IDate)
+      c("report_date", "reference_date") := .(
+        as.IDate(report_date), as.IDate(reference_date)
+      )
+    ]
+  }
+
   if (length(select) > 0) {         # if selecting particular list ...
-    return(dt[, .SD, .SDcols = c(select)])
+    return(dt[, .SD, .SDcols = c(select)][])
   } else {
     return(dt[])
   }

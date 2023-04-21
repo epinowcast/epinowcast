@@ -301,8 +301,7 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
 enw_add_delay <- function(obs, copy = TRUE) {
-  obs <- coerce_dt(obs, copy = copy)
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, dates = TRUE, copy = copy)
   obs[, delay := as.numeric(report_date - reference_date)]
   return(obs[])
 }
@@ -329,8 +328,7 @@ enw_add_delay <- function(obs, copy = TRUE) {
 #' obs$confirm <- 1:3
 #' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs, copy = TRUE) {
-  obs <- coerce_dt(obs, group = TRUE, copy = copy)
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, group = TRUE, dates = TRUE, copy = copy)
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
     ,
@@ -350,13 +348,17 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' observed data. Users may wish to combine this function with
 #' [enw_filter_reference_dates()].
 #'
+#' @param obs A data.table or data.frame with a `report_date` column. 
+#'
 #' @param latest_date Date, the latest report date to include in the
 #' returned dataset.
 #'
 #' @param remove_days Integer, if \code{latest_date} is not given, the number
 #' of report dates to remove, starting from the latest date included.
 #'
-#' @inheritParams check_dates
+#' @param obs An `data.frame`; must have `report_date` and `reference_date`
+#' columns.
+#' 
 #' @return A data.table  filtered by report date
 #' @family preprocess
 #' @export
@@ -371,8 +373,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
     "exactly one of `remove_days` and `latest_date` must be specified." =
       xor(missing(remove_days), missing(latest_date))
   )
-  filt_obs <- coerce_dt(obs)
-  filt_obs <- check_dates(filt_obs)
+  filt_obs <- coerce_dt(obs, dates = TRUE)
   if (missing(latest_date)) {
     latest_date <- max(filt_obs$report_date) - remove_days
   }
@@ -404,7 +405,9 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @param remove_days Integer, if \code{latest_date} is not given, the number
 #' of reference dates to remove, starting from the latest date included.
 #'
-#' @inheritParams check_dates
+#' @param obs An `data.frame`; must have `report_date` and `reference_date`
+#' columns.
+#'
 #' @return A data.table  filtered by report date
 #' @family preprocess
 #' @export
@@ -423,8 +426,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' )
 enw_filter_reference_dates <- function(obs, earliest_date, include_days,
                                        latest_date, remove_days) {
-  filt_obs <- coerce_dt(obs)
-  filt_obs <- check_dates(filt_obs)
+  filt_obs <- coerce_dt(obs, dates = TRUE)
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
       stop("`remove_days` and `latest_date` can't both be specified.")
@@ -464,15 +466,16 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
 #' @return A `data.frame` of observations filtered for the latest available data
 #' for each reference date.
 #'
-#' @inheritParams check_dates
+#' @param obs An `data.frame`; must have `report_date` and `reference_date`
+#' columns.
+#'
 #' @family preprocess
 #' @export
 #' @examples
 #' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
 enw_latest_data <- function(obs) {
-  latest_data <- coerce_dt(obs)
-  latest_data <- check_dates(latest_data)
+  latest_data <- coerce_dt(obs, dates = TRUE)
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date)) | is.na(reference_date)],
@@ -513,9 +516,8 @@ enw_latest_data <- function(obs) {
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
                                         by = NULL, copy = TRUE) {
   reports <- coerce_dt(
-    obs, required_cols = c(by, "confirm"), copy = copy
+    obs, required_cols = c(by, "confirm"), dates = TRUE, copy = copy
   )
-  reports <- check_dates(reports)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
     by = c("reference_date", by)
@@ -558,8 +560,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = NULL) {
 
-  obs <- coerce_dt(obs)
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, dates = TRUE)
   obs <- obs[!is.na(reference_date)]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
 
@@ -677,8 +678,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' enw_complete_dates(obs)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
                                missing_reference = TRUE) {
-  obs <- coerce_dt(obs)
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
@@ -758,8 +758,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' obs <- enw_cumulative_to_incidence(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
-  obs <- coerce_dt(obs, group = TRUE)
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, group = TRUE, dates = TRUE)
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
     .(.confirm_avail = sum(new_confirm)),
@@ -976,8 +975,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 ..., copy = TRUE) {
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
-  obs <- coerce_dt(obs, copy = copy) # no checks here: those in functions below
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, dates = TRUE, copy = copy)
   check_group(obs)
   data.table::setkeyv(obs, "reference_date")
 

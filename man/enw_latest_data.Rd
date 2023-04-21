@@ -7,8 +7,8 @@
 enw_latest_data(obs)
 }
 \arguments{
-\item{obs}{An object that will be \code{\link[=coerce_dt]{coerce_dt()}}d in place; must have
-\code{report_date} and \code{reference_date} columns.}
+\item{obs}{An \code{data.frame}; must have \code{report_date} and \code{reference_date}
+columns.}
 }
 \value{
 A \code{data.frame} of observations filtered for the latest available data

@@ -18,7 +18,6 @@ Check Observations for Reserved Grouping Variables
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_dates}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_module}()},
 \code{\link{check_quantiles}()}
