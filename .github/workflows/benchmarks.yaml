@@ -1,4 +1,4 @@
-name: Continuous Benchmarks (Receive)
+name: Benchmarks
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}

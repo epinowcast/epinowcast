@@ -1,4 +1,4 @@
-name: Continuous Benchmarks (Comment)
+name: Benchmarks (Comment)
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -6,15 +6,14 @@ concurrency:
 
 on:
   workflow_run:
-    workflows: ["Continuous Benchmarks (Receive)"]
+    workflows: 
+      - Benchmarks
     types:
       - completed
 
 jobs:
   upload:
     runs-on: ubuntu-latest
-    if: >
-      ${{ github.event.workflow_run.event == 'pull_request' }}
     steps:
       - uses: lorenzwalthert/touchstone/actions/comment@main
         with: 
