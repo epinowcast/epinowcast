@@ -1,7 +1,7 @@
 #' Check Quantiles Required are Present
 #'
-#' @param posterior A `data.frame` containing quantiles identified using
-#' the `q5` naming scheme. Default: No default.
+#' @param posterior An object that will be [coerce_dt()]d in place; must contain
+#' quantiles identified using the `q5` naming scheme.
 #'
 #' @param req_probs A numeric vector of required probabilities. Default:
 #' c(0.5, 0.95, 0.2, 0.8).
@@ -10,26 +10,23 @@
 #'
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
-  if (any(req_probs <= 0) || any(req_probs >= 1)) {
-    stop("Please provide probabilities as numbers between 0 and 1.")
-  }
-  cols <- colnames(posterior)
-  if (sum(cols %in% paste0("q", req_probs * 100)) != length(req_probs)) {
-    stop(
-      "Following quantiles must be present (set with probs): ",
-      toString(req_probs)
-    )
-  }
-  return(invisible(NULL))
+  stopifnot(
+    "Please provide probabilities as numbers between 0 and 1." =
+    all(data.table::between(req_probs, 0, 1, incbounds = FALSE))
+  )
+  return(coerce_dt(
+    posterior, required_cols = sprintf("q%g", req_probs * 100),
+    copy = FALSE
+  ))
 }
 
 #' Check for and Format Report and Reference Dates
 #'
-#' @param obs A `data.frame` containing `report_date` and `reference_date`
-#' columns.
+#' @param obs An object that will be [coerce_dt()]d in place; must have
+#' `report_date` and `reference_date` columns.
 #'
-#' @return The `obs` object, potentially modified, where `report_date` and
-#' `reference_date` cast via [IDateTime] format.
+#' @return The `obs` object, modified in place (if necessary), where
+#' `report_date` and `reference_date` are cast via [data.table::as.IDate()].
 #'
 #' @family check
 #' @importFrom data.table as.IDate
@@ -45,10 +42,10 @@ check_dates <- function(obs) {
 
 #' Check Observations for Reserved Grouping Variables
 #'
-#' @param obs An observation `data.table` that does not contain `.group`,
-#' `.old_group`, or `.new_group` as these are reserved variables.
+#' @param obs An object that will be `coerce_dt`d in place, that does not
+#' contain `.group`, `.old_group`, or `.new_group`. These are reserved names.
 #'
-#' @return The `obs` object
+#' @return The `obs` object, which will be modifiable in place.
 #'
 #' @family check
 check_group <- function(obs) {
