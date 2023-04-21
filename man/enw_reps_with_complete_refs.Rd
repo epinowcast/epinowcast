@@ -21,6 +21,9 @@ that this is zero indexed and so includes the reference date and
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
+
+\item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
+modifies \code{obs} in place.}
 }
 \value{
 A \code{data.frame} containing a \code{report_date} variable, and grouping

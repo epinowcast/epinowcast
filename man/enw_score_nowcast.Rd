@@ -10,8 +10,7 @@ enw_score_nowcast(
   log = FALSE,
   check = FALSE,
   round_to = 3,
-  ...,
-  copy = TRUE
+  ...
 )
 }
 \arguments{
@@ -67,9 +66,6 @@ are examples for each format (\link[scoringutils]{example_quantile}, \link[scori
 default), all available metrics will be computed. For a list of available
 metrics see \code{\link[scoringutils:available_metrics]{available_metrics()}}, or  check the \link[scoringutils]{metrics} data set.}
   }}
-
-\item{copy}{A logical; make a copy of \code{latest_obs} or allow it to be
-modified?}
 }
 \value{
 A \code{data.table} as returned by \code{\link[scoringutils:score]{scoringutils::score()}}.

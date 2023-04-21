@@ -37,8 +37,8 @@
 #' enw_manual_formula(data, fixed = "week", random = "day_of_week")
 enw_manual_formula <- function(data, fixed = NULL, random = NULL,
                                custom_random = NULL, no_contrasts = FALSE,
-                               add_intercept = TRUE, copy = TRUE) {
-  data <- coerce_dt(data, copy = copy)
+                               add_intercept = TRUE) {
+  data <- coerce_dt(data)
   if (add_intercept) {
     form <- "1"
   } else {

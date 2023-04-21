@@ -8,8 +8,7 @@ enw_reference_by_report(
   missing_reference,
   reps_with_complete_refs,
   metareference,
-  max_delay,
-  copy = TRUE
+  max_delay
 )
 }
 \arguments{
@@ -28,9 +27,6 @@ include in the delay distribution. Computation scales non-linearly with this
 setting so consider what maximum makes sense for your data carefully. Note
 that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
-
-\item{copy}{A logical; make a copy of \code{metareference} or allow it to be
-modified?}
 }
 \value{
 A wide \code{data.frame} with each row being a complete report date and'

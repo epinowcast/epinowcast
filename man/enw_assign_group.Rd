@@ -11,9 +11,12 @@ enw_assign_group(obs, by = NULL, copy = TRUE)
 
 \item{by}{A character vector of column names to group by. Defaults to
 an empty vector.}
+
+\item{copy}{A logical; make a copy (default) of \code{obs} or modify it in
+place?}
 }
 \value{
-A data.table with a \code{.group} column added ordered by \code{.group}
+A \code{data.table} with a \code{.group} column added ordered by \code{.group}
 and the existing key of \code{obs}.
 }
 \description{

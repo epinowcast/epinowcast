@@ -4,14 +4,7 @@
 \alias{enw_design}
 \title{A helper function to construct a design matrix from a formula}
 \usage{
-enw_design(
-  formula,
-  data,
-  no_contrasts = FALSE,
-  sparse = TRUE,
-  ...,
-  copy = TRUE
-)
+enw_design(formula, data, no_contrasts = FALSE, sparse = TRUE, ...)
 }
 \arguments{
 \item{formula}{An R formula.}
@@ -32,8 +25,6 @@ TRUE.}
     \item{\code{object}}{an object of an appropriate class.  For the default
     method, a model \link[stats]{formula} or a \code{\link[stats]{terms}} object.}
   }}
-
-\item{copy}{A logical; make a copy of \code{data} or allow it to be modified?}
 }
 \value{
 A list containing the formula, the design matrix, and the index.

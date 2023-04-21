@@ -33,6 +33,9 @@ indicating whether the effects were matched.}
 
 \item{...}{Additional arguments to \code{finder_fn}. E.g. for the
 \code{finder_fn = startsWith} default, this should be \code{prefix = "somestring"}.}
+
+\item{copy}{A logical; make a copy (default) of \code{effects} or modify it in
+place?}
 }
 \value{
 A \code{data.table} with the following columns:

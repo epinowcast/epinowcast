@@ -4,7 +4,7 @@
 \alias{enw_formula}
 \title{Define a model using a formula interface}
 \usage{
-enw_formula(formula, data, sparse = TRUE, copy = TRUE)
+enw_formula(formula, data, sparse = TRUE)
 }
 \arguments{
 \item{formula}{A model formula that may use standard fixed
@@ -16,8 +16,6 @@ variables used in the supplied formula.}
 
 \item{sparse}{Logical, defaults to  \code{TRUE}. Should the fixed effects design
 matrix be sparely defined.}
-
-\item{copy}{A logical; make a copy of \code{data} or allow it to be modified?}
 }
 \value{
 A list containing the following:

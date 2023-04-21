@@ -78,8 +78,6 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' variable names in order too allow them to be distinguished from
 #' their standard usage within modelling code.
 #'
-#' @param copy A logical; make a copy of `priors` or allow it to be modified?
-#'
 #' @return A named list with each entry specifying a prior as a length
 #' two vector (specifying the mean and standard deviation of the prior).
 #' @family modeltools
@@ -109,9 +107,6 @@ enw_priors_as_data_list <- function(priors) {
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions.
-#'
-#' @param copy A logical; make a copy of `priors` and `custom_priors` or allow
-#' them to be modified?
 #'
 #' @param custom_priors A `data.frame` with the following variables:
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
@@ -143,9 +138,9 @@ enw_priors_as_data_list <- function(priors) {
 #' fit_priors
 #'
 #' enw_replace_priors(default_priors, fit_priors)
-enw_replace_priors <- function(priors, custom_priors, copy = TRUE) {
+enw_replace_priors <- function(priors, custom_priors) {
   custom_priors <- coerce_dt(
-    custom_priors, select = c("variable", "mean", "sd"), copy = copy
+    custom_priors, select = c("variable", "mean", "sd")
   )[
     ,
     .(variable = gsub("\\[([^]]*)\\]", "", variable),
@@ -153,7 +148,7 @@ enw_replace_priors <- function(priors, custom_priors, copy = TRUE) {
   ]
   variables <- custom_priors$variable
   priors <- coerce_dt(
-    priors, required_cols = "variable", copy = copy
+    priors, required_cols = "variable"
   )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])

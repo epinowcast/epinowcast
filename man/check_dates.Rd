@@ -7,12 +7,12 @@
 check_dates(obs)
 }
 \arguments{
-\item{obs}{A \code{data.frame} containing \code{report_date} and \code{reference_date}
-columns.}
+\item{obs}{An object that will be \code{\link[=coerce_dt]{coerce_dt()}}d in place; must have
+\code{report_date} and \code{reference_date} columns.}
 }
 \value{
-The \code{obs} object, potentially modified, where \code{report_date} and
-\code{reference_date} cast via \link{IDateTime} format.
+The \code{obs} object, modified in place (if necessary), where
+\code{report_date} and \code{reference_date} are cast via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}.
 }
 \description{
 Check for and Format Report and Reference Dates

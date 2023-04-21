@@ -34,9 +34,6 @@ enw_reps_with_complete_refs <- function(
 #' @param metareference `metareference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
-#' @param copy A logical; make a copy of `metareference` or allow it to be
-#' modified?
-#'
 #' @return A wide `data.frame` with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
 #' @inheritParams enw_preprocess_data

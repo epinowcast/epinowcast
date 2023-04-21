@@ -4,7 +4,12 @@
 \alias{enw_cumulative_to_incidence}
 \title{Calculate incidence of new reports from cumulative reports}
 \usage{
-enw_cumulative_to_incidence(obs, set_negatives_to_zero = TRUE, by = NULL)
+enw_cumulative_to_incidence(
+  obs,
+  set_negatives_to_zero = TRUE,
+  by = NULL,
+  copy = TRUE
+)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
@@ -21,6 +26,9 @@ TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
+
+\item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
+modifies \code{obs} in place.}
 }
 \value{
 The input \code{data.frame} with a new variable \code{new_confirm}. If

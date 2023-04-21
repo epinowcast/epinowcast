@@ -260,7 +260,10 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
 #' @param by A character vector of column names to group by. Defaults to
 #' an empty vector.
 #'
-#' @return A data.table with a `.group` column added ordered by `.group`
+#' @param copy A logical; make a copy (default) of `obs` or modify it in
+#' place?
+#'
+#' @return A `data.table` with a `.group` column added ordered by `.group`
 #' and the existing key of `obs`.
 #'
 #' @family preprocess
@@ -508,8 +511,10 @@ enw_latest_data <- function(obs) {
 #' dt <- enw_add_max_reported(dt)
 #' enw_cumulative_to_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
-                                        by = NULL) {
-  reports <- coerce_dt(obs)
+                                        by = NULL, copy = TRUE) {
+  reports <- coerce_dt(
+    obs, required_cols = c(by, "confirm"), copy = copy
+  )
   reports <- check_dates(reports)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
@@ -552,7 +557,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' dt <- enw_add_max_reported(dt)
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = NULL) {
-  
+
   obs <- coerce_dt(obs)
   obs <- check_dates(obs)
   obs <- obs[!is.na(reference_date)]
@@ -720,8 +725,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     by = c("reference_date", ".group")
   ]
   obs[, .group := NULL]
-  data.table::setkeyv(obs, c(by, "report_date", "reference_date"))
-  data.table::setcolorder(obs)
+  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
+  data.table::setcolorder(obs, c(by, "report_date", "reference_date"))
   return(obs[])
 }
 
@@ -927,6 +932,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #'   e.g. `holidays`, which sets commonly used metadata
 #'   (e.g. day of week, days since start of time series)
 #'
+#' @param copy A logical; if `TRUE` (the default) creates a copy; otherwise,
+#' modifies `obs` in place.
+#'
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
 #'  - `obs`: (observations with the addition of empirical reporting proportions
@@ -965,8 +973,10 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' pobs
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 set_negatives_to_zero = TRUE,
-                                ...) {
-  obs <- coerce_dt(obs)
+                                ..., copy = TRUE) {
+  # coerce obs - at this point, either making a copy or not
+  # after, we are modifying the copy/not copy
+  obs <- coerce_dt(obs, copy = copy) # no checks here: those in functions below
   obs <- check_dates(obs)
   check_group(obs)
   data.table::setkeyv(obs, "reference_date")

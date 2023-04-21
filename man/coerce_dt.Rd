@@ -28,10 +28,8 @@ n.b. it is an error to include ".group"; use \code{group} argument for that}
 \item{copy}{A logical; if \code{TRUE} (default), a new \code{data.table} is returned}
 }
 \value{
-a \code{data.table}; if \code{data} is a \code{data.table}, the returned object
-will have a new address, unless \code{copy = FALSE}.
-i.e. be distinct from the original and not cause any side effects with
-changes.
+A \code{data.table}; the returned object will be a copy, unless
+\code{copy = FALSE}, in which case modifications are made in-place
 }
 \description{
 Provides consistent coercion of inputs to \link{data.table}

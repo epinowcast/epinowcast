@@ -4,15 +4,13 @@
 \alias{enw_priors_as_data_list}
 \title{Convert prior \code{data.frame} to list}
 \usage{
-enw_priors_as_data_list(priors, copy = TRUE)
+enw_priors_as_data_list(priors)
 }
 \arguments{
 \item{priors}{A \code{data.frame} with the following variables:
 \code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions.}
-
-\item{copy}{A logical; make a copy of \code{priors} or allow it to be modified?}
 }
 \value{
 A named list with each entry specifying a prior as a length

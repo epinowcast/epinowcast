@@ -26,9 +26,6 @@
 #'
 #' @inheritDotParams scoringutils::score
 #'
-#' @param copy A logical; make a copy of `latest_obs` or allow it to be
-#' modified?
-#'
 #' @return A `data.table` as returned by [scoringutils::score()].
 #' @family modelvalidation
 #' @importFrom data.table setnames
@@ -55,7 +52,7 @@
 #' log_scores <- enw_score_nowcast(summarised_nowcast, obs, log = TRUE)
 #' summarise_scores(log_scores, by = "location")
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
-                              check = FALSE, round_to = 3, ..., copy = TRUE) {
+                              check = FALSE, round_to = 3, ...) {
   if (!requireNamespace("scoringutils")) {
     stop("scoringutils is required for this function to work")
   }
@@ -63,7 +60,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   if (!is.null(long_nowcast[["mad"]])) {
     long_nowcast[, "mad" := NULL]
   }
-  latest_obs <- coerce_dt(latest_obs, copy = copy)
+  latest_obs <- coerce_dt(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
   latest_obs[, report_date := NULL]
   cols <- intersect(colnames(nowcast), colnames(latest_obs))

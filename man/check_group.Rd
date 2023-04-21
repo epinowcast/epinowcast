@@ -7,11 +7,11 @@
 check_group(obs)
 }
 \arguments{
-\item{obs}{An observation \code{data.table} that does not contain \code{.group},
-\code{.old_group}, or \code{.new_group} as these are reserved variables.}
+\item{obs}{An object that will be \code{coerce_dt}d in place, that does not
+contain \code{.group}, \code{.old_group}, or \code{.new_group}. These are reserved names.}
 }
 \value{
-The \code{obs} object
+The \code{obs} object, which will be modifiable in place.
 }
 \description{
 Check Observations for Reserved Grouping Variables

@@ -10,8 +10,7 @@ enw_manual_formula(
   random = NULL,
   custom_random = NULL,
   no_contrasts = FALSE,
-  add_intercept = TRUE,
-  copy = TRUE
+  add_intercept = TRUE
 )
 }
 \arguments{
@@ -33,8 +32,6 @@ supplied indicating which variables should  not have contrasts.}
 
 \item{add_intercept}{Logical, defaults to \code{FALSE}. Should an intercept be
 added to the fixed effects.}
-
-\item{copy}{A logical; make a copy of \code{data} or allow it to be modified?}
 }
 \value{
 A list specifying the fixed effects (formula, design matrix, and
