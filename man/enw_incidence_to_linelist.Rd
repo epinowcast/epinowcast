@@ -2,21 +2,47 @@
 % Please edit documentation in R/data-converters.R
 \name{enw_incidence_to_linelist}
 \alias{enw_incidence_to_linelist}
-\title{FUNCTION_TITLE}
+\title{Convert Aggregate Counts (Incidence) to a Line List}
 \usage{
-enw_incidence_to_linelist(obs, by = NULL)
+enw_incidence_to_linelist(obs, reference_date, report_date)
 }
 \arguments{
-\item{obs}{DESCRIPTION.}
+\item{obs}{An object coercible to a \code{data.table} (such as a \code{data.frame})
+which must have a \code{new_confirm} column.}
 
-\item{by}{DESCRIPTION.}
+\item{reference_date}{A character string of the variable name to use
+for the \code{reference_date} in the line list. If not supplied then the
+function will not rename the \code{reference_date} column.}
+
+\item{report_date}{A character string of the variable name to use
+for the \code{report_date} in the line list. If not supplied then the
+function will not rename the \code{report_date} column.}
 }
 \value{
-RETURN_DESCRIPTION
+A \code{data.table} with the following variables: \code{id}, \code{reference_date},
+\code{report_date}, and any other variables in the \code{obs} object. Rows in \code{obs}
+will be duplicated based on the \code{new_confirm} column. \code{reference_date} and
+\code{report_date} may be renamed if \code{reference_date} and \code{report_date} are
+supplied.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function takes a \code{data.table} of aggregate counts or
+something coercible to a \code{data.table} (such as a \code{data.frame}) and converts
+it to a line list where each row represents a case.
 }
 \examples{
-# ADD_EXAMPLES_HERE
+incidence <- enw_add_incidence(germany_covid19_hosp)
+incidence <- enw_filter_reference_dates(
+  incidence[location \%in\% "DE"], include_days = 10
+)
+enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 }
+\seealso{
+Data converters
+\code{\link{enw_add_cumulative}()},
+\code{\link{enw_add_incidence}()},
+\code{\link{enw_cumulative_to_incidence}()},
+\code{\link{enw_incidence_to_cumulative}()},
+\code{\link{enw_linelist_to_incidence}()}
+}
+\concept{dataconverters}

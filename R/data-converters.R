@@ -80,28 +80,63 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 }
 
 
-#' FUNCTION_TITLE
+#' Convert a Line List to Aggregate Counts (Incidence)
 #'
-#' FUNCTION_DESCRIPTION
+#' @description This function takes a line list (i.e. something coercible to
+#' a `data.table (such as a `data.frame`)  where each row represents a
+#' case) and aggregates to a count (`new_confirm`) of cases by user-specified
+#' `reference_date`s and `report_date`s. This is enables the use of
+#' [enw_preprocess_data()] and other [epinowcast()] preprocessing functions.
 #'
-#' @param linelist DESCRIPTION.
-#' @param by DESCRIPTION.
-#' @param max_delay DESCRIPTION.
+#' @param linelist An object coercible to a `data.table` (such as a
+#' `data.frame`) where each row represents a case. Must contain at least
+#' two date variables or variables that can be coerced to dates.
 #'
-#' @return RETURN_DESCRIPTION
+#' @param reference_date A date or a variable that can be coerced to a date
+#' that represents the date of interest for the case. For example, if the
+#' `reference_date` is the date of symptom onset then the `new_confirm` will
+#' be the number of new cases reported (based on `report_date`) on each day
+#' that had onset on that day. Optional if a `reference_date` is already
+#' present in the `linelist`.
+#'
+#' @param report_date A date or a variable that can be coerced to a date
+#' that represents the date the case was reported.
+#'
+#' @param by A character vector of variables to also aggregate by (i.e. as well
+#' as using the `reference_date` and `report_date`). If not supplied 
+#' then the function will aggregate by just the `reference_date` and
+#' `report_date`.
+#'
+#' @param max_delay The maximum number of days between the `reference_date`
+#' and the `report_date`. If not supplied then the function will use the
+#' maximum number of days between the `reference_date` and the `report_date`
+#' in the `linelist`. If the `max_delay` is less than the maximum number of
+#' days between the `reference_date` and the `report_date` in the `linelist`
+#' then the function will use this value instead and inform the user.
+#'
+#' @return A `data.table` with the following variables: `reference_date`,
+#' `report_date`, `new_confirm`, `confirm`, `delay`, and
+#' any variables specified in `by`.
 #'
 #' @family dataconverters
 #' @export
 #' @examples
 #' linelist <- data.frame(
-#'   reference_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
+#'   onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
 #'   report_date = as.Date(c("2021-01-03", "2021-01-05", "2021-01-04"))
 #' )
-#' enw_linelist_to_incidence(linelist)
-enw_linelist_to_incidence <- function(linelist, by = NULL, max_delay) {
+#' enw_linelist_to_incidence(linelist, reference_date = "onset_date")
+enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
+                                       by = NULL, max_delay) {
   check_by(linelist)
-  obs <- check_dates(linelist)
   counts <- data.table::as.data.table(linelist)
+  if (!missing(report_date)) {
+    counts[, report_date := get(report_date)]
+  }
+  if (!missing(reference_date)) {
+    counts[, reference_date := get(reference_date)]
+  }
+  counts <- check_dates(counts)
   data.table::setkeyv(counts, c(by, "reference_date", "report_date"))
   counts <- counts[,
     .(new_confirm = .N), keyby = c("reference_date", "report_date", by)
@@ -111,12 +146,16 @@ enw_linelist_to_incidence <- function(linelist, by = NULL, max_delay) {
   obs_delay <- max(counts$report_date) - min(counts$reference_date) + 1
   if (missing(max_delay)) {
     max_delay <- obs_delay
-    message("Using maximum observed delay of ", max_delay, " days")
+    message(
+      "Using the maximum observed delay of ", max_delay, " days ",
+      "to complete the incidence data."
+    )
   }
   if (max_delay < obs_delay) {
     message(
-      "Using maximum observed delay of ", max_delay, " days as greater than
-       the maximum specified")
+      "Using the maximum observed delay of ", max_delay,
+      " days as greater than the maximum specified to complete the incidence ",
+      "data.")
        max_delay <- obs_delay
   }
   cum_counts <- enw_add_cumulative(counts)
@@ -129,27 +168,54 @@ enw_linelist_to_incidence <- function(linelist, by = NULL, max_delay) {
 }
 
 
-#' FUNCTION_TITLE
+#' Convert Aggregate Counts (Incidence) to a Line List
 #'
-#' FUNCTION_DESCRIPTION
+#' @description This function takes a `data.table` of aggregate counts or
+#' something coercible to a `data.table` (such as a `data.frame`) and converts
+#' it to a line list where each row represents a case.
 #'
-#' @param obs DESCRIPTION.
-#' @param by DESCRIPTION.
+#' @param obs An object coercible to a `data.table` (such as a `data.frame`)
+#' which must have a `new_confirm` column.
 #'
-#' @return RETURN_DESCRIPTION
+#' @param reference_date A character string of the variable name to use 
+#' for the `reference_date` in the line list. If not supplied then the
+#' function will not rename the `reference_date` column.
+#'
+#' @param report_date A character string of the variable name to use
+#' for the `report_date` in the line list. If not supplied then the
+#' function will not rename the `report_date` column.
+#'
+#' @return A `data.table` with the following variables: `id`, `reference_date`,
+#' `report_date`, and any other variables in the `obs` object. Rows in `obs`
+#' will be duplicated based on the `new_confirm` column. `reference_date` and
+#' `report_date` may be renamed if `reference_date` and `report_date` are
+#' supplied.
+#'
 #' @export
+#' @family dataconverters
 #' @examples
-#' # ADD_EXAMPLES_HERE
-enw_incidence_to_linelist <- function(obs, by = NULL) {
+#' incidence <- enw_add_incidence(germany_covid19_hosp)
+#' incidence <- enw_filter_reference_dates(
+#'   incidence[location %in% "DE"], include_days = 10
+#' )
+#' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
+enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
   check_by(obs)
   obs <- check_dates(obs)
-  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
+  # TODO: Add a check for new_confirm here using `coerce_dt()`
+  suppressWarnings(obs[, c("confirm") := NULL])
+  cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]
-  obs <- obs[,
-   .(id = 1:new_confirm),
-   keyby = c(by, "reference_date", "report_date")
-  ]
-  obs <- obs[order(reference_date, report_date)]
+  obs <- obs[, .(person = 1:new_confirm), by = cols]
+  obs[, person := NULL]
+  obs[, id:= 1:.N]
+  data.table::setcolorder(obs, c("id", cols))
+  if (!missing(reference_date)) {
+    data.table::setnames(obs, "reference_date", reference_date)
+  }
+  if (!missing(report_date)) {
+    data.table::setnames(obs, "report_date", report_date)
+  }
   return(obs[])
 }
 

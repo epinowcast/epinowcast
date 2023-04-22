@@ -2,35 +2,66 @@
 % Please edit documentation in R/data-converters.R
 \name{enw_linelist_to_incidence}
 \alias{enw_linelist_to_incidence}
-\title{FUNCTION_TITLE}
+\title{Convert a Line List to Aggregate Counts (Incidence)}
 \usage{
-enw_linelist_to_incidence(linelist, by = NULL, max_delay)
+enw_linelist_to_incidence(
+  linelist,
+  reference_date,
+  report_date,
+  by = NULL,
+  max_delay
+)
 }
 \arguments{
-\item{linelist}{DESCRIPTION.}
+\item{linelist}{An object coercible to a \code{data.table} (such as a
+\code{data.frame}) where each row represents a case. Must contain at least
+two date variables or variables that can be coerced to dates.}
 
-\item{by}{DESCRIPTION.}
+\item{reference_date}{A date or a variable that can be coerced to a date
+that represents the date of interest for the case. For example, if the
+\code{reference_date} is the date of symptom onset then the \code{new_confirm} will
+be the number of new cases reported (based on \code{report_date}) on each day
+that had onset on that day. Optional if a \code{reference_date} is already
+present in the \code{linelist}.}
 
-\item{max_delay}{DESCRIPTION.}
+\item{report_date}{A date or a variable that can be coerced to a date
+that represents the date the case was reported.}
+
+\item{by}{A character vector of variables to also aggregate by (i.e. as well
+as using the \code{reference_date} and \code{report_date}). If not supplied
+then the function will aggregate by just the \code{reference_date} and
+\code{report_date}.}
+
+\item{max_delay}{The maximum number of days between the \code{reference_date}
+and the \code{report_date}. If not supplied then the function will use the
+maximum number of days between the \code{reference_date} and the \code{report_date}
+in the \code{linelist}. If the \code{max_delay} is less than the maximum number of
+days between the \code{reference_date} and the \code{report_date} in the \code{linelist}
+then the function will use this value instead and inform the user.}
 }
 \value{
-RETURN_DESCRIPTION
+A \code{data.table} with the following variables: \code{reference_date},
+\code{report_date}, \code{new_confirm}, \code{confirm}, \code{delay}, and
+any variables specified in \code{by}.
 }
 \description{
-FUNCTION_DESCRIPTION
+This function takes a line list (i.e. something coercible to
+a \verb{data.table (such as a }data.frame\verb{)  where each row represents a case) and aggregates to a count (}new_confirm\verb{) of cases by user-specified }reference_date\verb{s and }report_date`s. This is enables the use of
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and other \code{\link[=epinowcast]{epinowcast()}} preprocessing functions.
 }
 \examples{
 linelist <- data.frame(
-  reference_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
+  onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
   report_date = as.Date(c("2021-01-03", "2021-01-05", "2021-01-04"))
 )
-enw_linelist_to_incidence(linelist)
+enw_linelist_to_incidence(linelist, reference_date = "onset_date")
 }
 \seealso{
 Data converters
 \code{\link{enw_add_cumulative}()},
 \code{\link{enw_add_incidence}()},
 \code{\link{enw_cumulative_to_incidence}()},
-\code{\link{enw_incidence_to_cumulative}()}
+\code{\link{enw_incidence_to_cumulative}()},
+\code{\link{enw_incidence_to_linelist}()}
 }
 \concept{dataconverters}
