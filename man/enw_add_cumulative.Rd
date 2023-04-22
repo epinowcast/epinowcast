@@ -4,7 +4,7 @@
 \alias{enw_add_cumulative}
 \title{Calculate cumulative reported cases from incidence of new reports}
 \usage{
-enw_add_cumulative(obs, by = c())
+enw_add_cumulative(obs, by = NULL)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:

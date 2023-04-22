@@ -4,7 +4,7 @@
 \alias{enw_linelist_to_incidence}
 \title{FUNCTION_TITLE}
 \usage{
-enw_linelist_to_incidence(linelist, by = c(), max_delay)
+enw_linelist_to_incidence(linelist, by = NULL, max_delay)
 }
 \arguments{
 \item{linelist}{DESCRIPTION.}

@@ -18,7 +18,7 @@
 #'
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' enw_add_cumulative(dt)
-enw_add_cumulative <- function(obs, by = c()) {
+enw_add_cumulative <- function(obs, by = NULL) {
   obs <- check_dates(obs)
   check_by(obs)
 
@@ -56,7 +56,7 @@ enw_add_cumulative <- function(obs, by = c()) {
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' dt <- enw_add_max_reported(dt)
 #' enw_add_incidence(dt)
-enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = c()) {
+enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
   check_by(obs)
   reports <- check_dates(obs)
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
@@ -98,7 +98,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = c()) {
 #'   report_date = as.Date(c("2021-01-03", "2021-01-05", "2021-01-04"))
 #' )
 #' enw_linelist_to_incidence(linelist)
-enw_linelist_to_incidence <- function(linelist, by = c(), max_delay) {
+enw_linelist_to_incidence <- function(linelist, by = NULL, max_delay) {
   check_by(linelist)
   obs <- check_dates(linelist)
   counts <- data.table::as.data.table(linelist)
@@ -125,13 +125,38 @@ enw_linelist_to_incidence <- function(linelist, by = c(), max_delay) {
     cum_counts, max_delay = max_delay, by = by
   )
   complete_counts <- enw_add_incidence(complete_counts, by = by)
-  return(complete_counts)
+  return(complete_counts[])
+}
+
+
+#' FUNCTION_TITLE
+#'
+#' FUNCTION_DESCRIPTION
+#'
+#' @param obs DESCRIPTION.
+#' @param by DESCRIPTION.
+#'
+#' @return RETURN_DESCRIPTION
+#' @export
+#' @examples
+#' # ADD_EXAMPLES_HERE
+enw_incidence_to_linelist <- function(obs, by = NULL) {
+  check_by(obs)
+  obs <- check_dates(obs)
+  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
+  obs <- obs[new_confirm > 0]
+  obs <- obs[,
+   .(id = 1:new_confirm),
+   keyby = c(by, "reference_date", "report_date")
+  ]
+  obs <- obs[order(reference_date, report_date)]
+  return(obs[])
 }
 
 #' Calculate incidence of new reports from cumulative reports
 #'
 #' @description `r lifecycle::badge('deprecated')`
-#' 
+#'
 #' @param obs A `data.frame` containing at least the following variables:
 #' `reference date` (index date of interest), `report_date` (report date for
 #' observations), and `confirm` (cumulative observations by reference and report
@@ -158,11 +183,11 @@ enw_linelist_to_incidence <- function(linelist, by = c(), max_delay) {
 #' dt <- enw_add_max_reported(dt)
 #' enw_add_incidence(dt)
 enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
-                                        by = c()) {
+                                        by = NULL) {
   lifecycle::deprecate_warn(
     "0.2.1", "enw_cumulative_to_incidence()", "enw_add_incidence()"
   )
-  enw_add_incidence(obs, set_negatives_to_zero, by)
+  return(enw_add_incidence(obs, set_negatives_to_zero, by))
 }
 
 #' Calculate cumulative reported cases from incidence of new reports
@@ -187,9 +212,9 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #'
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' enw_add_cumulative(dt)
-enw_incidence_to_cumulative <- function(obs, by = c()) {
+enw_incidence_to_cumulative <- function(obs, by = NULL) {
   lifecycle::deprecate_warn(
     "0.2.1", "enw_incidence_to_cumulative()", "enw_add_cumulative()"
   )
-  enw_add_cumulative(obs, by = c())
+  return(enw_add_cumulative(obs, by = by))
 }

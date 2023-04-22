@@ -4,7 +4,7 @@
 \alias{enw_add_incidence}
 \title{Calculate incidence of new reports from cumulative reports}
 \usage{
-enw_add_incidence(obs, set_negatives_to_zero = TRUE, by = c())
+enw_add_incidence(obs, set_negatives_to_zero = TRUE, by = NULL)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
