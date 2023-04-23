@@ -10,7 +10,6 @@ on:
       - Benchmarks
     types:
       - completed
-  workflow_dispatch:
 
 jobs:
   upload:
