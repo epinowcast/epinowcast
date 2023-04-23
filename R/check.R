@@ -15,8 +15,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
     all(data.table::between(req_probs, 0, 1, incbounds = FALSE))
   )
   return(coerce_dt(
-    posterior, required_cols = sprintf("q%g", req_probs * 100),
-    copy = FALSE
+    posterior, required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
+    msg_required = "The following quantiles must be present (set with `probs`):"
   ))
 }
 
@@ -30,7 +30,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #' @family check
 check_group <- function(obs) {
   return(coerce_dt(
-    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE
+    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
+    msg_forbidden = "The following are reserved grouping columns:"
   ))
 }
 
@@ -122,7 +123,9 @@ check_modules_compatible <- function(modules) {
 coerce_dt <- function(
   data, select = NULL, required_cols = select,
   forbidden_cols = NULL, group = FALSE,
-  dates = FALSE, copy = TRUE
+  dates = FALSE, copy = TRUE,
+  msg_required = "The following columns are required: ",
+  msg_forbidden = "The following columns are forbidden: "
 ) {
   if (!copy) { # if we want to keep the original data.table ...
     dt <- data.table::setDT(data)
@@ -144,7 +147,7 @@ coerce_dt <- function(
     # check that all required columns are present
     if (!all(required_cols %in% colnames(dt))) {
       stop(
-        "The following columns are required: ",
+        msg_required,
         toString(required_cols[!(required_cols %in% colnames(dt))]),
         " but are not present among ",
         toString(colnames(dt)),
@@ -157,12 +160,12 @@ coerce_dt <- function(
 
   if ((length(forbidden_cols) > 0)) {    # if we have forbidden columns ...
     if (!is.character(forbidden_cols)) { # ... check they are check-able
-      stop("`required_cols` must be a character vector")
+      stop("`forbidden_cols` must be a character vector")
     }
     # check that no forbidden columns are present
     if (any(forbidden_cols %in% colnames(dt))) {
       stop(
-        "The following columns are forbidden: ",
+        msg_forbidden,
         toString(forbidden_cols[forbidden_cols %in% colnames(dt)]),
         " but are present among ",
         toString(colnames(dt)),
