@@ -29,7 +29,7 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release', rtools: ''}
-          - {os: windows-latest, r: 'release', rtools: '42'}
+          - {os: windows-latest, r: 'release', rtools: '43'}
           - {os: ubuntu-latest,   r: 'release', rtools: ''}
           - {os: ubuntu-latest,   r: 'oldrel-1', rtools: ''}
 
