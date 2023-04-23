@@ -582,8 +582,11 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' general all features that you may consider using as grouping variables
 #' or as covariates need to be included in the `by` variable.
 #'
-#' @param missing_reference Should entries for cases with missing reference date
-#' be completed as well?, Default: TRUE
+#' @param missing_reference Logical, should entries for cases with missing
+#' reference date be completed as well?, Default: TRUE
+#'
+#' @param completion_beyond_obs_max Logical, should entries be completed beyond
+#' the maximum date found in the data? Default: FALSE
 #'
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
@@ -598,19 +601,19 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'   confirm = 1
 #' )
 #' enw_complete_dates(obs)
+#'
+#' # Allow completion beyond the maximum date found in the data
+#' enw_complete_dates(obs, completion_beyond_obs_max = TRUE, max_delay = 10)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
-                               missing_reference = TRUE) {
+                               missing_reference = TRUE,
+                               completion_beyond_obs_max = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)
   if (missing(max_delay)) {
-    if (is.null(obs$delay)) {
-      obs <- enw_add_delay(obs)
-    }
-    max_delay <- max(obs$delay, na.rm = TRUE)
-    obs[, delay := NULL]
+    max_delay <- as.numeric(max_date - min_date)
   }
 
   dates <- seq.Date(min_date, max_date, by = 1)
@@ -626,7 +629,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     report_date = 0:max_delay
   )
   completion <- completion[, report_date := reference_date + report_date]
-  completion <- completion[report_date <= max_date]
+  if (!completion_beyond_obs_max) {
+    completion <- completion[report_date <= max_date]
+  }
 
   if (missing_reference) {
     completion <- rbind(

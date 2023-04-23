@@ -4,7 +4,13 @@
 \alias{enw_complete_dates}
 \title{Complete missing reference and report dates}
 \usage{
-enw_complete_dates(obs, by = NULL, max_delay, missing_reference = TRUE)
+enw_complete_dates(
+  obs,
+  by = NULL,
+  max_delay,
+  missing_reference = TRUE,
+  completion_beyond_obs_max = FALSE
+)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
@@ -23,8 +29,11 @@ setting so consider what maximum makes sense for your data carefully. Note
 that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 
-\item{missing_reference}{Should entries for cases with missing reference date
-be completed as well?, Default: TRUE}
+\item{missing_reference}{Logical, should entries for cases with missing
+reference date be completed as well?, Default: TRUE}
+
+\item{completion_beyond_obs_max}{Logical, should entries be completed beyond
+the maximum date found in the data? Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of
@@ -43,6 +52,9 @@ obs <- data.frame(
   confirm = 1
 )
 enw_complete_dates(obs)
+
+# Allow completion beyond the maximum date found in the data
+enw_complete_dates(obs, completion_beyond_obs_max = TRUE, max_delay = 10)
 }
 \seealso{
 Preprocessing functions
