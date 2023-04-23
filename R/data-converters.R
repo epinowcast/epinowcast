@@ -9,6 +9,7 @@
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
 #' @export
+#' @importFrom data.table setkeyv
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
@@ -47,7 +48,7 @@ enw_add_cumulative <- function(obs, by = NULL) {
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
 #' @export
-#' @importFrom data.table shift
+#' @importFrom data.table setkeyv
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
@@ -120,6 +121,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #'
 #' @family dataconverters
 #' @export
+#' @importFrom data.table as.data.table setkeyv
 #' @examples
 #' linelist <- data.frame(
 #'   onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
@@ -192,6 +194,7 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 #'
 #' @export
 #' @family dataconverters
+#' @importFrom data.table setcolorder setnames
 #' @examples
 #' incidence <- enw_add_incidence(germany_covid19_hosp)
 #' incidence <- enw_filter_reference_dates(
@@ -238,7 +241,7 @@ enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
 #' @export
-#' @importFrom data.table shift
+#' @importFrom lifecycle deprecate_warn
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
@@ -268,6 +271,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
 #' @export
+#' @importFrom lifecycle deprecate_warn
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
