@@ -103,3 +103,18 @@
       28:  40     2021-01-05  2021-01-05           0       0     0
           age reference_date report_date new_confirm confirm delay
 
+---
+
+    Code
+      enw_linelist_to_incidence(linelist_right_names, max_delay = 5,
+        completion_beyond_obs_max = TRUE)[reference_date == max(reference_date,
+        na.rm = TRUE)]
+    Output
+         reference_date report_date new_confirm confirm delay
+      1:     2021-01-05  2021-01-05           0       0     0
+      2:     2021-01-05  2021-01-06           0       0     1
+      3:     2021-01-05  2021-01-07           0       0     2
+      4:     2021-01-05  2021-01-08           0       0     3
+      5:     2021-01-05  2021-01-09           0       0     4
+      6:     2021-01-05  2021-01-10           0       0     5
+

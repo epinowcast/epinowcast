@@ -9,7 +9,8 @@ enw_linelist_to_incidence(
   reference_date,
   report_date,
   by = NULL,
-  max_delay
+  max_delay,
+  completion_beyond_obs_max = FALSE
 )
 }
 \arguments{
@@ -38,6 +39,9 @@ maximum number of days between the \code{reference_date} and the \code{report_da
 in the \code{linelist}. If the \code{max_delay} is less than the maximum number of
 days between the \code{reference_date} and the \code{report_date} in the \code{linelist}
 then the function will use this value instead and inform the user.}
+
+\item{completion_beyond_obs_max}{Logical, should entries be completed beyond
+the maximum date found in the data? Default: FALSE}
 }
 \value{
 A \code{data.table} with the following variables: \code{reference_date},
@@ -55,6 +59,13 @@ linelist <- data.frame(
   report_date = as.Date(c("2021-01-03", "2021-01-05", "2021-01-04"))
 )
 enw_linelist_to_incidence(linelist, reference_date = "onset_date")
+
+# Specify a custom maximum delay and allow completion beyond the maximum
+# observed delay
+enw_linelist_to_incidence(
+ linelist, reference_date = "onset_date", max_delay = 5,
+ completion_beyond_obs_max = TRUE
+)
 }
 \seealso{
 Data converters

@@ -115,6 +115,8 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #' days between the `reference_date` and the `report_date` in the `linelist`
 #' then the function will use this value instead and inform the user.
 #'
+#' @inheritParams enw_complete_dates
+#'
 #' @return A `data.table` with the following variables: `reference_date`,
 #' `report_date`, `new_confirm`, `confirm`, `delay`, and
 #' any variables specified in `by`.
@@ -128,8 +130,16 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #'   report_date = as.Date(c("2021-01-03", "2021-01-05", "2021-01-04"))
 #' )
 #' enw_linelist_to_incidence(linelist, reference_date = "onset_date")
+#'
+#' # Specify a custom maximum delay and allow completion beyond the maximum
+#' # observed delay
+#' enw_linelist_to_incidence(
+#'  linelist, reference_date = "onset_date", max_delay = 5,
+#'  completion_beyond_obs_max = TRUE
+#' )
 enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
-                                       by = NULL, max_delay) {
+                                      by = NULL, max_delay,
+                                      completion_beyond_obs_max = FALSE) {
   check_by(linelist)
   counts <- data.table::as.data.table(linelist)
   if (!missing(report_date)) {
@@ -162,7 +172,8 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
   cum_counts <- enw_add_cumulative(counts, by = by)
 
   complete_counts <- enw_complete_dates(
-    cum_counts, max_delay = max_delay, by = by
+    cum_counts, max_delay = max_delay, by = by,
+    completion_beyond_obs_max = completion_beyond_obs_max
   )
   complete_counts <- enw_add_incidence(complete_counts, by = by)
   return(complete_counts[])

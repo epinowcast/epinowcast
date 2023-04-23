@@ -28,4 +28,9 @@ test_that("enw_linelist_to_incidence can return incidence", {
       linelist_right_names, by = "age"
     )
   )
+  expect_snapshot(
+    enw_linelist_to_incidence(
+      linelist_right_names, max_delay = 5, completion_beyond_obs_max = TRUE
+    )[reference_date == max(reference_date, na.rm = TRUE)]
+  )
 })
