@@ -193,8 +193,8 @@ enw_effects_metadata <- function(design) {
 #' effects <- enw_effects_metadata(design)
 #' enw_add_pooling_effect(effects, prefix = "b")
 enw_add_pooling_effect <- function(effects, var_name = "sd",
-                                   finder_fn = startsWith, ..., copy = TRUE) {
-  effects <- coerce_dt(effects, copy = copy)
+                                   finder_fn = startsWith, ...) {
+  effects <- coerce_dt(effects, copy = FALSE)
   effects[, (var_name) := as.numeric(finder_fn(effects, ...))]
   effects[finder_fn(effects, ...), fixed := 0]
   return(effects[])
