@@ -10,7 +10,7 @@ enw_linelist_to_incidence(
   report_date,
   by = NULL,
   max_delay,
-  completion_beyond_obs_max = FALSE
+  completion_beyond_max_report = FALSE
 )
 }
 \arguments{
@@ -40,7 +40,7 @@ in the \code{linelist}. If the \code{max_delay} is less than the maximum number 
 days between the \code{reference_date} and the \code{report_date} in the \code{linelist}
 then the function will use this value instead and inform the user.}
 
-\item{completion_beyond_obs_max}{Logical, should entries be completed beyond
+\item{completion_beyond_max_report}{Logical, should entries be completed beyond
 the maximum date found in the data? Default: FALSE}
 }
 \value{
@@ -64,7 +64,7 @@ enw_linelist_to_incidence(linelist, reference_date = "onset_date")
 # observed delay
 enw_linelist_to_incidence(
  linelist, reference_date = "onset_date", max_delay = 5,
- completion_beyond_obs_max = TRUE
+ completion_beyond_max_report = TRUE
 )
 }
 \seealso{

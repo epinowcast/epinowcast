@@ -585,7 +585,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param missing_reference Logical, should entries for cases with missing
 #' reference date be completed as well?, Default: TRUE
 #'
-#' @param completion_beyond_obs_max Logical, should entries be completed beyond
+#' @param completion_beyond_max_report Logical, should entries be completed beyond
 #' the maximum date found in the data? Default: FALSE
 #'
 #' @return A `data.table` with completed entries for all combinations of
@@ -603,10 +603,10 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' enw_complete_dates(obs)
 #'
 #' # Allow completion beyond the maximum date found in the data
-#' enw_complete_dates(obs, completion_beyond_obs_max = TRUE, max_delay = 10)
+#' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
                                missing_reference = TRUE,
-                               completion_beyond_obs_max = FALSE) {
+                               completion_beyond_max_report  = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
@@ -629,7 +629,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     report_date = 0:max_delay
   )
   completion <- completion[, report_date := reference_date + report_date]
-  if (!completion_beyond_obs_max) {
+  if (!completion_beyond_max_report) {
     completion <- completion[report_date <= max_date]
   }
 

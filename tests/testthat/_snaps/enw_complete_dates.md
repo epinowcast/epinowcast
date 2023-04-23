@@ -1,7 +1,7 @@
 # enw_complete_dates works as expected with well behaved data
 
     Code
-      enw_complete_dates(obs, completion_beyond_obs_max = TRUE, max_delay = 5)
+      enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 5)
     Output
           report_date reference_date confirm
        1:  2021-10-01           <NA>       0

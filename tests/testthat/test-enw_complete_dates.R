@@ -22,10 +22,10 @@ test_that("enw_complete_dates works as expected with well behaved data", {
     exp_obs[!is.na(reference_date)]
   )
   expect_snapshot(
-    enw_complete_dates(obs, completion_beyond_obs_max = TRUE, max_delay = 5)
+    enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 5)
   )
   expect_equal(
-    enw_complete_dates(obs, completion_beyond_obs_max = FALSE, max_delay = 5),
+    enw_complete_dates(obs, completion_beyond_max_report = FALSE, max_delay = 5),
     exp_obs
   )
   obs$location <- "DE"

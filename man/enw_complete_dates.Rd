@@ -9,7 +9,7 @@ enw_complete_dates(
   by = NULL,
   max_delay,
   missing_reference = TRUE,
-  completion_beyond_obs_max = FALSE
+  completion_beyond_max_report = FALSE
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ that this is zero indexed and so includes the reference date and
 \item{missing_reference}{Logical, should entries for cases with missing
 reference date be completed as well?, Default: TRUE}
 
-\item{completion_beyond_obs_max}{Logical, should entries be completed beyond
+\item{completion_beyond_max_report}{Logical, should entries be completed beyond
 the maximum date found in the data? Default: FALSE}
 }
 \value{
@@ -54,7 +54,7 @@ obs <- data.frame(
 enw_complete_dates(obs)
 
 # Allow completion beyond the maximum date found in the data
-enw_complete_dates(obs, completion_beyond_obs_max = TRUE, max_delay = 10)
+enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 }
 \seealso{
 Preprocessing functions

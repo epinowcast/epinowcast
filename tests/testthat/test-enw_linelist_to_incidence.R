@@ -30,7 +30,7 @@ test_that("enw_linelist_to_incidence can return incidence", {
   )
   expect_snapshot(
     enw_linelist_to_incidence(
-      linelist_right_names, max_delay = 5, completion_beyond_obs_max = TRUE
+      linelist_right_names, max_delay = 5, completion_beyond_max_report = TRUE
     )[reference_date == max(reference_date, na.rm = TRUE)]
   )
 })

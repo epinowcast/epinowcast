@@ -135,11 +135,11 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #' # observed delay
 #' enw_linelist_to_incidence(
 #'  linelist, reference_date = "onset_date", max_delay = 5,
-#'  completion_beyond_obs_max = TRUE
+#'  completion_beyond_max_report = TRUE
 #' )
 enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
                                       by = NULL, max_delay,
-                                      completion_beyond_obs_max = FALSE) {
+                                      completion_beyond_max_report = FALSE) {
   check_by(linelist)
   counts <- data.table::as.data.table(linelist)
   if (!missing(report_date)) {
@@ -173,7 +173,7 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 
   complete_counts <- enw_complete_dates(
     cum_counts, max_delay = max_delay, by = by,
-    completion_beyond_obs_max = completion_beyond_obs_max
+    completion_beyond_max_report = completion_beyond_max_report
   )
   complete_counts <- enw_add_incidence(complete_counts, by = by)
   return(complete_counts[])
