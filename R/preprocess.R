@@ -348,7 +348,7 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' observed data. Users may wish to combine this function with
 #' [enw_filter_reference_dates()].
 #'
-#' @param obs A data.table or data.frame with a `report_date` column. 
+#' @param obs A `data.frame` with a `report_date` column.
 #'
 #' @param latest_date Date, the latest report date to include in the
 #' returned dataset.
@@ -356,9 +356,9 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' @param remove_days Integer, if \code{latest_date} is not given, the number
 #' of report dates to remove, starting from the latest date included.
 #'
-#' @param obs An `data.frame`; must have `report_date` and `reference_date`
+#' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
-#' 
+#'
 #' @return A data.table  filtered by report date
 #' @family preprocess
 #' @export

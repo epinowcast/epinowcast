@@ -176,9 +176,6 @@ enw_effects_metadata <- function(design) {
 #' @param ... Additional arguments to `finder_fn`. E.g. for the
 #' `finder_fn = startsWith` default, this should be `prefix = "somestring"`.
 #'
-#' @param copy A logical; make a copy (default) of `effects` or modify it in
-#' place?
-#'
 #' @return A `data.table` with the following columns:
 #' - effects: the name of the effect
 #' - fixed: a logical indicating whether the effect is fixed (1) or random (0).

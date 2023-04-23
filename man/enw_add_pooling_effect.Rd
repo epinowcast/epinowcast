@@ -4,13 +4,7 @@
 \alias{enw_add_pooling_effect}
 \title{Add a pooling effect to model design metadata}
 \usage{
-enw_add_pooling_effect(
-  effects,
-  var_name = "sd",
-  finder_fn = startsWith,
-  ...,
-  copy = TRUE
-)
+enw_add_pooling_effect(effects, var_name = "sd", finder_fn = startsWith, ...)
 }
 \arguments{
 \item{effects}{A \code{data.table} with the following columns:
@@ -33,9 +27,6 @@ indicating whether the effects were matched.}
 
 \item{...}{Additional arguments to \code{finder_fn}. E.g. for the
 \code{finder_fn = startsWith} default, this should be \code{prefix = "somestring"}.}
-
-\item{copy}{A logical; make a copy (default) of \code{effects} or modify it in
-place?}
 }
 \value{
 A \code{data.table} with the following columns:

@@ -105,6 +105,12 @@ check_modules_compatible <- function(modules) {
 #' `reference_date`? If `TRUE` (default), those columns will be coerced with
 #' [data.table::as.IDate()].
 #'
+#' @param msg_required A character string; for `required_cols`-related error
+#' message
+#'
+#' @param msg_forbidden A character string; for `forbidden_cols`-related error
+#' message
+#'
 #' @return A `data.table`; the returned object will be a copy, unless
 #' `copy = FALSE`, in which case modifications are made in-place
 #'
@@ -135,7 +141,7 @@ coerce_dt <- function(
 
   if (dates) {
     required_cols <- c(required_cols, c("report_date", "reference_date"))
-    if (length(select) > 0) { 
+    if (length(select) > 0) {
       select <- c(select, c("report_date", "reference_date"))
     }
   }

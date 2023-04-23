@@ -70,3 +70,15 @@ test_that("`coerce_dt(date = TRUE)` requires reference and report dates", {
   expect_error(coerce_dt(report_dates, dates = TRUE))
   expect_error(coerce_dt(mtcars, dates = TRUE))
 })
+
+test_that("`coerce_dt` provides the requested errors",{
+  present <- data.table::data.table(present = 1:10)
+  expect_error(
+    coerce_dt(present, required_cols = "absent", msg_required = "ABSENT"),
+    regexp = "ABSENT"
+  )
+  expect_error(
+    coerce_dt(present, forbidden_cols = "present", msg_forbidden = "PRESENT"),
+    regexp = "PRESENT"
+  )
+})

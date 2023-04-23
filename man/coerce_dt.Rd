@@ -11,7 +11,9 @@ coerce_dt(
   forbidden_cols = NULL,
   group = FALSE,
   dates = FALSE,
-  copy = TRUE
+  copy = TRUE,
+  msg_required = "The following columns are required: ",
+  msg_forbidden = "The following columns are forbidden: "
 )
 }
 \arguments{
@@ -31,6 +33,12 @@ n.b. it is an error to include ".group"; use \code{group} argument for that}
 \code{\link[data.table:IDateTime]{data.table::as.IDate()}}.}
 
 \item{copy}{A logical; if \code{TRUE} (default), a new \code{data.table} is returned}
+
+\item{msg_required}{A character string; for \code{required_cols}-related error
+message}
+
+\item{msg_forbidden}{A character string; for \code{forbidden_cols}-related error
+message}
 }
 \value{
 A \code{data.table}; the returned object will be a copy, unless
