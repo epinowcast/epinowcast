@@ -40,8 +40,8 @@ in the \code{linelist}. If the \code{max_delay} is less than the maximum number 
 days between the \code{reference_date} and the \code{report_date} in the \code{linelist}
 then the function will use this value instead and inform the user.}
 
-\item{completion_beyond_max_report}{Logical, should entries be completed beyond
-the maximum date found in the data? Default: FALSE}
+\item{completion_beyond_max_report}{Logical, should entries be completed
+beyond the maximum date found in the data? Default: FALSE}
 }
 \value{
 A \code{data.table} with the following variables: \code{reference_date},

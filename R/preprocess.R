@@ -585,8 +585,8 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param missing_reference Logical, should entries for cases with missing
 #' reference date be completed as well?, Default: TRUE
 #'
-#' @param completion_beyond_max_report Logical, should entries be completed beyond
-#' the maximum date found in the data? Default: FALSE
+#' @param completion_beyond_max_report Logical, should entries be completed
+#' beyond the maximum date found in the data? Default: FALSE
 #'
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.

@@ -104,7 +104,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #' that represents the date the case was reported.
 #'
 #' @param by A character vector of variables to also aggregate by (i.e. as well
-#' as using the `reference_date` and `report_date`). If not supplied 
+#' as using the `reference_date` and `report_date`). If not supplied
 #' then the function will aggregate by just the `reference_date` and
 #' `report_date`.
 #'
@@ -189,7 +189,7 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` column.
 #'
-#' @param reference_date A character string of the variable name to use 
+#' @param reference_date A character string of the variable name to use
 #' for the `reference_date` in the line list. If not supplied then the
 #' function will not rename the `reference_date` column.
 #'
@@ -215,13 +215,12 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
   check_by(obs)
   obs <- check_dates(obs)
-  # TODO: Add a check for new_confirm here using `coerce_dt()`
-  suppressWarnings(obs <- obs[, c("confirm") := NULL])
+  suppressWarnings(obs <- obs[, "confirm" := NULL])
   cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]
   obs <- obs[, .(person = 1:new_confirm), by = cols]
   obs[, person := NULL]
-  obs[, id:= 1:.N]
+  obs[, id := seq_len(.N)]
   data.table::setcolorder(obs, c("id", cols))
   if (!missing(reference_date)) {
     data.table::setnames(obs, "reference_date", reference_date)
@@ -229,6 +228,7 @@ enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
   if (!missing(report_date)) {
     data.table::setnames(obs, "report_date", report_date)
   }
+
   return(obs[])
 }
 

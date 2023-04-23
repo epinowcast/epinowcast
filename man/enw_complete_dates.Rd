@@ -32,8 +32,8 @@ that this is zero indexed and so includes the reference date and
 \item{missing_reference}{Logical, should entries for cases with missing
 reference date be completed as well?, Default: TRUE}
 
-\item{completion_beyond_max_report}{Logical, should entries be completed beyond
-the maximum date found in the data? Default: FALSE}
+\item{completion_beyond_max_report}{Logical, should entries be completed
+beyond the maximum date found in the data? Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of
