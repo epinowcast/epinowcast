@@ -203,7 +203,7 @@ enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
   check_by(obs)
   obs <- check_dates(obs)
   # TODO: Add a check for new_confirm here using `coerce_dt()`
-  suppressWarnings(obs[, c("confirm") := NULL])
+  suppressWarnings(obs <- obs[, c("confirm") := NULL])
   cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]
   obs <- obs[, .(person = 1:new_confirm), by = cols]
