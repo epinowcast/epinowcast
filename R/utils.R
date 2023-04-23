@@ -227,6 +227,7 @@ utils::globalVariables(
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
-    "formula", ".id", "n", ".confirm_avail", "prediction", "true_value"
+    "formula", ".id", "n", ".confirm_avail", "prediction", "true_value",
+    "person", "id"
   )
 )
