@@ -141,7 +141,6 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
   counts <- counts[,
     .(new_confirm = .N), keyby = c("reference_date", "report_date", by)
   ]
-  counts[order(reference_date, report_date)]
 
   obs_delay <- max(counts$report_date) - min(counts$reference_date) + 1
   if (missing(max_delay)) {
@@ -153,12 +152,12 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
   }
   if (max_delay < obs_delay) {
     message(
-      "Using the maximum observed delay of ", max_delay,
+      "Using the maximum observed delay of ", obs_delay,
       " days as greater than the maximum specified to complete the incidence ",
       "data.")
        max_delay <- obs_delay
   }
-  cum_counts <- enw_add_cumulative(counts)
+  cum_counts <- enw_add_cumulative(counts, by = by)
 
   complete_counts <- enw_complete_dates(
     cum_counts, max_delay = max_delay, by = by
