@@ -4,7 +4,7 @@
 \alias{enw_add_cumulative_membership}
 \title{Add a cumulative membership effect to a \code{data.frame}}
 \usage{
-enw_add_cumulative_membership(metaobs, feature)
+enw_add_cumulative_membership(metaobs, feature, copy = TRUE)
 }
 \arguments{
 \item{metaobs}{A \code{data.frame} with a column named \code{feature} that contains
@@ -12,6 +12,8 @@ a numeric vector of values.}
 
 \item{feature}{The name of the column in \code{metaobs} that contains the
 numeric vector of values.}
+
+\item{copy}{Should \code{metaobs} be copied (default) or modified in place?}
 }
 \value{
 A \code{data.frame} with a new columns \verb{cfeature$} that contain the

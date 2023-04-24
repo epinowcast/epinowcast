@@ -7,11 +7,11 @@
 enw_latest_data(obs)
 }
 \arguments{
-\item{obs}{An observation \code{data.frame} containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{A \code{data.frame}; must have \code{report_date} and \code{reference_date}
+columns.}
 }
 \value{
-A \code{data.frame} of observations filtered for the latest available data
+A \code{data.table} of observations filtered for the latest available data
 for each reference date.
 }
 \description{

@@ -4,13 +4,16 @@
 \alias{enw_add_max_reported}
 \title{Add the maximum number of cases reported on a given day}
 \usage{
-enw_add_max_reported(obs)
+enw_add_max_reported(obs, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
+
+\item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
+modifies \code{obs} in place.}
 }
 \value{
 A data.table with a \code{max_confirm} and \code{cum_prop_reported}

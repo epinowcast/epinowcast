@@ -9,7 +9,8 @@ enw_preprocess_data(
   by = NULL,
   max_delay = 20,
   set_negatives_to_zero = TRUE,
-  ...
+  ...,
+  copy = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 \item{...}{Other arguments to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}},
 e.g. \code{holidays}, which sets commonly used metadata
 (e.g. day of week, days since start of time series)}
+
+\item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
+modifies \code{obs} in place.}
 }
 \value{
 A data.table containing processed observations as a series of nested

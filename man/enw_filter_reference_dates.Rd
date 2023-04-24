@@ -13,8 +13,8 @@ enw_filter_reference_dates(
 )
 }
 \arguments{
-\item{obs}{An observation \code{data.frame} containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{An \code{data.frame}; must have \code{report_date} and \code{reference_date}
+columns.}
 
 \item{earliest_date}{earliest reference date to include in the data set}
 
