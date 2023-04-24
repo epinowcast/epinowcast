@@ -68,7 +68,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
     obs, dates = TRUE, required_cols = c(by, "confirm"), copy = copy
   )
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
-  reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
+  reports[, new_confirm := c(confirm[1], diff(confirm)),
     by = c("reference_date", by)
   ]
   reports <- reports[,
