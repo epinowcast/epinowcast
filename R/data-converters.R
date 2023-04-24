@@ -7,9 +7,9 @@
 #'
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
-#' 
+#'
 #' @return The input `data.frame` with a new variable `confirm`.
-#' 
+#'
 #' @family dataconverters
 #' @export
 #' @importFrom data.table setkeyv
@@ -49,11 +49,11 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' @param copy Should `obs` be copied (default) or modified in place?
 #'
 #' @inheritParams enw_preprocess_data
-#' 
+#'
 #' @return The input `data.frame` with a new variable `new_confirm`. If
 #' `max_confirm` was present in the `data.frame` then the proportion
 #' reported on each day (`prop_reported`) is also added.
-#' 
+#'
 #' @family dataconverters
 #' @export
 #' @importFrom data.table setkeyv
