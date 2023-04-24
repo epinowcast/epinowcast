@@ -50,7 +50,7 @@ completed with enw_complete_dates()."><meta property="og:image" content="package
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.13000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.14000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -127,7 +127,8 @@ completed with <code><a href="enw_complete_dates.html">enw_complete_dates()</a><
 <span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_delay <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  set_negatives_to_zero <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  <span class="va">...</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  copy <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -166,6 +167,11 @@ TRUE if intending to use <code><a href="epinowcast.html">epinowcast()</a></code>
 <dd><p>Other arguments to <code><a href="enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code>,
 e.g. <code>holidays</code>, which sets commonly used metadata
 (e.g. day of week, days since start of time series)</p></dd>
+
+
+<dt>copy</dt>
+<dd><p>A logical; if <code>TRUE</code> (the default) creates a copy; otherwise,
+modifies <code>obs</code> in place.</p></dd>
 
 </dl></div>
     <div class="section level2">

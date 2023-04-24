@@ -24,7 +24,7 @@ between the report_date and reference_date columns."><meta property="og:image" c
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.13000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.14000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,7 +83,7 @@ between the <code>report_date</code> and <code>reference_date</code> columns.</p
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_add_delay</span><span class="op">(</span><span class="va">obs</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_add_delay</span><span class="op">(</span><span class="va">obs</span>, copy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -93,6 +93,11 @@ between the <code>report_date</code> and <code>reference_date</code> columns.</p
 <code>reference date</code> (index date of interest), <code>report_date</code> (report date for
 observations), and <code>confirm</code> (cumulative observations by reference and report
 date).</p></dd>
+
+
+<dt>copy</dt>
+<dd><p>A logical; if <code>TRUE</code> (the default) creates a copy; otherwise,
+modifies <code>obs</code> in place.</p></dd>
 
 </dl></div>
     <div class="section level2">

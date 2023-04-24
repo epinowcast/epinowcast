@@ -28,7 +28,7 @@ will be assigned to the same group."><meta property="og:image" content="package.
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.13000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.14000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,7 +89,7 @@ will be assigned to the same group.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_assign_group</span><span class="op">(</span><span class="va">obs</span>, by <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_assign_group</span><span class="op">(</span><span class="va">obs</span>, by <span class="op">=</span> <span class="cn">NULL</span>, copy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -102,12 +102,17 @@ will be assigned to the same group.</p>
 <dd><p>A character vector of column names to group by. Defaults to
 an empty vector.</p></dd>
 
+
+<dt>copy</dt>
+<dd><p>A logical; make a copy (default) of <code>obs</code> or modify it in
+place?</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data.table with a <code>.group</code> column added ordered by <code>.group</code></p>
+<p>A <code>data.table</code> with a <code>.group</code> column added ordered by <code>.group</code></p>
 
 
 <p>and the existing key of <code>obs</code>.</p>

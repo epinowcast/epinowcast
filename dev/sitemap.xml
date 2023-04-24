@@ -31,19 +31,10 @@
     <loc>package.epinowcast.org/dev/news/index.html</loc>
   </url>
   <url>
-    <loc>package.epinowcast.org/dev/reference/add_group.html</loc>
-  </url>
-  <url>
     <loc>package.epinowcast.org/dev/reference/add_pmfs.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/as_string_formula.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/dev/reference/check_by.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/dev/reference/check_dates.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_group.html</loc>
@@ -59,6 +50,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/coerce_date.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/coerce_dt.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/construct_re.html</loc>
