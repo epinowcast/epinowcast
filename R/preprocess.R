@@ -328,7 +328,9 @@ enw_add_delay <- function(obs, copy = TRUE) {
 #' obs$confirm <- 1:3
 #' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs, copy = TRUE) {
-  obs <- coerce_dt(obs, group = TRUE, dates = TRUE, copy = copy)
+  obs <- coerce_dt(
+    obs, required_cols = "confirm", group = TRUE, dates = TRUE, copy = copy
+  )
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
     ,
@@ -463,10 +465,10 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
 #' for the maximum report date in all cases as data may only be updated
 #' up to some maximum number of days.
 #'
-#' @return A `data.frame` of observations filtered for the latest available data
+#' @return A `data.table` of observations filtered for the latest available data
 #' for each reference date.
 #'
-#' @param obs An `data.frame`; must have `report_date` and `reference_date`
+#' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
 #'
 #' @family preprocess
@@ -560,7 +562,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' enw_cumulative_to_incidence(dt)
 enw_incidence_to_cumulative <- function(obs, by = NULL) {
 
-  obs <- coerce_dt(obs, dates = TRUE)
+  obs <- coerce_dt(obs, required_cols = c(by, "new_confirm"), dates = TRUE)
   obs <- obs[!is.na(reference_date)]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
 
@@ -612,7 +614,10 @@ enw_delay_filter <- function(obs, max_delay) {
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
-  obs <- coerce_dt(obs, group = TRUE)
+  obs <- coerce_dt(
+    obs, required_cols = c("new_confirm", "reference_date", "delay"),
+    group = TRUE
+  )
   if (any(obs$new_confirm < 0)) {
     warning(
       "Negative new confirmed cases found. This is not yet supported in
@@ -758,7 +763,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' obs <- enw_cumulative_to_incidence(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
-  obs <- coerce_dt(obs, group = TRUE, dates = TRUE)
+  obs <- coerce_dt(
+    obs, required_cols = "new_confirm", group = TRUE, dates = TRUE
+  )
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
     .(.confirm_avail = sum(new_confirm)),
