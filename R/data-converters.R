@@ -155,8 +155,11 @@ enw_linelist_to_incidence <- function(linelist,
   counts <- coerce_dt(
     linelist, required_cols = c(by, reference_date, report_date), copy = copy
   )
-  data.table::setnames(counts, reference_date, "reference_date")
-  data.table::setnames(counts, report_date, "report_date")
+  data.table::setnames(
+    counts,
+    c(reference_date, report_date),
+    c("reference_date", "report_date")
+  )
 
   counts <- coerce_dt(counts, dates = TRUE, copy = FALSE)
 
