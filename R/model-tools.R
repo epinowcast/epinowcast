@@ -31,43 +31,29 @@
 #' enw_formula_as_data_list(prefix = "missing")
 enw_formula_as_data_list <- function(formula, prefix,
                                      drop_intercept = FALSE) {
-  paste_lab <- function(string, lab = prefix) {
-    paste0(lab, "_", string)
-  }
+  data <- within(list(), {
+    fintercept <- fnrow <- fnindex <- fncol <- rncol <- 0
+    fdesign <- findex <- rdesign <- numeric()
+  })
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      stop(
-        "formula must be an object of class enw_formula as produced using
-        enw_formula"
-      )
+      stop("
+        formula must be an object of class enw_formula as produced using
+        enw_formula")
     }
-    fintercept <- as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design),
-      fixed = TRUE
-    )))
-
-    data <- list()
-    data[[paste_lab("fdesign")]] <- formula$fixed$design
-    data[[paste_lab("fintercept")]] <- fintercept
-    data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
-    data[[paste_lab("findex")]] <- formula$fixed$index
-    data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
-    data[[paste_lab("fncol")]] <-
-      ncol(formula$fixed$design) -
-      min(as.numeric(drop_intercept), as.numeric(fintercept))
-    data[[paste_lab("rdesign")]] <- formula$random$design
-    data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
-  } else {
-    data <- list()
-    data[[paste_lab("fdesign")]] <- numeric(0)
-    data[[paste_lab("fintercept")]] <- 0
-    data[[paste_lab("fnrow")]] <- 0
-    data[[paste_lab("findex")]] <- numeric(0)
-    data[[paste_lab("fnindex")]] <- 0
-    data[[paste_lab("fncol")]] <- 0
-    data[[paste_lab("rdesign")]] <- numeric(0)
-    data[[paste_lab("rncol")]] <- 0
+    fintercept <-  as.numeric(any(grepl("(Intercept)",
+    colnames(formula$fixed$design), fixed = TRUE)))
+    data$fdesign <- formula$fixed$design
+    data$fintercept <- fintercept
+    data$fnrow <- nrow(formula$fixed$design)
+    data$findex <- formula$fixed$index
+    data$fnindex <- length(formula$fixed$index)
+    data$fncol <- ncol(formula$fixed$design) - min(
+    as.numeric(drop_intercept), fintercept)
+    data$rdesign <- formula$random$design
+    data$rncol <- ncol(formula$random$design) - 1
   }
+  names(data) <- sprintf("%s_%s", prefix, names(data))
   return(data)
 }
 
