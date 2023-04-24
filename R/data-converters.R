@@ -91,7 +91,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' Convert a Line List to Aggregate Counts (Incidence)
 #'
 #' @description This function takes a line list (i.e. something coercible to
-#' a `data.table (such as a `data.frame`)  where each row represents a
+#' a `data.table` (such as a `data.frame`)  where each row represents a
 #' case) and aggregates to a count (`new_confirm`) of cases by user-specified
 #' `reference_date`s and `report_date`s. This is enables the use of
 #' [enw_preprocess_data()] and other [epinowcast()] preprocessing functions.
