@@ -6,8 +6,8 @@
 \usage{
 enw_linelist_to_incidence(
   linelist,
-  reference_date,
-  report_date,
+  reference_date = "reference_date",
+  report_date = "report_date",
   by = NULL,
   max_delay,
   completion_beyond_max_report = FALSE,
@@ -23,11 +23,10 @@ two date variables or variables that can be coerced to dates.}
 that represents the date of interest for the case. For example, if the
 \code{reference_date} is the date of symptom onset then the \code{new_confirm} will
 be the number of new cases reported (based on \code{report_date}) on each day
-that had onset on that day. Optional if a \code{reference_date} is already
-present in the \code{linelist}.}
+that had onset on that day. The default is "reference_date".}
 
 \item{report_date}{A date or a variable that can be coerced to a date
-that represents the date the case was reported.}
+that represents the date the case was reported. The default is "report_date".}
 
 \item{by}{A character vector of variables to also aggregate by (i.e. as well
 as using the \code{reference_date} and \code{report_date}). If not supplied
@@ -52,9 +51,10 @@ A \code{data.table} with the following variables: \code{reference_date},
 any variables specified in \code{by}.
 }
 \description{
-This function takes a line list (i.e. something coercible to
-a \verb{data.table (such as a }data.frame\verb{)  where each row represents a case) and aggregates to a count (}new_confirm\verb{) of cases by user-specified }reference_date\verb{s and }report_date`s. This is enables the use of
-\code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and other \code{\link[=epinowcast]{epinowcast()}} preprocessing functions.
+This function takes a line list (i.e. tabular data where each
+row represents a case) and aggregates to a count (\code{new_confirm}) of cases by
+user-specified \code{reference_date}s and \code{report_date}s. This is enables the use
+of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and other \code{\link[=epinowcast]{epinowcast()}} preprocessing functions.
 }
 \examples{
 linelist <- data.frame(

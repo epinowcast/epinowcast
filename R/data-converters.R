@@ -6,9 +6,10 @@
 #' report date).
 #'
 #' @inheritParams enw_add_incidence
-#'
-#' @return The input `data.frame` with a new variable `confirm`.
 #' @inheritParams enw_preprocess_data
+#' 
+#' @return The input `data.frame` with a new variable `confirm`.
+#' 
 #' @family dataconverters
 #' @export
 #' @importFrom data.table setkeyv
@@ -47,10 +48,12 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #'
 #' @param copy Should `obs` be copied (default) or modified in place?
 #'
+#' @inheritParams enw_preprocess_data
+#' 
 #' @return The input `data.frame` with a new variable `new_confirm`. If
 #' `max_confirm` was present in the `data.frame` then the proportion
 #' reported on each day (`prop_reported`) is also added.
-#' @inheritParams enw_preprocess_data
+#' 
 #' @family dataconverters
 #' @export
 #' @importFrom data.table setkeyv
@@ -90,11 +93,10 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 
 #' Convert a Line List to Aggregate Counts (Incidence)
 #'
-#' @description This function takes a line list (i.e. something coercible to
-#' a `data.table` (such as a `data.frame`)  where each row represents a
-#' case) and aggregates to a count (`new_confirm`) of cases by user-specified
-#' `reference_date`s and `report_date`s. This is enables the use of
-#' [enw_preprocess_data()] and other [epinowcast()] preprocessing functions.
+#' @description This function takes a line list (i.e. tabular data where each
+#' row represents a case) and aggregates to a count (`new_confirm`) of cases by
+#' user-specified `reference_date`s and `report_date`s. This is enables the use
+#' of [enw_preprocess_data()] and other [epinowcast()] preprocessing functions.
 #'
 #' @param linelist An object coercible to a `data.table` (such as a
 #' `data.frame`) where each row represents a case. Must contain at least
@@ -104,11 +106,10 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' that represents the date of interest for the case. For example, if the
 #' `reference_date` is the date of symptom onset then the `new_confirm` will
 #' be the number of new cases reported (based on `report_date`) on each day
-#' that had onset on that day. Optional if a `reference_date` is already
-#' present in the `linelist`.
+#' that had onset on that day. The default is "reference_date".
 #'
 #' @param report_date A date or a variable that can be coerced to a date
-#' that represents the date the case was reported.
+#' that represents the date the case was reported. The default is "report_date".
 #'
 #' @param by A character vector of variables to also aggregate by (i.e. as well
 #' as using the `reference_date` and `report_date`). If not supplied
@@ -145,17 +146,18 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #'  linelist, reference_date = "onset_date", max_delay = 5,
 #'  completion_beyond_max_report = TRUE
 #' )
-enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
+enw_linelist_to_incidence <- function(linelist,
+                                      reference_date = "reference_date",
+                                      report_date = "report_date",
                                       by = NULL, max_delay,
                                       completion_beyond_max_report = FALSE,
                                       copy = TRUE) {
-  counts <- coerce_dt(linelist, required_cols = by, copy = copy)
-  if (!missing(report_date)) {
-    counts[, report_date := get(report_date)]
-  }
-  if (!missing(reference_date)) {
-    counts[, reference_date := get(reference_date)]
-  }
+  counts <- coerce_dt(
+    linelist, required_cols = c(by, reference_date, report_date), copy = copy
+  )
+  data.table::setnames(counts, reference_date, "reference_date")
+  data.table::setnames(counts, report_date, "report_date")
+
   counts <- coerce_dt(counts, dates = TRUE, copy = FALSE)
 
   data.table::setkeyv(counts, c(by, "reference_date", "report_date"))
@@ -199,12 +201,10 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 #' which must have a `new_confirm` column.
 #'
 #' @param reference_date A character string of the variable name to use
-#' for the `reference_date` in the line list. If not supplied then the
-#' function will not rename the `reference_date` column.
+#' for the `reference_date` in the line list. The default is "reference_date".
 #'
 #' @param report_date A character string of the variable name to use
-#' for the `report_date` in the line list. If not supplied then the
-#' function will not rename the `report_date` column.
+#' for the `report_date` in the line list. The default is "report_date".
 #'
 #' @return A `data.table` with the following variables: `id`, `reference_date`,
 #' `report_date`, and any other variables in the `obs` object. Rows in `obs`
@@ -221,21 +221,19 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 #'   incidence[location %in% "DE"], include_days = 10
 #' )
 #' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
-enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
-  obs <- coerce_dt(obs, dates = TRUE, required_cols = "new_confirm")
+enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
+                                      report_date = "report_date") {
+  obs <- coerce_dt(
+    obs, dates = TRUE, required_cols = "new_confirm", forbidden_cols = "id"
+  )
   suppressWarnings(obs <- obs[, "confirm" := NULL])
   cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]
-  obs <- obs[, .(person = 1:new_confirm), by = cols]
-  obs[, person := NULL]
+  obs <- obs[, .(id = 1:new_confirm), by = cols]
   obs[, id := seq_len(.N)]
   data.table::setcolorder(obs, c("id", cols))
-  if (!missing(reference_date)) {
-    data.table::setnames(obs, "reference_date", reference_date)
-  }
-  if (!missing(report_date)) {
-    data.table::setnames(obs, "report_date", report_date)
-  }
+  data.table::setnames(obs, "reference_date", reference_date)
+  data.table::setnames(obs, "report_date", report_date)
 
   return(obs[])
 }

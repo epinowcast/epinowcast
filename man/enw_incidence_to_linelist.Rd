@@ -4,19 +4,21 @@
 \alias{enw_incidence_to_linelist}
 \title{Convert Aggregate Counts (Incidence) to a Line List}
 \usage{
-enw_incidence_to_linelist(obs, reference_date, report_date)
+enw_incidence_to_linelist(
+  obs,
+  reference_date = "reference_date",
+  report_date = "report_date"
+)
 }
 \arguments{
 \item{obs}{An object coercible to a \code{data.table} (such as a \code{data.frame})
 which must have a \code{new_confirm} column.}
 
 \item{reference_date}{A character string of the variable name to use
-for the \code{reference_date} in the line list. If not supplied then the
-function will not rename the \code{reference_date} column.}
+for the \code{reference_date} in the line list. The default is "reference_date".}
 
 \item{report_date}{A character string of the variable name to use
-for the \code{report_date} in the line list. If not supplied then the
-function will not rename the \code{report_date} column.}
+for the \code{report_date} in the line list. The default is "report_date".}
 }
 \value{
 A \code{data.table} with the following variables: \code{id}, \code{reference_date},
