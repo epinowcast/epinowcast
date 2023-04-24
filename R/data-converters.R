@@ -5,6 +5,8 @@
 #' observations), and `new_confirm` (incident observations by reference and
 #' report date).
 #'
+#' @inheritParams enw_add_incidence
+#' 
 #' @return The input `data.frame` with a new variable `confirm`.
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
@@ -19,15 +21,16 @@
 #'
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' enw_add_cumulative(dt)
-enw_add_cumulative <- function(obs, by = NULL) {
-  obs <- check_dates(obs)
-  check_by(obs)
+enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
+  reports <- coerce_dt(
+    obs, dates = TRUE, required_cols = c(by, "new_confirm"), copy = copy
+  )
 
-  obs <- obs[!is.na(reference_date)]
-  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
+  reports <- reports[!is.na(reference_date)]
+  data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
 
-  obs[, confirm := cumsum(new_confirm), by = c(by, "reference_date")]
-  return(obs[])
+  reports[, confirm := cumsum(new_confirm), by = c(by, "reference_date")]
+  return(reports[])
 }
 
 #' Calculate incidence of new reports from cumulative reports
@@ -41,6 +44,8 @@ enw_add_cumulative <- function(obs, by = NULL) {
 #' counts (for calculated incidence of observations) be set to zero. Currently
 #' downstream modelling does not support negative counts and so setting must be
 #' TRUE if intending to use [epinowcast()].
+#'
+#' @param copy Should `obs` be copied (default) or modified in place?
 #'
 #' @return The input `data.frame` with a new variable `new_confirm`. If
 #' `max_confirm` was present in the `data.frame` then the proportion
@@ -57,9 +62,11 @@ enw_add_cumulative <- function(obs, by = NULL) {
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' dt <- enw_add_max_reported(dt)
 #' enw_add_incidence(dt)
-enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
-  check_by(obs)
-  reports <- check_dates(obs)
+enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
+                              copy = TRUE) {
+  reports <- coerce_dt(
+    obs, dates = TRUE, required_cols = c(by, "confirm"), copy = copy
+  )
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
     by = c("reference_date", by)
@@ -115,7 +122,8 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #' days between the `reference_date` and the `report_date` in the `linelist`
 #' then the function will use this value instead and inform the user.
 #'
-#' @inheritParams enw_complete_dates
+#' @inheritParams enw_complete_dates 
+#' @inheritParams enw_add_incidence
 #'
 #' @return A `data.table` with the following variables: `reference_date`,
 #' `report_date`, `new_confirm`, `confirm`, `delay`, and
@@ -139,16 +147,17 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL) {
 #' )
 enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
                                       by = NULL, max_delay,
-                                      completion_beyond_max_report = FALSE) {
-  check_by(linelist)
-  counts <- data.table::as.data.table(linelist)
+                                      completion_beyond_max_report = FALSE,
+                                      copy = TRUE) {
+  counts <- coerce_dt(linelist, required_cols = by, copy = copy)
   if (!missing(report_date)) {
     counts[, report_date := get(report_date)]
   }
   if (!missing(reference_date)) {
     counts[, reference_date := get(reference_date)]
   }
-  counts <- check_dates(counts)
+  counts <- coerce_dt(counts, dates = TRUE, copy = FALSE)
+
   data.table::setkeyv(counts, c(by, "reference_date", "report_date"))
   counts <- counts[,
     .(new_confirm = .N), keyby = c("reference_date", "report_date", by)
@@ -169,13 +178,13 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
       "data.")
        max_delay <- obs_delay
   }
-  cum_counts <- enw_add_cumulative(counts, by = by)
+  cum_counts <- enw_add_cumulative(counts, by = by, copy = FALSE)
 
   complete_counts <- enw_complete_dates(
     cum_counts, max_delay = max_delay, by = by,
     completion_beyond_max_report = completion_beyond_max_report
   )
-  complete_counts <- enw_add_incidence(complete_counts, by = by)
+  complete_counts <- enw_add_incidence(complete_counts, by = by, copy = FALSE)
   return(complete_counts[])
 }
 
@@ -213,8 +222,7 @@ enw_linelist_to_incidence <- function(linelist, reference_date, report_date,
 #' )
 #' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 enw_incidence_to_linelist <- function(obs, reference_date, report_date) {
-  check_by(obs)
-  obs <- check_dates(obs)
+  obs <- coerce_dt(obs, dates = TRUE, required_cols = "new_confirm")
   suppressWarnings(obs <- obs[, "confirm" := NULL])
   cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]

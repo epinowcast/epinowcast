@@ -11,6 +11,8 @@ enw_add_delay(obs, copy = TRUE)
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
+
+\item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
 A data.table with a \code{delay} column added.

@@ -4,7 +4,7 @@
 \alias{enw_add_cumulative}
 \title{Calculate cumulative reported cases from incidence of new reports}
 \usage{
-enw_add_cumulative(obs, by = NULL)
+enw_add_cumulative(obs, by = NULL, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
@@ -16,6 +16,8 @@ report date).}
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
+
+\item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
 The input \code{data.frame} with a new variable \code{confirm}.
