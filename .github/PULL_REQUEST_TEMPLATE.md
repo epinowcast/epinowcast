@@ -9,7 +9,7 @@ This PR closes #<issue-number>.
 ## Checklist
 
 - [ ] My PR is based on a package issue and I have explicitly linked it.
-- [ ] I have included the target issue or issues in the PR title in the for Issue(s) #*issue-number*: PR title
+- [ ] I have included the target issue or issues in the PR title in the for Issue(s) *issue-numbers*: PR title
 - [ ] I have read the [contribution guidelines](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md).
 - [ ] I have tested my changes locally.
 - [ ] I have updated the documentation if required.
