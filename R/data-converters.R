@@ -163,7 +163,6 @@ enw_linelist_to_incidence <- function(linelist,
 
   counts <- coerce_dt(counts, dates = TRUE, copy = FALSE)
 
-  data.table::setkeyv(counts, c(by, "reference_date", "report_date"))
   counts <- counts[,
     .(new_confirm = .N), keyby = c("reference_date", "report_date", by)
   ]
