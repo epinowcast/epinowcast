@@ -6,7 +6,7 @@
 #' report date).
 #'
 #' @inheritParams enw_add_incidence
-#' 
+#'
 #' @return The input `data.frame` with a new variable `confirm`.
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
@@ -122,7 +122,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' days between the `reference_date` and the `report_date` in the `linelist`
 #' then the function will use this value instead and inform the user.
 #'
-#' @inheritParams enw_complete_dates 
+#' @inheritParams enw_complete_dates
 #' @inheritParams enw_add_incidence
 #'
 #' @return A `data.table` with the following variables: `reference_date`,
