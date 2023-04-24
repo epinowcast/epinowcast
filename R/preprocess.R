@@ -293,7 +293,7 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #'
 #' @return A data.table with a `delay` column added.
 #'
-#' @inheritParams enw_cumulative_to_incidence
+#' @inheritParams enw_add_incidence
 #' @family preprocess
 #' @export
 #' @examples
@@ -318,7 +318,7 @@ enw_add_delay <- function(obs, copy = TRUE) {
 #' reported on a given day relative to the maximum number of cases
 #' reported on a given day.
 #'
-#' @inheritParams enw_cumulative_to_incidence
+#' @inheritParams enw_add_incidence
 #' @inheritParams enw_latest_data
 #' @family preprocess
 #' @export
@@ -487,95 +487,12 @@ enw_latest_data <- function(obs) {
   return(latest_data[])
 }
 
-#' Calculate incidence of new reports from cumulative reports
-#'
-#' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
-#' observations), and `confirm` (cumulative observations by reference and report
-#' date).
-#'
-#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
-#' counts (for calculated incidence of observations) be set to zero. Currently
-#' downstream modelling does not support negative counts and so setting must be
-#' TRUE if intending to use [epinowcast()].
-#'
-#' @return The input `data.frame` with a new variable `new_confirm`. If
-#' `max_confirm` was present in the `data.frame` then the proportion
-#' reported on each day (`prop_reported`) is also added.
-#' @inheritParams enw_preprocess_data
-#' @family preprocess
-#' @export
-#' @importFrom data.table shift
-#' @examples
-#' # Default reconstruct incidence
-#' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-#' enw_cumulative_to_incidence(dt)
-#'
-#' # Make use of maximum reported to calculate empirical daily reporting
-#' dt <- enw_assign_group(dt)
-#' dt <- enw_add_max_reported(dt)
-#' enw_cumulative_to_incidence(dt)
-enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
-                                        by = NULL, copy = TRUE) {
-  reports <- coerce_dt(
-    obs, required_cols = c(by, "confirm"), dates = TRUE, copy = copy
-  )
-  data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
-  reports[, new_confirm := confirm - data.table::shift(confirm, fill = 0),
-    by = c("reference_date", by)
-  ]
-  reports <- reports[,
-    .SD[reference_date >= min(report_date) | is.na(reference_date)],
-    by = by
-  ]
-  reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", by)]
-
-  if (!is.null(reports$max_confirm)) {
-    reports[, prop_reported := new_confirm / max_confirm]
-  }
-
-  if (set_negatives_to_zero) {
-    reports <- reports[new_confirm < 0, new_confirm := 0]
-  }
-  return(reports[])
-}
-
-#' Calculate cumulative reported cases from incidence of new reports
-#'
-#' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
-#' observations), and `new_confirm` (incident observations by reference and
-#' report date).
-#'
-#' @return The input `data.frame` with a new variable `confirm`.
-#' @inheritParams enw_preprocess_data
-#' @family preprocess
-#' @export
-#' @examples
-#' # Default reconstruct incidence
-#' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-#' enw_cumulative_to_incidence(dt)
-#'
-#' # Make use of maximum reported to calculate empirical daily reporting
-#' dt <- enw_assign_group(dt)
-#' dt <- enw_add_max_reported(dt)
-#' enw_cumulative_to_incidence(dt)
-enw_incidence_to_cumulative <- function(obs, by = NULL) {
-
-  obs <- coerce_dt(obs, required_cols = c(by, "new_confirm"), dates = TRUE)
-  obs <- obs[!is.na(reference_date)]
-  data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
-
-  obs[, confirm := cumsum(new_confirm), by = c(by, "reference_date")]
-  return(obs[])
-}
-
 #' Filter observations to restrict the maximum reporting delay
 #'
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
 #'
-#' @inheritParams enw_cumulative_to_incidence
+#' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
@@ -602,7 +519,7 @@ enw_delay_filter <- function(obs, max_delay) {
 #' Constructs the reporting triangle with each row representing a reference date
 #' and columns being observations by report date
 #'
-#' @param obs A `data.frame` as produced by [enw_cumulative_to_incidence()].
+#' @param obs A `data.frame` as produced by [enw_add_incidence()].
 #' Must contain the following variables: `reference_date`, `.group`, `delay`.
 #'
 #' @return A `data.frame` with each row being a reference date, and columns
@@ -665,8 +582,11 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' general all features that you may consider using as grouping variables
 #' or as covariates need to be included in the `by` variable.
 #'
-#' @param missing_reference Should entries for cases with missing reference date
-#' be completed as well?, Default: TRUE
+#' @param missing_reference Logical, should entries for cases with missing
+#' reference date be completed as well?, Default: TRUE
+#'
+#' @param completion_beyond_max_report Logical, should entries be completed
+#' beyond the maximum date found in the data? Default: FALSE
 #'
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
@@ -681,19 +601,19 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'   confirm = 1
 #' )
 #' enw_complete_dates(obs)
+#'
+#' # Allow completion beyond the maximum date found in the data
+#' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
-                               missing_reference = TRUE) {
+                               missing_reference = TRUE,
+                               completion_beyond_max_report  = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
   min_date <- min(obs$reference_date, na.rm = TRUE)
   max_date <- max(obs$report_date, na.rm = TRUE)
   if (missing(max_delay)) {
-    if (is.null(obs$delay)) {
-      obs <- enw_add_delay(obs)
-    }
-    max_delay <- max(obs$delay, na.rm = TRUE)
-    obs[, delay := NULL]
+    max_delay <- as.numeric(max_date - min_date)
   }
 
   dates <- seq.Date(min_date, max_date, by = 1)
@@ -709,7 +629,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     report_date = 0:max_delay
   )
   completion <- completion[, report_date := reference_date + report_date]
-  completion <- completion[report_date <= max_date]
+  if (!completion_beyond_max_report) {
+    completion <- completion[report_date <= max_date]
+  }
 
   if (missing_reference) {
     completion <- rbind(
@@ -740,7 +662,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' Returns reports with missing reference dates as well as calculating
 #' the proportion of reports for a given reference date that were missing.
 #'
-#' @param obs A `data.frame` as produced by [enw_cumulative_to_incidence()].
+#' @param obs A `data.frame` as produced by [enw_add_incidence()].
 #' Must contain the following variables: `report_date`, `reference_date`,
 #' `.group`, and `confirm`, and `new_confirm`.
 #'
@@ -760,7 +682,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' )
 #' obs <- enw_complete_dates(obs)
 #' obs <- enw_assign_group(obs)
-#' obs <- enw_cumulative_to_incidence(obs)
+#' obs <- enw_add_incidence(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
   obs <- coerce_dt(
@@ -964,7 +886,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' - `max_date`: The maximum available report date.
 #'
 #' @family preprocess
-#' @inheritParams enw_cumulative_to_incidence
+#' @inheritParams enw_add_incidence
 #' @export
 #' @importFrom data.table data.table
 #' @examples
@@ -992,7 +914,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   obs <- enw_delay_filter(obs, max_delay = max_delay)
 
-  diff_obs <- enw_cumulative_to_incidence(
+  diff_obs <- enw_add_incidence(
     obs,
     set_negatives_to_zero = set_negatives_to_zero,
     by = by

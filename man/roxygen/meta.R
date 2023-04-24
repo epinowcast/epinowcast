@@ -1,5 +1,6 @@
 list( # nolint
   rd_family_title = list( # nolint
+    dataconverters = "Data converters",
     preprocess = "Preprocessing functions",
     modelmodules = "Model modules",
     modelmodulehelpers = "Helper functions for model modules",

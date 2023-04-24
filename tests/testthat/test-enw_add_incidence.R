@@ -1,5 +1,5 @@
-test_that("enw_cumulative_to_incidence can return toy incidence data", {
-  dt <- enw_cumulative_to_incidence(
+test_that("enw_add_incidence can return toy incidence data", {
+  dt <- enw_add_incidence(
     toy_cumulative,
     set_negatives_to_zero = FALSE
   )
@@ -10,8 +10,8 @@ test_that("enw_cumulative_to_incidence can return toy incidence data", {
   expect_equal(dt$delay, 0:9)
 })
 
-test_that("enw_cumulative_to_incidence can calculate reporing proportions", {
-  dt <- enw_cumulative_to_incidence(
+test_that("enw_add_incidence can calculate reporing proportions", {
+  dt <- enw_add_incidence(
     data.table::copy(toy_cumulative)[, max_confirm := 100],
     set_negatives_to_zero = FALSE
   )
@@ -21,8 +21,8 @@ test_that("enw_cumulative_to_incidence can calculate reporing proportions", {
   )
 })
 
-test_that("enw_cumulative_to_incidence can set negatives to zero", {
-  dt <- enw_cumulative_to_incidence(
+test_that("enw_add_incidence can set negatives to zero", {
+  dt <- enw_add_incidence(
     toy_cumulative,
     set_negatives_to_zero = TRUE
   )

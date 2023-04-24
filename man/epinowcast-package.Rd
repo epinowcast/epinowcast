@@ -34,6 +34,7 @@ Other contributors:
   \item Michael DeWitt \email{me.dewitt.jr@gmail.com} (\href{https://orcid.org/0000-0001-8940-1967}{ORCID}) [contributor]
   \item Hannah Choi \email{hannah.choi1@lshtm.ac.uk} [contributor]
   \item Pratik Gupte \email{pratik.gupte@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-5294-7819}{ORCID}) [contributor]
+  \item Joel Hellewell \email{joel@ebi.ac.uk} (\href{https://orcid.org/0000-0003-2683-0849}{ORCID}) [contributor]
 }
 
 }

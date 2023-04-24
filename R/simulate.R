@@ -12,7 +12,7 @@
 #' @return A `data.table` of the same format as the input but with a simulated
 #' proportion of observations now having a missing reference date.
 #'
-#' @inheritParams enw_cumulative_to_incidence
+#' @inheritParams enw_add_incidence
 #' @family simulate
 #' @export
 #' @examples
@@ -37,14 +37,14 @@
 #'   proportion = 0.35, by = c("location", "age_group")
 #' )
 enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = NULL) {
-  obs <- enw_cumulative_to_incidence(obs, by = by)
+  obs <- enw_add_incidence(obs, by = by)
 
   obs[, missing := purrr::map2_dbl(
     new_confirm, proportion, ~ rbinom(1, .x, .y)
   )]
   obs[, new_confirm := new_confirm - missing]
 
-  complete_ref <- enw_incidence_to_cumulative(obs, by = by)
+  complete_ref <- enw_add_cumulative(obs, by = by)
   complete_ref[, c("new_confirm", "delay", "missing") := NULL]
 
   missing_ref <- obs[, .(confirm = sum(missing)),
