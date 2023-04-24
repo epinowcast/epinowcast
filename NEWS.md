@@ -1,4 +1,4 @@
-# epinowcast 0.2.0.13000
+# epinowcast 0.2.1
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
 
@@ -21,9 +21,8 @@ This is release is in development. It is not yet ready for production use. If yo
 - Switched to the `lint-changed-files.yaml` GitHub Actions workflow instead of the regular `lint.yaml` to avoid annotations unrelated to the changes made in the PR. See #220 by @Bisaloo and reviewed by @pearsonca and @seabbs.
 - Added tests for `summary.epinowcast()` and `plot.epinowcast()` methods. See #209 by @seabbs and reviewed by @pearsonca.
 - Added tests for `enw_plot_obs()` where not otherwise covered by `plot.epinowcast()` tests. See #209 by @seabbs and reviewed by @pearsonca.
-- Made the `.group` variable optional for all preprocessing functions using a new `add_group()` internal function. See #208 by @seabbs and reviewed by @pearsonca.
+- Refactored to consolidate data checking and internalization into a single internal function `coerce_dt()`, addressing issues #242, #241, #214, and #149. This eliminates the need for `add_group`, `check_by`, and `check_dates` (and associated documentation, tests - some of these were intermediate capabilities introduced within this minor version; see #208). Also starts to enable internal versus external use of exposed methods with the `copy = ...` argument. See #239 by @pearsonca, reviewed by @seabbs.
 - Resolved the spurious test warnings for snapshot tests which were linked to unstated formatting requirements. See #208 by @seabbs and reviewed by @pearsonca.
-- Added a new internal `check_by` function as suggested by @pearsonca. This checks that user suggested grouping variables exist in the supplied data and returns an informative error if they do not. See #208 by @seabbs and reviewed by @pearsonca.
 - Removed unused internal plot helpers. See #217 by @seabbs and reviewed by @adrian-lison.
 - Added tests for all internal `check_` functions used to check inputs. See #217 by @seabbs and reviewed by @adrian-lison.
 - Removed the problematic double specification of default arguments for `target_date` in `enw_metadata()` as flagged in #212 by @pearsonca using `formals()` to instead detect the default values from the function specification. See #232 by @seabbs and self-reviewed.
