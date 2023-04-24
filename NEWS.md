@@ -39,8 +39,12 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added support for using the same variable as both a random effect and a random walk. In most settings this is not advised. See #228 by @seabbs and self-reviewed.
 - Added an error message to `construct_rw()` when a random walk is specified for a variable that is not a numeric variable. See #228 by @seabbs and self-reviewed.
 - Added support for preprocessing and model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk. See #200 by @seabbs, @adrian-lison, @sbfnk, and self-reviewed.
+<<<<<<< HEAD
 - Added a complete set of data converters to map between line list (i.e. each row is a case) and count data (i.e incidence and cumulative counts by reference and report date). In particular, this will help workflows where individual line list data is available as it can now be formatted ready for preprocessing using a single call to `enw_linelist_to_incidence()` which previously took several steps. See #247 by @seabbs and @jhellewell14 and reviewed by @pearsonca.
 - Dropped the use of the `develop` branch for development versions of the package. This change was discussed in #250 with the major motivator being that since the introduction of release only builds to R Universe we no longer need to have a stable `main` branch of GitHub to control our releases. See #256 by @seabbs and reviewed by @Bisaloo and @pearsonca.
+=======
+- Cleaned enw_formula_as_data_list() to better align with DRY principles. See #245 by @Lnrivas, reviewed by @pearsonca and @seabbs. 
+>>>>>>> e2c3eb3d (Issue #245)
 
 ## Documentation
 
@@ -49,6 +53,7 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
 - Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and self-reviewed.
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
+- Added @Lnrivas as contributor to DESCRIPTION
 
 # epinowcast 0.2.0
 
@@ -124,11 +129,11 @@ This is a major release focusing on improving the user experience, and preparing
 * Convolution-based delay models (i.e hospitalisations and deaths) with partially reported data.
 * Additional observation models.
 
-If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://package.epinowcast.org/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance. 
+If interested in contributing to these features, or other aspects of package development (for example improving post-processing, the coverage of documentation, or contributing case studies) please see our [contributing guide](https://package.epinowcast.org/dev/CONTRIBUTING.html) and/or just reach out. This is a community project that needs support from its users in order to provide improved tools for real-time infectious disease surveillance.
 
 This release contains multiple breaking changes. If needing the old interface please install [`0.0.7` from GitHub](https://github.com/epinowcast/epinowcast/releases/tag/v0.0.7). For ease, we have stratified changes below into interface, package, documentation, and model changes. Note the package is still flagged as experimental but is in regular use by the authors.
 
-@adrian-lison, @sbfnk, and @seabbs contributed to this release. 
+@adrian-lison, @sbfnk, and @seabbs contributed to this release.
 
 ## Interface
 
@@ -141,7 +146,7 @@ This release contains multiple breaking changes. If needing the old interface pl
 * A new helper function `enw_delay_metadata()` has been added. This produces metadata about the delay distribution vector that may be helpful in future modelling. This prepares the way for #4 where this `data.frame` will be combined with the reference metadata in order to build non-parametric hazard reference and delay-based models. In addition to adding this function, it has also been added to the output of `enw_preprocess_data()` in order to make the metadata readily available to end-users. See #80 by @seabbs.
 * Two new helper functions `enw_filter_reference_dates()` and `enw_filter_report_dates()` have been added. These replace `enw_retrospective_data()` but allow users to similarly construct retrospective data. Splitting these functions out into components also allows for additional use cases that were not previously possible. Note that by definition it is assumed that a report date for a given reference date must be equal or greater (i.e a report cannot happen before the event being reported occurs). See #82 by @sbfnk and @seabbs.
 * The internal grouping variables have been refactored to reduce the chance of clashes with columns in the data.frames supplied by the user. There will also be an error thrown in case of a variable clash, making preprocessing safer. See #102 by @adrian-lison and @seabbs, which solves #99.
-* Support for preprocessing observations with missing reference dates has been added along with a new data object returned by `enw_preprocess_data()` that highlights this information to the user (alternatively can be accessed by users using `enw_missing_reference()`). In addition, these missing observations have been setup to be passed to stan in order to allow their use in modelling. This feature is in preparation of adding full support for missing observations (see #43). See 
+* Support for preprocessing observations with missing reference dates has been added along with a new data object returned by `enw_preprocess_data()` that highlights this information to the user (alternatively can be accessed by users using `enw_missing_reference()`). In addition, these missing observations have been setup to be passed to stan in order to allow their use in modelling. This feature is in preparation of adding full support for missing observations (see #43). See
 #106 by @adrian-lison and @seabbs.
 * The discretised reporting probability function has been extended to handle delays beyond the maximum delay in three different ways: ignore, add to maximum, or normalize. The nowcasting model uses "normalise" though work on this is ongoing. See #113 by @adrian-lison and #121 by @seabbs.
 * Fixed an issue (#105) with `cmdstan 2.30.0` where passing optimisation flags to `stanc_options` by default was causing a compilation error by not passing these flags by default. See #117 by @sbfnk and @seabbs.
@@ -165,7 +170,7 @@ This release contains multiple breaking changes. If needing the old interface pl
 
 # epinowcast 0.0.7
 
-* Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see #62 by @seabbs). 
+* Adds additional quality of life data processing so that the maximum number (`max_confirm`) of notifications is available in every row (for both cumulative and incidence notifications) and the cumulative and daily empirical proportion reported are calculated for the user during pre-processing (see #62 by @seabbs).
 * The default approach to handling reported notifications beyond the maximum delay has been changed. In `0.0.6` and previous versions notifications beyond the maximum delay were silently dropped. In `0.0.7` this is now optional behaviour (set using `max_delay_strat` in `enw_preprocess_data()`) and the default is instead to add these notifications to the last included delay were present. This should produce more accurate long-term nowcasts when data is available but means that reported notifications for the maximum delay need to be interpreted with this in mind. See #62 by @seabbs.
 * Adds some basic testing and documentation for preprocessing functions. See #62 by @seabbs.
 * Stabilises calculation of expected observations by increasing the proportion of the calculation performed on the log scale. This results in reduced computation time with the majority of this coming from switching to using the `neg_binomial_2_log` family of functions (over their natural scale counterparts). See #65 by @seabbs
@@ -179,7 +184,7 @@ This release contains multiple breaking changes. If needing the old interface pl
 * `hazard_to_prob` has been optimised using vectorisation (see #53 by @adrian-lison and @seabbs).
 * `prob_to_hazard` has been optimised so that only required cumulative probabilities are calculated (see #53 by @adrian-lison and @seabbs).
 * Updated to use the `inv_sqrt` stan function (see #60 by @seabbs).
-* Added support for `scoringutils 1.0.0` (see #61 by @seabbs). 
+* Added support for `scoringutils 1.0.0` (see #61 by @seabbs).
 * Added a basic example helper function, `enw_example()`, to power examples and tests based on work done in [`forecast.vocs`](https://epiforecasts.io/forecast.vocs/) (see #61 by @seabbs).
 
 # epinowcast 0.0.5
