@@ -67,10 +67,16 @@
     <loc>package.epinowcast.org/dev/reference/convolution_matrix.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/enw_add_cumulative.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/enw_add_cumulative_membership.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_add_delay.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_add_incidence.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_add_latest_obs_to_nowcast.html</loc>
@@ -136,7 +142,13 @@
     <loc>package.epinowcast.org/dev/reference/enw_incidence_to_cumulative.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/enw_incidence_to_linelist.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/enw_latest_data.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_linelist_to_incidence.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_manual_formula.html</loc>
