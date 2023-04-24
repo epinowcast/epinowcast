@@ -236,7 +236,7 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
   obs[, id := seq_len(.N)]
   data.table::setcolorder(obs, c("id", cols))
   data.table::setnames(
-    counts,
+    obs,
     c("reference_date", "report_date"),
     c(reference_date, report_date)
   )
