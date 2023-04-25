@@ -50,7 +50,6 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
 - Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and self-reviewed.
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
-- Added @Lnrivas as contributor to DESCRIPTION
 
 # epinowcast 0.2.0
 
