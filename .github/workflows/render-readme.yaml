@@ -34,6 +34,7 @@ jobs:
         run: |
           cmdstanr::check_cmdstan_toolchain(fix = TRUE)
           cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
+        shell: Rscript {0}
 
       - name: Compile the readme
         run: |
