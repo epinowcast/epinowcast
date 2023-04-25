@@ -76,7 +76,7 @@
     
     <a class="navbar-brand me-2" href="index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.15000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.0.16000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,14 +142,10 @@
 </h2>
 <p>This README is a good place to get started with <code>epinowcast</code>, in particular the following installation and quick start sections. As you make use of the package, or if your problem requires a richer feature set than presented here, we also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.</p>
 <ul>
-<li>
-<a href="https://package.epinowcast.org/">Package website</a>: This includes a function reference, model outline, and case studies making use of the package. The development version of our documentation (corresponding to our <code>develop</code> branch) is available <a href="https://package.epinowcast.org/dev/">here</a>.</li>
-<li>
-<a href="https://www.epinowcast.org/" class="external-link">Organisation website</a>: This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.</li>
-<li>
-<a href="https://github.com/epinowcast/epinowcast/tree/main/inst/examples" class="external-link">Directory of example scripts</a>: Not as fleshed out as our complete case studies these scripts are used during package development and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.</li>
-<li>
-<a href="https://community.epinowcast.org/" class="external-link">Community forum</a>: Our community forum is where development of tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of <code>epinowcast</code>.</li>
+<li><p><a href="https://package.epinowcast.org/">Package website</a>: This includes a function reference, model outline, and case studies making use of the package. This site refers to the release version of our package which can be installed from our Universe or from the latest GitHub release (see installation instructions). The development version of our documentation (corresponding to our <code>main</code> branch on GitHub) is available <a href="https://package.epinowcast.org/dev/">here</a>.</p></li>
+<li><p><a href="https://www.epinowcast.org/" class="external-link">Organisation website</a>: This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.</p></li>
+<li><p><a href="https://github.com/epinowcast/epinowcast/tree/main/inst/examples" class="external-link">Directory of example scripts</a>: Not as fleshed out as our complete case studies these scripts are used during package development and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.</p></li>
+<li><p><a href="https://community.epinowcast.org/" class="external-link">Community forum</a>: Our community forum is where development of methods and tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of <code>epinowcast</code>.</p></li>
 </ul>
 </div>
 <div class="section level2">
@@ -161,12 +157,13 @@
 <p>Install the latest released version of the package with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"epinowcast"</span>, repos <span class="op">=</span> <span class="st">"https://epinowcast.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, install the stable development version from GitHub using the following,</p>
+<p>Alternatively, install the development version (whilst we strive to limit breaking changes or the introduction of bugs during development this version may contain both) from GitHub using the following,</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>The unstable development version can also be installed from GitHub using the following,</p>
+<p>Historical package releases can be installed from GitHub using <code>remotes</code> by adding the release tag as in the following example (which installs <a href="https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0" class="external-link"><code>0.2.0</code></a>),</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"epinowcast/epinowcast@develop"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, ref <span class="op">=</span> <span class="st">"v0.2.0"</span><span class="op">)</span></span></code></pre></div>
+<p><em>Note: A similar method can be used to install a particular commit of the package which may be useful for some users who are unable to use a fixed release but concerned about the stability of their dependencies.</em></p>
 </div>
 <div class="section level3">
 <h3 id="installing-cmdstan">Installing CmdStan<a class="anchor" aria-label="anchor" href="#installing-cmdstan"></a>
@@ -174,6 +171,12 @@
 <p>If you don’t already have CmdStan installed then, in addition to installing <code>epinowcast</code>, it is also necessary to install CmdStan using CmdStanR’s <code>install_cmdstan()</code> function to enable model fitting in <code>epinowcast</code>. A suitable C++ toolchain is also required. Instructions are provided in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with CmdStanR</em></a> vignette. See the <a href="https://mc-stan.org/cmdstanr/" class="external-link">CmdStanR documentation</a> for further details and support.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><em>Note: This install process can be sped up using the <code>cores</code> argument and past versions can be installed using the <code>version</code> argument (which may be useful if install historical package releases).</em></p>
+</div>
+<div class="section level3">
+<h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
+</h3>
+<p>As an alternative to local installation we provide a Docker image with <code>epinowcast</code> and all dependencies installed. This can be used to run <code>epinowcast</code> without installing dependencies locally. The image is available <a href="https://github.com/orgs/epinowcast/packages/container/package/epinowcast" class="external-link">here</a>.</p>
 </div>
 </div>
 <div class="section level2">
@@ -292,11 +295,11 @@
 <span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22</span></span>
 <span><span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[8]&gt;    1000     1.01</span></span>
+<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[8]&gt;    1000     1.03</span></span>
 <span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
 <span><span class="co">#&gt; 1:                     0                         0             8</span></span>
 <span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                 223                0.223       48</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:                 104                0.104     76.3</span></span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
@@ -315,26 +318,26 @@
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
 <span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
 <span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.040     69 0.2010981 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.098     47 0.3201539 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.193     65 0.4493918 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.247     50 0.5081823 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.213     36 0.4897661 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.439     94 0.6773018 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.696     91 0.8731245 0.0000 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.016    100 1.0577631 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.198     87 1.1384604 1.4826 86</span></span>
-<span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
-<span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  69 0.9993628 1028.7509 1014.8826</span></span>
-<span><span class="co">#&gt;  3:  48 1.0017209  800.8692  788.7778</span></span>
-<span><span class="co">#&gt;  4:  66 0.9984950  929.2068  829.2287</span></span>
-<span><span class="co">#&gt;  5:  51 0.9983571  863.3922  859.1843</span></span>
-<span><span class="co">#&gt;  6:  37 0.9995919  781.9900  829.4605</span></span>
-<span><span class="co">#&gt;  7:  96 1.0131604  750.5999  699.0742</span></span>
-<span><span class="co">#&gt;  8:  93 1.0019323  712.3780  845.1180</span></span>
-<span><span class="co">#&gt;  9: 102 1.0004630  984.9557  914.8867</span></span>
-<span><span class="co">#&gt; 10:  89 1.0002847  917.9605  994.8352</span></span></code></pre></div>
+<span><span class="co">#&gt;  2:                 1    38             0  69.052     69 0.2309748 0.0000 69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.090     47 0.2999833 0.0000 47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.186     65 0.4467702 0.0000 65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.272     50 0.5237273 0.0000 50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.238     36 0.4833111 0.0000 36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.466     94 0.7234413 0.0000 94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.818     92 0.9163600 1.4826 91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.034    100 1.0862891 1.4826 99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.169     87 1.1453169 1.4826 86</span></span>
+<span><span class="co">#&gt;        q95      rhat  ess_bulk  ess_tail</span></span>
+<span><span class="co">#&gt;  1:  72.00        NA        NA        NA</span></span>
+<span><span class="co">#&gt;  2:  69.05 0.9985267  996.4221 1003.4172</span></span>
+<span><span class="co">#&gt;  3:  48.00 1.0001713  931.8566  925.7191</span></span>
+<span><span class="co">#&gt;  4:  66.00 0.9991242 1082.8792 1043.1154</span></span>
+<span><span class="co">#&gt;  5:  51.00 1.0021465 1042.1404 1073.5649</span></span>
+<span><span class="co">#&gt;  6:  37.00 0.9993967 1023.9880  985.6183</span></span>
+<span><span class="co">#&gt;  7:  96.00 1.0017263  898.4902  943.5495</span></span>
+<span><span class="co">#&gt;  8:  94.00 0.9998329  965.2067  891.1079</span></span>
+<span><span class="co">#&gt;  9: 102.00 1.0011457  759.0457  593.3755</span></span>
+<span><span class="co">#&gt; 10:  89.00 1.0016938  887.4992  789.4787</span></span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
@@ -367,17 +370,17 @@
 <span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    435</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    433</span></span>
-<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    435</span></span>
-<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    435</span></span>
-<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    433</span></span>
+<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    434</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    434</span></span>
+<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    434</span></span>
+<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    438</span></span>
+<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    434</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2017</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2703</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2122</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2564</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   1844</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2026</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2123</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1999</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2197</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2093</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -395,24 +398,23 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If using <code>epinowcast</code> in your work please consider citing it using the following,</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To cite package 'epinowcast' in publications use:</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Flexible hierarchical nowcasting." _Zenodo_.</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doi:10.5281/zenodo.5637165 &lt;https://doi.org/10.5281/zenodo.5637165&gt;,</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;https://github.com/epinowcast/epinowcast&gt;.</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   @Article{,</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     title = {epinowcast: Flexible hierarchical nowcasting},</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     year = {2021},</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     journal = {Zenodo},</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     doi = {10.5281/zenodo.5637165},</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     url = {https://github.com/epinowcast/epinowcast},</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   }</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To cite package 'epinowcast' in publications use:</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Flexible hierarchical nowcasting." _Zenodo_.</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doi:10.5281/zenodo.5637165 &lt;https://doi.org/10.5281/zenodo.5637165&gt;,</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;https://github.com/epinowcast/epinowcast&gt;.</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   @Article{,</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     title = {epinowcast: Flexible hierarchical nowcasting},</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     year = {2021},</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     journal = {Zenodo},</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     doi = {10.5281/zenodo.5637165},</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     url = {https://github.com/epinowcast/epinowcast},</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   }</span></span></code></pre></div>
 <p>If making use of our methodology or the methodology on which ours is based please cite the relevant papers from our <a href="https://package.epinowcast.org/articles/model.html">model outline</a>.</p>
 </div>
 <div class="section level2">
