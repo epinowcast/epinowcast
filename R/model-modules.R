@@ -382,9 +382,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           ),
           nrow = data$expr_gt_n
         )),
-        expr_r_int = rnorm(
-          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
-        ),
+        expr_r_int = numeric(0),
         expl_beta = numeric(0),
         expl_beta_sd = numeric(0)
       )
@@ -396,6 +394,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           data$expr_rncol, priors$expr_beta_sd_p[1],
           priors$expr_beta_sd_p[2] / 10
         ))
+      }
+      if (data$expr_fintercept > 0) {
+        init$expr_r_int <- rnorm(
+          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
+        )
       }
       if (data$expl_fncol > 0) {
         init$expl_beta <- rnorm(data$expl_fncol, 0, 0.01)
