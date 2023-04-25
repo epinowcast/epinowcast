@@ -149,7 +149,30 @@ where the hazard on the final day has been assumed to be 1 in order to enforce t
   p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0} p_{g,t,d^{\prime}} \right) \times h_{g,t,d}
 \end{equation}
 
-All ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations. For further implementation details see `enw_reference()` for delays linked to the date of reference, `enw_report()` for delays linked to the date of report.
+All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations. For further implementation details see `enw_reference()` for delays linked to the date of reference, `enw_report()` for delays linked to the date of report.
+
+## Details on discretised parametric distributions
+
+Currently, 4 distributions are implemented for modelling the parametric part of the delay distribution: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. 
+
+The following table provides a link to the definition of the parametric distributions, how $\mu_{g,t}$ and $\nu_{g,t}$ defined above are mapped to the parameters of in the referenced definition of the distribution and what this means for the mean of the distribution (before discretization and adjustment for an assumed maximum delay).
+
+| Distribution 	| Parametrization | Mean |
+|--------------	|------------ |------------------	|
+| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)  | $\mu=\mu_{g,t}$, $\sigma = \nu_{g,t}$	| $exp(\mu_{g,t}+\frac{\nu_{g,t}^2}{2})$ 	|
+| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html)  | $\beta = exp(-\mu_{g,t})$	| $exp(\mu_{g,t})$ |
+| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = exp(\mu_{g,t})$, $\beta = \nu_{g,t}$ | $exp(\mu_{g,t})/\nu_{g,t}$ |
+| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = exp(\mu_{g,t})$, $\beta = \nu_{g,t}$ | $\frac{exp(\mu_{g,t})\pi/\nu_{g,t}}{sin(\pi/\nu_{g,t})}$ |
+
+For a specific reference date $t$ and maximum delay *max_delay*, the discretised parametric delay distribution is now constructed the following way:
+
+1) Evaluate the cumulative distribution function of the chosen (continuous) distribution $P(D\leq d|\mu_{g,t}, \nu_{g,t})$ at integer values $d=1, \ldots, max\_delay$.
+
+2) Adjust for the chosen maximum delay by normalizing via division through $P(D\leq max\_delay|\mu_{g,t}, \nu_{g,t})$.
+
+3) Derive the discretized probability-mass function (and subsequently hazard function) by taking first differences. 
+
+Based on this discretization scheme, the probability of a reporting delay of zero days is $p_{g,t,0} = P(D\leq 1|\mu_{g,t}, \nu_{g,t})$, the probability of a delay of one day is $p_{g,t,1} = P(D\leq 2|\mu_{g,t}, \nu_{g,t}) - P(D\leq 1|\mu_{g,t}, \nu_{g,t})$, and so on. Note, that a discrete random variable with such a pmf has in general not exactly the same moments as the corresponding continuous random variable with distribution $P_{\mu_{g,t}, \nu_{g,t}}$.
 
 # Observation model and nowcast
 
