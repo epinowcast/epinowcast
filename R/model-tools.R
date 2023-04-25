@@ -50,8 +50,8 @@ enw_formula_as_data_list <- function(formula, prefix,
     data$fnrow <- nrow(formula$fixed$design)
     data$findex <- formula$fixed$index
     data$fnindex <- length(formula$fixed$index)
-    data$fncol <- ncol(formula$fixed$design) - min(
-      as.numeric(drop_intercept), fintercept)
+    data$fncol <- ncol(formula$fixed$design) -
+      min(as.numeric(drop_intercept), fintercept)
     data$rdesign <- formula$random$design
     data$rncol <- ncol(formula$random$design) - 1
   }
