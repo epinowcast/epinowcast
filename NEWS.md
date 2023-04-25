@@ -20,7 +20,6 @@ This is release is in development. It is not yet ready for production use. If yo
 - `enw_incidence_to_cumulative()`: Deprecated with a warning in favour of `enw_add_cumulative()`. This renaming is to better reflect the function's purpose. `enw_incidence_to_cumulative()` will be removed in `0.3.0`. See #247 by @seabbs and reviewed by @pearsonca.
 - `enw_cumulative_to_incidence()`: Deprecated with a warning in favour of `enw_add_incidence()`. This renaming is to better reflect the function's purpose. `enw_cumulative_to_incidence()` will be removed in `0.3.0`. See #247 by @seabbs and reviewed by @pearsonca.
 
-- `
 ## Package
 
 - Fixed some typos in `README.md`, `NEWS.md`, the `model.Rmd` vignette and `convolution_matrix()` documentation. The `WORDLIST` used by spelling has also been updated by eliminate false positives. See #221 by @Bisaloo and reviewed by @seabbs and @adrian-lison.
