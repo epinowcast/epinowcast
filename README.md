@@ -38,27 +38,32 @@ set than presented here, we also provide a range of other documentation,
 case studies, and spaces for the community to interact with each other.
 Below is a short list of current resources.
 
-  - [Package website](https://package.epinowcast.org/): This includes a
-    function reference, model outline, and case studies making use of
-    the package. The development version of our documentation
-    (corresponding to our `develop` branch) is available
-    [here](https://package.epinowcast.org/dev/).
-  - [Organisation website](https://www.epinowcast.org/): This includes
-    links to our other resources as well as guest posts from community
-    members and schedules for any related seminars being run by
-    community members.
-  - [Directory of example
-    scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
-    Not as fleshed out as our complete case studies these scripts are
-    used during package development and each showcase a subset of
-    package functionality. Often newly introduced features will be
-    explored here before surfacing in other areas of our documentation.
-  - [Community forum](https://community.epinowcast.org/): Our community
-    forum is where development of tools is discussed, along with related
-    research from our members and discussions between users. If you are
-    interested in real-time analysis of infectious disease this is
-    likely a good place to start regardless of if you end up making use
-    of `epinowcast`.
+- [Package website](https://package.epinowcast.org/): This includes a
+  function reference, model outline, and case studies making use of the
+  package. This site refers to the release version of our package which
+  can be installed from our Universe or from the latest GitHub release
+  (see installation instructions). The development version of our
+  documentation (corresponding to our `main` branch on GitHub) is
+  available [here](https://package.epinowcast.org/dev/).
+
+- [Organisation website](https://www.epinowcast.org/): This includes
+  links to our other resources as well as guest posts from community
+  members and schedules for any related seminars being run by community
+  members.
+
+- [Directory of example
+  scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
+  Not as fleshed out as our complete case studies these scripts are used
+  during package development and each showcase a subset of package
+  functionality. Often newly introduced features will be explored here
+  before surfacing in other areas of our documentation.
+
+- [Community forum](https://community.epinowcast.org/): Our community
+  forum is where development of methods and tools is discussed, along
+  with related research from our members and discussions between users.
+  If you are interested in real-time analysis of infectious disease this
+  is likely a good place to start regardless of if you end up making use
+  of `epinowcast`.
 
 ## Installation
 
@@ -70,19 +75,25 @@ Install the latest released version of the package with:
 install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
-Alternatively, install the stable development version from GitHub using
-the following,
+Alternatively, install the development version (whilst we strive to
+limit breaking changes or the introduction of bugs during development
+this version may contain both) from GitHub using the following,
 
 ``` r
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
-The unstable development version can also be installed from GitHub using
-the following,
+Historical package releases can be installed from GitHub using `remotes`
+by adding the release tag as in the following example (which installs
+[`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)),
 
 ``` r
-remotes::install_github("epinowcast/epinowcast@develop", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0")
 ```
+
+*Note: A similar method can be used to install a particular commit of
+the package which may be useful for some users who are unable to use a
+fixed release but concerned about the stability of their dependencies.*
 
 ### Installing CmdStan
 
@@ -99,6 +110,18 @@ support.
 ``` r
 cmdstanr::install_cmdstan()
 ```
+
+*Note: This install process can be sped up using the `cores` argument
+and past versions can be installed using the `version` argument (which
+may be useful if install historical package releases).*
+
+### Docker
+
+As an alternative to local installation we provide a Docker image with
+`epinowcast` and all dependencies installed. This can be used to run
+`epinowcast` without installing dependencies locally. The image is
+available
+[here](https://github.com/orgs/epinowcast/packages/container/package/epinowcast).
 
 ## Quick start
 
@@ -272,11 +295,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.01
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.03
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 223                0.223       48
+#> 1:                 104                0.104     76.3
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -298,26 +321,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.040     69 0.2010981 0.0000 69
-#>  3:                 1    37             0  47.098     47 0.3201539 0.0000 47
-#>  4:                 1    36             0  65.193     65 0.4493918 0.0000 65
-#>  5:                 1    35             0  50.247     50 0.5081823 0.0000 50
-#>  6:                 1    34             0  36.213     36 0.4897661 0.0000 36
-#>  7:                 1    33             0  94.439     94 0.6773018 0.0000 94
-#>  8:                 1    32             0  91.696     91 0.8731245 0.0000 91
-#>  9:                 1    31             0 100.016    100 1.0577631 1.4826 99
-#> 10:                 1    30             0  87.198     87 1.1384604 1.4826 86
-#>     q95      rhat  ess_bulk  ess_tail
-#>  1:  72        NA        NA        NA
-#>  2:  69 0.9993628 1028.7509 1014.8826
-#>  3:  48 1.0017209  800.8692  788.7778
-#>  4:  66 0.9984950  929.2068  829.2287
-#>  5:  51 0.9983571  863.3922  859.1843
-#>  6:  37 0.9995919  781.9900  829.4605
-#>  7:  96 1.0131604  750.5999  699.0742
-#>  8:  93 1.0019323  712.3780  845.1180
-#>  9: 102 1.0004630  984.9557  914.8867
-#> 10:  89 1.0002847  917.9605  994.8352
+#>  2:                 1    38             0  69.052     69 0.2309748 0.0000 69
+#>  3:                 1    37             0  47.090     47 0.2999833 0.0000 47
+#>  4:                 1    36             0  65.186     65 0.4467702 0.0000 65
+#>  5:                 1    35             0  50.272     50 0.5237273 0.0000 50
+#>  6:                 1    34             0  36.238     36 0.4833111 0.0000 36
+#>  7:                 1    33             0  94.466     94 0.7234413 0.0000 94
+#>  8:                 1    32             0  91.818     92 0.9163600 1.4826 91
+#>  9:                 1    31             0 100.034    100 1.0862891 1.4826 99
+#> 10:                 1    30             0  87.169     87 1.1453169 1.4826 86
+#>        q95      rhat  ess_bulk  ess_tail
+#>  1:  72.00        NA        NA        NA
+#>  2:  69.05 0.9985267  996.4221 1003.4172
+#>  3:  48.00 1.0001713  931.8566  925.7191
+#>  4:  66.00 0.9991242 1082.8792 1043.1154
+#>  5:  51.00 1.0021465 1042.1404 1073.5649
+#>  6:  37.00 0.9993967 1023.9880  985.6183
+#>  7:  96.00 1.0017263  898.4902  943.5495
+#>  8:  94.00 0.9998329  965.2067  891.1079
+#>  9: 102.00 1.0011457  759.0457  593.3755
+#> 10:  89.00 1.0016938  887.4992  789.4787
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -366,17 +389,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    435
-#>     2:                 1    33             0      1          2     2    433
-#>     3:                 1    33             0      1          3     3    435
-#>     4:                 1    33             0      1          4     4    435
-#>     5:                 1    33             0      1          5     5    433
+#>     1:                 1    33             0      1          1     1    434
+#>     2:                 1    33             0      1          2     2    434
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    438
+#>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2017
-#> 33997:                 1     0             1      2        497   997   2703
-#> 33998:                 1     0             1      2        498   998   2122
-#> 33999:                 1     0             1      2        499   999   2564
-#> 34000:                 1     0             1      2        500  1000   1844
+#> 33996:                 1     0             1      2        496   996   2026
+#> 33997:                 1     0             1      2        497   997   2123
+#> 33998:                 1     0             1      2        498   998   1999
+#> 33999:                 1     0             1      2        499   999   2197
+#> 34000:                 1     0             1      2        500  1000   2093
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -396,7 +419,6 @@ enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 If using `epinowcast` in your work please consider citing it using the
 following,
 
-    #> 
     #> To cite package 'epinowcast' in publications use:
     #> 
     #>   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:
@@ -431,7 +453,7 @@ for more information.
 
 ## Contributing
 
-We welcome contributions and new contributors\! We particularly
+We welcome contributions and new contributors! We particularly
 appreciate help on priority problems in the
 [issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull
