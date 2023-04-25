@@ -1,5 +1,8 @@
-# Name of the workflow
-name: render-readme
+name: Render README
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
 
 on:
   workflow_dispatch:
