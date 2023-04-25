@@ -314,7 +314,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
 }
 ```
 
-We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data frame.
+We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data.frame.
 
 ```{r}
 options(mc.cores = 2)
@@ -369,7 +369,7 @@ nowcasts <- list(
 )
 ```
 
-and then summarise the nowcast posterior for each model and join into a tidy data frame to make further analysis easier.
+and then summarise the nowcast posterior for each model and join into a tidy `data.frame` to make further analysis easier.
 
 ```{r}
 summarised_nowcasts <- map(
@@ -445,8 +445,8 @@ age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
 age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
 plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
-  geom_hline(yintercept = 1, linetype = 2, size = 1.2, alpha = 0.5) +
-  geom_line(size = 1.1, alpha = 0.6) +
+  geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +
+  geom_line(linewidth = 1.1, alpha = 0.6) +
   geom_point(size = 1.2) +
   facet_wrap(vars(age_group)) +
   scale_color_brewer(palette = "Dark2") +

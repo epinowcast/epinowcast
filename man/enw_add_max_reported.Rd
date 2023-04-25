@@ -2,21 +2,35 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_max_reported}
 \alias{enw_add_max_reported}
-\title{FUNCTION_TITLE}
+\title{Add the maximum number of cases reported on a given day}
 \usage{
-enw_add_max_reported(obs)
+enw_add_max_reported(obs, copy = TRUE)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
+
+\item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with a \code{max_confirm} and \code{cum_prop_reported}
+columns added. \code{max_confirm} is the maximum number of cases reported
+on a given day. \code{cum_prop_reported} is the proportion of cases
+reported on a given day relative to the maximum number of cases
+reported on a given day.
 }
 \description{
-FUNCTION_DESCRIPTION
+Add the maximum number of cases reported on a given day
+to the data set. This is useful for calculating the proportion of
+cases reported on a given day which is also done in this function.
+}
+\examples{
+obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
+obs$reference_date <- as.Date("2021-01-01")
+obs$confirm <- 1:3
+enw_add_max_reported(obs)
 }
 \seealso{
 Preprocessing functions
@@ -25,13 +39,11 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

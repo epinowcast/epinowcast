@@ -8,7 +8,7 @@
 #' @param nowcast A posterior nowcast or posterior prediction as returned by
 #' [summary.epinowcast()], when used on the output of [epinowcast()].
 #'
-#' @param latest_obs A data frame of the latest available observations as
+#' @param latest_obs A `data.frame` of the latest available observations as
 #' produced by [enw_latest_data()] or otherwise.
 #'
 #' @param log Logical, defaults to FALSE. Should scores be calculated on the
@@ -24,11 +24,11 @@
 #' @param round_to Integer defaults to 3. Number of digits to round scoring
 #' output to.
 #'
-#' @param ... Additional arguments passed to [scoringutils::score()].
+#' @inheritDotParams scoringutils::score
 #'
 #' @return A `data.table` as returned by [scoringutils::score()].
 #' @family modelvalidation
-#' @importFrom data.table copy setnames
+#' @importFrom data.table setnames
 #' @export
 #' @examplesIf interactive()
 #' library(data.table)
@@ -58,9 +58,9 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   }
   long_nowcast <- enw_quantiles_to_long(nowcast)
   if (!is.null(long_nowcast[["mad"]])) {
-    long_nowcast[, c("mad") := NULL]
+    long_nowcast[, "mad" := NULL]
   }
-  latest_obs <- data.table::copy(latest_obs)
+  latest_obs <- coerce_dt(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
   latest_obs[, report_date := NULL]
   cols <- intersect(colnames(nowcast), colnames(latest_obs))
@@ -70,6 +70,9 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     cols <- c("true_value", "prediction")
     long_nowcast[, (cols) := purrr::map(.SD, ~ log(. + 0.01)), .SDcols = cols]
   }
+
+  long_nowcast[, prediction := as.numeric(prediction)]
+  long_nowcast[, true_value := as.numeric(true_value)]
 
   if (check) {
     scoringutils::check_forecasts(long_nowcast)

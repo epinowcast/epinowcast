@@ -56,7 +56,6 @@ retro_nat_germany <- nat_germany_hosp |>
   enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 #>       reference_date location age_group confirm report_date
-#>               <IDat>   <fctr>    <fctr>   <int>      <IDat>
 #>    1:     2021-07-23       DE       00+      30  2021-07-23
 #>    2:     2021-07-24       DE       00+      31  2021-07-24
 #>    3:     2021-07-25       DE       00+       8  2021-07-25
@@ -91,16 +90,12 @@ Another key modelling choice we make at this stage is to model overall hospitali
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
 pobs
 #>                     obs           new_confirm               latest
-#>                  <list>                <list>               <list>
 #> 1: <data.table[6020x9]> <data.table[6020x11]> <data.table[287x10]>
 #>    missing_reference   reporting_triangle       metareference
-#>               <list>               <list>              <list>
 #> 1: <data.table[0x6]> <data.table[287x42]> <data.table[287x9]>
-#>              metareport          metadelay  time snapshots        by groups
-#>                  <list>             <list> <int>     <int>    <list>  <int>
-#> 1: <data.table[560x12]> <data.table[40x4]>    41       287 age_group      7
+#>              metareport          metadelay time snapshots        by groups
+#> 1: <data.table[560x12]> <data.table[40x4]>   41       287 age_group      7
 #>    max_delay   max_date
-#>        <num>     <IDat>
 #> 1:        40 2021-09-01
 ```
 
@@ -132,16 +127,8 @@ fit <- enw_fit_opts(
 )
 nowcast <- epinowcast(pobs,
   fit = fit,
-  model = multithread_model,
+  model = multithread_model
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 185.8 seconds.
-#> Chain 2 finished in 254.7 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 220.3 seconds.
-#> Total execution time: 254.9 seconds.
 ```
 
 We first visualise the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.
@@ -167,11 +154,14 @@ priors <- summary(
 )
 priors[, sd := sd * 2]
 priors
-#>            variable      mean    median         sd        mad        q5       q20       q80       q95     rhat ess_bulk ess_tail
-#>              <char>     <num>     <num>      <num>      <num>     <num>     <num>     <num>     <num>    <num>    <num>    <num>
-#> 1: refp_mean_int[1] 1.1216000 1.1195750 0.08808307 0.04474487 1.0478135 1.0855260 1.1585820 1.1935425 1.004192 1410.998 795.7473
-#> 2:   refp_sd_int[1] 1.7296920 1.7269600 0.09428034 0.04573080 1.6514915 1.6905040 1.7705580 1.8108135 1.008058 2130.656 879.3806
-#> 3:      sqrt_phi[1] 0.5947632 0.5951165 0.03426963 0.01748208 0.5655864 0.5798324 0.6092524 0.6205295 1.000538 1246.998 795.8234
+#>            variable      mean    median         sd        mad        q5
+#> 1: refp_mean_int[1] 1.1207624 1.1204600 0.09072471 0.04619040 1.0462980
+#> 2:   refp_sd_int[1] 1.7311648 1.7296850 0.09567793 0.04728753 1.6547720
+#> 3:      sqrt_phi[1] 0.5955124 0.5953265 0.03710977 0.01839165 0.5659246
+#>          q20      q80       q95      rhat ess_bulk ess_tail
+#> 1: 1.0818620 1.158388 1.1980045 0.9996327 1851.653 663.5543
+#> 2: 1.6903560 1.772894 1.8116325 0.9991851 2428.449 756.0963
+#> 3: 0.5804142 0.611261 0.6269922 0.9989755 1151.603 747.4970
 ```
 
 ## Reference day of the week effect
@@ -190,14 +180,6 @@ exp_nowcast <- epinowcast(pobs,
   model = multithread_model,
   priors = priors
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 327.8 seconds.
-#> Chain 2 finished in 693.7 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 510.7 seconds.
-#> Total execution time: 693.9 seconds.
 ```
 
 We again visualise the nowcasts
@@ -243,14 +225,6 @@ dow_nowcast <- epinowcast(pobs,
   model = multithread_model,
   priors = priors
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 2 finished in 690.6 seconds.
-#> Chain 1 finished in 774.6 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 732.6 seconds.
-#> Total execution time: 774.8 seconds.
 ```
 
 Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance). We could also plot the posterior predictions for this model in the same way as for the previous model.
@@ -284,14 +258,6 @@ age_nowcast <- epinowcast(pobs,
   model = multithread_model,
   priors = priors
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 851.4 seconds.
-#> Chain 2 finished in 966.5 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 909.0 seconds.
-#> Total execution time: 966.7 seconds.
 ```
 
 Fit looks slightly better with this adjustment though uncertainty has also increased for all age groups and performance for the final day of data may have reduced compared to the first model.
@@ -328,14 +294,6 @@ week_nowcast <- epinowcast(pobs,
 
   priors = priors
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 1865.2 seconds.
-#> Chain 2 finished in 1903.2 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 1884.2 seconds.
-#> Total execution time: 1903.4 seconds.
 ```
 
 In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.
@@ -371,14 +329,6 @@ age_week_nowcast <- epinowcast(pobs,
   model = multithread_model,
   priors = priors
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 1936.7 seconds.
-#> Chain 2 finished in 2058.0 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 1997.3 seconds.
-#> Total execution time: 2058.3 seconds.
 ```
 
 In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.
@@ -421,7 +371,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
 }
 ```
 
-We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data frame.
+We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data.frame.
 
 
 ```r
@@ -440,68 +390,6 @@ independent_nowcast <- map(
   model = multithread_model,
   priors = priors
 )
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 142.0 seconds.
-#> Chain 2 finished in 160.4 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 151.2 seconds.
-#> Total execution time: 160.7 seconds.
-#> 
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 78.9 seconds.
-#> Chain 2 finished in 93.3 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 86.1 seconds.
-#> Total execution time: 93.6 seconds.
-#> 
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 69.4 seconds.
-#> Chain 2 finished in 82.3 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 75.9 seconds.
-#> Total execution time: 82.6 seconds.
-#> 
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 91.8 seconds.
-#> Chain 2 finished in 102.7 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 97.2 seconds.
-#> Total execution time: 102.9 seconds.
-#> 
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 2 finished in 137.2 seconds.
-#> Chain 1 finished in 142.7 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 140.0 seconds.
-#> Total execution time: 142.8 seconds.
-#> 
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 2 finished in 91.3 seconds.
-#> Chain 1 finished in 99.8 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 95.5 seconds.
-#> Total execution time: 100.0 seconds.
-#> 
-#> Running MCMC with 2 parallel chains, with 6 thread(s) per chain...
-#> 
-#> Chain 1 finished in 89.0 seconds.
-#> Chain 2 finished in 99.6 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 94.3 seconds.
-#> Total execution time: 99.8 seconds.
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
@@ -543,7 +431,7 @@ nowcasts <- list(
 )
 ```
 
-and then summarise the nowcast posterior for each model and join into a tidy data frame to make further analysis easier.
+and then summarise the nowcast posterior for each model and join into a tidy `data.frame` to make further analysis easier.
 
 
 ```r
@@ -590,10 +478,10 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age and week by age, Report: Day of week  -10.3       3.7 
-#> Reference: Age, Report: Day of week                  -11.0       5.5 
-#> Reference: Fixed, Report: Day of week                -48.6      10.2 
-#> Reference: Fixed, Report: Fixed                     -609.5      45.1
+#> Reference: Age, Report: Day of week                  -11.1       5.2 
+#> Reference: Age and week by age, Report: Day of week  -11.7       3.3 
+#> Reference: Fixed, Report: Day of week                -50.7      10.5 
+#> Reference: Fixed, Report: Fixed                     -611.9      45.2
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -618,12 +506,12 @@ score |>
 
 |model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
 |:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
-|Reference: Fixed, Report: Fixed                          |       9.818798|   3.139237|        4.339090|      2.3401256|         -0.0930926| -0.0887755|  16.24490|
-|Reference: Fixed, Report: Day of week                    |      10.083115|   2.355764|        6.779435|      0.9483516|         -0.1323391| -0.2265306|  15.54082|
-|Reference: Age, Report: Day of week                      |       8.562323|   2.317488|        5.592465|      0.6524333|         -0.1354788| -0.3581633|  13.86735|
-|Reference: Age and week, Report: Day of week             |       7.569366|   2.899246|        1.156672|      3.5136578|         -0.0255887|  0.1285714|  12.42857|
-|Reference: Age and week by age, Report: Day of week      |       6.797542|   3.034496|        1.942857|      1.8197802|          0.0215071| -0.1357143|  11.28571|
-|Independent by age, Reference: Week, Report: Day of week |       7.277953|   3.854562|        1.538305|      1.8845212|          0.0419152| -0.0591837|  12.26531|
+|Reference: Fixed, Report: Fixed                          |       9.786248|   3.158477|        4.225981|      2.4019466|         -0.1087912| -0.1020408|  16.29592|
+|Reference: Fixed, Report: Day of week                    |      10.100157|   2.326279|        6.827567|      0.9466248|         -0.1386185| -0.2428571|  15.48980|
+|Reference: Age, Report: Day of week                      |       8.630703|   2.267425|        5.730863|      0.6326531|         -0.1417582| -0.3673469|  13.91837|
+|Reference: Age and week, Report: Day of week             |       7.314954|   2.790201|        1.396860|      3.1275510|         -0.0193093|  0.0826531|  12.02041|
+|Reference: Age and week by age, Report: Day of week      |       6.887651|   3.004575|        2.028258|      1.8546939|          0.0058085| -0.1387755|  11.29592|
+|Independent by age, Reference: Week, Report: Day of week |       7.292314|   3.869724|        1.583673|      1.8387755|          0.0340659| -0.0622449|  12.31633|
 
 Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
@@ -643,8 +531,8 @@ age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
 age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
 plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
-  geom_hline(yintercept = 1, linetype = 2, size = 1.2, alpha = 0.5) +
-  geom_line(size = 1.1, alpha = 0.6) +
+  geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +
+  geom_line(linewidth = 1.1, alpha = 0.6) +
   geom_point(size = 1.2) +
   facet_wrap(vars(age_group)) +
   scale_color_brewer(palette = "Dark2") +

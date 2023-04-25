@@ -13,8 +13,8 @@ obs <- enw_example("observations")
 # make standard plot
 plot <- summary(nowcast)[, mean := NA] |>
   enw_plot_nowcast_quantiles(
-  latest = obs[reference_date >= (max(reference_date) - 19)]
-)
+    latest = obs[reference_date >= (max(reference_date) - 19)]
+  )
 
 # strip out most of the background
 hex_plot <- plot +
@@ -27,18 +27,19 @@ hex_plot <- plot +
         panel.background = element_blank())
 
 # make and save hexsticker
-sticker(hex_plot,
-        package = "epinowcast",
-        p_size = 23,
-        p_color = "#646770",
-        s_x = 1,
-        s_y = .85,
-        s_width = 1.3,
-        s_height = 0.85,
-        h_fill = "#ffffff",
-        h_color = "#646770",
-        filename = "./man/figures/logo.png",
-        url = "epinowcast.org",
-        u_color = "#646770",
-        u_size = 3.5
+sticker(
+  hex_plot,
+  package = "epinowcast",
+  p_size = 23,
+  p_color = "#646770",
+  s_x = 1,
+  s_y = 0.85,
+  s_width = 1.3,
+  s_height = 0.85,
+  h_fill = "#ffffff",
+  h_color = "#646770",
+  filename = file.path("man", "figures", "logo.png"),
+  url = "epinowcast.org",
+  u_color = "#646770",
+  u_size = 3.5
 )

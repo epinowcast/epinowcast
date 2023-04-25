@@ -32,13 +32,12 @@ External code contributions are extremely helpful and appreciated. Here are the 
 
 1. Prior to contribution, please propose your idea in a [new issue thread](https://github.com/epinowcast/epinowcast/issues) so you and the reviewer can define the intent and scope of the work.
 2. [Fork the repository](https://help.github.com/articles/fork-a-repo/).
-3. Follow the [GitHub flow](https://guides.github.com/introduction/flow/index.html) to create a new branch, add commits, and open a pull request. 
+3. Follow the [GitHub flow](https://guides.github.com/introduction/flow/index.html) to create a new branch, add commits, and open a pull request.
 4. Discuss your code with the reviewer in the pull request thread.
 5. If everything looks good, the reviewer will merge your code into the project.
 
 Please also follow these additional guidelines.
 
-* We use a `develop`/ `main` workflow so please target major changes to the `develop` branch and minor changes to the `main` branch. If unclear please ask when opening the initial issue proposing the change.
 * Respect the architecture and reasoning of the package. Depending on the scope of your work, you may want to read the design documents (package vignettes).
 * In general we aim to use `data.table` to manipulate data. However, if this is a barrier to contributing please use tools you are familiar with and raise this in your pull request. The reviewer will then work with you to refactor your contribution or if appropriate add the dependencies you require.
 * If possible, keep contributions small enough to easily review manually. It is okay to split up your work into multiple pull requests.

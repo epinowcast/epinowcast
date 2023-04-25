@@ -4,10 +4,16 @@
 \alias{enw_complete_dates}
 \title{Complete missing reference and report dates}
 \usage{
-enw_complete_dates(obs, by = c(), max_delay, missing_reference = TRUE)
+enw_complete_dates(
+  obs,
+  by = NULL,
+  max_delay,
+  missing_reference = TRUE,
+  completion_beyond_max_report = FALSE
+)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
 date).}
@@ -23,8 +29,11 @@ setting so consider what maximum makes sense for your data carefully. Note
 that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 
-\item{missing_reference}{Should entries for cases with missing reference date
-be completed as well?, Default: TRUE}
+\item{missing_reference}{Logical, should entries for cases with missing
+reference date be completed as well?, Default: TRUE}
+
+\item{completion_beyond_max_report}{Logical, should entries be completed
+beyond the maximum date found in the data? Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of
@@ -43,6 +52,9 @@ obs <- data.frame(
   confirm = 1
 )
 enw_complete_dates(obs)
+
+# Allow completion beyond the maximum date found in the data
+enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 }
 \seealso{
 Preprocessing functions
@@ -51,13 +63,11 @@ Preprocessing functions
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

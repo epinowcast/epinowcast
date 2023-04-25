@@ -10,7 +10,7 @@ epinowcast(
     non_parametric = ~0, data = data),
   report = epinowcast::enw_report(non_parametric = ~0, structural = ~0, data = data),
   expectation = epinowcast::enw_expectation(r = ~0 + (1 | day:.group), generation_time =
-    c(1), observation = ~1, latent_reporting_delay = c(1), data = data),
+    1, observation = ~1, latent_reporting_delay = 1, data = data),
   missing = epinowcast::enw_missing(formula = ~0, data = data),
   obs = epinowcast::enw_obs(family = "negbin", data = data),
   fit = epinowcast::enw_fit_opts(sampler = epinowcast::enw_sample, nowcast = TRUE, pp =
@@ -50,7 +50,7 @@ further details.}
 \item{model}{The model to use within \code{fit}. By default this uses
 \code{\link[=enw_model]{enw_model()}}.}
 
-\item{priors}{A data.frame with the following variables:
+\item{priors}{A \code{data.frame} with the following variables:
 \code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions. Priors in this data.frame

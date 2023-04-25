@@ -2,20 +2,41 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_metadata}
 \alias{enw_metadata}
-\title{FUNCTION_TITLE}
+\title{Extract metadata from raw data}
 \usage{
 enw_metadata(obs, target_date = c("reference_date", "report_date"))
 }
 \arguments{
-\item{obs}{PARAM_DESCRIPTION}
+\item{obs}{A \code{data.frame} or \code{data.table} with columns: \code{reference_date}
+and/or \code{report_date}; at least one must be provided, \code{.group}, a grouping
+column and a \code{date}, a \link{Date} column.}
 
-\item{target_date}{PARAM_DESCRIPTION, Default: 'reference_date'}
+\item{target_date}{A character string, either "reference_date" or
+"report_date". The column corresponding to this string will be used
+as the target date for metadata extraction.}
 }
 \value{
-OUTPUT_DESCRIPTION
+A data.table with columns:
+\itemize{
+\item \code{date}, a \link{Date} column
+\item \code{.group}, a grouping column
+}
+
+and the first observation for each group and date.
+The data.table is sorted by \code{.group} and \code{date}.
 }
 \description{
-FUNCTION_DESCRIPTION
+Extract metadata from raw data, either
+by reference or by report date. For the target date chosen
+(reference or report), \code{confirm}, \verb{max_confirm``, and }cum_prop_reported`
+are dropped and the first observation for each group and date is retained.
+}
+\examples{
+obs <- data.frame(
+ reference_date = as.Date("2021-01-01"),
+ report_date = as.Date("2022-01-01"), x = 1:10
+)
+enw_metadata(obs, target_date = "reference_date")
 }
 \seealso{
 Preprocessing functions
@@ -25,13 +46,11 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},

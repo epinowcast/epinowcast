@@ -1,7 +1,6 @@
 # Load packages
 library(epinowcast)
 library(data.table)
-library(purrr)
 library(ggplot2)
 
 # Use 4 cores
@@ -82,9 +81,9 @@ miss_prop <- cbind(
 
 ggplot(miss_prop) +
   aes(x = reference_date) +
-  geom_line(aes(y = median), size = 1, alpha = 0.6) +
+  geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
   geom_hline(yintercept = prop_miss, linetype = 2) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   geom_hline(yintercept = prop_miss, linetype = 2) +
   theme_bw() +

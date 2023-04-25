@@ -7,11 +7,11 @@
 enw_latest_data(obs)
 }
 \arguments{
-\item{obs}{An observation data frame containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{A \code{data.frame}; must have \code{report_date} and \code{reference_date}
+columns.}
 }
 \value{
-A data.frame of observations filtered for the latest available data
+A \code{data.table} of observations filtered for the latest available data
 for each reference date.
 }
 \description{
@@ -32,13 +32,11 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},

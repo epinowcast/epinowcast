@@ -72,12 +72,12 @@
       [1] 5
       
       $data$miss_rdesign
-        fixed week
-      1     0    1
-      2     0    1
-      3     0    1
-      4     0    1
-      5     0    1
+        fixed rw__week
+      1     0        1
+      2     0        1
+      3     0        1
+      4     0        1
+      5     0        1
       attr(,"assign")
       [1] 1 2
       

@@ -19,7 +19,7 @@ enw_plot_theme <- function(plot) {
 #' @param obs A `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column and a date variable
 #'
-#' @param latest_obs A data frame of observed data containing at least a
+#' @param latest_obs A `data.frame` of observed data containing at least a
 #' `confirm` count variable and the same date variable as in the main data.frame
 #' used for plotting.
 #'
@@ -32,8 +32,16 @@ enw_plot_theme <- function(plot) {
 #'
 #' @family plot
 #' @importFrom scales comma
-#' @importFrom data.table copy
 #' @export
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#' obs <- enw_example("obs")
+#'
+#' # Plot observed data by reference date
+#' enw_plot_obs(obs, x = reference_date)
+#'
+#' # Plot observed data by reference date with more recent data
+#' enw_plot_obs(nowcast$latest[[1]], obs, x = reference_date)
 enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   plot <- ggplot(obs) +
     aes(...)
@@ -44,7 +52,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     )
 
   if (!is.null(latest_obs)) {
-    latest_obs <- data.table::copy(latest_obs)
+    latest_obs <- coerce_dt(latest_obs)
     latest_obs[, latest_confirm := confirm]
     plot <- plot +
       geom_point(
@@ -61,38 +69,33 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   return(plot)
 }
 
-enw_plot_obs_by_reference <- function(obs, latest_obs, log = TRUE, ...) {
-  enw_plot_obs(obs, latest_obs, log = log, ...) +
-    labs(y = "Notifications", x = "Reference date")
-}
-
-enw_plot_obs_by_report <- function(obs, log = TRUE, ...) {
-  enw_plot_obs(obs, log = log, ...) +
-    labs(y = "Notifications", x = "Report date")
-}
-
-
 #' Generic quantile plot
 #'
 #' @param posterior A `data.frame` of summarised posterior estimates
 #' containing at least a `confirm` count column a date variable,
 #' quantile estimates for the 5%, 20%, 80%, and 95% quantiles and the
-#' mean and median.
+#' mean and median. This function is wrapped in
+#' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible
+#' default labels.
 #'
 #' @return A `ggplot2` plot.
-#'
+#' @seealso [enw_plot_nowcast_quantiles()], [enw_plot_pp_quantiles()]
 #' @family plot
 #' @inheritParams enw_plot_obs
 #' @export
-enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = TRUE, ...) {
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#' nowcast <- summary(nowcast, probs = c(0.05, 0.2, 0.8, 0.95))
+#' enw_plot_quantiles(nowcast, x = reference_date)
+enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
   check_quantiles(posterior, req_probs = c(0.05, 0.2, 0.8, 0.95))
 
   plot <- enw_plot_obs(posterior, latest_obs = latest_obs, log = log, ...)
 
   plot <- plot +
-    geom_line(aes(y = median), size = 1, alpha = 0.6) +
+    geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
     geom_line(aes(y = mean), linetype = 2) +
-    geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, size = 0.2) +
+    geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
     geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2)
   return(plot)
 }
@@ -111,6 +114,10 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = TRUE, ...) {
 #' @family plot
 #' @importFrom scales comma
 #' @export
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#' nowcast <- summary(nowcast, probs = c(0.05, 0.2, 0.8, 0.95))
+#' enw_plot_nowcast_quantiles(nowcast)
 enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
                                        log = FALSE, ...) {
   plot <- enw_plot_quantiles(
@@ -135,8 +142,15 @@ enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
 #' @family plot
 #' @importFrom scales comma
 #' @export
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#' nowcast <- summary(
+#'  nowcast, type = "posterior_prediction", probs = c(0.05, 0.2, 0.8, 0.95)
+#' )
+#' enw_plot_pp_quantiles(nowcast) +
+#'  ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
 enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
-  pp <- data.table::copy(pp)
+  pp <- coerce_dt(pp)
   pp[, confirm := new_confirm]
   plot <- enw_plot_quantiles(
     pp,

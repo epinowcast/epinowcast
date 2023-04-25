@@ -19,19 +19,22 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Sam Abbott \email{sam.abbott@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-8057-8037}{ORCID})
+\strong{Maintainer}: Sam Abbott \email{contact@samabbott.co.uk} (\href{https://orcid.org/0000-0001-8057-8037}{ORCID})
 
 Authors:
 \itemize{
   \item Adrian Lison \email{adrian.lison@bsse.ethz.ch} (\href{https://orcid.org/0000-0002-6822-8437}{ORCID})
   \item Sebastian Funk \email{sebastian.funk@lshtm.ac.uk}
   \item Carl Pearson \email{carl.ab.pearson@gmail.com} (\href{https://orcid.org/0000-0003-0701-7860}{ORCID})
+  \item Hugo Gruson \email{hugo.gruson@normalesup.org} (\href{https://orcid.org/0000-0002-4094-1476}{ORCID})
 }
 
 Other contributors:
 \itemize{
   \item Michael DeWitt \email{me.dewitt.jr@gmail.com} (\href{https://orcid.org/0000-0001-8940-1967}{ORCID}) [contributor]
   \item Hannah Choi \email{hannah.choi1@lshtm.ac.uk} [contributor]
+  \item Pratik Gupte \email{pratik.gupte@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-5294-7819}{ORCID}) [contributor]
+  \item Joel Hellewell \email{joel@ebi.ac.uk} (\href{https://orcid.org/0000-0003-2683-0849}{ORCID}) [contributor]
 }
 
 }

@@ -7,10 +7,11 @@
 enw_reporting_triangle_to_long(obs)
 }
 \arguments{
-\item{obs}{A dataframe in the format produced by \code{\link[=enw_reporting_triangle]{enw_reporting_triangle()}}.}
+\item{obs}{A \code{data.frame} in the format produced by
+\code{\link[=enw_reporting_triangle]{enw_reporting_triangle()}}.}
 }
 \value{
-A long format reporting triangle as a data frame with additional
+A long format reporting triangle as a \code{data.frame} with additional
 variables \code{new_confirm} and \code{delay}.
 }
 \description{
@@ -29,13 +30,11 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

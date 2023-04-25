@@ -41,8 +41,9 @@ enw_formula_as_data_list <- function(formula, prefix,
         enw_formula"
       )
     }
-    fintercept <-  as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    fintercept <- as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design),
+      fixed = TRUE
     )))
 
     data <- list()
@@ -70,7 +71,7 @@ enw_formula_as_data_list <- function(formula, prefix,
   return(data)
 }
 
-#' Convert prior data.frame to list
+#' Convert prior `data.frame` to list
 #'
 #' Converts priors defined in a `data.frame` into a list
 #' format for use by stan. In addition it adds "_p" to all
@@ -81,16 +82,14 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' two vector (specifying the mean and standard deviation of the prior).
 #' @family modeltools
 #' @inheritParams enw_replace_priors
-#' @importFrom data.table copy
 #' @importFrom purrr map
 #' @export
 #' @examples
 #' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- data.table::as.data.table(priors)
+  priors <- coerce_dt(priors, select = c("variable", "mean", "sd"))
   priors[, variable := paste0(variable, "_p")]
-  priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
   priors <- purrr::map(priors, ~ as.array(t(.)))
   return(priors)
@@ -104,12 +103,12 @@ enw_priors_as_data_list <- function(priors) {
 #' use would be extracting the posterior from a previous [epinowcast()]
 #' run (using `summary(nowcast, type = fit)`) and using this a prior.
 #'
-#' @param priors A data.frame with the following variables:
+#' @param priors A `data.frame` with the following variables:
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions.
 #'
-#' @param custom_priors A data.frame with the following variables:
+#' @param custom_priors A `data.frame` with the following variables:
 #'  `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
@@ -119,22 +118,38 @@ enw_priors_as_data_list <- function(priors) {
 #' @return A data.table of prior definitions (variable, mean and sd).
 #' @family modeltools
 #' @export
-#' @importFrom data.table as.data.table
 #' @examples
+#' # Update priors from a data.frame
 #' priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
 #' custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
 #' enw_replace_priors(priors, custom_priors)
+#'
+#' # Update priors from a previous model fit
+#' default_priors <- enw_reference(
+#'  distribution = "lognormal",
+#'  data = enw_example("preprocessed"),
+#' )$priors
+#' print(default_priors)
+#'
+#' fit_priors <- summary(
+#'  enw_example("nowcast"), type = "fit",
+#'  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+#' )
+#' fit_priors
+#'
+#' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
-  custom_priors <- data.table::as.data.table(custom_priors)[
+  custom_priors <- coerce_dt(
+    custom_priors, select = c("variable", "mean", "sd")
+  )[
     ,
-    .(variable, mean, sd)
-  ]
-  custom_priors <- custom_priors[
-    ,
-    variable := gsub("\\[([^]]*)\\]", "", variable)
+    .(variable = gsub("\\[([^]]*)\\]", "", variable),
+      mean = as.numeric(mean), sd = as.numeric(sd))
   ]
   variables <- custom_priors$variable
-  priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
+  priors <- coerce_dt(
+    priors, required_cols = "variable"
+  )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])
 }
@@ -328,12 +343,13 @@ enw_model <- function(model = system.file(
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
     message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", paste(include, collapse = ", ")))
+    message(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {
     stan_no_profile <- write_stan_files_no_profile(
-      model, include, target_dir =  target_dir
+      model, include,
+      target_dir = target_dir
     )
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths

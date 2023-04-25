@@ -6,14 +6,15 @@
 \usage{
 enw_preprocess_data(
   obs,
-  by = c(),
+  by = NULL,
   max_delay = 20,
   set_negatives_to_zero = TRUE,
-  ...
+  ...,
+  copy = TRUE
 )
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
 date).}
@@ -37,10 +38,13 @@ TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 \item{...}{Other arguments to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}},
 e.g. \code{holidays}, which sets commonly used metadata
 (e.g. day of week, days since start of time series)}
+
+\item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
+modifies \code{obs} in place.}
 }
 \value{
 A data.table containing processed observations as a series of nested
-data frames as well as variables containing metadata. These are:
+data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay).
@@ -99,13 +103,11 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

@@ -1,15 +1,19 @@
 #' Identify report dates with complete (i.e up to the maximum delay) reference
 #' dates
 #'
-#' @param new_confirm `new_confirm` data.frame output from
+#' @param new_confirm `new_confirm` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
-#' @return A data frame containing a `report_date` variable, and grouping
+#' @return A `data.frame` containing a `report_date` variable, and grouping
 #' variables specified for report dates that have complete reporting.
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
-enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
-  rep_with_complete_ref <- data.table::as.data.table(new_confirm)
+enw_reps_with_complete_refs <- function(
+  new_confirm, max_delay, by = NULL, copy = TRUE
+) {
+  rep_with_complete_ref <- coerce_dt(
+    new_confirm, select = c(by, "report_date"), copy = copy
+  )
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
     by = c(by, "report_date")
@@ -20,37 +24,37 @@ enw_reps_with_complete_refs <- function(new_confirm, max_delay, by = c()) {
 
 #' Construct a lookup of references dates by report
 #'
-#' @param missing_reference `missing_reference` data.frame output from
+#' @param missing_reference `missing_reference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
 #' @param reps_with_complete_refs A `data.frame` of report dates with complete
 #' (i.e fully reported) reference dates as produced using
 #' [enw_reps_with_complete_refs()].
 #'
-#' @param metareference `metareference` data.frame output from
+#' @param metareference `metareference` `data.frame` output from
 #' [enw_preprocess_data()].
 #'
-#' @return A wide data frame with each row being a complete report date and'
+#' @return A wide `data.frame` with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
-  # Make a complete data frame of all possible reference and report dates
-  miss_lk <- data.table::copy(metareference)[
-    ,
-    .(reference_date = date, .group)
-  ]
-  miss_lk[, delay := list(0:(max_delay - 1))]
+  # Make a complete data.table of all possible reference and report dates
+  miss_lk <- coerce_dt(
+    metareference, select = "date", group = TRUE
+  )
+  data.table::setnames(miss_lk, "date", "reference_date")
+
   miss_lk <- miss_lk[,
-    .(delay = unlist(delay)),
+    .(delay = 0:(max_delay - 1)),
     by = c("reference_date", ".group")
   ]
   miss_lk[, report_date := reference_date + delay]
   data.table::setkeyv(miss_lk, c(".group", "reference_date", "report_date"))
 
   # Assign an index (this should link with the in model index)
-  miss_lk[, .id := 1:.N]
+  miss_lk[, .id := seq_len(.N)]
 
   # Link with reports with complete reference dates
   complete_miss_lk <- miss_lk[
@@ -70,7 +74,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
 }
 #' Convert latest observed data to a matrix
 #'
-#' @param latest `latest` data.frame output from [enw_preprocess_data()].
+#' @param latest `latest` `data.frame` output from [enw_preprocess_data()].
 #'
 #' @return A matrix with each column being a group and each row a reference date
 #' @family modelmodulehelpers
@@ -84,11 +88,11 @@ latest_obs_as_matrix <- function(latest) {
 
 #' Construct a convolution matrix
 #'
-#' This function allows the construction of convoluton matrices which can be
+#' This function allows the construction of convolution matrices which can be
 #' be combined with a vector of primary events to produce a vector of secondary
 #' events for example in the form of a renewal equation or to simulate
 #' reporting delays. Time-varying delays are supported as well as distribution
-#' padding (to allow for use in renewal equation like aproaches).
+#' padding (to allow for use in renewal equation like approaches).
 #'
 #' @param dist A vector of list of vectors describing the distribution to be
 #' convolved as a probability mass function.
@@ -110,19 +114,19 @@ latest_obs_as_matrix <- function(latest) {
 #' # Include partially reported convolutions
 #' convolution_matrix(c(1, 2, 3), 10, include_partial = TRUE)
 #' # Use a list of distributions
-#' convolution_matrix(rep(list(c(1, 2, 3)), 10),10)
+#' convolution_matrix(rep(list(c(1, 2, 3)), 10), 10)
 #' # Use a time-varying list of distributions
-#' convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4,5,6))), 11)
+#' convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4, 5, 6))), 11)
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
       stop("dist must equal t or be the same for all t (i.e. length 1)")
     }
-    ldist <- purrr::map_dbl(dist, length)
+    ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
       stop("dist must be the same length for all t")
     }
-  }else {
+  } else {
     ldist <- rep(length(dist), t)
     dist <- rep(list(dist), t)
   }
@@ -131,10 +135,8 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     l <- min(t - s + 1, ldist[s])
     conv[s:(s + l - 1), s] <- head(dist[[s]], l)
   }
-  if (!include_partial) {
-    if (ldist[1] > 1) {
-      conv[1:(ldist[1] - 1), ] <- 0
-    }
+  if (!include_partial && ldist[1] > 1) {
+    conv[1:(ldist[1] - 1), ] <- 0
   }
   return(conv)
 }

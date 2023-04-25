@@ -33,7 +33,7 @@ jobs:
       - name: Install cmdstan
         run: |
           cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE, version = "2.31.0")
+          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
         shell: Rscript {0}
 
       - name: Build site

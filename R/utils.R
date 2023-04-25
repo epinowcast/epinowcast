@@ -4,6 +4,16 @@
 #' @importFrom stats median rnorm
 NULL
 
+#' @title Check an object is a Date
+#' @description Checks that an object is a date
+#' @param x An object
+#' @return A logical
+#' @family utils
+is.Date <- function(x) {
+  # nolint
+  inherits(x, "Date")
+}
+
 #' Read in a stan function file as a character string
 #'
 #' @inheritParams expose_stan_fns
@@ -13,11 +23,12 @@ NULL
 stan_fns_as_string <- function(files, target_dir) {
   functions <- paste0(
     "\n functions{ \n",
-    paste(purrr::map_chr(
-      files,
-      ~ paste(readLines(file.path(target_dir, .)), collapse = "\n")
-    ),
-    collapse = "\n"
+    paste(
+      purrr::map_chr(
+        files,
+        ~ paste(readLines(file.path(target_dir, .)), collapse = "\n")
+      ),
+      collapse = "\n"
     ),
     "\n }"
   )
@@ -32,10 +43,12 @@ stan_fns_as_string <- function(files, target_dir) {
 #' @return A character string of stan functions converted for use in `rstan`.
 #' @family utils
 convert_cmdstan_to_rstan <- function(functions) {
+  # nolint start: nonportable_path_linter
   # replace bars in CDF with commas
   functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
+  # nolint end
   # replace lupmf with lpmf
-  functions <- gsub("_lupmf", "_lpmf", functions)
+  functions <- gsub("_lupmf", "_lpmf", functions, fixed = TRUE)
   # replace array syntax
   #   case 1a: array[] real x -> real[] x
   functions <- gsub(
@@ -190,12 +203,12 @@ coerce_date <- function(dates) {
     )
   }, FUN.VALUE = data.table::as.IDate(0)))
 
-  if (any(is.na(res))) {
+  if (anyNA(res)) {
     bads <- is.na(res)
     stop(sprintf(
       "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
-      paste(dates[bads], collapse = ", "),
-      paste(which(bads), collapse = ", ")
+      toString(dates[bads]),
+      toString(which(bads))
     ))
   } else {
     return(res)
@@ -214,6 +227,7 @@ utils::globalVariables(
     "fit", "patterns", ".draws", "prop_reported", "max_confirm",
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
-    "formula", ".id", "n", ".confirm_avail"
+    "formula", ".id", "n", ".confirm_avail", "prediction", "true_value",
+    "person", "id", "latest"
   )
 )

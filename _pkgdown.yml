@@ -28,6 +28,10 @@ reference:
     desc: Functions for nowcasting.
     contents:
       - has_concept("epinowcast")
+  - title: Data converters
+    desc: Functions for converting between data formats
+    contents:
+      has_concept("dataconverters")
   - title: Preprocess
     desc: Functions for preprocessing observations.
     contents:

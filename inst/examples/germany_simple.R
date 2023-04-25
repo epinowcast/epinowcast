@@ -1,7 +1,9 @@
 # Load packages
 library(epinowcast)
 library(data.table)
-library(ggplot2)
+
+# Set cmdstan path
+cmdstanr::set_cmdstan_path()
 
 # Use 2 cores
 options(mc.cores = 2)

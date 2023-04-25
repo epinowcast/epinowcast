@@ -12,7 +12,7 @@ effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), 
 defined using the \code{\link[=rw]{rw()}} helper function.}
 }
 \value{
-RETURN_DESCRIPTION
+A formula object with the random walk terms removed.
 }
 \description{
 This function removes random walk terms

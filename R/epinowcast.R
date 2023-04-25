@@ -34,7 +34,7 @@
 #' @param model The model to use within `fit`. By default this uses
 #' [enw_model()].
 #'
-#' @param priors A data.frame with the following variables:
+#' @param priors A `data.frame` with the following variables:
 #' `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
@@ -115,9 +115,9 @@ epinowcast <- function(data,
                        ),
                        expectation = epinowcast::enw_expectation(
                          r = ~ 0 + (1 | day:.group),
-                         generation_time = c(1),
+                         generation_time = 1,
                          observation = ~1,
-                         latent_reporting_delay = c(1),
+                         latent_reporting_delay = 1,
                          data = data
                        ),
                        missing = epinowcast::enw_missing(

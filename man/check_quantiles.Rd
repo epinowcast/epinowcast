@@ -7,8 +7,8 @@
 check_quantiles(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8))
 }
 \arguments{
-\item{posterior}{A dataframe containing quantiles identified using
-the \code{q5} naming scheme. Default: No default.}
+\item{posterior}{A \code{data.table} that will be \code{\link[=coerce_dt]{coerce_dt()}}d in place; must
+contain quantiles identified using the \code{q5} naming scheme.}
 
 \item{req_probs}{A numeric vector of required probabilities. Default:
 c(0.5, 0.95, 0.2, 0.8).}
@@ -18,7 +18,6 @@ Check Quantiles Required are Present
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_dates}()},
 \code{\link{check_group}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_module}()}

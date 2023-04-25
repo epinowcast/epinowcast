@@ -17,7 +17,7 @@ that this is zero indexed and so includes the reference date and
 constructing a categorised version of numeric delays.}
 }
 \value{
-A \code{data.frame} of delay metadata. This includes:
+A  \code{data.frame}  of delay metadata. This includes:
 \itemize{
 \item \code{delay}: The numeric delay from reference date to report.
 \item \code{delay_cat}: The categorised delay. This may be useful for model building.
@@ -33,7 +33,7 @@ of the tail of the reporting distribution in a pragmatic way.
 Calculate delay metadata based on the supplied maximum delay and independent
 of other metadata or date indexing. These data are meant to be used in
 conjunction with metadata on the date of reference. Users can build
-additional features this \code{data.frame} or regenerate it using this function
+additional features this  \code{data.frame}  or regenerate it using this function
 in the output of \code{enw_preprocess_data()}.
 }
 \examples{
@@ -47,12 +47,10 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_filter}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

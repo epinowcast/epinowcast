@@ -1,7 +1,6 @@
-library(data.table)
 
 # Filter example hospitalisation data to be natioanl and over all ages
-nat_germany_hosp <- setkey(germany_covid19_hosp[
+nat_germany_hosp <- data.table::setkey(germany_covid19_hosp[
   (location == "DE") & (age_group %in% "00+")
 ], reference_date)
 
@@ -37,7 +36,7 @@ test_that("enw_add_metaobs_features always adds all columns", {
 })
 
 test_that("enw_add_metaobs_features overwrites columns with a warning", {
-  dummy <- as.data.table(nat_germany_hosp)
+  dummy <- data.table::as.data.table(nat_germany_hosp)
   dow <- "Placeholder"
   dummy[, day_of_week := dow]
   expect_warning(
@@ -92,7 +91,9 @@ test_that("enw_add_metaobs_features count from zero", {
 test_that("enw_add_metaobs_features resulting day, week, month always ascending", {
   mobs <- enw_add_metaobs_features(
     rbind(
-      copy(nat_germany_hosp)[, reference_date := reference_date - 365],
+      data.table::copy(nat_germany_hosp)[,
+       reference_date := reference_date - 365
+      ],
       nat_germany_hosp
     ),
     datecol = "reference_date",

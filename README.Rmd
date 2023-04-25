@@ -34,10 +34,13 @@ Tools to enable flexible and efficient hierarchical nowcasting of right-truncate
 
 This README is a good place to get started with `epinowcast`, in particular the following installation and quick start sections. As you make use of the package, or if your problem requires a richer feature set than presented here, we also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.
 
-- [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies making use of the package. The development version of our documentation (corresponding to our `develop` branch) is available [here](https://package.epinowcast.org/dev/).
+- [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies making use of the package. This site refers to the release version of our package which can be installed from our Universe or from the latest GitHub release (see installation instructions). The development version of our documentation (corresponding to our `main` branch on GitHub) is available [here](https://package.epinowcast.org/dev/).
+
 - [Organisation website](https://www.epinowcast.org/): This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.
-- [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package developemnt and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
-- [Community forum](https://community.epinowcast.org/): Our community forum is where development of tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
+
+- [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package development and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
+
+- [Community forum](https://community.epinowcast.org/): Our community forum is where development of methods and tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
 
 ## Installation
 
@@ -49,17 +52,19 @@ Install the latest released version of the package with:
 install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
-Alternatively, install the stable development version from GitHub using the following,
+Alternatively, install the development version (whilst we strive to limit breaking changes or the introduction of bugs during development this version may contain both) from GitHub using the following,
 
 ```{r, eval = FALSE}
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
-The unstable development version can also be installed from GitHub using the following,
+Historical package releases can be installed from GitHub using `remotes` by adding the release tag as in the following example (which installs [`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)),
 
 ```{r, eval = FALSE}
-remotes::install_github("epinowcast/epinowcast@develop", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0")
 ```
+
+*Note: A similar method can be used to install a particular commit of the package which may be useful for some users who are unable to use a fixed release but concerned about the stability of their dependencies.*
 
 ### Installing CmdStan
 
@@ -70,6 +75,12 @@ CmdStanR_](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) vignette. See th
 ```{r, eval = FALSE}
 cmdstanr::install_cmdstan()
 ```
+
+*Note: This install process can be sped up using the `cores` argument and past versions can be installed using the `version` argument (which may be useful if install historical package releases).*
+
+### Docker 
+
+As an alternative to local installation we provide a Docker image with `epinowcast` and all dependencies installed. This can be used to run `epinowcast` without installing dependencies locally. The image is available [here](https://github.com/orgs/epinowcast/packages/container/package/epinowcast).
 
 ## Quick start
 

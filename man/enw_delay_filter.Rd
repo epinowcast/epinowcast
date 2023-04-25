@@ -7,7 +7,7 @@
 enw_delay_filter(obs, max_delay)
 }
 \arguments{
-\item{obs}{A data frame containing at least the following variables:
+\item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
@@ -19,8 +19,8 @@ that this is zero indexed and so includes the reference date and
 \code{max_delay - 1} other days.}
 }
 \value{
-A data frame filtered so that dates by report are less than or equal
-the reference date plus the maximum delay.
+A \code{data.frame} filtered so that dates by report are less than or
+equal the reference date plus the maximum delay.
 }
 \description{
 Filter observations to restrict the maximum reporting delay
@@ -37,12 +37,10 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

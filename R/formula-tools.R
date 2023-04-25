@@ -1,4 +1,3 @@
-
 #' Define a model manually using fixed and random effects
 #'
 #' @description For most typical use cases [enw_formula()] should
@@ -31,20 +30,19 @@
 #'
 #' @inheritParams enw_formula
 #' @family formulatools
-#' @importFrom data.table copy
 #' @importFrom stats as.formula
 #' @export
 #' @examples
 #' data <- enw_example("prep")$metareference[[1]]
 #' enw_manual_formula(data, fixed = "week", random = "day_of_week")
-enw_manual_formula <- function(data, fixed = c(), random = c(),
-                               custom_random = c(), no_contrasts = FALSE,
+enw_manual_formula <- function(data, fixed = NULL, random = NULL,
+                               custom_random = NULL, no_contrasts = FALSE,
                                add_intercept = TRUE) {
-  data <- data.table::copy(data)
+  data <- coerce_dt(data)
   if (add_intercept) {
-    form <- c("1")
+    form <- "1"
   } else {
-    form <- c()
+    form <- NULL
   }
 
   cr_in_dt <- purrr::map(
@@ -73,7 +71,7 @@ enw_manual_formula <- function(data, fixed = c(), random = c(),
     random <- enw_design(~1, effects, sparse = FALSE)
   } else {
     for (i in random) {
-      effects <- enw_add_pooling_effect(effects, i, var_name = i)
+      effects <- enw_add_pooling_effect(effects, var_name = i, prefix = i)
     }
     rand_form <- c("0", "fixed", random)
     rand_form <- as.formula(paste0("~ ", paste(rand_form, collapse = " + ")))
@@ -104,8 +102,8 @@ as_string_formula <- function(formula) {
 #' epinowcast:::split_formula_to_terms(~ 1 + age_group + location)
 split_formula_to_terms <- function(formula) {
   formula <- as_string_formula(formula)
-  formula <- gsub("~", "", formula)
-  formula <- strsplit(formula, " \\+ ")[[1]]
+  formula <- gsub("~", "", formula, fixed = TRUE)
+  formula <- strsplit(formula, " + ", fixed = TRUE)[[1]]
   return(formula)
 }
 
@@ -135,7 +133,7 @@ rw_terms <- function(formula) {
   match <- grepl("(^(rw)\\([^:]*\\))$", trms)
 
   # ignore when included in a random effects term
-  match <- match & !grepl("\\|", trms)
+  match <- match & !grepl("|", trms, fixed = TRUE)
   return(trms[match])
 }
 
@@ -151,7 +149,7 @@ rw_terms <- function(formula) {
 #' the `epidemia` package (https://github.com/ImperialCollegeLondon/epidemia/).
 #'
 #' @inheritParams split_formula_to_terms
-#' @return RETURN_DESCRIPTION
+#' @return A formula object with the random walk terms removed.
 #' @family formulatools
 #' @examples
 #' epinowcast:::remove_rw_terms(~ 1 + age_group + location)
@@ -260,7 +258,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
     by <- deparse(substitute(by))
   }
   out <- list(time = time, by = by, type = type)
-  class(out) <- c("enw_rw_term")
+  class(out) <- "enw_rw_term"
   return(out)
 }
 
@@ -270,24 +268,23 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' by [rw()], produces the required additional variables
 #' (denoted using a "c" prefix and constructed using
 #' [enw_add_cumulative_membership()]), and then returns the
-#' extended data.frame along with the new fixed effects and the
+#' extended `data.frame` along with the new fixed effects and the
 #' random effect structure.
 #'
 #' @param rw A random walk term as defined by [rw()].
 #'
-#' @param data A data.frame of observations used to define the
+#' @param data A `data.frame` of observations used to define the
 #' random walk term. Must contain the time and grouping variables
 #' defined in the [rw()] term specified.
 #'
 #' @return A list containing the following:
-#'  - `data`: The input data.frame with the addition of the new variables
+#'  - `data`: The input `data.frame` with the addition of the new variables
 #' required by the specified random walk. These are added using
 #' [enw_add_cumulative_membership()].
 #'  -`terms`: A character vector of new fixed effects terms to add to a model
 #' formula.
-#'  - `effects`: A data.frame describing the random effect structure of the new
-#'  effects.
-#' @importFrom data.table copy
+#'  - `effects`: A `data.frame` describing the random effect structure of the
+#' new effects.
 #' @family formulatools
 #' @examples
 #' data <- enw_example("preproc")$metareference[[1]]
@@ -299,7 +296,17 @@ construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
     stop("rw must be a random walk term as constructed by rw")
   }
-  data <- data.table::copy(data)
+
+  if (!is.numeric(data[[rw$time]])) {
+    stop(
+      "The time variable ", rw$time, " is not numeric but must be to be used ",
+      "as a random walk term."
+    )
+  }
+
+  if (anyNA(data[[rw$time]])) {
+    stop("The time variable ", rw$time, " contains non-numeric values.")
+  }
 
   # add new cumulative features to use for the random walk
   data <- enw_add_cumulative_membership(
@@ -308,8 +315,7 @@ construct_rw <- function(rw, data) {
   )
   ctime <- paste0("c", rw$time)
   terms <- grep(ctime, colnames(data), value = TRUE)
-  fdata <- data.table::copy(data)
-  fdata <- fdata[, c(terms, rw$by), with = FALSE]
+  fdata <- data[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
       stop(
@@ -339,15 +345,18 @@ construct_rw <- function(rw, data) {
 
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
-    effects <- enw_add_pooling_effect(effects, ctime, rw$time)
+    effects <- enw_add_pooling_effect(
+      effects, var_name = paste0("rw__", rw$time), prefix = ctime
+    )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
-        effects, c(ctime, paste0(rw$by, i)), paste0(nby, "__", rw$time),
-        finder_fn = function(effect, pattern) {
-          grepl(pattern[1], effect) & startsWith(effect, pattern[2])
-        }
+        effects, var_name = paste0("rw__", nby, "__", rw$time),
+        finder_fn = function(effect, pattern, prefix) {
+          grepl(pattern, effect) & startsWith(effect, prefix)
+        },
+        pattern = ctime, prefix = paste0(rw$by, i)
       )
     }
   }
@@ -372,11 +381,9 @@ construct_rw <- function(rw, data) {
 #' form <- epinowcast:::parse_formula(~ 1 + (location | age_group))
 #' re(form$random[[1]])
 re <- function(formula) {
-  terms <- strsplit(as_string_formula(formula), " \\| ")[[1]]
-  fixed <- terms[1]
-  random <- terms[2]
+  terms <- strsplit(as_string_formula(formula), " | ", fixed = TRUE)[[1]]
   out <- list(fixed = terms[1], random = terms[2])
-  class(out) <- c("enw_re_term")
+  class(out) <- "enw_re_term"
   return(out)
 }
 
@@ -385,18 +392,17 @@ re <- function(formula) {
 #' @param re A random effect as defined using [re()] which itself takes
 #' random effects specified in a model formula using the [lme4] syntax.
 #'
-#' @param data A data.frame of observations used to define the
+#' @param data A `data.frame` of observations used to define the
 #' random effects. Must contain the variables specified in the
 #' [re()] term.
 #'
 #' @return A list containing the transformed data ("data"),
-#' fixed effects terms ("terms") and a `data.frame` specifying
+#' fixed effects terms ("terms") and a  `data.frame` specifying
 #' the random effect structure between these terms (`effects`). Note
 #' that if the specified random effect was not a factor it will have been
 #' converted into one.
 #'
 #' @family formulatools
-#' @importFrom data.table as.data.table
 #' @importFrom purrr map
 #' @examples
 #' # Simple examples
@@ -418,17 +424,16 @@ construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
     stop("re must be a random effect term as constructed by re")
   }
-  data <- data.table::as.data.table(data)
 
   # extract random and fixed effects
-  fixed <- strsplit(re$fixed, " \\+ ")[[1]]
-  random <- strsplit(re$random, " \\+ ")[[1]]
+  fixed <- strsplit(re$fixed, " + ", fixed = TRUE)[[1]]
+  random <- strsplit(re$random, " + ", fixed = TRUE)[[1]]
 
   # expand random effects that are interactions
-  expanded_random <- c()
+  expanded_random <- NULL
   random_int <- rep(FALSE, length(random))
   for (i in seq_along(random)) {
-    current_random <- strsplit(random[i], ":")[[1]]
+    current_random <- strsplit(random[i], ":", fixed = TRUE)[[1]]
 
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
@@ -437,12 +442,12 @@ construct_re <- function(re, data) {
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-      message(
-        "A random effect using ", current_random[2],
-        " is not possible as this variable has fewer than 2 unique values."
-      )
-      random[i] <- current_random[1]
-      }else {
+        message(
+          "A random effect using ", current_random[2],
+          " is not possible as this variable has fewer than 2 unique values."
+        )
+        random[i] <- current_random[1]
+      } else {
         random_int[i] <- TRUE
       }
     }
@@ -456,20 +461,21 @@ construct_re <- function(re, data) {
   # add these new random effects to list of all random effects
 
   # combine into fixed effects terms
-  terms <- c()
-  terms_int <- c()
+  terms <- NULL
+  terms_int <- NULL
   for (i in seq_along(random)) {
     terms <- c(terms, paste0(fixed, ":", random[i]))
     terms_int <- c(terms_int, rep(random_int[i], length(fixed)))
   }
   names(terms_int) <- terms
-  terms <- gsub("1:", "", terms)
+  terms <- gsub("1:", "", terms, fixed = TRUE)
   terms <- terms[!startsWith(terms, "0:")]
   terms_int <- terms_int[!startsWith(terms, "0:")]
 
   # make all right hand side random effects factors
-  data <- data[,
-    (expanded_random) := lapply(.SD, as.factor), .SDcols = expanded_random
+  data <- coerce_dt(data, required_cols = expanded_random)[,
+    (expanded_random) := lapply(.SD, as.factor),
+    .SDcols = expanded_random
   ]
 
   # make a fixed effects design matrix
@@ -484,21 +490,21 @@ construct_re <- function(re, data) {
 
   # implement random effects structure
   for (i in seq_along(terms)) {
-    loc_terms <- strsplit(terms[i], ":")[[1]]
+    loc_terms <- strsplit(terms[i], ":", fixed = TRUE)[[1]]
     # expand right hand side random effect if its an interaction
     # and make a list to map to effects
     if (terms_int[i]) {
       expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
       expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
       j <- purrr::map(expanded_int, function(x) {
-        j <- c()
+        j <- NULL
         if (length(loc_terms) > 2) {
           j <- loc_terms[1:(length(loc_terms) - 2)]
         }
         j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
         return(j)
       })
-    }else {
+    } else {
       j <- list(loc_terms)
     }
     # link random effects with fixed effects
@@ -508,37 +514,43 @@ construct_re <- function(re, data) {
       if (length(k) == 1) {
           if (terms_int[i]) {
             effects <- enw_add_pooling_effect(
-              effects, strsplit(k, ":")[[1]], gsub(":", "__", k),
+              effects, var_name = gsub(":", "__", k, fixed = TRUE),
               finder_fn = function(effect, pattern) {
                 grepl(pattern[1], effect) &
-                grepl(pattern[2], effect, fixed = TRUE) &
-                lengths(regmatches(effect, gregexpr(":", effect))) == 1
-              }
+                  grepl(pattern[2], effect, fixed = TRUE) &
+                  lengths(
+                    regmatches(effect, gregexpr(":", effect, fixed = TRUE))
+                  ) == 1
+              },
+              pattern = strsplit(k, ":", fixed = TRUE)[[1]]
             )
-          }else {
+          } else {
             effects <- enw_add_pooling_effect(
-              effects, k, k,
+              effects, var_name = k,
               finder_fn = function(effect, pattern) {
-                grepl(pattern, effect) & !grepl(":", effect)
-              }
+                grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
+              },
+              pattern = k
             )
           }
       } else {
         if (terms_int[i]) {
           effects <- enw_add_pooling_effect(
-              effects, c(k[1], strsplit(k[-1], ":")[[1]]),
-              paste(gsub(":", "__", k), collapse = "__"),
-              finder_fn = function(effect, pattern) {
-                grepl(pattern[1], effect) & grepl(pattern[2], effect) &
-                grepl(pattern[3], effect)
-            }
+            effects,
+            var_name = paste(gsub(":", "__", k, fixed = TRUE), collapse = "__"),
+            finder_fn = function(effect, pattern) {
+              grepl(pattern[1], effect) & grepl(pattern[2], effect) &
+              grepl(pattern[3], effect)
+            },
+            pattern = c(k[1], strsplit(k[-1], ":", fixed = TRUE)[[1]])
           )
-        }else {
+        } else {
           effects <- enw_add_pooling_effect(
-            effects, rev(k), paste(k, collapse = "__"),
+            effects, var_name = paste(k, collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & grepl(pattern[2], effect)
-            }
+            },
+            pattern = rev(k)
           )
         }
       }
@@ -579,7 +591,7 @@ construct_re <- function(re, data) {
 #' @family formulatools
 #' @export
 #' @importFrom purrr map transpose
-#' @importFrom data.table as.data.table rbindlist setnafill
+#' @importFrom data.table rbindlist setnafill
 #' @examples
 #' # Use meta data for references dates from the Germany COVID-19
 #' # hospitalisation data.
@@ -607,32 +619,10 @@ construct_re <- function(re, data) {
 #' # to specify an independent random effect per strata.
 #' enw_formula(~ (1 + day | week:month), data = data)
 enw_formula <- function(formula, data, sparse = TRUE) {
-  data <- data.table::as.data.table(data)
+  data <- coerce_dt(data)
 
   # Parse formula
   parsed_formula <- parse_formula(formula)
-
-  # Get random effects for all specified random effects
-  if (length(parsed_formula$random) > 0) {
-    random <- purrr::map(parsed_formula$random, re)
-    for (i in seq_along(random)) {
-      random[[i]] <- construct_re(random[[i]], data)
-      data <- random[[i]]$data
-      random[[i]]$data <- NULL
-    }
-    random <- purrr::transpose(random)
-
-    random_terms <- unlist(random$terms)
-    random_metadata <- data.table::rbindlist(
-      random$effects,
-      use.names = TRUE, fill = TRUE
-    )
-    no_contrasts <- random_terms
-  } else {
-    no_contrasts <- FALSE
-    random_terms <- c()
-    random_metadata <- NULL
-  }
 
   # Get random walk effects by iteratively looping through (as variables are
   # created in input data so need to use iteratively)
@@ -653,14 +643,43 @@ enw_formula <- function(formula, data, sparse = TRUE) {
       use.names = TRUE, fill = TRUE
     )
   } else {
-    rw_terms <- c()
+    rw_terms <- NULL
     rw_metadata <- NULL
+  }
+
+  # Get random effects for all specified random effects
+  # Happens last as converts all RHS variables to factors (which can interact)
+  # with other formula terms (i.e. random walks)
+  if (length(parsed_formula$random) > 0) {
+    random <- purrr::map(parsed_formula$random, re)
+    for (i in seq_along(random)) {
+      random[[i]] <- construct_re(random[[i]], data)
+      data <- random[[i]]$data
+      random[[i]]$data <- NULL
+    }
+    random <- purrr::transpose(random)
+
+    random_terms <- unlist(random$terms)
+    # Check that the user hasn't specified the same fixed and random effect
+    if (any(random_terms %in% parsed_formula$fixed)) {
+      stop(
+        "Random effect terms must not be included in the fixed effects formula",
+        call. = FALSE
+      )
+    }
+    random_metadata <- data.table::rbindlist(
+      random$effects,
+      use.names = TRUE, fill = TRUE
+    )
+  } else {
+    random_terms <- NULL
+    random_metadata <- NULL
   }
 
   # Make fixed design matrix using all fixed effects from all components
   # this should include new variables added by the random effects
   # need to make sure all random effects don't have contrasts
-  terms <- c(parsed_formula$fixed, rw_terms, random_terms)
+  terms <- c(parsed_formula$fixed, random_terms, rw_terms)
   expanded_formula <- as.formula(paste0("~ ", paste(terms, collapse = " + ")))
   fixed <- enw_design(
     formula = expanded_formula,

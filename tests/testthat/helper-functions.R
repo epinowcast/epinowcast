@@ -24,3 +24,17 @@ skip_on_local <- function() {
   }
   skip("Not on CI")
 }
+
+round_numerics <- function(dt) {
+  cols <- colnames(dt)[purrr::map_lgl(dt, is.numeric)]
+  dt <- dt[, (cols) := lapply(.SD, round, 0), .SDcols = cols]
+  return(dt)
+}
+
+dt_copies <- function(...) {
+  lapply(list(...), data.table::copy)
+}
+
+dt_compare_all <- function(ref_copies, ...) {
+  all(mapply(function(l, r) all(l == r), ref_copies, list(...)))
+}

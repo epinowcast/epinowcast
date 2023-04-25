@@ -10,7 +10,7 @@ enw_plot_obs(obs, latest_obs = NULL, log = TRUE, ...)
 \item{obs}{A \code{data.frame} of summarised posterior estimates
 containing at least a \code{confirm} count column and a date variable}
 
-\item{latest_obs}{A data frame of observed data containing at least a
+\item{latest_obs}{A \code{data.frame} of observed data containing at least a
 \code{confirm} count variable and the same date variable as in the main data.frame
 used for plotting.}
 
@@ -25,6 +25,16 @@ A \code{ggplot2} plot.
 }
 \description{
 Generic quantile plot
+}
+\examples{
+nowcast <- enw_example("nowcast")
+obs <- enw_example("obs")
+
+# Plot observed data by reference date
+enw_plot_obs(obs, x = reference_date)
+
+# Plot observed data by reference date with more recent data
+enw_plot_obs(nowcast$latest[[1]], obs, x = reference_date)
 }
 \seealso{
 Plotting functions
