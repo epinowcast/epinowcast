@@ -29,18 +29,17 @@
 #'
 #' # A missing formula produces the default list
 #' enw_formula_as_data_list(prefix = "missing")
-enw_formula_as_data_list <- function(formula, prefix,
-                                     drop_intercept = FALSE) {
-  data <- within(list(), {
-    fdesign <- numeric()
-    fintercept <- 0
-    fnrow <- 0
-    findex <- numeric()
-    fnindex <- 0
-    fncol <- 0
-    rdesign <- numeric()
-    rncol <- 0
-  })
+enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
+  data <- list(
+    fdesign = numeric(0),
+    fintercept = 0,
+    fnrow = 0,
+    findex = numeric(0),
+    fnindex = 0,
+    fncol = 0,
+    rdesign = numeric(0),
+    rncol = 0
+  )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
       stop(
