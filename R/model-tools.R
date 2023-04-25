@@ -37,19 +37,21 @@ enw_formula_as_data_list <- function(formula, prefix,
   })
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      stop("
-        formula must be an object of class enw_formula as produced using
-        enw_formula")
+      stop(
+        "formula must be an object of class enw_formula as produced using
+        enw_formula"
+      )
     }
-    fintercept <-  as.numeric(any(grepl("(Intercept)",
-    colnames(formula$fixed$design), fixed = TRUE)))
+    fintercept <-  as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    )))
     data$fdesign <- formula$fixed$design
     data$fintercept <- fintercept
     data$fnrow <- nrow(formula$fixed$design)
     data$findex <- formula$fixed$index
     data$fnindex <- length(formula$fixed$index)
     data$fncol <- ncol(formula$fixed$design) - min(
-    as.numeric(drop_intercept), fintercept)
+      as.numeric(drop_intercept), fintercept)
     data$rdesign <- formula$random$design
     data$rncol <- ncol(formula$random$design) - 1
   }
