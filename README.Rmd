@@ -55,7 +55,7 @@ remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
 Historical package releases can be installed from GitHub using `remotes` by adding the release tag as in the following example (which installs [`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)),
-
+ 
 ```{r, eval = FALSE}
 remotes::install_github("epinowcast/epinowcast@v0.2.0", dependencies = TRUE)
 ```
