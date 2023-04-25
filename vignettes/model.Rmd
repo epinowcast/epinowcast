@@ -100,7 +100,7 @@ Where data is available on the report date for a given individual we can estimat
 
 ## Default model
 
-In our default model we consider the delay distribution to follow a discretised log-normal as follows,
+In our default model, we consider the delay to follow a discretised log-normal distribution as follows,
 
 \begin{align}
   p_{g,t,d} &\sim \text{LogNormal} \left(\mu^d, \sigma^d \right) \\
@@ -108,13 +108,19 @@ In our default model we consider the delay distribution to follow a discretised 
   \sigma^d &\sim \text{Half-Normal} \left(0, 1 \right)
 \end{align}
 
+Here, $p_{g,t,d}$ is the probability that a case in group $g$ with reference time $t$ is reported with delay $d$.
+
 ## Generalised model
 
-We generalise this model in order to support a range of delay distributions and reporting processes following the approach of Günther et al.[@gunther2021] we estimate the delay distribution ($p_{g,t,d}$) using a discrete-time logistic hazard model
+We generalise this model in order to support a range of delay distributions and reporting processes. Following the approach of Günther et al.[@gunther2021], we estimate the delay probability ($p_{g,t,d}$) via a discrete-time logistic hazard model
 $$
-h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{g,t,d}\right)
+h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{g,t,d}\right),
 $$
-but we extend this model to decompose $W_{g,t,d}$ into 3 components: hazard derived from a parametric delay distribution ($\gamma_{g,t,d}$) dependent on covariates at the time of reference, hazard not derived from a parametric distribution ($\delta_{g,t,d}$) dependent on covariates at the time of reference, and hazard dependent on covariates referenced to the time of report ($\epsilon_{g,t,d}$).
+where $W_{g,t,d}$ is a design matrix for different effects on the reporting delay. We extend the model of Günther et al. by decomposing $W_{g,t,d}$ into 3 components:
+
+  - a hazard derived from a parametric delay distribution ($\gamma_{g,t,d}$) dependent on covariates at the time of reference
+  - a hazard not derived from a parametric distribution ($\delta_{g,t,d}$) dependent on covariates at the time of reference
+  - a hazard dependent on covariates referenced at the time of report ($\epsilon_{g,t,d}$).
 
 The first component ($\gamma_{g,t,d}$) we estimate what would be the probability of reporting $p^{\prime}_{g,t,d}$ at a given time if it followed a parametric distribution, here implemented using a discretised log normal (a range of other distributions are supported by the package) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms),
 
@@ -153,9 +159,9 @@ All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard 
 
 ## Details on discretised parametric distributions
 
-Currently, 4 distributions are implemented for modelling the parametric part of the delay distribution: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. 
+Currently, the parametric part of the delay distribution can be modeled by one of 4 distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. 
 
-The following table provides a link to the definition of the parametric distributions, how $\mu_{g,t}$ and $\nu_{g,t}$ defined above are mapped to the parameters of in the referenced definition of the distribution and what this means for the mean of the distribution (before discretization and adjustment for an assumed maximum delay).
+The table below provides a link to the definition of each parametric distribution, specifies how $\mu_{g,t}$ and $\nu_{g,t}$ as defined above are mapped to the parameters of the distribution (according to the referenced definition), and states what the resulting mean of the distribution (before discretization and adjustment for an assumed maximum delay).
 
 | Distribution 	| Parametrization | Mean |
 |--------------	|------------ |------------------	|
@@ -164,15 +170,15 @@ The following table provides a link to the definition of the parametric distribu
 | [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = exp(\mu_{g,t})$, $\beta = \nu_{g,t}$ | $exp(\mu_{g,t})/\nu_{g,t}$ |
 | [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = exp(\mu_{g,t})$, $\beta = \nu_{g,t}$ | $\frac{exp(\mu_{g,t})\pi/\nu_{g,t}}{sin(\pi/\nu_{g,t})}$ |
 
-For a specific reference date $t$ and maximum delay *max_delay*, the discretised parametric delay distribution is now constructed the following way:
+For a specific reference date $t$ and maximum delay *max_delay*, the discretised parametric delay distribution is constructed as follows:
 
 1) Evaluate the cumulative distribution function of the chosen (continuous) distribution $P(D\leq d|\mu_{g,t}, \nu_{g,t})$ at integer values $d=1, \ldots, max\_delay$.
 
-2) Adjust for the chosen maximum delay by normalizing via division through $P(D\leq max\_delay|\mu_{g,t}, \nu_{g,t})$.
+2) Adjust for the chosen maximum delay by normalizing via division through $P(D\leq max\_delay|\mu_{g,t}, \nu_{g,t})$. This can also be interpreted as conditioning on the maximum delay.
 
 3) Derive the discretized probability-mass function (and subsequently hazard function) by taking first differences. 
 
-Based on this discretization scheme, the probability of a reporting delay of zero days is $p_{g,t,0} = P(D\leq 1|\mu_{g,t}, \nu_{g,t})$, the probability of a delay of one day is $p_{g,t,1} = P(D\leq 2|\mu_{g,t}, \nu_{g,t}) - P(D\leq 1|\mu_{g,t}, \nu_{g,t})$, and so on. Note, that a discrete random variable with such a pmf has in general not exactly the same moments as the corresponding continuous random variable with distribution $P_{\mu_{g,t}, \nu_{g,t}}$.
+Based on this discretization scheme, the probability of a reporting delay of zero days is $p_{g,t,0} = P(D\leq 1|\mu_{g,t}, \nu_{g,t})$, the probability of a delay of one day is $p_{g,t,1} = P(D\leq 2|\mu_{g,t}, \nu_{g,t}) - P(D\leq 1|\mu_{g,t}, \nu_{g,t}) = P(1 < D\leq 2|\mu_{g,t}, \nu_{g,t})$, and so on. Note, that a discrete random variable with such a pmf has in general not exactly the same moments as the corresponding continuous random variable with distribution $P_{\mu_{g,t}, \nu_{g,t}}$.
 
 # Observation model and nowcast
 
