@@ -31,10 +31,12 @@
 #' enw_formula_as_data_list(prefix = "missing")
 enw_formula_as_data_list <- function(formula, prefix,
                                      drop_intercept = FALSE) {
+  # nolint start: object_name_linter (because it produces false positives in within() calls)
   data <- within(list(), {
     fintercept <- fnrow <- fnindex <- fncol <- rncol <- 0
     fdesign <- findex <- rdesign <- numeric()
   })
+  # nolint end
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
       stop(
