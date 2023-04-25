@@ -47,7 +47,7 @@ Authors@R:
     person(given = "Luis",
            family = "Rivas",
            role = "ctb",
-           email = "luisnicolasrivas@gmail.com")))
+           email = "luisnicolasrivas@gmail.com"))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
