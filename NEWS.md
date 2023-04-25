@@ -1,4 +1,4 @@
-# epinowcast 0.2.0.14000
+# epinowcast 0.2.0.15000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
 
@@ -13,13 +13,13 @@ This is release is in development. It is not yet ready for production use. If yo
 - Fixed a bug in `enw_replace_priors()` where the function could not deal with `epinowcast` summarised posterior estimates due to the new use of the `pillar` class. Added tests to catch if this issue reoccurs in the future. See #228 by @seabbs and self-reviewed.
 - Fixed an issue (#198) with the interface for `scoringutils`. For an unknown reason our example data contained `pillar` classes (likely due to an upstream change). This caused an issue with internal `scoringutils` that was using implicit type conversion (see [here](https://github.com/epiforecasts/scoringutils/pull/274)). See #201 by @seabbs and reviewed by @pearsonca.
 - Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs and self-reviewed.
+- Fixed a bug in `enw_expectation()` where when models were specified with zero intercept a initial condition was still being specified for the intercept of the growth rate (`expr_r_int`, #246). This was not flagged as an issue by `cmdstan 2.31.0` but as of `cmdstan 2.32.0`, due to improvements in how initial conditions were being read in ([stan-dev/stan#3182](https://github.com/stan-dev/stan/issues/3182)), it throws an error causing models to fail. Solution suggested by @WardBrian, implemented in #255 by @seabbs, and reviewed by @pearsonca.
 
 ## Depreciations
 
 - `enw_incidence_to_cumulative()`: Deprecated with a warning in favour of `enw_add_cumulative()`. This renaming is to better reflect the function's purpose. `enw_incidence_to_cumulative()` will be removed in `0.3.0`. See #247 by @seabbs and reviewed by @pearsonca.
 - `enw_cumulative_to_incidence()`: Deprecated with a warning in favour of `enw_add_incidence()`. This renaming is to better reflect the function's purpose. `enw_cumulative_to_incidence()` will be removed in `0.3.0`. See #247 by @seabbs and reviewed by @pearsonca.
 
-- `
 ## Package
 
 - Fixed some typos in `README.md`, `NEWS.md`, the `model.Rmd` vignette and `convolution_matrix()` documentation. The `WORDLIST` used by spelling has also been updated by eliminate false positives. See #221 by @Bisaloo and reviewed by @seabbs and @adrian-lison.

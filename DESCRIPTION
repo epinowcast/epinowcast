@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Flexible Hierarchical Nowcasting
-Version: 0.2.0.14000
+Version: 0.2.0.15000
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
