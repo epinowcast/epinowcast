@@ -39,12 +39,9 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added support for using the same variable as both a random effect and a random walk. In most settings this is not advised. See #228 by @seabbs and self-reviewed.
 - Added an error message to `construct_rw()` when a random walk is specified for a variable that is not a numeric variable. See #228 by @seabbs and self-reviewed.
 - Added support for preprocessing and model fitting benchmarking using `touchstone` based on the implementation in `EpiNow2` by @sbfnk. See #200 by @seabbs, @adrian-lison, @sbfnk, and self-reviewed.
-<<<<<<< HEAD
 - Added a complete set of data converters to map between line list (i.e. each row is a case) and count data (i.e incidence and cumulative counts by reference and report date). In particular, this will help workflows where individual line list data is available as it can now be formatted ready for preprocessing using a single call to `enw_linelist_to_incidence()` which previously took several steps. See #247 by @seabbs and @jhellewell14 and reviewed by @pearsonca.
 - Dropped the use of the `develop` branch for development versions of the package. This change was discussed in #250 with the major motivator being that since the introduction of release only builds to R Universe we no longer need to have a stable `main` branch of GitHub to control our releases. See #256 by @seabbs and reviewed by @Bisaloo and @pearsonca.
-=======
-- Cleaned enw_formula_as_data_list() to better align with DRY principles. See #245 by @Lnrivas, reviewed by @pearsonca and @seabbs. 
->>>>>>> e2c3eb3d (Issue #245)
+- Cleaned enw_formula_as_data_list() to better align with DRY principles. See #245 by @Lnrivas, reviewed by @pearsonca, @Bisaloo, and @seabbs.
 
 ## Documentation
 
