@@ -19,6 +19,7 @@ The following guidelines should be followed when using adding dependencies:
 - In the PR that adds the dependency this should be clearly stated in the PR description along with a justification for the dependency, the number and type of downstream dependencies, and an assessment of the risk of the dependency breaking.
 
 More generally when adding functions from external packages (i.e. even if they are already a dependency) the following should be followed:
+
 - Documented in function documentation using the `@importFrom` tag.
 - Used within functions using the `package::function` format.
 
