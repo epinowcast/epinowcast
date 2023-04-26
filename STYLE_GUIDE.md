@@ -6,7 +6,7 @@ In addition to this guide we also follow the [tidyverse style guide](https://sty
 
 ## Naming conventions
 
-- We use a `enw_` prefix to delineate functions that are part of the `epinowcast` package. This is to avoid conflicts with other packages and to make it clear to users which functions are part of the package.
+- We use a `enw_` prefix to delineate functions that are exported by the `epinowcast` package. This is to avoid conflicts with other packages and to make it clear to users which functions are part of the package.
 - The use of this prefix is not required for internal functions (i.e. functions that are not exported) or that are unlikely to have naming conflicts with other packages.
 
 ## Dependencies
