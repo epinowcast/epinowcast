@@ -32,7 +32,7 @@ More generally when adding functions from external packages (i.e. even if they a
 ```r
 print_dt <- function(dt) {
     dt <- epinowcast:::coerce_dt(dt, required_cols = c("date", "cases"))
-    return(dt)
+    return(dt[])
 }
 
 print_dt(mtcars)
