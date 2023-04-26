@@ -96,11 +96,11 @@ Where $\nu_{g,t}$ is the inferred ascertainment and is modelled flexibly using a
 
 # Delay distribution
 
-Where data is available on the report date for a given individual we can estimate the delay distribution directly and jointly rather than relying on estimates from other sources (though we may wish to augment our priors with these estimates). In the following section we describe our default parametric delay distribution model as well as our highly flexible discrete time to event based generic model.
+Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the nowcast, rather than relying on external estimates from other sources (though we may want to account for external information in our priors). In the following section we describe our default parametric delay distribution model and its extension into a generic, highly flexible delay model based on discrete time-to-event modeling.
 
 ## Default model
 
-In our default model, we consider the delay to follow a discretised log-normal distribution as follows,
+In our default model, we consider the delay to follow a discretised log-normal distribution, specified as follows,
 
 \begin{align}
   p_{g,t,d} &\sim \text{LogNormal} \left(\mu^d, \sigma^d \right) \\
@@ -108,21 +108,21 @@ In our default model, we consider the delay to follow a discretised log-normal d
   \sigma^d &\sim \text{Half-Normal} \left(0, 1 \right)
 \end{align}
 
-Here, $p_{g,t,d}$ is the probability that a case in group $g$ with reference time $t$ is reported with delay $d$.
+Here, $p_{g,t,d}$ is the probability that a case in group $g$ with reference time $t$ is reported with delay $d$. 
 
 ## Generalised model
 
-We generalise this model in order to support a range of delay distributions and reporting processes. Following the approach of Günther et al.[@gunther2021], we estimate the delay probability ($p_{g,t,d}$) via a discrete-time logistic hazard model
+We generalise this model in order to support a range of delay distributions and effects of the reporting process on the delay. Following the approach of Günther et al.[@gunther2021], we parameterise the delay probability ($p_{g,t,d}$) via a discrete-time logistic hazard model
 $$
 h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{g,t,d}\right),
 $$
 where $W_{g,t,d}$ is a design matrix for different effects on the reporting delay. We extend the model of Günther et al. by decomposing $W_{g,t,d}$ into 3 components:
 
-  - a hazard derived from a parametric delay distribution ($\gamma_{g,t,d}$) dependent on covariates at the time of reference
-  - a hazard not derived from a parametric distribution ($\delta_{g,t,d}$) dependent on covariates at the time of reference
-  - a hazard dependent on covariates referenced at the time of report ($\epsilon_{g,t,d}$).
+  - Parametric reference time model $\gamma_{g,t,d}$: a hazard derived from a parametric delay distribution whose parameters depend on covariates at the time of reference
+  - Non-parametric reference time effect $\delta_{g,t,d}$: effect on the hazard that depends on covariates at the time of reference
+  - Non-parametric report time effect $\epsilon_{g,t,d}$: effect on the hazard that depends on covariates at the time of report.
 
-The first component ($\gamma_{g,t,d}$) we estimate what would be the probability of reporting $p^{\prime}_{g,t,d}$ at a given time if it followed a parametric distribution, here implemented using a discretised log normal (a range of other distributions are supported by the package) with the log mean and log standard deviation defined using an intercept and arbitrary shared, reference time indexed, covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms),
+The parametric reference time model $\gamma_{g,t,d}$ describes for group $g$ and reference time $t$ what the probability of reporting with delay $d$ was if it followed a certain parametric distribution (discretised log-normal by default, but other distributions are supported). The parameters of this distribution are $\mu_{g,t}$ (the log mean) and $\upsilon_{g,t}$ (the log standard deviation). They are defined using a (log-)linear model each. The model consists of an intercept and a number of arbitrary, shared covariates, indexed by reference time. The covariates are multiplied by fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note that these can include auto-regressive terms). Overall, we have
 
 \begin{align}
   p^{\prime}_{g,t,d} &\sim \text{LogNormal} \left(\mu_{g,t}, \upsilon_{g,t} \right) \\
