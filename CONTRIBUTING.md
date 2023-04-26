@@ -22,9 +22,10 @@ At <https://community.epinowcast.org>, you can post general questions, brainstor
 * For bug reports: if you can, please install the latest GitHub version of `epinowcast` (i.e. `remotes::install_github("epinowcast/epinowcast")`) and verify that the issue still persists.
 * Describe your issue in prose as clearly and concisely as possible.
 * For any problem you identify, post a [minimal reproducible example](https://www.tidyverse.org/help/) like [this one](https://github.com/ropensci/targets/issues/256#issuecomment-754229683) so other contributors and authors can troubleshoot. A reproducible example is:
+
     * **Runnable**: post enough R code and data so any onlooker can create the error on their own computer.
     * **Minimal**: reduce runtime wherever possible and remove complicated details that are irrelevant to the issue at hand.
-    * **Readable**: format your code according to the [tidyverse style guide](https://style.tidyverse.org/).
+    * **Readable**: format your code according to the [`tidyverse` style guide](https://style.tidyverse.org/).
 
 ## Development
 
@@ -43,7 +44,7 @@ Please also follow these additional guidelines.
 * Respect the architecture and reasoning of the package. Depending on the scope of your work, you may want to read the design documents (package vignettes).
 * In general we aim to use `data.table` to manipulate data. However, if this is a barrier to contributing please use tools you are familiar with and raise this in your pull request. The reviewer will then work with you to refactor your contribution or if appropriate add the dependencies you require.
 * If possible, keep contributions small enough to easily review manually. It is okay to split up your work into multiple pull requests.
-* Format your code according to our [package style](https://github.com/epinowcast/epinowcast/blob/main/STYLE_GUIDE.md) or where not specified the [tidyverse style guide](https://style.tidyverse.org/). Automatic `tidyverse` styling can be achieved by running `style_pkg()` from [`styler`](https://github.com/r-lib/styler) (which rewrites the files) and `lint_package()` from [`lintr`](https://github.com/jimhester/lintr) (which provides a list of complaints for you to resolve). Note: `styler::style_pkg()` does not examine roxygen content i.e. `@examples` so you will need to check that manually.
+* Format your code according to our [package style](https://github.com/epinowcast/epinowcast/blob/main/STYLE_GUIDE.md) or where not specified the [`tidyverse style` guide](https://style.tidyverse.org/). Automatic `tidyverse` styling can be achieved by running `style_pkg()` from [`styler`](https://github.com/r-lib/styler) (which rewrites the files) and `lint_package()` from [`lintr`](https://github.com/jimhester/lintr) (which provides a list of complaints for you to resolve). Note: `styler::style_pkg()` does not examine roxygen content i.e. `@examples` so you will need to check that manually.
 * Check code coverage with `covr::package_coverage()`. Automated tests should cover all the new or changed functionality in your pull request.
 * Run overall package checks with `devtools::check()` and `goodpractice::gp()`
 * Describe your contribution in the project's [`NEWS.md`](https://github.com/epinowcast/epinowcast/blob/main/NEWS.md) file. Be sure to mention relevant GitHub issue numbers and your GitHub name as done in existing news entries.

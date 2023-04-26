@@ -2,7 +2,7 @@
 
 This document outlines the style guide for the `epinowcast` package. This guide is a work in progress and will be updated as the package evolves. We welcome contributions to this guide and encourage you to raise issues or submit PRs if you have any suggestions.
 
-In addition to this guide we also follow the [tidyverse style guide](https://style.tidyverse.org/). This guide is a subset of the tidyverse style guide and outlines the additional style requirements for the `epinowcast` package.
+In addition to this guide we also follow the [tidyverse style guide](https://style.tidyverse.org/). This guide is a subset of the `tidyverse` style guide and outlines the additional style requirements for the `epinowcast` package.
 
 ## Naming conventions
 
@@ -44,6 +44,7 @@ print_dt(data.frame(cases = 1, date = Sys.Date()))
 ```
 
 In general, we aim to check the inputs for all external facing functions. This is to ensure that the user is aware of any issues with the input data and to provide a consistent error message. See the documentation for `coerce_dt()` for more details. It may also be helpful to review usage in the package more widely, for this `data-converters.R` is a sensible place to start.
+
 - For external facing functions `coerce_dt()` should generally not update by reference (i.e. `copy = TRUE` should be set, the default). In cases where users may benefit from updating by reference the external function should pass through the `copy` argument to `coerce_dt()`.
 - For internal functions `coerce_dt()` should generally update by reference (i.e. `copy = FALSE` should be set) when used internally. This is to avoid unnecessary copying of data.
 
