@@ -25,7 +25,7 @@ More generally when adding functions from external packages (i.e. even if they a
 
 ## Input types and checking
 
-- We support inputs that are coercible to `data.table` objects using `data.table::as.data.table()`. This includes `data.frame` and `tibble` objects. This should be clearly documentede in the function documentation.
+- We support inputs that are coercible to `data.table` objects using `data.table::as.data.table()`. This includes `data.frame` and `tibble` objects. This should be clearly documented in the function documentation.
 - Any required inputs should be clearly documented in the function documentation.
 - We use an internal function `coerce_dt()` to check inputs are coercible to `data.table` objects and have the correct columns. This function is used in all functions that take data as input. The following function demonstrates this pattern:
 
