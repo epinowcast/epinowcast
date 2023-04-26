@@ -96,7 +96,7 @@ Where $\nu_{g,t}$ is the inferred ascertainment and is modelled flexibly using a
 
 # Delay distribution
 
-Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the nowcast, rather than relying on external estimates from other sources (though we may want to account for external information in our priors). In the following section, we describe our default parametric delay distribution model and its extension into a generic, and its extension into a highly flexible delay model based on discrete time-to-event modelling.
+Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors). In the following section, we describe our default parametric delay distribution model and its extension into a generic, highly flexible delay model based on discrete time-to-event modelling.
 
 ## Default model
 
@@ -112,7 +112,7 @@ Here, $p_{g,t,d}$ is the probability that a case in group $g$ with reference tim
 
 ## Generalised model
 
-We generalise this model in order to support a range of delay distributions as well as effects of the reporting process on the delay. Following the approach of Günther et al.[@gunther2021], we parameterise the delay probability ($p_{g,t,d}$) via a discrete-time hazard model, i.e.
+We generalise this model in order to support a range of delay distributions as well as effects of the reporting process on the delay. Following the approach of Günther et al.[@gunther2021] and others, we parameterise the delay probability ($p_{g,t,d}$) via a discrete-time hazard model, i.e.
 
 \begin{equation}
   p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0} p_{g,t,d^{\prime}} \right) \times h_{g,t,d},
@@ -129,7 +129,7 @@ is the so-called reporting hazard. For a case in group $g$ with reference time $
   - **Non-parametric reference time effect $\delta_{g,t,d}$**: effect on the hazard that depends on covariates at the time of reference
   - **Non-parametric report time effect $\epsilon_{g,t,d}$**: effect on the hazard that depends on covariates at the time of report
 
-Each component adds to the overall hazard through a logistic regression
+Each component adds to the overall hazard through a regression with logit link
 \begin{equation}
   \text{logit} (h_{g,t,d}) = \gamma_{g,t,d} + \delta_{g,t,d} + \epsilon_{g,t,d},
 \end{equation}
@@ -137,7 +137,7 @@ Each component adds to the overall hazard through a logistic regression
 where the maximum delay hazard is $h_{g,t,D}=1$, in order to enforce the assumption that all observations are reported within the specified maximum delay. In the following, we describe the parameterisation of the different components.
 
 #### Parametric baseline hazard
-The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference time $t$ is chosen according to a certain parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. By default, this is a discretised log-normal distribution, but other distributions are supported. To discretise the continuous probability distribution into discrete probabilities $p^{\prime}_{g,t,d}$, we use its cumulative distribution function $F^{\mu_{g,t}, \upsilon_{g,t}}$ to compute
+The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference time $t$ is modelled according to a certain parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. By default, this is a discretised log-normal distribution, but other distributions are supported. To discretise the continuous probability distribution into discrete probabilities $p^{\prime}_{g,t,d}$, we use its cumulative distribution function $F^{\mu_{g,t}, \upsilon_{g,t}}$ to compute
 
 $$p^{\prime}_{g,t,d} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
 In words, the discrete probability mass function (pmf) is obtained from the continuous distribution by dividing it into $D$ different bins $$(0,1),\, (1,2),\, \ldots,\, (D-1,D),$$
@@ -159,7 +159,7 @@ Currently, `epinowcast` supports four different parametric distributions: (i) lo
 | [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $exp(\mu_{g,t})/\upsilon_{g,t}$ |
 | [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\frac{exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{sin(\pi/\upsilon_{g,t})}$ |
 
-The pmf obtained from the parametric delay distribution is converted into a hazard on the logit scale using
+The delay probabilities obtained from the discretised delay distribution are converted into hazards on the logit scale using
 
 \begin{equation}
   \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
