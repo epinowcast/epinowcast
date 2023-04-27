@@ -27,20 +27,21 @@ More generally when adding functions from external packages (i.e. even if they a
 
 - We support inputs that are coercible to `data.table` objects using `data.table::as.data.table()`. This includes `data.frame` and `tibble` objects. This should be clearly documented in the function documentation.
 - Any required inputs should be clearly documented in the function documentation.
-- We use an internal function `coerce_dt()` to check inputs are coercible to `data.table` objects and have the correct columns. This function is used in all functions that take data as input. The following function demonstrates this pattern:
+- We use an internal function `coerce_dt()` to check inputs are coercible to `data.table` objects and have the correct columns. This function is used in all functions that take data as input. The following function demonstrates this pattern (note this requires the use of `devtools::load_all() in the package directory):
 
 ```r
 print_dt <- function(dt) {
-    dt <- epinowcast:::coerce_dt(dt, required_cols = c("date", "cases"))
+    dt <- coerce_dt(dt, required_cols = c("date", "cases"))
     return(dt[])
 }
 
 print_dt(mtcars)
-
-print_dt(data.frame(cases = 1, date = Sys.Date()))
 # Error in epinowcast:::coerce_dt(dt, required_cols = c("date", "cases")) : 
 #   The following columns are required: date, cases but are not present among mpg, cyl, disp, hp, drat, wt, qsec, vs, am, gear, carb
 # (all `required_cols`: date, cases)
+print_dt(data.frame(cases = 1, date = Sys.Date()))
+#    cases       date
+# 1:     1 2023-04-27
 ```
 
 In general, we aim to check the inputs for all external facing functions. This is to ensure that the user is aware of any issues with the input data and to provide a consistent error message. See the documentation for `coerce_dt()` for more details. It may also be helpful to review usage in the package more widely, for this `data-converters.R` is a sensible place to start.
