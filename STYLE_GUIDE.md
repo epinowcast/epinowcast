@@ -52,6 +52,19 @@ In general, we aim to check the inputs for all external facing functions. This i
 ## Internal data manipulation
 
 - `data.table` objects are used for internal data manipulation. If you are unfamiliar with `data.table` please see the [documentation](https://rdatatable.gitlab.io/data.table/index.html) and [cheatsheet](https://s3.amazonaws.com/assets.datacamp.com/img/blog/data+table+cheat+sheet.pdf). Prototype code may be written with other tools but will generally need be refactored to use `data.table` before submission (in PRs where help is needed with this please clearly state this).
+- We aim to use more readable vs efficient `data.table` syntax where there is a trade-off (of course the exact trade-off requirers developer judgement). For example, rather than bracket chaining we prefer the use of one-line statements with re-assignment. The following functions demonstrate these patterns:
+
+```r
+library(data.table)
+# we prefer this
+dt <- as.data.table(mtcars)
+dt[, mpg := mpg + 1]
+dt[mpg > 20, cyl := 10]
+dt[, cyl := cyl + 1]
+#over this
+dt_chain <- as.data.table(mtcars)[, mpg := mpg + 1][mpg > 20, cyl := 10][, cyl := cyl + 1]
+```
+
 - We also use `list` structures for more complex objects or where `data.table` is not appropriate. If the appropriate data structure is unclear for the problem at hand please flag this in the issue you are addressing or in the PR discussion.
 
 ## Output types
