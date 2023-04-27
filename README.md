@@ -230,7 +230,7 @@ rows with `index` containing the mapping to the full design matrix.
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
-Construct a model with a random effect for the day of report using the
+Construct a model with a random effect for the date of report using the
 metadata produced by `enw_preprocess_data()`.
 
 ``` r

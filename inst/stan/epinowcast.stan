@@ -34,7 +34,7 @@ data {
   array[s] int csdmax; // cumulative version of sdmax
 
   // Observations
-  array[s, dmax] int obs; // obs by reference time (row) and delay (column)
+  array[s, dmax] int obs; // obs by reference date (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
   array[t, g] int latest_obs; // latest obs by time and group
 
@@ -79,7 +79,7 @@ data {
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
 
-  // Reference time model
+  // Reference date model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -103,7 +103,7 @@ data {
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
   array[2, 1] real rep_beta_sd_p;
 
-  // Missing reference time model
+  // Missing reference date model
   int model_miss;
   int miss_obs;
   int miss_fnindex;
@@ -111,13 +111,13 @@ data {
   int miss_rncol;
   matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
-  // Observations reported without a reference time (by reporting time)
+  // Observations reported without a reference date (by reporting time)
   // --> Since the first dmax-1 obs are not used here, the reporting time
   // --> starts at dmax, not at 1
   array[miss_obs] int missing_reference;
-  // Lookup for the obs index by reference time of entries in missing_reference:
+  // Lookup for the obs index by reference date of entries in missing_reference:
   // --> If observations from entry i of missing_reference had a reporting
-  // --> delay of d, their index in the flat vector of obs by reference time
+  // --> delay of d, their index in the flat vector of obs by reference date
   // --> (e.g. flat_obs) would be: obs_by_report[i, d]
   array[miss_obs, dmax] int obs_by_report;
   // Observations by group (and cumulative) for missing_reference and
@@ -143,7 +143,7 @@ data {
 
 transformed data{
   real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bound
-  // if no reporting time effects use native probability for reference time
+  // if no reporting time effects use native probability for reference date
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
   // Type of likelihood aggregation to use
@@ -173,7 +173,7 @@ parameters {
   vector[rep_fncol] rep_beta;
   vector<lower=0>[rep_rncol] rep_beta_sd; 
 
-  // Missing reference time model
+  // Missing reference date model
   array[model_miss] real miss_int;
   vector[miss_fncol] miss_beta; 
   vector<lower=0>[miss_rncol] miss_beta_sd; 
@@ -197,7 +197,7 @@ transformed parameters{
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
   
-  // Missing reference time model
+  // Missing reference date model
   vector[miss_fnindex] miss_ref_lprop;
 
   // Observation model
@@ -233,7 +233,7 @@ transformed parameters{
   // Reference model
   profile("transformed_delay_reference_time_total") {
   if (model_refp) {
-    // calculate sparse reference time effects
+    // calculate sparse reference date effects
     profile("transformed_delay_reference_time_effects") {
     refp_mean = combine_effects(
       refp_mean_int, refp_mean_beta, refp_fdesign, refp_mean_beta_sd,
@@ -247,7 +247,7 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     } 
     }
-    // calculate reference time logit hazards (unless no reporting effects)
+    // calculate reference date logit hazards (unless no reporting effects)
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
       ref_lh[, i] = discretised_logit_hazard(
@@ -328,7 +328,7 @@ model {
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
-  // Missing reference time model
+  // Missing reference date model
   if (model_miss) {
     miss_int ~ normal(miss_int_p[1], miss_int_p[2]);
     effect_priors_lp(
@@ -444,7 +444,7 @@ generated quantities {
       // from a temporary object to a permanent one
       // drop predictions without linked observations
       pp_obs = allocate_observed_obs(1, s, pp_obs_tmp, sl, csl, sdmax, csdmax);
-      // Posterior predictions for observations missing reference times
+      // Posterior predictions for observations missing reference dates
       if (miss_obs) {
         pp_miss_ref = obs_rng(log_exp_miss_ref, phi, model_obs);
       }

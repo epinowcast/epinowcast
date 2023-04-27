@@ -135,7 +135,7 @@ Construct a parametric lognormal intercept only model for the date of reference 
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
-Construct a model with a random effect for the day of report using the metadata produced by `enw_preprocess_data()`.
+Construct a model with a random effect for the date of report using the metadata produced by `enw_preprocess_data()`.
 
 ```{r}
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)

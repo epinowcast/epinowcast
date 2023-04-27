@@ -117,7 +117,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 This is a major release focusing on improving the user experience, and preparing for future package extensions, with an increase in modularity, development of a flexible and full-featured formula interface, and hopefully future-proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious disease questions to be better answered. These extensions include:
 
 * Modelling missing data (#43).
-* Non-parametric modelling of delay and reference day logit hazard (#4).
+* Non-parametric modelling of delay and reference date logit hazard (#4).
 * Flexible expectation modelling (#5).
 * Forecasting beyond the horizon of the data (#3).
 * Known reporting structures (#33).

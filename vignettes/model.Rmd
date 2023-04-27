@@ -37,13 +37,13 @@ In the following sections we outline our modelling methodology, current feature 
 
 We are concerned with outcomes that occur at a time of _reference_ (e.g., date of symptom onset or test for a disease) that are reported only with a delay, at the time of _report_ (e.g. the date onsets are entered into a central database and so become available for analysis). We assume that these times are measured in discrete time steps, usually of a day (in which case the times are dates).
 
-We follow the approach of Höhle and Heiden[@hohle] and consider the distribution of notifications ($n_{g,t,d}$) by time of reference ($t$) and reporting delay ($d$) conditional on the final observed count $N_{g,t}$ for each dataset ($g$) such that,
+We follow the approach of Höhle and Heiden[@hohle] and consider the distribution of notifications ($n_{g,t,d}$) by date of reference ($t$) and reporting delay ($d$) conditional on the final observed count $N_{g,t}$ for each dataset ($g$) such that,
 
 \begin{equation}
   N_{g,t} = \sum_{d=0}^{D} n_{g,t,d}
 \end{equation}
 
-where $D$ represents the maximum delay between time of reference and time of report which in theory could be infinite but in practice we set to a finite value in order to make the model identifiable and computationally feasible. For each $t$ and $g$ these notifications are assumed to be drawn from a multinomial distribution with $N_{g,t}$ trials and a probability vector ($p_{g,t,d}$) of length $D$.  The aim of nowcasting is to predict the final observed counts $N_{g,t}$ given information available up to time $t$. We do this by estimating the components of this probability vector jointly with the expected number of final notifications ($\lambda_{g,t} = \mathbb{E}[N_{g,t}]$) in dataset $g$ at time $t$.
+where $D$ represents the maximum delay between date of reference and time of report which in theory could be infinite but in practice we set to a finite value in order to make the model identifiable and computationally feasible. For each $t$ and $g$ these notifications are assumed to be drawn from a multinomial distribution with $N_{g,t}$ trials and a probability vector ($p_{g,t,d}$) of length $D$.  The aim of nowcasting is to predict the final observed counts $N_{g,t}$ given information available up to time $t$. We do this by estimating the components of this probability vector jointly with the expected number of final notifications ($\lambda_{g,t} = \mathbb{E}[N_{g,t}]$) in dataset $g$ at time $t$.
 
 An alternative approach  would be to consider each $n_{g,t,d}$ independently at which point the model can be defined as a regression that can be fit using standard software with the appropriate observation model and adjustment for reporting delay (i.e it becomes a Poisson or Negative Binomial regression). An implementation of this approach is available in Bastos et al.[@bastos]. A downside of this simplified approach is that reporting is not conditionally dependent which may make specifying models for complex reporting distributions difficult.
 
@@ -107,7 +107,7 @@ In our default model, we consider the reporting delay to follow a $\text{LogNorm
   \sigma^d &\sim \text{Half-Normal} \left(0, 1 \right).
 \end{align}
 
-This distribution is discretised into daily probabilities $p_{g,t,d}$ (for a case in group $g$ with reference time $t$ to be reported with delay $d$) and adjusted for the maximum delay, see `vignette("distributions")` for details.
+This distribution is discretised into daily probabilities $p_{g,t,d}$ (for a case in group $g$ with reference date $t$ to be reported with delay $d$) and adjusted for the maximum delay, see `vignette("distributions")` for details.
 
 ## Generalised model
 
@@ -122,11 +122,11 @@ where
 $$
 h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d, W_{g,t,d}\right),
 $$
-is the so-called reporting hazard. For a case in group $g$ with reference time $t$, the hazard $h_{g,t,d}$ states the probability of being reported with delay $d$, given that the case is not reported earlier. The hazard depends on a design matrix $W_{g,t,d}$, which encodes a baseline delay distribution and covariates that affect the reporting delay. We extend the model of Günther et al. by decomposing the hazard into three components,
+is the so-called reporting hazard. For a case in group $g$ with reference date $t$, the hazard $h_{g,t,d}$ states the probability of being reported with delay $d$, given that the case is not reported earlier. The hazard depends on a design matrix $W_{g,t,d}$, which encodes a baseline delay distribution and covariates that affect the reporting delay. We extend the model of Günther et al. by decomposing the hazard into three components,
 
-  - **Parametric baseline hazard $\gamma_{g,t,d}$**: hazard derived from a parametric delay distribution, with parameters depending on covariates at the time of reference
-  - **Non-parametric reference time effect $\delta_{g,t,d}$**: effect on the hazard that depends on covariates at the time of reference
-  - **Non-parametric report time effect $\epsilon_{g,t,d}$**: effect on the hazard that depends on covariates at the time of report
+  - **Parametric baseline hazard $\gamma_{g,t,d}$**: hazard derived from a parametric delay distribution, with parameters depending on covariates on the date of reference
+  - **Non-parametric reference date effect $\delta_{g,t,d}$**: effect on the hazard that depends on covariates on the date of reference
+  - **Non-parametric report date effect $\epsilon_{g,t,d}$**: effect on the hazard that depends on covariates on the date of report
 
 Each component adds to the overall hazard through a regression with logit link
 \begin{equation}
@@ -136,22 +136,22 @@ Each component adds to the overall hazard through a regression with logit link
 where the maximum delay hazard is $h_{g,t,D}=1$, in order to enforce the assumption that all observations are reported within the specified maximum delay. In the following, we describe the parameterisation of the different components.
 
 #### Parametric baseline hazard
-The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference time $t$ is modelled according to a certain discretised parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Currently, `epinowcast` supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The distributions are discretised and adjusted for an assumed maximum delay, see `vignette("distributions")` for details. The delay probabilities $p^{\prime}_{g,t,d}$ obtained from the discretised delay distribution are converted into hazards on the logit scale using
+The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference date $t$ is modelled according to a certain discretised parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Currently, `epinowcast` supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The distributions are discretised and adjusted for an assumed maximum delay, see `vignette("distributions")` for details. The delay probabilities $p^{\prime}_{g,t,d}$ obtained from the discretised delay distribution are converted into hazards on the logit scale using
 
 \begin{equation}
   \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
 \end{equation}
 
-In the default case of the log-normal distribution, the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ represent the log mean and log standard deviation. Each parameter is defined using a (log-)linear model. The model consists of an intercept and a number of arbitrary, shared covariates, indexed by reference time. The covariates are multiplied by fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note that these can include auto-regressive terms), i.e.
+In the default case of the log-normal distribution, the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ represent the log mean and log standard deviation. Each parameter is defined using a (log-)linear model. The model consists of an intercept and a number of arbitrary, shared covariates, indexed by reference date. The covariates are multiplied by fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note that these can include auto-regressive terms), i.e.
 
 \begin{align}
   \mu_{g,t} &= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu} Z_{\gamma} \\
   \text{log} (\upsilon_{g,t}) &= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}
 
-#### Non-parametric reference time effect $\delta_{g,t,d}$ and report time effect $\epsilon_{g,t,d}$
+#### Non-parametric reference date effect $\delta_{g,t,d}$ and report date effect $\epsilon_{g,t,d}$
 
-In addition to parametric reporting effects there may also be non-parametric effects referenced by both reference and report dates. These are represented by the non-distributional logit hazard components for the time of reference and report, defined using an intercept ($\delta_0$) and arbitrary, shared covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms).
+In addition to parametric reporting effects there may also be non-parametric effects referenced by both reference and report dates. These are represented by the non-distributional logit hazard components for the date of reference and report, defined using an intercept ($\delta_0$) and arbitrary, shared covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms).
 
 \begin{align}
   \delta_{g,t,d} &= \delta_0 + \beta_{f,\delta} X_{\delta} + \beta_{r,\delta} Z_{\delta} \\
@@ -162,7 +162,7 @@ All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard 
 
 # Observation model and nowcast
 
-Expected notifications by time of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{g,t,d}$). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each reference time by summing posterior estimates for unobserved notification and observed notifications for that reference time.
+Expected notifications by date of reference ($t$) and reporting delay can now be found by multiplying expected final notifications for each $t$ with the probability of reporting for each day of delay ($p_{g,t,d}$). We assume a negative binomial observation model, by default, with a joint overdispersion parameter (with a standard half normal prior on 1 over square root of the overdispersion[@stan_prior_wiki]) and produce a nowcast of final observed notifications at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.
 
 \begin{align}
   n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &\sim \text{NB} \left((1 - \alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T. \\
