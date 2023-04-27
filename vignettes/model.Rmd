@@ -100,15 +100,14 @@ Given case counts both by date of reference and by date of report, we can estima
 
 ## Default model
 
-In our default model, we consider the delay to follow a discretised log-normal distribution, specified as
+In our default model, we consider the reporting delay to follow a $\text{LogNormal} \left(\mu^d, \sigma^d \right)$ distribution, with parameters
 
 \begin{align}
-  p_{g,t,d} &\sim \text{LogNormal} \left(\mu^d, \sigma^d \right) \\
   \mu^d &\sim \text{Normal} \left(0, 1 \right) \\
-  \sigma^d &\sim \text{Half-Normal} \left(0, 1 \right)
+  \sigma^d &\sim \text{Half-Normal} \left(0, 1 \right).
 \end{align}
 
-Here, $p_{g,t,d}$ is the probability that a case in group $g$ with reference time $t$ is reported with delay $d$. 
+This distribution is discretised into daily probabilities $p_{g,t,d}$ (for a case in group $g$ with reference time $t$ to be reported with delay $d$) and adjusted for the maximum delay, see `vignette("distributions")` for details.
 
 ## Generalised model
 
@@ -137,11 +136,11 @@ Each component adds to the overall hazard through a regression with logit link
 where the maximum delay hazard is $h_{g,t,D}=1$, in order to enforce the assumption that all observations are reported within the specified maximum delay. In the following, we describe the parameterisation of the different components.
 
 #### Parametric baseline hazard
-The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference time $t$ is modelled according to a certain parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. By default, this is a discretised log-normal distribution, but other distributions are supported. To discretise the continuous probability distribution into discrete probabilities $p^{\prime}_{g,t,d}$, we use its cumulative distribution function $F^{\mu_{g,t}, \upsilon_{g,t}}$ to compute
+The parametric baseline hazard $\gamma_{g,t,d}$ for a case in group $g$ with reference time $t$ is modelled according to a certain discretised parametric probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Currently, `epinowcast` supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The distributions are discretised and adjusted for an assumed maximum delay, see `vignette("distributions")` for details. The delay probabilities $p^{\prime}_{g,t,d}$ obtained from the discretised delay distribution are converted into hazards on the logit scale using
 
-$$p^{\prime}_{g,t,d} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
-In words, the discrete probability mass function (pmf) is obtained from the continuous distribution by dividing it into $D$ different bins $$(0,1),\, (1,2),\, \ldots,\, (D-1,D),$$
-where $D$ is the maximum delay covered by the model (specified in `epinowcast` via the `max_delay` argument). Importantly, the bins are normalized by $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$, which ensures that the $p^{\prime}_{g,t,d}$ sum to 1. Since $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$ is the probability of reporting before the maximum delay, this can also be interpreted as conditioning our distribution on the maximum delay. Note that because of the discretisation and normalization, the discrete random variable we obtain generally does not have exactly the same moments as the original, continuous distribution.
+\begin{equation}
+  \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
+\end{equation}
 
 In the default case of the log-normal distribution, the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ represent the log mean and log standard deviation. Each parameter is defined using a (log-)linear model. The model consists of an intercept and a number of arbitrary, shared covariates, indexed by reference time. The covariates are multiplied by fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note that these can include auto-regressive terms), i.e.
 
@@ -149,21 +148,6 @@ In the default case of the log-normal distribution, the parameters $\mu_{g,t}$ a
   \mu_{g,t} &= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu} Z_{\gamma} \\
   \text{log} (\upsilon_{g,t}) &= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}
-
-Currently, `epinowcast` supports four different parametric distributions: (i) log-normal (default), (ii) exponential, (iii) gamma, and (iv) log-logistic. The table below provides a link to the definition of each parametric distribution, specifies how the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ are mapped to the parameters of the distribution (according to the referenced definition), and states the resulting mean of the distribution (before discretization and adjustment for the assumed maximum delay).
-
-| Distribution 	| Parametrization | Mean |
-| :--------------:	| :------------:  | :------------------:	|
-| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)  | $\mu=\mu_{g,t}$, $\sigma = \upsilon_{g,t}$	| $exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})$ 	|
-| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html)  | $\beta = exp(-\mu_{g,t})$	| $exp(\mu_{g,t})$ |
-| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $exp(\mu_{g,t})/\upsilon_{g,t}$ |
-| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\frac{exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{sin(\pi/\upsilon_{g,t})}$ |
-
-The delay probabilities obtained from the discretised delay distribution are converted into hazards on the logit scale using
-
-\begin{equation}
-  \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1 -\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
-\end{equation}
 
 #### Non-parametric reference time effect $\delta_{g,t,d}$ and report time effect $\epsilon_{g,t,d}$
 
