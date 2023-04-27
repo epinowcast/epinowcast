@@ -21,7 +21,7 @@ The following guidelines should be followed when using adding dependencies:
 More generally when adding functions from external packages (i.e. even if they are already a dependency) the following should be followed:
 
 - Documented in function documentation using the `@importFrom` tag.
-- Used within functions using the `package::function` format.
+- Used within functions using the `package::function` format (though we make exception for functions from `data.table` as these are all imported by `epinowcast`).
 
 ## Input types and checking
 
