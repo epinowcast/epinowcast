@@ -15,8 +15,8 @@ In general we aim to minimise dependencies on other packages where possible. Thi
 
 The following guidelines should be followed when using adding dependencies:
 
-- Added to the `Imports` or `Suggests` field `DESCRIPTION` file in alphabetical order.
-- In the PR that adds the dependency this should be clearly stated in the PR description along with a justification for the dependency, the number and type of downstream dependencies, and an assessment of the risk of the dependency breaking.
+- Added to the `Imports` or `Suggests` field `DESCRIPTION` file in alphabetical order. A dependency should be an `Imports` if it is required for the package to function and a `Suggests` if it is only required for certain non-core functions or vignettes.
+- In the PR that adds the dependency this should be clearly stated in the PR description along with a justification for the dependency, the number and type of downstream dependencies, and an assessment of the risk of the dependency breaking. In general, the barrier for adding dependencies should be high but is lower for `Suggests` dependencies.
 
 More generally when adding functions from external packages (i.e. even if they are already a dependency) the following should be followed:
 
