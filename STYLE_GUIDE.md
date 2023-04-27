@@ -57,23 +57,23 @@ In general, we aim to check the inputs for all external facing functions. This i
 ## Output types
 
 - For external functions we aim for the output to be a `data.table` object if possible unless a custom class is used (which we generally aim to inherit from the `data.table` class). This is to ensure consistency with the input types and to allow for easy chaining of functions. The following functions demonstrate this pattern:
-- All returned `data.table` objects should be followed with `[]` as this ensures the object prints automatically. The following functions demonstrate this pattern:
+- All returned `data.table` objects should be followed with `[]` as this ensures the object prints automatically. This holds for both internal and external functions in order to improve both the user and developer experience. The following functions demonstrate this pattern:
 
 ```r
 library(data.table)
 
-no_dt_print <- function(dt) {
-    dt <- data.table::as.data.table(dt)
+no_print_iris <- function(dt) {
+    dt <- coerce_dt(dt)
     return(dt)
 }
 
-dt_print <- function(dt) {
-    dt <- data.table::as.data.table(dt)
+print_iris <- function(dt) {
+    dt <- coerce_dt(dt)
     return(dt[])
 }
 
-no_dt_print(iris)
-dt_print(iris)
+no_print_iris(iris)
+print_iris(iris)
 #      Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
 #   1:          5.1         3.5          1.4         0.2    setosa
 #   2:          4.9         3.0          1.4         0.2    setosa
