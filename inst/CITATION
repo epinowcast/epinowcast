@@ -1,7 +1,7 @@
 bibentry(
   "Article",
   title = "epinowcast: Flexible hierarchical nowcasting",
-  author = "Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson",
+  author = "Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther",
   year = 2021,
   journal = "Zenodo",
   doi = "10.5281/zenodo.5637165",
