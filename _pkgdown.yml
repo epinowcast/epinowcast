@@ -15,13 +15,30 @@ template:
       creator: "@seabbs"
       card: summary_large_image
 
-
 development:
   mode: auto
 
 authors:
   Sam Abbott:
     href: "https://www.samabbott.co.uk/"
+    
+navbar:
+  structure:
+    left: [reference, modeldefs, casestudies, changelog]
+    right: [github]
+  components:
+    modeldefs:
+      text: Model definitions
+      menu:
+      - text: Model definition and implementation
+        href: articles/model.html
+      - text: Discretised distributions
+        href: articles/distributions.html
+    casestudies:
+      text: Case studies
+      menu:
+      - text: Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany
+        href: articles/germany-age-stratified-nowcasting.html
     
 reference:
   - title: Nowcast

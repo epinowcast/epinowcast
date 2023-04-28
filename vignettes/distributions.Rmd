@@ -1,0 +1,38 @@
+---
+title: Discretised distributions
+description: "Distributions and their discretisation in epinowcast"
+author: Sam Abbott, Adrian Lison, Felix Günther
+output: rmarkdown::html_document
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+vignette: >
+  %\VignetteIndexEntry{Discretised distributions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This vignette describes the parametric delay distributions that are currently available in `epinowcast` and explains how they are internally discretised.
+
+## Available distributions
+
+The currently available parametric delay distributions are continuous probability distributions with (up to) two parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. The table below provides a link to the definition of each distribution, specifies how the parameters $\mu_{g,t}$ and $\upsilon_{g,t}$ are mapped to the parameters of the distribution (according to the referenced definition), and states the resulting mean of the distribution (before discretization and adjustment for the assumed maximum delay).
+
+| Distribution 	| Parametrization | Mean |
+| :--------------:	| :------------:  | :------------------:	|
+| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)  | $\mu=\mu_{g,t}$, $\sigma = \upsilon_{g,t}$	| $exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})$ 	|
+| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html)  | $\beta = exp(-\mu_{g,t})$	| $exp(\mu_{g,t})$ |
+| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $exp(\mu_{g,t})/\upsilon_{g,t}$ |
+| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\frac{exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{sin(\pi/\upsilon_{g,t})}$ |
+
+## Discretisation and adjustment for maximum delay
+
+In `epinowcast`, delays are modeled in discrete time and with an assumed maximum delay (specified via the `max_delay` argument). Therefore, the continuous delay distributions must be discretised and adjusted for the maximum delay.
+
+To discretise the continuous probability distribution into discrete probabilities $p^{\prime}_{g,t,d}$, we use its cumulative distribution function $F^{\mu_{g,t}, \upsilon_{g,t}}$ to compute
+$$p^{\prime}_{g,t,d} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
+In words, the discrete probability mass function (pmf) is obtained from the continuous distribution by dividing it into $D$ different bins $$(0,1),\, (1,2),\, \ldots,\, (D-1,D),$$
+where $D$ is the maximum delay covered by the model. Importantly, the bins are normalized by $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$, which ensures that the $p^{\prime}_{g,t,d}$ sum to 1. Since $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$ is the probability of reporting before the maximum delay, this can also be interpreted as conditioning our distribution on the maximum delay.
+
+Note that because of the discretisation and normalization, the discrete random variable we obtain generally does not have exactly the same moments as the original, continuous distribution.
+
+

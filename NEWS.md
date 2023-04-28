@@ -51,6 +51,7 @@ This is release is in development. It is not yet ready for production use. If yo
 - Added an example for `enw_replace_priors()` showing how to use a nowcast posterior to update the default priors. See #228 by @seabbs and self-reviewed.
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
 - Added a package style guide (`STYLE_GUIDE.md`) to document the style conventions used in the package. See #64 by @seabbs and reviewed by @pearsonca and @Bisaloo.
+- Improved and extended documentation of discretized, parametric delay distributions. Changed structure of package vignettes (into two categories, model definition vignettes and case study vignettes). See #265 by @FelixGuenther and @adrian-lison and reviewed by @seabbs.
 
 # epinowcast 0.2.0
 
@@ -117,7 +118,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 This is a major release focusing on improving the user experience, and preparing for future package extensions, with an increase in modularity, development of a flexible and full-featured formula interface, and hopefully future-proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious disease questions to be better answered. These extensions include:
 
 * Modelling missing data (#43).
-* Non-parametric modelling of delay and reference day logit hazard (#4).
+* Non-parametric modelling of delay and reference date logit hazard (#4).
 * Flexible expectation modelling (#5).
 * Forecasting beyond the horizon of the data (#3).
 * Known reporting structures (#33).

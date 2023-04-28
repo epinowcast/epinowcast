@@ -398,7 +398,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @param include_days if \code{earilest_date} is not given, the number
 #' of reference dates to include, ending with the latest reference
-#' date included once reporting dates have been removed. If specified
+#' date included once report dates have been removed. If specified
 #' this is indexed to `latest_date` or `remove_days`.
 #'
 #' @param latest_date Date, the latest reference date to include in the

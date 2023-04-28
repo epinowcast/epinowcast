@@ -32,7 +32,7 @@
  * eobs <- exp(expected_obs(tar_obs, date_p + rep(0, 30), 1))
  * all.equal(eobs, date_p)
  *
- * Example with hazard effect only on last day of report
+ * Example with hazard effect only on last date of report
  * ref_lh <- logit(hazard_to_log_prob(date_p))
  * eobs <- exp(expected_obs(tar_obs, ref_lh, c(rep(0, 29), 0.1), 0))
  * all.equal(eobs, date_p)

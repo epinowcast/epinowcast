@@ -14,7 +14,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
     sl, csl, sg, st, n[3]
   );
 
-  // observation error model (across all reference times and groups)
+  // observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
   tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
   }
@@ -76,7 +76,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
       i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3]
     );
   }
-  // Observation error model (across all reference times and groups)
+  // Observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
   tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
   if (model_miss && miss_obs) {
