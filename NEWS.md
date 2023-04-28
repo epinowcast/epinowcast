@@ -45,6 +45,7 @@ This is release is in development. It is not yet ready for production use. If yo
 
 ## Documentation
 
+- Improved and extended documentation of discretized, parametric delay distributions. Changed structure of package vignettes (into two categories, model definition vignettes and case study vignettes). See #265 by @FelixGuenther and @adrian-lison and reviewed by @seabbs.
 - Added examples for `summary.epinowcast()` and `plot.epinowcast()` methods to the documentation. See #209 by @seabbs and reviewed by @pearsonca.
 - Extended documentation, examples, and tests for internal, preprocessing, and postprocessing functions. See #208 by @seabbs and reviewed by @pearsonca.
 - Added examples for all plot functions. See #209 by @seabbs and reviewed by @pearsonca.
