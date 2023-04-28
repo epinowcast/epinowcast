@@ -141,8 +141,11 @@ The `epinowcast` package is designed to provide users with a flexible and custom
 #### Default Nowcasting Model
 
 The default nowcasting model in `epinowcast` consists of three modules: 
+
 - A process (expectation) module that models the expected counts by date of reference (`reference_date`)
+
 - A parametric reference reporting model which models the reporting distribution for the date of reference
+
 - A non-parametric reporting model which models modifiers on that reporting distribution by date of report (`report_date`), for example, day of the week reporting effects.
 
 In the following sections, we specify simple models for each of these modules. The appropriatness of this specification will vary depending on your context. See our vignettes for further details on model specification and examples of more complex models.
