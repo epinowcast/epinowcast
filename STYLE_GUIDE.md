@@ -47,7 +47,7 @@ print_dt(data.frame(cases = 1, date = Sys.Date()))
 In general, we aim to check the inputs for all external facing functions. This is to ensure that the user is aware of any issues with the input data and to provide a consistent error message. See the documentation for `coerce_dt()` for more details. It may also be helpful to review usage in the package more widely, for this `data-converters.R` is a sensible place to start.
 
 - For external facing functions `coerce_dt()` should generally not update by reference (i.e. `copy = TRUE` should be set, the default). In cases where users may benefit from updating by reference the external function should pass through the `copy` argument to `coerce_dt()`.
-- For internal functions `coerce_dt()` should generally update by reference (i.e. `copy = FALSE` should be set) when used internally. This is to avoid unnecessary copying of data.
+- However, those external functions may be invoked within other package functions, in which case `coerce_dt()` can often update by reference (i.e. `copy = FALSE` should be set). This is to avoid unnecessary copying of data. For purely internal functions, `coerce_dt()` can generally be used with `copy = FALSE`, again because copying is unnecessary. 
 
 ## Internal data manipulation
 
