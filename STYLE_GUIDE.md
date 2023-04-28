@@ -69,7 +69,7 @@ dt_chain <- as.data.table(mtcars)[, mpg := mpg + 1][mpg > 20, cyl := 10][, cyl :
 
 ## Output types
 
-- For external functions we aim for the output to be a `data.table` object if possible unless a custom class is used (which we generally aim to inherit from the `data.table` class). This is to ensure consistency with the input types and to allow for easy chaining of functions. The following functions demonstrate this pattern:
+- For external functions we aim for the output to be a `data.table` object if possible unless a custom class is used (which we generally aim to inherit from the `data.table` class). This is to ensure consistency with the input types and to allow for easy chaining of functions.
 - All returned `data.table` objects should be followed with `[]` as this ensures the object prints automatically. This holds for both internal and external functions in order to improve both the user and developer experience. The following functions demonstrate this pattern:
 
 ```r
