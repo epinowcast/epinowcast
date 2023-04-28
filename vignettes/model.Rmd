@@ -128,7 +128,7 @@ is the so-called reporting hazard. For a case in group $g$ with reference date $
   - **Non-parametric reference date effect $\delta_{g,t,d}$**: effect on the hazard that depends on covariates on the date of reference
   - **Non-parametric report date effect $\epsilon_{g,t,d}$**: effect on the hazard that depends on covariates on the date of report
 
-Each component adds to the overall hazard through a regression with logit link
+Each component adds to the overall hazard through a regression with a logit link
 \begin{equation}
   \text{logit} (h_{g,t,d}) = \gamma_{g,t,d} + \delta_{g,t,d} + \epsilon_{g,t,d},
 \end{equation}

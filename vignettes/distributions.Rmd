@@ -1,7 +1,7 @@
 ---
 title: Discretised distributions
 description: "Distributions and their discretisation in epinowcast"
-author: Sam Abbott, Adrian Lison, Felix Günther, Sebastian Funk
+author: Sam Abbott, Adrian Lison, Felix Günther
 output: rmarkdown::html_document
 bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
