@@ -217,7 +217,7 @@ pobs
 #>    missing_reference  reporting_triangle      metareference          metareport
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
 #>             metadelay time snapshots by groups max_delay   max_date
-#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
+#> 1: <data.table[40x4]>   41        41         1 <list[3]> 2021-08-22
 ```
 
 Construct a parametric lognormal intercept only model for the date of
@@ -271,7 +271,7 @@ nowcast <- epinowcast(pobs,
   expectation = expectation_module,
   reference = reference_module,
   report = report_module,
-  fit = enw_fit_opts(,
+  fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
     iter_sampling = 500, iter_warmup = 500,
@@ -293,13 +293,13 @@ nowcast
 #>    missing_reference  reporting_triangle      metareference          metareport
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
 #>             metadelay time snapshots by groups max_delay   max_date
-#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
+#> 1: <data.table[40x4]>   41        41         1 <list[3]> 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.02
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 193                0.193    124.8
+#> 1:                  80                 0.08    161.6
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -319,28 +319,28 @@ nowcast |>
 #>  8:     2021-07-21  2021-08-22      1          91       DE       00+      91
 #>  9:     2021-07-22  2021-08-22      1          99       DE       00+      99
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
-#>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
-#>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.039     69 0.1936918 0.0000 69
-#>  3:                 1    37             0  47.092     47 0.3092436 0.0000 47
-#>  4:                 1    36             0  65.203     65 0.4494363 0.0000 65
-#>  5:                 1    35             0  50.239     50 0.5139486 0.0000 50
-#>  6:                 1    34             0  36.244     36 0.5125688 0.0000 36
-#>  7:                 1    33             0  94.453     94 0.6901212 0.0000 94
-#>  8:                 1    32             0  91.806     92 0.9050874 1.4826 91
-#>  9:                 1    31             0 100.079    100 1.1036199 1.4826 99
-#> 10:                 1    30             0  87.228     87 1.1744766 1.4826 86
-#>     q95      rhat  ess_bulk  ess_tail
-#>  1:  72        NA        NA        NA
-#>  2:  69 1.0001863  857.4639  857.4639
-#>  3:  48 0.9983530 1063.5354 1016.3595
-#>  4:  66 1.0068361  943.9105  976.6578
-#>  5:  51 1.0003465  939.8898  889.9685
-#>  6:  37 0.9988009 1084.6138  980.0410
-#>  7:  96 0.9988456  980.6331 1027.6964
-#>  8:  93 1.0005417  907.1180  892.1914
-#>  9: 102 1.0020873  705.1886  820.2658
-#> 10:  89 1.0006704  854.8510  850.6764
+#>     cum_prop_reported delay prop_reported   mean median        sd    mad q5 q95
+#>  1:                 1    39             0 72.000     72 0.0000000 0.0000 72  72
+#>  2:                 1    38             0 69.043     69 0.2078321 0.0000 69  69
+#>  3:                 1    37             0 47.087     47 0.2991998 0.0000 47  48
+#>  4:                 1    36             0 65.180     65 0.4216370 0.0000 65  66
+#>  5:                 1    35             0 50.232     50 0.4903228 0.0000 50  51
+#>  6:                 1    34             0 36.223     36 0.4954962 0.0000 36  37
+#>  7:                 1    33             0 94.515     94 0.7295939 0.0000 94  96
+#>  8:                 1    32             0 91.731     91 0.9173225 0.0000 91  94
+#>  9:                 1    31             0 99.968    100 0.9929562 1.4826 99 102
+#> 10:                 1    30             0 87.105     87 1.1068876 1.4826 86  89
+#>          rhat  ess_bulk  ess_tail
+#>  1:        NA        NA        NA
+#>  2: 0.9980409  997.3506  994.6267
+#>  3: 0.9988060  973.5019  975.2912
+#>  4: 0.9988922 1079.7729 1032.3819
+#>  5: 0.9995436  876.8179  834.5515
+#>  6: 0.9982176  970.9203  872.6313
+#>  7: 1.0001539 1068.0980  848.4224
+#>  8: 1.0047752  898.4210  910.1080
+#>  9: 1.0006086 1085.2779 1053.2228
+#> 10: 0.9987012  986.3788  907.2598
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -388,18 +388,18 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    435
-#>     2:                 1    33             0      1          2     2    435
-#>     3:                 1    33             0      1          3     3    433
-#>     4:                 1    33             0      1          4     4    435
-#>     5:                 1    33             0      1          5     5    435
+#>        cum_prop_reported delay prop_reported sample .chain .iteration .draw
+#>     1:                 1    33             0    435      1          1     1
+#>     2:                 1    33             0    434      1          2     2
+#>     3:                 1    33             0    434      1          3     3
+#>     4:                 1    33             0    434      1          4     4
+#>     5:                 1    33             0    435      1          5     5
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2062
-#> 33997:                 1     0             1      2        497   997   2465
-#> 33998:                 1     0             1      2        498   998   1917
-#> 33999:                 1     0             1      2        499   999   2209
-#> 34000:                 1     0             1      2        500  1000   1877
+#> 33996:                 1     0             1   1974      2        496   996
+#> 33997:                 1     0             1   1958      2        497   997
+#> 33998:                 1     0             1   1994      2        498   998
+#> 33999:                 1     0             1   2071      2        499   999
+#> 34000:                 1     0             1   2108      2        500  1000
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
