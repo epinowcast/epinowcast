@@ -144,15 +144,15 @@ The default nowcasting model in `epinowcast` consists of three modules:
 
 - A process (expectation) module that models the expected counts by date of reference (`reference_date`)
 
-- A parametric reference reporting model which models the reporting distribution for the date of reference
+- A parametric reference reporting model which models the reporting distribution from the date of reference
 
 - A non-parametric reporting model which models modifiers on that reporting distribution by date of report (`report_date`), for example, day of the week reporting effects.
 
-In the following sections, we specify simple models for each of these modules. The appropriatness of this specification will vary depending on your context. See our vignettes for further details on model specification and examples of more complex models.
+In the following sections, we specify simple models for each of these modules. The appropriatness of these specifications will vary depending on your context. See our vignettes for further details on model specification and examples of more complex models.
 
 #### Process model
 
-A commonly used process model is to model expected counts by date of reference using a lognormal random walk. This model strives to strike a balance between capturing the underlying data generation process while being primarily dependent upon the information provided by available observations. Users may specify this model using the enw_expectation() function. Here, day refers to the number of days from the start of the data.
+A commonly used nowcasting process model is to model expected counts by date of reference using a lognormal random walk. This strives to strike a balance between capturing the underlying data generation process while being primarily dependent upon the information provided by available observations and their reporting delays. Users may specify this model using the enw_expectation() function. Here, day refers to the number of days from the start of the data.
 
 ```{r}
 expectation_module <- enw_expectation(
@@ -160,16 +160,16 @@ expectation_module <- enw_expectation(
 )
 ```
 
-Note as the process model is parameterised as a growth rate a random effect (i.e. `(1 | day)`) is equivalent to a random walk on the log scale. Here, we are defining a random effect as follows:
+Note as the process model is parameterised as a growth rate a random effect (i.e. `(1 | day)`) is equivalent to a random walk on the log scale. Here, we are defining a random effect as,
 
 $$ \text{day} \sim \mathcal{Normal}(0, \sigma) $$
-$$ \sigma \sim \mathcal{Half-Normal}(0, 1)$$
+$$ \sigma \sim \mathcal{Half-Normal}(0, 1).$$
 
 Where $\mathcal{Half-Normal}$ is a normal distribution bounded to be greater than 0.
 
 #### Reporting model by reference date
 
-Our baseline assumption about the reporting delay is that it is lognormally distributed, and static over time and strata. We can specify this model using the `enw_reference()` function,
+Our baseline assumption for the reporting delay is that it is lognormally distributed, and static over time and strata. We can specify this model using the `enw_reference()` function,
 
 ```{r}
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
@@ -187,7 +187,7 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 
 ### Precompiling the model
 
-As `epinowcast` uses `cmdstan` to fit its models it is necessary to first then compile the base model. This can be done using the `enw_model()` function. Note that this step can be left to `epinowcast` but here we want to use multiple cores per chain to speed up model fitting and so need to compile the model with this feature turned on.
+As `epinowcast` uses `cmdstan` to fit its models it is necessary to first compile the model. This can be done using the `enw_model()` function. Note that this step can be left to `epinowcast` but here we want to use multiple cores per chain to speed up model fitting and so need to compile the model with this feature turned on.
 
 ```{r}
 model <- enw_model(threads = TRUE)
@@ -195,7 +195,7 @@ model <- enw_model(threads = TRUE)
 
 ### Bringing it all together: Fitting the model
 
-We now fit the model using the ["No-U-Turn Sampler Markov Chain Monte Carlo" method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html). This method is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core model fitting method used by `cmdstan`. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specfiy fitting options here using `enw_fit_opts()` (not these options are tuned for speed here and may not be appropriate for many real world use cases), we also pass our preprocessed data (`pobs`), our pre-compiled model (`model`), and our model modules (`expectation_module`, `reference_module`, `report_module`) to `epinowcast` where they are combined and used to fit the model
+We now fit the model using the ["No-U-Turn Sampler Markov Chain Monte Carlo" method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html). This is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core fitting method used by `cmdstan`. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specfiy fitting options here using `enw_fit_opts()` (note these options are tuned for speed and may not be appropriate for many real world use cases), we also pass our preprocessed data (`pobs`), our pre-compiled model (`model`), and our model modules (`expectation_module`, `reference_module`, and `report_module`) to `epinowcast` where they are combined and used to fit the model.
 
 ```{r}
 options(mc.cores = 2)
@@ -239,7 +239,7 @@ plot(nowcast, latest_obs = latest_germany_hosp)
 
 ### Plotting posterior predictions
 
-Plotting posterior predictions can be a  useful way of assessing performance and checking that the model is capturing the underlying data generation process. We can do this directly on the output of `epinowcast()`,
+Plotting posterior predictions can be a  useful way of assessing performance and checking that the model is capturing the underlying data generation process adequately. We can do this directly on the output of `epinowcast()`,
 
 ```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
 plot(nowcast, type = "posterior") +
@@ -248,7 +248,7 @@ plot(nowcast, type = "posterior") +
 
 ### Using package functions rather than S3 methods
 
-Rather than using S3 methods supplied for `epinowcast` directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.
+Rather than using S3 methods supplied for `epinowcast()` directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.
 
 ```{r week_nowcast}
 # extract samples
@@ -271,7 +271,7 @@ sum_across_last_7_days <- enw_summarise_samples(samples)
 enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 ```
 
-Here we see that the model is underestimating the incidence of hospitalisations. There are a range of potential reasons for this with the first being that the process model does not fully capture the trend or day of the week periodicity evident in the data. See our case study vignettes for ideas on how deal with these issues.
+Here we see that the model is underestimating the incidence of hospitalisations that were ultimately reported. There are a range of potential reasons for this with the first being that the process model does not fully capture the trend or day of the week periodicity evident in the data. See our case study vignettes for ideas on how deal with these issues.
 
 ## Citation
 
