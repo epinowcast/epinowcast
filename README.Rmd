@@ -136,7 +136,7 @@ The returned output is in the form of a `data.table` with metadata stored as var
 
 ### Model specification
 
-The `epinowcast` package is designed to provide users with a flexible and customizable modelling framework. The package comes equipped with several modules that users can utilize to construct models, and also enables users to create their own modules. These tools ensure that models are tailored to the user's specific data and context.
+The `epinowcast` package is designed to provide users with a flexible and customizable modelling framework. The package comes equipped with several modules that users can utilize to construct models, and also enables users to create their own modules. These ensires that models are tailored to the user's specific data and context.
 
 #### Default Nowcasting Model
 
@@ -152,7 +152,7 @@ In the following sections, we specify simple models for each of these modules. T
 
 #### Process model
 
-A commonly used process model in the epinowcast package is to model expected counts by date of reference using a lognormal random walk. This model strives to strike a balance between capturing the underlying data generation process while being primarily dependent upon the information provided by available observations. Users may specify this model using the enw_expectation() function. Here, day refers to the number of days from the start of the data.
+A commonly used process model is to model expected counts by date of reference using a lognormal random walk. This model strives to strike a balance between capturing the underlying data generation process while being primarily dependent upon the information provided by available observations. Users may specify this model using the enw_expectation() function. Here, day refers to the number of days from the start of the data.
 
 ```{r}
 expectation_module <- enw_expectation(

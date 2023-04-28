@@ -160,7 +160,7 @@ Below we first filter for a snapshot of retrospective data available 40
 days before the 1st of October that contains 40 days of data and then
 produce the nowcast target based on the latest available
 hospitalisations by date of positive test. This will allow us to
-visualise how our nowcast made at the time does against what was
+visualise how our nowcast made at the time compares to what was
 ultimately reported.
 
 ``` r
@@ -187,13 +187,13 @@ retro_nat_germany
 ```
 
 This data is already in a format that can be used with `epinowcast` as
-there is a reference date (`reference_date`, the date of the observatio
-in this example the date of a positive test), a report date
+there is a reference date (`reference_date`, the date of the observation
+- in this example the date of a positive test), a report date
 (`report_date`, the date of report for a given set of observations by
 reference date), and a count (`confirm`, the total (i.e. cumulative)
 number of hospitalisations by reference date and report date). The
 package also provides a range of tools to convert from line list,
-incidence, or other common formats (see [Data
+incidence, or other common formats into the required format (see [Data
 converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)).
 
 ``` r
@@ -261,6 +261,7 @@ that reporting distribution by date of report (`report_date`), for
 example, day of the week reporting effects.
 =======
 The default nowcasting model in `epinowcast` consists of three modules:
+<<<<<<< HEAD
 - A process (expectation) module that models the expected counts by date
 of reference (`reference_date`) - A parametric reference reporting model
 which models the reporting distribution for the date of reference - A
@@ -268,6 +269,18 @@ non-parametric reporting model which models modifiers on that reporting
 distribution by date of report (`report_date`), for example, day of the
 week reporting effects.
 >>>>>>> 06ed4739 (edits)
+=======
+
+  - A process (expectation) module that models the expected counts by
+    date of reference (`reference_date`)
+
+  - A parametric reference reporting model which models the reporting
+    distribution for the date of reference
+
+  - A non-parametric reporting model which models modifiers on that
+    reporting distribution by date of report (`report_date`), for
+    example, day of the week reporting effects.
+>>>>>>> af782598 (update process model)
 
 In the following sections, we specify simple models for each of these
 modules. The appropriatness of this specification will vary depending on
@@ -419,8 +432,12 @@ nowcast
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
+<<<<<<< HEAD
 #> 1:                  48                0.048     42.6
 >>>>>>> 06ed4739 (edits)
+=======
+#> 1:                  14                0.014     43.3
+>>>>>>> af782598 (update process model)
 ```
 
 ### Summarising and plotting the nowcast
@@ -445,6 +462,7 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
+<<<<<<< HEAD
 <<<<<<< HEAD
 #>  2:                 1    38             0  69.035     69 0.1892374 0.0000 69
 #>  3:                 1    37             0  47.079     47 0.3047160 0.0000 47
@@ -488,6 +506,28 @@ nowcast |>
 #>  9: 102 0.9996441 1033.4852  982.4887
 #> 10:  89 1.0002512 1049.3322 1050.4254
 >>>>>>> 06ed4739 (edits)
+=======
+#>  2:                 1    38             0  69.039     69 0.1936918 0.0000 69
+#>  3:                 1    37             0  47.100     47 0.3195342 0.0000 47
+#>  4:                 1    36             0  65.190     65 0.4450821 0.0000 65
+#>  5:                 1    35             0  50.260     50 0.5202602 0.0000 50
+#>  6:                 1    34             0  36.248     36 0.5027412 0.0000 36
+#>  7:                 1    33             0  94.506     94 0.7351901 0.0000 94
+#>  8:                 1    32             0  91.744     92 0.9398656 1.4826 91
+#>  9:                 1    31             0 100.055    100 1.0840434 1.4826 99
+#> 10:                 1    30             0  87.147     87 1.1218956 1.4826 86
+#>     q95      rhat  ess_bulk  ess_tail
+#>  1:  72        NA        NA        NA
+#>  2:  69 1.0023305  978.9713  978.9713
+#>  3:  48 1.0003308 1014.2037 1012.2030
+#>  4:  66 0.9986686  939.1638  920.7313
+#>  5:  51 1.0007592  912.5349  895.1430
+#>  6:  37 1.0000791  886.1810  897.7615
+#>  7:  96 1.0010684 1011.8911  951.3583
+#>  8:  93 1.0009409  943.7979  884.3028
+#>  9: 102 1.0000774  893.6840 1000.3986
+#> 10:  89 0.9997888  769.0021  946.2895
+>>>>>>> af782598 (update process model)
 ```
 
 Similarly the summarised nowcast can be plotted against the latest
@@ -543,6 +583,7 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 <<<<<<< HEAD
+<<<<<<< HEAD
 #>     1:                 1    33             0      1          1     1    434
 #>     2:                 1    33             0      1          2     2    435
 #>     3:                 1    33             0      1          3     3    433
@@ -567,6 +608,19 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:                 1     0             1      2        499   999   2274
 #> 34000:                 1     0             1      2        500  1000   2006
 >>>>>>> 06ed4739 (edits)
+=======
+#>     1:                 1    33             0      1          1     1    436
+#>     2:                 1    33             0      1          2     2    433
+#>     3:                 1    33             0      1          3     3    435
+#>     4:                 1    33             0      1          4     4    435
+#>     5:                 1    33             0      1          5     5    434
+#>    ---                                                                     
+#> 33996:                 1     0             1      2        496   996   2108
+#> 33997:                 1     0             1      2        497   997   2006
+#> 33998:                 1     0             1      2        498   998   2074
+#> 33999:                 1     0             1      2        499   999   2234
+#> 34000:                 1     0             1      2        500  1000   2190
+>>>>>>> af782598 (update process model)
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
