@@ -89,14 +89,17 @@
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -251,7 +254,7 @@
 <p>Construct a parametric lognormal intercept only model for the date of reference using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix for parametric delay distributions to reduce runtimes so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
-<p>Construct a model with a random effect for the day of report using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p>
+<p>Construct a model with a random effect for the date of report using the metadata produced by <code><a href="reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 <p>Construct a model with a lognormal random walk on expected cases. See <code><a href="reference/enw_expectation.html">enw_expectation()</a></code> for other suggested choices.</p>
@@ -295,11 +298,11 @@
 <span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22</span></span>
 <span><span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[8]&gt;    1000     1.03</span></span>
+<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[8]&gt;    1000     1.02</span></span>
 <span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
 <span><span class="co">#&gt; 1:                     0                         0             8</span></span>
 <span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                 104                0.104     76.3</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:                 193                0.193    124.8</span></span></code></pre></div>
 <p>Summarise the nowcast for the latest snapshot of data.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
@@ -318,26 +321,26 @@
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
 <span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
 <span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.052     69 0.2309748 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.090     47 0.2999833 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.186     65 0.4467702 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.272     50 0.5237273 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.238     36 0.4833111 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.466     94 0.7234413 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.818     92 0.9163600 1.4826 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.034    100 1.0862891 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.169     87 1.1453169 1.4826 86</span></span>
-<span><span class="co">#&gt;        q95      rhat  ess_bulk  ess_tail</span></span>
-<span><span class="co">#&gt;  1:  72.00        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  69.05 0.9985267  996.4221 1003.4172</span></span>
-<span><span class="co">#&gt;  3:  48.00 1.0001713  931.8566  925.7191</span></span>
-<span><span class="co">#&gt;  4:  66.00 0.9991242 1082.8792 1043.1154</span></span>
-<span><span class="co">#&gt;  5:  51.00 1.0021465 1042.1404 1073.5649</span></span>
-<span><span class="co">#&gt;  6:  37.00 0.9993967 1023.9880  985.6183</span></span>
-<span><span class="co">#&gt;  7:  96.00 1.0017263  898.4902  943.5495</span></span>
-<span><span class="co">#&gt;  8:  94.00 0.9998329  965.2067  891.1079</span></span>
-<span><span class="co">#&gt;  9: 102.00 1.0011457  759.0457  593.3755</span></span>
-<span><span class="co">#&gt; 10:  89.00 1.0016938  887.4992  789.4787</span></span></code></pre></div>
+<span><span class="co">#&gt;  2:                 1    38             0  69.039     69 0.1936918 0.0000 69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.092     47 0.3092436 0.0000 47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.203     65 0.4494363 0.0000 65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.239     50 0.5139486 0.0000 50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.244     36 0.5125688 0.0000 36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.453     94 0.6901212 0.0000 94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.806     92 0.9050874 1.4826 91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.079    100 1.1036199 1.4826 99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.228     87 1.1744766 1.4826 86</span></span>
+<span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
+<span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
+<span><span class="co">#&gt;  2:  69 1.0001863  857.4639  857.4639</span></span>
+<span><span class="co">#&gt;  3:  48 0.9983530 1063.5354 1016.3595</span></span>
+<span><span class="co">#&gt;  4:  66 1.0068361  943.9105  976.6578</span></span>
+<span><span class="co">#&gt;  5:  51 1.0003465  939.8898  889.9685</span></span>
+<span><span class="co">#&gt;  6:  37 0.9988009 1084.6138  980.0410</span></span>
+<span><span class="co">#&gt;  7:  96 0.9988456  980.6331 1027.6964</span></span>
+<span><span class="co">#&gt;  8:  93 1.0005417  907.1180  892.1914</span></span>
+<span><span class="co">#&gt;  9: 102 1.0020873  705.1886  820.2658</span></span>
+<span><span class="co">#&gt; 10:  89 1.0006704  854.8510  850.6764</span></span></code></pre></div>
 <p>Plot the summarised nowcast against currently observed data (or optionally more recent data for comparison purposes).</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
@@ -370,17 +373,17 @@
 <span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    434</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    434</span></span>
-<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    434</span></span>
-<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    438</span></span>
-<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    434</span></span>
+<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    435</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    435</span></span>
+<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    433</span></span>
+<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    435</span></span>
+<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    435</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2026</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2123</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1999</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2197</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2093</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2062</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2465</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1917</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2209</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   1877</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -474,6 +477,7 @@
 <li>Sebastian Funk <br><small class="roles"> Author </small>  </li>
 <li>Carl Pearson <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-0701-7860" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Hugo Gruson <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-4094-1476" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Felix Guenther <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-6582-1174" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -486,7 +490,7 @@
 
     <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson.</p>
+<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">

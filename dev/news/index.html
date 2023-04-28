@@ -34,14 +34,17 @@
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="active nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -129,6 +132,7 @@
 <li>Added an example for <code><a href="../reference/enw_replace_priors.html">enw_replace_priors()</a></code> showing how to use a nowcast posterior to update the default priors. See <a href="https://github.com/epinowcast/epinowcast/issues/228" class="external-link">#228</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
 <li>Updated the package citation and documentation to include all new authors as of the <code>0.2.1</code> release and to use the recommended <code><a href="https://rdrr.io/r/utils/bibentry.html" class="external-link">bibentry()</a></code> approach. See <a href="https://github.com/epinowcast/epinowcast/issues/236" class="external-link">#236</a> and <a href="https://github.com/epinowcast/epinowcast/issues/237" class="external-link">#237</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a>.</li>
 <li>Added a package style guide (<code>STYLE_GUIDE.md</code>) to document the style conventions used in the package. See <a href="https://github.com/epinowcast/epinowcast/issues/64" class="external-link">#64</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a> and <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a>.</li>
+<li>Improved and extended documentation of discretized, parametric delay distributions. Changed structure of package vignettes (into two categories, model definition vignettes and case study vignettes). See <a href="https://github.com/epinowcast/epinowcast/issues/265" class="external-link">#265</a> by <a href="https://github.com/FelixGuenther" class="external-link">@FelixGuenther</a> and <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -190,7 +194,7 @@
 <h2 class="pkg-version" data-toc-text="0.1.0" id="epinowcast-010">epinowcast 0.1.0<a class="anchor" aria-label="anchor" href="#epinowcast-010"></a></h2>
 <p>This is a major release focusing on improving the user experience, and preparing for future package extensions, with an increase in modularity, development of a flexible and full-featured formula interface, and hopefully future-proofing as far as possible. This prepares the ground for future model extensions which will allow a broad range of real-time infectious disease questions to be better answered. These extensions include:</p>
 <ul><li>Modelling missing data (<a href="https://github.com/epinowcast/epinowcast/issues/43" class="external-link">#43</a>).</li>
-<li>Non-parametric modelling of delay and reference day logit hazard (<a href="https://github.com/epinowcast/epinowcast/issues/4" class="external-link">#4</a>).</li>
+<li>Non-parametric modelling of delay and reference date logit hazard (<a href="https://github.com/epinowcast/epinowcast/issues/4" class="external-link">#4</a>).</li>
 <li>Flexible expectation modelling (<a href="https://github.com/epinowcast/epinowcast/issues/5" class="external-link">#5</a>).</li>
 <li>Forecasting beyond the horizon of the data (<a href="https://github.com/epinowcast/epinowcast/issues/3" class="external-link">#3</a>).</li>
 <li>Known reporting structures (<a href="https://github.com/epinowcast/epinowcast/issues/33" class="external-link">#33</a>).</li>
@@ -293,7 +297,7 @@
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">
