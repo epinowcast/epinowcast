@@ -126,11 +126,11 @@ available
 ## Quick start
 
 In this quick start we use COVID-19 hospitalisations by date of positive
-test in Germany available up to the 1st of October 2021 to demonstrate
-the specification and fitting of a simple nowcasting model using
-`epinowcast`. Examples using more complex models are available in the
-package vignettes and in the papers linked to in the literature
-vignette.
+test and date of test report in Germany available up to the 1st of
+October 2021 to demonstrate the specification and fitting of a simple
+nowcasting model using `epinowcast`. Examples using more complex models
+are available in the package vignettes and in the papers linked to in
+the literature vignette.
 
 ### Package
 
@@ -186,6 +186,16 @@ retro_nat_germany
 #> 861:     2021-07-13       DE       00+      59  2021-08-22
 ```
 
+This data is already in a format that can be used with `epinowcast` as
+there is a reference date (`reference_date`, the date of the observatio
+in this example the date of a positive test), a report date
+(`report_date`, the date of report for a given set of observations by
+reference date), and a count (`confirm`, the total (i.e. cumulative)
+number of hospitalisations by reference date and report date). The
+package also provides a range of tools to convert from line list,
+incidence, or other common formats (see [Data
+converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)).
+
 ``` r
 latest_germany_hosp <- nat_germany_hosp |>
   enw_latest_data() |>
@@ -204,12 +214,17 @@ head(latest_germany_hosp, n = 10)
 #> 10:     2021-07-22       DE       00+      99  2021-10-01
 ```
 
-### Data preprocessing and model specification
+### Data preprocessing
 
-Process reported data into format required for `epinowcast` and return
-in a `data.table`. At this stage specify grouping (i.e age, location) if
-any. It can be useful to check this output before beginning to model to
-make sure everything is as expected.
+To be used for modelling the input data needs to be converted into the
+“reporting triangle” format (see [our model description for
+details](https://package.epinowcast.org/articles/model)). We also need
+to determine metadata to facilitate model specification. This includes
+the number of days of data to use for the reference and report modules,
+the maximum delay to consider, and the grouping (i.e. age group,
+location, or both) of observations (if any). Process reported data into
+format required for `epinowcast` and return in a `data.table`. At this
+stage specify grouping (i.e age, location) if any.
 
 ``` r
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
@@ -222,25 +237,42 @@ pobs
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 ```
 
-Construct a parametric lognormal intercept only model for the date of
-reference using the metadata produced by `enw_preprocess_data()`. Note
-that `epinowcast` uses a sparse design matrix for parametric delay
-distributions to reduce runtimes so the design matrix shows only unique
-rows with `index` containing the mapping to the full design matrix.
+The returned output is in the form of a `data.table` with metadata
+stored as variables. It can be useful to check this output before
+beginning to model to make sure everything is as expected.
 
-``` r
-reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
-```
+### Model specification
 
-Construct a model with a random effect for the date of report using the
-metadata produced by `enw_preprocess_data()`.
+The `epinowcast` package is designed to provide users with a flexible
+and customizable modelling framework. The package comes equipped with
+several modules that users can utilize to construct models, and also
+enables users to create their own modules. These tools ensure that
+models are tailored to the user’s specific data and context.
 
-``` r
-report_module <- enw_report(~ (1 | day_of_week), data = pobs)
-```
+#### Default Nowcasting Model
 
-Construct a model with a lognormal random walk on expected cases. See
-`enw_expectation()` for other suggested choices.
+The default nowcasting model in `epinowcast` consists of three
+modules: - A process (expectation) module that models the expected
+counts by date of reference (`reference_date`) - A parametric reference
+reporting model which models the reporting distribution for the date of
+reference - A non-parametric reporting model which models modifiers on
+that reporting distribution by date of report (`report_date`), for
+example, day of the week reporting effects.
+
+In the following sections, we specify simple models for each of these
+modules. The appropriatness of this specification will vary depending on
+your context. See our vignettes for further details on model
+specification and examples of more complex models.
+
+#### Process model
+
+A commonly used process model in the epinowcast package is to model
+expected counts by date of reference using a lognormal random walk. This
+model strives to strike a balance between capturing the underlying data
+generation process while being primarily dependent upon the information
+provided by available observations. Users may specify this model using
+the enw_expectation() function. Here, day refers to the number of days
+from the start of the data.
 
 ``` r
 expectation_module <- enw_expectation(
@@ -248,45 +280,94 @@ expectation_module <- enw_expectation(
 )
 ```
 
-### Model fitting
+Note as the process model is parameterised as a growth rate a random
+effect (i.e. `(1 | day)`) is equivalent to a random walk on the log
+scale. Here, we are defining a random effect as follows:
 
-First compile the model. This step can be left to `epinowcast` but here
-we want to use multiple cores per chain to speed up model fitting and so
-need to compile the model with this feature turned on.
+$$ \text{day} \sim \mathcal{Normal}(0, \sigma) $$
+$$ \sigma \sim \mathcal{Half-Normal}(0, 1)$$
+
+Where $\mathcal{Half-Normal}$ is a normal distribution bounded to be
+greater than 0.
+
+#### Reporting model by reference date
+
+Our baseline assumption about the reporting delay is that it is
+lognormally distributed, and static over time and strata. We can specify
+this model using the `enw_reference()` function,
+
+``` r
+reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
+```
+
+Note that the default distribution is lognormal and so the distribution
+argument can be omitted.
+
+#### Reporting modifiers by report date
+
+Even where there is evidence that reporting processes can be
+approximated by a single distribution, there may be additional reporting
+modifiers that are not captured by the reference model. For example,
+reporting may be lower on weekends or holidays. We can specify a model
+for these modifiers using a hazard formulation (see [our model
+description for details](https://package.epinowcast.org/articles/model))
+using the `enw_report()` function. Here we specify a model with a random
+effect for the day of the week to capture weekly reporting effects.
+
+``` r
+report_module <- enw_report(~ (1 | day_of_week), data = pobs)
+```
+
+### Precompiling the model
+
+As `epinowcast` uses `cmdstan` to fit its models it is necessary to
+first then compile the base model. This can be done using the
+`enw_model()` function. Note that this step can be left to `epinowcast`
+but here we want to use multiple cores per chain to speed up model
+fitting and so need to compile the model with this feature turned on.
 
 ``` r
 model <- enw_model(threads = TRUE)
 ```
 
-We now fit the model and produce a nowcast using this fit. Note that
-here we use two chains each using two threads as a demonstration but in
-general using 4 chains is recommended. Also note that warm-up and
-sampling iterations have been set below default values to reduce compute
-requirements but this may not be sufficient for many real world use
-cases. Finally, note that here we have silenced fitting progress and
-potential warning messages for the purposes of keeping this quick start
-short but in general this should not be done.
+### Bringing it all together: Fitting the model
+
+We now fit the model using the [“No-U-Turn Sampler Markov Chain Monte
+Carlo”
+method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html).
+This method is a type of Hamiltonian Monte Carlo (HMC) algorithm and is
+the core model fitting method used by `cmdstan`. The NUTS MCMC method is
+efficient, automatically tunes its own parameters and is robust to
+correlations between parameters, making it fast and effective at
+generating samples from the posterior distribution. We specfiy fitting
+options here using `enw_fit_opts()` (not these options are tuned for
+speed here and may not be appropriate for many real world use cases), we
+also pass our preprocessed data (`pobs`), our pre-compiled model
+(`model`), and our model modules (`expectation_module`,
+`reference_module`, `report_module`) to `epinowcast` where they are
+combined and used to fit the model
 
 ``` r
 options(mc.cores = 2)
-nowcast <- epinowcast(pobs,
+nowcast <- epinowcast(data = pobs,
   expectation = expectation_module,
   reference = reference_module,
   report = report_module,
-  fit = enw_fit_opts(,
+  fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
     iter_sampling = 500, iter_warmup = 500,
-    show_messages = FALSE, refresh = 0
+    show_messages = FALSE
   ),
   model = model
 )
 ```
 
-### Results
+### The `epinowcast` object
 
-Print the output from `epinowcast` which includes diagnostic
-information, the data used for fitting, and the `cmdstanr` object.
+The `epinowcast()` function returns an `epinowcast` object which
+includes diagnostic information, the data used for fitting, and the
+underlying `cmdstanr` object.
 
 ``` r
 nowcast
@@ -297,14 +378,17 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.01
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 124                0.124    183.2
+#> 1:                 489                0.489    321.5
 ```
 
-Summarise the nowcast for the latest snapshot of data.
+### Summarising and plotting the nowcast
+
+The nowcast (the combination of currrenlty observed and predictions of
+unobserved data) can then be summarised using the following,
 
 ``` r
 nowcast |>
@@ -323,30 +407,30 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.043     69 0.2029586 0.0000 69
-#>  3:                 1    37             0  47.084     47 0.2846490 0.0000 47
-#>  4:                 1    36             0  65.190     65 0.4219930 0.0000 65
-#>  5:                 1    35             0  50.254     50 0.5155092 0.0000 50
-#>  6:                 1    34             0  36.231     36 0.5018873 0.0000 36
-#>  7:                 1    33             0  94.498     94 0.7580043 0.0000 94
-#>  8:                 1    32             0  91.743     92 0.8565540 1.4826 91
-#>  9:                 1    31             0 100.030    100 1.0946681 1.4826 99
-#> 10:                 1    30             0  87.123     87 1.1511717 1.4826 86
+#>  2:                 1    38             0  69.035     69 0.1892374 0.0000 69
+#>  3:                 1    37             0  47.079     47 0.3047160 0.0000 47
+#>  4:                 1    36             0  65.179     65 0.4184903 0.0000 65
+#>  5:                 1    35             0  50.272     50 0.5002662 0.0000 50
+#>  6:                 1    34             0  36.230     36 0.4746844 0.0000 36
+#>  7:                 1    33             0  94.489     94 0.7199982 0.0000 94
+#>  8:                 1    32             0  91.735     92 0.8919476 1.4826 91
+#>  9:                 1    31             0 100.069    100 1.1364552 1.4826 99
+#> 10:                 1    30             0  87.140     87 1.1007323 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 0.9992121 1046.6204 1046.6204
-#>  3:  48 1.0037909  930.2387  921.7738
-#>  4:  66 1.0050128  926.4497  894.3515
-#>  5:  51 1.0070681 1054.9662  336.1520
-#>  6:  37 1.0010407  868.9787  891.0973
-#>  7:  96 0.9984852  940.6786 1033.4245
-#>  8:  93 0.9999859  705.0229 1009.8984
-#>  9: 102 0.9997789  906.5662  877.2591
-#> 10:  89 0.9987174  889.7617  916.9815
+#>  2:  69 0.9985263  896.8678  909.4370
+#>  3:  48 0.9988463 1026.2480 1016.3595
+#>  4:  66 0.9983635  869.4378  848.5000
+#>  5:  51 0.9984251 1030.7984  815.3028
+#>  6:  37 0.9991687  989.1594  947.9736
+#>  7:  96 0.9980512  992.7857  944.9026
+#>  8:  93 1.0004805  938.4577  951.0334
+#>  9: 102 1.0014541  895.8439  904.0644
+#> 10:  89 0.9988903  944.5873  890.7303
 ```
 
-Plot the summarised nowcast against currently observed data (or
-optionally more recent data for comparison purposes).
+Similarly the summarised nowcast can be plotted against the latest
+observed data using the following,
 
 ``` r
 plot(nowcast, latest_obs = latest_germany_hosp)
@@ -354,8 +438,12 @@ plot(nowcast, latest_obs = latest_germany_hosp)
 
 <img src="man/figures/README-nowcast-1.png" width="100%" />
 
-Plot posterior predictions for observed notifications by date of report
-as a check of how well the model reproduces the observed data.
+### Plotting posterior predictions
+
+Plotting posterior predictions can be a useful way of assessing
+performance and checking that the model is capturing the underlying data
+generation process. We can do this directly on the output of
+`epinowcast()`,
 
 ``` r
 plot(nowcast, type = "posterior") +
@@ -364,8 +452,10 @@ plot(nowcast, type = "posterior") +
 
 <img src="man/figures/README-pp-1.png" width="100%" />
 
-Rather than using the methods supplied for `epinowcast` directly,
-package functions can also be used to extract nowcast posterior samples,
+### Using package functions rather than S3 methods
+
+Rather than using S3 methods supplied for `epinowcast` directly, package
+functions can also be used to extract nowcast posterior samples,
 summarise them, and then plot them. This is demonstrated here by
 plotting the 7 day incidence for hospitalisations.
 
@@ -391,17 +481,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    437
-#>     2:                 1    33             0      1          2     2    433
-#>     3:                 1    33             0      1          3     3    435
-#>     4:                 1    33             0      1          4     4    434
-#>     5:                 1    33             0      1          5     5    435
+#>     1:                 1    33             0      1          1     1    434
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    433
+#>     4:                 1    33             0      1          4     4    435
+#>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2175
-#> 33997:                 1     0             1      2        497   997   2091
-#> 33998:                 1     0             1      2        498   998   2159
-#> 33999:                 1     0             1      2        499   999   2273
-#> 34000:                 1     0             1      2        500  1000   2111
+#> 33996:                 1     0             1      2        496   996   1990
+#> 33997:                 1     0             1      2        497   997   2098
+#> 33998:                 1     0             1      2        498   998   2204
+#> 33999:                 1     0             1      2        499   999   1962
+#> 34000:                 1     0             1      2        500  1000   2087
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -416,6 +506,12 @@ enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 
 <img src="man/figures/README-week_nowcast-1.png" width="100%" />
 
+Here we see that the model is underestimating the incidence of
+hospitalisations. There are a range of potential reasons for this with
+the first being that the process model does not fully capture the trend
+or day of the week periodicity evident in the data. See our case study
+vignettes for ideas on how deal with these issues.
+
 ## Citation
 
 If using `epinowcast` in your work please consider citing it using the
@@ -423,8 +519,8 @@ following,
 
     #> To cite package 'epinowcast' in publications use:
     #> 
-    #>   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:
-    #>   Flexible hierarchical nowcasting." _Zenodo_.
+    #>   Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021).
+    #>   "epinowcast: Flexible hierarchical nowcasting." _Zenodo_.
     #>   doi:10.5281/zenodo.5637165 <https://doi.org/10.5281/zenodo.5637165>,
     #>   <https://github.com/epinowcast/epinowcast>.
     #> 
@@ -432,7 +528,7 @@ following,
     #> 
     #>   @Article{,
     #>     title = {epinowcast: Flexible hierarchical nowcasting},
-    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},
+    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther},
     #>     year = {2021},
     #>     journal = {Zenodo},
     #>     doi = {10.5281/zenodo.5637165},
