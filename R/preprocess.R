@@ -916,9 +916,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' - `metadelay`: Metadata for reporting delays produced using
 #'  [enw_metadata_delay()].
 #' - `time`: Numeric, number of timepoints in the data.
-#' - `snapshots`: Numeric, number of available data snapshots to use for 
+#' - `snapshots`: Numeric, number of available data snapshots to use for
 #' nowcasting.
-#' - `groups`: Numeric, Number of groups/strata in the supplied observations 
+#' - `groups`: Numeric, Number of groups/strata in the supplied observations
 #' (set using `by`).
 #' - `max_delay`: A `list`, with the (potentially different) maximum delays
 #' specified by the user, found in the data, and used by the model.

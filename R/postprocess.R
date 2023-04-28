@@ -69,8 +69,8 @@ enw_posterior <- function(fit, variables = NULL,
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
-#' 
-#' @param max_delay Metadata for the maximum delay produced using 
+#'
+#' @param max_delay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
@@ -115,7 +115,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 
   # add artificial summary statistics for not-modeled dates
   nowcast[seq_len(nrow(obs_head)), c("mean", "median") := confirm]
-  cols_quantile <- colnames(nowcast)[grepl("q\\d+", colnames(nowcast))]
+  cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE)
   nowcast[seq_len(nrow(obs_head)), (cols_quantile) := confirm]
   nowcast[seq_len(nrow(obs_head)), c("sd", "mad") := 0]
 
@@ -132,7 +132,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param max_delay Metadata for the maximum delay produced using 
+#' @param max_delay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` of posterior samples for the nowcast prediction.
