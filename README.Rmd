@@ -68,9 +68,9 @@ remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.
 
 ### Installing CmdStan
 
-If you don't already have CmdStan installed then, in addition to installing `epinowcast`, it is also necessary to install CmdStan using CmdStanR's 
+If you don't already have CmdStan installed then, in addition to installing `epinowcast`, it is also necessary to install CmdStan using `cmdstanr`'s 
 `install_cmdstan()` function to enable model fitting in `epinowcast`. A suitable C++ toolchain is also required. Instructions are provided in the [_Getting started with
-CmdStanR_](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) vignette. See the [CmdStanR documentation](https://mc-stan.org/cmdstanr/) for further details and support. 
+`cmdstanr`_](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) vignette. See the [`cmdstanr` documentation](https://mc-stan.org/cmdstanr/) for further details and support. 
 
 ```{r, eval = FALSE}
 cmdstanr::install_cmdstan()
@@ -156,7 +156,7 @@ In the following sections, we specify simple models for each of these modules. T
 
 #### Process model
 
-A commonly used process model in nowcasting is to model the expected counts by date of reference via a lognormal random walk. This aims to strike a balance between capturing the underlying data generation process while being primarily dependent on the information provided by available observations and their reporting delays. Users may specify this model using the enw_expectation() function. Here, `day` refers to the number of days from the start of the data.
+A commonly used process model in nowcasting is to model the expected counts by date of reference via a geometric random walk. This aims to strike a balance between capturing the underlying data generation process while being primarily dependent on the information provided by available observations and their reporting delays. Users may specify this model using the enw_expectation() function. Here, `day` refers to the number of days from the start of the data.
 
 ```{r}
 expectation_module <- enw_expectation(
@@ -164,12 +164,10 @@ expectation_module <- enw_expectation(
 )
 ```
 
-Note that because the process model is parameterised as a growth rate, a random effect (i.e. `(1 | day)`) is equivalent to a random walk on the log scale. Here, we are defining a random effect as,
+Note that because the process model is parameterised as a growth rate, a random effect (i.e. `(1 | day)`) is equivalent to a geometric random walk. Here, we are defining a random effect as,
 
-$$ \text{day} \sim \mathcal{Normal}(0, \sigma) $$
-$$ \sigma \sim \mathcal{Half-Normal}(0, 1).$$
-
-Where $\mathcal{Half-Normal}$ is a normal distribution bounded to be greater than 0.
+$$ \text{day} \sim \text{Normal}(0, \sigma) $$
+$$ \sigma \sim \text{Half-Normal}(0, 1).$$
 
 #### Reporting model by reference date
 
@@ -219,7 +217,7 @@ nowcast <- epinowcast(data = pobs,
 
 ### The `epinowcast` object
 
-The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying `cmdstanr` object.
+The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying `cmdstan` object.
 
 ```{r}
 nowcast
