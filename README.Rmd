@@ -1,4 +1,4 @@
----
+z---
 output: github_document
 ---
 
@@ -181,7 +181,7 @@ Note that the default distribution is log-normal, hence the distribution argumen
 
 #### Reporting modifiers by report date
 
-Even where there is evidence that reporting processes can be approximated by a single distribution, there may be additional reporting modifiers that are not captured by the reference model. For example, reporting may be lower on weekends or holidays. We can specify a model for these modifiers using a hazard formulation (see [our model description for details](https://package.epinowcast.org/articles/model)) using the `enw_report()` function. Here we specify a model with a random effect for the day of the week to capture weekly seasonality in the reporting delay.
+Even where there is evidence that reporting processes can be approximated by a single distribution, there may be additional reporting effects that are not captured by the reference model. For example, reporting may be lower on weekends or holidays. We can specify a model for these effects using a hazard formulation (which captures the conditional relationship between different reporting delays, see [our model description for details](https://package.epinowcast.org/articles/model)) using the `enw_report()` function. Here we specify a model with a random effect for the day of the week to capture weekly seasonality in the reporting delay.
 
 ```{r}
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
