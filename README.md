@@ -99,11 +99,11 @@ fixed release but concerned about the stability of their dependencies.*
 
 If you don’t already have CmdStan installed then, in addition to
 installing `epinowcast`, it is also necessary to install CmdStan using
-CmdStanR’s `install_cmdstan()` function to enable model fitting in
+`cmdstanr`’s `install_cmdstan()` function to enable model fitting in
 `epinowcast`. A suitable C++ toolchain is also required. Instructions
 are provided in the [*Getting started with
-CmdStanR*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
-vignette. See the [CmdStanR
+`cmdstanr`*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
+vignette. See the [`cmdstanr`
 documentation](https://mc-stan.org/cmdstanr/) for further details and
 support.
 
@@ -276,7 +276,7 @@ specification and examples of more complex models.
 #### Process model
 
 A commonly used process model in nowcasting is to model the expected
-counts by date of reference via a lognormal random walk. This aims to
+counts by date of reference via a geometric random walk. This aims to
 strike a balance between capturing the underlying data generation
 process while being primarily dependent on the information provided by
 available observations and their reporting delays. Users may specify
@@ -290,14 +290,11 @@ expectation_module <- enw_expectation(
 ```
 
 Note that because the process model is parameterised as a growth rate, a
-random effect (i.e. `(1 | day)`) is equivalent to a random walk on the
-log scale. Here, we are defining a random effect as,
+random effect (i.e. `(1 | day)`) is equivalent to a geometric random
+walk. Here, we are defining a random effect as,
 
-$$ \text{day} \sim \mathcal{Normal}(0, \sigma) $$
-$$ \sigma \sim \mathcal{Half-Normal}(0, 1).$$
-
-Where $\mathcal{Half-Normal}$ is a normal distribution bounded to be
-greater than 0.
+$$ \text{day} \sim \text{Normal}(0, \sigma) $$
+$$ \sigma \sim \text{Half-Normal}(0, 1).$$
 
 #### Reporting model by reference date
 
@@ -377,7 +374,7 @@ nowcast <- epinowcast(data = pobs,
 
 The `epinowcast()` function returns an `epinowcast` object which
 includes diagnostic information, the data used for fitting, and the
-underlying `cmdstanr` object.
+underlying `cmdstan` object.
 
 ``` r
 nowcast
@@ -392,7 +389,7 @@ nowcast
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                   7                0.007    228.7
+#> 1:                  18                0.018      129
 ```
 
 ### Summarising and plotting the nowcast
@@ -417,26 +414,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.055     69 0.2324415 0.0000 69
-#>  3:                 1    37             0  47.078     47 0.2863529 0.0000 47
-#>  4:                 1    36             0  65.226     65 0.4744988 0.0000 65
-#>  5:                 1    35             0  50.270     50 0.5471740 0.0000 50
-#>  6:                 1    34             0  36.236     36 0.5005542 0.0000 36
-#>  7:                 1    33             0  94.493     94 0.7338184 0.0000 94
-#>  8:                 1    32             0  91.785     92 0.9008810 1.4826 91
-#>  9:                 1    31             0 100.041    100 1.0947682 1.4826 99
-#> 10:                 1    30             0  87.204     87 1.1583289 1.4826 86
-#>     q95      rhat  ess_bulk  ess_tail
-#>  1:  72        NA        NA        NA
-#>  2:  70 0.9990070  949.3518  939.6375
-#>  3:  48 0.9986759  989.5856  984.3037
-#>  4:  66 1.0007649  784.4023  799.7746
-#>  5:  51 1.0004112  957.1549  973.6752
-#>  6:  37 1.0012256 1027.1641  944.5816
-#>  7:  96 0.9989497 1054.6499 1049.3863
-#>  8:  94 1.0019631  899.8796  869.1805
-#>  9: 102 1.0029758  765.2953  895.8493
-#> 10:  90 1.0012908  859.4077  975.6091
+#>  2:                 1    38             0  69.037     69 0.1940842 0.0000 69
+#>  3:                 1    37             0  47.077     47 0.2741280 0.0000 47
+#>  4:                 1    36             0  65.175     65 0.4272675 0.0000 65
+#>  5:                 1    35             0  50.245     50 0.4972145 0.0000 50
+#>  6:                 1    34             0  36.273     36 0.5047036 0.0000 36
+#>  7:                 1    33             0  94.502     94 0.7228544 0.0000 94
+#>  8:                 1    32             0  91.765     92 0.9362968 1.4826 91
+#>  9:                 1    31             0 100.013    100 1.1099834 1.4826 99
+#> 10:                 1    30             0  87.196     87 1.1388068 1.4826 86
+#>        q95      rhat  ess_bulk ess_tail
+#>  1:  72.00        NA        NA       NA
+#>  2:  69.00 0.9995844  854.0427 870.4875
+#>  3:  48.00 1.0013314  953.2118 942.0789
+#>  4:  66.00 0.9997046  893.2563 874.6159
+#>  5:  51.00 0.9989805  893.0632 762.9092
+#>  6:  37.00 0.9990466 1098.3251 931.1420
+#>  7:  96.00 0.9998598  929.9685 878.5478
+#>  8:  94.00 0.9995301  896.9423 810.0773
+#>  9: 102.00 1.0008674  634.1130 599.8774
+#> 10:  89.05 1.0006250  866.1546 820.3866
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -491,17 +488,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    433
-#>     2:                 1    33             0      1          2     2    436
-#>     3:                 1    33             0      1          3     3    434
-#>     4:                 1    33             0      1          4     4    435
-#>     5:                 1    33             0      1          5     5    435
+#>     1:                 1    33             0      1          1     1    437
+#>     2:                 1    33             0      1          2     2    434
+#>     3:                 1    33             0      1          3     3    433
+#>     4:                 1    33             0      1          4     4    433
+#>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2120
-#> 33997:                 1     0             1      2        497   997   2301
-#> 33998:                 1     0             1      2        498   998   2124
-#> 33999:                 1     0             1      2        499   999   2144
-#> 34000:                 1     0             1      2        500  1000   2106
+#> 33996:                 1     0             1      2        496   996   1913
+#> 33997:                 1     0             1      2        497   997   2311
+#> 33998:                 1     0             1      2        498   998   2136
+#> 33999:                 1     0             1      2        499   999   2145
+#> 34000:                 1     0             1      2        500  1000   2198
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
