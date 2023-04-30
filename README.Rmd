@@ -98,9 +98,9 @@ library(ggplot2)
 
 ### Data
 
-Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data. This requires data on these patterns for previous observations and typically this means the time series of data as reported on multiple consecutive days (in theory non-consecutive days could be used, but this is not yet supported in `epinowcast`). For this quick start, we use data sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence). The data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021. For this, the originally weekly data were deconvolved to a daily resolution, and days with negative counts are adjusted.
+Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data. For this, we need to count cases both by when they occurred (often called "reference date") and by when they were reported (often called "report date"). Then, the difference between the reference date and the report date and is the reporting delay. For this quick start, we use data sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence). The data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.
 
-Below, we first filter for a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data. Then, we produce the nowcast target based on the latest available hospitalisations by date of positive test. This will allow us to visualise how our nowcast made at the time compares to what was ultimately reported.
+We first filter for a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data. Then, we create the nowcast target which is the latest available hospitalisations by date of positive test. This will allow us to visualise how our nowcast made at the time compares to what was ultimately reported.
 
 ```{r}
 nat_germany_hosp <-
