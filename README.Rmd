@@ -164,7 +164,7 @@ expectation_module <- enw_expectation(
 )
 ```
 
-Note that because the process model is parameterised as a growth rate, a random effect (i.e. `(1 | day)`) is equivalent to a geometric random walk. Here, we are defining a random effect as,
+As the underlying process model is an exponential growth rate model, specifying a random effect (i.e. `(1 | day)`) on the growth rate is equivalent to a geometric random walk on expected counts by reference date. We are defining a random effect as,
 
 $$ \text{day} \sim \text{Normal}(0, \sigma) $$
 $$ \sigma \sim \text{Half-Normal}(0, 1).$$
