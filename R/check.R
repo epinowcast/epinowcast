@@ -209,7 +209,7 @@ coerce_dt <- function(
 #' Compare maximum delays specified by the user vs. observed in the data, and
 #' raise potential warnings.
 #'
-#' @param latest_obs The latest available observations.
+#' @param latest_obs Metadata for the latest observation produced
 #'
 #' @param max_delay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
@@ -220,12 +220,20 @@ coerce_dt <- function(
 #'
 #' @family check
 check_max_delay <- function(latest_obs, max_delay, cum_coverage = 0.8) {
-  if (max_delay$obs < max_delay$spec) {
+  latest_obs <- coerce_dt(
+    latest_obs, required_cols = c("cum_prop_reported", "cum_coverage")
+  )
+  max_delay <- coerce_dt(
+    max_delay, required_cols = c("type", "delay")
+  )
+  obs_d <- max_delay[type == "observed", delay]
+  spec_d <- max_delay[type == "specified", delay]
+  if (obs_d < spec_d) {
     warning(
       "You specified a maximum delay of ",
-      max_delay$spec, " days, ",
+      spec_d, " days, ",
       "but epinowcast will currently only model delays until the observed ",
-      "maximum delay (", max_delay$obs, " days). ",
+      "maximum delay (", obs_d, " days). ",
       "Consider adding unobserved delays with zero reports to your data using ",
       "`enw_complete_dates` to avoid truncated delay distributions if you ",
       "believe that these are truely zero. Otherwise consider opening an ",
@@ -241,9 +249,9 @@ check_max_delay <- function(latest_obs, max_delay, cum_coverage = 0.8) {
   if (low_cum > 0.5) {
     warning(
       "The currently specified maximum reporting delay ",
-      "(", max_delay$spec, " days) ",
+      "(", spec_d, " days) ",
       "covers less than ", 100 * cum_coverage,
-      "% of cases for the majority of reference dates. ",
+      "% of cases for the majority (i.e. 50%) of reference dates. ",
       "Consider using a larger maximum delay to avoid potential model",
       "misspecification.",
       immediate. = TRUE
