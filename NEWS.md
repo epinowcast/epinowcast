@@ -1,6 +1,20 @@
-# epinowcast 0.2.0.18000
+# epinowcast 0.2.1
 
-This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
+In this release we focussed on improving the internal code structure, documentation, and development infrastructure of the package to make it easier to maintain and extend functionality in the future. We also fixed a number of bugs and made some minor improvements to the interface. These changes included extending test and documentation coverage across all package functions, improving internal data checking and internalization, and removing some deprecated functions.
+
+Whilst these changes are not expected to impact most users, we recommend that all users upgrade to this version. We also recommend that users who have fitted models with both random effects and random walks refit these models and compare the output to previous fits in order to understand the impact on their usage of a bug in the specification of these models that was fixed in this release.
+
+This release lays the groundwork for planned features in [`0.3.0`](https://github.com/orgs/epinowcast/projects/1) and [`0.4.0`](https://github.com/orgs/epinowcast/projects/2) including: support for non-parametric delays, non-daily data with a non-daily process model (i.e. weekly data with a weekly process model), additional flexibility specifying generation times and latent reporting delays, improved case studies, and adding support for forecasting.
+
+Full details on the changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.1). To see the development timeline of this release see the [`0.2.1` project](https://github.com/orgs/epinowcast/projects/3).
+
+## Contributors
+
+@adrian-lison, @Bisaloo, @pearsonca, @FelixGuenther, @Lnrivas, @seabbs, @sbfnk, and @jhellewell14 made code contributions to this release.
+
+@pearsonca, @Bisaloo, @adrian-lison, and @seabbs reviewed pull requests for this release.
+
+@Gulfa, @WardBrian, @parkws3, @adrian-lison, @Bisaloo, @pearsonca, @FelixGuenther, @Lnrivas, @seabbs, @sbfnk and @jhellewell14 reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Potentially breaking changes
 
