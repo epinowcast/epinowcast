@@ -145,24 +145,21 @@ library(ggplot2)
 ### Data
 
 Nowcasting of right-truncated case counts involves the estimation of
-reporting delays for recently reported data. This requires data on these
-patterns for previous observations and typically this means the time
-series of data as reported on multiple consecutive days (in theory
-non-consecutive days could be used, but this is not yet supported in
-`epinowcast`). For this quick start, we use data sourced from the
+reporting delays for recently reported data. For this, we need to count
+cases both by when they occurred (often called “reference date”) and by
+when they were reported (often called “report date”). Then, the
+difference between the reference date and the report date and is the
+reporting delay. For this quick start, we use data sourced from the
 [Robert Koch Institute via the Germany Nowcasting
 hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence).
 The data represent hospitalisation counts by date of positive test and
-date of test report in Germany up to October 1, 2021. For this, the
-originally weekly data were deconvolved to a daily resolution, and days
-with negative counts are adjusted.
+date of test report in Germany up to October 1, 2021.
 
-Below, we first filter for a snapshot of retrospective data available 40
-days before October 1, 2021 that contains 40 days of data. Then, we
-produce the nowcast target based on the latest available
-hospitalisations by date of positive test. This will allow us to
-visualise how our nowcast made at the time compares to what was
-ultimately reported.
+We first filter for a snapshot of retrospective data available 40 days
+before October 1, 2021 that contains 40 days of data. Then, we create
+the nowcast target which is the latest available hospitalisations by
+date of positive test. This will allow us to visualise how our nowcast
+made at the time compares to what was ultimately reported.
 
 ``` r
 nat_germany_hosp <-
@@ -195,7 +192,7 @@ it contains
 - a report date (column `report_date`): the date of report for a given
   set of observations by reference date
 - a count (column `confirm`): the total (i.e. cumulative) number of
-  hospitalisations by reference date and report date
+  hospitalisations by reference date and report date.
 
 The package also provides a range of tools to convert data from line
 list, incidence, or other common formats into the required format (see
@@ -276,12 +273,11 @@ specification and examples of more complex models.
 #### Process model
 
 A commonly used process model in nowcasting is to model the expected
-counts by date of reference via a geometric random walk. This aims to
-strike a balance between capturing the underlying data generation
-process while being primarily dependent on the information provided by
-available observations and their reporting delays. Users may specify
-this model using the enw_expectation() function. Here, `day` refers to
-the number of days from the start of the data.
+counts by date of reference via a geometric random walk as this acts as
+a minimally informed smoothing prior and thus gives a lot of weight to
+the observed data. This is the default process model in `epinowcast`.
+Users may also specify this model for themselves using the
+enw_expectation() function.
 
 ``` r
 expectation_module <- enw_expectation(
@@ -289,9 +285,13 @@ expectation_module <- enw_expectation(
 )
 ```
 
-Note that because the process model is parameterised as a growth rate, a
-random effect (i.e. `(1 | day)`) is equivalent to a geometric random
-walk. Here, we are defining a random effect as,
+Here, `day` refers to the number of days from the start of the data.
+
+As the underlying process model is an exponential growth rate model
+($C_t = C_{t-1} \exp^r_t$), specifying a random effect
+(i.e. `(1 | day)`) on the growth rate is equivalent to a geometric
+random walk on expected counts by reference date. We are defining a
+random effect as,
 
 $$ \text{day} \sim \text{Normal}(0, \sigma) $$
 $$ \sigma \sim \text{Half-Normal}(0, 1).$$
@@ -309,17 +309,19 @@ reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 Note that the default distribution is log-normal, hence the distribution
 argument could be omitted here.
 
-#### Reporting modifiers by report date
+#### Reporting effects by report date
 
 Even where there is evidence that reporting processes can be
 approximated by a single distribution, there may be additional reporting
-modifiers that are not captured by the reference model. For example,
+effects that are not captured by the reference model. For example,
 reporting may be lower on weekends or holidays. We can specify a model
-for these modifiers using a hazard formulation (see [our model
-description for details](https://package.epinowcast.org/articles/model))
-using the `enw_report()` function. Here we specify a model with a random
-effect for the day of the week to capture weekly seasonality in the
-reporting delay.
+for these effects using a hazard formulation (which captures the
+conditional relationship between different reporting delays, see [our
+model description for
+details](https://package.epinowcast.org/articles/model)) using the
+`enw_report()` function. Here we specify a model with a random effect
+for the day of the week to capture weekly seasonality in the reporting
+delay.
 
 ``` r
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
@@ -385,11 +387,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.01
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>     500     1.03
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  18                0.018      129
+#> 1:                  12                0.024     78.3
 ```
 
 ### Summarising and plotting the nowcast
@@ -414,26 +416,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.037     69 0.1940842 0.0000 69
-#>  3:                 1    37             0  47.077     47 0.2741280 0.0000 47
-#>  4:                 1    36             0  65.175     65 0.4272675 0.0000 65
-#>  5:                 1    35             0  50.245     50 0.4972145 0.0000 50
-#>  6:                 1    34             0  36.273     36 0.5047036 0.0000 36
-#>  7:                 1    33             0  94.502     94 0.7228544 0.0000 94
-#>  8:                 1    32             0  91.765     92 0.9362968 1.4826 91
-#>  9:                 1    31             0 100.013    100 1.1099834 1.4826 99
-#> 10:                 1    30             0  87.196     87 1.1388068 1.4826 86
-#>        q95      rhat  ess_bulk ess_tail
-#>  1:  72.00        NA        NA       NA
-#>  2:  69.00 0.9995844  854.0427 870.4875
-#>  3:  48.00 1.0013314  953.2118 942.0789
-#>  4:  66.00 0.9997046  893.2563 874.6159
-#>  5:  51.00 0.9989805  893.0632 762.9092
-#>  6:  37.00 0.9990466 1098.3251 931.1420
-#>  7:  96.00 0.9998598  929.9685 878.5478
-#>  8:  94.00 0.9995301  896.9423 810.0773
-#>  9: 102.00 1.0008674  634.1130 599.8774
-#> 10:  89.05 1.0006250  866.1546 820.3866
+#>  2:                 1    38             0  69.046     69 0.2190433 0.0000 69
+#>  3:                 1    37             0  47.088     47 0.3105622 0.0000 47
+#>  4:                 1    36             0  65.204     65 0.5127473 0.0000 65
+#>  5:                 1    35             0  50.232     50 0.5354900 0.0000 50
+#>  6:                 1    34             0  36.258     36 0.5329203 0.0000 36
+#>  7:                 1    33             0  94.532     94 0.7443683 0.0000 94
+#>  8:                 1    32             0  91.774     92 0.8924780 1.4826 91
+#>  9:                 1    31             0 100.012    100 1.0363416 1.4826 99
+#> 10:                 1    30             0  87.242     87 1.1144146 1.4826 86
+#>     q95      rhat ess_bulk ess_tail
+#>  1:  72        NA       NA       NA
+#>  2:  69 1.0018006 424.7569 419.6155
+#>  3:  48 0.9983909 429.8996 402.9677
+#>  4:  66 0.9985900 434.4709 436.9189
+#>  5:  51 0.9981376 420.1992 414.3879
+#>  6:  37 1.0002802 519.2369 478.3666
+#>  7:  96 0.9993841 510.8154 521.2038
+#>  8:  93 0.9980430 386.0070 426.3406
+#>  9: 102 0.9990397 467.8079 458.3468
+#> 10:  89 1.0089681 466.9302 414.3765
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -482,23 +484,23 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #>     4:     2021-07-20  2021-08-22      1          94       DE       00+     433
 #>     5:     2021-07-20  2021-08-22      1          94       DE       00+     433
 #>    ---                                                                         
-#> 33996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 17000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    437
-#>     2:                 1    33             0      1          2     2    434
-#>     3:                 1    33             0      1          3     3    433
-#>     4:                 1    33             0      1          4     4    433
-#>     5:                 1    33             0      1          5     5    434
+#>     1:                 1    33             0      1          1     1    433
+#>     2:                 1    33             0      1          2     2    436
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    434
+#>     5:                 1    33             0      1          5     5    435
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   1913
-#> 33997:                 1     0             1      2        497   997   2311
-#> 33998:                 1     0             1      2        498   998   2136
-#> 33999:                 1     0             1      2        499   999   2145
-#> 34000:                 1     0             1      2        500  1000   2198
+#> 16996:                 1     0             1      1        496   496   2116
+#> 16997:                 1     0             1      1        497   497   1931
+#> 16998:                 1     0             1      1        498   498   2131
+#> 16999:                 1     0             1      1        499   499   2179
+#> 17000:                 1     0             1      1        500   500   2105
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
