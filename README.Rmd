@@ -98,7 +98,7 @@ library(ggplot2)
 
 ### Data
 
-Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data. For this, we need to count cases both by when they occurred (often called "reference date") and by when they were reported (often called "report date"). Then, the difference between the reference date and the report date and is the reporting delay. For this quick start, we use data sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence). The data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.
+Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data. For this, we need to count cases both by when they occurred (often called "reference date") and by when they were reported (often called "report date"). Then, the difference between the reference date and the report date is the reporting delay. For this quick start, we use data sourced from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence). The data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.
 
 We first filter for a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data. Then, we create the nowcast target which is the latest available hospitalisations by date of positive test. This will allow us to visualise how our nowcast made at the time compares to what was ultimately reported.
 
@@ -219,7 +219,7 @@ nowcast <- epinowcast(data = pobs,
 
 ### The `epinowcast` object
 
-The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying `cmdstan` object.
+The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying [`CmdStanModel` object](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html).
 
 ```{r}
 nowcast
