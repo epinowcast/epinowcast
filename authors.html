@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,14 +34,17 @@
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -88,6 +91,18 @@
           </p>
         </li>
         <li>
+          <p><strong>Carl Pearson</strong>. Author. <a href="https://orcid.org/0000-0003-0701-7860" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          </p>
+        </li>
+        <li>
+          <p><strong>Hugo Gruson</strong>. Author. <a href="https://orcid.org/0000-0002-4094-1476" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          </p>
+        </li>
+        <li>
+          <p><strong>Felix Guenther</strong>. Author. <a href="https://orcid.org/0000-0001-6582-1174" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          </p>
+        </li>
+        <li>
           <p><strong>Michael DeWitt</strong>. Contributor. <a href="https://orcid.org/0000-0001-8940-1967" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
           </p>
         </li>
@@ -96,7 +111,19 @@
           </p>
         </li>
         <li>
-          <p><strong>Carl Pearson</strong>. Author. <a href="https://orcid.org/0000-0003-0701-7860" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          <p><strong>Pratik Gupte</strong>. Contributor. <a href="https://orcid.org/0000-0001-5294-7819" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          </p>
+        </li>
+        <li>
+          <p><strong>Joel Hellewell</strong>. Contributor. <a href="https://orcid.org/0000-0003-2683-0849" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          </p>
+        </li>
+        <li>
+          <p><strong>Luis Rivas</strong>. Contributor. 
+          </p>
+        </li>
+        <li>
+          <p><strong>Sang Woo Park</strong>. Contributor. <a href="https://orcid.org/0000-0003-2202-3361" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
           </p>
         </li>
       </ul></div>
@@ -105,13 +132,18 @@
       <h2 id="citation">Citation</h2>
       <p><small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/HEAD/inst/CITATION" class="external-link"><code>inst/CITATION</code></a></small></p>
 
-      <p>Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast: Flexible hierarchical nowcasting,  DOI: 10.5281/zenodo.5637165</p>
+      <p>Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021).
+“epinowcast: Flexible hierarchical nowcasting.”
+<em>Zenodo</em>.
+<a href="https://doi.org/10.5281/zenodo.5637165" class="external-link">doi:10.5281/zenodo.5637165</a>, <a href="https://github.com/epinowcast/epinowcast" class="external-link">https://github.com/epinowcast/epinowcast</a>. 
+</p>
       <pre>@Article{,
   title = {epinowcast: Flexible hierarchical nowcasting},
-  author = {Sam Abbott and Adrian Lison and Sebastian Funk},
-  journal = {Zenodo},
+  author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther},
   year = {2021},
+  journal = {Zenodo},
   doi = {10.5281/zenodo.5637165},
+  url = {https://github.com/epinowcast/epinowcast},
 }</pre>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -119,7 +151,7 @@
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">

@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,14 +34,17 @@
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -122,12 +125,200 @@ the observations after fitting using <code><a href="enw_pp_summary.html">enw_pp_
 <code><a href="plot.epinowcast.html">plot.epinowcast</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Summarise nowcast posterior</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"nowcast"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date report_date .group max_confirm location age_group confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-08-03  2021-08-22      1         149       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-08-04  2021-08-22      1         166       DE       00+     166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-08-05  2021-08-22      1         133       DE       00+     133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-08-06  2021-08-22      1         137       DE       00+     137</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-08-07  2021-08-22      1         139       DE       00+     139</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-08-08  2021-08-22      1          97       DE       00+      97</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-08-09  2021-08-22      1          58       DE       00+      58</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-08-10  2021-08-22      1         175       DE       00+     175</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-08-11  2021-08-22      1         233       DE       00+     233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-08-12  2021-08-22      1         237       DE       00+     237</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-08-13  2021-08-22      1         204       DE       00+     204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-08-14  2021-08-22      1         189       DE       00+     189</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-08-15  2021-08-22      1         125       DE       00+     125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-08-16  2021-08-22      1          98       DE       00+      98</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-08-17  2021-08-22      1         242       DE       00+     242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-08-18  2021-08-22      1         223       DE       00+     223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-08-19  2021-08-22      1         202       DE       00+     202</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-08-20  2021-08-22      1         171       DE       00+     171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-08-21  2021-08-22      1         112       DE       00+     112</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cum_prop_reported delay prop_reported    mean median        sd     mad  q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:                 1    19   0.000000000 149.000  149.0  0.000000  0.0000 149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:                 1    18   0.000000000 167.453  167.0  1.291301  1.4826 166</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:                 1    17   0.000000000 135.677  135.0  1.853674  1.4826 133</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:                 1    16   0.000000000 140.896  141.0  2.169768  2.9652 138</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:                 1    15   0.007194245 145.222  145.0  2.760133  2.9652 141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:                 1    14   0.000000000 103.248  103.0  2.893591  2.9652  99</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:                 1    13   0.000000000  62.742   62.0  2.412313  2.9652  59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:                 1    12   0.000000000 185.065  185.0  3.687054  4.4478 180</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:                 1    11   0.000000000 255.574  255.0  6.079925  5.9304 246</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:                 1    10   0.004219409 266.480  266.0  7.480345  7.4130 255</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:                 1     9   0.000000000 235.082  235.0  7.671123  7.4130 224</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:                 1     8   0.015873016 229.150  229.0  9.532280 10.3782 215</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:                 1     7   0.040000000 163.327  163.0  8.941478  8.8956 149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:                 1     6   0.010204082 130.404  130.0  8.343284  8.8956 118</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:                 1     5   0.012396694 299.890  299.0 12.795923 13.3434 280</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:                 1     4   0.017937220 303.138  301.0 17.375755 17.0499 278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:                 1     3   0.019801980 311.131  309.0 24.503638 23.7216 275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:                 1     2   0.070175439 318.522  315.0 34.923992 34.0998 270</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:                 1     1   0.383928571 334.231  327.5 53.967621 51.1497 258</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:                 1     0   1.000000000 322.430  306.0 93.868922 80.8017 198</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       q20    q35   q50    q65   q80    q95      rhat  ess_bulk  ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 149.0 149.00 149.0 149.00 149.0 149.00        NA        NA        NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 166.0 167.00 167.0 168.00 168.0 170.00 1.0002481  858.3035  887.5883</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 134.0 135.00 135.0 136.00 137.0 139.00 0.9986872  784.2638  908.5946</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 139.0 140.00 141.0 142.00 143.0 145.00 0.9999757  986.1909  904.5245</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 143.0 144.00 145.0 146.00 147.0 150.00 1.0007676  865.5054  947.2221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 101.0 102.00 103.0 104.00 106.0 109.00 0.9991973  893.3750  835.9871</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  61.0  62.00  62.0  63.00  65.0  67.00 1.0036034  926.5402  861.1900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 182.0 183.00 185.0 186.00 188.0 191.00 0.9989872 1097.4089  937.1445</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 251.0 253.00 255.0 258.00 261.0 266.00 0.9991648 1111.3917 1021.2936</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 260.0 263.00 266.0 269.00 272.0 279.05 1.0073591 1059.0036  983.0723</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 228.0 232.00 235.0 237.35 241.0 248.00 1.0012317  975.8115  927.8796</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 221.0 225.00 229.0 232.00 237.0 246.00 0.9999872 1084.7105  951.3275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 155.0 159.00 163.0 166.00 171.0 178.00 0.9994459 1041.2300  974.4463</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 123.0 127.00 130.0 133.00 137.0 145.00 1.0012796  935.7652 1050.2310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 289.0 294.00 299.0 304.00 310.2 322.00 1.0017171 1130.4067  958.2443</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 288.8 295.00 301.0 308.00 317.0 334.05 1.0055266  848.0051  763.8073</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 291.0 300.65 309.0 317.35 329.0 356.00 1.0105072 1083.0271 1028.2641</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 288.8 303.00 315.0 330.00 343.2 383.00 1.0047446 1063.6034  939.8372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 288.8 308.00 327.5 347.00 375.0 436.00 1.0005068 1007.8998  874.2774</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 247.8 276.00 306.0 340.35 390.2 493.05 1.0003640 1366.8407  840.3280</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Nowcast posterior samples</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"nowcast_samples"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date report_date .group max_confirm location age_group confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-08-03  2021-08-22      1         149       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-08-03  2021-08-22      1         149       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-08-03  2021-08-22      1         149       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2021-08-03  2021-08-22      1         149       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2021-08-03  2021-08-22      1         149       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19996:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19997:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19998:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19999:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20000:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:                 1    19             0      1          1     1    149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:                 1    19             0      1          2     2    149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:                 1    19             0      1          3     3    149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:                 1    19             0      1          4     4    149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:                 1    19             0      1          5     5    149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19996:                 1     0             1      2        496   996    409</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19997:                 1     0             1      2        497   997    362</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19998:                 1     0             1      2        498   998    272</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19999:                 1     0             1      2        499   999    247</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20000:                 1     0             1      2        500  1000    189</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Nowcast model fit</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"fit"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                    variable          mean        median         sd        mad</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:                   lp__ -1362.7433500 -1362.4000000  6.7742130  6.5753310</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: expr_lelatent_int[1,1]     4.1434508     4.1380450  0.1539449  0.1552134</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:           expr_beta[1]     0.3257798     0.3108810  0.4838097  0.4978898</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:           expr_beta[2]    -0.2857518    -0.2857245  0.4811320  0.4351924</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:           expr_beta[3]    -0.6982430    -0.6893515  0.5035263  0.4989661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 852:       pp_inf_obs[16,1]   303.1380000   301.0000000 17.3757553 17.0499000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 853:       pp_inf_obs[17,1]   311.1310000   309.0000000 24.5036378 23.7216000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 854:       pp_inf_obs[18,1]   318.5220000   315.0000000 34.9239918 34.0998000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 855:       pp_inf_obs[19,1]   334.2310000   327.5000000 53.9676212 51.1497000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 856:       pp_inf_obs[20,1]   322.4300000   306.0000000 93.8689218 80.8017000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 q5           q20           q80           q95      rhat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1: -1374.5120000 -1.367952e+03 -1357.3100000 -1.352125e+03 1.0201797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:     3.8906655  4.018240e+00     4.2758060  4.402856e+00 0.9997963</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:    -0.4580074 -9.366416e-02     0.7622114  1.104135e+00 1.0099929</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:    -1.1171430 -6.469084e-01     0.1029920  5.050463e-01 1.0006211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:    -1.5294965 -1.135836e+00    -0.2657970  8.892956e-02 1.0001976</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 852:   278.0000000  2.888000e+02   317.0000000  3.340500e+02 1.0055266</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 853:   275.0000000  2.910000e+02   329.0000000  3.560000e+02 1.0105072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 854:   270.0000000  2.888000e+02   343.2000000  3.830000e+02 1.0047446</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 855:   258.0000000  2.888000e+02   375.0000000  4.360000e+02 1.0005068</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 856:   198.0000000  2.478000e+02   390.2000000  4.930500e+02 1.0003640</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       ess_bulk  ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  223.5349  482.9928</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 1194.9226  825.8359</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3: 1159.2004  822.9336</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4: 1284.8243  642.2432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5: 1285.1949  745.8015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 852:  848.0051  763.8073</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 853: 1083.0271 1028.2641</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 854: 1063.6034  939.8372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 855: 1007.8998  874.2774</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 856: 1366.8407  840.3280</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Posterior predictions</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior_prediction"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      reference_date report_date .group max_confirm location age_group confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:     2021-07-13  2021-07-13      1          59       DE       00+      21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:     2021-07-13  2021-07-14      1          59       DE       00+      33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:     2021-07-13  2021-07-15      1          59       DE       00+      36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:     2021-07-13  2021-07-16      1          59       DE       00+      40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:     2021-07-13  2021-07-17      1          59       DE       00+      43</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 626:     2021-08-20  2021-08-21      1         171       DE       00+     159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 627:     2021-08-20  2021-08-22      1         171       DE       00+     171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 628:     2021-08-21  2021-08-21      1         112       DE       00+      69</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 629:     2021-08-21  2021-08-22      1         112       DE       00+     112</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 630:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      cum_prop_reported delay new_confirm prop_reported    mean median        sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:         0.3559322     0          21    0.35593220  23.512   22.0  9.740572</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:         0.5593220     1          12    0.20338983  11.574   11.0  5.158016</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:         0.6101695     2           3    0.05084746   6.492    6.0  3.540405</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:         0.6779661     3           4    0.06779661   4.672    4.0  2.726509</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:         0.7288136     4           3    0.05084746   2.765    3.0  1.896674</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 626:         0.9298246     1          61    0.35672515  47.044   43.5 19.194491</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 627:         1.0000000     2          12    0.07017544  15.098   14.0  6.970867</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 628:         0.6160714     0          69    0.61607143 109.043  100.0 45.345136</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 629:         1.0000000     1          43    0.38392857  27.749   26.0 12.245814</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 630:         1.0000000     0          45    1.00000000  52.151   49.0 23.805565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          mad    q5  q20 q35   q50    q65 q80    q95      rhat  ess_bulk</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  8.8956 10.00 15.0  19  22.0  26.00  31  42.00 0.9987800 1164.0127</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:  4.4478  4.00  7.0   9  11.0  13.00  16  21.00 0.9988065 1016.1220</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  2.9652  1.00  3.0   5   6.0   7.00   9  13.00 1.0010941  942.2827</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  2.9652  1.00  2.0   3   4.0   5.00   7  10.00 1.0017034  817.9688</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  1.4826  0.00  1.0   2   3.0   3.00   4   6.00 1.0007183  982.1315</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 626: 17.0499 21.00 31.8  38  43.5  51.00  62  84.05 1.0056592  975.5135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 627:  5.9304  6.00  9.0  12  14.0  17.00  20  28.00 0.9986250  910.5990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 628: 38.5476 49.95 74.0  87 100.0 116.00 142 192.00 1.0011913  989.3871</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 629: 11.8608 11.00 17.0  22  26.0  31.00  37  52.00 1.0000296  916.6473</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 630: 22.2390 21.00 32.0  40  49.0  57.35  71  97.00 0.9997764 1035.8098</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  834.6738</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2: 1032.3776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  975.7223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  782.9234</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  914.5297</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 626:  913.8415</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 627: 1033.0860</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 628:  933.3896</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 629:  922.1847</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 630:  904.4781</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">

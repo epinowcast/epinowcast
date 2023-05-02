@@ -55,7 +55,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,14 +68,17 @@
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="active nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -113,7 +116,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Model definition and implementation</h1>
                         <h4 data-toc-skip class="author">Sam Abbott,
-Sebastian Funk</h4>
+Adrian Lison, Felix Günther, Sebastian Funk</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/HEAD/vignettes/model.Rmd" class="external-link"><code>vignettes/model.Rmd</code></a></small>
@@ -138,7 +141,7 @@ reporting process<span class="citation"><sup>[1,5,6]</sup></span>.
 Combined with the appropriate generation time distribution this approach
 has been shown to correspond to a Susceptible-Exposed-Infected-Recovered
 (SEIR) model<span class="citation"><sup>[7]</sup></span> with the
-addition of reporting delays. Howover, our default model contains
+addition of reporting delays. However, our default model contains
 minimal mechanism in order to more flexibly fit highly informative
 data.</p>
 <p>Our nowcasting approach is an extension of that proposed by Günther
@@ -154,9 +157,9 @@ assumption for the underlying reporting delay.</p>
 that the reporting delay is consistent between reported and unreported
 observations following the methodology of Lison et al.<span class="citation"><sup>[11]</sup></span>.</p>
 <p>Our modelling framework is implemented in the <code>stan</code>
-probalistic programming language via <code>cmdstanr</code><span class="citation"><sup>[12,13]</sup></span> with a focus on computational
+probabilistic programming language via <code>cmdstanr</code><span class="citation"><sup>[12,13]</sup></span> with a focus on computational
 efficiency and robustness.</p>
-<p>In the following sections we outline our modelling methodolgy,
+<p>In the following sections we outline our modelling methodology,
 current feature set stratified by module, and highlight implementation
 details. For each module we present both our default implementation as
 well as the more generic framework we support. Note that extensions to
@@ -175,7 +178,7 @@ available for analysis). We assume that these times are measured in
 discrete time steps, usually of a day (in which case the times are
 dates).</p>
 <p>We follow the approach of Höhle and Heiden<span class="citation"><sup>[9]</sup></span> and consider the distribution of
-notifications (<span class="math inline">\(n_{g,t,d}\)</span>) by time
+notifications (<span class="math inline">\(n_{g,t,d}\)</span>) by date
 of reference (<span class="math inline">\(t\)</span>) and reporting
 delay (<span class="math inline">\(d\)</span>) conditional on the final
 observed count <span class="math inline">\(N_{g,t}\)</span> for each
@@ -184,7 +187,7 @@ dataset (<span class="math inline">\(g\)</span>) such that,</p>
   N_{g,t} = \sum_{d=0}^{D} n_{g,t,d}
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(D\)</span> represents the maximum
-delay between time of reference and time of report which in theory could
+delay between date of reference and time of report which in theory could
 be infinite but in practice we set to a finite value in order to make
 the model identifiable and computationally feasible. For each <span class="math inline">\(t\)</span> and <span class="math inline">\(g\)</span> these notifications are assumed to be
 drawn from a multinomial distribution with <span class="math inline">\(N_{g,t}\)</span> trials and a probability vector
@@ -253,7 +256,7 @@ matrix for fixed effects (<span class="math inline">\(\beta_{f,r}\)</span>), and
 effects (<span class="math inline">\(\beta_{r,r}\)</span>. Within this
 specification the default model can be specified as a random effect on
 the day with no intercept. Alternative specifications that may be of
-interest include a weekly random walk (specifed as
+interest include a weekly random walk (specified as
 <code>~ 1 + rw(week)</code>), a piecewise linear model (specified as
 <code>~ 1 + day:week</code>), and a group specific random effect
 (specified as <code>~ 1 + (1 | .group)</code>).</p>
@@ -268,7 +271,7 @@ generalisation of the default model and can be used to model the
 expected number of latent notifications in a setting where the
 generation time is not fixed to be a day. It implies that current
 infections/notifications are dependent on past infections/notifications
-based on a kernal (usually interpreted as the generation time or serial
+based on a kernel (usually interpreted as the generation time or serial
 interval). An instantaneous daily growth rate model can be recovered by
 setting the generation time to be fixed at 1 day. The model is defined
 as follows,</p>
@@ -295,8 +298,8 @@ mass functions (i.e. by not enforcing a sum to 1 constraint) and
 inferring ascertainment where possible (for example day of the week
 reporting patterns).</p>
 <p><span class="math display">\[\begin{align}
-  \lambda_{g,t} &amp;= \nu_{g,t} \sum_{\tau = 0}^{L - 1} F_{g}\left(\tau
-+ 1, t - \tau \right)  \lambda^l_{g, t - \tau} \\
+  \lambda_{g,t} &amp;= \upsilon_{g,t} \sum_{\tau = 0}^{L - 1}
+F_{g}\left(\tau + 1, t - \tau \right)  \lambda^l_{g, t - \tau} \\
   \nu_{g,t} &amp;= \nu_0 + \beta_{f,\nu} X_{\nu} + \beta_{r,\nu} Z_{\nu}
 \end{align}\]</span></p>
 <p>Where <span class="math inline">\(\nu_{g,t}\)</span> is the inferred
@@ -308,110 +311,141 @@ ascertainment and is modelled flexibly using an optional intercept
 <div class="section level2">
 <h2 id="delay-distribution">Delay distribution<a class="anchor" aria-label="anchor" href="#delay-distribution"></a>
 </h2>
-<p>Where data is available on the report date for a given individual we
-can estimate the delay distribution directly and jointly rather than
-relying on estimates from other sources (though we may wish to augment
-our priors with these estimates). In the following section we describe
-our default parametric delay distribution model as well as our highly
-flexible discrete time to event based generic model.</p>
+<p>Given case counts both by date of reference and by date of report, we
+can estimate the reporting delay distribution directly and jointly with
+the underlying process model, rather than relying on external estimates
+from other sources (though we may want to account for external
+information in our priors). In the following section, we describe our
+default parametric delay distribution model and its extension into a
+generic, highly flexible delay model based on discrete time-to-event
+modelling.</p>
 <div class="section level3">
 <h3 id="default-model-1">Default model<a class="anchor" aria-label="anchor" href="#default-model-1"></a>
 </h3>
-<p>In our default model we consider the delay distribution to follow a
-discretised log-normal as follows,</p>
+<p>In our default model, we consider the reporting delay to follow a
+<span class="math inline">\(\text{LogNormal} \left(\mu^d, \sigma^d
+\right)\)</span> distribution, with parameters</p>
 <p><span class="math display">\[\begin{align}
-  p_{g,t,d} &amp;\sim \text{LogNormal} \left(\mu^d, \sigma^d \right) \\
   \mu^d &amp;\sim \text{Normal} \left(0, 1 \right) \\
-  \sigma^d &amp;\sim \text{Half-Normal} \left(0, 1 \right)
+  \sigma^d &amp;\sim \text{Half-Normal} \left(0, 1 \right).
 \end{align}\]</span></p>
+<p>This distribution is discretised into daily probabilities <span class="math inline">\(p_{g,t,d}\)</span> (for a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span> to be reported with delay <span class="math inline">\(d\)</span>) and adjusted for the maximum delay,
+see <code><a href="../articles/distributions.html">vignette("distributions")</a></code> for details.</p>
 </div>
 <div class="section level3">
 <h3 id="generalised-model-1">Generalised model<a class="anchor" aria-label="anchor" href="#generalised-model-1"></a>
 </h3>
 <p>We generalise this model in order to support a range of delay
-distributions and reporting processes following the approach of Günther
-et al.<span class="citation"><sup>[8]</sup></span> we estimate the delay
-distribution (<span class="math inline">\(p_{g,t,d}\)</span>) using a
-discrete-time logistic hazard model <span class="math display">\[
+distributions as well as effects of the reporting process on the delay.
+Following the approach of Günther et al.<span class="citation"><sup>[8]</sup></span> and others, we parameterise the
+delay probability (<span class="math inline">\(p_{g,t,d}\)</span>) via a
+discrete-time hazard model, i.e.</p>
+<p><span class="math display">\[\begin{equation}
+  p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0}
+p_{g,t,d^{\prime}} \right) \times h_{g,t,d},
+\end{equation}\]</span></p>
+<p>where</p>
+<p><span class="math display">\[
 h_{g,t,d} =\text{P} \left(\text{delay}=d|\text{delay} \geq d,
-W_{g,t,d}\right)
-\]</span> but we extend this model to decompose <span class="math inline">\(W_{g,t,d}\)</span> into 3 components: hazard
-derived from a parametric delay distribution (<span class="math inline">\(\gamma_{g,t,d}\)</span>) dependent on covariates
-at the time of reference, hazard not derived from a parametric
-distribution (<span class="math inline">\(\delta_{g,t,d}\)</span>)
-dependent on covariates at the time of reference, and hazard dependent
-on covariates referenced to the time of report (<span class="math inline">\(\epsilon_{g,t,d}\)</span>).</p>
-<p>The first component (<span class="math inline">\(\gamma_{g,t,d}\)</span>) we estimate what would be
-the probability of reporting <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> at a given time if it
-followed a parametric distribution, here implemented using a discretised
-log normal (a range of other distributions are supported by the package)
-with the log mean and log standard deviation defined using an intercept
-and arbitrary shared, reference time indexed, covariates with fixed
-(<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients (note these can
-include auto-regressive terms),</p>
+W_{g,t,d}\right),
+\]</span> is the so-called reporting hazard. For a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span>, the hazard <span class="math inline">\(h_{g,t,d}\)</span> states the probability of being
+reported with delay <span class="math inline">\(d\)</span>, given that
+the case is not reported earlier. The hazard depends on a design matrix
+<span class="math inline">\(W_{g,t,d}\)</span>, which encodes a baseline
+delay distribution and covariates that affect the reporting delay. We
+extend the model of Günther et al. by decomposing the hazard into three
+components,</p>
+<ul>
+<li>
+<strong>Parametric baseline hazard <span class="math inline">\(\gamma_{g,t,d}\)</span></strong>: hazard derived
+from a parametric delay distribution, with parameters depending on
+covariates on the date of reference</li>
+<li>
+<strong>Non-parametric reference date effect <span class="math inline">\(\delta_{g,t,d}\)</span></strong>: effect on the
+hazard that depends on covariates on the date of reference</li>
+<li>
+<strong>Non-parametric report date effect <span class="math inline">\(\epsilon_{g,t,d}\)</span></strong>: effect on the
+hazard that depends on covariates on the date of report</li>
+</ul>
+<p>Each component adds to the overall hazard through a regression with a
+logit link <span class="math display">\[\begin{equation}
+  \text{logit} (h_{g,t,d}) = \gamma_{g,t,d} + \delta_{g,t,d} +
+\epsilon_{g,t,d},
+\end{equation}\]</span></p>
+<p>where the maximum delay hazard is <span class="math inline">\(h_{g,t,D}=1\)</span>, in order to enforce the
+assumption that all observations are reported within the specified
+maximum delay. In the following, we describe the parameterisation of the
+different components.</p>
+<div class="section level5">
+<h5 id="parametric-baseline-hazard">Parametric baseline hazard<a class="anchor" aria-label="anchor" href="#parametric-baseline-hazard"></a>
+</h5>
+<p>The parametric baseline hazard <span class="math inline">\(\gamma_{g,t,d}\)</span> for a case in group <span class="math inline">\(g\)</span> with reference date <span class="math inline">\(t\)</span> is modelled according to a certain
+discretised parametric probability distribution with parameters <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span>. Currently,
+<code>epinowcast</code> supports four different parametric
+distributions: (i) log-normal (default), (ii) exponential, (iii) gamma,
+and (iv) log-logistic. The distributions are discretised and adjusted
+for an assumed maximum delay, see <code><a href="../articles/distributions.html">vignette("distributions")</a></code>
+for details. The delay probabilities <span class="math inline">\(p^{\prime}_{g,t,d}\)</span> obtained from the
+discretised delay distribution are converted into hazards on the logit
+scale using</p>
+<p><span class="math display">\[\begin{equation}
+  \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1
+-\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right).
+\end{equation}\]</span></p>
+<p>In the default case of the log-normal distribution, the parameters
+<span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span> represent the log mean and
+log standard deviation. Each parameter is defined using a (log-)linear
+model. The model consists of an intercept and a number of arbitrary,
+shared covariates, indexed by reference date. The covariates are
+multiplied by fixed (<span class="math inline">\(\beta_{f,i}\)</span>)
+and random (<span class="math inline">\(\beta_{r,i}\)</span>)
+coefficients (note that these can include auto-regressive terms),
+i.e.</p>
 <p><span class="math display">\[\begin{align}
-  p^{\prime}_{g,t,d} &amp;\sim \text{LogNormal} \left(\mu_{g,t},
-\upsilon_{g,t} \right) \\
   \mu_{g,t} &amp;= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu}
 Z_{\gamma} \\
   \text{log} (\upsilon_{g,t}) &amp;= \upsilon_0 + \beta_{f,\upsilon}
 X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}\]</span></p>
-<p>Note we normalise this distribution so that it sums to 1. The
-parametric logit hazard (i.e. the probability of report at a given time
-conditional on not already having reported) for this component of the
-model is then,</p>
-<p><span class="math display">\[\begin{equation}
-  \gamma_{g,t,d} = \text{logit} \left(\frac{p^{\prime}_{g,t,d}}{\left(1
--\sum^{d-1}_{d^{\prime}=0} p^{\prime}_{g,t,d^{\prime}} \right)} \right)
-\end{equation}\]</span></p>
+</div>
+<div class="section level5">
+<h5 id="non-parametric-reference-date-effect-delta_gtd-and-report-date-effect-epsilon_gtd">Non-parametric reference date effect <span class="math inline">\(\delta_{g,t,d}\)</span> and report date effect
+<span class="math inline">\(\epsilon_{g,t,d}\)</span><a class="anchor" aria-label="anchor" href="#non-parametric-reference-date-effect-delta_gtd-and-report-date-effect-epsilon_gtd"></a>
+</h5>
 <p>In addition to parametric reporting effects there may also be
 non-parametric effects referenced by both reference and report dates.
 These are represented by the non-distributional logit hazard components
-for the time of reference and report, defined using an intercept (<span class="math inline">\(\delta_0\)</span>) and arbitrary shared covariates
-with fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random
-(<span class="math inline">\(\beta_{r,i}\)</span>) coefficients (note
-these can include auto-regressive terms).</p>
+for the date of reference and report, defined using an intercept (<span class="math inline">\(\delta_0\)</span>) and arbitrary, shared
+covariates with fixed (<span class="math inline">\(\beta_{f,i}\)</span>)
+and random (<span class="math inline">\(\beta_{r,i}\)</span>)
+coefficients (note these can include auto-regressive terms).</p>
 <p><span class="math display">\[\begin{align}
   \delta_{g,t,d} &amp;= \delta_0 + \beta_{f,\delta} X_{\delta} +
 \beta_{r,\delta} Z_{\delta} \\
   \epsilon_{g,t,d} &amp;= \beta_{f,\epsilon} X_{\epsilon} +
 \beta_{r,\epsilon} Z_{\epsilon}
 \end{align}\]</span></p>
-<p>The overall hazard for each group, reference time, and delay is
-then,</p>
-<p><span class="math display">\[\begin{equation}
-  \text{logit} (h_{g,t,d}) = \gamma_{g,t,d} + \delta_{g,t,d}
-+  \epsilon_{g,t,d},\ h_{g,t,D} = 1
-\end{equation}\]</span></p>
-<p>where the hazard on the final day has been assumed to be 1 in order
-to enforce the constraint that all reported observations are reported
-within the specified maximum delay. The probability of report for a
-given delay, reference time, and group is then as follows,</p>
-<p><span class="math display">\[\begin{equation}
-  p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0}
-p_{g,t,d^{\prime}} \right) \times h_{g,t,d}
-\end{equation}\]</span></p>
-<p>All (<span class="math inline">\(\beta_{f,i}\)</span>) and random
-(<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have
-standard normal priors by default with standard half-normal priors for
-pooled standard deviations. For further implementation details see
+<p>All fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and
+random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients
+have standard normal priors by default with standard half-normal priors
+for pooled standard deviations. For further implementation details see
 <code><a href="../reference/enw_reference.html">enw_reference()</a></code> for delays linked to the date of reference,
 <code><a href="../reference/enw_report.html">enw_report()</a></code> for delays linked to the date of report.</p>
+</div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="observation-model-and-nowcast">Observation model and nowcast<a class="anchor" aria-label="anchor" href="#observation-model-and-nowcast"></a>
 </h2>
-<p>Expected notifications by time of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found
+<p>Expected notifications by date of reference (<span class="math inline">\(t\)</span>) and reporting delay can now be found
 by multiplying expected final notifications for each <span class="math inline">\(t\)</span> with the probability of reporting for
 each day of delay (<span class="math inline">\(p_{g,t,d}\)</span>). We
 assume a negative binomial observation model, by default, with a joint
 overdispersion parameter (with a standard half normal prior on 1 over
 square root of the overdispersion<span class="citation"><sup>[15]</sup></span>) and produce a nowcast of final
-observed notifications at each reference time by summing posterior
+observed notifications at each reference date by summing posterior
 estimates for unobserved notification and observed notifications for
-that reference time.</p>
+that reference date.</p>
 <p><span class="math display">\[\begin{align}
   n_{g,t,d} \mid \lambda_{g,t},p_{g,t,d}  &amp;\sim \text{NB} \left((1 -
 \alpha_{g,t})\lambda_{g,t} \times p_{g,t,d}, \phi \right),\ t=1,...,T.
@@ -472,7 +506,7 @@ supported. For further implementation details see
 <div class="section level2">
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
-<p>The model is implemented in the probalistic programming language
+<p>The model is implemented in the probabilistic programming language
 <code>stan</code> and we use <code>cmdstanr</code> to interact with the
 model<span class="citation"><sup>[12,13]</sup></span>. Optional within
 chain parallelisation is available across times of reference to reduce
@@ -588,7 +622,7 @@ rules and metrics to assess predictions</em>. <a href="https://github.com/epifor
 
     <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
+<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">

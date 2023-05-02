@@ -30,7 +30,7 @@ run (using summary(nowcast, type = fit)) and using this a prior."><meta property
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,14 +42,17 @@ run (using summary(nowcast, type = fit)) and using this a prior."><meta property
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -98,14 +101,14 @@ run (using <code>summary(nowcast, type = fit)</code>) and using this a prior.</p
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>priors</dt>
-<dd><p>A data.frame with the following variables:
+<dd><p>A <code>data.frame</code> with the following variables:
 <code>variable</code>, <code>mean</code>, <code>sd</code> describing normal priors. Priors in the
 appropriate format are returned by <code><a href="enw_reference.html">enw_reference()</a></code> as well as by
 other similar model specification functions.</p></dd>
 
 
 <dt>custom_priors</dt>
-<dd><p>A data.frame with the following variables:
+<dd><p>A <code>data.frame</code> with the following variables:
 <code>variable</code>, <code>mean</code>, <code>sd</code> describing normal priors. Priors in the
 appropriate format are returned by <code><a href="enw_reference.html">enw_reference()</a></code> as well as by
 other similar model specification functions. Priors in this data.frame
@@ -132,12 +135,69 @@ replace the default priors. Note that currently vectorised prior names
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Update priors from a data.frame</span></span></span>
+<span class="r-in"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">custom_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>variable <span class="op">=</span> <span class="st">"x[1]"</span>, mean <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">priors</span>, <span class="va">custom_priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    variable mean sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        y    2  2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:        x   10  2</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Update priors from a previous model fit</span></span></span>
+<span class="r-in"><span><span class="va">default_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_reference.html">enw_reference</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> distribution <span class="op">=</span> <span class="st">"lognormal"</span>,</span></span>
+<span class="r-in"><span> data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">$</span><span class="va">priors</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">default_priors</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:   refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  1.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.5  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0  1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">fit_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"fit"</span>,</span></span>
+<span class="r-in"><span> variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit_priors</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean    median         sd        mad        q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 1.4065186 1.3627850 0.31867081 0.28263545 0.9784832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 1.9488911 1.9301000 0.17462563 0.16212231 1.6974820</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3253364 0.3242025 0.03123022 0.03085661 0.2758690</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          q20       q80       q95     rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 1.1410640 1.6335340 2.0573970 1.012034  341.9545 526.7013</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 1.7996520 2.0693360 2.2809700 1.008008  404.0572 428.0146</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.2998764 0.3513736 0.3794238 1.002608 1325.7827 735.9718</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">default_priors</span>, <span class="va">fit_priors</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:          sqrt_phi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                    description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Standard deviation of scaled pooled parametric mean effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                                                        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                                                        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                                        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean         sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                  &lt;NA&gt; 1.4065186 0.31867081</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                  &lt;NA&gt; 1.9488911 0.17462563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 0.3253364 0.03123022</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -145,7 +205,7 @@ replace the default priors. Note that currently vectorised prior names
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">

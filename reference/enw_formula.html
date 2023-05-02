@@ -30,7 +30,7 @@ appropriate design matrix row."><meta property="og:image" content="package.epino
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,14 +42,17 @@ appropriate design matrix row."><meta property="og:image" content="package.epino
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -324,99 +327,142 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $expanded_formula</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + cweek1 + cweek2 + cweek3 + cweek4 + cweek5 + age_group"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$formula</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + cweek1 + cweek2 + cweek3 + cweek4 + cweek5 + age_group"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + age_group + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     (Intercept) cweek1 cweek2 cweek3 cweek4 cweek5 age_group00-04 age_group00+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1      0      0      0      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8             1      1      0      0      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15            1      1      1      0      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22            1      1      1      1      0      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29            1      1      1      1      1      0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36            1      1      1      1      1      1              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42            1      0      0      0      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49            1      1      0      0      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56            1      1      1      0      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63            1      1      1      1      0      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70            1      1      1      1      1      0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77            1      1      1      1      1      1              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83            1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90            1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 97            1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 111           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 118           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 124           1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 131           1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 138           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 159           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 165           1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 172           1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 179           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 186           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 193           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 200           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 206           1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 213           1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 220           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 227           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 234           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 241           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 247           1      0      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 254           1      1      0      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 261           1      1      1      0      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 268           1      1      1      1      0      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 275           1      1      1      1      1      0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282           1      1      1      1      1      1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     age_group05-14 age_group15-34 age_group35-59 age_group60-79 age_group80+</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77               0              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83               1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90               1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 97               1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 111              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 118              1              0              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 124              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 131              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 138              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 159              0              1              0              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 165              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 172              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 179              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 186              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 193              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 200              0              0              1              0            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 206              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 213              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 220              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 227              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 234              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 241              0              0              0              1            0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 247              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 254              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 261              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 268              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 275              0              0              0              0            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 282              0              0              0              0            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     (Intercept) age_group00-04 age_group00+ age_group05-14 age_group15-34</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1             1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8             1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15            1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22            1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29            1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36            1              0            1              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77            1              1            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83            1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90            1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97            1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104           1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111           1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118           1              0            0              1              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159           1              0            0              0              1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 186           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 193           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 200           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 213           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 220           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 227           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 234           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 241           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 254           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 261           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 275           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282           1              0            0              0              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     age_group35-59 age_group60-79 age_group80+ cweek1 cweek2 cweek3 cweek4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                0              0            0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                0              0            0      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15               0              0            0      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22               0              0            0      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29               0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36               0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42               0              0            0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49               0              0            0      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56               0              0            0      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63               0              0            0      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70               0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77               0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83               0              0            0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90               0              0            0      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97               0              0            0      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104              0              0            0      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111              0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118              0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124              0              0            0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131              0              0            0      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138              0              0            0      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145              0              0            0      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152              0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159              0              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165              1              0            0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172              1              0            0      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179              1              0            0      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 186              1              0            0      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 193              1              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 200              1              0            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206              0              1            0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 213              0              1            0      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 220              0              1            0      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 227              0              1            0      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 234              0              1            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 241              0              1            0      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247              0              0            1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 254              0              0            1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 261              0              0            1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268              0              0            1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 275              0              0            1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282              0              0            1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cweek5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 186      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 193      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 200      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 206      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 213      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 220      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 227      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 234      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 241      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 247      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 254      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 261      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 275      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 282      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1]  1  1  1  1  1  1  1  2  2  2  2  2  2  2  3  3  3  3  3  3  3  4  4  4  4</span>
@@ -435,22 +481,22 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random$formula</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~0 + fixed + age_group + week"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~0 + fixed + age_group + rw__week"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random$design</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    fixed age_group week</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      0         1    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0         0    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      0         0    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     0         0    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     0         0    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     0         0    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    fixed age_group rw__week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      0         1        0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      0         0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      0         0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     0         0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     0         0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     0         0        1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -849,7 +895,7 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">

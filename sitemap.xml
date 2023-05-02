@@ -19,6 +19,12 @@
     <loc>package.epinowcast.org/PULL_REQUEST_TEMPLATE.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/STYLE_GUIDE.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/articles/distributions.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/articles/germany-age-stratified-nowcasting.html</loc>
   </url>
   <url>
@@ -43,9 +49,6 @@
     <loc>package.epinowcast.org/reference/as_string_formula.html</loc>
   </url>
   <url>
-    <loc>package.epinowcast.org/reference/check_dates.html</loc>
-  </url>
-  <url>
     <loc>package.epinowcast.org/reference/check_group.html</loc>
   </url>
   <url>
@@ -61,6 +64,9 @@
     <loc>package.epinowcast.org/reference/coerce_date.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/coerce_dt.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/construct_re.html</loc>
   </url>
   <url>
@@ -73,10 +79,16 @@
     <loc>package.epinowcast.org/reference/convolution_matrix.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/enw_add_cumulative.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/enw_add_cumulative_membership.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_add_delay.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/enw_add_incidence.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_add_latest_obs_to_nowcast.html</loc>
@@ -101,9 +113,6 @@
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_cumulative_to_incidence.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/reference/enw_dates_to_factors.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_delay_filter.html</loc>
@@ -145,7 +154,13 @@
     <loc>package.epinowcast.org/reference/enw_incidence_to_cumulative.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/reference/enw_incidence_to_linelist.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/reference/enw_latest_data.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/reference/enw_linelist_to_incidence.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/reference/enw_manual_formula.html</loc>

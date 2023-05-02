@@ -24,7 +24,7 @@ opinionated defaults."><meta property="og:image" content="package.epinowcast.org
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,14 +36,17 @@ opinionated defaults."><meta property="og:image" content="package.epinowcast.org
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
-    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
+    <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
   </div>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="../news/index.html">Changelog</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+  </div>
 </li>
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
@@ -113,7 +116,7 @@ plotting functions to work.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A dataframe summarising the model posterior.</p>
+<p>A <code>data.frame</code> summarising the model posterior.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -126,12 +129,102 @@ plotting functions to work.</p></dd>
 <code><a href="enw_summarise_samples.html">enw_summarise_samples</a>()</code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">enw_posterior</span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, variables <span class="op">=</span> <span class="st">"expr_beta"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          variable         mean       median        sd       mad         q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  expr_beta[1]  0.325779775  0.310881000 0.4838097 0.4978898 -0.4580074</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  expr_beta[2] -0.285751817 -0.285724500 0.4811320 0.4351924 -1.1171430</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  expr_beta[3] -0.698242984 -0.689351500 0.5035263 0.4989661 -1.5294965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  expr_beta[4]  0.543736703  0.535870000 0.4792923 0.4831482 -0.2344822</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  expr_beta[5] -0.573181688 -0.563478500 0.5141543 0.5216773 -1.4219590</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  expr_beta[6] -0.378280841 -0.375470500 0.5119466 0.4997905 -1.2387885</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  expr_beta[7]  1.696781465  1.682865000 0.4965383 0.5049661  0.9072351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  expr_beta[8]  0.274348282  0.277022000 0.4481634 0.4420225 -0.4262268</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  expr_beta[9]  0.185407734  0.188547500 0.4268269 0.4158138 -0.4904147</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: expr_beta[10] -0.282596234 -0.272723500 0.4504232 0.4278443 -1.0240520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: expr_beta[11] -0.047371678 -0.050473000 0.4545852 0.4564355 -0.7661744</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: expr_beta[12] -0.587952299 -0.589397500 0.4588563 0.4469083 -1.3425825</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: expr_beta[13] -1.409101655 -1.418430000 0.4835023 0.4724898 -2.2115425</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: expr_beta[14]  1.545657074  1.527955000 0.5381898 0.5191472  0.6860950</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: expr_beta[15]  1.734204724  1.748170000 0.4987449 0.4952032  0.9173902</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: expr_beta[16] -0.238295058 -0.246505000 0.4485424 0.4394674 -0.9740212</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: expr_beta[17] -0.165515065 -0.172435000 0.4545090 0.4660864 -0.9088496</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: expr_beta[18] -0.056975132 -0.071531900 0.4073327 0.4020224 -0.7024563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: expr_beta[19] -0.655276567 -0.641959500 0.4342609 0.4283439 -1.3524920</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: expr_beta[20] -0.611534005 -0.611756000 0.4451523 0.4348807 -1.3629465</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: expr_beta[21]  1.765361241  1.785360000 0.4549762 0.4679827  1.0356065</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: expr_beta[22]  0.426851242  0.407699000 0.4019490 0.4028921 -0.2054494</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: expr_beta[23] -0.381202294 -0.375930500 0.4153174 0.4206032 -1.0500000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24: expr_beta[24] -0.169577713 -0.160547000 0.4297672 0.4042761 -0.8820044</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: expr_beta[25]  0.012368220  0.017780650 0.4062113 0.4014197 -0.6512639</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: expr_beta[26] -0.871334871 -0.855679500 0.4373369 0.4641932 -1.5656075</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: expr_beta[27] -0.866123142 -0.866338500 0.4648207 0.4607350 -1.6245060</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: expr_beta[28]  2.043599679  2.055780000 0.4688895 0.4886427  1.3095775</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29: expr_beta[29]  1.433634728  1.401945000 0.4500883 0.4246018  0.7353343</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30: expr_beta[30]  0.006018938 -0.001234724 0.4319966 0.4305745 -0.6779237</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31: expr_beta[31] -0.455601036 -0.464617000 0.3949637 0.3897563 -1.1072715</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: expr_beta[32] -0.077595866 -0.077172100 0.3950102 0.3853650 -0.7307162</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: expr_beta[33] -0.667134847 -0.644114000 0.4274061 0.4381276 -1.4059055</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: expr_beta[34] -0.448528434 -0.458064000 0.4650302 0.4777145 -1.1737750</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: expr_beta[35]  1.688058215  1.680285000 0.4889434 0.4544317  0.9052262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36: expr_beta[36]  0.273126249  0.280581000 0.4847856 0.4614257 -0.5406728</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37: expr_beta[37]  0.069206420  0.052811350 0.5338072 0.5185885 -0.8058002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38: expr_beta[38]  0.131544949  0.136503000 0.5613003 0.5796677 -0.7853116</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: expr_beta[39]  0.188225622  0.160021500 0.5643956 0.5840273 -0.6891477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: expr_beta[40] -0.279208041 -0.300830000 0.7022208 0.7073040 -1.3862745</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          variable         mean       median        sd       mad         q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             q20         q80         q95      rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: -0.09366416  0.76221140  1.10413450 1.0099929 1159.2004 822.9336</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: -0.64690840  0.10299200  0.50504630 1.0006211 1284.8243 642.2432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: -1.13583600 -0.26579700  0.08892956 1.0001976 1285.1949 745.8015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  0.14964800  0.93358240  1.32660300 1.0005632 1239.5051 639.7020</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: -1.01438600 -0.13794600  0.23046985 0.9999926 1132.1788 779.3987</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: -0.79029460  0.04244452  0.45524775 1.0038064 1060.9991 849.7843</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  1.26993200  2.12269400  2.53310800 1.0021449  999.3643 809.6835</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: -0.11682600  0.65489180  1.01496700 1.0002751 1252.0844 827.4362</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: -0.17673820  0.51912120  0.89033785 1.0029313 1179.2114 638.5761</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: -0.66771000  0.09279750  0.42070250 0.9991341 1061.0652 882.1328</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: -0.43373220  0.33166960  0.74586505 0.9998181 1164.4346 685.4559</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: -0.96972360 -0.20237060  0.13261735 1.0025509 1460.8834 666.2817</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: -1.80568600 -1.01381800 -0.57970910 1.0000451 1191.0922 688.8561</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:  1.11683600  1.97457000  2.46249500 0.9985229 1111.5202 694.6092</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:  1.30395000  2.11755000  2.61151800 1.0013222  837.5717 738.5379</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: -0.60635360  0.12685800  0.51079420 0.9994091 1215.9847 796.7165</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: -0.55250440  0.23580340  0.57267185 0.9987599 1319.1449 852.5114</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: -0.40167640  0.29483300  0.65706110 1.0003053 1223.7983 743.5377</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: -1.02691000 -0.29980140  0.06848818 1.0020510 1096.1520 795.2866</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: -0.98123160 -0.23956760  0.09701997 1.0038848  974.3870 755.6643</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:  1.36030400  2.13165800  2.55294500 1.0008891  897.2598 696.6751</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:  0.10100138  0.74907580  1.13466150 0.9996837  923.4957 784.5132</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: -0.74289220 -0.04295778  0.29470080 1.0001720 1329.9095 853.7776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24: -0.51914100  0.19245760  0.52024090 1.0010176 1238.6845 898.2003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: -0.31329620  0.35625100  0.65763045 1.0001205 1124.7401 710.9356</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: -1.25660800 -0.48680260 -0.21006680 1.0045389 1354.9781 938.8111</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: -1.26566400 -0.48911060 -0.07998525 1.0016781 1421.4261 722.3788</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:  1.62653600  2.43705400  2.79203350 1.0013443  912.9864 872.8117</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:  1.07611400  1.79090000  2.19791250 1.0025878 1145.7215 663.6031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30: -0.36921800  0.36803980  0.68536920 1.0026930 1228.9211 481.8507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31: -0.77532080 -0.10589280  0.19159310 1.0033988 1027.3322 903.1009</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: -0.39942360  0.25126780  0.55513085 1.0008729 1247.9355 681.6430</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: -1.03876400 -0.31346660 -0.01804383 1.0004038  898.7760 912.4267</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: -0.83913420 -0.06314966  0.32850660 1.0009000  896.6488 760.2299</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35:  1.29391400  2.07111600  2.48749600 1.0008372  837.8435 723.5094</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36: -0.11349560  0.64900200  1.11254900 1.0072449  854.4420 732.1922</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37: -0.36457840  0.50927900  0.97367420 1.0137967 1126.6411 637.3351</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38: -0.36729340  0.59653160  1.07903700 1.0149484 1103.6831 714.8289</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: -0.30497160  0.65788860  1.18279200 1.0096151 1394.8641 842.4776</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: -0.86686900  0.32352980  0.89831470 1.0081467 1323.5167 789.3121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             q20         q80         q95      rhat  ess_bulk ess_tail</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
 
     <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson.</p>
+  <p></p><p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
 <div class="pkgdown">
