@@ -1,4 +1,4 @@
-# epinowcast 0.2.0.17000
+# epinowcast 0.2.0.18000
 
 This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
 
@@ -52,6 +52,7 @@ This is release is in development. It is not yet ready for production use. If yo
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
 - Added a package style guide (`STYLE_GUIDE.md`) to document the style conventions used in the package. See #64 by @seabbs and reviewed by @pearsonca and @Bisaloo.
 - Improved and extended documentation of discretized, parametric delay distributions. Changed structure of package vignettes (into two categories, model definition vignettes and case study vignettes). See #265 by @FelixGuenther and @adrian-lison and reviewed by @seabbs.
+- Improved and extended the README quick start after feedback from @parksw3 in #260. See #267 by @seabbs and reviewed by @adrian-lison and @parksw3.
 
 # epinowcast 0.2.0
 
