@@ -289,8 +289,8 @@ Here, `day` refers to the number of days from the start of the data.
 
 As the underlying process model is an exponential growth rate model
 (![C\_t = C\_{t-1}
-\\exp^r\_t](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5Er_t
-"C_t = C_{t-1} \\exp^r_t")), specifying a random effect (i.e. `(1 |
+\\exp^{r\_t}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D
+"C_t = C_{t-1} \\exp^{r_t}")), specifying a random effect (i.e. `(1 |
 day)`) on the growth rate is equivalent to a geometric random walk on
 expected counts by reference date. We are defining a random effect as,
 
@@ -396,11 +396,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.02
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  81                0.081     45.3
+#> 1:                  88                0.088     45.1
 ```
 
 ### Summarising and plotting the nowcast
@@ -425,26 +425,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.047     69 0.2209974 0.0000 69
-#>  3:                 1    37             0  47.078     47 0.2756665 0.0000 47
-#>  4:                 1    36             0  65.189     65 0.4352798 0.0000 65
-#>  5:                 1    35             0  50.243     50 0.5120676 0.0000 50
-#>  6:                 1    34             0  36.235     36 0.4858096 0.0000 36
-#>  7:                 1    33             0  94.469     94 0.7345601 0.0000 94
-#>  8:                 1    32             0  91.680     91 0.8296314 0.0000 91
-#>  9:                 1    31             0 100.063    100 1.0696612 1.4826 99
-#> 10:                 1    30             0  87.134     87 1.1354881 1.4826 86
+#>  2:                 1    38             0  69.053     69 0.2285678 0.0000 69
+#>  3:                 1    37             0  47.077     47 0.2848722 0.0000 47
+#>  4:                 1    36             0  65.181     65 0.4223949 0.0000 65
+#>  5:                 1    35             0  50.262     50 0.5400441 0.0000 50
+#>  6:                 1    34             0  36.234     36 0.4873207 0.0000 36
+#>  7:                 1    33             0  94.450     94 0.6840818 0.0000 94
+#>  8:                 1    32             0  91.718     92 0.8667337 1.4826 91
+#>  9:                 1    31             0 100.000    100 1.0654272 1.4826 99
+#> 10:                 1    30             0  87.138     87 1.1208087 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 0.9985157 1001.4013 1032.0319
-#>  3:  48 1.0016297  877.2011  846.3734
-#>  4:  66 0.9995550  880.3481  879.8695
-#>  5:  51 0.9988545  919.8319  923.7353
-#>  6:  37 1.0005094 1000.1245  979.7706
-#>  7:  96 0.9992541 1000.6165 1028.9996
-#>  8:  93 0.9986836 1012.8789  991.1655
-#>  9: 102 0.9992390  933.0235  954.3266
-#> 10:  89 0.9982511  900.2206  919.4512
+#>  2:  70 1.0044543  774.0424  757.6304
+#>  3:  48 0.9993121  946.9098  936.9878
+#>  4:  66 0.9988098  871.2902  825.0835
+#>  5:  51 0.9987209 1058.7750 1053.2701
+#>  6:  37 1.0001560  968.1390  848.9453
+#>  7:  96 0.9987062  949.0887  827.4477
+#>  8:  93 0.9991097  880.5745  870.1764
+#>  9: 102 0.9988143  882.8099  836.2403
+#> 10:  89 0.9986048  962.7974  864.3884
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -500,16 +500,16 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>     1:                 1    33             0      1          1     1    434
-#>     2:                 1    33             0      1          2     2    434
-#>     3:                 1    33             0      1          3     3    436
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    433
 #>     4:                 1    33             0      1          4     4    435
-#>     5:                 1    33             0      1          5     5    436
+#>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2354
-#> 33997:                 1     0             1      2        497   997   2152
-#> 33998:                 1     0             1      2        498   998   2122
-#> 33999:                 1     0             1      2        499   999   1985
-#> 34000:                 1     0             1      2        500  1000   2124
+#> 33996:                 1     0             1      2        496   996   1872
+#> 33997:                 1     0             1      2        497   997   2306
+#> 33998:                 1     0             1      2        498   998   2094
+#> 33999:                 1     0             1      2        499   999   2013
+#> 34000:                 1     0             1      2        500  1000   2128
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
