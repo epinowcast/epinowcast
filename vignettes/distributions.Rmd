@@ -30,7 +30,7 @@ In `epinowcast`, delays are modeled in discrete time and with an assumed maximum
 
 To discretise the continuous probability distribution into discrete probabilities $p^{\prime}_{g,t,d}$, we use its cumulative distribution function $F^{\mu_{g,t}, \upsilon_{g,t}}$ to compute
 $$p^{\prime}_{g,t,d} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
-In words, the discrete probability mass function (pmf) is obtained from the continuous distribution by dividing it into $D$ different bins $$(0,1),\, (1,2),\, \ldots,\, (D-1,D),$$
+In words, the discrete probability mass function (pmf) is obtained from the continuous distribution by dividing it into $D$ different bins $$(0,1],\, (1,2],\, \ldots,\, (D-1,D],$$
 where $D$ is the maximum delay covered by the model. Importantly, the bins are normalized by $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$, which ensures that the $p^{\prime}_{g,t,d}$ sum to 1. Since $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$ is the probability of reporting before the maximum delay, this can also be interpreted as conditioning our distribution on the maximum delay.
 
 Note that because of the discretisation and normalization, the discrete random variable we obtain generally does not have exactly the same moments as the original, continuous distribution.
