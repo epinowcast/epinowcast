@@ -841,7 +841,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' completed with [enw_complete_dates()].
 #'
 #' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
+#' `reference_date` (index date of interest), `report_date` (report date for
 #' observations), `confirm` (cumulative observations by reference and report
 #' date).
 #'

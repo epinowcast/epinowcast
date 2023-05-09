@@ -14,7 +14,7 @@ enw_complete_dates(
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
-\verb{reference date} (index date of interest), \code{report_date} (report date for
+\code{reference_date} (index date of interest), \code{report_date} (report date for
 observations), \code{confirm} (cumulative observations by reference and report
 date).}
 
