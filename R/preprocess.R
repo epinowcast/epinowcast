@@ -850,11 +850,11 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay Numeric defaults to 20. The maximum number of days to
-#' include in the delay distribution. Computation scales non-linearly with this
-#' setting so consider what maximum makes sense for your data carefully. Note
-#' that this is zero indexed and so includes the reference date and
-#' `max_delay - 1` other days.
+#' @param max_delay Numeric defaults to 20 and needs to be greater than or equal
+#' to 1. The maximum number of days to include in the delay distribution.
+#' Computation scales non-linearly with this setting so consider what maximum
+#' makes sense for your data carefully. Note that this is zero indexed and so
+#' includes the reference date and `max_delay - 1` other days.
 #'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata

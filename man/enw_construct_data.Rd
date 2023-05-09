@@ -44,11 +44,11 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric defaults to 20. The maximum number of days to
-include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully. Note
-that this is zero indexed and so includes the reference date and
-\code{max_delay - 1} other days.}
+\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
+to 1. The maximum number of days to include in the delay distribution.
+Computation scales non-linearly with this setting so consider what maximum
+makes sense for your data carefully. Note that this is zero indexed and so
+includes the reference date and \code{max_delay - 1} other days.}
 }
 \value{
 A data.table containing processed observations as a series of nested
