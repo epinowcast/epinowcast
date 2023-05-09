@@ -1,3 +1,17 @@
+# epinowcast 0.2.2
+
+This release is in development and therefore not ready for production use.
+
+## Contributors
+
+@seabbs contributed code to this release.
+
+@seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Bug
+
+- Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by `cmdstan 2.32.0`. This fix is required in order to use versions of `cmdstan` beyond `2.31.0`. See # by @seabbs
+
 # epinowcast 0.2.1
 
 In this release, we focused on improving the internal code structure, documentation, and development infrastructure of the package to make it easier to maintain and extend functionality in the future. We also fixed a number of bugs and made some minor improvements to the interface. These changes included extending test and documentation coverage across all package functions, improving internal data checking and internalization, and removing some deprecated functions.
