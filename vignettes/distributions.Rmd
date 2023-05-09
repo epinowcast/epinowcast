@@ -19,10 +19,10 @@ The currently available parametric delay distributions are continuous probabilit
 
 | Distribution 	| Parametrization | Mean |
 | :--------------:	| :------------:  | :------------------:	|
-| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)  | $\mu=\mu_{g,t}$, $\sigma = \upsilon_{g,t}$	| $exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})$ 	|
-| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html)  | $\beta = exp(-\mu_{g,t})$	| $exp(\mu_{g,t})$ |
-| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $exp(\mu_{g,t})/\upsilon_{g,t}$ |
-| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\frac{exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{sin(\pi/\upsilon_{g,t})}$ |
+| [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)  | $\mu=\mu_{g,t}$, $\sigma = \upsilon_{g,t}$	| $\exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})$ 	|
+| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html)  | $\beta = \exp(-\mu_{g,t})$	| $\exp(\mu_{g,t})$ |
+| [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)        |	$\alpha = \exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\exp(\mu_{g,t})/\upsilon_{g,t}$ |
+| [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution) |	$\alpha = \exp(\mu_{g,t})$, $\beta = \upsilon_{g,t}$ | $\frac{\exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{\sin(\pi/\upsilon_{g,t})}$ |
 
 ## Discretisation and adjustment for maximum delay
 
