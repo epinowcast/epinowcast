@@ -10,7 +10,7 @@ This release is in development and therefore not ready for production use.
 
 ## Bug
 
-- Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by `cmdstan 2.32.1`. This fix is required in order to use versions of `cmdstan` beyond `2.32.0`. See #276 by @seabbs.
+- Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by `cmdstan 2.32.1`. This fix is required in order to use versions of `cmdstan` beyond `2.32.0`. See #276 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.1
 
