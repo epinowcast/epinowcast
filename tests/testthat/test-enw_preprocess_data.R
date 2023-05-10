@@ -112,7 +112,9 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
 test_that(
   "enw_preprocess_data fails as expected with incorrect max_delay input", {
     expect_error(
-      enw_preprocess_data(nat_germany_hosp, max_delay = "junk")
+      suppressWarnings(
+        enw_preprocess_data(nat_germany_hosp, max_delay = "junk")
+      )
     )
     expect_error(
       enw_preprocess_data(nat_germany_hosp, max_delay = 0)
