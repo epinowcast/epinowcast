@@ -14,9 +14,14 @@ This release is in development and not ready for production use.
 
 - Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by `cmdstan 2.32.1`. This fix is required in order to use versions of `cmdstan` beyond `2.32.0`. See #276 by @seabbs and self-reviewed.
 
+## Package
+
+- Added input checking for `max_delay` in `enw_preprocess_data()` to ensure that the maximum delay is greater than or equal to 1 and that it can be coerced to be an integer. See #274 by @sbfnk and reviewed by @seabbs.
+
 ## Documentation
 
 - Improved the discrete delay distributions vignette including escaping functions to improve readibility and right-closing discretised bins. See #275 by @sbfnk and reviewed by @seabbs.
+- Improved the documentation for `max_delay` in `enw_preprocess_data()` and fixed a typo in the same documentation. See #274 by @sbfnk and reviewed by @seabbs.
 
 # epinowcast 0.2.1
 
