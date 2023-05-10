@@ -30,7 +30,7 @@ in the output of enw_preprocess_data()."><meta property="og:image" content="pack
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.2000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.3000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -104,11 +104,13 @@ in the output of <code><a href="enw_preprocess_data.html">enw_preprocess_data()<
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>max_delay</dt>
-<dd><p>Numeric defaults to 20. The maximum number of days to
-include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully. Note
-that this is zero indexed and so includes the reference date and
-<code>max_delay - 1</code> other days.</p></dd>
+<dd><p>Numeric defaults to 20 and needs to be greater than or equal
+to 1 and an integer (internally it will be coerced to one using
+<code><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer()</a></code>). The maximum number of days to include in the delay
+distribution. Computation scales non-linearly with this setting so consider
+what maximum makes sense for your data carefully. Note that this is zero
+indexed and so includes the reference date and <code>max_delay - 1</code> other days
+(i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
 
 
 <dt>breaks</dt>
