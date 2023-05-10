@@ -22,11 +22,13 @@ enw_reference_by_report(
 \item{metareference}{\code{metareference} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{max_delay}{Numeric defaults to 20. The maximum number of days to
-include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully. Note
-that this is zero indexed and so includes the reference date and
-\code{max_delay - 1} other days.}
+\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
+to 1 and an integer (internally it will be coerced to one using
+\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
+distribution. Computation scales non-linearly with this setting so consider
+what maximum makes sense for your data carefully. Note that this is zero
+indexed and so includes the reference date and \code{max_delay - 1} other days
+(i.e. a \code{max_delay} of 1 corresponds with no delay).}
 }
 \value{
 A wide \code{data.frame} with each row being a complete report date and'
