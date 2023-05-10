@@ -8,10 +8,12 @@ enw_delay_metadata(max_delay = 20, breaks = 4)
 }
 \arguments{
 \item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1. The maximum number of days to include in the delay distribution.
-Computation scales non-linearly with this setting so consider what maximum
-makes sense for your data carefully. Note that this is zero indexed and so
-includes the reference date and \code{max_delay - 1} other days.}
+to 1 and an integer (internally it will be coerced to one using
+\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
+distribution. Computation scales non-linearly with this setting so consider
+what maximum makes sense for your data carefully. Note that this is zero
+indexed and so includes the reference date and \code{max_delay - 1} other days
+(i.e. a \code{max_delay} of 1 corresponds with no delay).}
 
 \item{breaks}{Numeric, defaults to 4. The number of breaks to use when
 constructing a categorised version of numeric delays.}
