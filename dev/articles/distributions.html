@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.2000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -160,31 +160,31 @@ and adjustment for the assumed maximum delay).</p>
 <span class="math inline">\(\mu=\mu_{g,t}\)</span>,
 <span class="math inline">\(\sigma = \upsilon_{g,t}\)</span>
 </td>
-<td align="center"><span class="math inline">\(exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})\)</span></td>
+<td align="center"><span class="math inline">\(\exp(\mu_{g,t}+\frac{\upsilon_{g,t}^2}{2})\)</span></td>
 </tr>
 <tr class="even">
 <td align="center"><a href="https://mc-stan.org/docs/functions-reference/exponential-distribution.html" class="external-link">Exponential</a></td>
 <td align="center"><span class="math inline">\(\beta =
-exp(-\mu_{g,t})\)</span></td>
-<td align="center"><span class="math inline">\(exp(\mu_{g,t})\)</span></td>
+\exp(-\mu_{g,t})\)</span></td>
+<td align="center"><span class="math inline">\(\exp(\mu_{g,t})\)</span></td>
 </tr>
 <tr class="odd">
 <td align="center"><a href="https://mc-stan.org/docs/functions-reference/gamma-distribution.html" class="external-link">Gamma</a></td>
 <td align="center">
 <span class="math inline">\(\alpha =
-exp(\mu_{g,t})\)</span>, <span class="math inline">\(\beta =
+\exp(\mu_{g,t})\)</span>, <span class="math inline">\(\beta =
 \upsilon_{g,t}\)</span>
 </td>
-<td align="center"><span class="math inline">\(exp(\mu_{g,t})/\upsilon_{g,t}\)</span></td>
+<td align="center"><span class="math inline">\(\exp(\mu_{g,t})/\upsilon_{g,t}\)</span></td>
 </tr>
 <tr class="even">
 <td align="center"><a href="https://en.wikipedia.org/wiki/Log-logistic_distribution" class="external-link">Log-logistic</a></td>
 <td align="center">
 <span class="math inline">\(\alpha =
-exp(\mu_{g,t})\)</span>, <span class="math inline">\(\beta =
+\exp(\mu_{g,t})\)</span>, <span class="math inline">\(\beta =
 \upsilon_{g,t}\)</span>
 </td>
-<td align="center"><span class="math inline">\(\frac{exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{sin(\pi/\upsilon_{g,t})}\)</span></td>
+<td align="center"><span class="math inline">\(\frac{\exp(\mu_{g,t})\,\pi/\upsilon_{g,t}}{\sin(\pi/\upsilon_{g,t})}\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -203,7 +203,7 @@ we use its cumulative distribution function <span class="math inline">\(F^{\mu_{
 \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d)}{F^{\mu_{g,t},
 \upsilon_{g,t}}(D)}.\]</span> In words, the discrete probability mass
 function (pmf) is obtained from the continuous distribution by dividing
-it into <span class="math inline">\(D\)</span> different bins <span class="math display">\[(0,1),\, (1,2),\, \ldots,\, (D-1,D),\]</span>
+it into <span class="math inline">\(D\)</span> different bins <span class="math display">\[(0,1],\, (1,2],\, \ldots,\, (D-1,D],\]</span>
 where <span class="math inline">\(D\)</span> is the maximum delay
 covered by the model. Importantly, the bins are normalized by <span class="math inline">\(F^{\mu_{g,t}, \upsilon_{g,t}}(D)\)</span>, which
 ensures that the <span class="math inline">\(p^{\prime}_{g,t,d}\)</span>
