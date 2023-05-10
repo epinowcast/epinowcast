@@ -905,8 +905,10 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
   max_delay <- as.integer(max_delay)
-  stopifnot("`max_delay` must be an integer and not NA" = is.integer(max_delay))
-  stopifnot("`max_delay` must be greater than or equal to one" = max_delay >= 1)
+  stopifnot(
+    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
+    "`max_delay` must be greater than or equal to one" = max_delay >= 1
+  )
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
