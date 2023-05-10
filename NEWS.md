@@ -1,16 +1,22 @@
 # epinowcast 0.2.2
 
-This release is in development and therefore not ready for production use.
+This release is in development and not ready for production use.
 
 ## Contributors
 
-@seabbs contributed code to this release.
+@sbfnk and @seabbs contributed code to this release.
 
-@seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@seabbs reviewed pull requests for this release.
 
-## Bug
+@sbfnk and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Bugs
 
 - Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by `cmdstan 2.32.1`. This fix is required in order to use versions of `cmdstan` beyond `2.32.0`. See #276 by @seabbs and self-reviewed.
+
+## Documentation
+
+- Improved the discrete delay distributions vignette including escaping functions to improve readibility and right-closing discretised bins. See #275 by @sbfnk and reviewed by @seabbs.
 
 # epinowcast 0.2.1
 
