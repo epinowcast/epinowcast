@@ -75,7 +75,7 @@ jobs:
 
       - name: Install cmdstan
         run: |
-          print(list.files("C:/rtools42"))
+          print(list.files("C:/rtools43"))
           cmdstanr::check_cmdstan_toolchain(fix = TRUE)
           cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
         shell: Rscript {0}

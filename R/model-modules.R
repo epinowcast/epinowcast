@@ -92,33 +92,37 @@ enw_reference <- function(parametric = ~1, distribution = c(
         refp_sd_beta_sd = numeric(0)
       )
       if (data$model_refp > 0) {
-        init$refp_mean_int <- rnorm(
+        init$refp_mean_int <- array(rnorm(
           1, priors$refp_mean_int[1], priors$refp_mean_int[2] / 10
-        )
+        ))
       }
       if (data$model_refp > 1) {
-        init$refp_sd_int <- abs(
+        init$refp_sd_int <- array(abs(
           rnorm(1, priors$refp_sd_int[1], priors$refp_sd_int[2] / 10)
-        )
+        ))
       }
       init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
       init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
       if (data$refp_fncol > 0) {
-        init$refp_mean_beta <- rnorm(data$refp_fncol, 0, 0.01)
+        init$refp_mean_beta <- array(
+          rnorm(data$refp_fncol, 0, 0.01)
+        )
         if (data$model_refp > 1) {
-          init$refp_sd_beta <- rnorm(data$refp_fncol, 0, 0.01)
+          init$refp_sd_beta <- array(
+            rnorm(data$refp_fncol, 0, 0.01)
+          )
         }
       }
       if (data$refp_rncol > 0) {
-        init$refp_mean_beta_sd <- abs(rnorm(
+        init$refp_mean_beta_sd <- array(abs(rnorm(
           data$refp_rncol, priors$refp_mean_beta_sd_p[1],
           priors$refp_mean_beta_sd_p[2] / 10
-        ))
+        )))
         if (data$model_refp > 1) {
-          init$refp_sd_beta_sd <- abs(rnorm(
+          init$refp_sd_beta_sd <- array(abs(rnorm(
             data$refp_rncol, priors$refp_sd_beta_sd_p[1],
             priors$refp_sd_beta_sd_p[2] / 10
-          ))
+          )))
         }
       }
       return(init)
@@ -202,13 +206,13 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
         rep_beta_sd = numeric(0)
       )
       if (data$rep_fncol > 0) {
-        init$rep_beta <- rnorm(data$rep_fncol, 0, 0.01)
+        init$rep_beta <- array(rnorm(data$rep_fncol, 0, 0.01))
       }
       if (data$rep_rncol > 0) {
-        init$rep_beta_sd <- abs(rnorm(
+        init$rep_beta_sd <- array(abs(rnorm(
           data$rep_rncol, priors$rep_beta_sd_p[1],
           priors$rep_beta_sd_p[2] / 10
-        ))
+        )))
       }
       return(init)
     }
@@ -374,40 +378,40 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       init <- list(
         expr_beta = numeric(0),
         expr_beta_sd = numeric(0),
-        expr_lelatent_int = array(matrix(
+        expr_lelatent_int = matrix(
           rnorm(
             1,
             as.vector(priors$expr_lelatent_int_p[1]),
             as.vector(priors$expr_lelatent_int_p[2]) * 0.1
           ),
           nrow = data$expr_gt_n
-        )),
+        ),
         expr_r_int = numeric(0),
         expl_beta = numeric(0),
         expl_beta_sd = numeric(0)
       )
       if (data$expr_fncol > 0) {
-        init$expr_beta <- rnorm(data$expr_fncol, 0, 0.01)
+        init$expr_beta <- array(rnorm(data$expr_fncol, 0, 0.01))
       }
       if (data$expr_rncol > 0) {
-        init$expr_beta_sd <- abs(rnorm(
+        init$expr_beta_sd <- array(abs(rnorm(
           data$expr_rncol, priors$expr_beta_sd_p[1],
           priors$expr_beta_sd_p[2] / 10
-        ))
+        )))
       }
       if (data$expr_fintercept > 0) {
-        init$expr_r_int <- rnorm(
+        init$expr_r_int <- array(rnorm(
           1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
-        )
+        ))
       }
       if (data$expl_fncol > 0) {
-        init$expl_beta <- rnorm(data$expl_fncol, 0, 0.01)
+        init$expl_beta <- array(rnorm(data$expl_fncol, 0, 0.01))
       }
       if (data$expl_rncol > 0) {
-        init$expl_beta_sd <- abs(rnorm(
+        init$expl_beta_sd <- array(abs(rnorm(
           data$expl_rncol, priors$expl_beta_sd_p[1],
           priors$expl_beta_sd_p[2] / 10
-        ))
+        )))
       }
       return(init)
     }
@@ -525,15 +529,17 @@ enw_missing <- function(formula = ~1, data) {
         miss_beta_sd = numeric(0)
       )
       if (data$model_miss) {
-        init$miss_int <- rnorm(1, priors$miss_int_p[1], priors$miss_int_p[2])
+        init$miss_int <- array(
+          rnorm(1, priors$miss_int_p[1], priors$miss_int_p[2])
+        )
         if (data$miss_fncol > 0) {
-          init$miss_beta <- rnorm(data$miss_fncol, 0, 0.01)
+          init$miss_beta <- array(rnorm(data$miss_fncol, 0, 0.01))
         }
         if (data$miss_rncol > 0) {
-          init$miss_beta_sd <- abs(rnorm(
+          init$miss_beta_sd <- array(abs(rnorm(
             data$miss_rncol, priors$miss_beta_sd_p[1],
             priors$miss_beta_sd_p[2] / 10
-          ))
+          )))
         }
       }
       return(init)
