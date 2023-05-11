@@ -50,7 +50,7 @@ completed with enw_complete_dates()."><meta property="og:image" content="package
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -142,7 +142,7 @@ completed with <code><a href="enw_complete_dates.html">enw_complete_dates()</a><
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>obs</dt>
 <dd><p>A <code>data.frame</code> containing at least the following variables:
-<code>reference date</code> (index date of interest), <code>report_date</code> (report date for
+<code>reference_date</code> (index date of interest), <code>report_date</code> (report date for
 observations), <code>confirm</code> (cumulative observations by reference and report
 date).</p></dd>
 
@@ -155,11 +155,13 @@ downstream modelling</p></dd>
 
 
 <dt>max_delay</dt>
-<dd><p>Numeric defaults to 20. The maximum number of days to
-include in the delay distribution. Computation scales non-linearly with this
-setting so consider what maximum makes sense for your data carefully. Note
-that this is zero indexed and so includes the reference date and
-<code>max_delay - 1</code> other days.</p></dd>
+<dd><p>Numeric defaults to 20 and needs to be greater than or equal
+to 1 and an integer (internally it will be coerced to one using
+<code><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer()</a></code>). The maximum number of days to include in the delay
+distribution. Computation scales non-linearly with this setting so consider
+what maximum makes sense for your data carefully. Note that this is zero
+indexed and so includes the reference date and <code>max_delay - 1</code> other days
+(i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
 
 
 <dt>set_negatives_to_zero</dt>

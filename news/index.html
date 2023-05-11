@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,6 +79,29 @@
       <small>Source: <a href="https://github.com/epinowcast/epinowcast/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.2" id="epinowcast-022">epinowcast 0.2.2<a class="anchor" aria-label="anchor" href="#epinowcast-022"></a></h2>
+<p>This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in <code>cmdstan 2.32.1</code>. Upgrading is recommended for all users who wish to use versions of <code>cmdstan</code> beyond <code>2.32.0</code>. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.</p>
+<div class="section level3">
+<h3 id="contributors-0-2-2">Contributors<a class="anchor" aria-label="anchor" href="#contributors-0-2-2"></a></h3>
+<p>@sbfnk and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> contributed code to this release.</p>
+<p>@seabbs reviewed pull requests for this release.</p>
+<p>@sbfnk and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.</p>
+</div>
+<div class="section level3">
+<h3 id="bugs-0-2-2">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-2"></a></h3>
+<ul><li>Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by <code>cmdstan 2.32.1</code>. This fix is required in order to use versions of <code>cmdstan</code> beyond <code>2.32.0</code>. See <a href="https://github.com/epinowcast/epinowcast/issues/276" class="external-link">#276</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="package-0-2-2">Package<a class="anchor" aria-label="anchor" href="#package-0-2-2"></a></h3>
+<ul><li>Added input checking for <code>max_delay</code> in <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> to ensure that the maximum delay is greater than or equal to 1 and that it can be coerced to be an integer. See <a href="https://github.com/epinowcast/epinowcast/issues/274" class="external-link">#274</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-2-2">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-2"></a></h3>
+<ul><li>Improved the discrete delay distributions vignette including escaping functions to improve readibility and right-closing discretised bins. See <a href="https://github.com/epinowcast/epinowcast/issues/275" class="external-link">#275</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<li>Improved the documentation for <code>max_delay</code> in <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code> and fixed a typo in the same documentation. See <a href="https://github.com/epinowcast/epinowcast/issues/274" class="external-link">#274</a> by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="epinowcast-021">epinowcast 0.2.1<a class="anchor" aria-label="anchor" href="#epinowcast-021"></a></h2>
 <p>In this release, we focused on improving the internal code structure, documentation, and development infrastructure of the package to make it easier to maintain and extend functionality in the future. We also fixed a number of bugs and made some minor improvements to the interface. These changes included extending test and documentation coverage across all package functions, improving internal data checking and internalization, and removing some deprecated functions.</p>
