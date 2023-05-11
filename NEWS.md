@@ -1,6 +1,6 @@
 # epinowcast 0.2.2
 
-This release is in development and not ready for production use.
+This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in `cmdstan 2.32.1`. Upgrading is recommended for all users who wish to use versions of `cmdstan` beyond `2.32.0`. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.
 
 ## Contributors
 
