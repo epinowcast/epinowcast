@@ -259,6 +259,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @inheritParams enw_obs
 #' @family modelmodules
 #' @importFrom rstan extract_sparse_parts
+#' @importFrom purrr map2_dbl
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
@@ -379,12 +380,14 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
         expr_beta = numeric(0),
         expr_beta_sd = numeric(0),
         expr_lelatent_int = matrix(
-          rnorm(
-            1,
+          purrr::map2_dbl(
             as.vector(priors$expr_lelatent_int_p[1]),
-            as.vector(priors$expr_lelatent_int_p[2]) * 0.1
+            as.vector(priors$expr_lelatent_int_p[2]),
+            \(x, y) {
+              rnorm(1, x, y * 0.1)
+            }
           ),
-          nrow = data$expr_gt_n
+          nrow = data$expr_gt_n, ncol = data$g
         ),
         expr_r_int = numeric(0),
         expl_beta = numeric(0),
