@@ -17,6 +17,7 @@ This release is in development and not yet ready for production use.
 ## Package
 
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See # by @seabbs
+- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See # by @seabbs
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See # by @seabbs
 
 # epinowcast 0.2.2
