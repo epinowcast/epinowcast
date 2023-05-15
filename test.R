@@ -3,6 +3,7 @@ library(data.table)
 
 # Use 2 cores
 options(mc.cores = 2)
+
 # Load and filter germany hospitalisations
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group %in% c("00+", "80+")]
@@ -39,10 +40,14 @@ reference_module <- enw_reference(
 )
 
 # set reporting time indexed reporting process model
-report_module <- enw_report(~ 1 + (1 | .group), data = pobs)
+report_module <- enw_report(~ 1, data = pobs)
 
 # set expectation module
-expectation_module <- enw_expectation(~rw(day, by = .group),  data = pobs)
+expectation_module <- enw_expectation(
+  ~ rw(week, by = .group),
+  observation = ~ (1 | day_of_week:.group),
+  data = pobs
+)
 
 # Fit the nowcast model and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
@@ -52,6 +57,9 @@ nowcast <- epinowcast(pobs,
                       expectation = expectation_module,
                       fit = enw_fit_opts(
                         save_warmup = FALSE, pp = TRUE,
-                        chains = 2, iter_warmup = 500, iter_sampling = 500
+                        chains = 2, iter_warmup = 500, iter_sampling = 500,
+                        max_treedepth = 12, adapt_delta = 0.95
                       )
 )
+
+plot(nowcast, latest_obs) + facet_wrap(vars(age_group), scales = "free")
