@@ -1,3 +1,25 @@
+# epinowcast 0.2.3
+
+This release is in development and not yet ready for production use.
+
+## Contributors
+
+@seabbs contributed code to this release.
+
+@seabbs reviewed pull requests for this release.
+
+@jbracher and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Bugs
+
+- Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
+
+## Package
+
+- Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs
+- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and self-reviewed.
+- Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and self-reviewed.
+
 # epinowcast 0.2.2
 
 This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in `cmdstan 2.32.1`. Upgrading is recommended for all users who wish to use versions of `cmdstan` beyond `2.32.0`. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.
