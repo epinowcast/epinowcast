@@ -979,7 +979,7 @@
 # enw_expectation works as expected when multiple timeseries are present
 
     Code
-      expectation_module[setdiff(names(expectation_module), c("inits"))]
+      expectation_module[setdiff(names(expectation_module), "inits")]
     Output
       $formula
       $formula$r

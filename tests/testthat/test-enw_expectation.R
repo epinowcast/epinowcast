@@ -52,26 +52,26 @@ test_that(
   # Preprocess observations (note this maximum delay is likely too short)
   pobs <- enw_preprocess_data(
     retro_nat_germany, by = "age_group", max_delay = 10
-  )  
+  )
   expectation_module <- enw_expectation(
-    ~ 1 + (1 | .group), 
+    ~ 1 + (1 | .group),
     observation = ~ (1 | week:.group),
     generation_time = c(0.1, 0.9),
     latent_reporting_delay = c(0.1, 0.9),
     data = pobs
   )
   expect_snapshot(
-    expectation_module[setdiff(names(expectation_module), c("inits"))]
+    expectation_module[setdiff(names(expectation_module), "inits")]
   )
-  expect_equal(
+  expect_identical(
     purrr::map(
       expectation_module$init(
-        c(expectation_module$data, list(g = 3)), 
+        c(expectation_module$data, list(g = 3)),
         expectation_module$priors
       )(),
       dim
     ),
-    list(expr_beta = 3, expr_beta_sd = 1, expr_lelatent_int = c(2, 3), 
-         expr_r_int = 1, expl_beta = 6, expl_beta_sd = 3)
+    list(expr_beta = 3L, expr_beta_sd = 1L, expr_lelatent_int = c(2L, 3L),
+         expr_r_int = 1L, expl_beta = 6L, expl_beta_sd = 3L)
   )
 })

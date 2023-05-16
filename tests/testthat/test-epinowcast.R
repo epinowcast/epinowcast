@@ -22,10 +22,10 @@ test_that("epinowcast preprocesses data and model modules as expected", {
     ),
     model = NULL
   ))
-  expect_true(is.list(nowcast$data[[1]]))
+  expect_type(nowcast$data[[1]], "list")
   expect_error(nowcast$init())
   class(pobs) <- c("epinowcast", class(pobs))
-  expect_equal(nowcast[, c("init", "data") := NULL], pobs)
+  expect_identical(nowcast[, c("init", "data") := NULL], pobs)
 })
 
 test_that("epinowcast runs using default arguments only", {
@@ -36,7 +36,7 @@ test_that("epinowcast runs using default arguments only", {
     enw_filter_reference_dates(include_days = 10)
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(epinowcast(pobs))
-  expect_equal(
+  expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
       "fit", "data", "fit_args", "samples", "max_rhat",
@@ -44,7 +44,7 @@ test_that("epinowcast runs using default arguments only", {
       "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -74,7 +74,7 @@ test_that("epinowcast can fit a simple reporting model", {
     model = model
   ))
 
-  expect_equal(
+  expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
       "fit", "data", "fit_args", "samples", "max_rhat",
@@ -82,7 +82,7 @@ test_that("epinowcast can fit a simple reporting model", {
       "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -113,7 +113,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     ),
     model = model
   ))
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -121,7 +121,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
   expect_lt(nowcast$max_rhat, 1.05)
   posterior <- as.data.table(nowcast$fit[[1]]$summary())
   regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
-  expect_equal(
+  expect_identical(
     posterior$variable,
     regression_posterior$variable
   )
@@ -212,7 +212,7 @@ test_that("epinowcast can fit a simple missing data model", {
     fit = fit, model = model
   ))
   # Check convergence
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -249,7 +249,7 @@ test_that("epinowcast can fit a simple missing data model", {
   )
 })
 
-test_that("epinowcast can fit multiple timeseries at once", {
+test_that("epinowcast can fit multiple time series at once", {
   skip_on_cran()
   skip_on_local()
   # Load and filter germany hospitalisations
@@ -305,7 +305,7 @@ test_that("epinowcast can fit multiple timeseries at once", {
     )
   )
 
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
