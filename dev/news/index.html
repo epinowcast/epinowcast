@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.2.3000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,8 +80,28 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.3" id="epinowcast-023">epinowcast 0.2.3<a class="anchor" aria-label="anchor" href="#epinowcast-023"></a></h2>
+<p>This release is in development and not yet ready for production use.</p>
+<div class="section level3">
+<h3 id="contributors-0-2-3">Contributors<a class="anchor" aria-label="anchor" href="#contributors-0-2-3"></a></h3>
+<p>@seabbs contributed code to this release.</p>
+<p>@seabbs reviewed pull requests for this release.</p>
+<p>@jbracher and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.</p>
+</div>
+<div class="section level3">
+<h3 id="bugs-0-2-3">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-3"></a></h3>
+<ul><li>Fixed a bug identified by <a href="https://github.com/jbracher" class="external-link">@jbracher</a> where the <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in <code>cmdstan 2.32.1</code> and is required in order to use versions of <code>cmdstan</code> beyond <code>2.32.0</code> with models that contain multiple time series. See <a href="https://github.com/epinowcast/epinowcast/issues/282" class="external-link">#282</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="package-0-2-3">Package<a class="anchor" aria-label="anchor" href="#package-0-2-3"></a></h3>
+<ul><li>Added additional tests to ensure that the <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> module is appropriately defining initial conditions when multiple groups are present. See <a href="https://github.com/epinowcast/epinowcast/issues/282" class="external-link">#282</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a></li>
+<li>Added an integration test for <code><a href="../reference/epinowcast.html">epinowcast()</a></code> to check models with multiple time series can be fit as expected on example data. See <a href="https://github.com/epinowcast/epinowcast/issues/282" class="external-link">#282</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
+<li>Added a <code>{touchstone}</code> benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See <a href="https://github.com/epinowcast/epinowcast/issues/282" class="external-link">#282</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="epinowcast-022">epinowcast 0.2.2<a class="anchor" aria-label="anchor" href="#epinowcast-022"></a></h2>
-<p>This release is in development and not ready for production use.</p>
+<p>This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in <code>cmdstan 2.32.1</code>. Upgrading is recommended for all users who wish to use versions of <code>cmdstan</code> beyond <code>2.32.0</code>. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.</p>
 <div class="section level3">
 <h3 id="contributors-0-2-2">Contributors<a class="anchor" aria-label="anchor" href="#contributors-0-2-2"></a></h3>
 <p>@sbfnk and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> contributed code to this release.</p>
