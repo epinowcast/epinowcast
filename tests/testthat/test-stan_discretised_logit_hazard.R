@@ -90,7 +90,7 @@ simulate_double_censored_pmf <- function(
   alpha, beta, max, fun = rlnorm, n = 1000
 ) {
   primary <- runif(n, 0, 1)
-  secondary <- primary + runif(n, 0, 1) + fun(n, alpha, beta)
+  secondary <- primary + fun(n, alpha, beta)
   delay <- floor(secondary) - floor(primary)
   cdf <- ecdf(delay)(0:max)
   pmf <- c(cdf[1], diff(cdf))
@@ -105,5 +105,5 @@ print(sim - dlnorm(0:10, 0.6, 0.5))
 print(sim - (plnorm(1:11, 0.6, 0.5) - plnorm(c(0:10), 0.6, 0.5)))
 
 # Compare to window of 2 discretisation
-print(sim - (plnorm(c(1:11), 0.6, 0.5) - plnorm(c(0, 0:9), 0.6, 0.5)) / 2)
+print(sim - (plnorm(c(1:11), 0.6, 0.5) - plnorm(c(0, 0:9), 0.6, 0.5)) / (plnorm(11, 0.6, 0.5) + plnorm(10, 0.6, 0.5) - plnorm(0, 0.6, 0.5)))
 
