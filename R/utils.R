@@ -105,15 +105,14 @@ convert_cmdstan_to_rstan <- function(functions) {
 #'
 #' @return NULL (indivisibly)
 #' @family utils
+#' @importFrom cmstanr cmdstan_model write_stan_file
 #' @importFrom rstan expose_stan_functions stanc
 expose_stan_fns <- function(files, target_dir, ...) {
   # Make functions into a string
   functions <- stan_fns_as_string(files, target_dir)
-  # Convert from cmdstan -> rstan to allow for in R uses
-  functions <- convert_cmdstan_to_rstan(functions)
-  # expose stan codef
-  rstan::expose_stan_functions(rstan::stanc(model_code = functions), ...)
-  return(invisible(NULL))
+  function_file <- cmdstanr::write_stan_file(functions, dir = tempdir())
+  mod <- cmdstanr::cmdstan_model(function_file, compile_standalone = TRUE)
+  return(mod)
 }
 
 #' Load a package example
