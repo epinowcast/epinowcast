@@ -22,6 +22,14 @@ This release is in development and not yet ready for production use.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and self-reviewed.
 - Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
 
+## Model
+
+- Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event testing. See by @seabbs and self-reviewed.
+
+## Documentation
+
+- Updated the distributions vignette to match the updated handling of discretisation. See #282 by @seabbs and self-reviewed.
+
 # epinowcast 0.2.2
 
 This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in `cmdstan 2.32.1`. Upgrading is recommended for all users who wish to use versions of `cmdstan` beyond `2.32.0`. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.
