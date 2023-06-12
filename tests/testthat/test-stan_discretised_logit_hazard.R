@@ -105,13 +105,19 @@ simulate_double_censored_pmf <- function(
 
 # Assume that you have the function hazard_to_log_prob, as it's not provided.
 test_that("double_censored_pmf and discretised_logit_hazard are similar", {
-  for (alpha in seq(0.1, 2, by = 0.1)) {
-    for (beta in seq(0.1, 2, by = 0.1)) {
-      expect_equal(
-        round(double_censored_pmf(30, alpha, beta), 4), 
-        round(exp(discretised_logit_hazard(alpha, beta, 30, 2, 2, 1)), 4), 
-        tolerance = 1e-4
-      )
+  truncations <- seq(10, 100, by = 10) # Choose your desired truncation levels
+  alphas <- seq(0.1, 2, by = 0.1)
+  betas <- seq(0.1, 2, by = 0.1)
+
+  for (truncation in truncations) {
+    for (alpha in alphas) {
+      for (beta in betas) {
+        expect_equal(
+          round(double_censored_pmf(truncation, alpha, beta), 4), 
+          round(exp(discretised_logit_hazard(alpha, beta, truncation, 2, 2, 1)), 4), 
+          tolerance = 1e-4
+        )
+      }
     }
   }
 })
