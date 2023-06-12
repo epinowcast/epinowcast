@@ -77,8 +77,8 @@ convert_cmdstan_to_rstan <- function(functions) {
     fixed = TRUE
   )
   functions <- gsub(
-    "lhaz[3:(n-1)] = lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);",
-    "for (i in 3:(n-1)) lhaz[i] =  lprob[i] - log_diff_exp(lccdf[i-1], lcdf[i-2]);",
+    "lhaz[3:(n-1)] = lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);", # nolint
+    "for (i in 3:(n-1)) lhaz[i] =  lprob[i] - log_diff_exp(lccdf[i-1], lcdf[i-2]);", # nolint
     functions,
     fixed = TRUE
   )
