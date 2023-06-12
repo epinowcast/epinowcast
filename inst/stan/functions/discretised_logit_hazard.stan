@@ -98,7 +98,8 @@ vector lprob_to_uniform_double_censored_log_hazard(vector lprob, vector lcdf,
     lccdf = log1m_exp(lcdf[1:(n-2)]);
     lhaz[2] = lprob[2] - lccdf[1];
     if (n > 2) {
-      lhaz[3:(n-1)] = lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);
+      lhaz[3:(n-1)] =
+        lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);
     }
   }
   return(lhaz);
