@@ -15,11 +15,11 @@ date).}
 \item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
-A data.table with a \code{max_confirm} and \code{cum_prop_reported}
-columns added. \code{max_confirm} is the maximum number of cases reported
-on a given day. \code{cum_prop_reported} is the proportion of cases
-reported on a given day relative to the maximum number of cases
-reported on a given day.
+A data.table with new columns \code{max_confirm} and \code{cum_prop_reported}.
+\code{max_confirm} is the maximum number of cases reported for a certain
+reference_date. \code{cum_prop_reported} is the proportion of cases for a certain
+reference_date that are reported until a given report_day, relative to all
+cases so far observed for this reference_date.
 }
 \description{
 This is a helper function which adds the maximum (in the sense
