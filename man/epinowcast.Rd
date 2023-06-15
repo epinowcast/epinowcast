@@ -10,7 +10,7 @@ epinowcast(
     non_parametric = ~0, data = data),
   report = epinowcast::enw_report(non_parametric = ~0, structural = ~0, data = data),
   expectation = epinowcast::enw_expectation(r = ~0 + (1 | day:.group), generation_time =
-    c(1), observation = ~1, latent_reporting_delay = c(1), data = data),
+    1, observation = ~1, latent_reporting_delay = 1, data = data),
   missing = epinowcast::enw_missing(formula = ~0, data = data),
   obs = epinowcast::enw_obs(family = "negbin", data = data),
   fit = epinowcast::enw_fit_opts(sampler = epinowcast::enw_sample, nowcast = TRUE, pp =
@@ -23,10 +23,10 @@ epinowcast(
 \arguments{
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{reference}{The reference time indexed reporting process model
+\item{reference}{The reference date indexed reporting process model
 specification as defined using \code{\link[=enw_reference]{enw_reference()}}.}
 
-\item{report}{The report time indexed reporting process model
+\item{report}{The report date indexed reporting process model
 specification as defined using \code{\link[=enw_report]{enw_report()}}.}
 
 \item{expectation}{The expectation model specification as defined using

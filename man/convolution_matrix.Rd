@@ -20,11 +20,11 @@ A matrix with each column indicating a primary event and each row
 indicating a secondary event.
 }
 \description{
-This function allows the construction of convoluton matrices which can be
+This function allows the construction of convolution matrices which can be
 be combined with a vector of primary events to produce a vector of secondary
 events for example in the form of a renewal equation or to simulate
 reporting delays. Time-varying delays are supported as well as distribution
-padding (to allow for use in renewal equation like aproaches).
+padding (to allow for use in renewal equation like approaches).
 }
 \examples{
 # Simple convolution matrix with a static distribution
@@ -32,9 +32,9 @@ convolution_matrix(c(1, 2, 3), 10)
 # Include partially reported convolutions
 convolution_matrix(c(1, 2, 3), 10, include_partial = TRUE)
 # Use a list of distributions
-convolution_matrix(rep(list(c(1, 2, 3)), 10),10)
+convolution_matrix(rep(list(c(1, 2, 3)), 10), 10)
 # Use a time-varying list of distributions
-convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4,5,6))), 11)
+convolution_matrix(c(rep(list(c(1, 2, 3)), 10), list(c(4, 5, 6))), 11)
 }
 \seealso{
 Helper functions for model modules

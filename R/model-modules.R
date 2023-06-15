@@ -188,9 +188,9 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   out$formula$non_parametric <- form$formula
   out$data <- data_list
   out$priors <- data.table::data.table(
-    variable = c("rep_beta_sd"),
-    description = c("Standard deviation of scaled pooled report date effects"),
-    distribution = c("Zero truncated normal"),
+    variable = "rep_beta_sd",
+    description = "Standard deviation of scaled pooled report date effects",
+    distribution = "Zero truncated normal",
     mean = 0,
     sd = 1
   )
@@ -258,8 +258,8 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
-enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
-                            observation = ~1, latent_reporting_delay = c(1),
+enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
+                            observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
     stop("An expectation model formula for r must be specified")
@@ -317,7 +317,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
       length(latent_reporting_delay[[1]]), length(latent_reporting_delay)
     ),
     lrd = convolution_matrix(
-      latent_reporting_delay, r_list$ft, include_partial = FALSE
+      latent_reporting_delay, r_list$ft,
+      include_partial = FALSE
     )
   )
 
@@ -325,10 +326,9 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
   obs_list <- c(obs_list, extract_sparse_matrix(obs_list$lrd, prefix = "lrd"))
   obs_list$lrd <- NULL
 
-  obs_list$obs <- ifelse(
-    sum(latent_reporting_delay) == 1 && obs_list$lrd_n == 1 &&
-      as_string_formula(observation) %in% "~1",
-    0, 1
+  obs_list$obs <- as.numeric(
+    sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
+      !as_string_formula(observation) %in% "~1"
   )
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
@@ -382,9 +382,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
           ),
           nrow = data$expr_gt_n
         )),
-        expr_r_int = rnorm(
-          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
-        ),
+        expr_r_int = numeric(0),
         expl_beta = numeric(0),
         expl_beta_sd = numeric(0)
       )
@@ -396,6 +394,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
           data$expr_rncol, priors$expr_beta_sd_p[1],
           priors$expr_beta_sd_p[2] / 10
         ))
+      }
+      if (data$expr_fintercept > 0) {
+        init$expr_r_int <- rnorm(
+          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
+        )
       }
       if (data$expl_fncol > 0) {
         init$expl_beta <- rnorm(data$expl_fncol, 0, 0.01)
@@ -425,7 +428,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = c(1),
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
-#' @importFrom data.table setorderv copy dcast
+#' @importFrom data.table setorderv dcast
 #' @importFrom purrr map
 #' @export
 #' @examples
@@ -469,16 +472,16 @@ enw_missing <- function(formula = ~1, data) {
     )
 
     # Get the indexes for when grouped observations start and end
-    miss_lookup <- data.table::copy(rep_w_complete_ref)
-    data_list$miss_st <- miss_lookup[, n := 1:.N, by = ".group"]
+    miss_lookup <- coerce_dt(rep_w_complete_ref)
+    data_list$miss_st <- miss_lookup[, n := seq_len(.N), by = ".group"]
     data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
-    data_list$miss_cst <- miss_lookup[, n := 1:.N]
+    data_list$miss_cst <- miss_lookup[, n := seq_len(.N)]
     data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
 
     # Get (and order) reported cases with a missing reference date
-    missing_reference <- data.table::copy(data$missing_reference[[1]])
+    missing_reference <- coerce_dt(data$missing_reference[[1]])
     data.table::setkeyv(missing_reference, c(".group", "report_date"))
-    data_list$missing_reference <- data.table::copy(missing_reference)[
+    data_list$missing_reference <- coerce_dt(missing_reference)[
       rep_w_complete_ref,
       on = c("report_date", ".group")
     ][, confirm]
@@ -567,7 +570,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
 
   # get new confirm for processing
-  new_confirm <- data.table::copy(data$new_confirm[[1]])
+  new_confirm <- coerce_dt(data$new_confirm[[1]])
   data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
 
   # get flat observations
@@ -582,7 +585,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # snap lookup
   snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
-  snap_lookup[, s := 1:.N]
+  snap_lookup[, s := seq_len(.N)]
   snap_lookup <- data.table::dcast(
     snap_lookup, reference_date ~ .group,
     value.var = "s"
@@ -591,7 +594,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
 
   # snap time
   snap_time <- unique(new_confirm[, .(reference_date, .group)])
-  snap_time[, t := 1:.N, by = ".group"]
+  snap_time[, t := seq_len(.N), by = ".group"]
   snap_time <- snap_time$t
 
   # Format indexing and observed data
@@ -620,9 +623,9 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
   out$family <- family
   out$data <- data
   out$priors <- data.table::data.table(
-    variable = c("sqrt_phi"),
-    description = c("One over the square root of the reporting overdispersion"),
-    distribution = c("Zero truncated normal"),
+    variable = "sqrt_phi",
+    description = "One over the square root of the reporting overdispersion",
+    distribution = "Zero truncated normal",
     mean = 0,
     sd = 1
   )

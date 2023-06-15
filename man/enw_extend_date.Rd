@@ -4,7 +4,7 @@
 \alias{enw_extend_date}
 \title{Extend a time series with additional dates}
 \usage{
-enw_extend_date(metaobs, days = 20, direction = "end")
+enw_extend_date(metaobs, days = 20, direction = c("end", "start"))
 }
 \arguments{
 \item{metaobs}{A \code{data.frame} with a \code{date} column.}
@@ -40,11 +40,9 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata_maxdelay}()},

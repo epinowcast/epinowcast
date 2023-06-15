@@ -38,27 +38,32 @@ set than presented here, we also provide a range of other documentation,
 case studies, and spaces for the community to interact with each other.
 Below is a short list of current resources.
 
-  - [Package website](https://package.epinowcast.org/): This includes a
-    function reference, model outline, and case studies making use of
-    the package. The development version of our documentation
-    (corresponding to our `develop` branch) is available
-    [here](https://package.epinowcast.org/dev/).
-  - [Organisation website](https://www.epinowcast.org/): This includes
-    links to our other resources as well as guest posts from community
-    members and schedules for any related seminars being run by
-    community members.
-  - [Directory of example
-    scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
-    Not as fleshed out as our complete case studies these scripts are
-    used during package developemnt and each showcase a subset of
-    package functionality. Often newly introduced features will be
-    explored here before surfacing in other areas of our documentation.
-  - [Community forum](https://community.epinowcast.org/): Our community
-    forum is where development of tools is discussed, along with related
-    research from our members and discussions between users. If you are
-    interested in real-time analysis of infectious disease this is
-    likely a good place to start regardless of if you end up making use
-    of `epinowcast`.
+- [Package website](https://package.epinowcast.org/): This includes a
+  function reference, model outline, and case studies making use of the
+  package. This site refers to the release version of our package which
+  can be installed from our Universe or from the latest GitHub release
+  (see installation instructions). The development version of our
+  documentation (corresponding to our `main` branch on GitHub) is
+  available [here](https://package.epinowcast.org/dev/).
+
+- [Organisation website](https://www.epinowcast.org/): This includes
+  links to our other resources as well as guest posts from community
+  members and schedules for any related seminars being run by community
+  members.
+
+- [Directory of example
+  scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
+  Not as fleshed out as our complete case studies these scripts are used
+  during package development and each showcase a subset of package
+  functionality. Often newly introduced features will be explored here
+  before surfacing in other areas of our documentation.
+
+- [Community forum](https://community.epinowcast.org/): Our community
+  forum is where development of methods and tools is discussed, along
+  with related research from our members and discussions between users.
+  If you are interested in real-time analysis of infectious disease this
+  is likely a good place to start regardless of if you end up making use
+  of `epinowcast`.
 
 ## Installation
 
@@ -70,19 +75,25 @@ Install the latest released version of the package with:
 install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 ```
 
-Alternatively, install the stable development version from GitHub using
-the following,
+Alternatively, install the development version (whilst we strive to
+limit breaking changes or the introduction of bugs during development
+this version may contain both) from GitHub using the following,
 
 ``` r
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
-The unstable development version can also be installed from GitHub using
-the following,
+Historical package releases can be installed from GitHub using `remotes`
+by adding the release tag as in the following example (which installs
+[`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)),
 
 ``` r
-remotes::install_github("epinowcast/epinowcast@develop", dependencies = TRUE)
+remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0")
 ```
+
+*Note: A similar method can be used to install a particular commit of
+the package which may be useful for some users who are unable to use a
+fixed release but concerned about the stability of their dependencies.*
 
 ### Installing CmdStan
 
@@ -99,6 +110,18 @@ support.
 ``` r
 cmdstanr::install_cmdstan()
 ```
+
+*Note: This install process can be sped up using the `cores` argument
+and past versions can be installed using the `version` argument (which
+may be useful if install historical package releases).*
+
+### Docker
+
+As an alternative to local installation we provide a Docker image with
+`epinowcast` and all dependencies installed. This can be used to run
+`epinowcast` without installing dependencies locally. The image is
+available
+[here](https://github.com/orgs/epinowcast/packages/container/package/epinowcast).
 
 ## Quick start
 
@@ -148,7 +171,6 @@ retro_nat_germany <- nat_germany_hosp |>
   enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 #>      reference_date location age_group confirm report_date
-#>              <IDat>   <fctr>    <fctr>   <int>      <IDat>
 #>   1:     2021-07-13       DE       00+      21  2021-07-13
 #>   2:     2021-07-14       DE       00+      22  2021-07-14
 #>   3:     2021-07-15       DE       00+      28  2021-07-15
@@ -168,7 +190,6 @@ latest_germany_hosp <- nat_germany_hosp |>
   enw_filter_reference_dates(remove_days = 40, include_days = 40)
 head(latest_germany_hosp, n = 10)
 #>     reference_date location age_group confirm report_date
-#>             <IDat>   <fctr>    <fctr>   <int>      <IDat>
 #>  1:     2021-07-13       DE       00+      60  2021-10-01
 #>  2:     2021-07-14       DE       00+      74  2021-10-01
 #>  3:     2021-07-15       DE       00+      69  2021-10-01
@@ -192,14 +213,11 @@ make sure everything is as expected.
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 #>                    obs          new_confirm              latest
-#>                 <list>               <list>              <list>
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
 #>    missing_reference  reporting_triangle      metareference          metareport
-#>               <list>              <list>             <list>              <list>
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
-#>             metadelay  time snapshots     by groups max_delay   max_date
-#>                <list> <int>     <int> <list>  <int>     <num>     <IDat>
-#> 1: <data.table[40x4]>    41        41             1        40 2021-08-22
+#>             metadelay time snapshots by groups max_delay   max_date
+#> 1: <data.table[40x4]>   41        41         1 <list[3]> 2021-08-22
 ```
 
 Construct a parametric lognormal intercept only model for the date of
@@ -212,7 +230,7 @@ rows with `index` containing the mapping to the full design matrix.
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
-Construct a model with a random effect for the day of report using the
+Construct a model with a random effect for the date of report using the
 metadata produced by `enw_preprocess_data()`.
 
 ``` r
@@ -253,7 +271,7 @@ nowcast <- epinowcast(pobs,
   expectation = expectation_module,
   reference = reference_module,
   report = report_module,
-  fit = enw_fit_opts(,
+  fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
     iter_sampling = 500, iter_warmup = 500,
@@ -261,14 +279,6 @@ nowcast <- epinowcast(pobs,
   ),
   model = model
 )
-#> Running MCMC with 2 parallel chains, with 2 thread(s) per chain...
-#> 
-#> Chain 2 finished in 41.3 seconds.
-#> Chain 1 finished in 43.0 seconds.
-#> 
-#> Both chains finished successfully.
-#> Mean chain execution time: 42.1 seconds.
-#> Total execution time: 43.1 seconds.
 ```
 
 ### Results
@@ -279,26 +289,17 @@ information, the data used for fitting, and the `cmdstanr` object.
 ``` r
 nowcast
 #>                    obs          new_confirm              latest
-#>                 <list>               <list>              <list>
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
 #>    missing_reference  reporting_triangle      metareference          metareport
-#>               <list>              <list>             <list>              <list>
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
-#>             metadelay  time snapshots     by groups max_delay   max_date
-#>                <list> <int>     <int> <list>  <int>     <num>     <IDat>
-#> 1: <data.table[40x4]>    41        41             1        40 2021-08-22
-#>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         fit
-#>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      <list>
-#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    hessian: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    init: function () \n    init_model_methods: function (seed = 0, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    loo: function (variables = "log_lik", r_eff = TRUE, ...) \n    lp: function () \n    metadata: function () \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL) \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1481.3 -1481.72 -1471.02 -1471.1 -1475.78 -1473.61 -147 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 6 7 7 7 7 7 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
-#>          data  fit_args samples max_rhat divergent_transitions
-#>        <list>    <list>   <int>    <num>                 <num>
-#> 1: <list[99]> <list[8]>    1000     1.01                     0
-#>    per_divergent_transitions max_treedepth no_at_max_treedepth
-#>                        <num>         <num>               <int>
-#> 1:                         0             8                  15
-#>    per_at_max_treedepth run_time
-#>                   <num>    <num>
-#> 1:                0.015     43.1
+#>             metadelay time snapshots by groups max_delay   max_date
+#> 1: <data.table[40x4]>   41        41         1 <list[3]> 2021-08-22
+#>                  fit       data  fit_args samples max_rhat
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[8]>    1000     1.01
+#>    divergent_transitions per_divergent_transitions max_treedepth
+#> 1:                     0                         0             8
+#>    no_at_max_treedepth per_at_max_treedepth run_time
+#> 1:                  80                 0.08    161.6
 ```
 
 Summarise the nowcast for the latest snapshot of data.
@@ -308,7 +309,6 @@ nowcast |>
   summary(probs = c(0.05, 0.95)) |>
   head(n = 10)
 #>     reference_date report_date .group max_confirm location age_group confirm
-#>             <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
 #>  1:     2021-07-14  2021-08-22      1          72       DE       00+      72
 #>  2:     2021-07-15  2021-08-22      1          69       DE       00+      69
 #>  3:     2021-07-16  2021-08-22      1          47       DE       00+      47
@@ -319,30 +319,28 @@ nowcast |>
 #>  8:     2021-07-21  2021-08-22      1          91       DE       00+      91
 #>  9:     2021-07-22  2021-08-22      1          99       DE       00+      99
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
-#>     cum_prop_reported delay prop_reported    mean median        sd    mad    q5
-#>                 <num> <num>         <num>   <num>  <num>     <num>  <num> <num>
-#>  1:                 1    39             0  72.000     72 0.0000000 0.0000    72
-#>  2:                 1    38             0  69.057     69 0.2486218 0.0000    69
-#>  3:                 1    37             0  47.073     47 0.2715598 0.0000    47
-#>  4:                 1    36             0  65.185     65 0.4438152 0.0000    65
-#>  5:                 1    35             0  50.238     50 0.4935581 0.0000    50
-#>  6:                 1    34             0  36.254     36 0.5193782 0.0000    36
-#>  7:                 1    33             0  94.513     94 0.7525938 0.0000    94
-#>  8:                 1    32             0  91.728     92 0.8560074 1.4826    91
-#>  9:                 1    31             0 100.016    100 1.0727977 1.4826    99
-#> 10:                 1    30             0  87.197     87 1.1249251 1.4826    86
-#>       q95      rhat  ess_bulk  ess_tail
-#>     <num>     <num>     <num>     <num>
-#>  1:    72        NA        NA        NA
-#>  2:    70 1.0016127  930.1962  907.6383
-#>  3:    48 0.9982702 1055.7404 1013.5831
-#>  4:    66 1.0008253  902.0810  893.6840
-#>  5:    51 0.9996211  761.5321  839.5581
-#>  6:    37 1.0014637  946.0659  938.5932
-#>  7:    96 0.9989225  894.9256  904.0204
-#>  8:    93 1.0019180  887.0910  726.9359
-#>  9:   102 1.0022603  973.0836  790.9693
-#> 10:    89 0.9984863  925.5100  797.7415
+#>     cum_prop_reported delay prop_reported   mean median        sd    mad q5 q95
+#>  1:                 1    39             0 72.000     72 0.0000000 0.0000 72  72
+#>  2:                 1    38             0 69.043     69 0.2078321 0.0000 69  69
+#>  3:                 1    37             0 47.087     47 0.2991998 0.0000 47  48
+#>  4:                 1    36             0 65.180     65 0.4216370 0.0000 65  66
+#>  5:                 1    35             0 50.232     50 0.4903228 0.0000 50  51
+#>  6:                 1    34             0 36.223     36 0.4954962 0.0000 36  37
+#>  7:                 1    33             0 94.515     94 0.7295939 0.0000 94  96
+#>  8:                 1    32             0 91.731     91 0.9173225 0.0000 91  94
+#>  9:                 1    31             0 99.968    100 0.9929562 1.4826 99 102
+#> 10:                 1    30             0 87.105     87 1.1068876 1.4826 86  89
+#>          rhat  ess_bulk  ess_tail
+#>  1:        NA        NA        NA
+#>  2: 0.9980409  997.3506  994.6267
+#>  3: 0.9988060  973.5019  975.2912
+#>  4: 0.9988922 1079.7729 1032.3819
+#>  5: 0.9995436  876.8179  834.5515
+#>  6: 0.9982176  970.9203  872.6313
+#>  7: 1.0001539 1068.0980  848.4224
+#>  8: 1.0047752  898.4210  910.1080
+#>  9: 1.0006086 1085.2779 1053.2228
+#> 10: 0.9987012  986.3788  907.2598
 ```
 
 Plot the summarised nowcast against currently observed data (or
@@ -379,7 +377,6 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
   .SDcols = cols, by = ".draw"
 ][!is.na(sample)]
 #>        reference_date report_date .group max_confirm location age_group confirm
-#>                <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
 #>     1:     2021-07-20  2021-08-22      1          94       DE       00+     433
 #>     2:     2021-07-20  2021-08-22      1          94       DE       00+     433
 #>     3:     2021-07-20  2021-08-22      1          94       DE       00+     433
@@ -391,19 +388,18 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    33             0      1          1     1    434
-#>     2:                 1    33             0      1          2     2    438
-#>     3:                 1    33             0      1          3     3    436
-#>     4:                 1    33             0      1          4     4    435
-#>     5:                 1    33             0      1          5     5    433
+#>        cum_prop_reported delay prop_reported sample .chain .iteration .draw
+#>     1:                 1    33             0    435      1          1     1
+#>     2:                 1    33             0    434      1          2     2
+#>     3:                 1    33             0    434      1          3     3
+#>     4:                 1    33             0    434      1          4     4
+#>     5:                 1    33             0    435      1          5     5
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2189
-#> 33997:                 1     0             1      2        497   997   2063
-#> 33998:                 1     0             1      2        498   998   2083
-#> 33999:                 1     0             1      2        499   999   2087
-#> 34000:                 1     0             1      2        500  1000   2308
+#> 33996:                 1     0             1   1974      2        496   996
+#> 33997:                 1     0             1   1958      2        497   997
+#> 33998:                 1     0             1   1994      2        498   998
+#> 33999:                 1     0             1   2071      2        499   999
+#> 34000:                 1     0             1   2108      2        500  1000
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -423,20 +419,22 @@ enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 If using `epinowcast` in your work please consider citing it using the
 following,
 
+    #> To cite package 'epinowcast' in publications use:
     #> 
-    #> To cite epinowcast in publications use:
-    #> 
-    #>   Sam Abbott, Adrian Lison, and Sebastian Funk (2021). epinowcast:
-    #>   Flexible hierarchical nowcasting, DOI: 10.5281/zenodo.5637165
+    #>   Abbott S, Lison A, Funk S, Pearson C, Gruson H (2021). "epinowcast:
+    #>   Flexible hierarchical nowcasting." _Zenodo_.
+    #>   doi:10.5281/zenodo.5637165 <https://doi.org/10.5281/zenodo.5637165>,
+    #>   <https://github.com/epinowcast/epinowcast>.
     #> 
     #> A BibTeX entry for LaTeX users is
     #> 
     #>   @Article{,
     #>     title = {epinowcast: Flexible hierarchical nowcasting},
-    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk},
-    #>     journal = {Zenodo},
+    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson},
     #>     year = {2021},
+    #>     journal = {Zenodo},
     #>     doi = {10.5281/zenodo.5637165},
+    #>     url = {https://github.com/epinowcast/epinowcast},
     #>   }
 
 If making use of our methodology or the methodology on which ours is
@@ -455,7 +453,7 @@ for more information.
 
 ## Contributing
 
-We welcome contributions and new contributors\! We particularly
+We welcome contributions and new contributors! We particularly
 appreciate help on priority problems in the
 [issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull

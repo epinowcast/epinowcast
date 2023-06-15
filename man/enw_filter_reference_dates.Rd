@@ -13,14 +13,14 @@ enw_filter_reference_dates(
 )
 }
 \arguments{
-\item{obs}{An observation \code{data.frame} containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{An \code{data.frame}; must have \code{report_date} and \code{reference_date}
+columns.}
 
 \item{earliest_date}{earliest reference date to include in the data set}
 
 \item{include_days}{if \code{earilest_date} is not given, the number
 of reference dates to include, ending with the latest reference
-date included once reporting dates have been removed. If specified
+date included once report dates have been removed. If specified
 this is indexed to \code{latest_date} or \code{remove_days}.}
 
 \item{latest_date}{Date, the latest reference date to include in the
@@ -64,11 +64,9 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata_maxdelay}()},

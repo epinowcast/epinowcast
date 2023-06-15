@@ -21,6 +21,13 @@ test_that("enw_complete_dates works as expected with well behaved data", {
     enw_complete_dates(obs, missing_reference = FALSE),
     exp_obs[!is.na(reference_date)]
   )
+  expect_snapshot(
+    enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 5)
+  )
+  expect_equal(
+    enw_complete_dates(obs, completion_beyond_max_report = FALSE, max_delay = 5),
+    exp_obs
+  )
   obs$location <- "DE"
   data.table::setkeyv(
     exp_obs[, location := "DE"], c("location", "reference_date", "report_date")

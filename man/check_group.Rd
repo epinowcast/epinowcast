@@ -2,22 +2,22 @@
 % Please edit documentation in R/check.R
 \name{check_group}
 \alias{check_group}
-\title{Check Observations for reserved grouping variables}
+\title{Check Observations for Reserved Grouping Variables}
 \usage{
 check_group(obs)
 }
 \arguments{
-\item{obs}{An observation \code{data.frame} that does not contain \code{.group},
-\code{.old_group}, or \code{.new_group} as these are reserved variables.}
+\item{obs}{An object that will be \code{coerce_dt}d in place, that does not
+contain \code{.group}, \code{.old_group}, or \code{.new_group}. These are reserved names.}
+}
+\value{
+The \code{obs} object, which will be modifiable in place.
 }
 \description{
-Check Observations for reserved grouping variables
+Check Observations for Reserved Grouping Variables
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{add_group}()},
-\code{\link{check_by}()},
-\code{\link{check_dates}()},
 \code{\link{check_max_delay}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_module}()},

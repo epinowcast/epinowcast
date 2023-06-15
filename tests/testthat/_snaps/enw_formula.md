@@ -304,18 +304,18 @@
       
       
       $expanded_formula
-      [1] "~1 + cweek1 + age_group"
+      [1] "~1 + age_group + cweek1"
       
       $fixed
       $fixed$formula
-      [1] "~1 + cweek1 + age_group"
+      [1] "~1 + age_group + cweek1"
       
       $fixed$design
-        (Intercept) cweek1 age_group00+ age_group15-34
-      1           1      0            1              0
-      3           1      1            1              0
-      5           1      0            0              1
-      7           1      1            0              1
+        (Intercept) age_group00+ age_group15-34 cweek1
+      1           1            1              0      0
+      3           1            1              0      1
+      5           1            0              1      0
+      7           1            0              1      1
       
       $fixed$index
       [1] 1 1 2 2 3 3 4 4
@@ -323,13 +323,13 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + week"
+      [1] "~0 + fixed + age_group + rw__week"
       
       $random$design
-        fixed age_group week
-      1     0         1    0
-      2     0         1    0
-      3     0         0    1
+        fixed age_group rw__week
+      1     0         1        0
+      2     0         1        0
+      3     0         0        1
       attr(,"assign")
       [1] 1 2 3
       
@@ -362,11 +362,11 @@
       
       
       $expanded_formula
-      [1] "~1 + age_group:cweek1 + age_group"
+      [1] "~1 + age_group + age_group:cweek1"
       
       $fixed
       $fixed$formula
-      [1] "~1 + age_group:cweek1 + age_group"
+      [1] "~1 + age_group + age_group:cweek1"
       
       $fixed$design
         (Intercept) age_group00+ age_group15-34 age_group00+:cweek1
@@ -386,14 +386,14 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + `age_group00+__week` + `age_group15-34__week`"
+      [1] "~0 + fixed + age_group + `rw__age_group00+__week` + `rw__age_group15-34__week`"
       
       $random$design
-        fixed age_group `age_group00+__week` `age_group15-34__week`
-      1     0         1                    0                      0
-      2     0         1                    0                      0
-      3     0         0                    1                      0
-      4     0         0                    0                      1
+        fixed age_group `rw__age_group00+__week` `rw__age_group15-34__week`
+      1     0         1                        0                          0
+      2     0         1                        0                          0
+      3     0         0                        1                          0
+      4     0         0                        0                          1
       attr(,"assign")
       [1] 1 2 3 4
       
@@ -426,22 +426,22 @@
       
       
       $expanded_formula
-      [1] "~1 + day_of_week + cweek1 + age_group"
+      [1] "~1 + day_of_week + age_group + cweek1"
       
       $fixed
       $fixed$formula
-      [1] "~1 + day_of_week + cweek1 + age_group"
+      [1] "~1 + day_of_week + age_group + cweek1"
       
       $fixed$design
-        (Intercept) day_of_weekTuesday cweek1 age_group00+ age_group15-34
-      1           1                  0      0            1              0
-      2           1                  1      0            1              0
-      3           1                  0      1            1              0
-      4           1                  1      1            1              0
-      5           1                  0      0            0              1
-      6           1                  1      0            0              1
-      7           1                  0      1            0              1
-      8           1                  1      1            0              1
+        (Intercept) day_of_weekTuesday age_group00+ age_group15-34 cweek1
+      1           1                  0            1              0      0
+      2           1                  1            1              0      0
+      3           1                  0            1              0      1
+      4           1                  1            1              0      1
+      5           1                  0            0              1      0
+      6           1                  1            0              1      0
+      7           1                  0            0              1      1
+      8           1                  1            0              1      1
       
       $fixed$index
       [1] 1 2 3 4 5 6 7 8
@@ -449,14 +449,14 @@
       
       $random
       $random$formula
-      [1] "~0 + fixed + age_group + week"
+      [1] "~0 + fixed + age_group + rw__week"
       
       $random$design
-        fixed age_group week
-      1     1         0    0
-      2     0         1    0
-      3     0         1    0
-      4     0         0    1
+        fixed age_group rw__week
+      1     1         0        0
+      2     0         1        0
+      3     0         1        0
+      4     0         0        1
       attr(,"assign")
       [1] 1 2 3
       
@@ -668,6 +668,62 @@
       
       $random$index
       [1] 1 2 3 4 5 6 7 8 9
+      
+      
+      attr(,"class")
+      [1] "enw_formula" "list"       
+
+# enw_formula supports random effects and random walks for the same variable
+
+    Code
+      enw_formula(~ 1 + (1 | week) + rw(week), data)
+    Output
+      $formula
+      [1] "~1 + (1 | week) + rw(week)"
+      
+      $parsed_formula
+      $parsed_formula$fixed
+      [1] "1"
+      
+      $parsed_formula$random
+      $parsed_formula$random[[1]]
+      1 | week
+      
+      
+      $parsed_formula$rw
+      [1] "rw(week)"
+      
+      
+      $expanded_formula
+      [1] "~1 + week + cweek1"
+      
+      $fixed
+      $fixed$formula
+      [1] "~1 + week + cweek1"
+      
+      $fixed$design
+        (Intercept) week0 week1 cweek1
+      1           1     1     0      0
+      3           1     0     1      1
+      
+      $fixed$index
+      [1] 1 1 2 2 1 1 2 2
+      
+      
+      $random
+      $random$formula
+      [1] "~0 + fixed + week + rw__week"
+      
+      $random$design
+        fixed week rw__week
+      1     0    1        0
+      2     0    1        0
+      3     0    0        1
+      attr(,"assign")
+      [1] 1 2 3
+      
+      $random$index
+      [1] 1 2 3
       
       
       attr(,"class")

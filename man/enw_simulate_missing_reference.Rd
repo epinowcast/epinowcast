@@ -4,7 +4,7 @@
 \alias{enw_simulate_missing_reference}
 \title{Simulate observations with a missing reference date.}
 \usage{
-enw_simulate_missing_reference(obs, proportion = 0.2, by = c())
+enw_simulate_missing_reference(obs, proportion = 0.2, by = NULL)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:

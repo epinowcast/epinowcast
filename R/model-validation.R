@@ -24,11 +24,11 @@
 #' @param round_to Integer defaults to 3. Number of digits to round scoring
 #' output to.
 #'
-#' @param ... Additional arguments passed to [scoringutils::score()].
+#' @inheritDotParams scoringutils::score
 #'
 #' @return A `data.table` as returned by [scoringutils::score()].
 #' @family modelvalidation
-#' @importFrom data.table copy setnames
+#' @importFrom data.table setnames
 #' @export
 #' @examplesIf interactive()
 #' library(data.table)
@@ -58,9 +58,9 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   }
   long_nowcast <- enw_quantiles_to_long(nowcast)
   if (!is.null(long_nowcast[["mad"]])) {
-    long_nowcast[, c("mad") := NULL]
+    long_nowcast[, "mad" := NULL]
   }
-  latest_obs <- data.table::copy(latest_obs)
+  latest_obs <- coerce_dt(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
   latest_obs[, report_date := NULL]
   cols <- intersect(colnames(nowcast), colnames(latest_obs))

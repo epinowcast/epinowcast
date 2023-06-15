@@ -4,7 +4,13 @@
 \alias{enw_complete_dates}
 \title{Complete missing reference and report dates}
 \usage{
-enw_complete_dates(obs, by = c(), max_delay, missing_reference = TRUE)
+enw_complete_dates(
+  obs,
+  by = NULL,
+  max_delay,
+  missing_reference = TRUE,
+  completion_beyond_max_report = FALSE
+)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
@@ -25,8 +31,11 @@ maximum that makes sense for your data. Note that delays use zero-based
 indexing, i.e. \code{max_delay} includes the reference date and the
 \code{max_delay - 1} following days.}
 
-\item{missing_reference}{Should entries for cases with missing reference date
-be completed as well?, Default: TRUE}
+\item{missing_reference}{Logical, should entries for cases with missing
+reference date be completed as well?, Default: TRUE}
+
+\item{completion_beyond_max_report}{Logical, should entries be completed
+beyond the maximum date found in the data? Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of
@@ -45,6 +54,9 @@ obs <- data.frame(
   confirm = 1
 )
 enw_complete_dates(obs)
+
+# Allow completion beyond the maximum date found in the data
+enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 }
 \seealso{
 Preprocessing functions
@@ -53,12 +65,10 @@ Preprocessing functions
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata_maxdelay}()},

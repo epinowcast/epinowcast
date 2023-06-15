@@ -4,16 +4,19 @@
 \alias{enw_assign_group}
 \title{Assign a group to each row of a data.table}
 \usage{
-enw_assign_group(obs, by = c())
+enw_assign_group(obs, by = NULL, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.table} or \code{data.frame} without a \code{.group} column.}
 
 \item{by}{A character vector of column names to group by. Defaults to
 an empty vector.}
+
+\item{copy}{A logical; make a copy (default) of \code{obs} or modify it in
+place?}
 }
 \value{
-A data.table with a \code{.group} column added ordered by \code{.group}
+A \code{data.table} with a \code{.group} column added ordered by \code{.group}
 and the existing key of \code{obs}.
 }
 \description{
@@ -34,12 +37,10 @@ Preprocessing functions
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata_maxdelay}()},

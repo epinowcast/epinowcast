@@ -29,9 +29,7 @@
 enw_posterior <- function(fit, variables = NULL,
                           probs = c(0.05, 0.2, 0.8, 0.95), ...) {
   # order probs
-  probs <- probs[order(probs)]
-  # NULL out variables
-  variable <- type <- NULL
+  probs <- sort(probs, na.last = TRUE)
 
   # extract summary parameters of interest and join
   sfit <- list(
@@ -49,8 +47,8 @@ enw_posterior <- function(fit, variables = NULL,
     )
   )
   cbind_custom <- function(x, y) {
-    x <- setDT(x)
-    y <- setDT(y)[, variable := NULL]
+    x <- data.table::setDT(x)
+    y <- data.table::setDT(y)[, variable := NULL]
     cbind(x, y)
   }
   sfit <- purrr::reduce(sfit, cbind_custom)
@@ -62,7 +60,7 @@ enw_posterior <- function(fit, variables = NULL,
 #'
 #' @description A generic wrapper around [enw_posterior()] with
 #' opinionated defaults to extract the posterior prediction for the
-#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of 
+#' nowcast (`"pp_inf_obs"` from the `stan` code). The functionality of
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
@@ -75,6 +73,9 @@ enw_posterior <- function(fit, variables = NULL,
 #' @param max_delay Metadata for the maximum delay produced using 
 #' [enw_metadata_maxdelay()].
 #'
+#' @param max_delay Metadata for the maximum delay produced using
+#' [enw_metadata_maxdelay()].
+#'
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
 #' This uses observed data where available and the posterior prediction
 #' where not.
@@ -83,7 +84,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' @inheritParams enw_posterior
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table copy setorderv
+#' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
@@ -103,7 +104,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
       )
   }
 
-  ord_obs <- data.table::copy(obs)
+  ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay$spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   obs_head <- ord_obs[reference_date <= (max(reference_date) - max_delay$model)]
@@ -117,7 +118,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 
   # add artificial summary statistics for not-modeled dates
   nowcast[seq_len(nrow(obs_head)), c("mean", "median") := confirm]
-  cols_quantile <- colnames(nowcast)[grepl("q\\d+", colnames(nowcast))]
+  cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE)
   nowcast[seq_len(nrow(obs_head)), (cols_quantile) := confirm]
   nowcast[seq_len(nrow(obs_head)), c("sd", "mad") := 0]
 
@@ -134,7 +135,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param max_delay Metadata for the maximum delay produced using 
+#' @param max_delay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` of posterior samples for the nowcast prediction.
@@ -144,7 +145,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' @inheritParams enw_nowcast_summary
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table copy setorderv
+#' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
@@ -153,7 +154,9 @@ enw_nowcast_samples <- function(fit, obs, max_delay) {
     variables = "pp_inf_obs",
     format = "draws_df"
   )
-  nowcast <- data.table::setDT(nowcast)
+  nowcast <- coerce_dt(
+    nowcast, required_cols = c(".chain", ".iteration", ".draw")
+  )
   nowcast <- melt(
     nowcast,
     value.name = "sample", variable.name = "variable",
@@ -166,7 +169,7 @@ enw_nowcast_samples <- function(fit, obs, max_delay) {
     )
   }
 
-  ord_obs <- data.table::copy(obs)
+  ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay$spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
@@ -264,16 +267,15 @@ enw_summarise_samples <- function(samples, probs = c(
 #' added.
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table setcolorder
+#' @importFrom data.table setcolorder
 #' @examples
 #' fit <- enw_example("nowcast")
 #' obs <- enw_example("obs")
 #' nowcast <- summary(fit, type = "nowcast")
 #' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
-  obs <- data.table::as.data.table(obs)
-  obs <- add_group(obs)
-  obs <- obs[, .(reference_date, .group, latest_confirm = confirm)]
+  obs <- coerce_dt(obs, select = c("reference_date", "confirm"), group = TRUE)
+  data.table::setnames(obs, "confirm", "latest_confirm")
   out <- merge(
     nowcast, obs,
     by = c("reference_date", ".group"), all.x = TRUE
@@ -300,7 +302,7 @@ enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
 #' @inheritParams enw_posterior
 #' @family postprocess
 #' @export
-#' @importFrom data.table as.data.table copy setorderv
+#' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_pp_summary(fit$fit[[1]], fit$new_confirm[[1]], probs = c(0.5))
@@ -314,7 +316,7 @@ enw_pp_summary <- function(fit, diff_obs,
     probs = probs
   )
 
-  ord_obs <- data.table::copy(diff_obs)
+  ord_obs <- coerce_dt(diff_obs)
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   pp <- cbind(
     ord_obs,
@@ -342,7 +344,7 @@ enw_quantiles_to_long <- function(posterior) {
     measure.vars = patterns("^q[0-9]"),
     value.name = "prediction", variable.name = "quantile"
   )
-  long[, quantile := gsub("q", "", quantile)]
+  long[, quantile := gsub("q", "", quantile, fixed = TRUE)]
   long[, quantile := as.numeric(quantile) / 100]
   return(long[])
 }

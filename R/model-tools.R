@@ -29,11 +29,17 @@
 #'
 #' # A missing formula produces the default list
 #' enw_formula_as_data_list(prefix = "missing")
-enw_formula_as_data_list <- function(formula, prefix,
-                                     drop_intercept = FALSE) {
-  paste_lab <- function(string, lab = prefix) {
-    paste0(lab, "_", string)
-  }
+enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
+  data <- list(
+    fdesign = numeric(0),
+    fintercept = 0,
+    fnrow = 0,
+    findex = numeric(0),
+    fnindex = 0,
+    fncol = 0,
+    rdesign = numeric(0),
+    rncol = 0
+  )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
       stop(
@@ -44,29 +50,17 @@ enw_formula_as_data_list <- function(formula, prefix,
     fintercept <-  as.numeric(any(grepl(
       "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
     )))
-
-    data <- list()
-    data[[paste_lab("fdesign")]] <- formula$fixed$design
-    data[[paste_lab("fintercept")]] <- fintercept
-    data[[paste_lab("fnrow")]] <- nrow(formula$fixed$design)
-    data[[paste_lab("findex")]] <- formula$fixed$index
-    data[[paste_lab("fnindex")]] <- length(formula$fixed$index)
-    data[[paste_lab("fncol")]] <-
-      ncol(formula$fixed$design) -
-      min(as.numeric(drop_intercept), as.numeric(fintercept))
-    data[[paste_lab("rdesign")]] <- formula$random$design
-    data[[paste_lab("rncol")]] <- ncol(formula$random$design) - 1
-  } else {
-    data <- list()
-    data[[paste_lab("fdesign")]] <- numeric(0)
-    data[[paste_lab("fintercept")]] <- 0
-    data[[paste_lab("fnrow")]] <- 0
-    data[[paste_lab("findex")]] <- numeric(0)
-    data[[paste_lab("fnindex")]] <- 0
-    data[[paste_lab("fncol")]] <- 0
-    data[[paste_lab("rdesign")]] <- numeric(0)
-    data[[paste_lab("rncol")]] <- 0
+    data$fdesign <- formula$fixed$design
+    data$fintercept <- fintercept
+    data$fnrow <- nrow(formula$fixed$design)
+    data$findex <- formula$fixed$index
+    data$fnindex <- length(formula$fixed$index)
+    data$fncol <- ncol(formula$fixed$design) -
+      min(as.numeric(drop_intercept), fintercept)
+    data$rdesign <- formula$random$design
+    data$rncol <- ncol(formula$random$design) - 1
   }
+  names(data) <- sprintf("%s_%s", prefix, names(data))
   return(data)
 }
 
@@ -81,16 +75,14 @@ enw_formula_as_data_list <- function(formula, prefix,
 #' two vector (specifying the mean and standard deviation of the prior).
 #' @family modeltools
 #' @inheritParams enw_replace_priors
-#' @importFrom data.table copy
 #' @importFrom purrr map
 #' @export
 #' @examples
 #' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- data.table::as.data.table(priors)
+  priors <- coerce_dt(priors, select = c("variable", "mean", "sd"))
   priors[, variable := paste0(variable, "_p")]
-  priors <- priors[, .(variable, mean, sd)]
   priors <- split(priors, by = "variable", keep.by = FALSE)
   priors <- purrr::map(priors, ~ as.array(t(.)))
   return(priors)
@@ -119,22 +111,38 @@ enw_priors_as_data_list <- function(priors) {
 #' @return A data.table of prior definitions (variable, mean and sd).
 #' @family modeltools
 #' @export
-#' @importFrom data.table as.data.table
 #' @examples
+#' # Update priors from a data.frame
 #' priors <- data.frame(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
 #' custom_priors <- data.frame(variable = "x[1]", mean = 10, sd = 2)
 #' enw_replace_priors(priors, custom_priors)
+#'
+#' # Update priors from a previous model fit
+#' default_priors <- enw_reference(
+#'  distribution = "lognormal",
+#'  data = enw_example("preprocessed"),
+#' )$priors
+#' print(default_priors)
+#'
+#' fit_priors <- summary(
+#'  enw_example("nowcast"), type = "fit",
+#'  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+#' )
+#' fit_priors
+#'
+#' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
-  custom_priors <- data.table::as.data.table(custom_priors)[
+  custom_priors <- coerce_dt(
+    custom_priors, select = c("variable", "mean", "sd")
+  )[
     ,
-    .(variable, mean, sd)
-  ]
-  custom_priors <- custom_priors[
-    ,
-    variable := gsub("\\[([^]]*)\\]", "", variable)
+    .(variable = gsub("\\[([^]]*)\\]", "", variable),
+      mean = as.numeric(mean), sd = as.numeric(sd))
   ]
   variables <- custom_priors$variable
-  priors <- data.table::as.data.table(priors)[!(variable %in% variables)]
+  priors <- coerce_dt(
+    priors, required_cols = "variable"
+  )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])
 }
@@ -328,12 +336,13 @@ enw_model <- function(model = system.file(
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
     message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", paste(include, collapse = ", ")))
+    message(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {
     stan_no_profile <- write_stan_files_no_profile(
-      model, include, target_dir =  target_dir
+      model, include,
+      target_dir = target_dir
     )
     model <- stan_no_profile$model
     include <- stan_no_profile$include_paths

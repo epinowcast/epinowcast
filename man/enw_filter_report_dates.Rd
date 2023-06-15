@@ -7,8 +7,8 @@
 enw_filter_report_dates(obs, latest_date, remove_days)
 }
 \arguments{
-\item{obs}{An observation \code{data.frame} containing \code{report_date} and
-\code{reference_date} columns.}
+\item{obs}{A \code{data.frame}; must have \code{report_date} and \code{reference_date}
+columns.}
 
 \item{latest_date}{Date, the latest report date to include in the
 returned dataset.}
@@ -17,7 +17,7 @@ returned dataset.}
 of report dates to remove, starting from the latest date included.}
 }
 \value{
-A data.table filtered by report date
+A data.table  filtered by report date
 }
 \description{
 This is a helper function which allows users to create
@@ -41,11 +41,9 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata_maxdelay}()},

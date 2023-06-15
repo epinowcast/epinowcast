@@ -1,0 +1,10 @@
+*
+!script.R
+!config.json
+!.gitignore
+!header.R
+!footer.R
+!setup.R
+!missing-setup.R
+!preprocessing.R
+!threaded-setup.R

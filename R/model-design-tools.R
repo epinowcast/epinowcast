@@ -34,7 +34,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' A helper function to construct a design matrix from a formula
 #'
 #' @description This function is a wrapper around [stats::model.matrix()] that
-#'  can optionally return a sparse design matrix defined as the unique
+#' can optionally return a sparse design matrix defined as the unique
 #' number of rows in the design matrix and an index vector that
 #' allows the full design matrix to be reconstructed. This is useful
 #' for models that have many repeated rows in the design matrix and that
@@ -53,12 +53,11 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' @param sparse Logical, if TRUE return a sparse design matrix. Defaults to
 #' TRUE.
 #'
-#' @param ... Additional arguments passed to [stats::model.matrix()].
+#' @inheritDotParams stats::model.matrix
 #'
 #' @return A list containing the formula, the design matrix, and the index.
 #' @family modeldesign
 #' @export
-#' @importFrom data.table as.data.table
 #' @importFrom stats terms contrasts model.matrix
 #' @importFrom purrr map
 #' @examples
@@ -71,10 +70,10 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
                        ...) {
   # make data.table and copy
-  data <- data.table::as.data.table(data)
+  data <- coerce_dt(data)
 
   # make all character variables factors
-  chars <- colnames(data)[sapply(data, function(x) is.character(x))]
+  chars <- colnames(data)[sapply(data, is.character)]
   data <- suppressWarnings(
     data[, (chars) := lapply(.SD, as.factor), .SDcols = chars]
   )
@@ -192,8 +191,8 @@ enw_effects_metadata <- function(design) {
 #' enw_add_pooling_effect(effects, prefix = "b")
 enw_add_pooling_effect <- function(effects, var_name = "sd",
                                    finder_fn = startsWith, ...) {
-  effects <- data.table::setDT(effects)
-  effects[, (var_name) := ifelse(finder_fn(effects, ...), 1, 0)]
+  effects <- coerce_dt(effects, copy = FALSE)
+  effects[, (var_name) := as.numeric(finder_fn(effects, ...))]
   effects[finder_fn(effects, ...), fixed := 0]
   return(effects[])
 }
@@ -213,6 +212,8 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #' @param feature The name of the column in `metaobs` that contains the
 #' numeric vector of values.
 #'
+#' @param copy Should `metaobs` be copied (default) or modified in place?
+#'
 #' @return A `data.frame` with a new columns `cfeature$` that contain the
 #' cumulative membership effect for each value of `feature`. For example if the
 #' original `feature` was `week` (with numeric entries `1, 2, 3`) then the new
@@ -226,16 +227,18 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #'
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
 #' enw_add_cumulative_membership(metaobs, "week")
-enw_add_cumulative_membership <- function(metaobs, feature) {
-  metaobs <- data.table::as.data.table(metaobs)
-  metaobs <- add_group(metaobs)
-
+enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
+  metaobs <- coerce_dt(
+    metaobs, required_cols = feature, group = TRUE, copy = copy
+  )
   cfeature <- paste0("c", feature)
+
   if (!any(grepl(cfeature, colnames(metaobs)))) {
-    if (is.null(metaobs[[feature]])) {
+    if (!is.numeric(metaobs[[feature]])) {
       stop(
         "Requested variable ", feature,
-        " is not present in the supplied data.frame."
+        " is not numeric. Cumulative membership effects are only defined for ",
+        "numeric variables."
       )
     }
     metaobs[, (cfeature) := as.factor(get(feature))]
@@ -247,7 +250,7 @@ enw_add_cumulative_membership <- function(metaobs, feature) {
     metaobs[, (paste0(cfeature, as.character(min_avail))) := NULL]
     cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
     metaobs[,
-      (cfeatures) := purrr::map(.SD, ~ ifelse(cumsum(.) > 0, 1, 0)),
+      (cfeatures) := purrr::map(.SD, ~ as.numeric(cumsum(.) > 0)),
       .SDcols = cfeatures, by = ".group"
     ]
   }

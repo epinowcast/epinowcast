@@ -2,7 +2,7 @@ vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh,
                              matrix ref_lh, array[] int dpmfs, int ref_p,
                              int rep_h, int g, int t, int l) {
   vector[l] lh;
-  // allocate reference time effects
+  // allocate reference date effects
   if (ref_p) {
     lh = ref_lh[1:l, dpmfs[i]];
   }else{

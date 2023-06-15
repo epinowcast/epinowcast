@@ -7,10 +7,10 @@
 #' individual model components for additional documentation and see the package
 #' case studies for example model specifications for different tasks.
 #'
-#' @param reference The reference time indexed reporting process model
+#' @param reference The reference date indexed reporting process model
 #' specification as defined using [enw_reference()].
 #'
-#' @param report The report time indexed reporting process model
+#' @param report The report date indexed reporting process model
 #' specification as defined using [enw_report()].
 #'
 #' @param expectation The expectation model specification as defined using
@@ -115,9 +115,9 @@ epinowcast <- function(data,
                        ),
                        expectation = epinowcast::enw_expectation(
                          r = ~ 0 + (1 | day:.group),
-                         generation_time = c(1),
+                         generation_time = 1,
                          observation = ~1,
-                         latent_reporting_delay = c(1),
+                         latent_reporting_delay = 1,
                          data = data
                        ),
                        missing = epinowcast::enw_missing(

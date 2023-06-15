@@ -19,7 +19,12 @@ no categorical variables will use contrasts.}
 \item{sparse}{Logical, if TRUE return a sparse design matrix. Defaults to
 TRUE.}
 
-\item{...}{Additional arguments passed to \code{\link[stats:model.matrix]{stats::model.matrix()}}.}
+\item{...}{
+  Arguments passed on to \code{\link[stats:model.matrix]{stats::model.matrix}}
+  \describe{
+    \item{\code{object}}{an object of an appropriate class.  For the default
+    method, a model \link[stats]{formula} or a \code{\link[stats]{terms}} object.}
+  }}
 }
 \value{
 A list containing the formula, the design matrix, and the index.
