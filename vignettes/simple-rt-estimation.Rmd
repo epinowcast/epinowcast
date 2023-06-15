@@ -1,0 +1,35 @@
+---
+title: "simple-rt-estimation"
+description: ""
+author: Sam Abbott
+opengraph:
+  image: 
+    src: figures/performance-1.png
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{simple-rt-estimation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(epinowcast)
+```
+
+- Introduce the package and sign post to further documentation
+- Introduuce the problem targeted in this vignette
+- Introduce a synthetic data example 
+- Introduce the model mathematically and with code (i.e. chunk by chunk).
+- Fit the model to the synthetic data
+- Visualise the nowcast, the Rt estimate, posterior predictions + compare to actual synthetic values.
+- Introduce the case study data and additional assumptions required.
+- Fit the same model to case study data
+- Show nowcast, Rt estimate, posterior predictions, and delay estimate vs retrospective delay.
+- Discuss results, highlight limitations, and sign post to further documentation.
