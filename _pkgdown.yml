@@ -24,7 +24,7 @@ authors:
     
 navbar:
   structure:
-    left: [reference, modeldefs, casestudies, changelog]
+    left: [reference, modeldefs, casestudies, news]
     right: [github]
   components:
     modeldefs:

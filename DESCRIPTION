@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Flexible Hierarchical Nowcasting
-Version: 0.2.0.17000
+Version: 0.2.3.1000
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -52,7 +52,12 @@ Authors@R:
     person(given = "Luis",
            family = "Rivas",
            role = "ctb",
-           email = "luisnicolasrivas@gmail.com"))
+           email = "luisnicolasrivas@gmail.com"),
+    person(given = "Sang Woo",
+           family = "Park",
+           role = "ctb",
+           email = "swp2@princeton.edu",
+           comment = c(ORCID = "0000-0003-2202-3361")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative

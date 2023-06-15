@@ -877,7 +877,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' completed with [enw_complete_dates()].
 #'
 #' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
+#' `reference_date` (index date of interest), `report_date` (report date for
 #' observations), `confirm` (cumulative observations by reference and report
 #' date).
 #'
@@ -886,13 +886,13 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay Numeric, defaults to 20. The maximum number of days to
-#' include in the delay distribution. Observations with a delay larger than
-#' `max_delay` will be dropped during preprocessing. The time required for model
-#' fitting increases non-linearly with this setting, so carefully choose a
-#' maximum that makes sense for your data. Note that delays use zero-based
-#' indexing, i.e. `max_delay` includes the reference date and the
-#' `max_delay - 1` following days.
+#' @param max_delay Numeric defaults to 20 and needs to be greater than or equal
+#' to 1 and an integer (internally it will be coerced to one using
+#' [as.integer()]). The maximum number of days to include in the delay
+#' distribution. Computation scales non-linearly with this setting so consider
+#' what maximum makes sense for your data carefully. Note that this is zero
+#' indexed and so includes the reference date and `max_delay - 1` other days
+#' (i.e. a `max_delay` of 1 corresponds with no delay).
 #'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
@@ -941,6 +941,11 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
+  max_delay <- as.integer(max_delay)
+  stopifnot(
+    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
+    "`max_delay` must be greater than or equal to one" = max_delay >= 1
+  )
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)

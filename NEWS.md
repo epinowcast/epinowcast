@@ -1,6 +1,67 @@
-# epinowcast 0.2.0.17000
+# epinowcast 0.2.3
 
-This is release is in development. It is not yet ready for production use. If you notice problems please report them on the [issue tracker](https://github.com/epinowcast/epinowcast/issues).
+This release is in development and not yet ready for production use.
+
+## Contributors
+
+@seabbs contributed code to this release.
+
+@seabbs reviewed pull requests for this release.
+
+@jbracher and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Bugs
+
+- Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
+
+## Package
+
+- Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs
+- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and self-reviewed.
+- Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and self-reviewed.
+
+# epinowcast 0.2.2
+
+This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in `cmdstan 2.32.1`. Upgrading is recommended for all users who wish to use versions of `cmdstan` beyond `2.32.0`. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.
+
+## Contributors
+
+@sbfnk and @seabbs contributed code to this release.
+
+@seabbs reviewed pull requests for this release.
+
+@sbfnk and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Bugs
+
+- Improved the handling of optional initial conditions so that they are consistently passed as arrays to stan as required by `cmdstan 2.32.1`. This fix is required in order to use versions of `cmdstan` beyond `2.32.0`. See #276 by @seabbs and self-reviewed.
+
+## Package
+
+- Added input checking for `max_delay` in `enw_preprocess_data()` to ensure that the maximum delay is greater than or equal to 1 and that it can be coerced to be an integer. See #274 by @sbfnk and reviewed by @seabbs.
+
+## Documentation
+
+- Improved the discrete delay distributions vignette including escaping functions to improve readibility and right-closing discretised bins. See #275 by @sbfnk and reviewed by @seabbs.
+- Improved the documentation for `max_delay` in `enw_preprocess_data()` and fixed a typo in the same documentation. See #274 by @sbfnk and reviewed by @seabbs.
+
+# epinowcast 0.2.1
+
+In this release, we focused on improving the internal code structure, documentation, and development infrastructure of the package to make it easier to maintain and extend functionality in the future. We also fixed a number of bugs and made some minor improvements to the interface. These changes included extending test and documentation coverage across all package functions, improving internal data checking and internalization, and removing some deprecated functions.
+
+While these changes are not expected to impact most users, we recommend that all users upgrade to this version. We also suggest that users who have fitted models with both random effects and random walks should refit these models and compare the output to previous fits in order to understand the impact of a bug in the specification of these models that was fixed in this release.
+
+This release lays the groundwork for planned features in [`0.3.0`](https://github.com/orgs/epinowcast/projects/1) and [`0.4.0`](https://github.com/orgs/epinowcast/projects/2) including: support for non-parametric delays, non-daily data with a non-daily process model (i.e. weekly data with a weekly process model), additional flexibility specifying generation times and latent reporting delays, improved case studies, and adding support for forecasting.
+
+Full details on the changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.1). To see the development timeline of this release see the [`0.2.1` project](https://github.com/orgs/epinowcast/projects/3).
+
+## Contributors
+
+@adrian-lison, @Bisaloo, @pearsonca, @FelixGuenther, @Lnrivas, @seabbs, @sbfnk, and @jhellewell14 made code contributions to this release.
+
+@pearsonca, @Bisaloo, @adrian-lison, and @seabbs reviewed pull requests for this release.
+
+@Gulfa, @WardBrian, @parkws3, @adrian-lison, @Bisaloo, @pearsonca, @FelixGuenther, @Lnrivas, @seabbs, @sbfnk and @jhellewell14 reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Potentially breaking changes
 
@@ -52,6 +113,7 @@ This is release is in development. It is not yet ready for production use. If yo
 - Updated the package citation and documentation to include all new authors as of the `0.2.1` release and to use the recommended `bibentry()` approach. See #236 and #237 by @seabbs and reviewed by @Bisaloo.
 - Added a package style guide (`STYLE_GUIDE.md`) to document the style conventions used in the package. See #64 by @seabbs and reviewed by @pearsonca and @Bisaloo.
 - Improved and extended documentation of discretized, parametric delay distributions. Changed structure of package vignettes (into two categories, model definition vignettes and case study vignettes). See #265 by @FelixGuenther and @adrian-lison and reviewed by @seabbs.
+- Improved and extended the README quick start after feedback from @parksw3 in #260. See #267 by @seabbs and reviewed by @adrian-lison and @parksw3.
 
 # epinowcast 0.2.0
 

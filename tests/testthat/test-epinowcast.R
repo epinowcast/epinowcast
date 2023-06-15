@@ -22,10 +22,10 @@ test_that("epinowcast preprocesses data and model modules as expected", {
     ),
     model = NULL
   ))
-  expect_true(is.list(nowcast$data[[1]]))
+  expect_type(nowcast$data[[1]], "list")
   expect_error(nowcast$init())
   class(pobs) <- c("epinowcast", class(pobs))
-  expect_equal(nowcast[, c("init", "data") := NULL], pobs)
+  expect_identical(nowcast[, c("init", "data") := NULL], pobs)
 })
 
 test_that("epinowcast runs using default arguments only", {
@@ -36,7 +36,7 @@ test_that("epinowcast runs using default arguments only", {
     enw_filter_reference_dates(include_days = 10)
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(epinowcast(pobs))
-  expect_equal(
+  expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
       "fit", "data", "fit_args", "samples", "max_rhat",
@@ -44,7 +44,7 @@ test_that("epinowcast runs using default arguments only", {
       "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -74,7 +74,7 @@ test_that("epinowcast can fit a simple reporting model", {
     model = model
   ))
 
-  expect_equal(
+  expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
       "fit", "data", "fit_args", "samples", "max_rhat",
@@ -82,7 +82,7 @@ test_that("epinowcast can fit a simple reporting model", {
       "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -113,7 +113,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
     ),
     model = model
   ))
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -121,7 +121,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
   expect_lt(nowcast$max_rhat, 1.05)
   posterior <- as.data.table(nowcast$fit[[1]]$summary())
   regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
-  expect_equal(
+  expect_identical(
     posterior$variable,
     regression_posterior$variable
   )
@@ -212,7 +212,7 @@ test_that("epinowcast can fit a simple missing data model", {
     fit = fit, model = model
   ))
   # Check convergence
-  expect_equal(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_type(nowcast$fit_args[[1]], "list")
   expect_type(nowcast$data[[1]], "list")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -247,4 +247,68 @@ test_that("epinowcast can fit a simple missing data model", {
     no_missing_posterior[variable %like% "refp_sd", median],
     0.1
   )
+})
+
+test_that("epinowcast can fit multiple time series at once", {
+  skip_on_cran()
+  skip_on_local()
+  # Load and filter germany hospitalisations
+  nat_germany_hosp <-
+    germany_covid19_hosp[location == "DE"][
+      age_group %in% c("00+", "00-04", "80+")
+    ]
+  nat_germany_hosp <- enw_filter_report_dates(
+    nat_germany_hosp,
+    latest_date = "2021-10-01"
+  )
+  # Make sure observations are complete
+  nat_germany_hosp <- enw_complete_dates(
+    nat_germany_hosp,
+    by = c("location", "age_group")
+  )
+  # Make a retrospective dataset
+  retro_nat_germany <- enw_filter_report_dates(
+    nat_germany_hosp,
+    remove_days = 40
+  )
+  retro_nat_germany <- enw_filter_reference_dates(
+    retro_nat_germany,
+    include_days = 10
+  )
+  # Preprocess observations (note this maximum delay is likely too short)
+  pobs <- enw_preprocess_data(
+    retro_nat_germany, by = "age_group", max_delay = 10
+  )
+  nowcast <- suppressWarnings(
+    suppressMessages(
+      epinowcast(
+        data = pobs,
+        expectation = enw_expectation(
+          r = ~ 1 + (1 | .group),
+          generation_time = c(0.1, 0.4, 0.4, 0.1),
+          observation = ~ (1 | day_of_week),
+          latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
+          data = pobs
+        ),
+        reference = enw_reference(~1, data = pobs),
+        report = enw_report(~(1 | day_of_week), data = pobs),
+        fit = enw_fit_opts(
+          sampler = silent_enw_sample,
+          save_warmup = FALSE, pp = FALSE,
+          chains = 2, iter_warmup = 500, iter_sampling = 500,
+          parallel_chains = 2, adapt_delta = 0.95,
+          refresh = 0, show_messages = FALSE
+        ),
+        obs = enw_obs(family = "negbin", data = pobs),
+        model = model
+      )
+    )
+  )
+
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_type(nowcast$fit_args[[1]], "list")
+  expect_type(nowcast$data[[1]], "list")
+  expect_lt(nowcast$per_divergent_transitions, 0.05)
+  expect_lt(nowcast$max_treedepth, 10)
+  expect_lt(nowcast$max_rhat, 1.05)
 })
