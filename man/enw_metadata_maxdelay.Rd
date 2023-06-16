@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_metadata_maxdelay}
 \alias{enw_metadata_maxdelay}
-\title{Calculate metadata for the maximum reporting delay}
+\title{Get the different user-specified, observed, and modelled maximum delays.}
 \usage{
 enw_metadata_maxdelay(obs, max_delay = 20)
 }
@@ -15,10 +15,18 @@ date).}
 \item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
 to 1 and an integer (internally it will be coerced to one using
 \code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
-distribution. Computation scales non-linearly with this setting so consider
-what maximum makes sense for your data carefully. Note that this is zero
-indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay).}
+distribution. Observations with delays larger then the maximum delay will be
+dropped. If the specified maximum delay is too short, nowcasts can be biased
+as important parts of the true delay distribution are cut off. At the same
+time, computational cost scales non-linearly with this setting, so you want
+the maximum delay to be as long as necessary, but not much longer. Consider
+what delays are realistic for your application, and when in doubt, check if
+increasing the maximum delay noticeably changes the delay distribution or
+nowcasts as estimated by epinowcast. If it does, your maximum delay may still
+be too short. Note that delays are zero indexed and so include the reference
+date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
+no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
+distribution for a given maximum delay.}
 }
 \value{
 A \code{list} of maximum delays. These include:

@@ -68,8 +68,8 @@ the standard reporting triangle matrix format.
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
-\item \code{max_delay}: A \code{list}, with the (potentially different) maximum delays
-specified by the user, found in the data, and used by the model.
+\item \code{max_delay}: A \code{list}, with the maximum delays specified by the user, found
+in the data, and used by the model. See \code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}} for details.
 \item \code{max_date}: The maximum available report date.
 }
 }
