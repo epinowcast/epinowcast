@@ -706,7 +706,7 @@ enw_missing_reference <- function(obs) {
   return(ref_missing[])
 }
 
-#' Calculate reporting delay metadata
+#' Calculate reporting delay metadata for a given maximum delay
 #'
 #' Calculate delay metadata based on the supplied maximum delay and independent
 #' of other metadata or date indexing. These data are meant to be used in
@@ -749,7 +749,7 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
   return(delays[])
 }
 
-#' Calculate metadata for the maximum reporting delay
+#' Get the different user-specified, observed, and modelled maximum delays.
 #'
 #' @description The maximum reporting delay is used to make the modeling of
 #' reporting delays tractable by right-truncating the delay distribution at a
@@ -899,7 +899,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' nowcasts as estimated by epinowcast. If it does, your maximum delay may still 
 #' be too short. Note that delays are zero indexed and so include the reference 
 #' date and `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to 
-#' no delay).
+#' no delay). See [enw_metadata_delay()] for checking the coverage of a delay 
+#' distribution for a given maximum delay.
 #'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
@@ -927,8 +928,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' nowcasting.
 #' - `groups`: Numeric, Number of groups/strata in the supplied observations
 #' (set using `by`).
-#' - `max_delay`: A `list`, with the (potentially different) maximum delays
-#' specified by the user, found in the data, and used by the model.
+#' - `max_delay`: A `list`, with the maximum delays specified by the user, found 
+#' in the data, and used by the model. See [enw_metadata_maxdelay()] for details.
 #' - `max_date`: The maximum available report date.
 #'
 #' @family preprocess
@@ -966,7 +967,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   # add metadata about different maximum delays
   max_delay <- enw_metadata_maxdelay(obs = obs, max_delay = max_delay)
   
-  # filter by the maximum delay
+  # filter by the maximum delay modelled
   obs <- enw_filter_delay(obs, max_delay = max_delay$model)
 
   diff_obs <- enw_add_incidence(
