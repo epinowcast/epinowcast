@@ -88,8 +88,8 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
 In some settings there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset. For these settings we support modelling "latent" reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in `EpiNow2` and `epidemia` as well as other similar models  [@EpiNow2; @Abbott2020; @Bhatt2020; @Lison2022]. In addition to this we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).
 
 \begin{align}
-  \lambda_{g,t} &= \upsilon_{g,t} \sum_{\tau = 0}^{L - 1} F_{g}\left(\tau + 1, t - \tau \right)  \lambda^l_{g, t - \tau} \\
-  \nu_{g,t} &= \nu_0 + \beta_{f,\nu} X_{\nu} + \beta_{r,\nu} Z_{\nu}
+  \lambda_{g,t} &= \nu_{g,t} \sum_{\tau = 0}^{L - 1} F_{g}\left(\tau + 1, t - \tau \right)  \lambda^l_{g, t - \tau} \\
+   \text{log} (\nu_{g,t}) &= \nu_0 + \beta_{f,\nu} X_{\nu} + \beta_{r,\nu} Z_{\nu}
 \end{align}
 
 Where $\nu_{g,t}$ is the inferred ascertainment and is modelled flexibly using an optional intercept ($\nu_0$), a design matrix ($X_{\nu}$) for fixed effects ($\beta_{f,\nu}$), and a design matrix ($Z_{\nu}$) for random effects ($\beta_{r,\nu}$.
