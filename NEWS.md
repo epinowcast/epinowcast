@@ -8,7 +8,11 @@ This release is in development and not yet ready for production use.
 
 @seabbs reviewed pull requests for this release.
 
+<<<<<<< HEAD
 @jbracher, @medewitt, @parksw3, and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+=======
+@jbracher, @parksw3, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+>>>>>>> f79e8c51 (Fix typos)
 
 ## Bugs
 
@@ -40,7 +44,7 @@ This is a minor release that fixes a bug in the handling of optional initial con
 
 @seabbs reviewed pull requests for this release.
 
-@sbfnk and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@sbfnk and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
