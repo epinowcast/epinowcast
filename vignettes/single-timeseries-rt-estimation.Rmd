@@ -350,7 +350,7 @@ Make sure that the data is complete and filter so that the latest reported data 
 ```{r}
 germany_hosp <- germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-09-01") |>
-  enw_complete_dates()
+  enw_complete_dates(missing_reference = FALSE)
 ```
 
 As for the synthetic example we need to make a "real-time" dataset and get the latest observations for the same time period as this will allows us to compare real-time estimates with what was ultimately retrospectively observed. Again as in the synthetic example we use 40 days of data with a maximum delay of 30 days. We also construct a retrospective dataset using the same time period but assuming that the data is complete (i.e. everything has been reported). We can then use this to compare the real-time estimates with the retrospective estimates.
@@ -364,13 +364,13 @@ realtime_germany <- germany_hosp |>
   enw_filter_reference_dates(include_days = 30)
 
 # Make a retrospective dataset
-retro_germany <- germany_hosp[!is.na(reference_date)] |>
+retro_germany <- germany_hosp |>
   enw_filter_reference_dates(remove_days = 40, include_days = 30)
 
 # Get latest observations for the same time period
 latest_obs <- germany_hosp |>
-  enw_latest_data() |>
-  enw_filter_reference_dates(remove_days = 40, include_days = 30)
+  enw_filter_reference_dates(remove_days = 40, include_days = 30) |>
+  enw_latest_data()
 ```
 
 Finally, we preprocess that data ready for modelling. As in the synthetic example this produces several useful intermediate datasets that can be used for plotting and checking the model fit as well as summary information about the proprocessed data (such as the number of groups, the maximum delay, and the number of observations in each group).
@@ -418,7 +418,7 @@ retro_germany_nowcast <- epinowcast(
 ### Plot the real-time nowcast against observed data
 
 ```{r plot-germany-nowcast
-plot(germany_nowcast, latest_obs)
+plot(retro_germany_nowcast, latest_obs)
 ```
 
 ### Plot the effective reproduction number
