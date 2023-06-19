@@ -26,7 +26,8 @@ knitr::opts_chunk$set(
   cache = TRUE,
   message = FALSE,
   warning = FALSE,
-  dpi = 330
+  dpi = 330,
+  fig.width = 8
 )
 ```
 
@@ -53,6 +54,15 @@ Unfortunately, we can't directly observe infections and the data we do observe s
   2. An estimate of the distribution of times from infection to hospitalisation;
   3. An estimate of the generation time distribution, which is the distribution of the time intervals between the infection of a primary case and the infection of secondary cases caused by the primary case.
  
+ ### What do we do {-}
+
+  1. Visualise and contextualise the data this case study uses (COVID-19 hositalisations in Germany);
+  2. Specify a joint model of the effective reproduction number, the delay from infection to hospitalisation and the delay from hospitalisation to report;
+  3. Fit this model to both the data that would have been available in real-time, and retrospectively;
+  4. Visualise the nowcast from the real-time data in comparison to the data that was ultimately observed.
+  2. An estimate of the distribution of times from infection to hospitalisation;
+  3. An estimate of the generation time distribution, which is the distribution of the time intervals between the infection of a primary case and the infection of secondary cases caused by the primary case.
+ 
 :::
 
 ## Getting setup
@@ -74,12 +84,13 @@ Here we make use of `data.table` for simple data transformations but tools from 
 
 :::
 
-## Introducing the case study data: COVID-19 hospitalisations in Germany
+## Introducing data: COVID-19 hospitalisations in Germany
 
 - Germany hospitalisations
 - Introduce the data
 - Explain why we are using it here. Reference the Germany nowcasting preprint.
 - Graph data (or use a graph from the Germany nowcasting preprint)
+- Discuss what to do if your data is in a line list (and how to get it into the right format).
 
 ## Model
 
@@ -173,44 +184,6 @@ Expected notifications by date of hospitalisations ($t$) and reporting date can 
 obs_module <- partial(enw_obs, family = "negbin")
 ```
 
-## Simulated data to evaluate the model
-
-### Simulating the data
-
-- Rt trajectory with a change point and a trend
-- Specify a gamma distributed generation time.
-- Use the renewal equaton to simulate cases (uu)
-- Specify a delay from infection to hospitalisation.
-- Specify a day of the week reporting model.
-- Specify a reporting fraction.
-- Convolve the reporting delay with the underlying cases to get expected hospitalisations.
-- Add noise to the expected hospitalisations to get observed hospitalisations
-- Specify a lognormal reporting delay model.
-- Project the observed hospitalisations using the reporting delay into a linelist.
-
-### Preprocessing the simulated data
-
-```{r, eval = FALSE}
-synth_obs <- linelist_to_obs(synth_linelist)
-
-# Make a retrospective dataset
-retro_synth_obs <- synth_obs |>
-  # Remove the last 40 days of reproted data
-  enw_filter_report_dates(remove_days = 40) |>
-  # INlcude on refernece dates within the last 40 days
-  enw_filter_reference_dates(include_days = 40)
-
-# Get latest observations for the same time period
-latest_synth_obs <- enw_latest_data(synth_obs) |>
-  enw_filter_reference_dates(remove_days = 40, include_days = 40)
-
-# Preprocess observations
-synth_pobs <- enw_preprocess_data(retro_synth_obs, max_delay = 30)
-germany_pobs
-```
-
-### Visualising the simulated data
-
 #### Plotting the simulated data by report date
 
 ```{r latest-data, eval = FALSE}
@@ -255,84 +228,6 @@ plot_obs_by_report_date <- function(pobs, report_dates) {
 
 ```
 
-### Fitting the `epinowcast` model
-
-We first need to specify some fitting options for the model using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8)  that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. We have also set the `max_treedepth` to 12 (the default is 10) to again ensure that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis).
-
-```{r fit-options}
-fit_module <- partial(enw_fit_opts,
-  chains = 2,
-  parallel_chains = 2,
-  threads_per_chain = 2,
-  iter_warmup = 500,
-  iter_sampling = 1000,
-  adapt_delta = 0.99,
-  max_treedepth = 12,
-  save_warmup = FALSE
-)
-```
-
-We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package).
-
-```{r compile-model}
-epinowcast_model <- enw_model(threads = TRUE, profile = FALSE)
-```
-
-Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data.
-
-```{r, eval = FALSE}
-synth_nowcast <- epinowcast(synth_pobs,
-  expectation = expectation_module(data = synth_pobs),
-  reference = reference_module(data = synth_pobs),
-  fit = fit_module(),
-  model = model
-)
-```
-
-::: {.alert .alert-info}
-
-You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
-
-:::
-
-### Plot the nowcast against observed data
-
-```{r plot-synth-nowcast, eval = FALSE}
-plot(synth_nowcast, latest_obs)
-```
-
-### Plot the effective reproduction number
-
-```{r plot-synth-rt, eval = FALSE}
-rt <- synth_nowcast$fit[[1]] |>
-  enw_posterior(variables = "r")
-cols <- c("mean", "median", "q5", "q20", "q80", "q95")
-rt[, (cols) := lapply(.SD, exp), .SDcols = cols]
-rt <- cbind(
-  expectation_module(data = synth_pobs)$data_raw$r[, .(date)], rt
-)
-
-ggplot(rt) +
-  aes(x = date) +
-  geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
-  geom_line(aes(y = mean), linetype = 2) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
-  geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
-  geom_hline(yintercept = 1, linetype = 2) +
-  theme_bw() +
-  labs(
-    x = "Reference date",
-    y = "Effective reproduction number"
-  )
-```
-
-### Plot the posterior distribution of the reporting delay
-
-```{r plot-germany-delay, eval = FALSE}
-
-```
-
-### Plot the posterior distribution of the day of the week reporting model
 
 ## Fitting the model to COVID-19 hospitalisations in Germany
 
@@ -386,12 +281,32 @@ and do the same for the retrospective data
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
 ```
 
-### Fit the `epinowcast` model
+### Fitting the `epinowcast` model
 
-On real-time data,
+Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8)  that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. We have also set the `max_treedepth` to 12 (the default is 10) to again ensure that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis).
+
+```{r fit-options}
+fit_module <- partial(enw_fit_opts,
+  chains = 2,
+  parallel_chains = 2,
+  threads_per_chain = 2,
+  iter_warmup = 500,
+  iter_sampling = 1000,
+  adapt_delta = 0.99,
+  max_treedepth = 12,
+  save_warmup = FALSE
+)
+```
+
+We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package).
+
+```{r compile-model}
+epinowcast_model <- enw_model(threads = TRUE, profile = FALSE)
+```
+
+Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data. We first fit to the data that would have been available in real-time,
 
 ```{r}
-# Fit nowcast model with these modules and produce a nowcast
 germany_nowcast <- epinowcast(
   data = germany_pobs,
   expectation = expectation_module(data = germany_pobs),
@@ -402,7 +317,7 @@ germany_nowcast <- epinowcast(
 )
 ```
 
-and then on retrospective data.
+and then on the retrospectivly observed data.
 
 ```{r}
 retro_germany_nowcast <- epinowcast(
@@ -415,78 +330,85 @@ retro_germany_nowcast <- epinowcast(
 )
 ```
 
-### Plot the real-time nowcast against observed data
+::: {.alert .alert-info}
 
-```{r plot-germany-nowcast
-plot(retro_germany_nowcast, latest_obs)
+You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
+
+:::
+
+### Visualising the nowcast based on real-time data
+
+We first plot the nowcast based on real-time data. Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available. We can compare this to the most recent observations to see how well the model is doing.
+
+```{r plot-germany-nowcast}
+#| fig.cap: "Nowcast of hospitalisations in Germany based on real-time data"
+plot(germany_nowcast, latest_obs) 
 ```
 
-### Plot the effective reproduction number
+In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported. 
+
+### Visualise the real-time and retrospective estimates of the effective reproduction number
+
+A key output of the model is the posterior distribution of the effective reproduction number. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
 
 ```{r plot-germany-rt}
-rt <- germany_nowcast$fit[[1]] |>
-  enw_posterior(variables = "r")
-cols <- c("mean", "median", "q5", "q20", "q80", "q95")
-rt[, (cols) := lapply(.SD, exp), .SDcols = cols]
-rt <- cbind(
-  expectation_module(data = germany_pobs)$data_raw$r[, .(date)], rt
-)
+get_rt_posterior <- function(nowcast, expectation = expectation_module) {
+  rt <- enw_posterior(nowcast$fit[[1]], variables = "r")
+  cols <- c("mean", "median", "q5", "q20", "q80", "q95")
+  rt[, (cols) := lapply(.SD, exp), .SDcols = cols]
+  rt <- cbind(
+    expectation(data = nowcast)$data_raw$r[, .(date)], rt
+  )
+  return(rt)
+}
+
+rt <- rbind(
+    get_rt_posterior(germany_nowcast)[, Data := "Real-time"],
+    get_rt_posterior(retro_germany_nowcast)[, Data := "Retrospective"]
+  )
 
 ggplot(rt) +
-  aes(x = date) +
+  aes(x = date, col = Data, fill = Data) +
   geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
   geom_line(aes(y = mean), linetype = 2) +
   geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   geom_hline(yintercept = 1, linetype = 2) +
+  scale_fill_brewer(palette = "Dark2") +
   theme_bw() +
   labs(
-    x = "Reference date",
+    x = "Date of infection",
     y = "Effective reproduction number"
-  )
+  ) +
+  theme(legend.position = "bottom")
 ```
 
-### Plot expected latent cases
+### Plot posterior predictions for the number of expected (i.e., without observation error) hospitalisations
 
-```{r plot-germany-latent-cases}
-latent_exp_cases <- enw_posterior(
-  germany_nowcast$fit[[1]],
-  variables = "exp_llatent"
-)
-latent_exp_cases[, (cols) := lapply(.SD, exp), .SDcols = cols]
-latent_exp_cases <- cbind(
-  enw_extend_date(
-    expectation_module(data = germany_pobs)$data_raw$r[, .(date, .group = 1)],
-    days = germany_nowcast$data[[1]]$expl_lrd_n,
-    direction = "start"
-  ),
-  latent_exp_cases
-)
+We can also plot the posterior predictions for the number of expected hospitalisations. This is the number of hospitalisations that would be reported if there was no observation error. We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing. 
 
-ggplot(latent_exp_cases) +
-  aes(x = date) +
-  geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
-  geom_line(aes(y = mean), linetype = 2) +
-  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
-  geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
-  theme_bw() +
-  labs(
-    x = "Reference date",
-    y = "Expected latent cases"
-  )
-```
+Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may neeed to revisit our model specification to make it closer to the generative process of the data we have.
 
-### Plot expected reported cases
+In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available.
 
 ```{r plot-germany-reported-cases}
-exp_cases <- enw_posterior(
-  germany_nowcast$fit[[1]],
-  variables = "exp_lobs"
-)
-exp_cases[, (cols) := lapply(.SD, exp), .SDcols = cols]
-exp_cases <- cbind(
-  expectation_module(data = germany_pobs)$data_raw$observation,
-  exp_cases
+get_expected_infections <- function(nowcast, expectation = expectation_module) {
+  exp_cases <- enw_posterior(
+    nowcast$fit[[1]],
+    variables = "exp_lobs"
+  )
+  exp_cases[, (cols) := lapply(.SD, exp), .SDcols = cols]
+  exp_cases <- cbind(
+    expectation(data = nowcast)$data_raw$observation,
+    exp_cases
+  )
+  return(exp_cases)
+}
+
+
+exp_cases <- rbind(
+  get_expected_infections(germany_nowcast)[, Data := "Real-time"],
+  get_expected_infections(retro_germany_nowcast)[, Data := "Retrospective"]
 )
 
 exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][
@@ -495,17 +417,19 @@ exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][
 ]
 
 ggplot(exp_cases) +
-  aes(x = date) +
-  geom_point(aes(y = confirm)) +
+  aes(x = date, fill = Data, col = Data) +
+  geom_point(aes(y = confirm), col = "Black") +
   geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
   geom_line(aes(y = mean), linetype = 2) +
   geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   theme_bw() +
   labs(
-    x = "Reference date",
-    y = "Expected reported cases"
-  )
+    x = "Date of hosptialisation",
+    y = "Expected hospitalisations"
+  ) +
+  scale_fill_brewer(palette = "Dark2") +
+  theme(legend.position = "bottom")
 ```
 
 ::: {.alert .alert-primary}
