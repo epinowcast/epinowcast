@@ -276,7 +276,10 @@ sum_across_last_7_days <- enw_summarise_samples(samples)
 enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 ```
 
-Here we see that the model is underestimating the incidence of hospitalisations that were ultimately reported. There are a range of potential reasons for this, the first being that the process model does not fully capture the trend or day of the week periodicity present in the data. See our case study vignettes for ideas on how deal with such issues.
+::: {.alert .alert-info}
+  Here we see that the model is underestimating the incidence of hospitalisations that were ultimately reported. There are a range of potential reasons for this, the first being that the process model does not fully capture the trend or day of the week periodicity present in the data. See our case study vignettes for ideas on how deal with such issues.
+:::
+
 
 ## Citation
 
