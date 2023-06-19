@@ -26,8 +26,7 @@ knitr::opts_chunk$set(
   cache = TRUE,
   message = FALSE,
   warning = FALSE,
-  dpi = 330,
-  fig.width = 8
+  dpi = 330
 )
 ```
 
@@ -47,7 +46,7 @@ Unfortunately, we can't directly observe infections and the data we do observe s
 :::
 
 ::: {.alert .alert-secondary}
-### What we have {-}
+  ### What we have {-}
 
   1. A linelist of cases with a date of interest (for example test positive date) and a date of report (for example date of hospitalisation report);
   2. An estimate of the distribution of times from infection to positive test;
@@ -79,7 +78,7 @@ library(ggplot2)
 
 ::: {.alert .alert-secondary}
 
-Here we make use of `data.table` for simple data transformations but tools from the tidyverse or base R tools could just as easily be used. We also use `purrr` to make use of the `partial()` function which allows us to partially specify a function. This is useful for specifying the model as we can specify the parts of the model that are common to all models and then specify the parts that are specific to each model. Finally we use `ggplot2` for plotting.
+  Here we make use of `data.table` for simple data transformations but tools from the tidyverse or base R tools could just as easily be used. We also use `purrr` to make use of the `partial()` function which allows us to partially specify a function. This is useful for specifying the model as we can specify the parts of the model that are common to all models and then specify the parts that are specific to each model. Finally we use `ggplot2` for plotting.
 
 :::
 
@@ -174,7 +173,7 @@ incidence_from_linelist
 ```
 
 ::: {.alert .alert-info}
-Here we have specifed the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
+  Here we have specifed the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
 :::
 
 ## Model
@@ -262,7 +261,7 @@ reference_module <- partial(enw_reference, ~1, distribution = "lognormal")
 Expected notifications by date of positive test ($t$) and reporting date can now be found by multiplying expected final notifications by date of positive test for each $t$ with the probability of reporting for each day of delay ($p_{t,d}$). We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.
 
 \begin{align}
-  n_{t,d} \mid \lambda_{t},p_{t,d}  &\sim \text{Poisson} \left(\lambda_{t} \times p_{t,d),\ t=1,...,T. \\
+  n_{t,d} \mid \lambda_{t},p_{t,d}  &\sim \text{Poisson} \left(\lambda_{t} \times p_{t,d) \right),\ t=1,...,T. \\
   N_{g,t} &= \sum_{d=0}^{D} n_{g,t,d}
 \end{align}
 
@@ -375,7 +374,7 @@ retro_germany_nowcast <- epinowcast(
 
 ::: {.alert .alert-info}
 
-You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
+  You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
 
 :::
 
@@ -391,7 +390,7 @@ plot(germany_nowcast, latest_obs)
 In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported. 
 
 ::: {.alert .alert-info}
-An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
+  An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
 :::
 
 ### Real-time and retrospective estimates of the effective reproduction number
@@ -560,28 +559,28 @@ Visualising the model predictions highlights some clear fitting issues. One clea
 :::
 
 ::: {.alert .alert-secondary}
-### Strengths {-}
+  ### Strengths {-}
 
-- We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propogated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a mulit-stage approach.
+  - We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propogated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a mulit-stage approach.
 
-### Limitations {-}
+  ### Limitations {-}
 
-- Assumed a known and static generation time distribution and latent reporting delay distribution. In reality these would need to be estimated from data, have uncertainty, and be liable to change over time.
-- Used a fixed parametric reporting delay distribution. In reality this would likely vary over time and depend on things like day of the week reporting effects. This could be addressed by using a more flexible reporting delay distribution which is supported by `epinowcast`.
+  - Assumed a known and static generation time distribution and latent reporting delay distribution. In reality these would need to be estimated from data, have uncertainty, and be liable to change over time.
+  - Used a fixed parametric reporting delay distribution. In reality this would likely vary over time and depend on things like day of the week reporting effects. This could be addressed by using a more flexible reporting delay distribution which is supported by `epinowcast`.
 
-### Alternative models {-}
+  ### Alternative models {-}
 
-- `EpiNow2`:
-- `EpiEstim`:
-- `epidemia`:
+  - `EpiNow2`:
+  - `EpiEstim`:
+  - `epidemia`:
 
-### Further work {-}
+  ### Further work {-}
 
-  - Use a more flexible reporting delay distribution.
-  - Use a more flexible generation time distribution.
-  - Use a more flexible model for the effective reproduction number.
-  - Add functionality to allow forecasting beyond the horizon of the observed data.
-  - Use an observation model that supports overdispersion in the number of reported cases, for example the negative binomial distribution.
+    - Use a more flexible reporting delay distribution.
+    - Use a more flexible generation time distribution.
+    - Use a more flexible model for the effective reproduction number.
+    - Add functionality to allow forecasting beyond the horizon of the observed data.
+    - Use an observation model that supports overdispersion in the number of reported cases, for example the negative binomial distribution.
 :::
 
 ## References
