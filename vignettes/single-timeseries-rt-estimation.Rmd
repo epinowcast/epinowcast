@@ -353,15 +353,19 @@ germany_hosp <- germany_hosp |>
   enw_complete_dates()
 ```
 
-As for the synthetic example we need to make a retrospective dataset and get the latest observations for the same time period as this will allows us to compare real-time estimates with what was ultimately retrospectively observed. Again as in the synthetic example we use 40 days of data with a maximum delay of 40 days.
+As for the synthetic example we need to make a "real-time" dataset and get the latest observations for the same time period as this will allows us to compare real-time estimates with what was ultimately retrospectively observed. Again as in the synthetic example we use 40 days of data with a maximum delay of 30 days. We also construct a retrospective dataset using the same time period but assuming that the data is complete (i.e. everything has been reported). We can then use this to compare the real-time estimates with the retrospective estimates.
 
 ```{r}
-# Make a retrospective dataset
-retro_germany <- germany_hosp |>
+# Make a real-time dataset
+realtime_germany <- germany_hosp |>
   # Remove the last 40 days of reported data
   enw_filter_report_dates(remove_days = 40) |>
   # Include on refernece dates within the last 30 days
   enw_filter_reference_dates(include_days = 30)
+
+# Make a retrospective dataset
+retro_germany <- germany_hosp[!is.na(reference_date)] |>
+  enw_filter_reference_dates(remove_days = 40, include_days = 30)
 
 # Get latest observations for the same time period
 latest_obs <- germany_hosp |>
@@ -372,13 +376,19 @@ latest_obs <- germany_hosp |>
 Finally, we preprocess that data ready for modelling. As in the synthetic example this produces several useful intermediate datasets that can be used for plotting and checking the model fit as well as summary information about the proprocessed data (such as the number of groups, the maximum delay, and the number of observations in each group).
 
 ```{r}
-# Preprocess observations
-germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
+germany_pobs <- enw_preprocess_data(realtime_germany, max_delay = 30)
 germany_pobs
 ```
 
+and do the same for the retrospective data
+
+```{r}
+retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
+```
 
 ### Fit the `epinowcast` model
+
+On real-time data,
 
 ```{r}
 # Fit nowcast model with these modules and produce a nowcast
@@ -392,15 +402,20 @@ germany_nowcast <- epinowcast(
 )
 ```
 
-### Summarise the nowcast
+and then on retrospective data.
 
-```{r check-synth-nowcast}
-germany_nowcast |>
-  summary(probs = c(0.05, 0.95)) |>
-  tail(n = 7)
+```{r}
+retro_germany_nowcast <- epinowcast(
+  data = retro_germany_pobs,
+  expectation = expectation_module(data = retro_germany_pobs),
+  reference = reference_module(data = retro_germany_pobs),
+  obs = obs_module(data = retro_germany_pobs),
+  fit = fit_module(),
+  model = epinowcast_model
+)
 ```
 
-### Plot the nowcast against observed data
+### Plot the real-time nowcast against observed data
 
 ```{r plot-germany-nowcast
 plot(germany_nowcast, latest_obs)

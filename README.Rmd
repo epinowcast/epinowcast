@@ -64,7 +64,12 @@ Historical package releases can be installed from GitHub using `remotes` by addi
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0")
 ```
 
-*Note: A similar method can be used to install a particular commit of the package which may be useful for some users who are unable to use a fixed release but concerned about the stability of their dependencies.*
+
+::: {.alert .alert-info}
+
+  A similar method can be used to install a particular commit of the package which may be useful for some users who are unable to use a fixed release but concerned about the stability of their dependencies.
+  
+:::
 
 ### Installing CmdStan
 
@@ -76,7 +81,10 @@ If you don't already have CmdStan installed then, in addition to installing `epi
 cmdstanr::install_cmdstan()
 ```
 
-*Note: This install process can be sped up using the `cores` argument and past versions can be installed using the `version` argument (which may be useful if install historical package releases).*
+
+::: {.alert .alert-info}
+  This install process can be sped up using the `cores` argument and past versions can be installed using the `version` argument (which may be useful if install historical package releases).
+:::
 
 ### Docker 
 

@@ -91,9 +91,13 @@ by adding the release tag as in the following example (which installs
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0")
 ```
 
-*Note: A similar method can be used to install a particular commit of
-the package which may be useful for some users who are unable to use a
-fixed release but concerned about the stability of their dependencies.*
+<div class="alert alert-info">
+
+A similar method can be used to install a particular commit of the
+package which may be useful for some users who are unable to use a fixed
+release but concerned about the stability of their dependencies.
+
+</div>
 
 ### Installing CmdStan
 
@@ -111,9 +115,13 @@ support.
 cmdstanr::install_cmdstan()
 ```
 
-*Note: This install process can be sped up using the `cores` argument
-and past versions can be installed using the `version` argument (which
-may be useful if install historical package releases).*
+<div class="alert alert-info">
+
+This install process can be sped up using the `cores` argument and past
+versions can be installed using the `version` argument (which may be
+useful if install historical package releases).
+
+</div>
 
 ### Docker
 
@@ -393,7 +401,11 @@ nowcast
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
+<<<<<<< HEAD
 #> 1:                  40                 0.04    203.6
+=======
+#> 1:                  32                0.032       44
+>>>>>>> 3325674f (add retrospective germany nowcast)
 ```
 
 ### Summarising and plotting the nowcast
@@ -418,6 +430,7 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
+<<<<<<< HEAD
 #>  2:                 1    38             0  69.054     69 0.2390421 0.0000 69
 #>  3:                 1    37             0  47.082     47 0.3055640 0.0000 47
 #>  4:                 1    36             0  65.179     65 0.4232471 0.0000 65
@@ -438,6 +451,28 @@ nowcast |>
 #>  8:  94 1.0077241 1035.1104 984.3727
 #>  9: 102 1.0069291  863.3264 868.8086
 #> 10:  89 1.0006258  740.8933 863.8095
+=======
+#>  2:                 1    38             0  69.055     69 0.2409005 0.0000 69
+#>  3:                 1    37             0  47.080     47 0.2787072 0.0000 47
+#>  4:                 1    36             0  65.199     65 0.4707660 0.0000 65
+#>  5:                 1    35             0  50.254     50 0.5345744 0.0000 50
+#>  6:                 1    34             0  36.238     36 0.4975978 0.0000 36
+#>  7:                 1    33             0  94.499     94 0.7338512 0.0000 94
+#>  8:                 1    32             0  91.745     92 0.9267329 1.4826 91
+#>  9:                 1    31             0 100.025    100 1.0805288 1.4826 99
+#> 10:                 1    30             0  87.239     87 1.1812173 1.4826 86
+#>     q95      rhat  ess_bulk  ess_tail
+#>  1:  72        NA        NA        NA
+#>  2:  70 0.9989120 1030.6971 1013.5831
+#>  3:  48 0.9992652 1104.8977 1008.0969
+#>  4:  66 0.9993303  916.6089  843.9559
+#>  5:  51 0.9986756  988.7320  916.0898
+#>  6:  37 0.9994319  996.6020  968.3856
+#>  7:  96 0.9985256  887.7505  864.9189
+#>  8:  93 0.9984657  826.8254  748.1731
+#>  9: 102 1.0008628  816.0401  822.4380
+#> 10:  89 1.0006440  949.7158  835.0665
+>>>>>>> 3325674f (add retrospective germany nowcast)
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -492,6 +527,7 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
+<<<<<<< HEAD
 #>     1:                 1    33             0      1          1     1    434
 #>     2:                 1    33             0      1          2     2    437
 #>     3:                 1    33             0      1          3     3    434
@@ -503,6 +539,19 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33998:                 1     0             1      2        498   998   2141
 #> 33999:                 1     0             1      2        499   999   1932
 #> 34000:                 1     0             1      2        500  1000   2245
+=======
+#>     1:                 1    33             0      1          1     1    433
+#>     2:                 1    33             0      1          2     2    434
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    434
+#>     5:                 1    33             0      1          5     5    434
+#>    ---                                                                     
+#> 33996:                 1     0             1      2        496   996   2254
+#> 33997:                 1     0             1      2        497   997   2222
+#> 33998:                 1     0             1      2        498   998   2122
+#> 33999:                 1     0             1      2        499   999   2020
+#> 34000:                 1     0             1      2        500  1000   1979
+>>>>>>> 3325674f (add retrospective germany nowcast)
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
