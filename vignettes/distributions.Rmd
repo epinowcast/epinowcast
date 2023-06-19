@@ -28,9 +28,9 @@ The currently available parametric delay distributions are continuous probabilit
 
 In `epinowcast`, delays are modeled in discrete time and with an assumed maximum delay (specified via the `max_delay` argument). Therefore, the continuous delay distributions must be discretised and adjusted for the maximum delay. 
 
-The exact form of this discretisation is complex due to the interaction between primary and secondary events. Rather than modelling this explicitly we approximate it by assuming a uniform censoring interval for each delay of 2 days. This comes from assuming daily censoring for both the primary and secondary event that make up the delay distribution and ignoring the interaction between these censoring intervals. This means that the probability of reporting a delay of $d$ days is the probability of reporting a delay of $d+1$ days or less, minus the probability of reporting a delay of $d-1$ days or less. This is then normalised by the sum of the probabilities of reporting a delay of $d$ for all delays up to some maximum delay, $D$. 
+The exact form of this discretisation is complex due to the interaction between primary and secondary events. Rather than modelling this explicitly, we approximate it by assuming a uniform censoring interval of 2 days for each delay. This comes from assuming daily censoring of both the primary and secondary events, which together define the delay distribution, and ignoring potential interactions between primary and secondary events. As a result, the probability of reporting a delay of $d$ days equals the probability of reporting a delay of $d+1$ days or less, minus the probability of reporting a delay of $d-1$ days or less. This is then normalised by the overall probability of reporting any delay up to some maximum delay, $D$. 
 
-More rigorously, we can define this in terms of the cumulative distribution function. Let $F^{\mu_{g,t}, \upsilon_{g,t}}$ be the cumulative distribution function of the continuous probability distribution with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Then the probability of reporting a delay of $d$ days is
+More formally, we define this in terms of the cumulative distribution function of the delay distribution. Let $F^{\mu_{g,t}, \upsilon_{g,t}}$ be the cumulative distribution function of a continuous probability distribution of delays with parameters $\mu_{g,t}$ and $\upsilon_{g,t}$. Then, the probability of reporting a delay of $d$ days is
 $$p_{g,t,d} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d-1)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D + 1 ) + F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
 
 Unless $d = 0$ then we instead have
@@ -39,6 +39,6 @@ $$p_{g,t,1} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(1)}{F^{\mu_{g,t}, \upsilon_{g,
 
 Normalising by $F^{\mu_{g,t}, \upsilon_{g,t}}(D+1) + F^{\mu_{g,t}, \upsilon_{g,t}}(D)$, ensures that the $p^{\prime}_{g,t,d}$ sum to 1. Since $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$ is the probability of reporting before the maximum delay, this can also be interpreted as conditioning our distribution on the maximum delay.
 
-Note that because of the discretisation and normalization, the discrete random variable we obtain generally are only approximately the same as the original, continuous distribution with the approximation being increasingly poor for short delays.
+Note that because of the discretisation and normalization, the discrete delay distribution we obtain only approximates the original continuous distribution, and the approximation is worse for shorter delays.
 
 
