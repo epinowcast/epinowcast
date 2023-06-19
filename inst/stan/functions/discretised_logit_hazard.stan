@@ -117,8 +117,8 @@ vector log_hazard_to_logit_hazard(vector lhaz, int n) {
 
 // Calculate discreteised logit hazard or log probability
 // up to a maximum oberved delay with a range of normalisation strategies
-// Assumes that delays are doubly censored and that the interval width is
-// approoximated by a uniform.
+// Assumes that delays are double-censored and that the interval width is 
+// approximately uniformly distributed.
 vector discretised_logit_hazard(real mu, real sigma, int n, int dist, 
                                 int max_strat, int ref_as_p) {
   vector[n] lcdf;
