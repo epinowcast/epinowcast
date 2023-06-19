@@ -87,11 +87,11 @@ vector lprob_to_uniform_double_censored_log_hazard(vector lprob, vector lcdf,
   // h_0 = cdf_1
   lhaz[1] = lcdf[1];
   // h_n = p_n / (1 - sum^{n-1}_{d=0} p_d)
-  // h_n = cdf_n+1 - cdf_n-1 / (1 - sum^{n-1}_{d=0} cdf_d+1 - cdf_d-1)
-  // h_n = cdf_n+1 - cdf_n-1 / 1 - sum^n_{d=0} cdf_d + sum^n-2_{d=1} cdf_d
-  // h_n = cdf_n+1 - cdf_n-1 / 1 - cdf_n - cdf_n-1
-  // h_n = (cdf_n+1 - cdf_n-1) / (cccdf_n - cdf_n-1)
-  // log(h_n) = log(cdf_n+1 - cdf_n-1) - log(cccdf_n - cdf_n-1)
+  // h_n = (cdf_n+1 - cdf_n-1) / (1 - sum^{n-1}_{d=0} cdf_d+1 - cdf_d-1)
+  // h_n = (cdf_n+1 - cdf_n-1) / (1 - (cdf_n + cdf_n-1))
+  // h_n = (cdf_n+1 - cdf_n-1) / (1 - cdf_n - cdf_n-1)
+  // h_n = (cdf_n+1 - cdf_n-1) / (ccdf_n - cdf_n-1)
+  // log(h_n) = log(cdf_n+1 - cdf_n-1) - log(ccdf_n - cdf_n-1)
   if (n > 1) {
     vector[n-2] lccdf;
     // cccdf_n = 1 - cdf_n
