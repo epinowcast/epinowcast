@@ -13,6 +13,7 @@ This release is in development and not yet ready for production use.
 ## Bugs
 
 - Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
+- Fixed a few typos in the models vignette by @medewitt
 
 ## Package
 
