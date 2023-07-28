@@ -33,8 +33,34 @@ knitr::opts_chunk$set(
 
 <-->
 
-## What is Stan
+## Epinowcast and Stan
 
-[Stan](https://mc-stan.org/) is the probabilistic programming language that performs the Bayesian inference in epinowcast.
+[Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `epinowcast`.
+The statistical models used in `epinowcast` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
+`epinowcast` utilises the [`cmdstanr`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
+As describe in the project [README](./index.html), you will need to install cmdstanr which also has the ability to install CmdStan. 
 
-## 
+### Ensuring you have the toolchain
+
+Because Stan needs a C++ compiler, you will need to ensure that your system has the appropriate supporting software, known as a toolchain.
+The steps to install this additional software is in addition to R and is platform specific.
+The Stan team has assembled very detailed instructions for each platform:
+
+* [**Windows**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#windows)
+* [**MacOS**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#macos)
+* [**Linux**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#linux)
+
+
+### Now install CmdStanR and CmdStan
+
+```r
+# Start with a fresh R Session and use the following function
+install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+
+```
+
+```r
+cmdstanr::install_cmdstan()
+```
+
+##
