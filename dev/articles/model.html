@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -177,7 +177,7 @@ components<a class="anchor" aria-label="anchor" href="#decomposition-into-expect
 <p>We are concerned with outcomes that occur at a time of
 <em>reference</em> (e.g., date of symptom onset or test for a disease)
 that are reported only with a delay, at the time of <em>report</em>
-(e.g. the date onsets are entered into a central database and so become
+(e.g., the date onsets are entered into a central database and so become
 available for analysis). We assume that these times are measured in
 discrete time steps, usually of a day (in which case the times are
 dates).</p>
@@ -204,7 +204,7 @@ of final notifications (<span class="math inline">\(\lambda_{g,t} =
 <p>An alternative approach would be to consider each <span class="math inline">\(n_{g,t,d}\)</span> independently at which point
 the model can be defined as a regression that can be fit using standard
 software with the appropriate observation model and adjustment for
-reporting delay (i.e it becomes a Poisson or Negative Binomial
+reporting delay (i.e., it becomes a Poisson or Negative Binomial
 regression). An implementation of this approach is available in Bastos
 et al.<span class="citation"><sup>[14]</sup></span>. A downside of this
 simplified approach is that reporting is not conditionally dependent
@@ -298,7 +298,7 @@ for these delays to vary over time and by group. This implementation is
 similar to that implemented in <code>EpiNow2</code> and
 <code>epidemia</code> as well as other similar models<span class="citation"><sup>[1,5,6,11]</sup></span>. In addition to this we
 support modelling ascertainment through the use of improper probability
-mass functions (i.e. by not enforcing a sum to 1 constraint) and
+mass functions (i.e., by not enforcing a sum to 1 constraint) and
 inferring ascertainment where possible (for example day of the week
 reporting patterns).</p>
 <p><span class="math display">\[\begin{align}
@@ -343,7 +343,7 @@ see <code><a href="../articles/distributions.html">vignette("distributions")</a>
 distributions as well as effects of the reporting process on the delay.
 Following the approach of Günther et al.<span class="citation"><sup>[8]</sup></span> and others, we parameterise the
 delay probability (<span class="math inline">\(p_{g,t,d}\)</span>) via a
-discrete-time hazard model, i.e.</p>
+discrete-time hazard model, i.e.,</p>
 <p><span class="math display">\[\begin{equation}
   p_{g,t,0} = h_{g,t,0},\ p_{g,t,d} = \left(1 -\sum^{d-1}_{d^{\prime}=0}
 p_{g,t,d^{\prime}} \right) \times h_{g,t,d},
@@ -404,7 +404,7 @@ shared covariates, indexed by reference date. The covariates are
 multiplied by fixed (<span class="math inline">\(\beta_{f,i}\)</span>)
 and random (<span class="math inline">\(\beta_{r,i}\)</span>)
 coefficients (note that these can include auto-regressive terms),
-i.e.</p>
+i.e.,</p>
 <p><span class="math display">\[\begin{align}
   \mu_{g,t} &amp;= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu}
 Z_{\gamma} \\
@@ -482,10 +482,10 @@ onset where report date is often known but onset date may not be. To
 account for this we support modelling this missing process by assuming
 that cases with a missing reference date have the same reporting delay
 distribution as cases with a known reference date and that processes
-that drive the probability of having a missing reference date ($_{g,t})
-are linked to the unknown date of reference rather than the date of
-report based on Lison et al.<span class="citation"><sup>[11]</sup></span>. We model this probability
-flexibly on a logit scale as follows,</p>
+that drive the probability of having a missing reference date (<span class="math inline">\(\alpha_{g,t}\)</span>) are linked to the unknown
+date of reference rather than the date of report based on Lison et
+al.<span class="citation"><sup>[11]</sup></span>. We model this
+probability flexibly on a logit scale as follows,</p>
 <p><span class="math display">\[\begin{equation}
   \text{logit} (\alpha_{g,t}) = \alpha_0 + \beta_{f,\alpha} X_{\alpha} +
 \beta_{r,\alpha} Z_{\alpha}

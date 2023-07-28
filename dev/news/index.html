@@ -22,7 +22,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1001</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,13 +84,14 @@
 <p>This release is in development and not yet ready for production use.</p>
 <div class="section level3">
 <h3 id="contributors-0-2-3">Contributors<a class="anchor" aria-label="anchor" href="#contributors-0-2-3"></a></h3>
-<p>@seabbs contributed code to this release.</p>
+<p>@medewitt and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> contributed code to this release.</p>
 <p>@seabbs reviewed pull requests for this release.</p>
-<p>@jbracher and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.</p>
+<p>@jbracher, <a href="https://github.com/medewitt" class="external-link">@medewitt</a>, and <a href="https://github.com/seabbs" class="external-link">@seabbs</a> reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.</p>
 </div>
 <div class="section level3">
 <h3 id="bugs-0-2-3">Bugs<a class="anchor" aria-label="anchor" href="#bugs-0-2-3"></a></h3>
 <ul><li>Fixed a bug identified by <a href="https://github.com/jbracher" class="external-link">@jbracher</a> where the <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in <code>cmdstan 2.32.1</code> and is required in order to use versions of <code>cmdstan</code> beyond <code>2.32.0</code> with models that contain multiple time series. See <a href="https://github.com/epinowcast/epinowcast/issues/282" class="external-link">#282</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
+<li>Fixed a few typos in the model vignette. See <a href="https://github.com/epinowcast/epinowcast/issues/292" class="external-link">#292</a> by <a href="https://github.com/medewitt" class="external-link">@medewitt</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="package-0-2-3">Package<a class="anchor" aria-label="anchor" href="#package-0-2-3"></a></h3>
@@ -159,7 +160,7 @@
 <div class="section level3">
 <h3 id="package-0-2-1">Package<a class="anchor" aria-label="anchor" href="#package-0-2-1"></a></h3>
 <ul><li>Fixed some typos in <code>README.md</code>, <code>NEWS.md</code>, the <code>model.Rmd</code> vignette and <code><a href="../reference/convolution_matrix.html">convolution_matrix()</a></code> documentation. The <code>WORDLIST</code> used by spelling has also been updated by eliminate false positives. See <a href="https://github.com/epinowcast/epinowcast/issues/221" class="external-link">#221</a> by <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and <a href="https://github.com/adrian-lison" class="external-link">@adrian-lison</a>.</li>
-<li>Added more non-default linters in <code>.lintr</code> configuration file. This file is used when <code><a href="https://lintr.r-lib.org/reference/lint.html" class="external-link">lintr::lint_package()</a></code> is run or in the new <code>lint-changed-files.yaml</code> GitHub Actions workflow. See <a href="https://github.com/epinowcast/epinowcast/issues/220" class="external-link">#220</a> by <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
+<li>Added more non-default linters in <code>.lintr</code> configuration file. This file is used when <code>lintr::lint_package()</code> is run or in the new <code>lint-changed-files.yaml</code> GitHub Actions workflow. See <a href="https://github.com/epinowcast/epinowcast/issues/220" class="external-link">#220</a> by <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 <li>Switched to the <code>lint-changed-files.yaml</code> GitHub Actions workflow instead of the regular <code>lint.yaml</code> to avoid annotations unrelated to the changes made in the PR. See <a href="https://github.com/epinowcast/epinowcast/issues/220" class="external-link">#220</a> by <a href="https://github.com/Bisaloo" class="external-link">@Bisaloo</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a> and <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 <li>Added tests for <code><a href="../reference/summary.epinowcast.html">summary.epinowcast()</a></code> and <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> methods. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
 <li>Added tests for <code><a href="../reference/enw_plot_obs.html">enw_plot_obs()</a></code> where not otherwise covered by <code><a href="../reference/plot.epinowcast.html">plot.epinowcast()</a></code> tests. See <a href="https://github.com/epinowcast/epinowcast/issues/209" class="external-link">#209</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/pearsonca" class="external-link">@pearsonca</a>.</li>
