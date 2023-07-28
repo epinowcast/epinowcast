@@ -1,0 +1,40 @@
+---
+title: Resources for help with Stan
+description: "How to address issues you may encounter with Stan"
+author: Michael DeWitt
+output: rmarkdown::html_document
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+vignette: >
+  %\VignetteIndexEntry{Help with Stan}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+
+<!-->
+
+- [ ] What is Stan
+- [ ] Issues with installation
+- [ ] Issues with compilation and paths
+- [ ] Issues with model fitting
+  - [ ] Adapt Delta
+  - [ ] Max Tree Depth
+  - [ ] Number of samples, priors, Rhat/ ESS
+- [ ] Other generic resources
+
+<-->
+
+## What is Stan
+
+[Stan](https://mc-stan.org/) is the probabilistic programming language that performs the Bayesian inference in epinowcast.
+
+## 
