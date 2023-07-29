@@ -217,7 +217,7 @@ add_pmfs <- function(pmfs) {
 #' mat <- matrix(1:9, nrow = 3)
 #' extract_sparse_matrix(mat)
 extract_sparse_matrix <- function(mat, prefix = "") {
-  sparse_mat <- rstan::extract_sparse_parts(mat)
+  sparse_mat <- suppressMessages(rstan::extract_sparse_parts(mat))
   sparse_mat <- list(
     nw = length(sparse_mat$w),
     w = sparse_mat$w,
