@@ -24,7 +24,7 @@ Return a list that describes the sparse matrix this includes:
 }
 \description{
 This helper function allows the extraction of a sparse matrix from a matrix
-using \code{rstan::extract_sparse_parsts()} and returns these elements in a named
+using \code{rstan::extract_sparse_parts()} and returns these elements in a named
 list for use in stan.
 }
 \examples{
