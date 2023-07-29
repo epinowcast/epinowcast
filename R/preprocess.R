@@ -294,6 +294,7 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #'
 #' @return A `data.table` of observations with a new column `delay`.
 #' @inheritParams enw_cumulative_to_incidence
+#' @inheritParams enw_add_incidence
 #' @family preprocess
 #' @export
 #' @examples
