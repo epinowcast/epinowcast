@@ -262,6 +262,7 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
 #' reported on each day (`prop_reported`) is also added.
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
+#' @keywords internal
 #' @export
 #' @importFrom lifecycle deprecate_warn
 #' @examples
@@ -292,6 +293,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' @return The input `data.frame` with a new variable `confirm`.
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
+#' @keywords internal
 #' @export
 #' @importFrom lifecycle deprecate_warn
 #' @examples
