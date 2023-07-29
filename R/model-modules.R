@@ -439,7 +439,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @importFrom purrr map
 #' @export
 #' @examples
-#' # Missing model with a fixed intercept only
+#' # Missingness model with a fixed intercept only
 #' enw_missing(data = enw_example("preprocessed"))
 #'
 #' # No missingness model specified
@@ -447,8 +447,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     !(as_string_formula(formula) %in% "~0")) {
-    stop("A missingness model has been specified but data on the proportion of
-          observations without reference dates is not available.")
+    stop(paste("A missingness model has been specified, but no observations", 
+          "with missing reference date are in the preprocessed data."))
   }
 
   if (as_string_formula(formula) %in% "~0") {

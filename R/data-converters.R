@@ -176,11 +176,11 @@ enw_linelist_to_incidence <- function(linelist,
     )
   }
   if (max_delay < obs_delay) {
+    max_delay <- obs_delay
     message(
-      "Using the maximum observed delay of ", obs_delay,
-      " days as greater than the maximum specified to complete the incidence ",
-      "data.")
-       max_delay <- obs_delay
+      "Using the maximum observed delay of ", obs_delay, " days ",
+      "to complete the incidence data, ",
+      "as this is greater than the user-specified maximum delay.")
   }
   cum_counts <- enw_add_cumulative(counts, by = by, copy = FALSE)
 

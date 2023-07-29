@@ -25,7 +25,7 @@ can be used to sample from a tightened version of the prior distribution.
 Missing reference data model module
 }
 \examples{
-# Missing model with a fixed intercept only
+# Missingness model with a fixed intercept only
 enw_missing(data = enw_example("preprocessed"))
 
 # No missingness model specified

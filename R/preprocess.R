@@ -751,16 +751,19 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 
 #' Get the different user-specified, observed, and modelled maximum delays.
 #'
-#' @description The maximum reporting delay is used to make the modeling of
-#' reporting delays tractable by right-truncating the delay distribution at a
-#' reasonable number of days. The maximum delay is specified by the user, and
-#' can be smaller or larger than the maximum delay observed in the data.
-#' Importantly, epinowcast will currently always use the smaller one of the two
-#' maximum delays for modeling. This means that observations with a delay
-#' larger than the specified maximum delay will be dropped from the analysis.
-#' In some settings, for example outbreaks where little data is available
-#' this may not be ideal. If this is an issue for you, please get in touch
-#' with the developers by opening an issue on GitHub.
+#' @description This metadata function records the different types of maximum
+#'   delays relevant for modeling. To obtain statistics on individual delays
+#'   for a given maximum delay, see `enw_metadata_delay` instead. The maximum
+#'   reporting delay is used to make the modeling of reporting delays tractable
+#'   by right-truncating the delay distribution at a reasonable number of days.
+#'   The maximum delay is specified by the user, and can be smaller or larger
+#'   than the maximum delay observed in the data. Importantly, epinowcast will
+#'   currently always use the smaller one of the two maximum delays for
+#'   modeling. This means that observations with a delay larger than the
+#'   specified maximum delay will be dropped from the analysis. In some
+#'   settings, for example outbreaks where little data is available, this may not
+#'   be ideal. If this is an issue for you, please get in touch with the
+#'   developers by opening an issue on GitHub.
 #'
 #' @return A `list` of maximum delays. These include:
 #'  - `spec`: The maximum delay specified by the user.
