@@ -222,7 +222,7 @@ coerce_dt <- function(
 #' @family check
 check_max_delay <- function(latest_obs, metamaxdelay, cum_coverage = 0.8) {
   latest_obs <- coerce_dt(
-    latest_obs, required_cols = c("cum_prop_reported", "cum_coverage"),
+    latest_obs, required_cols = c("cum_prop_reported"),
     msg_required = paste(
       "Please ensure that enw_add_max_reported() has been called",
       "on `latest_obs`. The following columns are required:"
