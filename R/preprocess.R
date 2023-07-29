@@ -784,11 +784,15 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- enw_add_delay(obs)
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
   max_delay_model <- min(max_delay_obs, max_delay)
-  metamaxdelay <- list(
-    spec = max_delay, # user-specified maximum delay
-    obs = max_delay_obs, # observed maximum delay
-    model = max_delay_model # maximum delay used in model
-  )
+  metamaxdelay <- data.table::data.table(
+    type = c("specified", "observed", "modelled"),
+    delay = c(max_delay, max_delay_obs, max_delay_model),
+    description = c(
+      "maximum delay specified by the user",
+      "maximum delay observed in the data",
+      "maximum delay used in model"
+    )
+    )
   return(metamaxdelay)
 }
 
@@ -975,7 +979,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metamaxdelay <- enw_metadata_maxdelay(obs = obs, max_delay = max_delay)
   
   # filter by the maximum delay modelled
-  obs <- enw_filter_delay(obs, max_delay = metamaxdelay$model)
+  obs <- enw_filter_delay(obs, max_delay = metamaxdelay[type == "modelled", delay])
 
   diff_obs <- enw_add_incidence(
     obs,
@@ -1023,7 +1027,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(
     metareport,
-    days = metamaxdelay$model - 1, direction = "end"
+    days = metamaxdelay[type == "modelled", delay] - 1, direction = "end"
   )
   metareport <- enw_add_metaobs_features(metareport, ...)
 
@@ -1035,7 +1039,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
-  metadelay <- enw_metadata_delay(metamaxdelay$model, breaks = 4)
+  metadelay <- enw_metadata_delay(metamaxdelay[type == "modelled", delay], breaks = 4)
 
   out <- enw_construct_data(
     obs = obs,
