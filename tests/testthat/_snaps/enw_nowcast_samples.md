@@ -2,7 +2,7 @@
 
     Code
       round_numerics(enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$
-      max_delay[[1]])[1:10])
+        metamaxdelay[[1]])[1:10])
     Output
           reference_date report_date .group max_confirm location age_group confirm
        1:     2021-08-03  2021-08-22      1         149       DE       00+     149

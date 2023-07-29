@@ -26,7 +26,7 @@
     Code
       enw_linelist_to_incidence(linelist_right_names, max_delay = 2)
     Message <simpleMessage>
-      Using the maximum observed delay of 4 days as greater than the maximum specified to complete the incidence data.
+      Using the maximum observed delay of 4 days to complete the incidence data, as this is greater than the user-specified maximum delay.
     Output
           report_date reference_date new_confirm confirm delay
        1:  2021-01-02           <NA>           0       0     0
