@@ -14,7 +14,7 @@ test_that("check_max_delay produces the expected warnings", {
     check_max_delay(latest_obs, list(spec = 20, obs = 30, model = 30))
   )
 
-  latest_obs$cum_prop_reported <- runif(nrow(latest_obs), min = 0.3, max = 0.79)
+  latest_obs$cum_prop_reported <- rep(0.5, nrow(latest_obs))
   expect_warning(
     check_max_delay(latest_obs, list(spec = 20, obs = 20, model = 20)),
     regexp = "The currently specified maximum reporting delay"
