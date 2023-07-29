@@ -337,9 +337,13 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
     ,
     .(reference_date, .group, max_confirm = confirm)
   ]
+  if ("max_confirm" %in% colnames(obs)) {
+    obs[,max_confirm:=NULL]
+  }
   obs <- orig_latest[obs, on = c("reference_date", ".group")]
   obs[is.na(reference_date), max_confirm := confirm]
   obs[, cum_prop_reported := confirm / max_confirm]
+  setcolorder(obs, c("reference_date", "report_date",".group"))
   return(obs[])
 }
 
