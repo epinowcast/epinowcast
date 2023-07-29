@@ -212,7 +212,7 @@ coerce_dt <- function(
 #' @param latest_obs Metadata for the latest observation produced. Note that 
 #' this requires [enw_add_max_reported()] to have already been applied.
 #'
-#' @param max_delay Metadata for the maximum delay produced using
+#' @param metamaxdelay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
 #' @param cum_coverage The cumulative coverage to use for the warning.
@@ -220,18 +220,18 @@ coerce_dt <- function(
 #' @return NULL
 #'
 #' @family check
-check_max_delay <- function(latest_obs, max_delay, cum_coverage = 0.8) {
+check_max_delay <- function(latest_obs, metamaxdelay, cum_coverage = 0.8) {
   latest_obs <- coerce_dt(
     latest_obs, required_cols = c("cum_prop_reported", "cum_coverage"),
     msg_required = paste(
       "Please ensure that enw_add_max_reported() has been called",
       "on `latest_obs`. The following columns are required:"
   ))
-  max_delay <- coerce_dt(
-    max_delay, required_cols = c("type", "delay")
+  metamaxdelay <- coerce_dt(
+    metamaxdelay, required_cols = c("type", "delay")
   )
-  obs_d <- max_delay[type == "observed", delay]
-  spec_d <- max_delay[type == "specified", delay]
+  obs_d <- metamaxdelay[type == "observed", delay]
+  spec_d <- metamaxdelay[type == "specified", delay]
   if (obs_d < spec_d) {
     warning(
       "You specified a maximum delay of ",

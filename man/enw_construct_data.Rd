@@ -13,7 +13,7 @@ enw_construct_data(
   metareport,
   metareference,
   metadelay,
-  max_delay,
+  metamaxdelay,
   by
 )
 }
@@ -39,7 +39,7 @@ date in the standard reporting triangle matrix format.}
 \item{metadelay}{Metadata for reporting delays produced using
 \code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.}
 
-\item{max_delay}{Metadata for the maximum delay produced using
+\item{metamaxdelay}{Metadata for the maximum delay produced using
 \code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
 
 \item{by}{A character vector describing the stratification of
@@ -63,13 +63,13 @@ the standard reporting triangle matrix format.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{metadelay}: Metadata for reporting delays produced using
 \code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.
+\item \code{metamaxdelay}: Metadata for reporting delays produced using
+\code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
-\item \code{max_delay}: A \code{list}, with the maximum delays specified by the user, found
-in the data, and used by the model. See \code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}} for details.
 \item \code{max_date}: The maximum available report date.
 }
 }
@@ -91,7 +91,7 @@ enw_construct_data(
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
   metadelay = pobs$metadelay[[1]],
-  max_delay = pobs$max_delay[[1]],
+  metamaxdelay = pobs$metamaxdelay[[1]],
   by = c()
 )
 }

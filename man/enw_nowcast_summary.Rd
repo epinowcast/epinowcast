@@ -7,7 +7,7 @@
 enw_nowcast_summary(
   fit,
   obs,
-  max_delay,
+  metamaxdelay,
   probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95)
 )
 }
@@ -20,7 +20,7 @@ most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
 output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 
-\item{max_delay}{Metadata for the maximum delay produced using
+\item{metamaxdelay}{Metadata for the maximum delay produced using
 \code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
 
 \item{probs}{A vector of numeric probabilities to produce
@@ -42,7 +42,7 @@ the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
 }
 \examples{
 fit <- enw_example("nowcast")
-enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
+enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
 }
 \seealso{
 \code{\link[=summary.epinowcast]{summary.epinowcast()}}

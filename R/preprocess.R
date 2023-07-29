@@ -777,12 +777,12 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- enw_add_delay(obs)
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
   max_delay_model <- min(max_delay_obs, max_delay)
-  max_delays <- list(
+  metamaxdelay <- list(
     spec = max_delay, # user-specified maximum delay
     obs = max_delay_obs, # observed maximum delay
     model = max_delay_model # maximum delay used in model
   )
-  return(max_delays)
+  return(metamaxdelay)
 }
 
 #' Construct preprocessed data
@@ -814,7 +814,7 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
 #' @param metadelay Metadata for reporting delays produced using
 #'  [enw_metadata_delay()].
 #'
-#' @param max_delay Metadata for the maximum delay produced using
+#' @param metamaxdelay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #
 #' @inheritParams enw_preprocess_data
@@ -832,12 +832,12 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
 #'   metareport = pobs$metareport[[1]],
 #'   metareference = pobs$metareference[[1]],
 #'   metadelay = pobs$metadelay[[1]],
-#'   max_delay = pobs$max_delay[[1]],
+#'   metamaxdelay = pobs$metamaxdelay[[1]],
 #'   by = c()
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
                                reporting_triangle, metareport, metareference,
-                               metadelay, max_delay, by) {
+                               metadelay, metamaxdelay, by) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
@@ -847,11 +847,11 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     metareference = list(metareference),
     metareport = list(metareport),
     metadelay = list(metadelay),
+    metamaxdelay = list(metamaxdelay),
     time = nrow(latest[.group == 1]),
     snapshots = nrow(unique(obs[, .(.group, report_date)])),
     by = list(by),
     groups = length(unique(obs$.group)),
-    max_delay = list(max_delay),
     max_date = max(obs$report_date)
   )
   class(out) <- c("enw_preprocess_data", class(out))
@@ -921,15 +921,15 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' the standard reporting triangle matrix format.
 #' - `metareference`: Metadata reference dates derived from observations.
 #' - `metrareport`: Metadata for report dates.
-#' - `metadelay`: Metadata for reporting delays produced using
-#'  [enw_metadata_delay()].
+#' - `metadelay`: Metadata for reporting delays produced using 
+#' [enw_metadata_delay()].
+#' - `metamaxdelay`: Metadata for reporting delays produced using 
+#' [enw_metadata_maxdelay()].
 #' - `time`: Numeric, number of timepoints in the data.
 #' - `snapshots`: Numeric, number of available data snapshots to use for
 #' nowcasting.
 #' - `groups`: Numeric, Number of groups/strata in the supplied observations
 #' (set using `by`).
-#' - `max_delay`: A `list`, with the maximum delays specified by the user, found 
-#' in the data, and used by the model. See [enw_metadata_maxdelay()] for details.
 #' - `max_date`: The maximum available report date.
 #'
 #' @family preprocess
@@ -965,10 +965,10 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   obs <- enw_add_delay(obs, copy = FALSE)
 
   # add metadata about different maximum delays
-  max_delay <- enw_metadata_maxdelay(obs = obs, max_delay = max_delay)
+  metamaxdelay <- enw_metadata_maxdelay(obs = obs, max_delay = max_delay)
   
   # filter by the maximum delay modelled
-  obs <- enw_filter_delay(obs, max_delay = max_delay$model)
+  obs <- enw_filter_delay(obs, max_delay = metamaxdelay$model)
 
   diff_obs <- enw_add_incidence(
     obs,
@@ -1010,13 +1010,13 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   latest[, new_confirm := NULL]
 
   # check maximum delay
-  check_max_delay(latest, max_delay)
+  check_max_delay(latest, metamaxdelay)
 
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(
     metareport,
-    days = max_delay$model - 1, direction = "end"
+    days = metamaxdelay$model - 1, direction = "end"
   )
   metareport <- enw_add_metaobs_features(metareport, ...)
 
@@ -1028,7 +1028,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
-  metadelay <- enw_metadata_delay(max_delay$model, breaks = 4)
+  metadelay <- enw_metadata_delay(metamaxdelay$model, breaks = 4)
 
   out <- enw_construct_data(
     obs = obs,
@@ -1039,7 +1039,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     metareference = metareference,
     metareport = metareport,
     metadelay = metadelay,
-    max_delay = max_delay,
+    metamaxdelay = metamaxdelay,
     by = by
   )
 

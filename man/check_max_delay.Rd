@@ -5,13 +5,13 @@
 \title{Compare maximum delays specified by the user vs. observed in the data, and
 raise potential warnings.}
 \usage{
-check_max_delay(latest_obs, max_delay, cum_coverage = 0.8)
+check_max_delay(latest_obs, metamaxdelay, cum_coverage = 0.8)
 }
 \arguments{
 \item{latest_obs}{Metadata for the latest observation produced. Note that
 this requires \code{\link[=enw_add_max_reported]{enw_add_max_reported()}} to have already been applied.}
 
-\item{max_delay}{Metadata for the maximum delay produced using
+\item{metamaxdelay}{Metadata for the maximum delay produced using
 \code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
 
 \item{cum_coverage}{The cumulative coverage to use for the warning.

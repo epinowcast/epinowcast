@@ -70,10 +70,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
 #' 
-#' @param max_delay Metadata for the maximum delay produced using 
-#' [enw_metadata_maxdelay()].
-#'
-#' @param max_delay Metadata for the maximum delay produced using
+#' @param metamaxdelay Metadata for the maximum delay produced using 
 #' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
@@ -87,8 +84,8 @@ enw_posterior <- function(fit, variables = NULL,
 #' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
-#' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
-enw_nowcast_summary <- function(fit, obs, max_delay,
+#' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
+enw_nowcast_summary <- function(fit, obs, metamaxdelay,
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
                                 )) {
@@ -98,17 +95,17 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
     probs = probs
   )
 
-  if (nrow(nowcast) / max(obs$.group) != max_delay$model) {
+  if (nrow(nowcast) / max(obs$.group) != metamaxdelay$model) {
     stop(
       "Fitted maximum delay is not consistent with modeled maximum delay."
       )
   }
 
   ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay$spec)]
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - metamaxdelay$spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
-  obs_head <- ord_obs[reference_date <= (max(reference_date) - max_delay$model)]
-  obs_tail <- ord_obs[reference_date > (max(reference_date) - max_delay$model)]
+  obs_head <- ord_obs[reference_date <= (max(reference_date) - metamaxdelay$model)]
+  obs_tail <- ord_obs[reference_date > (max(reference_date) - metamaxdelay$model)]
 
   nowcast <- cbind(
     obs_tail,
@@ -135,7 +132,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param max_delay Metadata for the maximum delay produced using
+#' @param metamaxdelay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` of posterior samples for the nowcast prediction.
@@ -148,8 +145,8 @@ enw_nowcast_summary <- function(fit, obs, max_delay,
 #' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
-#' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$max_delay[[1]])
-enw_nowcast_samples <- function(fit, obs, max_delay) {
+#' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
+enw_nowcast_samples <- function(fit, obs, metamaxdelay) {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
     format = "draws_df"
@@ -163,22 +160,22 @@ enw_nowcast_samples <- function(fit, obs, max_delay) {
     id.vars = c(".chain", ".iteration", ".draw")
   )
 
-  if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) != max_delay$model) {
+  if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) != metamaxdelay$model) {
     stop(
       "Fitted maximum delay is not consistent with modeled maximum delay."
     )
   }
 
   ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay$spec)]
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - metamaxdelay$spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
     .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
   )
   ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
   ord_obs <- ord_obs[order(.group, reference_date)]
-  obs_head <- ord_obs[reference_date <= (max(reference_date) - max_delay$model)]
-  obs_tail <- ord_obs[reference_date > (max(reference_date) - max_delay$model)]
+  obs_head <- ord_obs[reference_date <= (max(reference_date) - metamaxdelay$model)]
+  obs_tail <- ord_obs[reference_date > (max(reference_date) - metamaxdelay$model)]
 
   nowcast <- cbind(
     obs_tail,
