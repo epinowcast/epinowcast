@@ -37,3 +37,31 @@
        9: 255 267
       10: 266 280
 
+# enw_summarise_samples adds artificial samples when a delay smaller than specified was modelled
+
+    Code
+      summary[1:10]
+    Output
+          reference_date .group report_date max_confirm location age_group confirm
+       1:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       2:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       3:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       4:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       5:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       6:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       7:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       8:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+       9:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+      10:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
+          cum_prop_reported delay prop_reported mean median sd mad q5 q50 q95
+       1:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       2:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       3:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       4:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       5:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       6:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       7:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       8:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       9:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+      10:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+
