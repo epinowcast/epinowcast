@@ -85,7 +85,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
-enw_nowcast_summary <- function(fit, obs, metamaxdelay,
+enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
                                 )) {
@@ -95,32 +95,46 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay,
     probs = probs
   )
 
-  if (nrow(nowcast) / max(obs$.group) != metamaxdelay[type == "modelled", delay]) {
-    stop(
-      "Fitted maximum delay is not consistent with modeled maximum delay."
-      )
+  if (is.null(metamaxdelay)) {
+    max_delay_model <- nrow(nowcast) / max(obs$.group)
+    max_delay_spec <- max_delay_model
+  } else {
+    if (nrow(nowcast) / max(obs$.group) !=
+        metamaxdelay[type == "modelled", delay]) {
+      stop(
+        "Fitted maximum delay is not consistent with modeled maximum delay."
+        )
+    }
+    max_delay_model <- metamaxdelay[type == "modelled", delay]
+    max_delay_spec <- metamaxdelay[type == "specified", delay]
+    if (max_delay_model > max_delay_spec) {
+      stop(paste(
+        "Modelled maximum delay must not be larger than specified by the user.",
+        "Please make sure that your epinowcast result object is not corrupt."
+      ))
+    }
   }
-
+  
   ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date >
-    (max(reference_date) - metamaxdelay[type == "specified", delay])]
+    (max(reference_date) - max_delay_spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
-  obs_head <- ord_obs[reference_date <=
-    (max(reference_date) - metamaxdelay[type == "specified", delay])]
-  obs_tail <- ord_obs[reference_date >
-    (max(reference_date) - metamaxdelay[type == "specified", delay])]
+  obs_model <- ord_obs[reference_date >
+    (max(reference_date) - max_delay_model)]
+  obs_spec <- ord_obs[reference_date <=
+    (max(reference_date) - max_delay_model)]
 
-  nowcast <- cbind(
-    obs_tail,
-    nowcast
-  )
-  nowcast <- rbind(obs_head, nowcast, fill = TRUE)
-
-  # add artificial summary statistics for not-modeled dates
-  nowcast[seq_len(nrow(obs_head)), c("mean", "median") := confirm]
+  # add observations for modelled dates
+  nowcast <- cbind(obs_model, nowcast)
+  
+  # add not-modelled earlier dates with artificial summary statistics
+  if (max_delay_spec > max_delay_model) {
+  nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
+  nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
   cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE)
-  nowcast[seq_len(nrow(obs_head)), (cols_quantile) := confirm]
-  nowcast[seq_len(nrow(obs_head)), c("sd", "mad") := 0]
+  nowcast[seq_len(nrow(obs_spec)), (cols_quantile) := confirm]
+  nowcast[seq_len(nrow(obs_spec)), c("sd", "mad") := 0]
+  }
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL]
@@ -149,7 +163,7 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay,
 #' @examples
 #' fit <- enw_example("nowcast")
 #' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
-enw_nowcast_samples <- function(fit, obs, metamaxdelay) {
+enw_nowcast_samples <- function(fit, obs, metamaxdelay = NULL) {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
     format = "draws_df"
@@ -163,29 +177,43 @@ enw_nowcast_samples <- function(fit, obs, metamaxdelay) {
     id.vars = c(".chain", ".iteration", ".draw")
   )
 
-  if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) != metamaxdelay[type == "modelled", delay]) {
-    stop(
-      "Fitted maximum delay is not consistent with modeled maximum delay."
-    )
+  if (is.null(metamaxdelay)) {
+    max_delay_model <- nrow(nowcast) / max(obs$.group)
+    max_delay_spec <- max_delay_model
+  } else {
+    if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) !=
+        metamaxdelay[type == "modelled", delay]) {
+      stop(
+        "Fitted maximum delay is not consistent with modeled maximum delay."
+      )
+    }
+    max_delay_model <- metamaxdelay[type == "modelled", delay]
+    max_delay_spec <- metamaxdelay[type == "specified", delay]
+    if (max_delay_model > max_delay_spec) {
+      stop(paste(
+        "Modelled maximum delay must not be larger than specified by the user.",
+        "Please make sure that your epinowcast result object is not corrupt."
+      ))
+    }
   }
-
+  
   ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - metamaxdelay[type == "specified", delay])]
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay_spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
     .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
   )
   ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
   ord_obs <- ord_obs[order(.group, reference_date)]
-  obs_head <- ord_obs[reference_date <= (max(reference_date) - metamaxdelay[type == "modelled", delay])]
-  obs_tail <- ord_obs[reference_date > (max(reference_date) - metamaxdelay[type == "modelled", delay])]
+  obs_spec <- ord_obs[reference_date <= (max(reference_date) - max_delay_model)]
+  obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
 
-  nowcast <- cbind(
-    obs_tail,
-    nowcast
-  )
-  obs_head[, sample := confirm] # add artificial samples for not-modeled dates
-  nowcast <- rbind(obs_head, nowcast, fill = TRUE)
+  # add observations for modelled dates
+  nowcast <- cbind(obs_model, nowcast)
+  
+  # add artificial samples for not-modelled earlier dates
+  obs_spec[, sample := confirm] 
+  nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL][, .draws := NULL]
