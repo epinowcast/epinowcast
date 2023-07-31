@@ -234,10 +234,9 @@ check_max_delay <- function(latest_obs, metamaxdelay, cum_coverage = 0.8) {
   spec_d <- metamaxdelay[type == "specified", delay]
   if (obs_d < spec_d) {
     warning(
-      "You specified a maximum delay of ",
-      spec_d, " days, ",
-      "but epinowcast will currently only model delays until the observed ",
-      "maximum delay (", obs_d, " days). ",
+      "You specified a maximum delay of ", spec_d, " days, ",
+      "but epinowcast will only use the maximum observed delay (",
+      obs_d, " days) for modeling. ",
       "Consider adding unobserved delays with zero reports to your data using ",
       "`enw_complete_dates` to avoid truncated delay distributions (if you ",
       "believe that these are truly zero). Otherwise consider opening an ",
