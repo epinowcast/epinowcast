@@ -213,21 +213,26 @@ coerce_dt <- function(
 #'
 #' @inheritParams enw_preprocess_data
 #'
-#' @param cum_coverage The aspired percentage of cases which the maximum delay
-#'   should cover. Defaults to 0.8 (80%). A warning is generated if the
-#'   cumulative case count is below this percentage for the majority of
-#'   reference dates.
+#' @param cum_coverage The aspired percentage of cases that the maximum delay
+#'   should cover. Defaults to 0.8 (80%).
+#'   
+#' @param warn Should a warning be issued if the cumulative case count is
+#'   below `cum_coverage` for the majority of reference dates?
 #'
-#' @return A `data.table` showing for each group the share of reference dates
-#'   where the cumulative case count is below `cum_coverage`.
+#' @return Numeric, the share of reference dates where the cumulative case count
+#'   is below `cum_coverage`.
 #'
 #' @family check
 #' @export
 #' @examples
 #' check_max_delay(germany_covid19_hosp, max_delay = 20, cum_coverage = 0.8)
-check_max_delay <- function(obs, max_delay = 20, cum_coverage = 0.8) {
+check_max_delay <- function(obs, 
+                            max_delay = 20, 
+                            cum_coverage = 0.8,
+                            warn = TRUE) {
+    
   obs <- coerce_dt(
-    obs, dates = TRUE, group = TRUE, required_cols = c("confirm"), copy = TRUE
+    obs, dates = TRUE, required_cols = c("confirm"), copy = TRUE
   )
   
   stopifnot("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." = 
@@ -253,14 +258,10 @@ check_max_delay <- function(obs, max_delay = 20, cum_coverage = 0.8) {
   
   latest_obs <- enw_latest_data(obs)
   
-  low_coverage <- latest_obs[, .(
-    below_coverage =
-      sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
-      sum(!is.na(cum_prop_reported))
-  ), by = .group]
-  mean_coverage <- low_coverage[,mean(below_coverage)]
+  low_cum <- latest_obs[,sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
+                          sum(!is.na(cum_prop_reported))]
   
-  if (mean_coverage>0.5) {
+  if (warn && low_cum>0.5) {
     warning(
       "The specified maximum reporting delay ",
       "(", max_delay, " days) ",
@@ -271,8 +272,5 @@ check_max_delay <- function(obs, max_delay = 20, cum_coverage = 0.8) {
       immediate. = TRUE
     )
   }
-  low_coverage <- rbind(low_coverage, list("all", mean_coverage))
-  low_coverage[, coverage:= cum_coverage]
-  setcolorder(low_coverage, c(".group", "coverage"))
-  return(low_coverage[])
+  return(low_cum)
 }

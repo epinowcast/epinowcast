@@ -824,10 +824,13 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   be ideal. If this is an issue for you, please get in touch with the
 #'   developers by opening an issue on GitHub.
 #'
-#' @return A `list` of maximum delays. These include:
-#'  - `spec`: The maximum delay specified by the user.
-#'  - `obs`: The maximum delay observed in the data.
-#'  - `model`: The maximum delay used by the model.
+#' @return A `data.table` containing metadata about the different maximum
+#'   delays, with the following columns:
+#'  - `type`: specified, observed or modelled
+#'  - `delay`: length of the corresponding maximum delay
+#'  - `dates_too_short`: share of reference dates for which the corresponding 
+#'  maximum delay is too short, based on [check_max_delay()]
+#'  - `description`: description of the maximum delay type
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
@@ -837,11 +840,30 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- data.table::as.data.table(obs)
   obs <- enw_add_delay(obs)
+  
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
   max_delay_model <- min(max_delay_obs, max_delay)
+  if (max_delay_obs < max_delay) {
+    warning(
+      "You specified a maximum delay of ", max_delay, " days, ",
+      "but epinowcast will only use the maximum observed delay (",
+      max_delay_obs, " days) for modeling. ",
+      "Consider adding unobserved delays with zero reports to your data using ",
+      "`enw_complete_dates` to avoid truncated delay distributions (if you ",
+      "believe that these are truly zero). Otherwise consider opening an ",
+      "issue.",
+      immediate. = TRUE
+    )
+  }
+  
+  coverage <- check_max_delay(obs, max_delay)
+  coverage_obs <- check_max_delay(obs, max_delay_obs, warn = FALSE)
+  coverage_model <- check_max_delay(obs, max_delay_model, warn = FALSE)
+  
   metamaxdelay <- data.table::data.table(
     type = c("specified", "observed", "modelled"),
     delay = c(max_delay, max_delay_obs, max_delay_model),
+    dates_too_short = c(coverage, coverage_obs, coverage_model),
     description = c(
       "maximum delay specified by the user",
       "maximum delay observed in the data",
@@ -1032,7 +1054,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # add metadata about different maximum delays
   metamaxdelay <- enw_metadata_maxdelay(obs = obs, max_delay = max_delay)
-  
+
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(
     obs, max_delay = metamaxdelay[type == "modelled", delay]
@@ -1072,13 +1094,10 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # calculate reporting matrix on obs with available reference date
   reporting_triangle <- enw_reporting_triangle(reference_available)
-
+  
   # extract latest data
   latest <- enw_latest_data(reference_available)
   latest[, new_confirm := NULL]
-
-  # check maximum delay
-  check_max_delay(latest, metamaxdelay)
 
   # extract and extend report date meta data to include unobserved reports
   metareport <- enw_metadata(reference_available, target_date = "report_date")
