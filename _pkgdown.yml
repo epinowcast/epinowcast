@@ -1,9 +1,8 @@
 url: package.epinowcast.org/
 template:
   bootstrap: 5
-  package: preferably
-  params:
-    toggle: auto
+  bootswatch: flatly
+  theme: monokai
   twitter:
     creator: "@seabbs"
     card: summary_large_image

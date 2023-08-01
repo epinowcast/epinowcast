@@ -86,6 +86,7 @@ Imports:
     scales,
     lifecycle
 Suggests:
+    bookdown,
     loo (>= 2.4.1),
     knitr,
     rmarkdown,
@@ -100,8 +101,7 @@ Remotes:
     stan-dev/cmdstanr,
     stan-dev/loo
 Config/Needs/website:
-    r-lib/pkgdown,
-    amirmasoudabdol/preferably
+    r-lib/pkgdown
 Config/Needs/hexsticker:
     hexSticker,
     sysfonts

@@ -11,6 +11,10 @@ output:
     code_folding: show
 pkgdown:
   as_is: true
+bibliography: resources/library.json
+link-citations: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/
 vignette: >
   %\VignetteIndexEntry{Estimating the effective reproduction number in real-time for a single timeseries with reporting delays}
   %\VignetteEngine{knitr::rmarkdown}
@@ -21,7 +25,7 @@ vignette: >
 
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>", 
+  comment = "#>",
   eval = TRUE,
   cache = TRUE,
   message = FALSE,
@@ -30,7 +34,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-::: {.alert .alert-info}
+::: {.alert .alert-warning}
 This vignette is partly based on this [nowcasting example](https://github.com/epiforecasts/nowcasting.example) by Sebastian Funk and Sam Abbott.
 :::
 
@@ -46,39 +50,43 @@ Unfortunately, we can't directly observe infections and the data we do observe s
 :::
 
 ::: {.alert .alert-secondary}
-  ### What we have {-}
 
-  1. A linelist of cases with a date of interest (for example test positive date) and a date of report (for example date of hospitalisation report);
-  2. An estimate of the distribution of times from infection to positive test;
-  3. An estimate of the generation time distribution, which is the distribution of the time intervals between the infection of a primary case and the infection of secondary cases caused by the primary case.
+### What we have {-}
+
+1. A linelist of cases with a date of interest (for example test positive date) and a date of report (for example date of hospitalisation report);
+2. An estimate of the distribution of times from infection to positive test;
+3. An estimate of the generation time distribution, which is the distribution of the time intervals between the infection of a primary case and the infection of secondary cases caused by the primary case.
+4. An estimate of the ascertainment rate, which is the proportion of infections that are reported as hospitalisations.
  
- ### What do we do {-}
+### What do we do {-}
 
-  1. Visualise and contextualise the data this case study uses (COVID-19 hositalisations in Germany);
-  2. Specify a joint model of the effective reproduction number, the delay from infection to hospitalisation and the delay from hospitalisation to report;
-  3. Fit this model to both the data that would have been available in real-time, and retrospectively;
-  4. Visualise the nowcast from the real-time data in comparison to the data that was ultimately observed.
-  5. Compare real-time and retrospective reproduction number estimates and delay distribution estimates
-  6. Outline the limitations and strengths of this approach and highlight areas where it can be extended.
+1. Visualise and contextualise the data this case study uses (COVID-19 hositalisations in Germany);
+2. Specify a joint model of the effective reproduction number, the delay from infection to hospitalisation and the delay from hospitalisation to report;
+3. Fit this model to both the data that would have been available in real-time, and retrospectively;
+4. Visualise the nowcast from the real-time data in comparison to the data that was ultimately observed;
+5. Compare real-time and retrospective reproduction number estimates and delay distribution estimates;
+6. Outline the limitations and strengths of this approach and highlight areas where it can be extended.
  
 :::
 
 ## Getting setup
 
-See the [package documentation](https://epiforecasts.io/epinowcast/) for guidance on installing the package and getting setup with `cmdstanr` (the backend used for fitting models). 
+See the [package documentation](https://epiforecasts.io/epinowcast/) for guidance on installing the package and getting setup with `cmdstanr` (the backend used here for fitting models). 
 
 As well as the `epinowcast` package we will use the following packages in this vignette.
 
 ```{r setup}
 library(epinowcast)
-library(data.table) 
+library(data.table)
 library(purrr)
 library(ggplot2)
 ```
 
-::: {.alert .alert-secondary}
+::: {.alert .alert-warning}
 
-  Here we make use of `data.table` for simple data transformations but tools from the tidyverse or base R tools could just as easily be used. We also use `purrr` to make use of the `partial()` function which allows us to partially specify a function. This is useful for specifying the model as we can specify the parts of the model that are common to all models and then specify the parts that are specific to each model. Finally we use `ggplot2` for plotting.
+- Here we make use of `data.table` for simple data transformations but tools from the tidyverse or base R tools could just as easily be used;
+- We also use `purrr` to make use of the `partial()` function which allows us to partially specify a function for later reuse. This is useful for specifying the model as we can specify the parts of the model that are common to all models and then specify the parts that are specific to each model when we call the updated function;
+- Finally, we use `ggplot2` for plotting.
 
 :::
 
@@ -92,7 +100,7 @@ In this case study, we use data sourced from the [Robert Koch Institute via the 
 summary(germany_covid19_hosp)
 ```
 
- In this case study we only consider national level data without stratification by age group. We can filter these data using `data.table` as follows,
+In this case study we only consider national level data without stratification by age group. We can filter these data using `data.table` as follows,
 
 
 ```{r}
@@ -172,8 +180,8 @@ incidence_from_linelist <- enw_linelist_to_incidence(
 incidence_from_linelist
 ```
 
-::: {.alert .alert-info}
-  Here we have specifed the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
+::: {.alert .alert-warning}
+Here we have specifed the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
 :::
 
 ## Model
@@ -372,7 +380,7 @@ retro_germany_nowcast <- epinowcast(
 )
 ```
 
-::: {.alert .alert-info}
+::: {.alert .alert-warning}
 
   You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
 
@@ -384,13 +392,15 @@ We first plot the nowcast based on real-time data. Effectively here we are tryin
 
 ```{r plot-germany-nowcast}
 #| fig.cap: "Nowcast of hospitalisations in Germany based on real-time data"
-plot(germany_nowcast, latest_obs) 
+plot(germany_nowcast, latest_obs)
 ```
 
 In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported. 
 
-::: {.alert .alert-info}
+::: {.alert .alert-warning}
+
   An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
+
 :::
 
 ### Real-time and retrospective estimates of the effective reproduction number
@@ -543,7 +553,7 @@ plot(germany_nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
 
-::: {.alert .alert-info}
+::: {.alert .alert-warning}
 Visualising the model predictions highlights some clear fitting issues. One clear issue is that there appears to be periodicity in the observed data that is not present in this model. We could address this by using a report date reporting model (via `enw_report()`) that accounts for differences in reporting by weekday.
 :::
 
