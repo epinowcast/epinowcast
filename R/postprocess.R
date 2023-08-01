@@ -69,8 +69,8 @@ enw_posterior <- function(fit, variables = NULL,
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
-#' 
-#' @param metamaxdelay Metadata for the maximum delay produced using 
+#'
+#' @param metamaxdelay Metadata for the maximum delay produced using
 #' [enw_metadata_maxdelay()].
 #'
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
@@ -100,10 +100,10 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
     max_delay_spec <- max_delay_model
   } else {
     if (nrow(nowcast) / max(obs$.group) !=
-        metamaxdelay[type == "modelled", delay]) {
+      metamaxdelay[type == "modelled", delay]) {
       stop(
         "Fitted maximum delay is not consistent with modeled maximum delay."
-        )
+      )
     }
     max_delay_model <- metamaxdelay[type == "modelled", delay]
     max_delay_spec <- metamaxdelay[type == "specified", delay]
@@ -114,7 +114,7 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
       ))
     }
   }
-  
+
   ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date >
     (max(reference_date) - max_delay_spec)]
@@ -126,14 +126,14 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
 
   # add observations for modelled dates
   nowcast <- cbind(obs_model, nowcast)
-  
+
   # add not-modelled earlier dates with artificial summary statistics
   if (max_delay_spec > max_delay_model) {
-  nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
-  nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
-  cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE)
-  nowcast[seq_len(nrow(obs_spec)), (cols_quantile) := confirm]
-  nowcast[seq_len(nrow(obs_spec)), c("sd", "mad") := 0]
+    nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
+    nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
+    cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE)
+    nowcast[seq_len(nrow(obs_spec)), (cols_quantile) := confirm]
+    nowcast[seq_len(nrow(obs_spec)), c("sd", "mad") := 0]
   }
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))
@@ -169,7 +169,8 @@ enw_nowcast_samples <- function(fit, obs, metamaxdelay = NULL) {
     format = "draws_df"
   )
   nowcast <- coerce_dt(
-    nowcast, required_cols = c(".chain", ".iteration", ".draw")
+    nowcast,
+    required_cols = c(".chain", ".iteration", ".draw")
   )
   nowcast <- melt(
     nowcast,
@@ -182,7 +183,7 @@ enw_nowcast_samples <- function(fit, obs, metamaxdelay = NULL) {
     max_delay_spec <- max_delay_model
   } else {
     if (nrow(nowcast) / max(obs$.group) / max(nowcast$.draw) !=
-        metamaxdelay[type == "modelled", delay]) {
+      metamaxdelay[type == "modelled", delay]) {
       stop(
         "Fitted maximum delay is not consistent with modeled maximum delay."
       )
@@ -196,7 +197,7 @@ enw_nowcast_samples <- function(fit, obs, metamaxdelay = NULL) {
       ))
     }
   }
-  
+
   ord_obs <- coerce_dt(obs)
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay_spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
@@ -210,9 +211,9 @@ enw_nowcast_samples <- function(fit, obs, metamaxdelay = NULL) {
 
   # add observations for modelled dates
   nowcast <- cbind(obs_model, nowcast)
-  
+
   # add artificial samples for not-modelled earlier dates
-  obs_spec[, sample := confirm] 
+  obs_spec[, sample := confirm]
   nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))

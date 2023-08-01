@@ -31,9 +31,11 @@ test_that("Preprocessing produces expected output when excluding and using a
   maximum delay of 10", {
   expect_warning(
     pobs <- enw_preprocess_data(
-    nat_germany_hosp,
-    max_delay = 10
-  ), regexp = "Consider using a larger maximum delay")
+      nat_germany_hosp,
+      max_delay = 10
+    ),
+    regexp = "Consider using a larger maximum delay"
+  )
   expect_data_table(pobs)
   expect_equal(pobs$time[[1]], 198)
   expect_equal(pobs$snapshots[[1]], 198)
@@ -117,7 +119,8 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
 })
 
 test_that(
-  "enw_preprocess_data fails as expected with incorrect max_delay input", {
+  "enw_preprocess_data fails as expected with incorrect max_delay input",
+  {
     expect_error(
       suppressWarnings(
         enw_preprocess_data(nat_germany_hosp, max_delay = "junk")
@@ -126,4 +129,5 @@ test_that(
     expect_error(
       enw_preprocess_data(nat_germany_hosp, max_delay = 0)
     )
-})
+  }
+)

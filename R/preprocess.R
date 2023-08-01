@@ -25,8 +25,8 @@
 #' @export
 #' @examples
 #' obs <- data.frame(
-#'  reference_date = as.Date("2021-01-01"),
-#'  report_date = as.Date("2022-01-01"), x = 1:10
+#'   reference_date = as.Date("2021-01-01"),
+#'   report_date = as.Date("2022-01-01"), x = 1:10
 #' )
 #' enw_metadata(obs, target_date = "reference_date")
 enw_metadata <- function(obs, target_date = c(
@@ -274,11 +274,12 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
 #' enw_assign_group(obs, by = "x")
 enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
   obs <- coerce_dt( # must have by (if present), cannot initially have .group
-    obs, required_cols = by, forbidden_cols = ".group",
+    obs,
+    required_cols = by, forbidden_cols = ".group",
     group = (length(by) == 0), # ... but should add .group, if by is empty
     copy = copy
   )
-  if (length(by) != 0) {       # if by is not empty, add more complex .group
+  if (length(by) != 0) { # if by is not empty, add more complex .group
     obs[, .group := .GRP, by = by]
   }
   # update or set key to include .group
@@ -314,10 +315,10 @@ enw_add_delay <- function(obs, copy = TRUE) {
 #' computes the proportion of already reported cases for each combination of
 #' reference_date and report_date.
 #'
-#' @return A data.table with new columns `max_confirm` and `cum_prop_reported`. 
-#' `max_confirm` is the maximum number of cases reported for a certain 
-#' reference_date. `cum_prop_reported` is the proportion of cases for a certain 
-#' reference_date that are reported until a given report_day, relative to all 
+#' @return A data.table with new columns `max_confirm` and `cum_prop_reported`.
+#' `max_confirm` is the maximum number of cases reported for a certain
+#' reference_date. `cum_prop_reported` is the proportion of cases for a certain
+#' reference_date that are reported until a given report_day, relative to all
 #' cases so far observed for this reference_date.
 #'
 #' @inheritParams enw_add_incidence
@@ -331,7 +332,8 @@ enw_add_delay <- function(obs, copy = TRUE) {
 #' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs, copy = TRUE) {
   obs <- coerce_dt(
-    obs, required_cols = "confirm", group = TRUE, dates = TRUE, copy = copy
+    obs,
+    required_cols = "confirm", group = TRUE, dates = TRUE, copy = copy
   )
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
@@ -339,12 +341,12 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
     .(reference_date, .group, max_confirm = confirm)
   ]
   if ("max_confirm" %in% colnames(obs)) {
-    obs[,max_confirm:=NULL]
+    obs[, max_confirm := NULL]
   }
   obs <- orig_latest[obs, on = c("reference_date", ".group")]
   obs[is.na(reference_date), max_confirm := confirm]
   obs[, cum_prop_reported := confirm / max_confirm]
-  setcolorder(obs, c("reference_date", "report_date",".group"))
+  setcolorder(obs, c("reference_date", "report_date", ".group"))
   return(obs[])
 }
 
@@ -516,9 +518,9 @@ enw_filter_delay <- function(obs, max_delay) {
 }
 
 #' Filter observations to restrict the maximum reporting delay
-#' 
+#'
 #' @description `r lifecycle::badge('deprecated')`
-#' 
+#'
 #' @description `enw_delay_filter()` was renamed to `enw_filter_delay()` for better consistency.
 #'
 #' @return A `data.frame` filtered so that dates by report are less than or
@@ -555,7 +557,8 @@ enw_delay_filter <- function(obs, max_delay) {
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
   obs <- coerce_dt(
-    obs, required_cols = c("new_confirm", "reference_date", "delay"),
+    obs,
+    required_cols = c("new_confirm", "reference_date", "delay"),
     group = TRUE
   )
   if (any(obs$new_confirm < 0)) {
@@ -629,7 +632,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
                                missing_reference = TRUE,
-                               completion_beyond_max_report  = FALSE) {
+                               completion_beyond_max_report = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
@@ -709,7 +712,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
   obs <- coerce_dt(
-    obs, required_cols = "new_confirm", group = TRUE, dates = TRUE
+    obs,
+    required_cols = "new_confirm", group = TRUE, dates = TRUE
   )
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
@@ -737,7 +741,7 @@ enw_missing_reference <- function(obs) {
 #' Calculate delay metadata based on the supplied maximum delay and independent
 #' of other metadata or date indexing. These data are meant to be used in
 #' conjunction with metadata on the date of reference. Users can build
-#' additional features with this  `data.frame`  or regenerate it using this 
+#' additional features with this  `data.frame`  or regenerate it using this
 #' function in the output of [`enw_preprocess_data()`].
 #'
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
@@ -776,7 +780,7 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 }
 
 #' Calculate reporting delay metadata for a given maximum delay
-#' 
+#'
 #' @description `r lifecycle::badge('deprecated')`
 #'
 #' @description Calculate delay metadata based on the supplied maximum delay and independent
@@ -784,7 +788,7 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 #' conjunction with metadata on the date of reference. Users can build
 #' additional features this  `data.frame`  or regenerate it using this function
 #' in the output of `enw_preprocess_data()`.
-#' 
+#'
 #' `enw_delay_metadata()` was renamed to [`enw_metadata_delay()`] for better consistency.
 #'
 #' @return A  `data.frame`  of delay metadata. This includes:
@@ -828,7 +832,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   delays, with the following columns:
 #'  - `type`: specified, observed or modelled
 #'  - `delay`: length of the corresponding maximum delay
-#'  - `dates_too_short`: share of reference dates for which the corresponding 
+#'  - `dates_too_short`: share of reference dates for which the corresponding
 #'  maximum delay is too short, based on [check_max_delay()]
 #'  - `description`: description of the maximum delay type
 #' @inheritParams enw_preprocess_data
@@ -840,7 +844,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- data.table::as.data.table(obs)
   obs <- enw_add_delay(obs)
-  
+
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
   max_delay_model <- min(max_delay_obs, max_delay)
   if (max_delay_obs < max_delay) {
@@ -855,11 +859,11 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
       immediate. = TRUE
     )
   }
-  
+
   coverage <- check_max_delay(obs, max_delay)
   coverage_obs <- check_max_delay(obs, max_delay_obs, warn = FALSE)
   coverage_model <- check_max_delay(obs, max_delay_model, warn = FALSE)
-  
+
   metamaxdelay <- data.table::data.table(
     type = c("specified", "observed", "modelled"),
     delay = c(max_delay, max_delay_obs, max_delay_model),
@@ -869,8 +873,8 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
       "maximum delay observed in the data",
       "maximum delay used in model"
     )
-    )
-  return(metamaxdelay)
+  )
+  return(metamaxdelay[])
 }
 
 #' Construct preprocessed data
@@ -974,20 +978,20 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay Numeric, defaults to 20 and needs to be greater than or 
+#' @param max_delay Numeric, defaults to 20 and needs to be greater than or
 #' equal to 1 and an integer (internally it will be coerced to one using
 #' [as.integer()]). The maximum number of days to include in the delay
-#' distribution. Observations with delays larger then the maximum delay will be 
-#' dropped. If the specified maximum delay is too short, nowcasts can be biased 
-#' as important parts of the true delay distribution are cut off. At the same 
-#' time, computational cost scales non-linearly with this setting, so you want 
-#' the maximum delay to be as long as necessary, but not much longer. Consider 
-#' what delays are realistic for your application, and when in doubt, check if 
-#' increasing the maximum delay noticeably changes the delay distribution or 
-#' nowcasts as estimated by epinowcast. If it does, your maximum delay may still 
-#' be too short. Note that delays are zero indexed and so include the reference 
-#' date and `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to 
-#' no delay). See [enw_metadata_delay()] for checking the coverage of a delay 
+#' distribution. Observations with delays larger then the maximum delay will be
+#' dropped. If the specified maximum delay is too short, nowcasts can be biased
+#' as important parts of the true delay distribution are cut off. At the same
+#' time, computational cost scales non-linearly with this setting, so you want
+#' the maximum delay to be as long as necessary, but not much longer. Consider
+#' what delays are realistic for your application, and when in doubt, check if
+#' increasing the maximum delay noticeably changes the delay distribution or
+#' nowcasts as estimated by epinowcast. If it does, your maximum delay may still
+#' be too short. Note that delays are zero indexed and so include the reference
+#' date and `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
+#' no delay). See [enw_metadata_delay()] for checking the coverage of a delay
 #' distribution for a given maximum delay.
 #'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
@@ -1009,9 +1013,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' the standard reporting triangle matrix format.
 #' - `metareference`: Metadata reference dates derived from observations.
 #' - `metrareport`: Metadata for report dates.
-#' - `metadelay`: Metadata for reporting delays produced using 
+#' - `metadelay`: Metadata for reporting delays produced using
 #' [enw_metadata_delay()].
-#' - `metamaxdelay`: Metadata for reporting delays produced using 
+#' - `metamaxdelay`: Metadata for reporting delays produced using
 #' [enw_metadata_maxdelay()].
 #' - `time`: Numeric, number of timepoints in the data.
 #' - `snapshots`: Numeric, number of available data snapshots to use for
@@ -1057,7 +1061,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(
-    obs, max_delay = metamaxdelay[type == "modelled", delay]
+    obs,
+    max_delay = metamaxdelay[type == "modelled", delay]
   )
 
   diff_obs <- enw_add_incidence(
@@ -1094,7 +1099,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # calculate reporting matrix on obs with available reference date
   reporting_triangle <- enw_reporting_triangle(reference_available)
-  
+
   # extract latest data
   latest <- enw_latest_data(reference_available)
   latest[, new_confirm := NULL]
@@ -1116,8 +1121,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # extract and add features for delays
   metadelay <- enw_metadata_delay(
-    metamaxdelay[type == "modelled", delay], breaks = 4
-    )
+    metamaxdelay[type == "modelled", delay],
+    breaks = 4
+  )
 
   out <- enw_construct_data(
     obs = obs,

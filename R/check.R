@@ -12,10 +12,11 @@
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   stopifnot(
     "Please provide probabilities as numbers between 0 and 1." =
-    all(data.table::between(req_probs, 0, 1, incbounds = FALSE))
+      all(data.table::between(req_probs, 0, 1, incbounds = FALSE))
   )
   return(coerce_dt(
-    posterior, required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
+    posterior,
+    required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
     msg_required = "The following quantiles must be present (set with `probs`):"
   ))
 }
@@ -30,7 +31,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #' @family check
 check_group <- function(obs) {
   return(coerce_dt(
-    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
+    obs,
+    forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
     msg_forbidden = "The following are reserved grouping columns:"
   ))
 }
@@ -126,16 +128,14 @@ check_modules_compatible <- function(modules) {
 #'
 #' @importFrom data.table as.data.table setDT
 #' @family utils
-coerce_dt <- function(
-  data, select = NULL, required_cols = select,
-  forbidden_cols = NULL, group = FALSE,
-  dates = FALSE, copy = TRUE,
-  msg_required = "The following columns are required: ",
-  msg_forbidden = "The following columns are forbidden: "
-) {
+coerce_dt <- function(data, select = NULL, required_cols = select,
+                      forbidden_cols = NULL, group = FALSE,
+                      dates = FALSE, copy = TRUE,
+                      msg_required = "The following columns are required: ",
+                      msg_forbidden = "The following columns are forbidden: ") {
   if (!copy) { # if we want to keep the original data.table ...
     dt <- data.table::setDT(data)
-  } else {     # ... otherwise, make a copy
+  } else { # ... otherwise, make a copy
     dt <- data.table::as.data.table(data)
   }
 
@@ -146,8 +146,8 @@ coerce_dt <- function(
     }
   }
 
-  if ((length(required_cols) > 0)) {     # if we have required columns ...
-    if (!is.character(required_cols)) {  # ... check they are check-able
+  if ((length(required_cols) > 0)) { # if we have required columns ...
+    if (!is.character(required_cols)) { # ... check they are check-able
       stop("`required_cols` must be a character vector")
     }
     # check that all required columns are present
@@ -164,7 +164,7 @@ coerce_dt <- function(
     }
   }
 
-  if ((length(forbidden_cols) > 0)) {    # if we have forbidden columns ...
+  if ((length(forbidden_cols) > 0)) { # if we have forbidden columns ...
     if (!is.character(forbidden_cols)) { # ... check they are check-able
       stop("`forbidden_cols` must be a character vector")
     }
@@ -182,24 +182,25 @@ coerce_dt <- function(
     }
   }
 
-  if (group) {                      # if we want to ensure a .group column ...
-    if (is.null(dt[[".group"]])) {  # ... check it's presence
-      dt <- dt[, .group := 1]       # ... and add it if it's not there
+  if (group) { # if we want to ensure a .group column ...
+    if (is.null(dt[[".group"]])) { # ... check it's presence
+      dt <- dt[, .group := 1] # ... and add it if it's not there
     }
-    if (length(select) > 0) {         # if we have a select list ...
+    if (length(select) > 0) { # if we have a select list ...
       select <- c(select, ".group") # ... add ".group" to it
     }
   }
 
   if (dates) {
-    dt[,               # cast-in-place to IDateTime (as.IDate)
+    dt[
+      , # cast-in-place to IDateTime (as.IDate)
       c("report_date", "reference_date") := .(
         as.IDate(report_date), as.IDate(reference_date)
       )
     ]
   }
 
-  if (length(select) > 0) {         # if selecting particular list ...
+  if (length(select) > 0) { # if selecting particular list ...
     return(dt[, .SD, .SDcols = c(select)][])
   } else {
     return(dt[])
@@ -215,7 +216,7 @@ coerce_dt <- function(
 #'
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
 #'   should cover. Defaults to 0.8 (80%).
-#'   
+#'
 #' @param warn Should a warning be issued if the cumulative case count is
 #'   below `cum_coverage` for the majority of reference dates?
 #'
@@ -226,39 +227,42 @@ coerce_dt <- function(
 #' @export
 #' @examples
 #' check_max_delay(germany_covid19_hosp, max_delay = 20, cum_coverage = 0.8)
-check_max_delay <- function(obs, 
-                            max_delay = 20, 
+check_max_delay <- function(obs,
+                            max_delay = 20,
                             cum_coverage = 0.8,
                             warn = TRUE) {
-    
   obs <- coerce_dt(
-    obs, dates = TRUE, required_cols = c("confirm"), copy = TRUE
+    obs,
+    dates = TRUE, required_cols = c("confirm"), copy = TRUE
   )
-  
-  stopifnot("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." = 
-              cum_coverage>0 & cum_coverage<=1)
-  
+
+  stopifnot(
+    "`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." =
+      cum_coverage > 0 & cum_coverage <= 1
+  )
+
   obs <- enw_add_max_reported(obs, copy = FALSE)
-  
+
   # Note that we if we here filter by the user-specified maximum delay, any
   # warnings obtained would also apply to a modelled, potentially shorter,
   # maximum delay.
   obs <- enw_filter_delay(
-    obs, max_delay = max_delay
+    obs,
+    max_delay = max_delay
   )
-  
+
   # filter by earliest observed report date
   obs <- obs[,
-     .SD[reference_date >= min(report_date) | is.na(reference_date)],
-     by = .group
+    .SD[reference_date >= min(report_date) | is.na(reference_date)],
+    by = .group
   ]
-  
+
   latest_obs <- enw_latest_data(obs)
-  
-  low_cum <- latest_obs[,sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
-                          sum(!is.na(cum_prop_reported))]
-  
-  if (warn && low_cum>0.5) {
+
+  low_cum <- latest_obs[, sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
+    sum(!is.na(cum_prop_reported))]
+
+  if (warn && low_cum > 0.5) {
     warning(
       "The specified maximum reporting delay ",
       "(", max_delay, " days) ",
