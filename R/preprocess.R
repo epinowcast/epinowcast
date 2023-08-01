@@ -738,7 +738,7 @@ enw_missing_reference <- function(obs) {
 #' of other metadata or date indexing. These data are meant to be used in
 #' conjunction with metadata on the date of reference. Users can build
 #' additional features with this  `data.frame`  or regenerate it using this 
-#' function in the output of `enw_preprocess_data()`.
+#' function in the output of [`enw_preprocess_data()`].
 #'
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
 #' constructing a categorised version of numeric delays.
@@ -785,7 +785,7 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 #' additional features this  `data.frame`  or regenerate it using this function
 #' in the output of `enw_preprocess_data()`.
 #' 
-#' `enw_delay_metadata()` was renamed to `enw_metadata_delay()` for better consistency.
+#' `enw_delay_metadata()` was renamed to [`enw_metadata_delay()`] for better consistency.
 #'
 #' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
@@ -808,11 +808,11 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
   return(enw_metadata_delay(max_delay, breaks))
 }
 
-#' Get the different user-specified, observed, and modelled maximum delays.
+#' Get the user-specified, observed, and modelled maximum delay
 #'
 #' @description This metadata function records the different types of maximum
 #'   delays relevant for modeling. To obtain statistics on individual delays
-#'   for a given maximum delay, see `enw_metadata_delay` instead. The maximum
+#'   for a given maximum delay, see [`enw_metadata_delay`] instead. The maximum
 #'   reporting delay is used to make the modeling of reporting delays tractable
 #'   by right-truncating the delay distribution at a reasonable number of days.
 #'   The maximum delay is specified by the user, and can be smaller or larger

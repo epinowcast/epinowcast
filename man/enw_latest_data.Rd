@@ -15,7 +15,7 @@ A \code{data.table} of observations filtered for the latest available data
 for each reference date.
 }
 \description{
-Filter observations to be the latest available reported
+Filter observations for the latest available reported
 data for each reference date. Note this is not the same as filtering
 for the maximum report date in all cases as data may only be updated
 up to some maximum number of days.

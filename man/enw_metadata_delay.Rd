@@ -7,8 +7,8 @@
 enw_metadata_delay(max_delay = 20, breaks = 4)
 }
 \arguments{
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
+\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
+equal to 1 and an integer (internally it will be coerced to one using
 \code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
 distribution. Observations with delays larger then the maximum delay will be
 dropped. If the specified maximum delay is too short, nowcasts can be biased
@@ -43,8 +43,8 @@ of the tail of the reporting distribution in a pragmatic way.
 Calculate delay metadata based on the supplied maximum delay and independent
 of other metadata or date indexing. These data are meant to be used in
 conjunction with metadata on the date of reference. Users can build
-additional features this  \code{data.frame}  or regenerate it using this function
-in the output of \code{enw_preprocess_data()}.
+additional features with this  \code{data.frame}  or regenerate it using this
+function in the output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
 }
 \examples{
 enw_metadata_delay(max_delay = 20, breaks = 4)

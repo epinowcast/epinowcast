@@ -11,8 +11,8 @@ enw_reps_with_complete_refs(new_confirm, max_delay, by = NULL, copy = TRUE)
 \item{new_confirm}{\code{new_confirm} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
+\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
+equal to 1 and an integer (internally it will be coerced to one using
 \code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
 distribution. Observations with delays larger then the maximum delay will be
 dropped. If the specified maximum delay is too short, nowcasts can be biased

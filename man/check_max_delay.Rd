@@ -2,24 +2,48 @@
 % Please edit documentation in R/check.R
 \name{check_max_delay}
 \alias{check_max_delay}
-\title{Compare maximum delays specified by the user vs. observed in the data, and
-raise potential warnings.}
+\title{Check appropriateness of maximum delay}
 \usage{
-check_max_delay(latest_obs, metamaxdelay, cum_coverage = 0.8)
+check_max_delay(obs, max_delay = 20, cum_coverage = 0.8, warn = TRUE)
 }
 \arguments{
-\item{latest_obs}{Metadata for the latest observation produced. Note that
-this requires \code{\link[=enw_add_max_reported]{enw_add_max_reported()}} to have already been applied.}
+\item{obs}{A \code{data.frame} containing at least the following variables:
+\code{reference_date} (index date of interest), \code{report_date} (report date for
+observations), \code{confirm} (cumulative observations by reference and report
+date).}
 
-\item{metamaxdelay}{Metadata for the maximum delay produced using
-\code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
+\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
+equal to 1 and an integer (internally it will be coerced to one using
+\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
+distribution. Observations with delays larger then the maximum delay will be
+dropped. If the specified maximum delay is too short, nowcasts can be biased
+as important parts of the true delay distribution are cut off. At the same
+time, computational cost scales non-linearly with this setting, so you want
+the maximum delay to be as long as necessary, but not much longer. Consider
+what delays are realistic for your application, and when in doubt, check if
+increasing the maximum delay noticeably changes the delay distribution or
+nowcasts as estimated by epinowcast. If it does, your maximum delay may still
+be too short. Note that delays are zero indexed and so include the reference
+date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
+no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
+distribution for a given maximum delay.}
 
-\item{cum_coverage}{The cumulative coverage to use for the warning.
-Defaults to 0.8 (80\%)}
+\item{cum_coverage}{The aspired percentage of cases that the maximum delay
+should cover. Defaults to 0.8 (80\%).}
+
+\item{warn}{Should a warning be issued if the cumulative case count is
+below \code{cum_coverage} for the majority of reference dates?}
+}
+\value{
+Numeric, the share of reference dates where the cumulative case count
+is below \code{cum_coverage}.
 }
 \description{
-Compare maximum delays specified by the user vs. observed in the data, and
+Check if maximum delay specified by the user is long enough and
 raise potential warnings.
+}
+\examples{
+check_max_delay(germany_covid19_hosp, max_delay = 20, cum_coverage = 0.8)
 }
 \seealso{
 Functions used for checking inputs

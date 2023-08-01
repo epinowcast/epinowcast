@@ -24,8 +24,8 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
+\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
+equal to 1 and an integer (internally it will be coerced to one using
 \code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
 distribution. Observations with delays larger then the maximum delay will be
 dropped. If the specified maximum delay is too short, nowcasts can be biased
@@ -41,7 +41,7 @@ no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for check
 distribution for a given maximum delay.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero. Currently
+counts (for calculated incidence of observations) be set to zero? Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 
@@ -57,7 +57,7 @@ A data.table containing processed observations as a series of nested
 data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
-and and restricted to the specified maximum delay).
+and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.

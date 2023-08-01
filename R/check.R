@@ -240,12 +240,9 @@ check_max_delay <- function(obs,
   
   obs <- enw_add_max_reported(obs, copy = FALSE)
   
-  # Note that we here filter by the user-specified maximum delay, not the
-  # modelled maximum delay as elsewhere. These will differ if the observed
-  # maximum delay is shorter than the specified maximum delay (the shorter one
-  # will be used for modeling). However, because this function only checks if
-  # the user-specified maximum delay is too short, any warnings obtained would
-  # also apply to a modelled, potentially shorter, maximum delay.
+  # Note that we if we here filter by the user-specified maximum delay, any
+  # warnings obtained would also apply to a modelled, potentially shorter,
+  # maximum delay.
   obs <- enw_filter_delay(
     obs, max_delay = max_delay
   )

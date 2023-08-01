@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_metadata_maxdelay}
 \alias{enw_metadata_maxdelay}
-\title{Get the different user-specified, observed, and modelled maximum delays.}
+\title{Get the user-specified, observed, and modelled maximum delay}
 \usage{
 enw_metadata_maxdelay(obs, max_delay = 20)
 }
@@ -12,8 +12,8 @@ enw_metadata_maxdelay(obs, max_delay = 20)
 observations), \code{confirm} (cumulative observations by reference and report
 date).}
 
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
+\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
+equal to 1 and an integer (internally it will be coerced to one using
 \code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
 distribution. Observations with delays larger then the maximum delay will be
 dropped. If the specified maximum delay is too short, nowcasts can be biased
@@ -29,17 +29,20 @@ no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for check
 distribution for a given maximum delay.}
 }
 \value{
-A \code{list} of maximum delays. These include:
+A \code{data.table} containing metadata about the different maximum
+delays, with the following columns:
 \itemize{
-\item \code{spec}: The maximum delay specified by the user.
-\item \code{obs}: The maximum delay observed in the data.
-\item \code{model}: The maximum delay used by the model.
+\item \code{type}: specified, observed or modelled
+\item \code{delay}: length of the corresponding maximum delay
+\item \code{dates_too_short}: share of reference dates for which the corresponding
+maximum delay is too short, based on \code{\link[=check_max_delay]{check_max_delay()}}
+\item \code{description}: description of the maximum delay type
 }
 }
 \description{
 This metadata function records the different types of maximum
 delays relevant for modeling. To obtain statistics on individual delays
-for a given maximum delay, see \code{enw_metadata_delay} instead. The maximum
+for a given maximum delay, see \code{\link{enw_metadata_delay}} instead. The maximum
 reporting delay is used to make the modeling of reporting delays tractable
 by right-truncating the delay distribution at a reasonable number of days.
 The maximum delay is specified by the user, and can be smaller or larger

@@ -23,8 +23,8 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
+\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
+equal to 1 and an integer (internally it will be coerced to one using
 \code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
 distribution. Observations with delays larger then the maximum delay will be
 dropped. If the specified maximum delay is too short, nowcasts can be biased

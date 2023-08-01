@@ -7,7 +7,7 @@
 enw_nowcast_summary(
   fit,
   obs,
-  metamaxdelay,
+  metamaxdelay = NULL,
   probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95)
 )
 }

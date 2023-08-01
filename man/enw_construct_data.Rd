@@ -52,7 +52,7 @@ A data.table containing processed observations as a series of nested
 data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
-and and restricted to the specified maximum delay).
+and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
