@@ -35,7 +35,8 @@ equal the reference date plus the maximum delay.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-\code{enw_delay_filter()} was renamed to \code{enw_filter_delay()} for better consistency.
+\code{enw_delay_filter()} was renamed to \code{enw_filter_delay()} for
+better consistency.
 }
 \examples{
 obs <- enw_example("preprocessed")$obs[[1]]

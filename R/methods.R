@@ -40,7 +40,9 @@ summary.epinowcast <- function(object, type = c(
   type <- match.arg(type)
 
   s <- with(object, switch(type,
-    nowcast = enw_nowcast_summary(fit[[1]], latest[[1]], metamaxdelay[[1]], ...),
+    nowcast = enw_nowcast_summary(
+      fit[[1]], latest[[1]], metamaxdelay[[1]], ...
+    ),
     nowcast_samples = enw_nowcast_samples(
       fit[[1]], latest[[1]], metamaxdelay[[1]], ...
     ),

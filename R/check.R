@@ -233,7 +233,7 @@ check_max_delay <- function(obs,
                             warn = TRUE) {
   obs <- coerce_dt(
     obs,
-    dates = TRUE, required_cols = c("confirm"), copy = TRUE
+    dates = TRUE, required_cols = "confirm", copy = TRUE
   )
 
   stopifnot(

@@ -108,10 +108,10 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
     max_delay_model <- metamaxdelay[type == "modelled", delay]
     max_delay_spec <- metamaxdelay[type == "specified", delay]
     if (max_delay_model > max_delay_spec) {
-      stop(paste(
+      stop(
         "Modelled maximum delay must not be larger than specified by the user.",
-        "Please make sure that your epinowcast result object is not corrupt."
-      ))
+        " Please make sure that your epinowcast result object is not corrupt."
+      )
     }
   }
 
@@ -191,10 +191,10 @@ enw_nowcast_samples <- function(fit, obs, metamaxdelay = NULL) {
     max_delay_model <- metamaxdelay[type == "modelled", delay]
     max_delay_spec <- metamaxdelay[type == "specified", delay]
     if (max_delay_model > max_delay_spec) {
-      stop(paste(
+      stop(
         "Modelled maximum delay must not be larger than specified by the user.",
-        "Please make sure that your epinowcast result object is not corrupt."
-      ))
+        " Please make sure that your epinowcast result object is not corrupt."
+      )
     }
   }
 

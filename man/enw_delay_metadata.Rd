@@ -35,20 +35,21 @@ A  \code{data.frame}  of delay metadata. This includes:
 may be useful for model building.
 \item \code{delay_tail}: A logical variable defining if the delay is in the upper
 75\% of the potential delays. This may be particularly useful when building
-models that assume a parametric distribution in order to increase the weight
-of the tail of the reporting distribution in a pragmatic way.
+models that assume a parametric distribution in order to increase the
+weight of the tail of the reporting distribution in a pragmatic way.
 }
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
-Calculate delay metadata based on the supplied maximum delay and independent
-of other metadata or date indexing. These data are meant to be used in
-conjunction with metadata on the date of reference. Users can build
-additional features this  \code{data.frame}  or regenerate it using this function
-in the output of \code{enw_preprocess_data()}.
+Calculate delay metadata based on the supplied maximum delay and
+independent of other metadata or date indexing. These data are meant to be
+used in conjunction with metadata on the date of reference. Users can build
+additional features this  \code{data.frame}  or regenerate it using this
+function in the output of \code{enw_preprocess_data()}.
 
-\code{enw_delay_metadata()} was renamed to \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for better consistency.
+\code{enw_delay_metadata()} was renamed to \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for better
+consistency.
 }
 \examples{
 enw_delay_metadata(max_delay = 20, breaks = 4)

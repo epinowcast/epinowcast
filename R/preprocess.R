@@ -521,10 +521,11 @@ enw_filter_delay <- function(obs, max_delay) {
 #'
 #' @description `r lifecycle::badge('deprecated')`
 #'
-#' @description `enw_delay_filter()` was renamed to `enw_filter_delay()` for better consistency.
+#' @description `enw_delay_filter()` was renamed to `enw_filter_delay()` for
+#'   better consistency.
 #'
 #' @return A `data.frame` filtered so that dates by report are less than or
-#' equal the reference date plus the maximum delay.
+#'   equal the reference date plus the maximum delay.
 #'
 #' @inheritParams enw_filter_delay
 #' @keywords internal
@@ -783,23 +784,24 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
 #'
 #' @description `r lifecycle::badge('deprecated')`
 #'
-#' @description Calculate delay metadata based on the supplied maximum delay and independent
-#' of other metadata or date indexing. These data are meant to be used in
-#' conjunction with metadata on the date of reference. Users can build
-#' additional features this  `data.frame`  or regenerate it using this function
-#' in the output of `enw_preprocess_data()`.
+#' @description Calculate delay metadata based on the supplied maximum delay and
+#'   independent of other metadata or date indexing. These data are meant to be
+#'   used in conjunction with metadata on the date of reference. Users can build
+#'   additional features this  `data.frame`  or regenerate it using this
+#'   function in the output of `enw_preprocess_data()`.
 #'
-#' `enw_delay_metadata()` was renamed to [`enw_metadata_delay()`] for better consistency.
+#'   `enw_delay_metadata()` was renamed to [`enw_metadata_delay()`] for better
+#'   consistency.
 #'
 #' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
 #'  - `delay_week`: The numeric week since the delay was reported. This again
-#'  may be useful for model building.
+#'   may be useful for model building.
 #'  - `delay_tail`: A logical variable defining if the delay is in the upper
-#'  75% of the potential delays. This may be particularly useful when building
-#'  models that assume a parametric distribution in order to increase the weight
-#'  of the tail of the reporting distribution in a pragmatic way.
+#'   75% of the potential delays. This may be particularly useful when building
+#'   models that assume a parametric distribution in order to increase the
+#'   weight of the tail of the reporting distribution in a pragmatic way.
 #' @inheritParams enw_metadata_delay
 #' @keywords internal
 #' @export
@@ -815,8 +817,8 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #' Get the user-specified, observed, and modelled maximum delay
 #'
 #' @description This metadata function records the different types of maximum
-#'   delays relevant for modeling. To obtain statistics on individual delays
-#'   for a given maximum delay, see [`enw_metadata_delay`] instead. The maximum
+#'   delays relevant for modeling. To obtain statistics on individual delays for
+#'   a given maximum delay, see [`enw_metadata_delay`] instead. The maximum
 #'   reporting delay is used to make the modeling of reporting delays tractable
 #'   by right-truncating the delay distribution at a reasonable number of days.
 #'   The maximum delay is specified by the user, and can be smaller or larger
@@ -824,8 +826,8 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   currently always use the smaller one of the two maximum delays for
 #'   modeling. This means that observations with a delay larger than the
 #'   specified maximum delay will be dropped from the analysis. In some
-#'   settings, for example outbreaks where little data is available, this may not
-#'   be ideal. If this is an issue for you, please get in touch with the
+#'   settings, for example outbreaks where little data is available, this may
+#'   not be ideal. If this is an issue for you, please get in touch with the
 #'   developers by opening an issue on GitHub.
 #'
 #' @return A `data.table` containing metadata about the different maximum
@@ -833,7 +835,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'  - `type`: specified, observed or modelled
 #'  - `delay`: length of the corresponding maximum delay
 #'  - `dates_too_short`: share of reference dates for which the corresponding
-#'  maximum delay is too short, based on [check_max_delay()]
+#'   maximum delay is too short, based on [check_max_delay()]
 #'  - `description`: description of the maximum delay type
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
@@ -860,7 +862,7 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
     )
   }
 
-  coverage <- check_max_delay(obs, max_delay)
+  coverage <- check_max_delay(obs, max_delay, warn = TRUE)
   coverage_obs <- check_max_delay(obs, max_delay_obs, warn = FALSE)
   coverage_model <- check_max_delay(obs, max_delay_model, warn = FALSE)
 
