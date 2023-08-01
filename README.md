@@ -199,8 +199,9 @@ it contains
   observation, in this example the date of a positive test
 - a report date (column `report_date`): the date of report for a given
   set of observations by reference date
-- a count (column `confirm`): the total (i.e. cumulative) number of
-  hospitalisations by reference date and report date.
+- a count (column `confirm`): the total number of hospitalisations by
+  reference date and report date. Note that this is cumulative by report
+  date.
 
 The package also provides a range of tools to convert data from line
 list, incidence, or other common formats into the required format (see
@@ -397,11 +398,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.02
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 172                0.172    151.2
+#> 1:                 108                0.108    123.7
 ```
 
 ### Summarising and plotting the nowcast
@@ -426,26 +427,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.045     69 0.2168456 0.0000 69
-#>  3:                 1    37             0  47.090     47 0.3255856 0.0000 47
-#>  4:                 1    36             0  65.208     65 0.4826686 0.0000 65
-#>  5:                 1    35             0  50.257     50 0.5303133 0.0000 50
-#>  6:                 1    34             0  36.240     36 0.4966353 0.0000 36
-#>  7:                 1    33             0  94.476     94 0.7238425 0.0000 94
-#>  8:                 1    32             0  91.700     91 0.8559981 0.0000 91
-#>  9:                 1    31             0 100.047    100 1.0844201 1.4826 99
-#> 10:                 1    30             0  87.261     87 1.2467692 1.4826 86
+#>  2:                 1    38             0  69.043     69 0.2078321 0.0000 69
+#>  3:                 1    37             0  47.078     47 0.2898275 0.0000 47
+#>  4:                 1    36             0  65.215     65 0.4806308 0.0000 65
+#>  5:                 1    35             0  50.237     50 0.5206747 0.0000 50
+#>  6:                 1    34             0  36.239     36 0.5100384 0.0000 36
+#>  7:                 1    33             0  94.490     94 0.7473008 0.0000 94
+#>  8:                 1    32             0  91.785     92 0.9042083 1.4826 91
+#>  9:                 1    31             0 100.012    100 1.0463990 1.4826 99
+#> 10:                 1    30             0  87.192     87 1.1137219 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  69 1.0009708  959.9618  995.3373
-#>  3:  48 0.9993164 1050.2047 1022.3865
-#>  4:  66 0.9991190  941.1281  950.4920
-#>  5:  51 1.0030270  980.5571  992.4641
-#>  6:  37 1.0027909  976.8003  912.4705
-#>  7:  96 1.0013694 1010.9882  736.9459
-#>  8:  93 1.0014567  836.7792  851.6097
-#>  9: 102 0.9984591  855.7363  821.9171
-#> 10:  90 1.0004052  948.4541  859.0422
+#>  2:  69 0.9992123  923.7524  939.5073
+#>  3:  48 1.0040792 1079.4777 1020.0972
+#>  4:  66 1.0002486  815.4759  813.9671
+#>  5:  51 0.9993471 1010.6458  892.5234
+#>  6:  37 0.9986698  966.4460  959.9144
+#>  7:  96 0.9993444  932.7423  874.4032
+#>  8:  93 0.9989490 1049.2308 1016.1944
+#>  9: 102 1.0028379  897.0204  856.6158
+#> 10:  89 1.0026106 1055.2435  965.0286
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -500,17 +501,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    433
+#>     1:                 1    33             0      1          1     1    434
 #>     2:                 1    33             0      1          2     2    434
-#>     3:                 1    33             0      1          3     3    435
-#>     4:                 1    33             0      1          4     4    435
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    434
 #>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2249
-#> 33997:                 1     0             1      2        497   997   2506
-#> 33998:                 1     0             1      2        498   998   2035
-#> 33999:                 1     0             1      2        499   999   2167
-#> 34000:                 1     0             1      2        500  1000   2194
+#> 33996:                 1     0             1      2        496   996   2156
+#> 33997:                 1     0             1      2        497   997   2203
+#> 33998:                 1     0             1      2        498   998   2109
+#> 33999:                 1     0             1      2        499   999   1832
+#> 34000:                 1     0             1      2        500  1000   2126
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
