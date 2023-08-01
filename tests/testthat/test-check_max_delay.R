@@ -1,27 +1,35 @@
 test_that("check_max_delay produces the expected warnings", {
-  latest_obs <- enw_example("preprocessed_observations")$latest[[1]]
-  ex_metamaxdelay <- enw_example("preprocessed_observations")$metamaxdelay[[1]]
+  obs <- enw_example(type = "preprocessed_observations")$obs[[1]]
+  expect_warning(
+    check_max_delay(obs, max_delay = 5),
+    regexp = "covers less than 80% of cases for the majority"
+  )
   
-  ex_metamaxdelay[, delay := c(20, 10, 10)]
-  expect_warning(
-    check_max_delay(latest_obs, ex_metamaxdelay),
-    regexp = "You specified a maximum delay of"
-  )
-
-  ex_metamaxdelay[, delay := c(20, 20, 20)]
   expect_no_warning(
-    check_max_delay(latest_obs, ex_metamaxdelay)
+    check_max_delay(obs, max_delay = 5, warn = FALSE)
   )
-
-  ex_metamaxdelay[, delay := c(20, 30, 30)]
-  expect_no_warning(
-    check_max_delay(latest_obs, ex_metamaxdelay)
-  )
-
-  latest_obs$cum_prop_reported <- rep(0.5, nrow(latest_obs))
-  ex_metamaxdelay[, delay := c(20, 20, 20)]
+  
   expect_warning(
-    check_max_delay(latest_obs, ex_metamaxdelay),
-    regexp = "The currently specified maximum reporting delay"
+    check_max_delay(obs, max_delay = 8, cum_coverage = 0.9),
+    regexp = "covers less than 90% of cases for the majority"
   )
+
+  expect_no_warning(
+    check_max_delay(obs, 10)
+  )
+})
+
+test_that("check_max_delay produces the expected output", {
+  obs <- enw_example(type = "preprocessed_observations")$obs[[1]]
+  
+  expect_equal(check_max_delay(obs, max_delay = 10), 0.073170732)
+  
+  expect_equal(
+    check_max_delay(obs, max_delay = 10, cum_coverage = 0.9),
+    0.48780488
+    )
+  
+  expect_equal(check_max_delay(obs, max_delay = 20), 0)
+  
+  expect_error(check_max_delay(obs, max_delay = 10, cum_coverage = 80))
 })
