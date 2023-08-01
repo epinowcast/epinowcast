@@ -42,7 +42,7 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' date).
 #'
 #' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
-#' counts (for calculated incidence of observations) be set to zero. Currently
+#' counts (for calculated incidence of observations) be set to zero? Currently
 #' downstream modelling does not support negative counts and so setting must be
 #' TRUE if intending to use [epinowcast()].
 #'
@@ -51,8 +51,8 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' @inheritParams enw_preprocess_data
 #'
 #' @return The input `data.frame` with a new variable `new_confirm`. If
-#' `max_confirm` was present in the `data.frame` then the proportion
-#' reported on each day (`prop_reported`) is also added.
+#' `max_confirm` is present in the `data.frame`, then the proportion
+#' reported on each day (`prop_reported`) will also be added.
 #'
 #' @family dataconverters
 #' @export

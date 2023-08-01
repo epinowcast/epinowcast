@@ -466,7 +466,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
 
 #' Filter observations to the latest available reported
 #'
-#' @description Filter observations to be the latest available reported
+#' @description Filter observations for the latest available reported
 #' data for each reference date. Note this is not the same as filtering
 #' for the maximum report date in all cases as data may only be updated
 #' up to some maximum number of days.
@@ -486,10 +486,9 @@ enw_latest_data <- function(obs) {
   latest_data <- coerce_dt(obs, dates = TRUE)
 
   latest_data <- latest_data[,
-    .SD[report_date == (max(report_date)) | is.na(reference_date)],
+    .SD[report_date == (max(report_date)) & !is.na(reference_date)],
     by = "reference_date"
   ]
-  latest_data <- latest_data[!is.na(reference_date)]
   return(latest_data[])
 }
 
@@ -738,8 +737,8 @@ enw_missing_reference <- function(obs) {
 #' Calculate delay metadata based on the supplied maximum delay and independent
 #' of other metadata or date indexing. These data are meant to be used in
 #' conjunction with metadata on the date of reference. Users can build
-#' additional features this  `data.frame`  or regenerate it using this function
-#' in the output of `enw_preprocess_data()`.
+#' additional features with this  `data.frame`  or regenerate it using this 
+#' function in the output of `enw_preprocess_data()`.
 #'
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
 #' constructing a categorised version of numeric delays.
@@ -953,8 +952,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay Numeric defaults to 20 and needs to be greater than or equal
-#' to 1 and an integer (internally it will be coerced to one using
+#' @param max_delay Numeric, defaults to 20 and needs to be greater than or 
+#' equal to 1 and an integer (internally it will be coerced to one using
 #' [as.integer()]). The maximum number of days to include in the delay
 #' distribution. Observations with delays larger then the maximum delay will be 
 #' dropped. If the specified maximum delay is too short, nowcasts can be biased 
@@ -979,7 +978,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
 #'  - `obs`: (observations with the addition of empirical reporting proportions
-#'  and and restricted to the specified maximum delay).
+#'  and restricted to the specified maximum delay).
 #' - `new_confirm`: Incidence of notifications by reference and report date.
 #' Empirical reporting distributions are also added.
 #' - `latest`: The latest available observations.
@@ -1035,7 +1034,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metamaxdelay <- enw_metadata_maxdelay(obs = obs, max_delay = max_delay)
   
   # filter by the maximum delay modelled
-  obs <- enw_filter_delay(obs, max_delay = metamaxdelay[type == "modelled", delay])
+  obs <- enw_filter_delay(
+    obs, max_delay = metamaxdelay[type == "modelled", delay]
+  )
 
   diff_obs <- enw_add_incidence(
     obs,
@@ -1095,7 +1096,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
-  metadelay <- enw_metadata_delay(metamaxdelay[type == "modelled", delay], breaks = 4)
+  metadelay <- enw_metadata_delay(
+    metamaxdelay[type == "modelled", delay], breaks = 4
+    )
 
   out <- enw_construct_data(
     obs = obs,
