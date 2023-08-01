@@ -127,7 +127,7 @@ This data is already in a format that can be used with `epinowcast`, as it conta
 
 - a reference date (column `reference_date`): the date of the observation, in this example the date of a positive test
 - a report date (column `report_date`): the date of report for a given set of observations by reference date
-- a count (column `confirm`): the total (i.e. cumulative) number of hospitalisations by reference date and report date.
+- a count (column `confirm`): the total number of hospitalisations by reference date and report date. Note that this is cumulative by report date.
 
 The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see [Data converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)).
 
