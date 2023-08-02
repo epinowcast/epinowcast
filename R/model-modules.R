@@ -180,11 +180,11 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     matrix(
       data_list$rep_findex,
       ncol = data$groups[[1]],
-      nrow = data$time[[1]] + 
+      nrow = data$time[[1]] +
         data$metamaxdelay[[1]][type == "modelled", delay] - 1
     )
   )
-  data_list$rep_t <- data$time[[1]] + 
+  data_list$rep_t <- data$time[[1]] +
     data$metamaxdelay[[1]][type == "modelled", delay] - 1
   data_list$model_rep <- as.numeric(
     !as_string_formula(non_parametric) %in% "~1"
@@ -450,7 +450,7 @@ enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     !(as_string_formula(formula) %in% "~0")) {
     stop(
-      "A missingness model has been specified, but no observations", 
+      "A missingness model has been specified, but no observations",
       "with missing reference date are in the preprocessed data."
     )
   }
