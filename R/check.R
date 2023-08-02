@@ -210,18 +210,18 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @title Check appropriateness of maximum delay
 #'
 #' @description Check if maximum delay specified by the user is long enough and
-#'   raise potential warnings.
+#' raise potential warnings.
 #'
 #' @inheritParams enw_preprocess_data
 #'
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
-#'   should cover. Defaults to 0.8 (80%).
+#' should cover. Defaults to 0.8 (80%).
 #'
 #' @param warn Should a warning be issued if the cumulative case count is
-#'   below `cum_coverage` for the majority of reference dates?
+#' below `cum_coverage` for the majority of reference dates?
 #'
 #' @return Numeric, the share of reference dates where the cumulative case count
-#'   is below `cum_coverage`.
+#' is below `cum_coverage`.
 #'
 #' @family check
 #' @export

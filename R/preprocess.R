@@ -1063,14 +1063,11 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(
-    obs,
-    max_delay = metamaxdelay[type == "modelled", delay]
+    obs, max_delay = metamaxdelay[type == "modelled", delay]
   )
 
   diff_obs <- enw_add_incidence(
-    obs,
-    set_negatives_to_zero = set_negatives_to_zero,
-    by = by
+    obs, set_negatives_to_zero = set_negatives_to_zero, by = by
   )
 
   # filter obs based on diff constraints
