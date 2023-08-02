@@ -163,8 +163,10 @@ epinowcast <- function(data,
   )
 
   if (!missing$formula %in% "~0") {
-    warning(paste("The missing data model is highly experimental.",
-    "There is a significant chance of bugs in its implementation."))
+    warning(
+      "The missing data model is highly experimental.",
+      "There is a significant chance of bugs in its implementation."
+    )
   }
 
   inits <- purrr::compact(modules$inits)

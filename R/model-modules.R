@@ -449,8 +449,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     !(as_string_formula(formula) %in% "~0")) {
-    stop(paste("A missingness model has been specified, but no observations", 
-          "with missing reference date are in the preprocessed data."))
+    stop(
+      "A missingness model has been specified, but no observations", 
+      "with missing reference date are in the preprocessed data."
+    )
   }
 
   if (as_string_formula(formula) %in% "~0") {
