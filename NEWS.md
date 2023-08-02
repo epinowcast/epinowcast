@@ -8,7 +8,7 @@ This release is in development and not yet ready for production use.
 
 @seabbs reviewed pull requests for this release.
 
-@jbracher and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @pearsonca, @bisaloo, @adrian-lison, and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
