@@ -116,13 +116,10 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
   }
 
   ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date >
-    (max(reference_date) - max_delay_spec)]
+  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay_spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
-  obs_model <- ord_obs[reference_date >
-    (max(reference_date) - max_delay_model)]
-  obs_spec <- ord_obs[reference_date <=
-    (max(reference_date) - max_delay_model)]
+  obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
+  obs_spec <- ord_obs[reference_date <=(max(reference_date) - max_delay_model)]
 
   # add observations for modelled dates
   nowcast <- cbind(obs_model, nowcast)
