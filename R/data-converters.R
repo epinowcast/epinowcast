@@ -228,7 +228,7 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
   obs <- coerce_dt(
     obs, dates = TRUE, required_cols = "new_confirm", forbidden_cols = "id"
   )
-  suppressWarnings(obs <- obs[, "confirm" := NULL])
+  suppressWarnings(obs <- obs[, "confirm" := NULL]) # nolint
   cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]
   obs <- obs[, .(id = 1:new_confirm), by = cols]
