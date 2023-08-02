@@ -246,10 +246,7 @@ check_max_delay <- function(obs,
   # Note that we if we here filter by the user-specified maximum delay, any
   # warnings obtained would also apply to a modelled, potentially shorter,
   # maximum delay.
-  obs <- enw_filter_delay(
-    obs,
-    max_delay = max_delay
-  )
+  obs <- enw_filter_delay(obs, max_delay = max_delay)
 
   # filter by earliest observed report date
   obs <- obs[,
