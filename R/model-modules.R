@@ -628,7 +628,7 @@ enw_obs <- function(family = c("negbin", "poisson"), data) {
                 data$snapshots[[1]]),
     csdmax = cumsum(rep(data$metamaxdelay[[1]][type == "modelled", delay],
                         data$snapshots[[1]])),
-    obs = as.matrix(data$reporting_triangle[[1]][, -c(1:2)]),
+    obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)]),
     flat_obs = flat_obs,
     latest_obs = latest_matrix,
     model_obs = model_obs

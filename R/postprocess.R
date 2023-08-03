@@ -119,7 +119,7 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
   ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay_spec)]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
-  obs_spec <- ord_obs[reference_date <=(max(reference_date) - max_delay_model)]
+  obs_spec <- ord_obs[reference_date <= (max(reference_date) - max_delay_model)]
 
   # add observations for modelled dates
   nowcast <- cbind(obs_model, nowcast)
@@ -128,7 +128,7 @@ enw_nowcast_summary <- function(fit, obs, metamaxdelay = NULL,
   if (max_delay_spec > max_delay_model) {
     nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
     nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
-    cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE)
+    cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE) # nolint
     nowcast[seq_len(nrow(obs_spec)), (cols_quantile) := confirm]
     nowcast[seq_len(nrow(obs_spec)), c("sd", "mad") := 0]
   }
