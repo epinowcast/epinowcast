@@ -35,7 +35,7 @@ $$p_{g,t,d} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_
 
 Unless $d = 0$ then we instead have
 
-$$p_{g,t,1} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(1)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D + 1 ) + F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
+$$p_{g,t,0} = \frac{F^{\mu_{g,t}, \upsilon_{g,t}}(1)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D + 1 ) + F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.$$
 
 Normalising by $F^{\mu_{g,t}, \upsilon_{g,t}}(D+1) + F^{\mu_{g,t}, \upsilon_{g,t}}(D)$, ensures that the $p^{\prime}_{g,t,d}$ sum to 1. Since $F^{\mu_{g,t}, \upsilon_{g,t}}(D)$ is the probability of reporting before the maximum delay, this can also be interpreted as conditioning our distribution on the maximum delay.
 
