@@ -283,9 +283,10 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
   }
   # update or set key to include .group
   data.table::setkeyv(obs, union(".group", data.table::key(obs)))
-  
-  cells <- obs[, .(count = .N),
-               by = c("reference_date", "report_date", ".group")]
+  group_cols <- intersect(
+    colnames(obs), c("reference_date", "report_date", ".group")
+  )
+  cells <- obs[, .(count = .N), by = group_cols]
   if (any(cells[, count>1])) {
     stop("The input data seems to be stratified by more variables ",
             "than specified via the `by` argument. Please provide additional ",
