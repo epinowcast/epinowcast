@@ -20,6 +20,7 @@ This release is in development and not yet ready for production use.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs
 - Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and self-reviewed.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and self-reviewed.
+- Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.2
 
