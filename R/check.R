@@ -232,3 +232,34 @@ coerce_dt <- function(
     return(dt[])
   }
 }
+
+check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
+
+  dates <- obs[[date_var]]
+  diffs <- difftime(dates, lag(dates), units = "days")
+  internal_timestep <- get_timestep(timestep)
+
+  if (internal_timestep == "month") {
+    int_diffs <- interval(diffs)
+    if (exact) {
+      check <- all(int_diffs == months(1))
+    } else {
+      check <- sum(int_diffs %% months(1)) == 0
+    }
+  }else {
+    if (exact) {
+      check <- all(diffs == internal_timestep)
+    } else {
+      check <- sum(diffs %% internal_timestep) == 0
+    }
+
+  }
+
+  if (!check) {
+    if (is.character(timestep)) {
+      stop("The data is not in the specified timestep of ", timestep)
+    }else{
+      stop("The data is not in the specified timestep of ", timestep, " days")
+  }
+  return(invisble(NULL))
+}

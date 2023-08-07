@@ -221,6 +221,32 @@ coerce_date <- function(dates) {
   }
 }
 
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
+    abs(x - round(x)) < tol
+}
+
+get_numeric_timestep <- function(timestep) {
+  if (is.numeric(timestep)) {
+    stopifnot(
+      timestep > 0, "Timestep must be a positive integer",
+      is.wholenumber(timestep), "Timestep must be a whole number"
+      length(timestep) == 1, "Timestep must be a single value"
+    )
+    return(timestep)
+  } else if (is.character(timestep)){
+
+  }
+  if (timestep == "day") {
+    return(1)
+  } else if (timestep == "week") {
+    return(7)
+  } else if (timestep == "month") {
+    return(30)
+  } else {
+    stop("Invalid timestep")
+  }
+}
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",

@@ -42,7 +42,8 @@ weekly_germany_hosp[]
 # Make sure observations are complete
 weekly_germany_hosp <- enw_complete_dates(
   weekly_germany_hosp,
-  by = c("location", "age_group")
+  by = c("location", "age_group"),
+  timestep = "week"
 )
 # Make a retrospective real-time dataset
 rt_nat_germany <- enw_filter_report_dates(
