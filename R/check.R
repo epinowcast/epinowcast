@@ -250,22 +250,29 @@ coerce_dt <- function(
 #'
 #' @inheritParams get_internal_timestep
 #'
+#' @importFrom lubridate interval months
+#' @importFrom stats lag
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
 check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
+  if (!is.Date(obs[[date_var]])) {
+    stop(date_var, " must be of class Date")
+  }
+
   dates <- obs[[date_var]]
-  diffs <- difftime(dates, lag(dates), units = "days")
+  diffs <- difftime(dates, stats::lag(dates), units = "days")
   internal_timestep <- get_internal_timestep(timestep)
 
   if (internal_timestep == "month") {
-    int_diffs <- interval(diffs)
+    int_diffs <- interval(dates)
     if (exact) {
-      check <- all(int_diffs == months(1))
+      check <- all(diffs == months(1))
     } else {
       check <- sum(int_diffs %% months(1)) == 0
     }
   }else {
+    diffs <- as.numeric(diffs)
     if (exact) {
       check <- all(diffs == internal_timestep)
     } else {
@@ -276,10 +283,15 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
 
   if (!check) {
     if (is.character(timestep)) {
-      stop("The data is not in the specified timestep of ", timestep)
-    }else{
-      stop("The data is not in the specified timestep of ", timestep, " days")
+      stop(
+        date_var, " does not have the specified timestep of ", timestep
+      )
+    }else {
+      stop(
+        date_var, " does not have the specified timestep of ",
+        timestep, " days"
+      )
     }
   }
-  return(invisble(NULL))
+  return(invisible(NULL))
 }
