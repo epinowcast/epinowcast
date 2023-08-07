@@ -221,31 +221,44 @@ coerce_date <- function(dates) {
   }
 }
 
-is.wholenumber <- function(x, tol = .Machine$double.eps^0.5) {
-    abs(x - round(x)) < tol
-}
-
-get_numeric_timestep <- function(timestep) {
-  if (is.numeric(timestep)) {
-    stopifnot(
-      timestep > 0, "Timestep must be a positive integer",
-      is.wholenumber(timestep), "Timestep must be a whole number"
-      length(timestep) == 1, "Timestep must be a single value"
+#' Get Internal Timestep
+#'
+#' This function converts the string representation of the timestep to its
+#' corresponding numeric value or returns the numeric input (if it is a whole
+#' number). For "day", "week", it returns 1 and 7 respectively. 
+#' For "month", it returns "month" as months are not a fixed number of days.
+#' If the input is a numeric whole number, it is returned as is.
+#'
+#' @param timestep The timestep to used. This can be a string ("day",
+#' "week", "month") or a numeric whole number representing the number of days.
+#'
+#' @return A numeric value representing the number of days for "day" and
+#' "week", "month" for "month",  or the input value if it is a numeric whole
+#' number.
+get_internal_timestep <- function(timestep) {
+  # check if the input is a character
+  if (is.character(timestep)) {
+    switch(
+      timestep,
+      "day" = 1,
+      "week" = 7,
+      "month" = "month",  # months are not a fixed number of days
+      stop(
+        "Invalid timestep. Acceptable string inputs are 'day', 'week',",
+        " 'month'."
+      )
     )
+  } else if (is.numeric(timestep) && timestep == round(timestep)) {
+    # check if the input is a whole number
     return(timestep)
-  } else if (is.character(timestep)){
-
-  }
-  if (timestep == "day") {
-    return(1)
-  } else if (timestep == "week") {
-    return(7)
-  } else if (timestep == "month") {
-    return(30)
   } else {
-    stop("Invalid timestep")
+    stop(
+      "Invalid timestep. If timestep is a numeric, it should be a whole",
+      " number representing the number of days."
+    )
   }
 }
+
 
 utils::globalVariables(
   c(

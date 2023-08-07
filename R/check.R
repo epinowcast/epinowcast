@@ -233,11 +233,30 @@ coerce_dt <- function(
   }
 }
 
+#' Check Timestep
+#'
+#' This function verifies if the difference in dates in the provided
+#' observations corresponds to the provided timestep. If the `exact` argument
+#' is set to TRUE, the function checks if all differences exactly match the
+#' timestep; otherwise, it checks if the sum of the differences modulo the
+#' timestep equals zero. If the check fails, the function stops and returns an
+#' error message.
+#'
+#' @param obs Any of the types supported by [data.table::as.data.table()].
+#' @param date_var The variable in `obs` representing dates.
+#' @param exact Logical, if `TRUE``, checks if all differences exactly match the
+#' timestep. If `FALSE``, checks if the sum of the differences modulo the
+#' timestep equals zero. Default is `FALSE`.
+#'
+#' @inheritParams get_internal_timestep
+#'
+#' @return This function is used for its side effect of stopping if the check
+#' fails. If the check passes, the function returns invisibly.
 check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
-
+  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   dates <- obs[[date_var]]
   diffs <- difftime(dates, lag(dates), units = "days")
-  internal_timestep <- get_timestep(timestep)
+  internal_timestep <- get_internal_timestep(timestep)
 
   if (internal_timestep == "month") {
     int_diffs <- interval(diffs)
@@ -260,6 +279,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
       stop("The data is not in the specified timestep of ", timestep)
     }else{
       stop("The data is not in the specified timestep of ", timestep, " days")
+    }
   }
   return(invisble(NULL))
 }
