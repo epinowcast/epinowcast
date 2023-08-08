@@ -49,22 +49,22 @@ weekly_germany_hosp <- enw_complete_dates(
 # Make a retrospective real-time dataset
 rt_nat_germany <- enw_filter_report_dates(
   weekly_germany_hosp,
-  remove_days = 40
+  remove_days = 20
 )
 rt_nat_germany <- enw_filter_reference_dates(
   rt_nat_germany,
-  include_days = 40
+  include_days = 60
 )
 
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(weekly_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 40, include_days = 20
+  remove_days = 20, include_days = 60
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
-pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 5)
+pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 28, timestep = "week")
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.
