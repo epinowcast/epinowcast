@@ -4,7 +4,13 @@
 \alias{check_timestep}
 \title{Check Timestep}
 \usage{
-check_timestep(obs, date_var, timestep = "day", exact = TRUE)
+check_timestep(
+  obs,
+  date_var,
+  timestep = "day",
+  exact = TRUE,
+  check_nrow = TRUE
+)
 }
 \arguments{
 \item{obs}{Any of the types supported by \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.}
@@ -16,6 +22,10 @@ check_timestep(obs, date_var, timestep = "day", exact = TRUE)
 
 \item{exact}{Logical, if \verb{TRUE``, checks if all differences exactly match the timestep. If }FALSE``, checks if the sum of the differences modulo the
 timestep equals zero. Default is \code{TRUE}.}
+
+\item{check_nrow}{Logical, if \code{TRUE}, checks if there are at least two
+observations. Default is \code{TRUE}. If \code{FALSE}, the function returns invisibly
+if there is only one observation.}
 }
 \value{
 This function is used for its side effect of stopping if the check

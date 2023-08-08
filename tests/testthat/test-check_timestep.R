@@ -136,6 +136,12 @@ test_that("check_timestep() handles problematic inputs", {
     check_timestep(obs_one, date_var = "date", timestep = "day", exact = TRUE),
     "There must be at least two observations"
   )
+  expect_silent(
+    check_timestep(
+      obs_one, date_var = "date", timestep = "day", exact = FALSE,
+      check_nrow = FALSE
+    )
+  )
 
   # 3. Test with non-Date class data
   obs_char <- data.frame(date = c("2020-01-01", "2020-01-02", "2020-01-03"))

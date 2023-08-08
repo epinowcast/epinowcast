@@ -6,15 +6,6 @@
 \usage{
 check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 }
-\arguments{
-\item{obs}{Any of the types supported by \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.}
-
-\item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
-
-\item{exact}{Logical, if \verb{TRUE``, checks if all differences exactly match the timestep. If }FALSE``, checks if the sum of the differences modulo the
-timestep equals zero. Default is \code{TRUE}.}
-}
 \value{
 This function is used for its side effect of checking the timestep
 by date in \code{obs}. If the check passes for all dates, the function
@@ -23,7 +14,8 @@ returns invisibly. Otherwise, it stops and returns an error message.
 \description{
 This function verifies if the difference in dates within each date in the
 provided observations corresponds to the provided timestep. This check is
-performed for both \code{report_date} and \code{reference_date}.
+performed for both \code{report_date} and \code{reference_date} and for each group in
+\code{obs}.
 }
 \seealso{
 Functions used for checking inputs

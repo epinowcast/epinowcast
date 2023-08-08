@@ -330,13 +330,18 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #'
 #' @param obs Any of the types supported by [data.table::as.data.table()].
 #'
+#' @param check_nrow Logical, if `TRUE`, checks if there are at least two
+#' observations. Default is `TRUE`. If `FALSE`, the function returns invisibly
+#' if there is only one observation.
+#' 
 #' @inheritParams get_internal_timestep
 #' @inheritParams check_calendar_timestep
 #'
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
 #' @family check
-check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE) {
+check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
+                           check_nrow = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
     stop(date_var, " must be of class Date")
@@ -346,9 +351,13 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE) {
   dates <- sort(dates)
   dates <- dates[!is.na(dates)]
 
-  stopifnot(
-    "There must be at least two observations" = length(dates) > 1
-  )
+  if (length(dates) <= 1) {
+    if (check_nrow) {
+      stop("There must be at least two observations")
+    } else {
+      return(invisible(NULL))
+    }
+  }
 
   internal_timestep <- get_internal_timestep(timestep)
 
@@ -361,31 +370,12 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE) {
   return(invisible(NULL))
 }
 
-#' Check Timestep By Group
-#'
-#' This function verifies if the difference in dates within each group in the
-#' provided observations corresponds to the provided timestep.
-#'
-#' @inheritParams check_timestep
-#'
-#' @return This function is used for its side effect of checking the timestep
-#' for each group in `obs`. If the check passes for all groups, the function 
-#' returns invisibly. Otherwise, it stops and returns an error message.
-check_timestep_by_group <- function(obs, date_var, timestep = "day",
-                                    exact = TRUE) {
-  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE, group = TRUE)
-  obs[,
-      check_timestep(.SD, date_var, timestep, exact),
-      by = ".group"
-  ]
-  return(invisible(NULL))
-}
-
 #' Check Timestep By Date
 #'
 #' This function verifies if the difference in dates within each date in the
 #' provided observations corresponds to the provided timestep. This check is
-#' performed for both `report_date` and `reference_date`.
+#' performed for both `report_date` and `reference_date` and for each group in
+#' `obs`.
 #'
 #' @inheritParams check_timestep_by_group
 #'
@@ -394,14 +384,26 @@ check_timestep_by_group <- function(obs, date_var, timestep = "day",
 #' returns invisibly. Otherwise, it stops and returns an error message.
 #' @family check
 check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
-  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE, dates = TRUE)
+  obs <- coerce_dt(obs, copy = FALSE, dates = TRUE, group = TRUE)
+  cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
+  cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
+  if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
+    stop(
+      "There must be at least two observations by group and date",
+      " combination to establish a timestep"
+    )
+  }
   obs[,
-      check_timestep_by_date(.SD, date_var = "report_date", timestep, exact),
-      by = "reference_date"
+      check_timestep(
+        .SD, date_var = "report_date", timestep, exact, check_nrow = FALSE
+      ),
+      by = c("reference_date", ".group")
   ]
   obs[,
-      check_timestep_by_date(.SD, date_var = "reference_date", timestep, exact),
-      by = "report_date"
+      check_timestep(
+        .SD, date_var = "reference_date", timestep, exact, check_nrow = FALSE
+      ),
+      by = c("report_date", ".group")
   ]
   return(invisible(NULL))
 }
