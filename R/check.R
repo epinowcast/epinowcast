@@ -250,8 +250,6 @@ coerce_dt <- function(
 #'
 #' @inheritParams get_internal_timestep
 #'
-#' @importFrom lubridate interval months
-#' @importFrom stats lag
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
 check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
@@ -261,36 +259,61 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
   }
 
   dates <- obs[[date_var]]
-  diffs <- difftime(dates, stats::lag(dates), units = "days")
+  dates <- sort(dates)
+  dates <- dates[!is.na(dates)]
+
+  stopifnot(
+    "There must be at least two observations" = length(dates) > 1
+  )
+
   internal_timestep <- get_internal_timestep(timestep)
 
   if (internal_timestep == "month") {
-    int_diffs <- interval(dates)
-    if (exact) {
-      check <- all(diffs == months(1))
+    diff_dates <- dates[-1] - months(1)
+    sequential_dates <- dates[-length(dates)] == diff_dates
+    all_sequential_dates <- all(sequential_dates)
+    if (all_sequential_dates) {
+      return(invisible(NULL))
+    }
+
+    if (any(diff_dates < dates)) {
+      stop(
+        date_var, " has a shorter timestep than the specified timestep of ",
+        timestep
+      )
+    }
+
+    if (exact || all_sequential_dates) {
+      check <- all_sequential_dates
+      if (!check) {
+        stop(
+          date_var, " does not have the specified timestep of ", timestep
+        )
+      }
     } else {
-      check <- sum(int_diffs %% months(1)) == 0
+      diff_dates <- dates[-1] - months(2)
+      check <- sum(int_diffs %% month(1)) == 0
     }
   }else {
+    diffs <- difftime(dates[-1], dates[-length(dates)], units = "days")
     diffs <- as.numeric(diffs)
+    non_exact_timestep <- sum(diffs %% internal_timestep) == 0
     if (exact) {
       check <- all(diffs == internal_timestep)
+      if (!check) {
+        stop(
+          date_var, " does not have the specified exact timestep of ", timestep,
+          " days"
+        )
+      }
     } else {
       check <- sum(diffs %% internal_timestep) == 0
-    }
-
-  }
-
-  if (!check) {
-    if (is.character(timestep)) {
-      stop(
-        date_var, " does not have the specified timestep of ", timestep
-      )
-    }else {
-      stop(
-        date_var, " does not have the specified timestep of ",
-        timestep, " days"
-      )
+      if (!check) {
+        stop(
+          date_var, " does not have the specified timestep of ", timestep,
+          " days"
+        )
+      }
     }
   }
   return(invisible(NULL))
