@@ -634,7 +634,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
     .group = groups$.group,
     report_date = 0:max_delay
   )
-  completion <- completion[, report_date := reference_date + report_date]
+  completion <- completion[,
+    report_date := reference_date + report_date * internal_timestep
+  ]
   if (!completion_beyond_max_report) {
     completion <- completion[report_date <= max_date]
   }
