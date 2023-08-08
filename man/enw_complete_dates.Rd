@@ -9,7 +9,8 @@ enw_complete_dates(
   by = NULL,
   max_delay,
   missing_reference = TRUE,
-  completion_beyond_max_report = FALSE
+  completion_beyond_max_report = FALSE,
+  timestep = "day"
 )
 }
 \arguments{
@@ -36,6 +37,9 @@ reference date be completed as well?, Default: TRUE}
 
 \item{completion_beyond_max_report}{Logical, should entries be completed
 beyond the maximum date found in the data? Default: FALSE}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of

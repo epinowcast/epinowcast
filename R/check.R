@@ -333,7 +333,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #' @param check_nrow Logical, if `TRUE`, checks if there are at least two
 #' observations. Default is `TRUE`. If `FALSE`, the function returns invisibly
 #' if there is only one observation.
-#' 
+#'
 #' @inheritParams get_internal_timestep
 #' @inheritParams check_calendar_timestep
 #'
@@ -377,14 +377,14 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
 #' performed for both `report_date` and `reference_date` and for each group in
 #' `obs`.
 #'
-#' @inheritParams check_timestep_by_group
+#' @inheritParams check_timestep
 #'
 #' @return This function is used for its side effect of checking the timestep
 #' by date in `obs`. If the check passes for all dates, the function 
 #' returns invisibly. Otherwise, it stops and returns an error message.
 #' @family check
 check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
-  obs <- coerce_dt(obs, copy = FALSE, dates = TRUE, group = TRUE)
+  obs <- coerce_dt(obs, copy = TRUE, dates = TRUE, group = TRUE)
   cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {

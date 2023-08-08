@@ -24,8 +24,8 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
     obs, 
     data.table::data.table(
       .group = "A", 
-      report_date = as.IDate("2020-01-01"),
-      reference_date = as.IDate("2020-01-01")
+      report_date = as.Date("2020-01-01"),
+      reference_date = as.Date("2020-01-01")
     )
   )
 

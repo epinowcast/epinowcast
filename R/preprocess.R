@@ -588,6 +588,8 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param completion_beyond_max_report Logical, should entries be completed
 #' beyond the maximum date found in the data? Default: FALSE
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
 #'
@@ -604,7 +606,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' # Allow completion beyond the maximum date found in the data
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
-enw_complete_dates <- function(obs, by = NULL, max_delay,
+enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
                                missing_reference = TRUE,
                                completion_beyond_max_report  = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
@@ -616,7 +618,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     max_delay <- as.numeric(max_date - min_date)
   }
 
-  dates <- seq.Date(min_date, max_date, by = 1)
+  internal_timestep <- get_internal_timestep(timestep)
+
+  dates <- seq.Date(min_date, max_date, by = internal_timestep)
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
@@ -656,6 +660,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
   data.table::setcolorder(obs, c(by, "report_date", "reference_date"))
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   return(obs[])
 }
 
@@ -859,13 +864,15 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' what maximum makes sense for your data carefully. Note that this is zero
 #' indexed and so includes the reference date and `max_delay - 1` other days
 #' (i.e. a `max_delay` of 1 corresponds with no delay).
-#'
+#' 
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
 #'   (e.g. day of week, days since start of time series)
 #'
 #' @param copy A logical; if `TRUE` (the default) creates a copy; otherwise,
 #' modifies `obs` in place.
+#' 
+#' @inheritParam get_internal_timestep
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
@@ -904,7 +911,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
-                                set_negatives_to_zero = TRUE,
+                                timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
   max_delay <- as.integer(max_delay)
   stopifnot(
@@ -919,6 +926,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
   check_group_date_unique(obs)
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
+
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, copy = FALSE)
 

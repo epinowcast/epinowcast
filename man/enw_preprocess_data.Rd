@@ -9,6 +9,7 @@ enw_preprocess_data(
   by = NULL,
   max_delay = 20,
   set_negatives_to_zero = TRUE,
+  timestep = "day",
   ...,
   copy = TRUE
 )
