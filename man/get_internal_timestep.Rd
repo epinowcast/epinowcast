@@ -22,3 +22,13 @@ number). For "day", "week", it returns 1 and 7 respectively.
 For "month", it returns "month" as months are not a fixed number of days.
 If the input is a numeric whole number, it is returned as is.
 }
+\seealso{
+Utility functions
+\code{\link{coerce_date}()},
+\code{\link{coerce_dt}()},
+\code{\link{convert_cmdstan_to_rstan}()},
+\code{\link{expose_stan_fns}()},
+\code{\link{is.Date}()},
+\code{\link{stan_fns_as_string}()}
+}
+\concept{utils}

@@ -41,6 +41,7 @@ Utility functions
 \code{\link{coerce_dt}()},
 \code{\link{convert_cmdstan_to_rstan}()},
 \code{\link{expose_stan_fns}()},
+\code{\link{get_internal_timestep}()},
 \code{\link{is.Date}()},
 \code{\link{stan_fns_as_string}()}
 }

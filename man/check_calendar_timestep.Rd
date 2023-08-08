@@ -22,3 +22,15 @@ fails. If the check passes, the function returns invisibly.
 This function verifies if the difference in calendar dates in the provided
 observations corresponds to the provided timestep of "month".
 }
+\seealso{
+Functions used for checking inputs
+\code{\link{check_group_date_unique}()},
+\code{\link{check_group}()},
+\code{\link{check_modules_compatible}()},
+\code{\link{check_module}()},
+\code{\link{check_numeric_timestep}()},
+\code{\link{check_quantiles}()},
+\code{\link{check_timestep_by_date}()},
+\code{\link{check_timestep}()}
+}
+\concept{check}

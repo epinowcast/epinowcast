@@ -235,6 +235,7 @@ coerce_date <- function(dates) {
 #' @return A numeric value representing the number of days for "day" and
 #' "week", "month" for "month",  or the input value if it is a numeric whole
 #' number.
+#' @family utils
 get_internal_timestep <- function(timestep) {
   # check if the input is a character
   if (is.character(timestep)) {

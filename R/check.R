@@ -247,6 +247,7 @@ coerce_dt <- function(
 #' @importFrom lubridate %m-%
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
+#' @family check
 check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   diff_dates <- dates[-1] %m-% months(1L)
   sequential_dates <- dates[-length(dates)] == diff_dates
@@ -283,6 +284,7 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
 #' @inheritParams check_calendar_timestep
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
+#' @family check
 check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
   diffs <- as.numeric(
     difftime(dates[-1], dates[-length(dates)], units = "days")
@@ -333,6 +335,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #'
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
+#' @family check
 check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
@@ -355,5 +358,50 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE) {
     check_numeric_timestep(dates, date_var, internal_timestep, exact)
   }
 
+  return(invisible(NULL))
+}
+
+#' Check Timestep By Group
+#'
+#' This function verifies if the difference in dates within each group in the
+#' provided observations corresponds to the provided timestep.
+#'
+#' @inheritParams check_timestep
+#'
+#' @return This function is used for its side effect of checking the timestep
+#' for each group in `obs`. If the check passes for all groups, the function 
+#' returns invisibly. Otherwise, it stops and returns an error message.
+check_timestep_by_group <- function(obs, date_var, timestep = "day",
+                                    exact = TRUE) {
+  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE, group = TRUE)
+  obs[,
+      check_timestep(.SD, date_var, timestep, exact),
+      by = ".group"
+  ]
+  return(invisible(NULL))
+}
+
+#' Check Timestep By Date
+#'
+#' This function verifies if the difference in dates within each date in the
+#' provided observations corresponds to the provided timestep. This check is
+#' performed for both `report_date` and `reference_date`.
+#'
+#' @inheritParams check_timestep_by_group
+#'
+#' @return This function is used for its side effect of checking the timestep
+#' by date in `obs`. If the check passes for all dates, the function 
+#' returns invisibly. Otherwise, it stops and returns an error message.
+#' @family check
+check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
+  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE, dates = TRUE)
+  obs[,
+      check_timestep_by_date(.SD, date_var = "report_date", timestep, exact),
+      by = "reference_date"
+  ]
+  obs[,
+      check_timestep_by_date(.SD, date_var = "reference_date", timestep, exact),
+      by = "report_date"
+  ]
   return(invisible(NULL))
 }
