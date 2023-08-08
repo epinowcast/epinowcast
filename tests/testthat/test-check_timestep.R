@@ -15,12 +15,20 @@ test_that("check_timestep() works correctly", {
   
   # test with "month" timestep and exact = TRUE, should fail
   expect_error(
-    check_timestep(obs, date_var = "date", timestep = "month", exact = TRUE)
+    check_timestep(obs, date_var = "date", timestep = "month", exact = TRUE),
+    "date has a shorter timestep than the specified timestep of a month"
   )
   
+  # test with "week" timestep and exact = TRUE, should fail
+  expect_error(
+    check_timestep(obs, date_var = "date", timestep = "week", exact = TRUE),
+    "date has a shorter timestep than the specified timestep of 7 day\\(s\\)"
+  )
+
   # test with "month" timestep and exact = FALSE, should fail
   expect_error(
-    check_timestep(obs, date_var = "date", timestep = "month", exact = FALSE)
+    check_timestep(obs, date_var = "date", timestep = "month", exact = FALSE),
+    "date has a shorter timestep than the specified timestep of a month"
   )
 })
 
@@ -43,6 +51,12 @@ test_that("check_timestep() works with weekly data", {
       obs_weekly, date_var = "date", timestep = "week", exact = FALSE
     )
   )
+  
+  # test with default "day" timestep and exact = TRUE, should fail
+  expect_error(
+    check_timestep(obs_weekly, date_var = "date", exact = TRUE),
+    "date does not have the specified timestep of 1 day\\(s\\)"
+  )
 
   # Weekly data with some weeks missing
   obs_weekly_missing <- data.table::as.data.table(obs_weekly)[-c(3,7), ]
@@ -50,7 +64,8 @@ test_that("check_timestep() works with weekly data", {
   # test with "week" timestep and exact = TRUE, should fail
   expect_error(
     check_timestep(
-      obs_weekly_missing, date_var = "date", timestep = "week", exact = TRUE
+      obs_weekly_missing, date_var = "date", timestep = "week", exact = TRUE,
+      "date does not have the specified timestep of 7 day\\(s\\)"
     )
   )
   
@@ -88,14 +103,16 @@ test_that("check_timestep() works with monthly data", {
   # test with "month" timestep and exact = TRUE, should fail
   expect_error(
     check_timestep(
-      obs_monthly_missing, date_var = "date", timestep = "month", exact = TRUE
+      obs_monthly_missing, date_var = "date", timestep = "month", exact = TRUE,
+      "date does not have the specified timestep of month"
     )
   )
   
   # test with "month" timestep and exact = FALSE, should still pass
-  expect_silent(
+  expect_error(
     check_timestep(
       obs_monthly_missing, date_var = "date", timestep = "month", exact = FALSE
-    )
+    ),
+    "Non-sequential dates are not currently supported for monthly data"
   )
 })

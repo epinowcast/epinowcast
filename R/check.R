@@ -244,16 +244,17 @@ coerce_dt <- function(
 #' timestep. If `FALSE``, checks if the sum of the differences modulo the
 #' timestep equals zero. Default is `TRUE`.
 #'
+#' @importFrom lubridate %m-%
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
 check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
-  diff_dates <- dates[-1] - months(1)
+  diff_dates <- dates[-1] %m-% months(1L)
   sequential_dates <- dates[-length(dates)] == diff_dates
   all_sequential_dates <- all(sequential_dates)
 
-  if (any(diff_dates < dates)) {
+  if (any(diff_dates < dates[-length(dates)])) {
     stop(
-      date_var, " has a shorter timestep than the specified timestep of month"
+      date_var, " has a shorter timestep than the specified timestep of a month"
     )
   }
 
@@ -287,16 +288,29 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     difftime(dates[-1], dates[-length(dates)], units = "days")
   )
 
+  if (any(diffs == 0)) {
+    stop(
+      date_var, " has a duplicate date. Please remove duplicate dates."
+    )
+  }
+
+  if (any(diffs < timestep)) {
+    stop(
+      date_var, " has a shorter timestep than the specified timestep of ",
+      timestep, " day(s)"
+    )
+  }
+
   if (exact) {
     check <- all(diffs == timestep)
   } else {
-    check <- sum(diffs %% timestep) == 0 && all(diffs > 0)
+    check <- sum(diffs %% timestep) == 0
   }
 
   if (!check) {
     stop(
       date_var, " does not have the specified timestep of ", timestep,
-      " days"
+      " day(s)"
     )
   }else {
     return(invisible(NULL))
