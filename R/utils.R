@@ -71,8 +71,14 @@ convert_cmdstan_to_rstan <- function(functions) {
 
   # Custom replacement of log_diff_exp usage
   functions <- gsub(
-    "lpmf[2:n] = log_diff_exp(lcdf[2:n], lcdf[1:(n-1)])",
-    "for (i in 2:n) lpmf[i] = log_diff_exp(lcdf[i], lcdf[i-1]);",
+    "lpmf[3:n] = log_diff_exp(lcdf[3:n], lcdf[1:(n-2)])",
+    "for (i in 3:n) lpmf[i] = log_diff_exp(lcdf[i], lcdf[i-2]);",
+    functions,
+    fixed = TRUE
+  )
+  functions <- gsub(
+    "lhaz[3:(n-1)] = lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);", # nolint
+    "for (i in 3:(n-1)) lhaz[i] =  lprob[i] - log_diff_exp(lccdf[i-1], lcdf[i-2]);", # nolint
     functions,
     fixed = TRUE
   )
