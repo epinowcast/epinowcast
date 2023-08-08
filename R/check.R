@@ -233,6 +233,76 @@ coerce_dt <- function(
   }
 }
 
+#' Check Calendar Timestep
+#'
+#' This function verifies if the difference in calendar dates in the provided
+#' observations corresponds to the provided timestep of "month".
+#'
+#' @param dates Vector of Date class representing dates.
+#' @param date_var The variable in `obs` representing dates.
+#' @param exact Logical, if `TRUE``, checks if all differences exactly match the
+#' timestep. If `FALSE``, checks if the sum of the differences modulo the
+#' timestep equals zero. Default is `TRUE`.
+#'
+#' @return This function is used for its side effect of stopping if the check
+#' fails. If the check passes, the function returns invisibly.
+check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
+  diff_dates <- dates[-1] - months(1)
+  sequential_dates <- dates[-length(dates)] == diff_dates
+  all_sequential_dates <- all(sequential_dates)
+
+  if (any(diff_dates < dates)) {
+    stop(
+      date_var, " has a shorter timestep than the specified timestep of month"
+    )
+  }
+
+  if (all_sequential_dates) {
+    return(invisible(NULL))
+  } else {
+    if (exact) {
+      stop(
+        date_var, " does not have the specified timestep of month"
+      )
+    } else {
+      stop(
+        "Non-sequential dates are not currently supported for monthly data"
+      )
+    }
+  }
+}
+
+#' Check Numeric Timestep
+#'
+#' This function verifies if the difference in numeric dates in the provided
+#' observations corresponds to the provided timestep.
+#'
+#' @param timestep Numeric timestep for date difference.
+#'
+#' @inheritParams check_calendar_timestep
+#' @return This function is used for its side effect of stopping if the check
+#' fails. If the check passes, the function returns invisibly.
+check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
+  diffs <- as.numeric(
+    difftime(dates[-1], dates[-length(dates)], units = "days")
+  )
+
+  if (exact) {
+    check <- all(diffs == timestep)
+  } else {
+    check <- sum(diffs %% timestep) == 0 && all(diffs > 0)
+  }
+
+  if (!check) {
+    stop(
+      date_var, " does not have the specified timestep of ", timestep,
+      " days"
+    )
+  }else {
+    return(invisible(NULL))
+  }
+}
+
 #' Check Timestep
 #'
 #' This function verifies if the difference in dates in the provided
@@ -243,16 +313,13 @@ coerce_dt <- function(
 #' error message.
 #'
 #' @param obs Any of the types supported by [data.table::as.data.table()].
-#' @param date_var The variable in `obs` representing dates.
-#' @param exact Logical, if `TRUE``, checks if all differences exactly match the
-#' timestep. If `FALSE``, checks if the sum of the differences modulo the
-#' timestep equals zero. Default is `FALSE`.
 #'
 #' @inheritParams get_internal_timestep
+#' @inheritParams check_calendar_timestep
 #'
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
-check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
+check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
     stop(date_var, " must be of class Date")
@@ -269,52 +336,10 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = FALSE) {
   internal_timestep <- get_internal_timestep(timestep)
 
   if (internal_timestep == "month") {
-    diff_dates <- dates[-1] - months(1)
-    sequential_dates <- dates[-length(dates)] == diff_dates
-    all_sequential_dates <- all(sequential_dates)
-    if (all_sequential_dates) {
-      return(invisible(NULL))
-    }
-
-    if (any(diff_dates < dates)) {
-      stop(
-        date_var, " has a shorter timestep than the specified timestep of ",
-        timestep
-      )
-    }
-
-    if (exact || all_sequential_dates) {
-      check <- all_sequential_dates
-      if (!check) {
-        stop(
-          date_var, " does not have the specified timestep of ", timestep
-        )
-      }
-    } else {
-      diff_dates <- dates[-1] - months(2)
-      check <- sum(int_diffs %% month(1)) == 0
-    }
-  }else {
-    diffs <- difftime(dates[-1], dates[-length(dates)], units = "days")
-    diffs <- as.numeric(diffs)
-    non_exact_timestep <- sum(diffs %% internal_timestep) == 0
-    if (exact) {
-      check <- all(diffs == internal_timestep)
-      if (!check) {
-        stop(
-          date_var, " does not have the specified exact timestep of ", timestep,
-          " days"
-        )
-      }
-    } else {
-      check <- sum(diffs %% internal_timestep) == 0
-      if (!check) {
-        stop(
-          date_var, " does not have the specified timestep of ", timestep,
-          " days"
-        )
-      }
-    }
+    check_calendar_timestep(dates, date_var, exact)
+  } else {
+    check_numeric_timestep(dates, date_var, internal_timestep, exact)
   }
+
   return(invisible(NULL))
 }
