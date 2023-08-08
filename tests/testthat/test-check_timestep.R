@@ -116,3 +116,47 @@ test_that("check_timestep() works with monthly data", {
     "Non-sequential dates are not currently supported for monthly data"
   )
 })
+
+test_that("check_timestep() handles problematic inputs", {
+  # 1. Test with NA or NULL values
+  obs_na <- data.frame(
+    date = c(as.Date("2020-01-01"), NA, as.Date("2020-01-03"))
+  )
+  expect_silent(
+    check_timestep(obs_na, date_var = "date", timestep = "day", exact = FALSE)
+  )
+  expect_error(
+    check_timestep(obs_na, date_var = "date", timestep = "day", exact = TRUE),
+    "date does not have the specified timestep of 1 day\\(s\\)"
+  )
+
+  # 2. Test with only one observation
+  obs_one <- data.frame(date = as.Date("2020-01-01"))
+  expect_error(
+    check_timestep(obs_one, date_var = "date", timestep = "day", exact = TRUE),
+    "There must be at least two observations"
+  )
+
+  # 3. Test with non-Date class data
+  obs_char <- data.frame(date = c("2020-01-01", "2020-01-02", "2020-01-03"))
+  expect_error(
+    check_timestep(obs_char, date_var = "date", timestep = "day", exact = TRUE),
+    "date must be of class Date"
+  )
+
+  # 4. Test with duplicate dates
+  obs_duplicate <- data.frame(date = rep(as.Date("2020-01-01"), 3))
+  expect_error(
+    check_timestep(obs_duplicate, date_var = "date", timestep = "day", exact = TRUE),
+    "date has a duplicate date. Please remove duplicate dates."
+  )
+
+  # 5. Test with non-sequential days when exact is TRUE
+  obs_non_sequential <- data.frame(
+    date = c(as.Date("2020-01-01"), as.Date("2020-01-04"), as.Date("2020-01-05"))
+  )
+  expect_error(
+    check_timestep(obs_non_sequential, date_var = "date", timestep = "day", exact = TRUE),
+    "date does not have the specified timestep of 1 day\\(s\\)"
+  )
+})
