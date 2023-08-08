@@ -657,10 +657,10 @@ enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", ".group")
   ]
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
   data.table::setcolorder(obs, c(by, "report_date", "reference_date"))
-  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   return(obs[])
 }
 
