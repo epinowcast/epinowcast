@@ -1,4 +1,4 @@
-#' Check Quantiles Required are Present
+#' Check required quantiles are present
 #'
 #' @param posterior A `data.table` that will be [coerce_dt()]d in place; must
 #' contain quantiles identified using the `q5` naming scheme.
@@ -20,7 +20,7 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   ))
 }
 
-#' Check Observations for Reserved Grouping Variables
+#' Check observations for reserved grouping variables
 #'
 #' @param obs An object that will be `coerce_dt`d in place, that does not
 #' contain `.group`, `.old_group`, or `.new_group`. These are reserved names.
@@ -35,11 +35,11 @@ check_group <- function(obs) {
   ))
 }
 
-#' Check Observations for Uniqueness of Grouping Variables with respect
-#' to reference_date and report_date
+#' Check observations for uniqueness of grouping variables with respect
+#' to `reference_date` and `report_date`
 #'
 #' @description This function checks that the input data is stratified by
-#' reference_date, report_date, and .group. It does this by counting the
+#' `reference_date`, `report_date`, and `.group.` It does this by counting the
 #' number of observations for each combination of these variables, and
 #' throwing a warning if any combination has more than one observation.
 #'
