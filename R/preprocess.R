@@ -363,7 +363,7 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' @param latest_date Date, the latest report date to include in the
 #' returned dataset.
 #'
-#' @param remove_days Integer, if \code{latest_date} is not given, the number
+#' @param remove_days Integer, if `latest_date` is not given, the number
 #' of report dates to remove, starting from the latest date included.
 #'
 #' @param obs A `data.frame`; must have `report_date` and `reference_date`
@@ -402,9 +402,12 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' occurs). This means that this function will also filter report dates earlier
 #' than the target reference dates.
 #'
+#' @param obs A `data.frame`; must have `report_date` and `reference_date`
+#' columns.
+#'
 #' @param earliest_date earliest reference date to include in the data set
 #'
-#' @param include_days if \code{earilest_date} is not given, the number
+#' @param include_days if `earliest_date` is not given, the number
 #' of reference dates to include, ending with the latest reference
 #' date included once report dates have been removed. If specified
 #' this is indexed to `latest_date` or `remove_days`.
@@ -412,11 +415,8 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @param latest_date Date, the latest reference date to include in the
 #' returned dataset.
 #'
-#' @param remove_days Integer, if \code{latest_date} is not given, the number
+#' @param remove_days Integer, if `latest_date` is not given, the number
 #' of reference dates to remove, starting from the latest date included.
-#'
-#' @param obs An `data.frame`; must have `report_date` and `reference_date`
-#' columns.
 #'
 #' @return A data.table  filtered by report date
 #' @family preprocess

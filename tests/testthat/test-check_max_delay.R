@@ -26,15 +26,15 @@ test_that("check_max_delay produces the expected output", {
     check_max_delay(obs, max_delay = 10),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8),
-      below_coverage = c(0.073170732, 0.073170732)
+      below_coverage = c(0.136363636, 0.136363636)
     )
   )
 
   expect_equal(
-    check_max_delay(obs, max_delay = 10, cum_coverage = 0.9),
+    check_max_delay(obs, max_delay = 13, cum_coverage = 0.9),
     data.table(
       .group = c(1, "all"), coverage = c(0.9, 0.9),
-      below_coverage = c(0.48780488, 0.48780488)
+      below_coverage = c(0.409090909, 0.409090909)
     )
   )
 

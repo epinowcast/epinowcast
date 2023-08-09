@@ -210,7 +210,21 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @title Check appropriateness of maximum delay
 #'
 #' @description Check if maximum delay specified by the user is long enough and
-#' raise potential warnings.
+#' raise potential warnings. This is achieved by computing the share of reference dates where the
+#' cumulative case count is below some aspired coverage.
+#'
+#' @details The coverage is with respect to the maximum observed case count for
+#' the corresponding reference date. As the maximum observed case count is
+#' likely smaller than the true overall case count for not yet fully observed
+#' reference dates (due to right truncation), only reference dates that are
+#' more than the maximum observed delay ago are included. Still, because we
+#' can only use the maximum observed delay, not the unknown true maximum
+#' delay, the computed coverage values should be interpreted with care, as they
+#' are only proxies for the true coverage.
+#'
+#' @details Note that instead of the overall maximum observed delay, the 97%
+#' quantile of the maximum observed delay over all reference dates is used. This
+#' is more robust against outliers.
 #'
 #' @inheritParams enw_preprocess_data
 #'
@@ -220,7 +234,7 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @param warn Should a warning be issued if the cumulative case count is
 #' below `cum_coverage` for the majority of reference dates?
 #'
-#' @return A `data.table` with the share of reference dates where the 
+#' @return A `data.table` with the share of reference dates where the
 #' cumulative case count is below `cum_coverage`, stratified by group.
 #'
 #' @family check
@@ -232,7 +246,8 @@ check_max_delay <- function(obs,
                             cum_coverage = 0.8,
                             warn = TRUE) {
   obs <- coerce_dt(
-    obs, dates = TRUE, group = TRUE, required_cols = "confirm", copy = TRUE
+    obs,
+    dates = TRUE, group = TRUE, required_cols = "confirm", copy = TRUE
   )
 
   stopifnot(
@@ -240,6 +255,14 @@ check_max_delay <- function(obs,
       cum_coverage > 0 & cum_coverage <= 1
   )
 
+  obs <- enw_add_delay(obs)
+  max_delay_ref <- obs[
+    !is.na(reference_date),
+    .SD[, .(delay = max(delay, na.rm = T)), by = reference_date]
+  ]
+  max_delay_obs <- ceiling(
+    max_delay_ref[, quantile(delay, 0.97, na.rm = TRUE)]
+  ) + 1
   obs <- enw_add_max_reported(obs, copy = FALSE)
 
   # Note that we if we here filter by the user-specified maximum delay, any
@@ -254,13 +277,27 @@ check_max_delay <- function(obs,
   ]
 
   latest_obs <- enw_latest_data(obs)
+  fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs + 1
+  # filter by the maximum observed delay to reduce right truncation bias
+  latest_obs <- enw_filter_reference_dates(
+    latest_obs,
+    latest_date = fully_observed_date
+  )
+
+  if (latest_obs[, .N] < 5) {
+    warning(
+      "There are only very few (", latest_obs[, .N], ") reference dates",
+      "that are sufficiently far in the past to compute coverage ",
+      "statistics for the maximum delay."
+    )
+  }
 
   low_coverage <- latest_obs[, .(
     below_coverage =
       sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
-      sum(!is.na(cum_prop_reported))
+        sum(!is.na(cum_prop_reported))
   ), by = .group]
-  mean_coverage <- low_coverage[,mean(below_coverage)]
+  mean_coverage <- low_coverage[, mean(below_coverage)]
 
   if (warn && mean_coverage > 0.5) {
     warning(
@@ -275,7 +312,7 @@ check_max_delay <- function(obs,
   }
 
   low_coverage <- rbind(low_coverage, list("all", mean_coverage))
-  low_coverage[, coverage:= cum_coverage]
+  low_coverage[, coverage := cum_coverage]
   setcolorder(low_coverage, c(".group", "coverage"))
   return(low_coverage[])
 }

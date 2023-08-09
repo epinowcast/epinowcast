@@ -64,7 +64,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param obs An observation `data.frame` containing \code{reference_date}
+#' @param obs An observation `data.frame` containing `reference_date`
 #' columns of the same length as the number of rows in the posterior and the
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the

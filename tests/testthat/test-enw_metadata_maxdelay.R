@@ -5,7 +5,7 @@ test_that("enw_metadata_maxdelay produces the expected metadata", {
     metamaxdelay <- data.table::data.table(
       type = c("specified", "observed", "modelled"),
       delay = c(10, 20, 10),
-      dates_too_short = c(0.073170732, 0, 0.073170732),
+      dates_too_short = c(0.136363636, 0, 0.136363636),
       description = c(
         "maximum delay specified by the user",
         "maximum delay observed in the data",
