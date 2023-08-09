@@ -521,7 +521,10 @@ enw_delay_filter <- function(obs, max_delay, timestep = "day") {
   }
   empircal_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empircal_max_delay < (max_delay - 1)) {
-    warning("Empirical max delay is less than the specified max delay.")
+    warning(
+      "Empirical max delay (", empircal_max_delay + 1, 
+      ") is less than the specified max delay (", max_delay, ")."
+    )
   }
   return(obs[])
 }
@@ -959,7 +962,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
 
-  obs <- enw_delay_filter(obs, max_delay = max_delay)
+  obs <- enw_delay_filter(
+    obs, max_delay = orig_scale_max_delay, timestep = timestep
+  )
 
   diff_obs <- enw_add_incidence(
     obs,
