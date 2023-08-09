@@ -323,7 +323,10 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` numeric column, and `report_date` and
 #' `reference_date` date columns. The input must have a timestep of a day
-#' and be complete. See [enw_complete_dates()] for more information.
+#' and be complete. See [enw_complete_dates()] for more information. If
+#' NA values are present in the `confirm` column then these will be set to
+#' zero before aggregation this may not be desirable if this missingness
+#' is meaningful.
 #'
 #' @inheritParams get_internal_timestep
 #' @inheritParams enw_linelist_to_incidence

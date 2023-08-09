@@ -14,54 +14,87 @@ obs <- data.table::data.table(
 )
 
 test_that("enw_aggregate_cumulative() basic functionality works", {
-  result <- enw_aggregate_cumulative(obs, timestep = "week", by = "location")
-  expect_lt(nrow(result), nrow(obs))
+  obs <- obs[location == "A"]
+  result <- enw_aggregate_cumulative(obs, timestep = "week")
+  expect_equal(unique(result$confirm), 7) # 7 days in a week
 })
 
-test_that("Works with different timesteps", {
-  # Test with a week
-  result_week <- enw_aggregate_cumulative(obs, timestep = "week")
+test_that("enw_aggregate_cumulative() works with different timesteps", {
+  obs <- obs[location == "A"]
+  # Test with a week as numeric
+  result_week <- enw_aggregate_cumulative(obs, timestep = 7)
+  expect_equal(unique(result_week$confirm), 7)
   
   # Test with a 5-day period
-  result_5days <- enw_aggregate_cumulative(obs, timestep = "5 days")
-  
-  expect_lt(nrow(result_5days), nrow(obs))
-  expect_gt(nrow(result_5days), nrow(result_week))
+  result_5days <- enw_aggregate_cumulative(obs, timestep = 5)
+  expect_equal(unique(result_5days$confirm), 5)
+
+  # Test with a 3-day period
+  result_5days <- enw_aggregate_cumulative(obs, timestep = 3)
+  expect_equal(unique(result_5days$confirm), 3)
 })
 
-test_that("Works with and without groups", {
-  # Without groups
-  result_no_group <- enw_aggregate_cumulative(obs, timestep = "week")
-  
+test_that("enw_aggregate_cumulative() with groups", {
   # With groups
-  result_with_group <- enw_aggregate_cumulative(obs, timestep = "week", by = ".group")
-  
-  expect_equal(nrow(result_with_group), 2 * nrow(result_no_group))
-  expect_equal(unique(result_with_group$.group), c("A", "B"))
+  result_with_group <- enw_aggregate_cumulative(
+    obs, timestep = "week", by = "location"
+  )
+  expect_equal(unique(result_with_group$confirm), 7)
 })
 
-test_that("Handles missing reference dates", {
-  obs_with_na <- copy(obs)
+test_that("enw_aggregate_cumulative() handles missing reference dates", {
+  obs_with_na <- obs[location %in% "A"]
+  setorder(obs_with_na, location, reference_date)
   obs_with_na[1:5, reference_date := NA]
   
-  result <- enw_aggregate_cumulative(obs_with_na, timestep = "week")
+  result <- enw_aggregate_cumulative(obs_with_na, timestep = 3)
   expect_true(any(is.na(result$reference_date)))
+  expect_equal(result$confirm[1], 1)
+  expect_equal(unique(result[-1,]$confirm), 3)
 })
 
-test_that("Handles missing report dates", {
-  obs_with_na <- copy(obs)
+test_that("enw_aggregate_cumulative() handles missing report dates", {
+  obs_with_na <- obs[location %in% "A"]
   obs_with_na[1:5, report_date := NA]
-  
   result <- enw_aggregate_cumulative(obs_with_na, timestep = "week")
-  expect_true(any(is.na(result$report_date)))
+  expect_equal(unique(result$confirm), 7)
 })
 
-test_that("Handles both missing report and reference dates", {
-  obs_with_na <- copy(obs)
-  obs_with_na[1:3, report_date := NA]
-  obs_with_na[7:9, reference_date := NA]
-  
-  result <- enw_aggregate_cumulative(obs_with_na, timestep = "week")
-  expect_true(any(is.na(result$report_date)))
-  expect_true(any(is.na(result$reference_date)))
+test_that("enw_aggregate_cumulative() when there are no complete report dates", {
+  obs_no_complete <- obs[location %in% "A"]
+  obs_no_complete <- obs_no_complete[1:20, ]
+  expect_error(
+    enw_aggregate_cumulative(obs_no_complete, timestep = "week"),
+    "There are no complete report dates"
+  )
+})
+
+test_that("enw_aggregate_cumulative() when timestep is set to 'day'", {
+  obs_day <- obs[location == "A"]
+  expect_error(
+    enw_aggregate_cumulative(obs_day, timestep = "day"),
+    "The data already has a timestep of a day"
+  )
+})
+
+test_that("enw_aggregate_cumulative() handles missing values in 'confirm'", {
+  obs_na_confirm <- obs[location == "A"]
+  obs_na_confirm[1:5, confirm := NA]
+  result <- enw_aggregate_cumulative(obs_na_confirm, timestep = "week")
+  expect_equal(unique(result$confirm), 7)
+})
+
+test_that("enw_aggregate_cumulative() when 'by' grouping does not exist", {
+  expect_error(
+    enw_aggregate_cumulative(
+      obs, timestep = "week", by = "non_existent_column")
+    )
+})
+
+test_that("enw_aggregate_cumulative() when 'obs' is empty", {
+  obs_empty <- obs[0]
+  expect_error(
+    enw_aggregate_cumulative(obs_empty, timestep = "week"),
+    "There must be at least two observations"
+  )
 })
