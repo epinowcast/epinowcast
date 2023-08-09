@@ -223,6 +223,8 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' are only proxies for the true coverage.
 #'
 #' @inheritParams enw_preprocess_data
+#' 
+#' @inheritParams enw_add_incidence
 #'
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
 #' should cover. Defaults to 0.8 (80%).
@@ -245,25 +247,59 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' check_max_delay(germany_covid19_hosp, max_delay = 20, cum_coverage = 0.8)
 check_max_delay <- function(obs,
                             max_delay = 20,
+                            by = NULL,
                             cum_coverage = 0.8,
                             quantile_outlier = 0.97,
+                            set_negatives_to_zero = TRUE,
                             warn = TRUE) {
-  obs <- coerce_dt(
-    obs,
-    dates = TRUE, group = TRUE, required_cols = "confirm", copy = TRUE
+  
+  max_delay <- as.integer(max_delay)
+  stopifnot(
+    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
+    "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
-
   stopifnot(
     "`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." =
       cum_coverage > 0 & cum_coverage <= 1
   )
-  
   stopifnot(
     "`quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
       quantile_outlier > 0 & quantile_outlier <= 1
   )
-
-  obs <- enw_add_delay(obs)
+  
+  obs <- coerce_dt(obs, dates = TRUE, copy = TRUE)
+  data.table::setkeyv(obs, "reference_date")
+  
+  if (!is.null(by)) {
+    if (by != ".group") {
+      check_group(obs)
+      obs <- enw_assign_group(obs, by = by, copy = FALSE)
+    } else {
+      stopifnot(
+        "Column `.group` is not present in the data" =
+          ".group" %in% colnames(obs)
+      )
+    }
+  }
+  obs <- enw_add_max_reported(obs, copy = FALSE)
+  obs <- enw_add_delay(obs, copy = FALSE)
+  
+  diff_obs <- enw_add_incidence(
+    obs, set_negatives_to_zero = set_negatives_to_zero, by = by
+  )
+  
+  # filter obs based on diff constraints
+  obs <- merge(
+    obs, diff_obs[, .(reference_date, report_date, .group)],
+    by = c("reference_date", "report_date", ".group")
+  )
+  
+  # update grouping in case any are now missing
+  if (!(is.null(by) || by == ".group")) {
+    obs[, .group := NULL]
+    obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  }
+  
   max_delay_ref <- obs[
     !is.na(reference_date),
     .SD[, .(delay = max(delay, na.rm = T)), by = reference_date]
@@ -271,7 +307,6 @@ check_max_delay <- function(obs,
   max_delay_obs <- ceiling(
     max_delay_ref[, quantile(delay, quantile_outlier, na.rm = TRUE)]
   ) + 1
-  obs <- enw_add_max_reported(obs, copy = FALSE)
 
   # Note that we if we here filter by the user-specified maximum delay, any
   # warnings obtained would also apply to a modelled, potentially shorter,

@@ -864,7 +864,9 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
 
   dates_too_short <- mapply(
     function(x, warn) {
-      check_max_delay(obs, x, warn = warn)[.group == "all", below_coverage]
+      check_max_delay(
+        obs, x, by = ".group", warn = warn
+      )[.group == "all", below_coverage]
     },
     x = c(max_delay, max_delay_obs, max_delay_model),
     warn = c(TRUE, FALSE, FALSE)
@@ -1067,11 +1069,13 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(
-    obs, max_delay = metamaxdelay[type == "modelled", delay]
+    obs,
+    max_delay = metamaxdelay[type == "modelled", delay]
   )
 
   diff_obs <- enw_add_incidence(
-    obs, set_negatives_to_zero = set_negatives_to_zero, by = by
+    obs,
+    set_negatives_to_zero = set_negatives_to_zero, by = by
   )
 
   # filter obs based on diff constraints
