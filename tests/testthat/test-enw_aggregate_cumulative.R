@@ -2,7 +2,7 @@
 obs <- data.table::data.table(
   location = c(rep("A", 50), rep("B", 50)),
   report_date = as.Date(rep(
-    rep(seq(as.Date("2020-01-01"), by = "day", length.out = 5), each = 10), 2
+    rep(seq(as.Date("2020-01-05"), by = "day", length.out = 5), each = 10), 2
   )),
   reference_date = as.Date(
     rep(

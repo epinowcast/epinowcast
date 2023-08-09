@@ -340,7 +340,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
   stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
   obs <- coerce_dt(
     obs,
-    required_cols = "confirm", forbidden_cols = ".group",
+    required_cols = c("confirm", by), forbidden_cols = ".group",
     dates = TRUE, copy = copy
   )
 
@@ -353,6 +353,12 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
   agg_obs <- obs[
     report_date >= min(reference_date, na.rm = TRUE) + internal_timestep
   ]
+
+  stopifnot(
+    "There are no complete report dates (i.e. report_date >= reference_date + timestep)" = nrow(agg_obs) > 0 # nolint
+  )
+
+  if (nrow(agg_obs) > 0)
 
   # Make numeric report and reference data
   agg_obs[,
