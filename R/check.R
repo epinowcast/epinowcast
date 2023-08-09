@@ -35,6 +35,33 @@ check_group <- function(obs) {
   ))
 }
 
+#' Check Observations for Uniqueness of Grouping Variables with respect
+#' to reference_date and report_date
+#'
+#' @description This function checks that the input data is stratified by
+#' reference_date, report_date, and .group. It does this by counting the
+#' number of observations for each combination of these variables, and
+#' throwing a warning if any combination has more than one observation.
+#'
+#' @param obs An object that will be `coerce_dt`d in place, that contains
+#' `.group`, `reference_date`, and `report_date` columns.
+#'
+#' @return NULL
+#'
+#' @family check
+check_group_date_unique <- function(obs) {
+  group_cols <- c("reference_date", "report_date", ".group")
+  obs <- coerce_dt(obs, required_cols = group_cols, copy = FALSE)
+  cells <- obs[, .(count = .N), by = group_cols]
+  if (any(cells[, count > 1])) {
+    stop("The input data seems to be stratified by more variables ",
+         "than specified via the `by` argument. Please provide additional ",
+         "grouping variables to `by`, ",
+         "or aggregate the observations beforehand.")
+  }
+  return(invisible(NULL))
+}
+
 #' Check a model module contains the required components
 #'
 #' @param module A model module. For example [enw_expectation()].

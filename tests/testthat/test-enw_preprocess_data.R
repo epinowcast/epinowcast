@@ -120,3 +120,19 @@ test_that(
       enw_preprocess_data(nat_germany_hosp, max_delay = 0)
     )
 })
+
+test_that(
+  "enw_preprocess_data fails as expected when input data is not aggregated by the specified by variables", {
+    expect_error(
+      enw_preprocess_data(germany_covid19_hosp),
+      "The input data seems to be stratified by more variables"
+    )
+    expect_error(
+      enw_preprocess_data(germany_covid19_hosp, by = "location"),
+      "The input data seems to be stratified by more variables"
+    )
+    expect_error(
+      enw_preprocess_data(germany_covid19_hosp, by = "age_group"),
+      "The input data seems to be stratified by more variables"
+    )
+})
