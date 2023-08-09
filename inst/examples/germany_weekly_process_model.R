@@ -17,7 +17,7 @@ nat_germany_hosp <- enw_filter_report_dates(
 
 nat_germany_hosp <- enw_filter_reference_dates(
   nat_germany_hosp,
-  earliest_date = "2021-08-01"
+  earliest_date = "2021-07-01"
 )
 
 nat_germany_hosp <- enw_complete_dates(
@@ -46,18 +46,18 @@ rt_nat_germany <- enw_filter_report_dates(
 )
 rt_nat_germany <- enw_filter_reference_dates(
   rt_nat_germany,
-  include_days = 60
+  include_days = 90
 )
 
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(weekly_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 20, include_days = 60
+  remove_days = 20, include_days = 90
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
-pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 3, timestep = "week")
+pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 4, timestep = "week")
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.

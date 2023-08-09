@@ -224,7 +224,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   direction <- match.arg(direction)
 
   internal_timestep <- get_internal_timestep(timestep)
-  new_days <- seq(1, days, by = internal_timestep)
+  new_days <- seq(internal_timestep, days, by = internal_timestep)
   if (direction %in% "start") {
     new_days <- -new_days
     filt_fn <- min
@@ -298,15 +298,17 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' @return A data.table with a `delay` column added.
 #'
 #' @inheritParams enw_add_incidence
+#' @inheritParams get_internal_timestep
 #' @family preprocess
 #' @export
 #' @examples
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
-enw_add_delay <- function(obs, copy = TRUE) {
+enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
-  obs[, delay := as.numeric(report_date - reference_date)]
+  internal_timestep <- get_internal_timestep(timestep)
+  obs[, delay := as.numeric(report_date - reference_date) / internal_timestep]
   return(obs[])
 }
 
@@ -734,7 +736,7 @@ enw_missing_reference <- function(obs) {
 #' constructing a categorised version of numeric delays.
 #'
 #' @inheritParams get_internal_timestep
-#' 
+#'
 #' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
@@ -949,7 +951,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
 
   obs <- enw_add_max_reported(obs, copy = FALSE)
-  obs <- enw_add_delay(obs, copy = FALSE)
+  obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
 
   obs <- enw_delay_filter(obs, max_delay = max_delay)
 
