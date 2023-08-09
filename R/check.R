@@ -222,14 +222,16 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' delay, the computed coverage values should be interpreted with care, as they
 #' are only proxies for the true coverage.
 #'
-#' @details Note that instead of the overall maximum observed delay, the 97%
-#' quantile of the maximum observed delay over all reference dates is used. This
-#' is more robust against outliers.
-#'
 #' @inheritParams enw_preprocess_data
 #'
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
 #' should cover. Defaults to 0.8 (80%).
+#' 
+#' @param quantile_outlier Only reference dates sufficiently far in the past,
+#' determined based on the maximum observed delay, are included (see details).
+#' Instead of the overall maximum observed delay, a quantile of the maximum
+#' observed delay over all reference dates is used. This is more robust
+#' against outliers. Defaults to 0.97 (97%).
 #'
 #' @param warn Should a warning be issued if the cumulative case count is
 #' below `cum_coverage` for the majority of reference dates?
@@ -244,6 +246,7 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 check_max_delay <- function(obs,
                             max_delay = 20,
                             cum_coverage = 0.8,
+                            quantile_outlier = 0.97,
                             warn = TRUE) {
   obs <- coerce_dt(
     obs,
@@ -254,6 +257,11 @@ check_max_delay <- function(obs,
     "`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." =
       cum_coverage > 0 & cum_coverage <= 1
   )
+  
+  stopifnot(
+    "`quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
+      quantile_outlier > 0 & quantile_outlier <= 1
+  )
 
   obs <- enw_add_delay(obs)
   max_delay_ref <- obs[
@@ -261,7 +269,7 @@ check_max_delay <- function(obs,
     .SD[, .(delay = max(delay, na.rm = T)), by = reference_date]
   ]
   max_delay_obs <- ceiling(
-    max_delay_ref[, quantile(delay, 0.97, na.rm = TRUE)]
+    max_delay_ref[, quantile(delay, quantile_outlier, na.rm = TRUE)]
   ) + 1
   obs <- enw_add_max_reported(obs, copy = FALSE)
 
@@ -287,8 +295,11 @@ check_max_delay <- function(obs,
   if (latest_obs[, .N] < 5) {
     warning(
       "There are only very few (", latest_obs[, .N], ") reference dates",
-      "that are sufficiently far in the past to compute coverage ",
-      "statistics for the maximum delay."
+      " that are sufficiently far in the past (beyond maximum observed delay ",
+      "of ", max_delay_obs," days) to compute coverage statistics. ",
+      "The maximum delay check may thus not be reliable. ",
+      "If you think the maximum observed delay of ", max_delay_obs," days is ",
+      "an outlier, consider decreasing `quantile_outlier`."
     )
   }
 
