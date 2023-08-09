@@ -5,7 +5,7 @@ nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
 
 cols <- c(
   "obs", "new_confirm", "latest", "missing_reference", "reporting_triangle",
-  "metareference", "metareport", "metadelay", "time", "snapshots", "by", "groups", "max_delay", "max_date"
+  "metareference", "metareport", "metadelay", "time", "snapshots", "by", "groups", "max_delay", "max_date", "timestep"
 )
 test_that("Preprocessing produces expected output with default settings", {
   pobs <- enw_preprocess_data(nat_germany_hosp)
