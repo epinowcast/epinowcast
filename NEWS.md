@@ -8,7 +8,7 @@ This release is in development and not yet ready for production use.
 
 @adrian-lison, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
@@ -17,11 +17,19 @@ This release is in development and not yet ready for production use.
 
 ## Package
 
-- Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs
-- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and self-reviewed.
-- Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and self-reviewed.
+- Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
+- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
+- Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
 - Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
+
+## Model
+
+- Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event censoring. Due to this change models may perform slightly differently between versions and any delay distribution estimates will have means that are half a day longer (note this corrects the previous bias). See #288 by @seabbs and reviewed by @adrian-lison.
+
+## Documentation
+
+- Updated the distributions vignette to match the updated handling of discretisation. See #288 by @seabbs and reviewed by @adrian-lison.
 
 # epinowcast 0.2.2
 
@@ -33,7 +41,7 @@ This is a minor release that fixes a bug in the handling of optional initial con
 
 @seabbs reviewed pull requests for this release.
 
-@sbfnk and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@sbfnk and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
