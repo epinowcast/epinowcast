@@ -61,6 +61,7 @@ always-error condition).
 }
 \seealso{
 Utility functions
+\code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{convert_cmdstan_to_rstan}()},
 \code{\link{expose_stan_fns}()},

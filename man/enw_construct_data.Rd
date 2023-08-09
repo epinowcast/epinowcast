@@ -14,7 +14,8 @@ enw_construct_data(
   metareference,
   metadelay,
   by,
-  max_delay
+  max_delay,
+  timestep
 )
 }
 \arguments{
@@ -51,6 +52,9 @@ distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
 (i.e. a \code{max_delay} of 1 corresponds with no delay).}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A data.table containing processed observations as a series of nested
@@ -96,7 +100,8 @@ enw_construct_data(
   metareference = pobs$metareference[[1]],
   metadelay = enw_delay_metadata(max_delay = 20),
   by = c(),
-  max_delay = pobs$max_delay[[1]]
+  max_delay = pobs$max_delay[[1]],
+  timestep = pobs$timestep[[1]]
 )
 }
 \seealso{

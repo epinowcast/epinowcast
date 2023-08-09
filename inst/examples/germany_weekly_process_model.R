@@ -20,26 +20,19 @@ nat_germany_hosp <- enw_filter_reference_dates(
   earliest_date = "2021-08-01"
 )
 
+nat_germany_hosp <- enw_complete_dates(
+  nat_germany_hosp,
+  by = c("location", "age_group"),
+  timestep = "day"
+)
+
 # Aggregate data to be weekly both by report and reference date
-weekly_germany_hosp <- nat_germany_hosp[report_date >= min(reference_date) + 7]
-weekly_germany_hosp <- weekly_germany_hosp[, rep_dow := wday(report_date)]
+weekly_germany_hosp <- nat_germany_hosp |> 
+  enw_aggregate_cumulative(timestep = "week")
 
-weekly_germany_hosp <- weekly_germany_hosp[rep_dow == rep_dow[1]]
-
-setorder(weekly_germany_hosp, reference_date, report_date)
-
-weekly_germany_hosp <- weekly_germany_hosp[,
-  `:=`(confirm = frollsum(confirm, c(1:6, rep(7, .N - 6)), adaptive = TRUE)),
-  by = c("report_date")
-]
-
-weekly_germany_hosp <- weekly_germany_hosp[, ref_dow := wday(reference_date)]
-weekly_germany_hosp <- weekly_germany_hosp[ref_dow == rep_dow[1]]
-weekly_germany_hosp <- weekly_germany_hosp[reference_date >= min(report_date)]
-
-weekly_germany_hosp[]
-
-# Make sure observations are complete
+# Make sure observations are complete (we don't need to do this here as we have
+# already done this above but for completeness we include it (as it would be
+# needed for real data)) 
 weekly_germany_hosp <- enw_complete_dates(
   weekly_germany_hosp,
   by = c("location", "age_group"),
@@ -64,7 +57,7 @@ latest_obs <- enw_filter_reference_dates(
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
-pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 28, timestep = "week")
+pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 4, timestep = "week")
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.

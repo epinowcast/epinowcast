@@ -186,7 +186,8 @@ enw_linelist_to_incidence <- function(linelist,
 
   complete_counts <- enw_complete_dates(
     cum_counts, max_delay = max_delay, by = by,
-    completion_beyond_max_report = completion_beyond_max_report
+    completion_beyond_max_report = completion_beyond_max_report,
+    timestep = "day"
   )
   complete_counts <- enw_add_incidence(complete_counts, by = by, copy = FALSE)
   return(complete_counts[])
@@ -308,4 +309,99 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
     "0.2.1", "enw_incidence_to_cumulative()", "enw_add_cumulative()"
   )
   return(enw_add_cumulative(obs, by = by))
+}
+
+#' Aggregate observations over a given timestep for both report and reference
+#' dates.
+#'
+#' This function aggregates observations over a specified timestep,
+#' ensuring alignment on the same day of week for report and reference dates.
+#' It is  useful for aggregating data to a weekly timestep, for example which
+#' may be desirable if testing using a weekly timestep or if you are very
+#' concerned about runtime.
+#'
+#' @param obs An object coercible to a `data.table` (such as a `data.frame`)
+#' which must have a `new_confirm` numeric column, and `report_date` and
+#' `reference_date` date columns. The input must have a timestep of a day
+#' and be complete. See [enw_complete_dates()] for more information.
+#'
+#' @inheritParams get_internal_timestep
+#' @inheritParams enw_linelist_to_incidence
+#' @return A data.table with aggregated observations.
+#'
+#' @importFrom data.table setorder
+#' @export
+#' @family dataconverters
+#' @examples
+#' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+#' enw_aggregate_cumulative(nat_hosp, timestep = "week")
+enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
+                                       copy = TRUE) {
+  stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
+  obs <- coerce_dt(
+    obs,
+    required_cols = "confirm", forbidden_cols = ".group",
+    dates = TRUE, copy = copy
+  )
+
+  obs <- enw_assign_group(obs, by = by)
+  check_timestep_by_date(obs, timestep = "day", exact = TRUE)
+
+  internal_timestep <- get_internal_timestep(timestep)
+
+  # Initial filtering
+  agg_obs <- obs[
+    report_date >= min(reference_date, na.rm = TRUE) + internal_timestep
+  ]
+
+  # Make numeric report and reference data
+  agg_obs[,
+    num_report_date :=
+     as.numeric(report_date) - as.numeric(min(report_date, na.rm = TRUE))
+  ]
+  agg_obs[,
+    num_reference_date :=
+      as.numeric(reference_date) - as.numeric(min(reference_date, na.rm = TRUE))
+  ]
+
+  # Set the day of the timestep based on timestep
+  agg_obs[, rep_mod := num_report_date %% internal_timestep]
+  agg_obs[, ref_mod := num_reference_date %% internal_timestep]
+
+  # Ordering by reference and report date 
+  setorder(agg_obs, reference_date, report_date)
+
+  # Split into missing and non-missing reference dates
+  agg_obs_na_ref <- agg_obs[is.na(reference_date)]
+  agg_obs <- agg_obs[!is.na(reference_date)]
+
+  # For non-missing reference dates, aggregate over the reference date
+  # using the desired reporting timestep
+  agg_obs <- agg_obs[rep_mod == rep_mod[1]]
+
+  # Aggregate over the timestep
+  agg_obs <- aggregate_rolling_sum(
+    agg_obs, internal_timestep, by = c("report_date", ".group")
+  )
+
+  # Set day of week for reference date and filter
+  agg_obs <- agg_obs[ref_mod == rep_mod[1]]
+  agg_obs <- agg_obs[reference_date >= min(report_date)]
+
+  # If there are missing reference dates, aggregate over the report date
+  # using the desired reporting timestep
+  if (nrow(agg_obs_na_ref) > 0) {
+    agg_obs_na_ref <- aggregate_rolling_sum(
+      agg_obs_na_ref, internal_timestep, by = c(".group")
+    )
+    agg_obs_na_ref <- agg_obs_na_ref[rep_mod == rep_mod[1]]
+    agg_obs <- rbind(agg_obs_na_ref, agg_obs)
+  }
+
+  # Drop internal processing columns
+  agg_obs[,
+   c("ref_mod", "num_report_date", "rep_mod", "num_reference_date", ".group") :=
+    NULL
+  ]
+  return(agg_obs[])
 }

@@ -8,8 +8,8 @@ enw_preprocess_data(
   obs,
   by = NULL,
   max_delay = 20,
-  set_negatives_to_zero = TRUE,
   timestep = "day",
+  set_negatives_to_zero = TRUE,
   ...,
   copy = TRUE
 )
@@ -32,6 +32,9 @@ distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
 (i.e. a \code{max_delay} of 1 corresponds with no delay).}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently

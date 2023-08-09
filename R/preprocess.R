@@ -806,11 +806,12 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   metareference = pobs$metareference[[1]],
 #'   metadelay = enw_delay_metadata(max_delay = 20),
 #'   by = c(),
-#'   max_delay = pobs$max_delay[[1]]
+#'   max_delay = pobs$max_delay[[1]],
+#'   timestep = pobs$timestep[[1]]
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
                                reporting_triangle, metareport, metareference,
-                               metadelay, by, max_delay) {
+                               metadelay, by, max_delay, timestep) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
@@ -825,7 +826,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     by = list(by),
     groups = length(unique(obs$.group)),
     max_delay = max_delay,
-    max_date = max(obs$report_date)
+    max_date = max(obs$report_date),
+    timestep = timestep
   )
   class(out) <- c("enw_preprocess_data", class(out))
   return(out[])
@@ -866,15 +868,15 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' what maximum makes sense for your data carefully. Note that this is zero
 #' indexed and so includes the reference date and `max_delay - 1` other days
 #' (i.e. a `max_delay` of 1 corresponds with no delay).
-#' 
+#'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
 #'   (e.g. day of week, days since start of time series)
 #'
 #' @param copy A logical; if `TRUE` (the default) creates a copy; otherwise,
 #' modifies `obs` in place.
-#' 
-#' @inheritParam get_internal_timestep
+#'
+#' @inheritParams get_internal_timestep
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
@@ -915,11 +917,14 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  max_delay <- as.integer(max_delay)
   stopifnot(
-    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
+    "`max_delay` must be an integer and not NA" = is.numeric(max_delay) &&
+       round(max_delay) == max_delay,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
+  internal_timestep <- get_internal_timestep(timestep)
+  orig_scale_max_delay <- max_delay
+  max_delay <- max_delay * internal_timestep
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
@@ -1003,7 +1008,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     metareport = metareport,
     metadelay = metadelay,
     by = by,
-    max_delay = max_delay
+    max_delay = orig_scale_max_delay,
+    timestep = timestep
   )
 
   return(out[])

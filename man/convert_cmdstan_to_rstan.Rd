@@ -18,6 +18,7 @@ Convert Cmdstan to Rstan
 }
 \seealso{
 Utility functions
+\code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{expose_stan_fns}()},

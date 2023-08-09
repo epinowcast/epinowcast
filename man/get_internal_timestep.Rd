@@ -24,6 +24,7 @@ If the input is a numeric whole number, it is returned as is.
 }
 \seealso{
 Utility functions
+\code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{convert_cmdstan_to_rstan}()},
