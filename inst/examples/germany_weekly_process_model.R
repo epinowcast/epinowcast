@@ -57,7 +57,7 @@ latest_obs <- enw_filter_reference_dates(
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
-pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 4, timestep = "week")
+pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 5, timestep = "week")
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.
@@ -67,5 +67,5 @@ nowcast <- epinowcast(pobs,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
   ),
-  obs = enw_obs(family = "poisson", data = pobs),
+  obs = enw_obs(family = "negbin", data = pobs),
 )

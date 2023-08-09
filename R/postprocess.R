@@ -94,9 +94,11 @@ enw_nowcast_summary <- function(fit, obs,
 
   max_delay <- nrow(nowcast) / max(obs$.group)
 
-  ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  ord_obs <- coerce_dt(
+    obs, copy = TRUE, required_cols = c(".group", "reference_date")
+  )
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
+  ord_obs <- ord_obs[, .SD[tail(.I, max_delay), ], by = ".group"]
   nowcast <- cbind(
     ord_obs,
     nowcast
@@ -140,9 +142,12 @@ enw_nowcast_samples <- function(fit, obs) {
   )
   max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
 
-  ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  ord_obs <- coerce_dt(
+    obs, copy = TRUE, required_cols = c(".group", "reference_date")
+  )
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
+  ord_obs <- ord_obs[, .SD[tail(.I, max_delay), ], by = ".group"]
+
   ord_obs <- data.table::data.table(
     .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
   )
