@@ -26,7 +26,7 @@ functionality without needing to install cmdstanr."><meta property="og:image" co
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.2000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -133,11 +133,11 @@ the file name(s) to generate these outputs (<code>type</code> = "script")</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             metareport          metadelay time snapshots by groups max_delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[60x12]&gt; &lt;data.table[20x4]&gt;   41        41         1        20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      max_date               fit       data  fit_args samples max_rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-08-22 &lt;CmdStanMCMC[32]&gt; &lt;list[94]&gt; &lt;list[6]&gt;    1000     1.02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-08-22 &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[6]&gt;    1000     1.03</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    divergent_transitions per_divergent_transitions max_treedepth</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:                     0                         0             8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    no_at_max_treedepth per_at_max_treedepth run_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                 198                0.198    103.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                  66                0.066     57.4</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the preprocessed observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"preprocessed_observations"</span><span class="op">)</span></span></span>
@@ -152,29 +152,29 @@ the file name(s) to generate these outputs (<code>type</code> = "script")</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the latest observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"observations"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group confirm report_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-08-02       DE       00+      59  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-08-03       DE       00+     156  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-08-04       DE       00+     183  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-08-05       DE       00+     147  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-08-06       DE       00+     155  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-08-07       DE       00+     159  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-08-08       DE       00+     119  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-08-09       DE       00+      65  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-08-10       DE       00+     204  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-08-11       DE       00+     275  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-08-12       DE       00+     273  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-08-13       DE       00+     270  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-08-14       DE       00+     262  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-08-15       DE       00+     192  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-08-16       DE       00+     140  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-08-17       DE       00+     323  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-08-18       DE       00+     409  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-08-19       DE       00+     370  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-08-20       DE       00+     361  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-08-21       DE       00+     339  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21:     2021-08-22       DE       00+     258  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group confirm report_date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group report_date confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     2021-08-02       DE       00+  2021-10-01      59</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     2021-08-03       DE       00+  2021-10-01     156</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2021-08-04       DE       00+  2021-10-01     183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     2021-08-05       DE       00+  2021-10-01     147</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     2021-08-06       DE       00+  2021-10-01     155</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     2021-08-07       DE       00+  2021-10-01     159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     2021-08-08       DE       00+  2021-10-01     119</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     2021-08-09       DE       00+  2021-10-01      65</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     2021-08-10       DE       00+  2021-10-01     204</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     2021-08-11       DE       00+  2021-10-01     275</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:     2021-08-12       DE       00+  2021-10-01     273</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:     2021-08-13       DE       00+  2021-10-01     270</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:     2021-08-14       DE       00+  2021-10-01     262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:     2021-08-15       DE       00+  2021-10-01     192</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:     2021-08-16       DE       00+  2021-10-01     140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:     2021-08-17       DE       00+  2021-10-01     323</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:     2021-08-18       DE       00+  2021-10-01     409</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:     2021-08-19       DE       00+  2021-10-01     370</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:     2021-08-20       DE       00+  2021-10-01     361</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:     2021-08-21       DE       00+  2021-10-01     339</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:     2021-08-22       DE       00+  2021-10-01     258</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reference_date location age_group report_date confirm</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the script used to generate these examples</span></span></span>
 <span class="r-in"><span><span class="co"># Optionally source this script to regenerate the example</span></span></span>

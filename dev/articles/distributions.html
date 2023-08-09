@@ -56,7 +56,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.1001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.2000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -196,24 +196,43 @@ and adjustment for the assumed maximum delay).</p>
 with an assumed maximum delay (specified via the <code>max_delay</code>
 argument). Therefore, the continuous delay distributions must be
 discretised and adjusted for the maximum delay.</p>
-<p>To discretise the continuous probability distribution into discrete
-probabilities <span class="math inline">\(p^{\prime}_{g,t,d}\)</span>,
-we use its cumulative distribution function <span class="math inline">\(F^{\mu_{g,t}, \upsilon_{g,t}}\)</span> to compute
-<span class="math display">\[p^{\prime}_{g,t,d} = \frac{F^{\mu_{g,t},
-\upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d)}{F^{\mu_{g,t},
-\upsilon_{g,t}}(D)}.\]</span> In words, the discrete probability mass
-function (pmf) is obtained from the continuous distribution by dividing
-it into <span class="math inline">\(D\)</span> different bins <span class="math display">\[(0,1],\, (1,2],\, \ldots,\, (D-1,D],\]</span>
-where <span class="math inline">\(D\)</span> is the maximum delay
-covered by the model. Importantly, the bins are normalized by <span class="math inline">\(F^{\mu_{g,t}, \upsilon_{g,t}}(D)\)</span>, which
+<p>The exact form of this discretisation is complex due to the
+interaction between primary and secondary events. Rather than modelling
+this explicitly, we approximate it by assuming a uniform censoring
+interval of 2 days for each delay. This comes from assuming daily
+censoring of both the primary and secondary events, which together
+define the delay distribution, and ignoring potential interactions
+between primary and secondary events. As a result, the probability of
+reporting a delay of <span class="math inline">\(d\)</span> days equals
+the probability of reporting a delay of <span class="math inline">\(d+1\)</span> days or less, minus the probability
+of reporting a delay of <span class="math inline">\(d-1\)</span> days or
+less. This is then normalised by the overall probability of reporting
+any delay up to some maximum observed delay, <span class="math inline">\(D\)</span>.</p>
+<p>More formally, we define this in terms of the cumulative distribution
+function of the delay distribution. Let <span class="math inline">\(F^{\mu_{g,t}, \upsilon_{g,t}}\)</span> be the
+cumulative distribution function of a continuous probability
+distribution of delays with parameters <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span>. Then, the probability of
+reporting a delay of <span class="math inline">\(d\)</span> days is
+<span class="math display">\[p_{g,t,d} = \frac{F^{\mu_{g,t},
+\upsilon_{g,t}}(d+1) - F^{\mu_{g,t}, \upsilon_{g,t}}(d-1)}{F^{\mu_{g,t},
+\upsilon_{g,t}}(D + 1 ) + F^{\mu_{g,t},
+\upsilon_{g,t}}(D)}.\]</span></p>
+<p>Unless <span class="math inline">\(d = 0\)</span> then we instead
+have</p>
+<p><span class="math display">\[p_{g,t,0} = \frac{F^{\mu_{g,t},
+\upsilon_{g,t}}(1)}{F^{\mu_{g,t}, \upsilon_{g,t}}(D + 1 ) +
+F^{\mu_{g,t}, \upsilon_{g,t}}(D)}.\]</span></p>
+<p>Normalising by <span class="math inline">\(F^{\mu_{g,t},
+\upsilon_{g,t}}(D+1) + F^{\mu_{g,t}, \upsilon_{g,t}}(D)\)</span>,
 ensures that the <span class="math inline">\(p^{\prime}_{g,t,d}\)</span>
 sum to 1. Since <span class="math inline">\(F^{\mu_{g,t},
 \upsilon_{g,t}}(D)\)</span> is the probability of reporting before the
 maximum delay, this can also be interpreted as conditioning our
 distribution on the maximum delay.</p>
 <p>Note that because of the discretisation and normalization, the
-discrete random variable we obtain generally does not have exactly the
-same moments as the original, continuous distribution.</p>
+discrete delay distribution we obtain only approximates the original
+continuous distribution, and the approximation is worse for shorter
+delays.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
