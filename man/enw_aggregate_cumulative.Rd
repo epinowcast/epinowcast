@@ -11,7 +11,10 @@ enw_aggregate_cumulative(obs, timestep = "day", by = c(), copy = TRUE)
 \item{obs}{An object coercible to a \code{data.table} (such as a \code{data.frame})
 which must have a \code{new_confirm} numeric column, and \code{report_date} and
 \code{reference_date} date columns. The input must have a timestep of a day
-and be complete. See \code{\link[=enw_complete_dates]{enw_complete_dates()}} for more information.}
+and be complete. See \code{\link[=enw_complete_dates]{enw_complete_dates()}} for more information. If
+NA values are present in the \code{confirm} column then these will be set to
+zero before aggregation this may not be desirable if this missingness
+is meaningful.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
 "week", "month") or a numeric whole number representing the number of days.}
