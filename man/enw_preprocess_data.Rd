@@ -33,8 +33,11 @@ what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
 (i.e. a \code{max_delay} of 1 corresponds with no delay).}
 
-\item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+\item{timestep}{The timestep to used in the process model (i.e. the
+reference date model). This can be a string ("day", "week", "month") or a
+numeric whole number representing the number of days. If your data does not
+have this timestep then you may wish to make use of
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently

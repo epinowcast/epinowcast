@@ -868,7 +868,13 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' what maximum makes sense for your data carefully. Note that this is zero
 #' indexed and so includes the reference date and `max_delay - 1` other days
 #' (i.e. a `max_delay` of 1 corresponds with no delay).
-#'
+#' 
+#' @param timestep The timestep to used in the process model (i.e. the
+#' reference date model). This can be a string ("day", "week", "month") or a
+#' numeric whole number representing the number of days. If your data does not
+#' have this timestep then you may wish to make use of
+#' [enw_aggregate_cumulative()] to aggregate your data to the desired timestep.
+#' 
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
 #'   (e.g. day of week, days since start of time series)
