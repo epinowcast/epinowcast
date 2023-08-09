@@ -220,8 +220,8 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @param warn Should a warning be issued if the cumulative case count is
 #' below `cum_coverage` for the majority of reference dates?
 #'
-#' @return Numeric, the share of reference dates where the cumulative case count
-#' is below `cum_coverage`.
+#' @return A `data.table` with the share of reference dates where the 
+#' cumulative case count is below `cum_coverage`, stratified by group.
 #'
 #' @family check
 #' @export
@@ -232,8 +232,7 @@ check_max_delay <- function(obs,
                             cum_coverage = 0.8,
                             warn = TRUE) {
   obs <- coerce_dt(
-    obs,
-    dates = TRUE, required_cols = "confirm", copy = TRUE
+    obs, dates = TRUE, group = TRUE, required_cols = "confirm", copy = TRUE
   )
 
   stopifnot(
@@ -256,10 +255,14 @@ check_max_delay <- function(obs,
 
   latest_obs <- enw_latest_data(obs)
 
-  low_cum <- latest_obs[, sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
-    sum(!is.na(cum_prop_reported))]
+  low_coverage <- latest_obs[, .(
+    below_coverage =
+      sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
+      sum(!is.na(cum_prop_reported))
+  ), by = .group]
+  mean_coverage <- low_coverage[,mean(below_coverage)]
 
-  if (warn && low_cum > 0.5) {
+  if (warn && mean_coverage > 0.5) {
     warning(
       "The specified maximum reporting delay ",
       "(", max_delay, " days) ",
@@ -270,5 +273,9 @@ check_max_delay <- function(obs,
       immediate. = TRUE
     )
   }
-  return(low_cum)
+
+  low_coverage <- rbind(low_coverage, list("all", mean_coverage))
+  low_coverage[, coverage:= cum_coverage]
+  setcolorder(low_coverage, c(".group", "coverage"))
+  return(low_coverage[])
 }

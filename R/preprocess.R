@@ -862,14 +862,18 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
     )
   }
 
-  coverage <- check_max_delay(obs, max_delay, warn = TRUE)
-  coverage_obs <- check_max_delay(obs, max_delay_obs, warn = FALSE)
-  coverage_model <- check_max_delay(obs, max_delay_model, warn = FALSE)
+  dates_too_short <- mapply(
+    function(x, warn) {
+      check_max_delay(obs, x, warn = warn)[.group == "all", below_coverage]
+    },
+    x = c(max_delay, max_delay_obs, max_delay_model),
+    warn = c(TRUE, FALSE, FALSE)
+  )
 
   metamaxdelay <- data.table::data.table(
     type = c("specified", "observed", "modelled"),
     delay = c(max_delay, max_delay_obs, max_delay_model),
-    dates_too_short = c(coverage, coverage_obs, coverage_model),
+    dates_too_short = dates_too_short,
     description = c(
       "maximum delay specified by the user",
       "maximum delay observed in the data",
