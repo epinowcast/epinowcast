@@ -4,7 +4,7 @@
 \alias{enw_delay_metadata}
 \title{Calculate reporting delay metadata}
 \usage{
-enw_delay_metadata(max_delay = 20, breaks = 4)
+enw_delay_metadata(max_delay = 20, breaks = 4, timestep = "day")
 }
 \arguments{
 \item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
@@ -17,6 +17,9 @@ indexed and so includes the reference date and \code{max_delay - 1} other days
 
 \item{breaks}{Numeric, defaults to 4. The number of breaks to use when
 constructing a categorised version of numeric delays.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A  \code{data.frame}  of delay metadata. This includes:

@@ -203,6 +203,8 @@ enw_add_metaobs_features <- function(metaobs,
 #' @param direction Should new dates be added at the beginning or end of
 #' the data. Default is "end" with "start" also available.
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A data.table with the same columns as `metaobs` but with
 #' additional rows for each date in the range of `date` to `date + days`
 #' (or `date - days` if `direction = "start"`). An additional variable
@@ -217,10 +219,12 @@ enw_add_metaobs_features <- function(metaobs,
 #' metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
 #' enw_extend_date(metaobs, days = 2)
 #' enw_extend_date(metaobs, days = 2, direction = "start")
-enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
+enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
+                            timestep = "day") {
   direction <- match.arg(direction)
 
-  new_days <- 1:days
+  internal_timestep <- get_internal_timestep(timestep)
+  new_days <- seq(1, days, by = internal_timestep)
   if (direction %in% "start") {
     new_days <- -new_days
     filt_fn <- min
@@ -729,6 +733,8 @@ enw_missing_reference <- function(obs) {
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
 #' constructing a categorised version of numeric delays.
 #'
+#' @inheritParams get_internal_timestep
+#' 
 #' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
@@ -743,9 +749,10 @@ enw_missing_reference <- function(obs) {
 #' @export
 #' @examples
 #' enw_delay_metadata(20, breaks = 4)
-enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
+enw_delay_metadata <- function(max_delay = 20, breaks = 4, timestep = "day") {
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
+  internal_timestep <- get_internal_timestep(timestep)
   delays <- delays[, `:=`(
     delay = delay,
     delay_cat = cut(
@@ -755,7 +762,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
       ),
       dig.lab = 0, right = FALSE
     ),
-    delay_week = as.integer(delay / 7),
+    delay_week = as.integer((delay * internal_timestep) / 7),
     delay_tail = delay > quantile(delay, probs = 0.75)
   )]
   return(delays[])
@@ -990,7 +997,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(
     metareport,
-    days = orig_scale_max_delay - 1, direction = "end", timestep = timestep
+    days = max_delay - 1, direction = "end", timestep = timestep
   )
   metareport <- enw_add_metaobs_features(metareport, ...)
 
@@ -1002,7 +1009,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
-  metadelay <- enw_delay_metadata(max_delay, breaks = 4)
+  metadelay <- enw_delay_metadata(
+    orig_scale_max_delay, breaks = 4, timestep = timestep
+  )
 
   out <- enw_construct_data(
     obs = obs,

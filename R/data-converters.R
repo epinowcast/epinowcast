@@ -361,18 +361,6 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
     "There are no complete report dates (i.e. report_date >= reference_date + timestep)" = nrow(agg_obs) > 0 # nolint
   )
 
-  if (nrow(agg_obs) > 0)
-
-  # Make numeric report and reference data
-  agg_obs[,
-    num_report_date :=
-     as.numeric(report_date) - as.numeric(min(report_date, na.rm = TRUE))
-  ]
-  agg_obs[,
-    num_reference_date :=
-      as.numeric(reference_date) - as.numeric(min(reference_date, na.rm = TRUE))
-  ]
-
   # Set the day of the timestep based on timestep
   agg_obs <- date_to_numeric_modulus(
     agg_obs, "report_date", internal_timestep
