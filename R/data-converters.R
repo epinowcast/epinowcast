@@ -374,10 +374,14 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
   ]
 
   # Set the day of the timestep based on timestep
-  agg_obs[, rep_mod := num_report_date %% internal_timestep]
-  agg_obs[, ref_mod := num_reference_date %% internal_timestep]
+  agg_obs <- date_to_numeric_modulus(
+    agg_obs, "report_date", internal_timestep
+  )
+  agg_obs <- date_to_numeric_modulus(
+    agg_obs, "reference_date", internal_timestep
+  )
 
-  # Ordering by reference and report date 
+  # Ordering by reference and report date
   setorder(agg_obs, reference_date, report_date)
 
   # Split into missing and non-missing reference dates
@@ -386,7 +390,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
 
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
-  agg_obs <- agg_obs[rep_mod == rep_mod[1]]
+  agg_obs <- agg_obs[report_date_mod == report_date_mod[1]]
 
   # Aggregate over the timestep
   agg_obs <- aggregate_rolling_sum(
@@ -394,7 +398,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
   )
 
   # Set day of week for reference date and filter
-  agg_obs <- agg_obs[ref_mod == rep_mod[1]]
+  agg_obs <- agg_obs[reference_date_mod == report_date_mod[1]]
   agg_obs <- agg_obs[reference_date >= min(report_date)]
 
   # If there are missing reference dates, aggregate over the report date
@@ -403,14 +407,13 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
     agg_obs_na_ref <- aggregate_rolling_sum(
       agg_obs_na_ref, internal_timestep, by = c(".group")
     )
-    agg_obs_na_ref <- agg_obs_na_ref[rep_mod == rep_mod[1]]
+    agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == report_date_mod[1]]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs)
   }
 
   # Drop internal processing columns
   agg_obs[,
-   c("ref_mod", "num_report_date", "rep_mod", "num_reference_date", ".group") :=
-    NULL
+   c("reference_date_mod", "report_date_mod", ".group") := NULL
   ]
   return(agg_obs[])
 }

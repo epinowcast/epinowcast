@@ -21,6 +21,7 @@ Utility functions
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{convert_cmdstan_to_rstan}()},
+\code{\link{date_to_numeric_modulus}()},
 \code{\link{expose_stan_fns}()},
 \code{\link{get_internal_timestep}()},
 \code{\link{stan_fns_as_string}()}

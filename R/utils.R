@@ -296,6 +296,35 @@ aggregate_rolling_sum <- function(dt, internal_timestep, by = c()) {
   return(dt[])
 }
 
+#' Convert date column to numeric and calculate its modulus with given timestep.
+#'
+#' This function processes a date column in a `data.table`, converting it to a
+#' numeric representation and then computing the modulus with the provided
+#' timestep.
+#'
+#' @param dt A data.table.
+#'
+#' @param date_column A character string representing the name of the date
+#' column in dt.
+#'
+#' @param timestep An integer representing the internal timestep.
+#'
+#' @return A modified data.table with two new columns: one for the numeric
+#' representation of the date minus the minimum date and another for its
+#' modulus with the timestep.
+#'
+#' @family utils
+date_to_numeric_modulus <- function(dt, date_column, timestep) {
+  mod_col_name <- paste0(date_column, "_mod")
+
+  dt[, c(mod_col_name) := as.numeric(
+        get(date_column) - min(get(date_column), na.rm = TRUE)
+      ) %% timestep
+  ]
+  return(dt[])
+}
+
+
 
 utils::globalVariables(
   c(
@@ -311,6 +340,6 @@ utils::globalVariables(
     "reference_missing", "prop_missing", "day", "posteriors",
     "formula", ".id", "n", ".confirm_avail", "prediction", "true_value",
     "person", "id", "latest", "num_reference_date", "num_report_date",
-    "rep_mod", "ref_mod", "count"
+    "rep_mod", "ref_mod", "count", "reference_date_mod", "report_date_mod"
   )
 )
