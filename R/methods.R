@@ -40,8 +40,12 @@ summary.epinowcast <- function(object, type = c(
   type <- match.arg(type)
 
   s <- with(object, switch(type,
-    nowcast = enw_nowcast_summary(fit[[1]], latest[[1]], ...),
-    nowcast_samples = enw_nowcast_samples(fit[[1]], latest[[1]], ...),
+    nowcast = enw_nowcast_summary(
+      fit[[1]], latest[[1]], timestep = timestep[[1]], ...
+    ),
+    nowcast_samples = enw_nowcast_samples(
+      fit[[1]], latest[[1]], timestep = timestep[[1]], ...
+    ),
     fit = enw_posterior(fit[[1]], ...),
     posterior_prediction = enw_pp_summary(fit[[1]], new_confirm[[1]], ...),
     stop(sprintf("unimplemented type: %s", type))
