@@ -505,14 +505,20 @@ enw_latest_data <- function(obs) {
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_delay_filter(obs, max_delay = 2)
-enw_delay_filter <- function(obs, max_delay) {
+enw_delay_filter <- function(obs, max_delay, timestep = "day") {
   obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
+  internal_timestep <- get_internal_timestep(timestep)
+  daily_max_delay <- internal_timestep * max_delay
   obs <- obs[,
     .SD[
-      report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
+      report_date <= (reference_date + daily_max_delay - 1) |
+        is.na(reference_date)
     ],
     by = c("reference_date", ".group")
   ]
+  if (is.null(obs[["delay"]])) {
+    obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE) 
+  }
   empircal_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empircal_max_delay < (max_delay - 1)) {
     warning("Empirical max delay is less than the specified max delay.")
