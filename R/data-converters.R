@@ -336,7 +336,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
 enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
-                                       copy = TRUE) {
+                                     copy = TRUE) {
   stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
   obs <- coerce_dt(
     obs,

@@ -279,19 +279,23 @@ get_internal_timestep <- function(timestep) {
 aggregate_rolling_sum <- function(dt, internal_timestep, by = c()) {
   dt <- dt[,
     `:=`(
-      confirm = frollsum(
-        confirm,
-        c(
-          1:(internal_timestep - 1),
-          rep(internal_timestep, .N - (internal_timestep - 1))
-        ),
-        adaptive = TRUE
-      )
+      confirm = {
+        n_vals <- if (.N <= internal_timestep) {
+          1:.N
+        } else {
+          c(
+            1:(internal_timestep - 1),
+            rep(internal_timestep, .N - (internal_timestep - 1))
+          )
+        }
+        frollsum(confirm, n_vals, adaptive = TRUE)
+      }
     ),
     by = by
   ]
   return(dt[])
 }
+
 
 utils::globalVariables(
   c(
