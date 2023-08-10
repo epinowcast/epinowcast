@@ -4,11 +4,11 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@adrian-lison, @medewitt, and @seabbs contributed code to this release.
+@medewitt, @adrian-lison, and @seabbs contributed code to this release.
 
-@adrian-lison and @seabbs reviewed pull requests for this release.
+@adrian-lison, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @adrian-lison, @medewitt, @parksw3, and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
@@ -21,6 +21,7 @@ This release is in development and not yet ready for production use.
 - Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
+- Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
 
 ## Model
 

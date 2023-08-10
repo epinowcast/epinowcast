@@ -620,6 +620,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  check_group_date_unique(obs)
+
   by_with_group_id <- c(".group", by) # nolint: object_usage_linter
   groups <- unique(obs[, ..by_with_group_id])
 
@@ -916,6 +918,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   data.table::setkeyv(obs, "reference_date")
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  check_group_date_unique(obs)
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, copy = FALSE)
 
@@ -936,6 +939,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   # update grouping in case any are now missing
   setnames(obs, ".group", ".old_group")
   obs <- enw_assign_group(obs, by)
+  check_group_date_unique(obs)
 
   # update diff data groups using updated groups
   diff_obs <- merge(

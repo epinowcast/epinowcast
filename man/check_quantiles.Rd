@@ -18,6 +18,7 @@ Check Quantiles Required are Present
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{check_group_date_unique}()},
 \code{\link{check_group}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_module}()}
