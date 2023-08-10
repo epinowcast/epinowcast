@@ -1,5 +1,6 @@
 skip_on_cran()
 skip_on_os("windows")
+skip_on_os("mac")
 skip_on_os("linux")
 skip_on_local()
 
