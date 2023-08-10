@@ -256,13 +256,9 @@ check_max_delay <- function(obs,
   max_delay <- as.integer(max_delay)
   stopifnot(
     "`max_delay` must be an integer and not NA" = is.integer(max_delay),
-    "`max_delay` must be greater than or equal to one" = max_delay >= 1
-  )
-  stopifnot(
+    "`max_delay` must be greater than or equal to one" = max_delay >= 1,
     "`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." =
-      cum_coverage > 0 & cum_coverage <= 1
-  )
-  stopifnot(
+      cum_coverage > 0 & cum_coverage <= 1,
     "`quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
       quantile_outlier > 0 & quantile_outlier <= 1
   )
