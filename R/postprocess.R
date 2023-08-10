@@ -97,6 +97,9 @@ enw_nowcast_summary <- function(fit, obs,
   internal_timestep <- get_internal_timestep(timestep)
 
   ord_obs <- coerce_dt(obs)
+  check_timestep(
+    ord_obs, "reference_date", timestep, exact = TRUE,  drop_duplicates = TRUE
+  )
   ord_obs <- ord_obs[
     reference_date > (max(reference_date) - max_delay * internal_timestep)
   ]
@@ -146,6 +149,9 @@ enw_nowcast_samples <- function(fit, obs, timestep = "day") {
   internal_timestep <- get_internal_timestep(timestep)
 
   ord_obs <- coerce_dt(obs)
+  check_timestep(
+    ord_obs, "reference_date", timestep, exact = TRUE,  drop_duplicates = TRUE
+  )
   ord_obs <- ord_obs[
     reference_date > (max(reference_date) - max_delay * internal_timestep)
   ]
