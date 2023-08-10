@@ -252,7 +252,7 @@ check_max_delay <- function(obs,
                             quantile_outlier = 0.97,
                             set_negatives_to_zero = TRUE,
                             warn = TRUE) {
-  
+
   max_delay <- as.integer(max_delay)
   stopifnot(
     "`max_delay` must be an integer and not NA" = is.integer(max_delay),
@@ -266,10 +266,10 @@ check_max_delay <- function(obs,
     "`quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
       quantile_outlier > 0 & quantile_outlier <= 1
   )
-  
+
   obs <- coerce_dt(obs, dates = TRUE, copy = TRUE)
   data.table::setkeyv(obs, "reference_date")
-  
+
   if (!is.null(by)) {
     if (by != ".group") {
       check_group(obs)
@@ -283,23 +283,23 @@ check_max_delay <- function(obs,
   }
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, copy = FALSE)
-  
+
   diff_obs <- enw_add_incidence(
     obs, set_negatives_to_zero = set_negatives_to_zero, by = by
   )
-  
+
   # filter obs based on diff constraints
   obs <- merge(
     obs, diff_obs[, .(reference_date, report_date, .group)],
     by = c("reference_date", "report_date", ".group")
   )
-  
+
   # update grouping in case any are now missing
   if (!(is.null(by) || by == ".group")) {
     obs[, .group := NULL]
     obs <- enw_assign_group(obs, by = by, copy = FALSE)
   }
-  
+
   max_delay_ref <- obs[
     !is.na(reference_date),
     .SD[, .(delay = max(delay, na.rm = T)), by = reference_date]
@@ -331,9 +331,9 @@ check_max_delay <- function(obs,
     warning(
       "There are only very few (", latest_obs[, .N], ") reference dates",
       " that are sufficiently far in the past (beyond maximum observed delay ",
-      "of ", max_delay_obs," days) to compute coverage statistics. ",
+      "of ", max_delay_obs, " days) to compute coverage statistics. ",
       "The maximum delay check may thus not be reliable. ",
-      "If you think the maximum observed delay of ", max_delay_obs," days is ",
+      "If you think the maximum observed delay of ", max_delay_obs, " days is ",
       "an outlier, consider decreasing `quantile_outlier`."
     )
   }
