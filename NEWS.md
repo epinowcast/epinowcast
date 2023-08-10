@@ -22,6 +22,7 @@ This release is in development and not yet ready for production use.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
 - Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
+- Added support for non-daily reference date models (i.e., process models). For example, this allows modelling weekly data as weekly. This may be desirable when delays are very long, when computational resources are limited, or it is not possible to specify a sufficiently flexible daily model to account for observed reporting patterns in either reference or report dates. As the model is unitless this entails no changes to the model itself. See #303 by @seabbs and self-reviewed.
 
 ## Model
 
