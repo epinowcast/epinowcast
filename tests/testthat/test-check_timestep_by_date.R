@@ -5,12 +5,12 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
     .group = c(rep("A", 50), rep("B", 50)),
     report_date = as.Date(rep(
       rep(seq(as.Date("2020-01-01"), by = "day", length.out = 5), each = 10), 2
-    )),
+    ), origin = "1970-01-01"),
     reference_date = as.Date(
       rep(
         replicate(5, seq(as.Date("2020-01-01"), by = "day", length.out = 10)),
         2
-      )
+      ), origin = "1970-01-01"
     )
   )
 
