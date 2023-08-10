@@ -233,7 +233,7 @@ coerce_dt <- function(
   }
 }
 
-#' Check Calendar Timestep
+#' Check calendar timestep
 #'
 #' This function verifies if the difference in calendar dates in the provided
 #' observations corresponds to the provided timestep of "month".
@@ -319,7 +319,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
   }
 }
 
-#' Check Timestep
+#' Check timestep
 #'
 #' This function verifies if the difference in dates in the provided
 #' observations corresponds to the provided timestep. If the `exact` argument
@@ -333,6 +333,9 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #' @param check_nrow Logical, if `TRUE`, checks if there are at least two
 #' observations. Default is `TRUE`. If `FALSE`, the function returns invisibly
 #' if there is only one observation.
+#'
+#' @param drop_duplicates Logical, if `TRUE`, removes duplicate dates before
+#' checking the timestep. Default is `FALSE`.
 #'
 #' @inheritParams get_internal_timestep
 #' @inheritParams check_calendar_timestep
@@ -370,7 +373,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   return(invisible(NULL))
 }
 
-#' Check Timestep By Date
+#' Check timestep by date
 #'
 #' This function verifies if the difference in dates within each date in the
 #' provided observations corresponds to the provided timestep. This check is
@@ -380,7 +383,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
 #' @inheritParams check_timestep
 #'
 #' @return This function is used for its side effect of checking the timestep
-#' by date in `obs`. If the check passes for all dates, the function 
+#' by date in `obs`. If the check passes for all dates, the function
 #' returns invisibly. Otherwise, it stops and returns an error message.
 #' @family check
 check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {

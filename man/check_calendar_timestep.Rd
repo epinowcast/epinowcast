@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_calendar_timestep}
 \alias{check_calendar_timestep}
-\title{Check Calendar Timestep}
+\title{Check calendar timestep}
 \usage{
 check_calendar_timestep(dates, date_var, exact = TRUE)
 }

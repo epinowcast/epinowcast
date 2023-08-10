@@ -4,7 +4,7 @@
 \alias{aggregate_rolling_sum}
 \title{Internal function to perform rolling sum aggregation}
 \usage{
-aggregate_rolling_sum(dt, internal_timestep, by = c())
+aggregate_rolling_sum(dt, internal_timestep, by = NULL)
 }
 \arguments{
 \item{dt}{A \code{data.table} to be aggregated.}

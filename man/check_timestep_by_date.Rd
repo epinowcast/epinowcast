@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_timestep_by_date}
 \alias{check_timestep_by_date}
-\title{Check Timestep By Date}
+\title{Check timestep by date}
 \usage{
 check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{get_internal_timestep}
 \alias{get_internal_timestep}
-\title{Get Internal Timestep}
+\title{Get internal timestep}
 \usage{
 get_internal_timestep(timestep)
 }

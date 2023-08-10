@@ -5,7 +5,7 @@
 \title{Aggregate observations over a given timestep for both report and reference
 dates.}
 \usage{
-enw_aggregate_cumulative(obs, timestep = "day", by = c(), copy = TRUE)
+enw_aggregate_cumulative(obs, timestep = "day", by = NULL, copy = TRUE)
 }
 \arguments{
 \item{obs}{An object coercible to a \code{data.table} (such as a \code{data.frame})

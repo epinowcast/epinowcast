@@ -221,11 +221,11 @@ coerce_date <- function(dates) {
   }
 }
 
-#' Get Internal Timestep
+#' Get internal timestep
 #'
 #' This function converts the string representation of the timestep to its
 #' corresponding numeric value or returns the numeric input (if it is a whole
-#' number). For "day", "week", it returns 1 and 7 respectively. 
+#' number). For "day", "week", it returns 1 and 7 respectively.
 #' For "month", it returns "month" as months are not a fixed number of days.
 #' If the input is a numeric whole number, it is returned as is.
 #'
@@ -276,12 +276,12 @@ get_internal_timestep <- function(timestep) {
 #'
 #' @importFrom data.table frollsum
 #' @family utils
-aggregate_rolling_sum <- function(dt, internal_timestep, by = c()) {
+aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL) {
   dt <- dt[,
     `:=`(
       confirm = {
         n_vals <- if (.N <= internal_timestep) {
-          1:.N
+          seq_len(.N)
         } else {
           c(
             1:(internal_timestep - 1),
@@ -340,6 +340,7 @@ utils::globalVariables(
     "reference_missing", "prop_missing", "day", "posteriors",
     "formula", ".id", "n", ".confirm_avail", "prediction", "true_value",
     "person", "id", "latest", "num_reference_date", "num_report_date",
-    "rep_mod", "ref_mod", "count", "reference_date_mod", "report_date_mod"
+    "rep_mod", "ref_mod", "count", "reference_date_mod", "report_date_mod",
+    "timestep"
   )
 )

@@ -517,12 +517,12 @@ enw_delay_filter <- function(obs, max_delay, timestep = "day") {
     by = c("reference_date", ".group")
   ]
   if (is.null(obs[["delay"]])) {
-    obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE) 
+    obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
   }
-  empircal_max_delay <- obs[, max(delay, na.rm = TRUE)]
-  if (empircal_max_delay < (max_delay - 1)) {
+  empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
+  if (empirical_max_delay < (max_delay - 1)) {
     warning(
-      "Empirical max delay (", empircal_max_delay + 1, 
+      "Empirical max delay (", empirical_max_delay + 1,
       ") is less than the specified max delay (", max_delay, ")."
     )
   }

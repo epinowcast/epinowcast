@@ -338,7 +338,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @examples
 #' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
-enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
+enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
                                      copy = TRUE) {
   stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
   obs <- coerce_dt(
@@ -393,7 +393,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = c(),
   # using the desired reporting timestep
   if (nrow(agg_obs_na_ref) > 0) {
     agg_obs_na_ref <- aggregate_rolling_sum(
-      agg_obs_na_ref, internal_timestep, by = c(".group")
+      agg_obs_na_ref, internal_timestep, by = ".group"
     )
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == report_date_mod[1]]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_timestep}
 \alias{check_timestep}
-\title{Check Timestep}
+\title{Check timestep}
 \usage{
 check_timestep(
   obs,
