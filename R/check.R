@@ -302,7 +302,7 @@ check_max_delay <- function(obs,
 
   max_delay_ref <- obs[
     !is.na(reference_date),
-    .SD[, .(delay = max(delay, na.rm = T)), by = reference_date]
+    .SD[, .(delay = max(delay, na.rm = TRUE)), by = reference_date]
   ]
   max_delay_obs <- ceiling(
     max_delay_ref[, quantile(delay, quantile_outlier, na.rm = TRUE)]
