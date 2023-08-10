@@ -12,6 +12,7 @@ This PR closes #<issue-number>.
 - [ ] I have included the target issue or issues in the PR title in the for Issue(s) *issue-numbers*: PR title
 - [ ] I have read the [contribution guidelines](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md).
 - [ ] I have tested my changes locally.
+- [ ] I have added or updated unit tests where necessary.
 - [ ] I have updated the documentation if required.
 - [ ] My code follows the established coding standards.
 - [ ] I have added a news item linked to this PR.

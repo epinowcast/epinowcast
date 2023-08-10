@@ -4,21 +4,31 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@seabbs contributed code to this release.
+@adrian-lison, @medewitt, and @seabbs contributed code to this release.
 
-@seabbs reviewed pull requests for this release.
+@adrian-lison and @seabbs reviewed pull requests for this release.
 
-@jbracher and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @adrian-lison, @medewitt, @parksw3, and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
 - Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
+- Fixed a few typos in the model vignette. See #292 by @medewitt and reviewed by @seabbs.
 
 ## Package
 
-- Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs
-- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and self-reviewed.
-- Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and self-reviewed.
+- Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
+- Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
+- Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
+- Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
+
+## Model
+
+- Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event censoring. Due to this change models may perform slightly differently between versions and any delay distribution estimates will have means that are half a day longer (note this corrects the previous bias). See #288 by @seabbs and reviewed by @adrian-lison.
+
+## Documentation
+
+- Updated the distributions vignette to match the updated handling of discretisation. See #288 by @seabbs and reviewed by @adrian-lison.
 
 # epinowcast 0.2.2
 
@@ -30,7 +40,7 @@ This is a minor release that fixes a bug in the handling of optional initial con
 
 @seabbs reviewed pull requests for this release.
 
-@sbfnk and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@sbfnk and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
