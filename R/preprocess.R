@@ -632,7 +632,6 @@ enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
   if (missing(max_delay)) {
     max_delay <- as.numeric(max_date - min_date)
   }
-
   internal_timestep <- get_internal_timestep(timestep)
 
   dates <- seq.Date(min_date, max_date, by = internal_timestep)
@@ -946,6 +945,13 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
        round(max_delay) == max_delay,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
+  if (timestep %in% "month") {
+    stop(
+      "Calendar months are not currently supported. Consider using an ",
+      "approximate number of days (i.e. 28), a different timestep (i.e. ",
+      "'week'), or commenting on issue #309."
+    )
+  }
   internal_timestep <- get_internal_timestep(timestep)
   orig_scale_max_delay <- max_delay
   max_delay <- max_delay * internal_timestep
