@@ -282,7 +282,7 @@ Here we see that the model is underestimating the incidence of hospitalisations 
 
 If you use `epinowcast` in your work, please consider citing it using the following,
 
-```{r}
+```{r, results = "asis"}
 citation("epinowcast")
 ```
 
