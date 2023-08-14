@@ -243,9 +243,13 @@ The `epinowcast` package provides a flexible framework for modelling the inciden
 
 ### Expected hospitalisations
 
-In settings where data is sparse or where users want to understand the underlying generative process our flexible default model is likely not a good choice. In these settings our generic model offers a range of options that are context specific. Our generic model is currently based on a renewal process [@Fraser2007; @Cori2013] with additional latent reporting delays [@EpiNow2; @Abbott2020; @Bhatt2020]. As previously noted [@champredon], this corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when appropriate generation time is specified [@champredon]
+The first part of the generative process we consider is the expected number of hospitalisations by date positive test. This is the number of hospitalisations that we would expect to observe if we had perfect reporting of hospitalisations and there was no unmodelled variance. This part of the model is also decomposed into three parts: the expected number of infections, the delay from infection to positive test, and the probability of hospitalisation given an infection. These three parts are combined to give the expected number of hospitalisations by date positive test. We describe each of these parts in turn.
 
-#### Instantaneous reproduction number
+#### Expected infections
+
+We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation [@Fraser2007; @Cori2013]. This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified [@champredon].
+
+##### Instantaneous reproduction number
 
 We model the instantaneous reproduction number ($R_t$) on the log scale as a weekly random walk as follows
 
@@ -257,9 +261,11 @@ We model the instantaneous reproduction number ($R_t$) on the log scale as a wee
 
 where $r_0$ is the intercept, and $\sum_{i = 0}^{t \% 7} \epsilon_i$ is a weekly random walk.
 
-#### Latent infections
+We choose this model because it is flexible, can be used to model a range of different scenarios, and is parsimonious. For example, if we set $\sigma_{\epsilon} = 0$ then the model reduces to a constant reproduction number. If we set $\sigma_{\epsilon} > 0$ then the model allows for changes in the reproduction number over time. Other sensible choices for the model include a random walk with a longer time scale (e.g. monthly) or shorter time scale (e.g. daily), a random walk with a drift term, or a random walk with a drift term and a seasonal component. 
 
-We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process [@Fraser2007; @Cori2013]. This model is a generalisation of the default model and can be used to model the expected number of latent notifications in a setting where the generation time is not fixed to be a day. It implies that current infections/notifications are dependent on past infections/notifications based on a kernel (usually interpreted as the generation time or serial interval). An instantaneous daily growth rate model can be recovered by setting the generation time to be fixed at 1 day. The model is defined as follows,
+##### Latent infections
+
+As discussed, we model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process [@Fraser2007; @Cori2013]. This model is a generalisation of the default `epinowcast` model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel. This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number. The model is defined as follows,
 
 \begin{align}
   \lambda^l_{t} &\sim \text{LogNormal}\left(\mu^{l}, \sigma^{l} \right),\ t \leq P \\
