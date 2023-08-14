@@ -187,6 +187,8 @@ head(latest_germany_hosp, n = 10)
 
 ### Visualising the data
 
+Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in `epinowcast` to visualise the data, but we can use the `ggplot2` package to do this manually as follows,
+
 ```{r}
 gh_vis_cohorts <- copy(retro_nat_germany)[,
   report_date := fcase(
@@ -217,7 +219,7 @@ gh_vis_cohorts_by_ref_rep |>
   aes(
     x = reference_date, y = confirm, fill = report_date, group = report_date
   ) +
-  geom_col(position = "stack", alpha = 1, col = "lightgrey") +
+  geom_col(position = "stack", alpha = 1, col = "grey") +
   geom_vline(
     aes(xintercept = as.Date(report_date)), linetype = 2, alpha = 0.9
   ) +
@@ -237,9 +239,7 @@ gh_vis_cohorts_by_ref_rep |>
 
 ## Model
 
-### Overview
-
-The `epinowcast` package provides a flexible framework for modelling hopsitalisations 
+The `epinowcast` package provides a flexible framework for modelling the incidence of infections and subsequent measures such as hospitalisations that are themselves reported with some delay. The framework is based on a generative model that describes the hypothesised process by which the data are generated. The generative model is then used to define a likelihood function that describes the probability of observing the data given the model parameters. The likelihood function is then combined with prior information used to fit the model parameters to the data. In the following sections we describe the generative model for the incidence of infections and hospitalisations. If you would like to know more about the general framework see the [model vignette](https://package.epinowcast.org/articles/model.html).
 
 ### Expected hospitalisations
 
