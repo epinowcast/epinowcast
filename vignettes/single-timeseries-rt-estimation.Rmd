@@ -144,9 +144,11 @@ incidence_from_linelist
 Here we have specifed the `reference_date` and `report_date` columns, the `by` columns (which are used to group the data), and the `max_delay` which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The `enw_linelist_to_incidence()` function will then calculate the incidence by reference date and report date for each group.
 :::
 
-### Filering the data
+### Filtering the data
 
-For this case study we will only consider data from the 1st of March 2020 onwards. We can filter the data using `data.table` as follows,
+For this case study we will only consider data from the 1st of March 2020 onwards. As a first step we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021. We do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions,
+
+```{r}
 
 ```{r}
 complete_germany_hosp <- germany_hosp |>
@@ -156,17 +158,26 @@ complete_germany_hosp <- germany_hosp |>
   enw_add_incidence()
 ```
 
+Here we have also used `enw_complete_dates()` to make sure that we have complete data for all dates between the earliest and latest dates. We have also used `enw_add_incidence()` to add the incidence column to the data. 
+
+Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (`rt_nat_germany`) and the data that was available retrospectively about the same time period will be used to evaluate the model (`retro_nat_germany`). We again do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions, 
+
+- Create the real-time dataset (`rt_nat_germany`) by filtering the data to only include reported observations from the 1st of May 2021 until the 1st of July 2021;
+
 ```{r}
 rt_nat_germany <- complete_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-07-01")
-rt_nat_germany
-```
+rt_nat_
+
+- Create the retrospective dataset (`retro_nat_germany`) by filtering the data to only include observations with reference dates (i.e. they may have been reported anytime up to the 1st of August 2021) from the 1st of May 2021 until the 1st of July 2021;
 
 ```{r}
 retro_nat_germany <- complete_germany_hosp |>
   enw_filter_reference_dates(latest_date = "2021-07-01")
 retro_nat_germany
 ```
+
+Finally we can create a dataset that contains the latest data available for each reference date. We do this using the `enw_latest_data()` function,
 
 ```{r}
 latest_germany_hosp <- retro_nat_germany  |>
@@ -229,7 +240,6 @@ gh_vis_cohorts_by_ref_rep |>
 ### Overview
 
 The `epinowcast` package provides a flexible framework for modelling hopsitalisations 
-
 
 ### Expected hospitalisations
 
