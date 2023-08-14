@@ -275,6 +275,8 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
 
 We assume the generation time ($g$) is a gamma distribution with mean 4 days and a standard deviation of 3 days. We 
 
+Where $g\left(p, t - p \right)$ is the probability of an infection $p$ days after infection $t - p$ days ago for group $g$, and $P$ is the maximum generation time. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group. The standard deviation is assumed to be 1. 
+
 #### Latent reporting delay and ascertainment
 
 In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore "nowcastable", a common example is the delay from exposure to symptom onset. For these settings we support modelling "latent" reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in `EpiNow2` and `epidemia` as well as other similar models  [@EpiNow2; @Abbott2020; @Bhatt2020; @Lison2022]. In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).
