@@ -19,3 +19,4 @@ pkgdown
 *.Rhistory
 .vscode
 /figures/
+/vignettes/*_cache/

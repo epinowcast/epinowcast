@@ -87,7 +87,9 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
 \begin{align}
   \lambda^l_{g,t} &\sim \text{LogNormal}\left(\mu^{l}_{g,t}, \sigma^{l}_{g,t} \right),\ t \leq P \\
   \lambda^l_{g,t} &= R_{g,t} \sum_{p = 1}^{P} G_{g}\left(p, t - p \right)  \lambda^l_{g, t-p},\ t \gt P  
-\end{align}
+\end{alig
+
+Where $G_{g}\left(p, t - p \right)$ is the probability of an infection $p$ days after infection $t - p$ days ago for group $g$, and $P$ is the maximum generation time. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group. The standard deviation is assumed to be 1. Both of these assumptions can be altered by the user.
 
 ## Latent reporting delay and ascertainment
 
