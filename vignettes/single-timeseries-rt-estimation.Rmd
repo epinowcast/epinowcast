@@ -618,11 +618,12 @@ Visualising the model predictions highlights some clear fitting issues. One clea
   - Assumed a known and static generation time distribution and latent reporting delay distribution. In reality these would need to be estimated from data, have uncertainty, and be liable to change over time.
   - Used a fixed parametric reporting delay distribution. In reality this would likely vary over time and depend on things like day of the week reporting effects. This could be addressed by using a more flexible reporting delay distribution which is supported by `epinowcast`.
 
-  ### Alternative models {-}
+  ### Alternative packages {-}
 
-  - `EpiNow2`:
-  - `EpiEstim`:
-  - `epidemia`:
+- [`EpiNow2`](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
+- [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2` and `epinowcast` but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `EpiNow2` and `epinowcast`.
+- [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays.
+
 
   ### Further work {-}
 
