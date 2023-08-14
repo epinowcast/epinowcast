@@ -273,9 +273,7 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
   \lambda^l_{t} &= R_{t} \sum_{p = 1}^{P} g\left(t - p \right)  \lambda^l_{t-p},\ t \gt P  
 \end{align}
 
-We assume the generation time ($g$) is a gamma distribution with mean 4 days and a standard deviation of 3 days. We 
-
-Where $g\left(p, t - p \right)$ is the probability of an infection $p$ days after infection $t - p$ days ago for group $g$, and $P$ is the maximum generation time. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group. The standard deviation is assumed to be 1. 
+We assume the generation time ($g$) is a gamma distribution with mean 4 days and a standard deviation of 3 days. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay. The standard deviation is assumed to be 1. 
 
 #### Latent reporting delay and ascertainment
 
