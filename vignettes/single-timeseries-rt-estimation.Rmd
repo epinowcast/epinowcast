@@ -421,9 +421,7 @@ retro_germany_nowcast <- epinowcast(
 ```
 
 ::: {.alert .alert-warning}
-
   You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
-
 :::
 
 ### Visualising the nowcast based on real-time data
@@ -438,9 +436,7 @@ plot(germany_nowcast, latest_obs)
 In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported. 
 
 ::: {.alert .alert-warning}
-
   An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
-
 :::
 
 ### Real-time and retrospective estimates of the effective reproduction number
@@ -486,10 +482,12 @@ We can also plot the posterior distribution of the delay from testing positive t
 ```{r plot-germany-delay}
 extract_epinowcast_cdf <- function(nowcast) {
   draws <- nowcast |>
-  (\(x) x$fit[[1]]$draws(variables = c("refp_mean", "refp_sd"), format = "df"))() |>
+    (\(x)
+      x$fit[[1]]$draws(variables = c("refp_mean", "refp_sd"), format = "df")
+    )() |>
   as.data.table()
 
-  draws[, 
+  draws[,
     cdf := purrr::map2(
     `refp_mean[1]`, `refp_sd[1]`,
     ~ data.table(
@@ -594,9 +592,8 @@ plot(germany_nowcast, type = "posterior") +
 ```
 
 ::: {.alert .alert-warning}
-Visualising the model predictions highlights some clear fitting issues. One clear issue is that there appears to be periodicity in the observed data that is not present in this model. We could address this by using a report date reporting model (via `enw_report()`) that accounts for differences in reporting by weekday.
+  Visualising the model predictions highlights some clear fitting issues. One clear issue is that there appears to be periodicity in the observed data that is not present in this model. We could address this by using a report date reporting model (via `enw_report()`) that accounts for differences in reporting by weekday.
 :::
-
 
 ## Wrapping up
 
@@ -620,16 +617,15 @@ Visualising the model predictions highlights some clear fitting issues. One clea
 
   ### Alternative packages {-}
 
-- [`EpiNow2`](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
-- [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2` and `epinowcast` but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `EpiNow2` and `epinowcast`.
-- [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays.
+  - [`EpiNow2`](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
+  - [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2` and `epinowcast` but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `EpiNow2` and `epinowcast`.
+  - [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays.
 
 
   ### Further work {-}
 
-    - Use a more flexible reporting delay distribution.
-    - Use a more flexible generation time distribution.
-    - Use a more flexible model for the effective reproduction number.
+    - Use a more flexible reporting delay distribution, potentially on ne that varies over time.
+    - Use a generation time distribution that incorporates uncertainty and that also potentially changes over time.
     - Add functionality to allow forecasting beyond the horizon of the observed data.
     - Use an observation model that supports overdispersion in the number of reported cases, for example the negative binomial distribution.
 :::
