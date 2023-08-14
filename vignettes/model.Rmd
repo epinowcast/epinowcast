@@ -2,8 +2,14 @@
 title: Model definition and implementation
 description: "Model formulation and implementation details"
 author: Sam Abbott, Adrian Lison, Felix Günther, Sebastian Funk
-output: rmarkdown::html_document
-bibliography: library.bib
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: resources/library.json
+link-citations: true
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Model definition and implementation}
