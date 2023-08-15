@@ -6,11 +6,11 @@
 \usage{
 simulate_double_censored_pmf(
   max,
-  fun_primary = runif,
+  fun_primary = stats::runif,
   primary_args = list(),
-  fun_dist = rlnorm,
+  fun_dist = stats::rlnorm,
   dist_args = list(...),
-  n = 1000,
+  n = 1e+06,
   ...
 )
 }
@@ -29,7 +29,10 @@ distribution function.}
 \item{dist_args}{List of additional arguments to be passed to the
 distribution function.}
 
-\item{n}{Number of simulations (default is 1000).}
+\item{n}{Number of simulations (default is 1e6).}
+
+\item{...}{Additional arguments to be passed to the distribution function.
+This is an alternative to \link{dist_args}.}
 }
 \value{
 A numeric vector representing the PMF.

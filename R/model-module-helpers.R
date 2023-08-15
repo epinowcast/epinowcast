@@ -249,6 +249,8 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 #' distribution function.
 #' @param dist_args List of additional arguments to be passed to the
 #' distribution function.
+#' @param ... Additional arguments to be passed to the distribution function.
+#' This is an alternative to [dist_args].
 #'
 #' @return A numeric vector representing the PMF.
 #' @export
@@ -256,7 +258,8 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 #' @examples
 #' simulate_double_censored_pmf(10, meanlog = 0, sdlog = 1)
 simulate_double_censored_pmf <- function(
-  max, fun_primary = runif, primary_args = list(), fun_dist = rlnorm,
+  max, fun_primary = stats::runif, primary_args = list(),
+  fun_dist = stats::rlnorm,
   dist_args = list(...), n = 1e6, ...
 ) {
   primary <- do.call(fun_primary, c(list(n), primary_args))
