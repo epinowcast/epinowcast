@@ -840,7 +840,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     metadelay = list(metadelay),
     time = nrow(latest[.group == 1]),
     snapshots = nrow(
-      unique(obs[!is.na(reference_date), .(.group, reference_date)]),
+      unique(obs[!is.na(reference_date)][, .(.group, reference_date)])
     ),
     by = list(by),
     groups = length(unique(obs$.group)),

@@ -375,11 +375,15 @@ This distribution is discretised into daily probabilities $p_{t,d}$ and adjusted
 
 #### Specifying the model using `epinowcast::enw_reference()`
 
+We can define the reporting delay distribution using the `epinowcast::enw_reference()` function as follows,
+
 ```{r reference_module}
 reference_module <- partial(enw_reference, ~1, distribution = "lognormal")
 ```
 
 ### Observation model and nowcast
+
+#### Defining the observation model
 
 Expected notifications by date of positive test ($t$) and reporting date can now be found by multiplying expected final notifications by date of positive test for each $t$ with the probability of reporting for each day of delay ($p_{t,d}$). We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.
 
@@ -414,7 +418,10 @@ retro_germany_pobs
 
 ### Fitting the `epinowcast` model
 
-Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8)  that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. We have also set the `max_treedepth` to 12 (the default is 10) to again ensure that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
+
+#### Specifying the fitting options
+
+Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the `max_treedepth` to 12 (the default is 10). Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
 
 ```{r fit-options}
 fit_module <- partial(enw_fit_opts,
@@ -430,22 +437,26 @@ fit_module <- partial(enw_fit_opts,
 )
 ```
 
-We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package).
+#### Compiling the model
+
+We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the [README](https://package.epinowcast.org). This will take around a minute to run when called for the first time.
 
 ```{r compile-model}
 epinowcast_model <- enw_model(threads = TRUE, profile = FALSE)
 ```
 
+#### Fitting the model
+
 Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data. We first fit to the data that would have been available in real-time,
 
 ```{r}
 germany_nowcast <- epinowcast(
-  data = germany_pobs,
-  expectation = expectation_module(data = germany_pobs),
-  reference = reference_module(data = germany_pobs),
-  obs = obs_module(data = germany_pobs),
+  data = rt_germany_pobs,
+  expectation = expectation_module(data = rt_germany_pobs),
+  reference = reference_module(data = rt_germany_pobs),
+  obs = obs_module(data = rt_germany_pobs),
   fit = fit_module(),
-  model = enw_model(threads = TRUE, profile = FALSE)
+  model = epinowcast_model
 )
 ```
 
@@ -458,12 +469,12 @@ retro_germany_nowcast <- epinowcast(
   reference = reference_module(data = retro_germany_pobs),
   obs = obs_module(data = retro_germany_pobs),
   fit = fit_module(),
-  model = enw_model(threads = TRUE, profile = FALSE)
+  model = epinowcast_model
 )
 ```
 
 ::: {.alert .alert-warning}
-  You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are working on improving in future versions of `epinowcast`.
+  You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of `epinowcast`.
 :::
 
 ### Visualising the nowcast based on real-time data
