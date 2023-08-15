@@ -191,7 +191,7 @@ head(latest_germany_hosp, n = 10)
 
 Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in `epinowcast` to visualise the data, but we can use the `ggplot2` package to do this manually as follows,
 
-```{r class.source = "fold-hide"}
+```{r,  class.source = "fold-hide"}
 #| fig.cap: "Hospitalisations in Germany by date of positive test and date of report"
 gh_vis_cohorts <- copy(retro_germany)[
   ,
@@ -551,7 +551,7 @@ It is clear from this plot that for these example dates the model is in the main
 
 A key output of the model is the posterior distribution of the effective reproduction number. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
 
-```{r plot-germany-rt class.source = "fold-hide"}
+```{r plot-germany-rt,  class.source = "fold-hide"}
 #| fig.cap: "Real-time and retrospective estimates of the effective reproduction number in Germany" # nolint
 get_rt_posterior <- function(nowcast, expectation = expectation_module) {
   rt <- enw_posterior(nowcast$fit[[1]], variables = "r")
@@ -592,7 +592,7 @@ Here we see good agreement between the real-time and retrospective estimates of 
 
 We can also plot the posterior distribution of the delay from testing positive to hospitalisation. This is the delay that is used to estimate the number of hospitalisations that will ultimately be reported based on the number of positive tests that have been reported. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
 
-```{r plot-germany-delay class.source = "fold-hide"}
+```{r plot-germany-delay,  class.source = "fold-hide"}
 #| fig.cap: "Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany" # nolint
 extract_epinowcast_cdf <- function(nowcast) {
   draws <- nowcast |>
@@ -658,7 +658,7 @@ Retrospectively, we would expect the model to fit very well to this data with an
 
 In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partiall unobserved).
 
-```{r plot-germany-reported-cases class.source = "fold-hide"}
+```{r plot-germany-reported-cases,  class.source = "fold-hide"}
 #| fig.cap: "Real-time and retrospective estimates of the number of expected hospitalisations in Germany" #nolint
 get_expected_infections <- function(nowcast, expectation = expectation_module) {
   exp_cases <- enw_posterior(
