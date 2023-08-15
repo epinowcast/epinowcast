@@ -489,19 +489,55 @@ retro_germany_nowcast <- epinowcast(
 You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of `epinowcast`.
 :::
 
-### Visualising the nowcast based on real-time data
+### Visualising the Nowcast
+
+#### Plotting the nowcast based on real-time data
 
 We first plot the nowcast based on real-time data. Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available. We can compare this to the most recent observations to see how well the model is doing.
-
 ```{r plot-germany-nowcast}
 #| fig.cap: "Nowcast of hospitalisations in Germany based on real-time data"
-plot(germany_nowcast, latest_obs)
+plot(
+  germany_nowcast, latest_germany_hosp[reference_date > as.Date("2021-06-01")]
+)
 ```
+
+Internally, this plotting function (see `?plot.epinowcast()`) sums observed data and posterior estimates for unobserved data to produce a nowcast of the number of hospitalisations that will ultimately be reported.
 
 In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported. 
 
 ::: {.alert .alert-warning}
-  An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
+An important thing to note here is that this model is clearly not perfect with more complete data being less well estimated by the model. This likely indicates some misspecification in the reporting delay model which could be fixed by making it more complex or even by making it entirely non-parametric (vs being based on a LogNormal).
+:::
+
+#### Plotting the nowcast based on retrospective data
+
+We can also plot the nowcast based on the retrospective data. As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed. This can be used to get a feel for how well specified our maximum delay is. Here we see that a small number of hospitalisations will be reported after 30 days. This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.
+
+```{r plot-retro-germany-nowcast}
+plot(
+  retro_germany_nowcast,
+  latest_germany_hosp[reference_date > as.Date("2021-06-01")]
+)
+```
+
+To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing `type = "posterior_prediction") we instead use `enw_plot_pp_quantiles()` so we can control the number of refernces dates we plot (as otherwise the plot will be quite overwhelming!).
+
+```{r plot-retro-germany-nowcast-obs}
+plot_select_pp_dates <- function(nowcast, dates) {
+  nowcast |>
+    summary(type = "posterior_prediction") |>
+    (\(x) x[reference_date %in% dates])() |>
+    enw_plot_pp_quantiles() +
+    facet_wrap(vars(reference_date), scales = "free")
+}
+plot_select_pp_dates(
+  retro_germany_nowcast,
+  as.Date(c("2021-05-01", "2021-05-14", "2021-06-01", "2021-07-01"))
+)
+```
+
+::: {.alert .alert-warning}
+It is clear from this plot that for these example dates the model is in the main able to predict the observed data well. However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay. This is likely due to the model not being able to account for the day of the week reporting periodicity. This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the [package README](https://package.epinowcast.org).
 :::
 
 ### Real-time and retrospective estimates of the effective reproduction number
