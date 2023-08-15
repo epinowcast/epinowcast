@@ -23,6 +23,7 @@
 ^inst/scripts$
 ^vignettes/precompile\.R$
 ^vignettes/germany-age-stratified-nowcasting\.Rmd\.orig$
+^vignettes/single-timeseries-rt-estimation\.Rmd\.orig$
 ^doc$
 ^Meta$
 ^touchstone$
