@@ -147,7 +147,10 @@ plot(nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
+<p class="caption">plot of chunk nowcast</p>
+</div>
 
 ## Using the inflated posterior as a prior
 
@@ -163,13 +166,13 @@ priors <- summary(
 priors[, sd := sd * 2]
 priors
 #>            variable      mean    median         sd        mad        q5
-#> 1: refp_mean_int[1] 1.1207624 1.1204600 0.09072471 0.04619040 1.0462980
-#> 2:   refp_sd_int[1] 1.7311648 1.7296850 0.09567793 0.04728753 1.6547720
-#> 3:      sqrt_phi[1] 0.5955124 0.5953265 0.03710977 0.01839165 0.5659246
-#>          q20      q80       q95      rhat ess_bulk ess_tail
-#> 1: 1.0818620 1.158388 1.1980045 0.9996327 1851.653 663.5543
-#> 2: 1.6903560 1.772894 1.8116325 0.9991851 2428.449 756.0963
-#> 3: 0.5804142 0.611261 0.6269922 0.9989755 1151.603 747.4970
+#> 1: refp_mean_int[1] 1.1212838 1.1200800 0.08829821 0.04312883 1.0465460
+#> 2:   refp_sd_int[1] 1.7304364 1.7283450 0.09136750 0.04443352 1.6572085
+#> 3:      sqrt_phi[1] 0.5943754 0.5945225 0.03663196 0.01858736 0.5650664
+#>          q20       q80       q95     rhat ess_bulk ess_tail
+#> 1: 1.0863640 1.1559380 1.1949585 1.000267 1919.003 779.4026
+#> 2: 1.6931480 1.7692440 1.8097575 1.023093 1564.573 706.6420
+#> 3: 0.5786032 0.6097982 0.6246353 1.002526 1328.925 783.8134
 ```
 
 ## Reference day of the week effect
@@ -198,7 +201,10 @@ plot(exp_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%" />
+<p class="caption">plot of chunk exp_nowcast</p>
+</div>
 
 ## Posterior predictions
 
@@ -210,7 +216,10 @@ plot(exp_nowcast, type = "posterior") +
   facet_wrap(vars(age_group, reference_date), scales = "free")
 ```
 
-<img src="figures/simple_pp-1.png" alt="plot of chunk simple_pp" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/simple_pp-1.png" alt="plot of chunk simple_pp" width="100%" />
+<p class="caption">plot of chunk simple_pp</p>
+</div>
 
 
 ## Reporting day of the week effect
@@ -243,7 +252,10 @@ plot(dow_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%" />
+<p class="caption">plot of chunk dow_nowcast</p>
+</div>
 
 ## Age group variation
 
@@ -276,7 +288,10 @@ plot(age_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%" />
+<p class="caption">plot of chunk age_nowcast</p>
+</div>
 
 ## Variation based on reference date
 
@@ -312,7 +327,10 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
+<p class="caption">plot of chunk week_nowcast</p>
+</div>
 
 ## Variation based on reference date stratified by age
 
@@ -347,7 +365,10 @@ plot(age_week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%" />
+<p class="caption">plot of chunk age_week_nowcast</p>
+</div>
 
 
 ## Independent models  for each age group.
@@ -411,7 +432,10 @@ enw_plot_nowcast_quantiles(
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%" />
+<p class="caption">plot of chunk ind_nowcast</p>
+</div>
 
 
 ## Alternative models
@@ -476,7 +500,10 @@ enw_plot_nowcast_quantiles(
   facet_grid(vars(age_group), vars(model), scales = "free_y")
 ```
 
-<img src="figures/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-20</p>
+</div>
 
 As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the `loo` package though note this is not typically appropriate for time series data ([where approximate LFO cross validation is likely to perform better](https://cran.r-project.org/web//packages/loo/vignettes/loo2-lfo.html)), the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required.
 
@@ -486,10 +513,10 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age, Report: Day of week                  -11.1       5.2 
-#> Reference: Age and week by age, Report: Day of week  -11.7       3.3 
-#> Reference: Fixed, Report: Day of week                -50.7      10.5 
-#> Reference: Fixed, Report: Fixed                     -611.9      45.2
+#> Reference: Age, Report: Day of week                  -11.1       5.3 
+#> Reference: Age and week by age, Report: Day of week  -11.4       3.4 
+#> Reference: Fixed, Report: Day of week                -49.9      10.6 
+#> Reference: Fixed, Report: Fixed                     -611.8      45.2
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -514,12 +541,14 @@ score |>
 
 |model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
 |:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
-|Reference: Fixed, Report: Fixed                          |       9.786248|   3.158477|        4.225981|      2.4019466|         -0.1087912| -0.1020408|  16.29592|
-|Reference: Fixed, Report: Day of week                    |      10.100157|   2.326279|        6.827567|      0.9466248|         -0.1386185| -0.2428571|  15.48980|
-|Reference: Age, Report: Day of week                      |       8.630703|   2.267425|        5.730863|      0.6326531|         -0.1417582| -0.3673469|  13.91837|
-|Reference: Age and week, Report: Day of week             |       7.314954|   2.790201|        1.396860|      3.1275510|         -0.0193093|  0.0826531|  12.02041|
-|Reference: Age and week by age, Report: Day of week      |       6.887651|   3.004575|        2.028258|      1.8546939|          0.0058085| -0.1387755|  11.29592|
-|Independent by age, Reference: Week, Report: Day of week |       7.292314|   3.869724|        1.583673|      1.8387755|          0.0340659| -0.0622449|  12.31633|
+|Reference: Fixed, Report: Fixed                          |       9.839809|   3.116986|        4.333061|      2.3892308|         -0.0962323| -0.1061224|  16.33673|
+|Reference: Fixed, Report: Day of week                    |      10.012964|   2.337862|        6.755102|      0.9199372|         -0.1229199| -0.2142857|  15.30612|
+|Reference: Age, Report: Day of week                      |       8.582860|   2.292750|        5.660471|      0.6288854|         -0.1370487| -0.3755102|  14.01020|
+|Reference: Age and week, Report: Day of week             |       7.317416|   2.796750|        1.324270|      3.1961695|         -0.0083203|  0.0816327|  12.15306|
+|Reference: Age and week by age, Report: Day of week      |       6.798807|   2.973862|        1.943956|      1.8810047|          0.0167975| -0.1357143|  11.23469|
+|Independent by age, Reference: Week, Report: Day of week |       7.379049|   3.885315|        1.646311|      1.8474254|          0.0277865| -0.0653061|  12.55102|
+
+
 
 Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
@@ -553,7 +582,10 @@ plot <- enw_plot_theme(plot) +
 plot
 ```
 
-<img src="figures/performance-1.png" alt="plot of chunk performance" width="100%" />
+<div class="figure">
+<img src="vignettes/figures/germany-age-stratified-nowcasting/performance-1.png" alt="plot of chunk performance" width="100%" />
+<p class="caption">plot of chunk performance</p>
+</div>
 
 # Summary
 
