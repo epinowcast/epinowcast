@@ -22,6 +22,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  fig.path = "figures/single-timeseries-rt-estimation/",
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
@@ -326,7 +327,6 @@ Now we define the latent reporting delay in a similar way remembering we specifi
 ```{r} 
 lgn_mean <- 5
 lgn_sd <- 2
-# log(mean^2/sqrt(sd^2 + mean^2))
 meanlog <- log(lgn_mean^2 / sqrt(lgn_sd^2 + lgn_mean^2))
 sdlog <- sqrt(log(1 + lgn_sd^2 / lgn_mean^2))
 
@@ -478,7 +478,7 @@ retro_germany_nowcast <- epinowcast(
 ```
 
 ::: {.alert .alert-warning}
-  You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of `epinowcast`.
+You may see a number of warning messages from `cmdstanr` when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in `epinowcast`. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of `epinowcast`.
 :::
 
 ### Visualising the nowcast based on real-time data
