@@ -316,6 +316,8 @@ gt_pmf <- simulate_double_censored_pmf(
 ) |>
 # and normalise it to account for right truncation
   (\(x) x / sum(x))()
+
+plot(gt_pmf)
 ```
 
 ::: {.alert .alert-warning}
@@ -332,12 +334,14 @@ sdlog <- sqrt(log(1 + lgn_sd^2 / lgn_mean^2))
 
 # then discretise the distribution
 reporting_pmf <- simulate_double_censored_pmf(
-  max = 15, shape = gamma_shape, scale = gamma_scale, fun_dist = rgamma
+  max = 15, meanlog = meanlog, sdlog = sdlog, fun_dist = rlnorm
 ) |>
 # normalise it to account for right truncation
   (\(x) x / sum(x))() |>
 # and scale it by the infection to hospitalisation ration (2%)
   (\(x) x * 0.02)()
+
+plot(reporting_pmf)
 ```
 
 The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,
@@ -463,6 +467,10 @@ germany_nowcast <- epinowcast(
   model = epinowcast_model
 )
 ```
+
+::: {.alert .alert-warning}
+Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the [fitting options](#fitting-the-epinowcast-model) section above).
+:::
 
 and then on the retrospectivly observed data.
 

@@ -244,7 +244,7 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 #' @param fun_primary Primary distribution function (default is \code{runif}).
 #' @param fun_dist Distribution function to be added to the primary (default is
 #' \code{rlnorm}).
-#' @param n Number of simulations (default is 1000).
+#' @param n Number of simulations (default is 1e6).
 #' @param primary_args List of additional arguments to be passed to the primary
 #' distribution function.
 #' @param dist_args List of additional arguments to be passed to the
@@ -257,7 +257,7 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 #' simulate_double_censored_pmf(10, meanlog = 0, sdlog = 1)
 simulate_double_censored_pmf <- function(
   max, fun_primary = runif, primary_args = list(), fun_dist = rlnorm,
-  dist_args = list(...), n = 1000, ...
+  dist_args = list(...), n = 1e6, ...
 ) {
   primary <- do.call(fun_primary, c(list(n), primary_args))
   secondary <- primary + do.call(fun_dist, c(list(n), dist_args))
