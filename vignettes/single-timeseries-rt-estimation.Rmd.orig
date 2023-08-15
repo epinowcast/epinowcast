@@ -192,7 +192,7 @@ head(latest_germany_hosp, n = 10)
 Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in `epinowcast` to visualise the data, but we can use the `ggplot2` package to do this manually as follows,
 
 ```{r,  class.source = "fold-hide"}
-#| fig.cap: "Hospitalisations in Germany by date of positive test and date of report"
+#| fig.cap: "Hospitalisations in Germany by date of positive test and date of report" # nolint
 gh_vis_cohorts <- copy(retro_germany)[
   ,
   report_date := fcase(
@@ -705,32 +705,32 @@ As expected the retrospective estimates fit very well to the data. The real-time
 ## Wrapping up
 
 ::: {.alert .alert-primary}
-  ### Summary {-}
-  In this case study we have shown how to use `epinowcast` to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. 
-  
-  We have also shown how to use the package to perform retrospective and real-time nowcasts which can be a useful way of understanding the real-time
-  performance of the model.
+### Summary {-}
+In this case study we have shown how to use `epinowcast` to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. 
+
+We have also shown how to use the package to perform retrospective and real-time nowcasts which can be a useful way of understanding the real-time
+performance of the model.
 :::
 
 ::: {.alert .alert-secondary}
-  ### Strengths {-}
+### Strengths {-}
 
-  - We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propogated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a mulit-stage approach.
-  - We have used a flexible model for the effective reproduction number which allows us to estimate the effective reproduction number over time and to incorporate uncertainty in the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases.
-  - We have accounted for the delay from infection to hospitalisation and the delay from hospitalisation to reporting in the estimation of the expected number of reported cases. This means that reproduction number estimates
-  are currently indexed to the date of infection.
+- We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propogated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a mulit-stage approach.
+- We have used a flexible model for the effective reproduction number which allows us to estimate the effective reproduction number over time and to incorporate uncertainty in the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases.
+- We have accounted for the delay from infection to hospitalisation and the delay from hospitalisation to reporting in the estimation of the expected number of reported cases. This means that reproduction number estimates
+are currently indexed to the date of infection.
 
-  ### Limitations {-}
+### Limitations {-}
 
-  - Assumed a known and static generation time distribution and latent reporting delay distribution. In reality these would need to be estimated from data, have uncertainty, and be liable to change over time.
-  - Used a fixed parametric reporting delay distribution. In reality this would likely vary over time and depend on things like day of the week reporting effects. This could be addressed by using a more flexible reporting delay distribution which is supported by `epinowcast`.
-  - Used an observation model that does not account for overdispersion in the number of reported cases. This could be addressed by using a more flexible observation model which is supported by `epinowcast`.
+- Assumed a known and static generation time distribution and latent reporting delay distribution. In reality these would need to be estimated from data, have uncertainty, and be liable to change over time.
+- Used a fixed parametric reporting delay distribution. In reality this would likely vary over time and depend on things like day of the week reporting effects. This could be addressed by using a more flexible reporting delay distribution which is supported by `epinowcast`.
+- Used an observation model that does not account for overdispersion in the number of reported cases. This could be addressed by using a more flexible observation model which is supported by `epinowcast`.
 
-  ### Alternative packages {-}
+### Alternative packages {-}
 
-  - [`EpiNow2`](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
-  - [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2`, in a similar way to `epinowcast`, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `epinowcast`. However, as it is an extension of `rstanarm` it comes with a number of useful features and a famliar interface for users of `rstanarm`
-  - [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.
+- [`EpiNow2`](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
+- [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2`, in a similar way to `epinowcast`, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `epinowcast`. However, as it is an extension of `rstanarm` it comes with a number of useful features and a famliar interface for users of `rstanarm`
+- [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.
 :::
 
 ## References
