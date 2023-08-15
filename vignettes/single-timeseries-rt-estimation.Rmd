@@ -191,7 +191,8 @@ head(latest_germany_hosp, n = 10)
 
 Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in `epinowcast` to visualise the data, but we can use the `ggplot2` package to do this manually as follows,
 
-```{r}
+```{r class.source = "fold-hide"}
+#| fig.cap: "Hospitalisations in Germany by date of positive test and date of report"
 gh_vis_cohorts <- copy(retro_germany)[
   ,
   report_date := fcase(
@@ -425,7 +426,7 @@ retro_germany_pobs
 
 #### Specifying the fitting options
 
-Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the `max_treedepth` to 12 (the default is 10). Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
+Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the `max_treedepth` to 15 (the default is 10). Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
 
 ```{r fit-options}
 fit_module <- partial(enw_fit_opts,
@@ -435,9 +436,11 @@ fit_module <- partial(enw_fit_opts,
   iter_warmup = 500,
   iter_sampling = 1000,
   adapt_delta = 0.99,
-  max_treedepth = 12,
+  max_treedepth = 15,
   save_warmup = FALSE,
-  pp = TRUE
+  pp = TRUE,
+  show_messages = interactive(),
+  refresh = as.numeric(interactive())
 )
 ```
 
@@ -514,15 +517,19 @@ An important thing to note here is that this model is clearly not perfect with m
 We can also plot the nowcast based on the retrospective data. As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed. This can be used to get a feel for how well specified our maximum delay is. Here we see that a small number of hospitalisations will be reported after 30 days. This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.
 
 ```{r plot-retro-germany-nowcast}
+#| fig.cap: "Nowcast of hospitalisations in Germany based on retrospective data"
 plot(
   retro_germany_nowcast,
   latest_germany_hosp[reference_date > as.Date("2021-06-01")]
 )
 ```
 
+### Posterior predictions for cases by date of postive test and report
+
 To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing `type = "posterior_prediction") we instead use `enw_plot_pp_quantiles()` so we can control the number of refernces dates we plot (as otherwise the plot will be quite overwhelming!).
 
 ```{r plot-retro-germany-nowcast-obs}
+#| fig.cap: "Posterior predictions of hospitalisations in Germany based on retrospective data" # nolint
 plot_select_pp_dates <- function(nowcast, dates) {
   nowcast |>
     summary(type = "posterior_prediction") |>
@@ -544,7 +551,8 @@ It is clear from this plot that for these example dates the model is in the main
 
 A key output of the model is the posterior distribution of the effective reproduction number. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
 
-```{r plot-germany-rt}
+```{r plot-germany-rt class.source = "fold-hide"}
+#| fig.cap: "Real-time and retrospective estimates of the effective reproduction number in Germany" # nolint
 get_rt_posterior <- function(nowcast, expectation = expectation_module) {
   rt <- enw_posterior(nowcast$fit[[1]], variables = "r")
   cols <- c("mean", "median", "q5", "q20", "q80", "q95")
@@ -567,6 +575,7 @@ ggplot(rt) +
   geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
   geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2) +
   geom_hline(yintercept = 1, linetype = 2) +
+  scale_y_continuous(trans = "log") +
   scale_fill_brewer(palette = "Dark2", aesthetics = c("color", "fill")) +
   theme_bw() +
   labs(
@@ -576,15 +585,19 @@ ggplot(rt) +
   theme(legend.position = "bottom")
 ```
 
+
+Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models. Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict. This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.
+
 ### Estimates of the delay from testing postive to hospitalisation both in real-time and retrospectively
 
 We can also plot the posterior distribution of the delay from testing positive to hospitalisation. This is the delay that is used to estimate the number of hospitalisations that will ultimately be reported based on the number of positive tests that have been reported. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
 
-```{r plot-germany-delay}
+```{r plot-germany-delay class.source = "fold-hide"}
+#| fig.cap: "Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany" # nolint
 extract_epinowcast_cdf <- function(nowcast) {
   draws <- nowcast |>
     (\(x)
-    x$fit[[1]]$draws(variables = c("refp_mean", "refp_sd"), format = "df")
+      x$fit[[1]]$draws(variables = c("refp_mean", "refp_sd"), format = "df")
     )() |>
     as.data.table()
 
@@ -593,7 +606,7 @@ extract_epinowcast_cdf <- function(nowcast) {
     cdf := purrr::map2(
       `refp_mean[1]`, `refp_sd[1]`,
       ~ data.table(
-        delay = 1:26, cdf = plnorm(1:26, .x, .y) / plnorm(26, .x, .y)
+        delay = 1:30, cdf = plnorm(1:30, .x, .y) / plnorm(30, .x, .y)
       )
     )
   ]
@@ -626,8 +639,8 @@ ggplot(nowcast_cdf) +
   theme(legend.position = "bottom") +
   scale_fill_brewer(palette = "Dark2", aesthetics = c("color", "fill")) +
   guides(
-    fill = guide_legend(nrow = 2),
-    col = guide_legend(nrow = 2)
+    fill = guide_legend(nrow = 1),
+    col = guide_legend(nrow = 1)
   ) +
   labs(
     x = "Delay between positive test and hospitalisation",
@@ -635,15 +648,18 @@ ggplot(nowcast_cdf) +
   )
 ```
 
+The estimates are a fairly good match indicating that the delay is being well estimated by the real-time model compared to the retrospective model and that the delay is unlikely to be changing rapidly over time in this exampel (as otherwise we would expect the estimated delays to diverge over time).
+
 ### Estimates of the number of expected hospitalisations both in real-time and retrospectively
 
 We can also plot the posterior predictions for the number of expected hospitalisations. This is the number of hospitalisations that would be reported if there was no observation error. We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing. 
 
-Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may neeed to revisit our model specification to make it closer to the generative process of the data we have.
+Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may neeed to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.
 
-In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available.
+In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partiall unobserved).
 
-```{r plot-germany-reported-cases}
+```{r plot-germany-reported-cases class.source = "fold-hide"}
+#| fig.cap: "Real-time and retrospective estimates of the number of expected hospitalisations in Germany" #nolint
 get_expected_infections <- function(nowcast, expectation = expectation_module) {
   exp_cases <- enw_posterior(
     nowcast$fit[[1]],
@@ -684,20 +700,7 @@ ggplot(exp_cases) +
   theme(legend.position = "bottom")
 ```
 
-As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast.
-
-### Posterior predictions for cases by date of postive test and report
-
-Plotting posterior predictions can be a useful way of assessing performance and checking that the model is capturing the underlying data generation process adequately. We can do this using a `plot` method as follows for the real-time data,
-
-```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
-plot(germany_nowcast, type = "posterior") +
-  facet_wrap(vars(reference_date), scale = "free")
-```
-
-::: {.alert .alert-warning}
-  Visualising the model predictions highlights some clear fitting issues. One clear issue is that there appears to be periodicity in the observed data that is not present in this model. We could address this by using a report date reporting model (via `enw_report()`) that accounts for differences in reporting by weekday.
-:::
+As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).
 
 ## Wrapping up
 
@@ -713,25 +716,21 @@ plot(germany_nowcast, type = "posterior") +
   ### Strengths {-}
 
   - We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propogated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a mulit-stage approach.
+  - We have used a flexible model for the effective reproduction number which allows us to estimate the effective reproduction number over time and to incorporate uncertainty in the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases.
+  - We have accounted for the delay from infection to hospitalisation and the delay from hospitalisation to reporting in the estimation of the expected number of reported cases. This means that reproduction number estimates
+  are currently indexed to the date of infection.
 
   ### Limitations {-}
 
   - Assumed a known and static generation time distribution and latent reporting delay distribution. In reality these would need to be estimated from data, have uncertainty, and be liable to change over time.
   - Used a fixed parametric reporting delay distribution. In reality this would likely vary over time and depend on things like day of the week reporting effects. This could be addressed by using a more flexible reporting delay distribution which is supported by `epinowcast`.
+  - Used an observation model that does not account for overdispersion in the number of reported cases. This could be addressed by using a more flexible observation model which is supported by `epinowcast`.
 
   ### Alternative packages {-}
 
   - [`EpiNow2`](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
-  - [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2` and `epinowcast` but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `EpiNow2` and `epinowcast`.
-  - [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays.
-
-
-  ### Further work {-}
-
-    - Use a more flexible reporting delay distribution, potentially on ne that varies over time.
-    - Use a generation time distribution that incorporates uncertainty and that also potentially changes over time.
-    - Add functionality to allow forecasting beyond the horizon of the observed data.
-    - Use an observation model that supports overdispersion in the number of reported cases, for example the negative binomial distribution.
+  - [`epidemia`](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2`, in a similar way to `epinowcast`, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `epinowcast`. However, as it is an extension of `rstanarm` it comes with a number of useful features and a famliar interface for users of `rstanarm`
+  - [`EpiEstim`](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.
 :::
 
 ## References
