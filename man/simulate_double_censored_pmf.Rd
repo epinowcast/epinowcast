@@ -32,7 +32,7 @@ distribution function.}
 \item{n}{Number of simulations (default is 1e6).}
 
 \item{...}{Additional arguments to be passed to the distribution function.
-This is an alternative to \link{dist_args}.}
+This is an alternative to \code{dist_args}.}
 }
 \value{
 A numeric vector representing the PMF.

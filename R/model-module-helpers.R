@@ -250,7 +250,7 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 #' @param dist_args List of additional arguments to be passed to the
 #' distribution function.
 #' @param ... Additional arguments to be passed to the distribution function.
-#' This is an alternative to [dist_args].
+#' This is an alternative to `dist_args`.
 #'
 #' @return A numeric vector representing the PMF.
 #' @export
