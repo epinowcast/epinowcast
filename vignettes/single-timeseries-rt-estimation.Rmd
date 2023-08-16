@@ -1,6 +1,6 @@
 ---
 title: "Estimating the effective reproduction number in real-time for a single timeseries with reporting delays"
-description: ""
+description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
 author: Sam Abbott
 opengraph:
   image: 
