@@ -179,7 +179,10 @@ parameters {
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
-  # TODO: Add duplicate non-parametric entries for the reference model
+  // Non-parametric reference model
+  array[model_refnp ? 1 : 0] real refnp_int;
+  vector[model_refnp ? refnp_fncol : 0] refnp_beta; 
+  vector<lower=0>[refp_rncol] refp_beta_sd;
 
   // Report model
   vector[rep_fncol] rep_beta;
