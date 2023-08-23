@@ -338,7 +338,7 @@ model {
   );
   
   // Reference model
-  # TODO: Add that this is for the parametric reference model
+  // Parametric reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
@@ -355,7 +355,14 @@ model {
       );
     }
   }
-  # TODO: Add effects for the non-parametric reference model
+  // Non-parametric reference model
+  if (model_refnp) {
+    refnp_int ~ normal(refnp_int_p[1], refnp_int_p[2]);
+    effect_priors_lp(
+      refnp_beta, refp_beta_sd, refp_beta_sd_p, refp_fncol, refp_rncol
+    );
+  }
+
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
