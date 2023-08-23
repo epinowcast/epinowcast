@@ -205,12 +205,12 @@ transformed parameters{
   array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
   
   // Reference model
-  # TODO: Add that this is for the parametric reference model
+  // Parametric reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
-  # TODO: Consider changing the name to reference the parametric model
-  matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
-  # TODO: Add a non-parametric refence model hazard
+  matrix[dmax, refp_fnrow] refp_lh; // sparse report logit hazards
+  // Non-parametric reference model
+  vector[refnp_fnindex] refnp_lh; 
   
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
@@ -249,8 +249,8 @@ transformed parameters{
   }
 
   // Reference model
-  # TODO: Add that this is for the parametric reference model
-  profile("transformed_delay_reference_time_total") {
+  // Parametric reference model
+  profile("transformed_delay_parametric_reference_time_total") {
   if (model_refp) {
     // calculate sparse reference date effects
     profile("transformed_delay_reference_time_effects") {
@@ -266,15 +266,24 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     } 
     }
-    // calculate reference date logit hazards (unless no reporting effects)
+    // calculate parametric reference date logit hazards
+    // (unless no reporting effects)
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      ref_lh[, i] = discretised_logit_hazard(
+      refp_lh[, i] = discretised_logit_hazard(
         refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
       );
     }
     }
   }  
+  }
+  if (model_refnp) {
+    // calculate non-parametric reference date logit hazards
+    profile("transformed_delay_non_parametric_reference_time_hazards") {
+    refnp_lh = combine_logit_hazards(
+      refnp_int, refnp_beta, refnp_fdesign, refnp_rdesign, 1
+    );
+    }
   }
   # TODO: Add non-parametric component combination
 
