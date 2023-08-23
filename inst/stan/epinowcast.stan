@@ -79,12 +79,8 @@ data {
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
 
-<<<<<<< HEAD
-  // Reference date model
-=======
   // Reference time model
-  # TODO: Add that this is the parameteric reference model
->>>>>>> dd56c0db (plan out required changes for adding the non-parametric model)
+  // Parametric reference model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -96,7 +92,15 @@ data {
   array[2, 1] real refp_sd_int_p;
   array[2, 1] real refp_mean_beta_sd_p;
   array[2, 1] real refp_sd_beta_sd_p;
-  # TODO: Add duplicate non-parametric entries for the reference model
+  // Non-parametric reference model
+  int model_refnp;
+  int refnp_findex;
+  int refnp_fncol;
+  int refnp_rncol;
+  matrix[refnp_fnindex, refnp_fncol + 1] refnp_fdesign;
+  matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
+  array[2, 1] real refnp_int_p;
+  array[2, 1] real refnp_beta_sd_p;
 
   // Reporting time model
   int model_rep;
@@ -168,7 +172,7 @@ parameters {
   vector<lower=0>[expl_rncol] expl_beta_sd;
     
   // Reference model
-  # TODO: Add that this is for the parametric model
+  // Parametric reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
