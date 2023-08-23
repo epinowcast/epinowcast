@@ -95,6 +95,7 @@ data {
   // Non-parametric reference model
   int model_refnp;
   int refnp_findex;
+  int refnp_fintercept; // Should an intercept be included
   int refnp_fncol;
   int refnp_rncol;
   matrix[refnp_fnindex, refnp_fncol + 1] refnp_fdesign;
@@ -180,7 +181,7 @@ parameters {
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
   // Non-parametric reference model
-  array[model_refnp ? 1 : 0] real refnp_int;
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta; 
   vector<lower=0>[refp_rncol] refp_beta_sd;
 
@@ -280,9 +281,14 @@ transformed parameters{
   if (model_refnp) {
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
-    refnp_lh = combine_logit_hazards(
-      refnp_int, refnp_beta, refnp_fdesign, refnp_rdesign, 1
-    );
+    if (refnp_fintercept) {
+      refnp_lh = combine_logit_hazards(
+        refnp_int, refnp_beta, refnp_fdesign, refnp_rdesign, 1
+      );
+    } else {
+      refnp_lh = combine_logit_hazards(
+        {0}, refnp_beta, refnp_fdesign, refnp_rdesign, 1
+      );
     }
   }
 
@@ -356,8 +362,9 @@ model {
   }
   // Non-parametric reference model
   if (model_refnp) {
-    # TODO: Make the intercept option in the stan model
-    refnp_int ~ normal(refnp_int_p[1], refnp_int_p[2]);
+    if (refnp_fintercept) {
+      refnp_int[refnp_fintercept] ~ normal(refnp_int_p[1], refnp_int_p[2]);
+    }
     effect_priors_lp(
       refnp_beta, refp_beta_sd, refp_beta_sd_p, refp_fncol, refp_rncol
     );
