@@ -357,6 +357,7 @@ model {
   }
   // Non-parametric reference model
   if (model_refnp) {
+    # TODO: Make the intercept option in the stan model
     refnp_int ~ normal(refnp_int_p[1], refnp_int_p[2]);
     effect_priors_lp(
       refnp_beta, refp_beta_sd, refp_beta_sd_p, refp_fncol, refp_rncol
