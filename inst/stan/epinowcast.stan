@@ -389,14 +389,15 @@ model {
     if (ll_aggregation) {
       target += reduce_sum(
         delay_group_lupmf, groups, 1, flat_obs, sl, csl, exp_lobs, t, sg, ts,
-        st, rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
-        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst
+        st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
+        refnp_lh
       );
     } else {
       target += reduce_sum(
         delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol,
-        ref_as_p, phi, model_obs
+        rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs, refnp_lh
       );
     }
     }
@@ -417,10 +418,9 @@ generated quantities {
 
     // Posterior predictions for observations
     profile("generated_obs") {
-    # TODO: Add passing of non-parametric reference model parameters to expected observation calc function
     log_exp_obs = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
-      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
+      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh
     );
     
     if (model_miss) {
