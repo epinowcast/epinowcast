@@ -1,5 +1,4 @@
 // Calculate  expected observations for a given index
-# TODO: Add non-parametric features
 vector expected_obs_from_index(int i, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
                                matrix ref_lh, array[] int dpmfs, int ref_p,
@@ -12,9 +11,8 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   tar_obs = imp_obs[g][t];
   }
   profile("model_likelihood_hazard_allocations") {
-    # TODO: Add non-parametric features
     lh = combine_logit_hazards(
-      i, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, g, t, l
+      i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh
     );
   }
   // combine expected final obs and time effects to get expected obs
@@ -25,13 +23,13 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
 }
 
 // Calculate  expected observations for a set of indexes
-# TODO: Add passing of non-parametric features
 vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
-                               matrix ref_lh, array[] int dpmfs,
+                               matrix refp_lh, array[] int dpmfs,
                                int ref_p, int rep_h, int ref_as_p,
                                array[] int sl, array[] int csl,
-                               array[] int sg, array[] int st, int n) {
+                               array[] int sg, array[] int st, int n,
+                               vector refnp_lh) {
   vector[n] log_exp_obs;
   int ssnap = 1;
   int esnap = 0;
@@ -48,9 +46,9 @@ vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
     // combine expected final obs and time effects to get expected obs
     profile("expected_obs_from_index") {
     esnap += l;
-    # TODO: Add passing of non-parametric features (potentially may want to externally filter vs pass the full vector?)
     log_exp_obs[ssnap:esnap] = expected_obs_from_index(
-      i, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t, l
+      i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t,
+      l, refnp_lh
     );
     ssnap += l;
     }
