@@ -1,4 +1,3 @@
-# TODO: Pass non-parametric features
 vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh,
                              matrix refp_lh, array[] int dpmfs, int ref_p,
                              int rep_h, int g, int t, int l, vector refnp_lh, int refnp_p) {

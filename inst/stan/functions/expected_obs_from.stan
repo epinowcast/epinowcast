@@ -1,8 +1,9 @@
 // Calculate  expected observations for a given index
 vector expected_obs_from_index(int i, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
-                               matrix ref_lh, array[] int dpmfs, int ref_p,
-                               int rep_h, int ref_as_p, int g, int t, int l) {
+                               matrix refp_lh, array[] int dpmfs, int ref_p,
+                               int rep_h, int ref_as_p, int g, int t, int l,
+                               vector refnp_lh, int ref_np) {
   real tar_obs;
   vector[l] lh;
   vector[l] log_exp_obs;
@@ -12,7 +13,7 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   }
   profile("model_likelihood_hazard_allocations") {
     lh = combine_logit_hazards(
-      i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh
+      i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh, ref_np
     );
   }
   // combine expected final obs and time effects to get expected obs
@@ -29,7 +30,7 @@ vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
                                int ref_p, int rep_h, int ref_as_p,
                                array[] int sl, array[] int csl,
                                array[] int sg, array[] int st, int n,
-                               vector refnp_lh) {
+                               vector refnp_lh, int ref_np) {
   vector[n] log_exp_obs;
   int ssnap = 1;
   int esnap = 0;
@@ -48,7 +49,7 @@ vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
     esnap += l;
     log_exp_obs[ssnap:esnap] = expected_obs_from_index(
       i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t,
-      l, refnp_lh
+      l, refnp_lh, ref_np
     );
     ssnap += l;
     }

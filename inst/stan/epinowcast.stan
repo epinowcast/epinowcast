@@ -94,7 +94,7 @@ data {
   array[2, 1] real refp_sd_beta_sd_p;
   // Non-parametric reference model
   int model_refnp;
-  int refnp_findex;
+  int refnp_fnindex;
   int refnp_fintercept; // Should an intercept be included
   int refnp_fncol;
   int refnp_rncol;
@@ -183,7 +183,7 @@ parameters {
   // Non-parametric reference model
   array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
   vector[model_refnp ? refnp_fncol : 0] refnp_beta; 
-  vector<lower=0>[refp_rncol] refp_beta_sd;
+  vector<lower=0>[refnp_rncol] refnp_beta_sd;
 
   // Report model
   vector[rep_fncol] rep_beta;
@@ -282,13 +282,14 @@ transformed parameters{
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
     if (refnp_fintercept) {
-      refnp_lh = combine_logit_hazards(
-        refnp_int, refnp_beta, refnp_fdesign, refnp_rdesign, 1
+      refnp_lh = combine_effects(
+        refnp_int, refnp_beta, refnp_fdesign, rep_beta_sd, refnp_rdesign, 1
       );
     } else {
-      refnp_lh = combine_logit_hazards(
-        {0}, refnp_beta, refnp_fdesign, refnp_rdesign, 1
+      refnp_lh = combine_effects(
+        {0}, refnp_beta, refnp_fdesign, rep_beta_sd, refnp_rdesign, 1
       );
+    }
     }
   }
 
@@ -366,7 +367,7 @@ model {
       refnp_int[refnp_fintercept] ~ normal(refnp_int_p[1], refnp_int_p[2]);
     }
     effect_priors_lp(
-      refnp_beta, refp_beta_sd, refp_beta_sd_p, refp_fncol, refp_rncol
+      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_fncol, refnp_rncol
     );
   }
 
@@ -424,7 +425,7 @@ generated quantities {
     // Posterior predictions for observations
     profile("generated_obs") {
     log_exp_obs = expected_obs_from_snaps(
-      1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
+      1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
       model_refnp
     );
