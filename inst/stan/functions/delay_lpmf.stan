@@ -1,9 +1,8 @@
-# TODO: Add passing of non-parametric features
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sl, array[] int csl, array[] vector imp_obs,
                      array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p,
                      int rep_h, int ref_as_p, array[] real phi, int model_obs,
-                     vector refp_lh) {
+                     vector refp_lh, int ref_np) {
   real tar = 0;
   // Where am I?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
@@ -14,10 +13,9 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   vector[n[3]] log_exp_obs;
 
   // combine expected final obs and time effects to get expected obs
-  # TODO: Add passing of non-parametric features
   log_exp_obs = expected_obs_from_snaps(
     start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p,
-    sl, csl, sg, st, n[3], filt_refnp_lh
+    sl, csl, sg, st, n[3], filt_refnp_lh, ref_np
   );
 
   // observation error model (across all reference dates and groups)
@@ -26,7 +24,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   }
   return(tar);
 }
-# TODO: Add passing of non-parametric features
+
 real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int sl, array[] int csl, array[] vector imp_obs,
                       int t, array[] int sg, array[,] int ts, array[] int st,
@@ -37,7 +35,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[,] int obs_by_report, vector miss_ref_lprop,
                       array[] int sdmax, array[] int csdmax,
                       array[] int miss_st, array[] int miss_cst,
-                      vector refp_lh) {
+                      vector refp_lh, int ref_np) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
@@ -60,8 +58,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
 
     // Calculate all expected observations
     log_exp_all = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3], refnp_lh
-    );
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3], refnp_lh, ref_np
 
     // Allocate to just those actually observed
     log_exp_obs = allocate_observed_obs(
@@ -82,7 +79,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     }
   }else{
     log_exp_obs = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np
     );
   }
   // Observation error model (across all reference dates and groups)
