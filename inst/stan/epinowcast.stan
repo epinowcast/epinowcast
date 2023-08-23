@@ -285,7 +285,6 @@ transformed parameters{
     );
     }
   }
-  # TODO: Add non-parametric component combination
 
   // Report model
   profile("transformed_delay_reporting_time_effects") {
@@ -383,7 +382,6 @@ model {
   
   }
   // Log-Likelihood either by snapshot or group depending on settings/model
-  # TODO: Add passing of non-parametric reference model parameters to likelihood
   if (likelihood) {
     profile("model_likelihood") {
     if (ll_aggregation) {
