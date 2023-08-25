@@ -17,8 +17,7 @@
 #' defined by reference date and by delay. It draws on a linked `data.frame`
 #' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
 #' When an effect per delay is specified this approximates the cox proportional
-#' hazard model in discrete time with a single strata. Note that this model is
-#' currently not available for users.
+#' hazard model in discrete time with a single strata.
 #'
 #' @return A list containing the supplied formulas, data passed into a list
 #' describing the models, a `data.frame` describing the priors used, and a
@@ -29,7 +28,17 @@
 #' @family modelmodules
 #' @export
 #' @examples
-#' enw_reference(data = enw_example("preprocessed"))
+#' # Parametric model with a lognormal distribution
+#' enw_reference(
+#'  parametric = ~1, distribution = "lognormal",
+#'  data = enw_example("preprocessed")
+#' )
+#'
+#' # Non-parametric model with a random effect per delay
+#' enw_reference(
+#'  parametric = ~ 1, non_parametric = ~ 1 + (1 | delay),
+#'  data = enw_example("preprocessed")
+#' )
 # TODO: Consider if we wish to change the package default. If we do this it needs to be very clearly sign posted, and all the documentation needs to be reviewed.
 enw_reference <- function(
   parametric = ~1,
@@ -47,6 +56,13 @@ enw_reference <- function(
       " is specified"
     )
   }
+  if (as_string_formula(non_parametric) %in% "~0") {
+    non_parametric <- ~1
+    model_refnp <- 0
+  }else {
+    model_refnp <- 1
+  }
+
   distribution <- data.table::fcase(
     distribution %in% "none", 0,
     distribution %in% "exponential", 1,
@@ -54,8 +70,6 @@ enw_reference <- function(
     distribution %in% "gamma", 3,
     distribution %in% "loglogistic", 4
   )
-  # TODO: Replicate parametric formula structure for non-parametric model
-  # TODO: Make a combined delay and reference date data.frame for model building. Need to check preprocessing to see which object makes the most sense.
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
   pdata <- enw_formula_as_data_list(
@@ -71,6 +85,7 @@ enw_reference <- function(
     by = "id",
     allow.cartesian = TRUE
   )[, id := NULL]
+
   npform <- enw_formula(
     non_parametric, metanp, sparse = FALSE
   )
@@ -78,9 +93,7 @@ enw_reference <- function(
     npform,
     prefix = "refnp", drop_intercept = TRUE
   )
-  npdata$model_refnp <- as.numeric(
-    !as_string_formula(non_parametric) %in% "~0"
-  )
+  npdata$model_refnp <- model_refnp
 
   # Map models to output
   out <- list()
@@ -90,7 +103,7 @@ enw_reference <- function(
   out$priors <- data.table::data.table(
     variable = c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refnp_int", "refnp_beta_sd",
+      "refnp_int", "refnp_beta_sd"
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
