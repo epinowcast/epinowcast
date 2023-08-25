@@ -31,24 +31,20 @@
 #' @examples
 #' enw_reference(data = enw_example("preprocessed"))
 # TODO: Consider if we wish to change the package default. If we do this it needs to be very clearly sign posted, and all the documentation needs to be reviewed.
-enw_reference <- function(parametric = ~1, distribution = c(
-                            "lognormal", "none", "exponential", "gamma",
-                            "loglogistic"
-                          ), non_parametric = ~0, data) {
+enw_reference <- function(
+  parametric = ~1,
+  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  non_parametric = ~0, data
+) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
     parametric <- "~1"
   }
-  # TODO: Remove this error when non-parametric models are implemented into the interface.
-  if (!as_string_formula(non_parametric) %in% "~0") {
-    stop("The non-parametric reference model has not yet been implemented")
-  }
   distribution <- match.arg(distribution)
-  # TODO: Remove this warning when non-parametric models are implemented into the interface.
-  if (distribution %in% "none") {
-    warning(
-      "As non-parametric hazards have yet to be implemented a parametric hazard
-       is likely required for all real-world use cases"
+  if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
+    stop(
+      "A non-parametric model must be specified if no parametric model",
+      " is specified"
     )
   }
   distribution <- data.table::fcase(
@@ -60,6 +56,7 @@ enw_reference <- function(parametric = ~1, distribution = c(
   )
   # TODO: Replicate parametric formula structure for non-parametric model
   # TODO: Make a combined delay and reference date data.frame for model building. Need to check preprocessing to see which object makes the most sense.
+  # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
   pdata <- enw_formula_as_data_list(
     pform,
@@ -67,21 +64,47 @@ enw_reference <- function(parametric = ~1, distribution = c(
   )
   pdata$model_refp <- distribution
 
+  # Define non-parametric model
+  metanp <- merge(
+    data.table::copy(data$metareference[[1]])[, delay := NULL][, id := 1],
+    data.table::copy(data$metadelay[[1]])[, id := 1],
+    by = "id",
+    allow.cartesian = TRUE
+  )[, id := NULL]
+  npform <- enw_formula(
+    non_parametric, metanp, sparse = FALSE
+  )
+  npdata <- enw_formula_as_data_list(
+    npform,
+    prefix = "refnp", drop_intercept = TRUE
+  )
+  npdata$model_refnp <- as.numeric(
+    !as_string_formula(non_parametric) %in% "~0"
+  )
+
+  # Map models to output
   out <- list()
   out$formula$parametric <- pform$formula
-  out$data <- pdata
+  out$formula$non_parametric <- npform$formula
+  out$data <- c(pdata, npdata)
   out$priors <- data.table::data.table(
     variable = c(
-      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd"
+      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
+      "refnp_int", "refnp_beta_sd",
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
-      "Standard deviation of scaled pooled parametric sd effects"
+      "Standard deviation of scaled pooled parametric sd effects",
+      "Intercept for non-parametric reference date delay",
+      "Standard deviation of scaled pooled non-parametric effects"
     ),
-    distribution = c("Normal", rep("Zero truncated normal", 3)),
-    mean = c(1, 0.5, 0, 0),
+    distribution = c(
+      "Normal", rep("Zero truncated normal", 3),
+      "Normal", "Zero truncated normal"
+    ),
+    mean = c(1, 0.5, 0, 0, 0, 0),
     sd = 1
   )
   out$inits <- function(data, priors) {
@@ -93,7 +116,10 @@ enw_reference <- function(parametric = ~1, distribution = c(
         refp_mean_beta = numeric(0),
         refp_sd_beta = numeric(0),
         refp_mean_beta_sd = numeric(0),
-        refp_sd_beta_sd = numeric(0)
+        refp_sd_beta_sd = numeric(0),
+        refnp_int = numeric(0),
+        refnp_beta = numeric(0),
+        refnp_beta_sd = numeric(0)
       )
       if (data$model_refp > 0) {
         init$refp_mean_int <- array(rnorm(
@@ -126,6 +152,20 @@ enw_reference <- function(parametric = ~1, distribution = c(
           init$refp_sd_beta_sd <- array(abs(rnorm(
             data$refp_rncol, priors$refp_sd_beta_sd_p[1],
             priors$refp_sd_beta_sd_p[2] / 10
+          )))
+        }
+      }
+      if (data$model_refnp > 1) {
+        init$refnp_int <- array(rnorm(
+          0, priors$refnp_int_p[1], priors$refnp_int_p[2] / 10
+        ))
+        if (data$refnp_fncol > 0) {
+          init$refnp_beta <- array(rnorm(data$refnp_fncol, 0, 0.01))
+        }
+        if (data$refnp_rncol > 0) {
+          init$refnp_beta_sd <- array(abs(rnorm(
+            data$refnp_rncol, priors$refnp_beta_sd_p[1],
+            priors$refnp_beta_sd_p[2] / 10
           )))
         }
       }
