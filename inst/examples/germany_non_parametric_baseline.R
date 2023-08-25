@@ -37,7 +37,7 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Reference date model
 reference_module <- enw_reference(
-  parametric = ~ 1, non_parametric = ~ 1 + (1 | delay_cat),
+  parametric = ~0, non_parametric = ~ 1 + (1 | delay_cat),
   data = pobs
 )
 

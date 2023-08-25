@@ -36,7 +36,7 @@
 #'
 #' # Non-parametric model with a random effect per delay
 #' enw_reference(
-#'  parametric = ~ 1, non_parametric = ~ 1 + (1 | delay),
+#'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
 #'  data = enw_example("preprocessed")
 #' )
 # TODO: Consider if we wish to change the package default. If we do this it needs to be very clearly sign posted, and all the documentation needs to be reviewed.
@@ -47,7 +47,7 @@ enw_reference <- function(
 ) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
-    parametric <- "~1"
+    parametric <- ~1
   }
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
