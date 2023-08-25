@@ -403,7 +403,7 @@ model {
       target += reduce_sum(
         delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
         rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
-        ref_as_p, phi, model_obs, refnp_lh, model_refnp
+        ref_as_p, phi, model_obs, refnp_lh, model_refnp, sdmax, csdmax
       );
     }
     }
@@ -427,7 +427,7 @@ generated quantities {
     log_exp_obs = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
-      model_refnp
+      model_refnp, sdmax, csdmax
     );
     
     if (model_miss) {
