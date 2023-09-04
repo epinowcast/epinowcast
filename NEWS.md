@@ -30,7 +30,7 @@ This release is in development and not yet ready for production use.
 ## Documentation
 
 - Updated the distributions vignette to match the updated handling of discretisation. See #288 by @seabbs and reviewed by @adrian-lison.
-- Updated the use of the `citation()` function in the README so that the command is shown to users and the output is treated like normal text. See #272 by @seabbs and reviewed by @pearsonca.
+- Updated the use of the `citation()` function in the README so that the command is shown to users and the output is treated like normal text. See #272 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.2
 
