@@ -324,8 +324,6 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   return(dt[])
 }
 
-
-
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",

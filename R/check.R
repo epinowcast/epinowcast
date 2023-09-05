@@ -334,8 +334,6 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #' observations. Default is `TRUE`. If `FALSE`, the function returns invisibly
 #' if there is only one observation.
 #'
-#' @param drop_duplicates Logical, if `TRUE`, removes duplicate dates before
-#' checking the timestep. Default is `FALSE`.
 #'
 #' @inheritParams get_internal_timestep
 #' @inheritParams check_calendar_timestep
@@ -369,6 +367,34 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   } else {
     check_numeric_timestep(dates, date_var, internal_timestep, exact)
   }
+
+  return(invisible(NULL))
+}
+
+#' Check timestep by group
+#'
+#' This function verifies if the difference in dates within each group in the
+#' provided observations corresponds to the provided timestep. This check is
+#' performed for the specified `date_var` and for each group in `obs`.
+#'
+#' @param obs Any of the types supported by [data.table::as.data.table()].
+#'
+#' @inheritParams check_timestep
+#' @return This function is used for its side effect of checking the timestep
+#' by group in `obs`. If the check passes for all groups, the function
+#' returns invisibly. Otherwise, it stops and returns an error message.
+#' @family check
+check_timestep_by_group <- function(obs, date_var, timestep = "day",
+                                    exact = TRUE) {
+  # Coerce to data.table and check for required columns
+  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE, group = TRUE)
+
+  # Check the timestep within each group
+  obs[,
+   check_timestep(
+    .SD, date_var = date_var, timestep, exact, check_nrow = FALSE),
+    by = ".group"
+  ]
 
   return(invisible(NULL))
 }

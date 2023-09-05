@@ -96,9 +96,11 @@ enw_nowcast_summary <- function(fit, obs,
   max_delay <- nrow(nowcast) / max(obs$.group)
   internal_timestep <- get_internal_timestep(timestep)
 
-  ord_obs <- coerce_dt(obs)
-  check_timestep(
-    ord_obs, "reference_date", timestep, exact = TRUE,  drop_duplicates = TRUE
+  ord_obs <- coerce_dt(
+    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  )
+  check_timestep_by_group(
+    ord_obs, "reference_date", timestep, exact = TRUE
   )
   ord_obs <- ord_obs[
     reference_date > (max(reference_date) - max_delay * internal_timestep)
@@ -148,9 +150,11 @@ enw_nowcast_samples <- function(fit, obs, timestep = "day") {
   max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
   internal_timestep <- get_internal_timestep(timestep)
 
-  ord_obs <- coerce_dt(obs)
-  check_timestep(
-    ord_obs, "reference_date", timestep, exact = TRUE,  drop_duplicates = TRUE
+  ord_obs <- coerce_dt(
+    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  )
+  check_timestep_by_group(
+    ord_obs, "reference_date", timestep, exact = TRUE
   )
   ord_obs <- ord_obs[
     reference_date > (max(reference_date) - max_delay * internal_timestep)
@@ -294,7 +298,9 @@ enw_pp_summary <- function(fit, diff_obs,
     probs = probs
   )
 
-  ord_obs <- coerce_dt(diff_obs)
+  ord_obs <- coerce_dt(
+    diff_obs,  required_cols = "new_confirm", dates = TRUE, group = TRUE
+  )
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   pp <- cbind(
     ord_obs,

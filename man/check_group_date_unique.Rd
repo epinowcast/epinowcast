@@ -26,6 +26,7 @@ Functions used for checking inputs
 \code{\link{check_numeric_timestep}()},
 \code{\link{check_quantiles}()},
 \code{\link{check_timestep_by_date}()},
+\code{\link{check_timestep_by_group}()},
 \code{\link{check_timestep}()}
 }
 \concept{check}
