@@ -4,7 +4,7 @@ description: "A walk through of a simple approach to jointly estimating the effe
 author: Sam Abbott
 opengraph:
   image: 
-    src: figures/performance-1.png
+    src: figures/single-timeseries-rt-estimation/plot-germany-rt-1.png
 output: 
   bookdown::html_vignette2:
     fig_caption: yes
