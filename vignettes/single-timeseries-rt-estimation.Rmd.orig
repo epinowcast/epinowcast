@@ -149,7 +149,7 @@ Here we have specifed the `reference_date` and `report_date` columns, the `by` c
 
 ### Filtering the data
 
-For this case study we will only consider data from the 1st of March 2020 onwards. As a first step we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021. We do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions,
+For this case study we will only consider data from the 1st of March 2020 onwards. As a first step, we filter the data to only include observations from the 1st of May 2021 until the 1st of August 2021. We do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions,
 
 ```{r}
 complete_germany_hosp <- germany_hosp |>
@@ -161,7 +161,7 @@ complete_germany_hosp <- germany_hosp |>
 
 Here we have also used `enw_complete_dates()` to make sure that we have complete data for all dates between the earliest and latest dates. We have also used `enw_add_incidence()` to add the incidence column to the data. 
 
-Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (`rt_nat_germany`) and the data that was available retrospectively about the same time period will be used to evaluate the model (`retro_nat_germany`). We again do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions, 
+Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (`rt_nat_germany`) and the data that was available retrospectively about the same time period will be used to evaluate the model (`retro_nat_germany`). We again do this using the `enw_filter_report_dates()` and `enw_filter_reference_dates()` functions as follows:  
 
 - Create the real-time dataset (`rt_nat_germany`) by filtering the data to only include reported observations from the 1st of May 2021 until the 1st of July 2021;
 
@@ -359,7 +359,7 @@ expectation_module <- partial(
   r = rt_formula,
   generation_time = gt_pmf,
   latent_reporting_delay = reporting_pmf,
-  observation = observation_formula,
+  observation = observation_formula
 )
 ```
 
@@ -393,8 +393,8 @@ reference_module <- partial(enw_reference, ~1, distribution = "lognormal")
 Expected notifications by date of positive test ($t$) and reporting date can now be found by multiplying expected final notifications by date of positive test for each $t$ with the probability of reporting for each day of delay ($p_{t,d}$). We assume a Poisson observation model and produce a nowcast of final observed hospitalisations at each reference date by summing posterior estimates for unobserved notification and observed notifications for that reference date.
 
 \begin{align}
-  n_{t,d} \mid \lambda_{t},p_{t,d}  &\sim \text{Poisson} \left(\lambda_{t} \times p_{t,d) \right),\ t=1,...,T. \\
-  N_{g,t} &= \sum_{d=0}^{D} n_{g,t,d}
+  n_{t,d} \mid \lambda_{t},p_{t,d}  &\sim \text{Poisson} \left(\lambda_{t} \times p_{t,d} \right),\ t=1,...,T. \\
+  N_{t} &= \sum_{d=0}^{D} n_{t,d}
 \end{align}
 
 #### Specifying the model using `epinowcast::enw_obs()`
@@ -526,7 +526,7 @@ plot(
 
 ### Posterior predictions for cases by date of postive test and report
 
-To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing `type = "posterior_prediction") we instead use `enw_plot_pp_quantiles()` so we can control the number of refernces dates we plot (as otherwise the plot will be quite overwhelming!).
+To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing `type = "posterior_prediction"`) we instead use `enw_plot_pp_quantiles()` so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).
 
 ```{r plot-retro-germany-nowcast-obs}
 #| fig.cap: "Posterior predictions of hospitalisations in Germany based on retrospective data" # nolint
