@@ -4,7 +4,7 @@ description: "A walk through of a simple approach to jointly estimating the effe
 author: Sam Abbott
 opengraph:
   image: 
-    src: figures/single-timeseries-rt-estimation/plot-germany-rt-1.png
+    src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
 output: 
   bookdown::html_vignette2:
     fig_caption: yes
@@ -22,7 +22,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "vignettes/figures/single-timeseries-rt-estimation/",
+  fig.path = "vignettes/figures/single-timeseries-rt-estimation-",
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
@@ -426,7 +426,7 @@ retro_germany_pobs
 
 #### Specifying the fitting options
 
-Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.99 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the `max_treedepth` to 15 (the default is 10). Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
+Before we are ready to fit the model we need to first specify some fitting options for using `cmdstanr` (more information on these options can be found in the `cmdstanr` documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set `adapt_delta` to 0.98 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the `max_treedepth` to 15 (the default is 10). Finally, we set `save_warmup` to `FALSE` to save space (we don't need the warmup samples for this analysis), and `pp` to `TRUE` so that we can use posterior predictive checks to assess the model fit.
 
 ```{r fit-options}
 fit_module <- partial(enw_fit_opts,
@@ -435,12 +435,12 @@ fit_module <- partial(enw_fit_opts,
   threads_per_chain = 2,
   iter_warmup = 500,
   iter_sampling = 1000,
-  adapt_delta = 0.99,
+  adapt_delta = 0.98,
   max_treedepth = 15,
   save_warmup = FALSE,
   pp = TRUE,
-  show_messages = interactive(),
-  refresh = as.numeric(interactive())
+  show_messages = FALSE, # set this to TRUE to show fitting messages
+  refresh = 0 # remove this to show fitting progress
 )
 ```
 
