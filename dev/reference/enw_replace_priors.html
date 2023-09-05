@@ -173,14 +173,14 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-in"><span> variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            variable     mean    median         sd        mad        q5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.907335 2.8915550 0.59034878 0.58968932 1.9763995</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.714781 3.7276150 0.28945895 0.30786189 3.2518135</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.346882 0.3456225 0.03199261 0.03005749 0.2941118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          q20      q80      q95      rhat  ess_bulk ess_tail</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.4090440 3.382796 3.915665 0.9998006  719.9338 628.9250</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.4598300 3.956674 4.168968 1.0004891  880.7985 898.5090</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3212668 0.373142 0.403754 1.0052299 1129.5585 557.8391</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median         sd        mad        q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.9094597 2.890800 0.59278054 0.61464148 1.9945040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.7121802 3.703165 0.28684669 0.28877341 3.2485520</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3457251 0.345330 0.03066519 0.03144891 0.2978062</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          q20       q80       q95     rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.3887180 3.4097680 3.9038630 1.007756  670.7265 813.1303</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.4720380 3.9641120 4.1829380 1.006129  776.8050 789.4460</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3206198 0.3716398 0.3973088 1.000220 1056.1530 709.8793</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">default_priors</span>, <span class="va">fit_priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
@@ -195,12 +195,12 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                                        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution     mean         sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                  &lt;NA&gt; 2.907335 0.59034878</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                  &lt;NA&gt; 3.714781 0.28945895</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 0.346882 0.03199261</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean         sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                  &lt;NA&gt; 2.9094597 0.59278054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                  &lt;NA&gt; 3.7121802 0.28684669</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 0.3457251 0.03066519</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

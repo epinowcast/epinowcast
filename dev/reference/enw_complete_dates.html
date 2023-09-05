@@ -102,6 +102,7 @@ or as covariates need to be included in the <code>by</code> variable.</p>
 <span>  <span class="va">obs</span>,</span>
 <span>  by <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">max_delay</span>,</span>
+<span>  timestep <span class="op">=</span> <span class="st">"day"</span>,</span>
 <span>  missing_reference <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  completion_beyond_max_report <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -131,6 +132,11 @@ distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and <code>max_delay - 1</code> other days
 (i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
+
+
+<dt>timestep</dt>
+<dd><p>The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.</p></dd>
 
 
 <dt>missing_reference</dt>

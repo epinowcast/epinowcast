@@ -127,6 +127,11 @@
         <dd>Calculate incidence of new reports from cumulative reports</dd>
       </dl><dl><dt>
           
+          <code><a href="enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code> 
+        </dt>
+        <dd>Aggregate observations over a given timestep for both report and reference dates.</dd>
+      </dl><dl><dt>
+          
           <code><a href="enw_cumulative_to_incidence.html">enw_cumulative_to_incidence()</a></code> 
         </dt>
         <dd>Calculate incidence of new reports from cumulative reports</dd>
@@ -619,14 +624,19 @@
 
       <dl><dt>
           
+          <code><a href="check_calendar_timestep.html">check_calendar_timestep()</a></code> 
+        </dt>
+        <dd>Check calendar timestep</dd>
+      </dl><dl><dt>
+          
           <code><a href="check_group.html">check_group()</a></code> 
         </dt>
-        <dd>Check Observations for Reserved Grouping Variables</dd>
+        <dd>Check observations for reserved grouping variables</dd>
       </dl><dl><dt>
           
           <code><a href="check_group_date_unique.html">check_group_date_unique()</a></code> 
         </dt>
-        <dd>Check Observations for Uniqueness of Grouping Variables with respect to reference_date and report_date</dd>
+        <dd>Check observations for uniqueness of grouping variables with respect to <code>reference_date</code> and <code>report_date</code></dd>
       </dl><dl><dt>
           
           <code><a href="check_module.html">check_module()</a></code> 
@@ -639,9 +649,29 @@
         <dd>Check that model modules have compatible specifications</dd>
       </dl><dl><dt>
           
+          <code><a href="check_numeric_timestep.html">check_numeric_timestep()</a></code> 
+        </dt>
+        <dd>Check Numeric Timestep</dd>
+      </dl><dl><dt>
+          
           <code><a href="check_quantiles.html">check_quantiles()</a></code> 
         </dt>
-        <dd>Check Quantiles Required are Present</dd>
+        <dd>Check required quantiles are present</dd>
+      </dl><dl><dt>
+          
+          <code><a href="check_timestep.html">check_timestep()</a></code> 
+        </dt>
+        <dd>Check timestep</dd>
+      </dl><dl><dt>
+          
+          <code><a href="check_timestep_by_date.html">check_timestep_by_date()</a></code> 
+        </dt>
+        <dd>Check timestep by date</dd>
+      </dl><dl><dt>
+          
+          <code><a href="check_timestep_by_group.html">check_timestep_by_group()</a></code> 
+        </dt>
+        <dd>Check timestep by group</dd>
       </dl></div><div class="section level2">
       <h2 id="utilities">Utilities<a class="anchor" aria-label="anchor" href="#utilities"></a></h2>
       
@@ -654,6 +684,11 @@
       
 
       <dl><dt>
+          
+          <code><a href="aggregate_rolling_sum.html">aggregate_rolling_sum()</a></code> 
+        </dt>
+        <dd>Internal function to perform rolling sum aggregation</dd>
+      </dl><dl><dt>
           
           <code><a href="coerce_date.html">coerce_date()</a></code> 
         </dt>
@@ -670,9 +705,19 @@
         <dd>Convert Cmdstan to Rstan</dd>
       </dl><dl><dt>
           
+          <code><a href="date_to_numeric_modulus.html">date_to_numeric_modulus()</a></code> 
+        </dt>
+        <dd>Convert date column to numeric and calculate its modulus with given timestep.</dd>
+      </dl><dl><dt>
+          
           <code><a href="expose_stan_fns.html">expose_stan_fns()</a></code> 
         </dt>
         <dd>Expose stan functions in R</dd>
+      </dl><dl><dt>
+          
+          <code><a href="get_internal_timestep.html">get_internal_timestep()</a></code> 
+        </dt>
+        <dd>Get internal timestep</dd>
       </dl><dl><dt>
           
           <code><a href="is.Date.html">is.Date()</a></code> 

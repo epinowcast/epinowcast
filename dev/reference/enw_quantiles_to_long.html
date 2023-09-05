@@ -117,16 +117,16 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">posterior</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_posterior.html">enw_posterior</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, var <span class="op">=</span> <span class="st">"expr_lelatent_int[1,1]"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_quantiles_to_long</span><span class="op">(</span><span class="va">posterior</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  variable     mean  median        sd      mad     rhat ess_bulk</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: expr_lelatent_int[1,1] 4.177749 4.18021 0.1618319 0.167519 1.001325  936.117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: expr_lelatent_int[1,1] 4.177749 4.18021 0.1618319 0.167519 1.001325  936.117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: expr_lelatent_int[1,1] 4.177749 4.18021 0.1618319 0.167519 1.001325  936.117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: expr_lelatent_int[1,1] 4.177749 4.18021 0.1618319 0.167519 1.001325  936.117</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    ess_tail quantile prediction</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 773.9056     0.05   3.923222</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 773.9056     0.20   4.039484</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 773.9056     0.80   4.313722</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 773.9056     0.95   4.443018</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  variable     mean  median        sd       mad     rhat</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: expr_lelatent_int[1,1] 4.174822 4.17915 0.1619883 0.1564588 1.002543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: expr_lelatent_int[1,1] 4.174822 4.17915 0.1619883 0.1564588 1.002543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: expr_lelatent_int[1,1] 4.174822 4.17915 0.1619883 0.1564588 1.002543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: expr_lelatent_int[1,1] 4.174822 4.17915 0.1619883 0.1564588 1.002543</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    ess_bulk ess_tail quantile prediction</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 671.6598 514.3376     0.05   3.899291</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 671.6598 514.3376     0.20   4.043978</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 671.6598 514.3376     0.80   4.308002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: 671.6598 514.3376     0.95   4.432952</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

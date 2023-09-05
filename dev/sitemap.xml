@@ -43,7 +43,13 @@
     <loc>package.epinowcast.org/dev/reference/add_pmfs.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/aggregate_rolling_sum.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/as_string_formula.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_calendar_timestep.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_group.html</loc>
@@ -58,7 +64,19 @@
     <loc>package.epinowcast.org/dev/reference/check_modules_compatible.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/check_numeric_timestep.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/check_quantiles.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_timestep.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_timestep_by_date.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_timestep_by_group.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/coerce_date.html</loc>
@@ -77,6 +95,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/convolution_matrix.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/date_to_numeric_modulus.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_add_cumulative.html</loc>
@@ -101,6 +122,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_add_pooling_effect.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_aggregate_cumulative.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_assign_group.html</loc>
@@ -263,6 +287,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/germany_covid19_hosp.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/get_internal_timestep.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/index.html</loc>

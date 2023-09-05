@@ -86,7 +86,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_delay_filter</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_delay_filter</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span>, timestep <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -106,6 +106,14 @@ distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and <code>max_delay - 1</code> other days
 (i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
+
+
+<dt>timestep</dt>
+<dd><p>The timestep to used in the process model (i.e. the
+reference date model). This can be a string ("day", "week", "month") or a
+numeric whole number representing the number of days. If your data does not
+have this timestep then you may wish to make use of
+<code><a href="enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code> to aggregate your data to the desired timestep.</p></dd>
 
 </dl></div>
     <div class="section level2">
