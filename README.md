@@ -38,32 +38,32 @@ set than presented here, we also provide a range of other documentation,
 case studies, and spaces for the community to interact with each other.
 Below is a short list of current resources.
 
-  - [Package website](https://package.epinowcast.org/): This includes a
-    function reference, model outline, and case studies making use of
-    the package. This site refers to the release version of our package
-    which can be installed from our Universe or from the latest GitHub
-    release (see installation instructions). The development version of
-    our documentation (corresponding to our `main` branch on GitHub) is
-    available [here](https://package.epinowcast.org/dev/).
+- [Package website](https://package.epinowcast.org/): This includes a
+  function reference, model outline, and case studies making use of the
+  package. This site refers to the release version of our package which
+  can be installed from our Universe or from the latest GitHub release
+  (see installation instructions). The development version of our
+  documentation (corresponding to our `main` branch on GitHub) is
+  available [here](https://package.epinowcast.org/dev/).
 
-  - [Organisation website](https://www.epinowcast.org/): This includes
-    links to our other resources as well as guest posts from community
-    members and schedules for any related seminars being run by
-    community members.
+- [Organisation website](https://www.epinowcast.org/): This includes
+  links to our other resources as well as guest posts from community
+  members and schedules for any related seminars being run by community
+  members.
 
-  - [Directory of example
-    scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
-    Not as fleshed out as our complete case studies these scripts are
-    used during package development and each showcase a subset of
-    package functionality. Often newly introduced features will be
-    explored here before surfacing in other areas of our documentation.
+- [Directory of example
+  scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
+  Not as fleshed out as our complete case studies these scripts are used
+  during package development and each showcase a subset of package
+  functionality. Often newly introduced features will be explored here
+  before surfacing in other areas of our documentation.
 
-  - [Community forum](https://community.epinowcast.org/): Our community
-    forum is where development of methods and tools is discussed, along
-    with related research from our members and discussions between
-    users. If you are interested in real-time analysis of infectious
-    disease this is likely a good place to start regardless of if you
-    end up making use of `epinowcast`.
+- [Community forum](https://community.epinowcast.org/): Our community
+  forum is where development of methods and tools is discussed, along
+  with related research from our members and discussions between users.
+  If you are interested in real-time analysis of infectious disease this
+  is likely a good place to start regardless of if you end up making use
+  of `epinowcast`.
 
 ## Installation
 
@@ -187,12 +187,12 @@ retro_nat_germany
 This data is already in a format that can be used with `epinowcast`, as
 it contains
 
-  - a reference date (column `reference_date`): the date of the
-    observation, in this example the date of a positive test
-  - a report date (column `report_date`): the date of report for a given
-    set of observations by reference date
-  - a count (column `confirm`): the total (i.e. cumulative) number of
-    hospitalisations by reference date and report date.
+- a reference date (column `reference_date`): the date of the
+  observation, in this example the date of a positive test
+- a report date (column `report_date`): the date of report for a given
+  set of observations by reference date
+- a count (column `confirm`): the total (i.e. cumulative) number of
+  hospitalisations by reference date and report date.
 
 The package also provides a range of tools to convert data from line
 list, incidence, or other common formats into the required format (see
@@ -257,13 +257,13 @@ be tailored to the user’s specific data and context.
 
 The default nowcasting model in `epinowcast` consists of three modules:
 
-  - A process (expectation) module that models the expected counts by
-    date of reference (`reference_date`)
-  - A parametric reference reporting model which models the reporting
-    delay distribution from the date of reference
-  - A non-parametric reporting model which models differences in the
-    reporting delay distribution by date of report (`report_date`), for
-    example, day-of-the-week effects on the reporting delay.
+- A process (expectation) module that models the expected counts by date
+  of reference (`reference_date`)
+- A parametric reference reporting model which models the reporting
+  delay distribution from the date of reference
+- A non-parametric reporting model which models differences in the
+  reporting delay distribution by date of report (`report_date`), for
+  example, day-of-the-week effects on the reporting delay.
 
 In the following sections, we specify simple models for each of these
 modules. The appropriateness of these specifications will vary depending
@@ -277,7 +277,7 @@ counts by date of reference via a geometric random walk as this acts as
 a minimally informed smoothing prior and thus gives a lot of weight to
 the observed data. This is the default process model in `epinowcast`.
 Users may also specify this model for themselves using the
-enw\_expectation() function.
+enw_expectation() function.
 
 ``` r
 expectation_module <- enw_expectation(
@@ -288,21 +288,14 @@ expectation_module <- enw_expectation(
 Here, `day` refers to the number of days from the start of the data.
 
 As the underlying process model is an exponential growth rate model
-(![C\_t = C\_{t-1}
-\\exp^{r\_t}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D
-"C_t = C_{t-1} \\exp^{r_t}")), specifying a random effect (i.e. `(1 |
-day)`) on the growth rate is equivalent to a geometric random walk on
-expected counts by reference date. We are defining a random effect as,
+($C_t = C_{t-1} \exp^{r_t}$), specifying a random effect
+(i.e. `(1 | day)`) on the growth rate is equivalent to a geometric
+random walk on expected counts by reference date. We are defining a
+random effect as,
 
-  
-![ \\text{day} \\sim \\text{Normal}(0, \\sigma)
-](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%20%5Ctext%7Bday%7D%20%5Csim%20%5Ctext%7BNormal%7D%280%2C%20%5Csigma%29%20
-" \\text{day} \\sim \\text{Normal}(0, \\sigma) ")  
+$$ \text{day} \sim \text{Normal}(0, \sigma) $$
 
-  
-![ \\sigma \\sim
-\\text{Half-Normal}(0, 1).](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%20%5Csigma%20%5Csim%20%5Ctext%7BHalf-Normal%7D%280%2C%201%29.
-" \\sigma \\sim \\text{Half-Normal}(0, 1).")  
+$$ \sigma \sim \text{Half-Normal}(0, 1).$$
 
 #### Reporting model by reference date
 
@@ -396,11 +389,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date timestep
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22      day
 #>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.02
+#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
-#> 1:                     0                         0             8
+#> 1:                     1                     0.001             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                   1                0.001     40.8
+#> 1:                  21                0.021     96.3
 ```
 
 ### Summarising and plotting the nowcast
@@ -425,26 +418,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.054     69 0.2348172 0.0000 69
-#>  3:                 1    37             0  47.080     47 0.2927212 0.0000 47
-#>  4:                 1    36             0  65.204     65 0.4545224 0.0000 65
-#>  5:                 1    35             0  50.303     50 0.5490833 0.0000 50
-#>  6:                 1    34             0  36.247     36 0.4982361 0.0000 36
-#>  7:                 1    33             0  94.502     94 0.7311159 0.0000 94
-#>  8:                 1    32             0  91.802     92 0.9357733 1.4826 91
-#>  9:                 1    31             0 100.221    100 1.1573671 1.4826 99
-#> 10:                 1    30             0  87.396     87 1.2184698 1.4826 86
+#>  2:                 1    38             0  69.040     69 0.2108185 0.0000 69
+#>  3:                 1    37             0  47.079     47 0.2878226 0.0000 47
+#>  4:                 1    36             0  65.240     65 0.4843910 0.0000 65
+#>  5:                 1    35             0  50.305     50 0.5764610 0.0000 50
+#>  6:                 1    34             0  36.248     36 0.4926852 0.0000 36
+#>  7:                 1    33             0  94.535     94 0.7690035 0.0000 94
+#>  8:                 1    32             0  91.868     92 1.0137078 1.4826 91
+#>  9:                 1    31             0 100.178    100 1.1780084 1.4826 99
+#> 10:                 1    30             0  87.339     87 1.2400067 1.4826 86
 #>     q95      rhat  ess_bulk  ess_tail
 #>  1:  72        NA        NA        NA
-#>  2:  70 1.0008089 1123.7443 1010.8290
-#>  3:  48 0.9981479 1006.5788 1018.2232
-#>  4:  66 0.9990405  974.1130  933.8401
-#>  5:  51 1.0001308  871.1600  851.4064
-#>  6:  37 0.9997534  808.5586  763.2225
-#>  7:  96 0.9988391 1021.4579 1025.0389
-#>  8:  94 0.9998444 1122.6898  960.3977
-#>  9: 102 0.9992337 1051.5770  921.9198
-#> 10:  90 0.9991999 1116.8188  920.6912
+#>  2:  69 1.0021837  645.0280  601.8980
+#>  3:  48 0.9989328 1032.6168  738.2160
+#>  4:  66 0.9984581  896.0689  890.5834
+#>  5:  51 0.9983299  903.0556  893.9250
+#>  6:  37 1.0004220  985.3368  937.8217
+#>  7:  96 0.9987727 1118.6086 1005.8117
+#>  8:  94 0.9995850  977.0422 1037.2376
+#>  9: 102 1.0010866 1157.8051 1060.6685
+#> 10:  90 1.0003975  896.9309  799.6898
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -499,17 +492,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    439
-#>     2:                 1    33             0      1          2     2    433
+#>     1:                 1    33             0      1          1     1    434
+#>     2:                 1    33             0      1          2     2    434
 #>     3:                 1    33             0      1          3     3    436
 #>     4:                 1    33             0      1          4     4    435
 #>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2013
-#> 33997:                 1     0             1      2        497   997   1983
-#> 33998:                 1     0             1      2        498   998   1986
-#> 33999:                 1     0             1      2        499   999   1919
-#> 34000:                 1     0             1      2        500  1000   1978
+#> 33996:                 1     0             1      2        496   996   2137
+#> 33997:                 1     0             1      2        497   997   2043
+#> 33998:                 1     0             1      2        498   998   1900
+#> 33999:                 1     0             1      2        499   999   2693
+#> 34000:                 1     0             1      2        500  1000   1992
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -571,7 +564,7 @@ for more information.
 
 ## Contributing
 
-We welcome contributions and new contributors\! We particularly
+We welcome contributions and new contributors! We particularly
 appreciate help on priority problems in the
 [issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull
