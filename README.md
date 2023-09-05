@@ -293,10 +293,13 @@ As the underlying process model is an exponential growth rate model
 random walk on expected counts by reference date. We are defining a
 random effect as,
 
+<<<<<<< HEAD
 $$ \text{day} \sim \text{Normal}(0, \sigma) $$
 
 $$ \sigma \sim \text{Half-Normal}(0, 1).$$
 
+=======
+>>>>>>> f0f95152 (fix latex issues)
 #### Reporting model by reference date
 
 Our baseline assumption for the reporting delay is that it is
@@ -393,7 +396,11 @@ nowcast
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     1                     0.001             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
+<<<<<<< HEAD
 #> 1:                  21                0.021     96.3
+=======
+#> 1:                  50                 0.05     41.2
+>>>>>>> f0f95152 (fix latex issues)
 ```
 
 ### Summarising and plotting the nowcast
@@ -418,6 +425,7 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
+<<<<<<< HEAD
 #>  2:                 1    38             0  69.040     69 0.2108185 0.0000 69
 #>  3:                 1    37             0  47.079     47 0.2878226 0.0000 47
 #>  4:                 1    36             0  65.240     65 0.4843910 0.0000 65
@@ -438,6 +446,28 @@ nowcast |>
 #>  8:  94 0.9995850  977.0422 1037.2376
 #>  9: 102 1.0010866 1157.8051 1060.6685
 #> 10:  90 1.0003975  896.9309  799.6898
+=======
+#>  2:                 1    38             0  69.034     69 0.1813198 0.0000 69
+#>  3:                 1    37             0  47.080     47 0.2822759 0.0000 47
+#>  4:                 1    36             0  65.217     65 0.4859497 0.0000 65
+#>  5:                 1    35             0  50.277     50 0.5482441 0.0000 50
+#>  6:                 1    34             0  36.229     36 0.4947765 0.0000 36
+#>  7:                 1    33             0  94.514     94 0.7391552 0.0000 94
+#>  8:                 1    32             0  91.811     92 0.9187617 1.4826 91
+#>  9:                 1    31             0 100.147    100 1.1020915 1.4826 99
+#> 10:                 1    30             0  87.300     87 1.1512277 1.4826 86
+#>     q95      rhat  ess_bulk  ess_tail
+#>  1:  72        NA        NA        NA
+#>  2:  69 0.9984033  866.8184  866.8184
+#>  3:  48 1.0009181 1064.8126 1013.5831
+#>  4:  66 0.9999331  906.6828  854.5546
+#>  5:  51 0.9993231 1008.3324  999.2719
+#>  6:  37 0.9984096  875.5216  888.3878
+#>  7:  96 0.9989109 1015.8882  930.9680
+#>  8:  94 0.9990668  992.9607  938.1244
+#>  9: 102 0.9992259 1072.6791 1063.0450
+#> 10:  89 1.0062443  962.0458  932.9632
+>>>>>>> f0f95152 (fix latex issues)
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -492,6 +522,7 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
+<<<<<<< HEAD
 #>     1:                 1    33             0      1          1     1    434
 #>     2:                 1    33             0      1          2     2    434
 #>     3:                 1    33             0      1          3     3    436
@@ -503,6 +534,19 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33998:                 1     0             1      2        498   998   1900
 #> 33999:                 1     0             1      2        499   999   2693
 #> 34000:                 1     0             1      2        500  1000   1992
+=======
+#>     1:                 1    33             0      1          1     1    433
+#>     2:                 1    33             0      1          2     2    435
+#>     3:                 1    33             0      1          3     3    434
+#>     4:                 1    33             0      1          4     4    433
+#>     5:                 1    33             0      1          5     5    436
+#>    ---                                                                     
+#> 33996:                 1     0             1      2        496   996   2275
+#> 33997:                 1     0             1      2        497   997   2113
+#> 33998:                 1     0             1      2        498   998   2105
+#> 33999:                 1     0             1      2        499   999   2400
+#> 34000:                 1     0             1      2        500  1000   2130
+>>>>>>> f0f95152 (fix latex issues)
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
