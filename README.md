@@ -293,6 +293,9 @@ As the underlying process model is an exponential growth rate model
 random walk on expected counts by reference date. We are defining a
 random effect as,
 
+$$ \text{day} &\sim \text{Normal}(0, \sigma) $$
+$$ \sigma &\sim \text{Half-Normal}(0, 1). $$
+
 #### Reporting model by reference date
 
 Our baseline assumption for the reporting delay is that it is
