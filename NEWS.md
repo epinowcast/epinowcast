@@ -29,17 +29,14 @@ This release is in development and not yet ready for production use.
 ## Model
 
 - Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event censoring. Due to this change models may perform slightly differently between versions and any delay distribution estimates will have means that are half a day longer (note this corrects the previous bias). See #288 by @seabbs and reviewed by @adrian-lison.
-- Updated the default prior for initialising the model to include the ascertainment rate which is inferred from the latent reporting delay distribution as this can be an improper probability mass function (i.e. one that does not sum to 1). See #312 by @seabbs and reviewed by.
+- Updated the default prior for initialising the model to include the ascertainment rate which is inferred from the latent reporting delay distribution as this can be an improper probability mass function (i.e. one that does not sum to 1). See #312 by @seabbs and self-reviewed.
 
 ## Documentation
 
 - Updated the distributions vignette to match the updated handling of discretisation. See #288 by @seabbs and reviewed by @adrian-lison.
-<<<<<<< HEAD
 - Updated the use of the `citation()` function in the README so that the command is shown to users and the output is treated like normal text. See #272 by @seabbs and self-reviewed.
-=======
-- Added a vignette walking through how to estimate the effective reproduction number in real-time (and comparing this to retrospective estimates) on a data source that is right truncated. See #312 by @seabbs and reviewed by.
-- Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and reviwed by.
->>>>>>> 6813236c (add news item)
+- Added a vignette walking through how to estimate the effective reproduction number in real-time (and comparing this to retrospective estimates) on a data source that is right truncated. See #312 by @seabbs and self-reviewed.
+- Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.2
 
