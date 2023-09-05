@@ -290,11 +290,7 @@ Here, `day` refers to the number of days from the start of the data.
 As the underlying process model is an exponential growth rate model
 ($C_t = C_{t-1} \exp^{r_t}$), specifying a random effect
 (i.e. `(1 | day)`) on the growth rate is equivalent to a geometric
-random walk on expected counts by reference date. We are defining a
-random effect as,
-
-$$ \text{day} &\sim \text{Normal}(0, \sigma) $$
-$$ \sigma &\sim \text{Half-Normal}(0, 1). $$
+random walk on expected counts by reference date.
 
 #### Reporting model by reference date
 
