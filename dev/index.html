@@ -6,20 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <meta name="description" content="Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.">
-<!-- Inform modern browsers that this page supports both dark and light color schemes,
-  and the page author prefers light. --><meta name="color-scheme" content="dark light">
-<script>
-  // If `prefers-color-scheme` is not supported, fall back to light mode.
-  // i.e. In this case, inject the `light` CSS before the others, with
-  // no media filter so that it will be downloaded with highest priority.
-  if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
-    document.documentElement.style.display = "none";
-    document.head.insertAdjacentHTML(
-      "beforeend",
-      "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/5/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
-    );
-  }
-</script><title>Flexible Hierarchical Nowcasting • epinowcast</title>
+<title>Flexible Hierarchical Nowcasting • epinowcast</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
@@ -30,7 +17,7 @@
 <link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Flexible Hierarchical Nowcasting">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Flexible Hierarchical Nowcasting">
 <meta property="og:description" content="Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.">
 <meta property="og:image" content="package.epinowcast.org/reference/figures/README-nowcast-1.png">
 <meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting">
@@ -41,12 +28,7 @@
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]--><!-- Flatly Theme - Light  --><link id="css-light" rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-<!-- Darkly Theme - Dark --><link id="css-dark" rel="stylesheet" href="https://bootswatch.com/5/darkly/bootstrap.css" media="(prefers-color-scheme: dark)">
-<!-- preferably CSS --><link rel="stylesheet" href="preferably.css">
-<link id="css-code-light" rel="stylesheet" href="code-color-scheme-light.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-<link id="css-code-dark" rel="stylesheet" href="code-color-scheme-dark.css" media="(prefers-color-scheme: dark)">
-<script src="darkswitch.js"></script>
+<![endif]-->
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -63,22 +45,21 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div id="navbar" class="collapse navbar-collapse ms-2">
+    <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <h6 class="dropdown-header" data-toc-skip>Model details</h6>
     <a class="dropdown-item" href="articles/model.html">Model definition and implementation</a>
     <a class="dropdown-item" href="articles/distributions.html">Discretised distributions</a>
-  </div>
-</li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+    <a class="dropdown-item" href="articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
   </div>
 </li>
 <li class="nav-item">
@@ -96,16 +77,6 @@
      
   </a>
 </li>
-
-        
-        <li>
-          <a class="external-link nav-link" id="css-toggle-btn" aria-label="github">
-            <span class="fas fa fas fa-adjust fa-lg"></span>
-          </a>
-        </li>
-        
-        
-        
       </ul>
 </div>
 
@@ -267,11 +238,7 @@
 <span>  <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Here, <code>day</code> refers to the number of days from the start of the data.</p>
-<p>As the underlying process model is an exponential growth rate model (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D%20%22C_t%20=%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D%22" alt="C_t = C_{t-1} \exp^{r_t}">), specifying a random effect (i.e. <code>(1 | day)</code>) on the growth rate is equivalent to a geometric random walk on expected counts by reference date. We are defining a random effect as,</p>
-<p>[ \text{day} \sim \text{Normal}(0, \sigma)](<a href="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%20%5Ctext%7Bday%7D%20%5Csim%20%5Ctext%7BNormal%7D%280%2C%20%5Csigma%29%20" class="external-link uri">https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%20%5Ctext%7Bday%7D%20%5Csim%20%5Ctext%7BNormal%7D%280%2C%20%5Csigma%29%20</a> ” \text{day} \sim \text{Normal}(0, \sigma) “)</p>
-<div class="figure">
-<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%20%5Csigma%20%5Csim%20%5Ctext%7BHalf-Normal%7D%280%2C%201%29.%20%22%20%5Csigma%20%5Csim%20%5Ctext%7BHalf-Normal%7D(0,%201).%22" alt=""><p class="caption">\sigma \sim \text{Half-Normal}(0, 1).</p>
-</div>
+<p>As the underlying process model is an exponential growth rate model (<span class="math inline"><em>C</em><sub><em>t</em></sub> = <em>C</em><sub><em>t</em> − 1</sub>exp<sup><em>r</em><sub><em>t</em></sub></sup></span>), specifying a random effect (i.e. <code>(1 | day)</code>) on the growth rate is equivalent to a geometric random walk on expected counts by reference date. We are defining a random effect as,</p>
 </div>
 <div class="section level4">
 <h4 id="reporting-model-by-reference-date">Reporting model by reference date<a class="anchor" aria-label="anchor" href="#reporting-model-by-reference-date"></a>
@@ -328,11 +295,11 @@
 <span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date timestep</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22      day</span></span>
 <span><span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[7]&gt;    1000     1.02</span></span>
+<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[7]&gt;    1000     1.01</span></span>
 <span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
 <span><span class="co">#&gt; 1:                     0                         0             8</span></span>
 <span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                   1                0.001     40.8</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:                 212                0.212     77.1</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summarising-and-plotting-the-nowcast">Summarising and plotting the nowcast<a class="anchor" aria-label="anchor" href="#summarising-and-plotting-the-nowcast"></a>
@@ -355,26 +322,26 @@
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
 <span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
 <span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.054     69 0.2348172 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.080     47 0.2927212 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.204     65 0.4545224 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.303     50 0.5490833 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.247     36 0.4982361 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.502     94 0.7311159 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.802     92 0.9357733 1.4826 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.221    100 1.1573671 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.396     87 1.2184698 1.4826 86</span></span>
+<span><span class="co">#&gt;  2:                 1    38             0  69.036     69 0.1916787 0.0000 69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.074     47 0.2694376 0.0000 47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.204     65 0.4739289 0.0000 65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.286     50 0.5371150 0.0000 50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.216     36 0.4955700 0.0000 36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.531     94 0.7221915 0.0000 94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.802     92 0.9206756 1.4826 91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.127    100 1.0936485 1.4826 99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.314     87 1.1801681 1.4826 86</span></span>
 <span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
 <span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  70 1.0008089 1123.7443 1010.8290</span></span>
-<span><span class="co">#&gt;  3:  48 0.9981479 1006.5788 1018.2232</span></span>
-<span><span class="co">#&gt;  4:  66 0.9990405  974.1130  933.8401</span></span>
-<span><span class="co">#&gt;  5:  51 1.0001308  871.1600  851.4064</span></span>
-<span><span class="co">#&gt;  6:  37 0.9997534  808.5586  763.2225</span></span>
-<span><span class="co">#&gt;  7:  96 0.9988391 1021.4579 1025.0389</span></span>
-<span><span class="co">#&gt;  8:  94 0.9998444 1122.6898  960.3977</span></span>
-<span><span class="co">#&gt;  9: 102 0.9992337 1051.5770  921.9198</span></span>
-<span><span class="co">#&gt; 10:  90 0.9991999 1116.8188  920.6912</span></span></code></pre></div>
+<span><span class="co">#&gt;  2:  69 0.9997723 1085.1287 1085.9625</span></span>
+<span><span class="co">#&gt;  3:  48 1.0046094 1005.4825  997.1800</span></span>
+<span><span class="co">#&gt;  4:  66 0.9985918  997.9345  949.9590</span></span>
+<span><span class="co">#&gt;  5:  51 1.0011434 1008.8150  948.5230</span></span>
+<span><span class="co">#&gt;  6:  37 0.9998773 1063.0420 1060.1157</span></span>
+<span><span class="co">#&gt;  7:  96 0.9985993 1048.9064  947.8989</span></span>
+<span><span class="co">#&gt;  8:  94 1.0024911  909.2898 1029.5347</span></span>
+<span><span class="co">#&gt;  9: 102 0.9994335  936.8367  815.5520</span></span>
+<span><span class="co">#&gt; 10:  90 1.0013150  854.4371 1004.8509</span></span></code></pre></div>
 <p>Similarly, the summarised nowcast can be plotted against the latest observed data using</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
@@ -415,17 +382,17 @@
 <span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    439</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    433</span></span>
-<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    436</span></span>
-<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    435</span></span>
-<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    433</span></span>
+<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    434</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    436</span></span>
+<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    433</span></span>
+<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    433</span></span>
+<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    434</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2013</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   1983</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1986</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   1919</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   1978</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   1973</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2211</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1985</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2246</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   1895</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -520,15 +487,14 @@
 </div>
 
 
-    <footer><div class="copyright">
+    <footer><div class="pkgdown-footer-left">
   <p></p>
 <p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
 </div>
 
-<div class="pkgdown">
+<div class="pkgdown-footer-right">
   <p></p>
 <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
-  <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
     </footer>

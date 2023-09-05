@@ -31,6 +31,9 @@
     <loc>package.epinowcast.org/dev/articles/model.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/authors.html</loc>
   </url>
   <url>
@@ -320,6 +323,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/rw_terms.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/simulate_double_censored_pmf.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/split_formula_to_terms.html</loc>
