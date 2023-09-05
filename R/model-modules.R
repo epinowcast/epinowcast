@@ -305,7 +305,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
-  seed_obs <- latest_matrix[1, ] + 1
+  seed_obs <- (latest_matrix[1, ] + 1) * sum(latent_reporting_delay)
   seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 

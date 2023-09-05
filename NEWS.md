@@ -8,12 +8,13 @@ This release is in development and not yet ready for production use.
 
 @adrian-lison, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @parksw3, @bisaloo, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
 - Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
 - Fixed a few typos in the model vignette. See #292 by @medewitt and reviewed by @seabbs.
+- Fixed a bug where snapshots (i.e. as returned as metadata in `enw_preprocess_data()`) were defined based on report vs reference date. This won't have impacted most usage but was a problem when trying to fit a model to retrospective (and so completely reported) data. See #312 by @seabbs and self-reviewed.
 
 ## Package
 
@@ -23,15 +24,19 @@ This release is in development and not yet ready for production use.
 - Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
 - Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
 - Added support for non-daily reference date models (i.e., process models). For example, this allows modelling weekly data as weekly. This may be desirable when delays are very long, when computational resources are limited, or it is not possible to specify a sufficiently flexible daily model to account for observed reporting patterns in either reference or report dates. As the model is unit less this entails no changes to the model itself. See #303 by @seabbs and self-reviewed.
+- Added a new helper function `simulate_double_censored_pmf()` which helps users define "correct" probability mass functions for double censored delays based on work in `epidist` by @parksw3 and @seabbs. Note this function is likely to be spun out into its own package in the near future. See #312 by @seabbs and self-reviewed.
 
 ## Model
 
 - Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event censoring. Due to this change models may perform slightly differently between versions and any delay distribution estimates will have means that are half a day longer (note this corrects the previous bias). See #288 by @seabbs and reviewed by @adrian-lison.
+- Updated the default prior for initialising the model to include the ascertainment rate which is inferred from the latent reporting delay distribution as this can be an improper probability mass function (i.e. one that does not sum to 1). See #312 by @seabbs and self-reviewed.
 
 ## Documentation
 
 - Updated the distributions vignette to match the updated handling of discretisation. See #288 by @seabbs and reviewed by @adrian-lison.
 - Updated the use of the `citation()` function in the README so that the command is shown to users and the output is treated like normal text. See #272 by @seabbs and self-reviewed.
+- Added a vignette walking through how to estimate the effective reproduction number in real-time (and comparing this to retrospective estimates) on a data source that is right truncated. See #312 by @seabbs and self-reviewed.
+- Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.2
 

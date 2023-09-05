@@ -1,9 +1,8 @@
 url: package.epinowcast.org/
 template:
   bootstrap: 5
-  package: preferably
-  params:
-    toggle: auto
+  bootswatch: flatly
+  theme: monokai
   twitter:
     creator: "@seabbs"
     card: summary_large_image
@@ -24,22 +23,21 @@ authors:
     
 navbar:
   structure:
-    left: [reference, modeldefs, casestudies, news]
+    left: [reference, articles, news]
     right: [github]
-  components:
-    modeldefs:
-      text: Model definitions
-      menu:
-      - text: Model definition and implementation
-        href: articles/model.html
-      - text: Discretised distributions
-        href: articles/distributions.html
-    casestudies:
-      text: Case studies
-      menu:
-      - text: Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany
-        href: articles/germany-age-stratified-nowcasting.html
-    
+
+articles:
+- title: Model details
+  navbar: Model details
+  contents:
+  - model
+  - distributions
+- title: Case studies
+  navbar: Case studies
+  contents:
+  - germany-age-stratified-nowcasting
+  - single-timeseries-rt-estimation
+  
 reference:
   - title: Nowcast
     desc: Functions for nowcasting.

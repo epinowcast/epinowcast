@@ -5,7 +5,15 @@ author: Sam Abbott
 opengraph:
   image: 
     src: figures/performance-1.png
-output: rmarkdown::html_vignette
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,8 +22,8 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "figures/",
-  cache = TRUE, cache.path = "cache/", dpi = 330,
+  fig.path = "vignettes/figures/germany-age-stratified-nowcasting/",
+  cache = TRUE, dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
   eval = TRUE
