@@ -232,3 +232,207 @@ coerce_dt <- function(
     return(dt[])
   }
 }
+
+#' Check calendar timestep
+#'
+#' This function verifies if the difference in calendar dates in the provided
+#' observations corresponds to the provided timestep of "month".
+#'
+#' @param dates Vector of Date class representing dates.
+#' @param date_var The variable in `obs` representing dates.
+#' @param exact Logical, if `TRUE``, checks if all differences exactly match the
+#' timestep. If `FALSE``, checks if the sum of the differences modulo the
+#' timestep equals zero. Default is `TRUE`.
+#'
+#' @importFrom lubridate %m-%
+#' @return This function is used for its side effect of stopping if the check
+#' fails. If the check passes, the function returns invisibly.
+#' @family check
+check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
+  diff_dates <- dates[-1] %m-% months(1L)
+  sequential_dates <- dates[-length(dates)] == diff_dates
+  all_sequential_dates <- all(sequential_dates)
+
+  if (any(diff_dates < dates[-length(dates)])) {
+    stop(
+      date_var, " has a shorter timestep than the specified timestep of a month"
+    )
+  }
+
+  if (all_sequential_dates) {
+    return(invisible(NULL))
+  } else {
+    if (exact) {
+      stop(
+        date_var, " does not have the specified timestep of month"
+      )
+    } else {
+      stop(
+        "Non-sequential dates are not currently supported for monthly data"
+      )
+    }
+  }
+}
+
+#' Check Numeric Timestep
+#'
+#' This function verifies if the difference in numeric dates in the provided
+#' observations corresponds to the provided timestep.
+#'
+#' @param timestep Numeric timestep for date difference.
+#'
+#' @inheritParams check_calendar_timestep
+#' @return This function is used for its side effect of stopping if the check
+#' fails. If the check passes, the function returns invisibly.
+#' @family check
+check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
+  diffs <- as.numeric(
+    difftime(dates[-1], dates[-length(dates)], units = "days")
+  )
+
+  if (any(diffs == 0)) {
+    stop(
+      date_var, " has a duplicate date. Please remove duplicate dates."
+    )
+  }
+
+  if (any(diffs < timestep)) {
+    stop(
+      date_var, " has a shorter timestep than the specified timestep of ",
+      timestep, " day(s)"
+    )
+  }
+
+  if (exact) {
+    check <- all(diffs == timestep)
+  } else {
+    check <- sum(diffs %% timestep) == 0
+  }
+
+  if (!check) {
+    stop(
+      date_var, " does not have the specified timestep of ", timestep,
+      " day(s)"
+    )
+  }else {
+    return(invisible(NULL))
+  }
+}
+
+#' Check timestep
+#'
+#' This function verifies if the difference in dates in the provided
+#' observations corresponds to the provided timestep. If the `exact` argument
+#' is set to TRUE, the function checks if all differences exactly match the
+#' timestep; otherwise, it checks if the sum of the differences modulo the
+#' timestep equals zero. If the check fails, the function stops and returns an
+#' error message.
+#'
+#' @param obs Any of the types supported by [data.table::as.data.table()].
+#'
+#' @param check_nrow Logical, if `TRUE`, checks if there are at least two
+#' observations. Default is `TRUE`. If `FALSE`, the function returns invisibly
+#' if there is only one observation.
+#'
+#'
+#' @inheritParams get_internal_timestep
+#' @inheritParams check_calendar_timestep
+#'
+#' @return This function is used for its side effect of stopping if the check
+#' fails. If the check passes, the function returns invisibly.
+#' @family check
+check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
+                           check_nrow = TRUE) {
+  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
+  if (!is.Date(obs[[date_var]])) {
+    stop(date_var, " must be of class Date")
+  }
+
+  dates <- obs[[date_var]]
+  dates <- sort(dates)
+  dates <- dates[!is.na(dates)]
+
+  if (length(dates) <= 1) {
+    if (check_nrow) {
+      stop("There must be at least two observations")
+    } else {
+      return(invisible(NULL))
+    }
+  }
+
+  internal_timestep <- get_internal_timestep(timestep)
+
+  if (internal_timestep == "month") {
+    check_calendar_timestep(dates, date_var, exact)
+  } else {
+    check_numeric_timestep(dates, date_var, internal_timestep, exact)
+  }
+
+  return(invisible(NULL))
+}
+
+#' Check timestep by group
+#'
+#' This function verifies if the difference in dates within each group in the
+#' provided observations corresponds to the provided timestep. This check is
+#' performed for the specified `date_var` and for each group in `obs`.
+#'
+#' @param obs Any of the types supported by [data.table::as.data.table()].
+#'
+#' @inheritParams check_timestep
+#' @return This function is used for its side effect of checking the timestep
+#' by group in `obs`. If the check passes for all groups, the function
+#' returns invisibly. Otherwise, it stops and returns an error message.
+#' @family check
+check_timestep_by_group <- function(obs, date_var, timestep = "day",
+                                    exact = TRUE) {
+  # Coerce to data.table and check for required columns
+  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE, group = TRUE)
+
+  # Check the timestep within each group
+  obs[,
+   check_timestep(
+    .SD, date_var = date_var, timestep, exact, check_nrow = FALSE),
+    by = ".group"
+  ]
+
+  return(invisible(NULL))
+}
+
+#' Check timestep by date
+#'
+#' This function verifies if the difference in dates within each date in the
+#' provided observations corresponds to the provided timestep. This check is
+#' performed for both `report_date` and `reference_date` and for each group in
+#' `obs`.
+#'
+#' @inheritParams check_timestep
+#'
+#' @return This function is used for its side effect of checking the timestep
+#' by date in `obs`. If the check passes for all dates, the function
+#' returns invisibly. Otherwise, it stops and returns an error message.
+#' @family check
+check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
+  obs <- coerce_dt(obs, copy = TRUE, dates = TRUE, group = TRUE)
+  cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
+  cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
+  if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
+    stop(
+      "There must be at least two observations by group and date",
+      " combination to establish a timestep"
+    )
+  }
+  obs[,
+      check_timestep(
+        .SD, date_var = "report_date", timestep, exact, check_nrow = FALSE
+      ),
+      by = c("reference_date", ".group")
+  ]
+  obs[,
+      check_timestep(
+        .SD, date_var = "reference_date", timestep, exact, check_nrow = FALSE
+      ),
+      by = c("report_date", ".group")
+  ]
+  return(invisible(NULL))
+}

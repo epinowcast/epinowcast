@@ -79,6 +79,7 @@ Imports:
     cmdstanr,
     data.table,
     lme4,
+    lubridate,
     ggplot2,
     posterior,
     purrr,

@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_quantiles}
 \alias{check_quantiles}
-\title{Check Quantiles Required are Present}
+\title{Check required quantiles are present}
 \usage{
 check_quantiles(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8))
 }
@@ -14,13 +14,18 @@ contain quantiles identified using the \code{q5} naming scheme.}
 c(0.5, 0.95, 0.2, 0.8).}
 }
 \description{
-Check Quantiles Required are Present
+Check required quantiles are present
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{check_calendar_timestep}()},
 \code{\link{check_group_date_unique}()},
 \code{\link{check_group}()},
 \code{\link{check_modules_compatible}()},
-\code{\link{check_module}()}
+\code{\link{check_module}()},
+\code{\link{check_numeric_timestep}()},
+\code{\link{check_timestep_by_date}()},
+\code{\link{check_timestep_by_group}()},
+\code{\link{check_timestep}()}
 }
 \concept{check}

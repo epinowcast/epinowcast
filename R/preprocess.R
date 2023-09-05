@@ -203,6 +203,8 @@ enw_add_metaobs_features <- function(metaobs,
 #' @param direction Should new dates be added at the beginning or end of
 #' the data. Default is "end" with "start" also available.
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A data.table with the same columns as `metaobs` but with
 #' additional rows for each date in the range of `date` to `date + days`
 #' (or `date - days` if `direction = "start"`). An additional variable
@@ -217,10 +219,12 @@ enw_add_metaobs_features <- function(metaobs,
 #' metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
 #' enw_extend_date(metaobs, days = 2)
 #' enw_extend_date(metaobs, days = 2, direction = "start")
-enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
+enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
+                            timestep = "day") {
   direction <- match.arg(direction)
 
-  new_days <- 1:days
+  internal_timestep <- get_internal_timestep(timestep)
+  new_days <- seq(internal_timestep, days, by = internal_timestep)
   if (direction %in% "start") {
     new_days <- -new_days
     filt_fn <- min
@@ -294,15 +298,17 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' @return A data.table with a `delay` column added.
 #'
 #' @inheritParams enw_add_incidence
+#' @inheritParams get_internal_timestep
 #' @family preprocess
 #' @export
 #' @examples
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
-enw_add_delay <- function(obs, copy = TRUE) {
+enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
-  obs[, delay := as.numeric(report_date - reference_date)]
+  internal_timestep <- get_internal_timestep(timestep)
+  obs[, delay := as.numeric(report_date - reference_date) / internal_timestep]
   return(obs[])
 }
 
@@ -499,17 +505,26 @@ enw_latest_data <- function(obs) {
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_delay_filter(obs, max_delay = 2)
-enw_delay_filter <- function(obs, max_delay) {
+enw_delay_filter <- function(obs, max_delay, timestep = "day") {
   obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
+  internal_timestep <- get_internal_timestep(timestep)
+  daily_max_delay <- internal_timestep * max_delay
   obs <- obs[,
     .SD[
-      report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
+      report_date <= (reference_date + daily_max_delay - 1) |
+        is.na(reference_date)
     ],
     by = c("reference_date", ".group")
   ]
-  empircal_max_delay <- obs[, max(delay, na.rm = TRUE)]
-  if (empircal_max_delay < (max_delay - 1)) {
-    warning("Empirical max delay is less than the specified max delay.")
+  if (is.null(obs[["delay"]])) {
+    obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
+  }
+  empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
+  if (empirical_max_delay < (max_delay - 1)) {
+    warning(
+      "Empirical max delay (", empirical_max_delay + 1,
+      ") is less than the specified max delay (", max_delay, ")."
+    )
   }
   return(obs[])
 }
@@ -588,6 +603,8 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @param completion_beyond_max_report Logical, should entries be completed
 #' beyond the maximum date found in the data? Default: FALSE
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
 #'
@@ -604,7 +621,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' # Allow completion beyond the maximum date found in the data
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
-enw_complete_dates <- function(obs, by = NULL, max_delay,
+enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
                                missing_reference = TRUE,
                                completion_beyond_max_report  = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
@@ -615,8 +632,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   if (missing(max_delay)) {
     max_delay <- as.numeric(max_date - min_date)
   }
+  internal_timestep <- get_internal_timestep(timestep)
 
-  dates <- seq.Date(min_date, max_date, by = 1)
+  dates <- seq.Date(min_date, max_date, by = internal_timestep)
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
@@ -630,7 +648,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     .group = groups$.group,
     report_date = 0:max_delay
   )
-  completion <- completion[, report_date := reference_date + report_date]
+  completion <- completion[,
+    report_date := reference_date + report_date * internal_timestep
+  ]
   if (!completion_beyond_max_report) {
     completion <- completion[report_date <= max_date]
   }
@@ -653,6 +673,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", ".group")
   ]
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
   data.table::setcolorder(obs, c(by, "report_date", "reference_date"))
@@ -722,6 +743,8 @@ enw_missing_reference <- function(obs) {
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
 #' constructing a categorised version of numeric delays.
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
@@ -736,9 +759,10 @@ enw_missing_reference <- function(obs) {
 #' @export
 #' @examples
 #' enw_delay_metadata(20, breaks = 4)
-enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
+enw_delay_metadata <- function(max_delay = 20, breaks = 4, timestep = "day") {
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
+  internal_timestep <- get_internal_timestep(timestep)
   delays <- delays[, `:=`(
     delay = delay,
     delay_cat = cut(
@@ -748,7 +772,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
       ),
       dig.lab = 0, right = FALSE
     ),
-    delay_week = as.integer(delay / 7),
+    delay_week = as.integer((delay * internal_timestep) / 7),
     delay_tail = delay > quantile(delay, probs = 0.75)
   )]
   return(delays[])
@@ -799,11 +823,12 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   metareference = pobs$metareference[[1]],
 #'   metadelay = enw_delay_metadata(max_delay = 20),
 #'   by = c(),
-#'   max_delay = pobs$max_delay[[1]]
+#'   max_delay = pobs$max_delay[[1]],
+#'   timestep = pobs$timestep[[1]]
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
                                reporting_triangle, metareport, metareference,
-                               metadelay, by, max_delay) {
+                               metadelay, by, max_delay, timestep) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
@@ -818,7 +843,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     by = list(by),
     groups = length(unique(obs$.group)),
     max_delay = max_delay,
-    max_date = max(obs$report_date)
+    max_date = max(obs$report_date),
+    timestep = timestep
   )
   class(out) <- c("enw_preprocess_data", class(out))
   return(out[])
@@ -860,12 +886,20 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' indexed and so includes the reference date and `max_delay - 1` other days
 #' (i.e. a `max_delay` of 1 corresponds with no delay).
 #'
+#' @param timestep The timestep to used in the process model (i.e. the
+#' reference date model). This can be a string ("day", "week", "month") or a
+#' numeric whole number representing the number of days. If your data does not
+#' have this timestep then you may wish to make use of
+#' [enw_aggregate_cumulative()] to aggregate your data to the desired timestep.
+#'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
 #'   (e.g. day of week, days since start of time series)
 #'
 #' @param copy A logical; if `TRUE` (the default) creates a copy; otherwise,
 #' modifies `obs` in place.
+#'
+#' @inheritParams get_internal_timestep
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
@@ -904,13 +938,23 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
-                                set_negatives_to_zero = TRUE,
+                                timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  max_delay <- as.integer(max_delay)
   stopifnot(
-    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
+    "`max_delay` must be an integer and not NA" = is.numeric(max_delay) &&
+       round(max_delay) == max_delay,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
+  if (timestep %in% "month") {
+    stop(
+      "Calendar months are not currently supported. Consider using an ",
+      "approximate number of days (i.e. 28), a different timestep (i.e. ",
+      "'week'), or commenting on issue #309."
+    )
+  }
+  internal_timestep <- get_internal_timestep(timestep)
+  orig_scale_max_delay <- max_delay
+  max_delay <- max_delay * internal_timestep
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
@@ -919,10 +963,14 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
   check_group_date_unique(obs)
-  obs <- enw_add_max_reported(obs, copy = FALSE)
-  obs <- enw_add_delay(obs, copy = FALSE)
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
 
-  obs <- enw_delay_filter(obs, max_delay = max_delay)
+  obs <- enw_add_max_reported(obs, copy = FALSE)
+  obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
+
+  obs <- enw_delay_filter(
+    obs, max_delay = orig_scale_max_delay, timestep = timestep
+  )
 
   diff_obs <- enw_add_incidence(
     obs,
@@ -968,7 +1016,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(
     metareport,
-    days = max_delay - 1, direction = "end"
+    days = max_delay - 1, direction = "end", timestep = timestep
   )
   metareport <- enw_add_metaobs_features(metareport, ...)
 
@@ -980,7 +1028,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareference <- enw_add_metaobs_features(metareference, ...)
 
   # extract and add features for delays
-  metadelay <- enw_delay_metadata(max_delay, breaks = 4)
+  metadelay <- enw_delay_metadata(
+    orig_scale_max_delay, breaks = 4, timestep = timestep
+  )
 
   out <- enw_construct_data(
     obs = obs,
@@ -992,7 +1042,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     metareport = metareport,
     metadelay = metadelay,
     by = by,
-    max_delay = max_delay
+    max_delay = orig_scale_max_delay,
+    timestep = timestep
   )
 
   return(out[])
