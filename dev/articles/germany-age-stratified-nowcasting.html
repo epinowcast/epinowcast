@@ -129,18 +129,30 @@
 <span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-09-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">retro_nat_germany</span></span>
-<span><span class="co">#&gt;       reference_date location age_group confirm report_date</span></span>
-<span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30  2021-07-23</span></span>
-<span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31  2021-07-24</span></span>
-<span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8  2021-07-25</span></span>
-<span><span class="co">#&gt;    4:     2021-07-26       DE       00+       9  2021-07-26</span></span>
-<span><span class="co">#&gt;    5:     2021-07-27       DE       00+      35  2021-07-27</span></span>
-<span><span class="co">#&gt;   ---                                                      </span></span>
-<span><span class="co">#&gt; 6023:     2021-07-23       DE     05-14       1  2021-09-01</span></span>
-<span><span class="co">#&gt; 6024:     2021-07-23       DE     15-34      21  2021-09-01</span></span>
-<span><span class="co">#&gt; 6025:     2021-07-23       DE     35-59      39  2021-09-01</span></span>
-<span><span class="co">#&gt; 6026:     2021-07-23       DE     60-79      21  2021-09-01</span></span>
-<span><span class="co">#&gt; 6027:     2021-07-23       DE       80+       5  2021-09-01</span></span></code></pre></div>
+<span><span class="co">#&gt;       reference_date location age_group confirm</span></span>
+<span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30</span></span>
+<span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31</span></span>
+<span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8</span></span>
+<span><span class="co">#&gt;    4:     2021-07-26       DE       00+       9</span></span>
+<span><span class="co">#&gt;    5:     2021-07-27       DE       00+      35</span></span>
+<span><span class="co">#&gt;   ---                                          </span></span>
+<span><span class="co">#&gt; 6023:     2021-07-23       DE     05-14       1</span></span>
+<span><span class="co">#&gt; 6024:     2021-07-23       DE     15-34      21</span></span>
+<span><span class="co">#&gt; 6025:     2021-07-23       DE     35-59      39</span></span>
+<span><span class="co">#&gt; 6026:     2021-07-23       DE     60-79      21</span></span>
+<span><span class="co">#&gt; 6027:     2021-07-23       DE       80+       5</span></span>
+<span><span class="co">#&gt;       report_date</span></span>
+<span><span class="co">#&gt;    1:  2021-07-23</span></span>
+<span><span class="co">#&gt;    2:  2021-07-24</span></span>
+<span><span class="co">#&gt;    3:  2021-07-25</span></span>
+<span><span class="co">#&gt;    4:  2021-07-26</span></span>
+<span><span class="co">#&gt;    5:  2021-07-27</span></span>
+<span><span class="co">#&gt;   ---            </span></span>
+<span><span class="co">#&gt; 6023:  2021-09-01</span></span>
+<span><span class="co">#&gt; 6024:  2021-09-01</span></span>
+<span><span class="co">#&gt; 6025:  2021-09-01</span></span>
+<span><span class="co">#&gt; 6026:  2021-09-01</span></span>
+<span><span class="co">#&gt; 6027:  2021-09-01</span></span></code></pre></div>
 </details><p>Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target “true” data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_nat_germany</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
@@ -157,14 +169,18 @@
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span>, by <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
-<span><span class="co">#&gt;                     obs           new_confirm               latest</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt; &lt;data.table[287x10]&gt;</span></span>
-<span><span class="co">#&gt;    missing_reference   reporting_triangle       metareference</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
-<span><span class="co">#&gt;              metareport          metadelay time snapshots        by groups</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;   41       287 age_group      7</span></span>
-<span><span class="co">#&gt;    max_delay   max_date</span></span>
-<span><span class="co">#&gt; 1:        40 2021-09-01</span></span></code></pre></div>
+<span><span class="co">#&gt;                     obs           new_confirm</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt;</span></span>
+<span><span class="co">#&gt;                  latest missing_reference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[287x10]&gt; &lt;data.table[0x6]&gt;</span></span>
+<span><span class="co">#&gt;      reporting_triangle       metareference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
+<span><span class="co">#&gt;              metareport          metadelay time</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;   41</span></span>
+<span><span class="co">#&gt;    snapshots        by groups max_delay</span></span>
+<span><span class="co">#&gt; 1:       287 age_group      7        40</span></span>
+<span><span class="co">#&gt;      max_date timestep</span></span>
+<span><span class="co">#&gt; 1: 2021-09-01      day</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level2">
@@ -195,7 +211,7 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/nowcast-1.png" alt="plot of chunk nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-nowcast-1.png" alt="plot of chunk nowcast" width="100%"><p class="caption">
 plot of chunk nowcast
 </p>
 </div>
@@ -212,14 +228,22 @@ plot of chunk nowcast
 <span><span class="op">)</span></span>
 <span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">priors</span></span>
-<span><span class="co">#&gt;            variable      mean    median         sd        mad        q5</span></span>
-<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1212838 1.1200800 0.08829821 0.04312883 1.0465460</span></span>
-<span><span class="co">#&gt; 2:   refp_sd_int[1] 1.7304364 1.7283450 0.09136750 0.04443352 1.6572085</span></span>
-<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.5943754 0.5945225 0.03663196 0.01858736 0.5650664</span></span>
-<span><span class="co">#&gt;          q20       q80       q95     rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt; 1: 1.0863640 1.1559380 1.1949585 1.000267 1919.003 779.4026</span></span>
-<span><span class="co">#&gt; 2: 1.6931480 1.7692440 1.8097575 1.023093 1564.573 706.6420</span></span>
-<span><span class="co">#&gt; 3: 0.5786032 0.6097982 0.6246353 1.002526 1328.925 783.8134</span></span></code></pre></div>
+<span><span class="co">#&gt;            variable      mean    median</span></span>
+<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1083702 1.0999150</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.5938331 2.5856750</span></span>
+<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6444396 0.6440095</span></span>
+<span><span class="co">#&gt;            sd        mad        q5     q20</span></span>
+<span><span class="co">#&gt; 1: 0.23916626 0.11090589 0.9294077 1.00725</span></span>
+<span><span class="co">#&gt; 2: 0.26334423 0.12787425 2.3918925 2.48332</span></span>
+<span><span class="co">#&gt; 3: 0.03645647 0.01747096 0.6145307 0.62941</span></span>
+<span><span class="co">#&gt;          q80       q95      rhat ess_bulk</span></span>
+<span><span class="co">#&gt; 1: 1.1955600 1.3246245 0.9991926  831.595</span></span>
+<span><span class="co">#&gt; 2: 2.6957700 2.8213280 1.0023876  791.710</span></span>
+<span><span class="co">#&gt; 3: 0.6588764 0.6761259 1.0072163 1142.299</span></span>
+<span><span class="co">#&gt;    ess_tail</span></span>
+<span><span class="co">#&gt; 1: 658.3016</span></span>
+<span><span class="co">#&gt; 2: 643.9374</span></span>
+<span><span class="co">#&gt; 3: 603.3725</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -242,7 +266,7 @@ plot of chunk nowcast
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%"><p class="caption">
 plot of chunk exp_nowcast
 </p>
 </div>
@@ -255,7 +279,7 @@ plot of chunk exp_nowcast
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span>, <span class="va">reference_date</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/simple_pp-1.png" alt="plot of chunk simple_pp" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-simple_pp-1.png" alt="plot of chunk simple_pp" width="100%"><p class="caption">
 plot of chunk simple_pp
 </p>
 </div>
@@ -280,7 +304,7 @@ plot of chunk simple_pp
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dow_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%"><p class="caption">
 plot of chunk dow_nowcast
 </p>
 </div>
@@ -306,7 +330,7 @@ plot of chunk dow_nowcast
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%"><p class="caption">
 plot of chunk age_nowcast
 </p>
 </div>
@@ -335,7 +359,7 @@ plot of chunk age_nowcast
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%"><p class="caption">
 plot of chunk week_nowcast
 </p>
 </div>
@@ -363,7 +387,7 @@ plot of chunk week_nowcast
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%"><p class="caption">
 plot of chunk age_week_nowcast
 </p>
 </div>
@@ -418,7 +442,7 @@ plot of chunk age_week_nowcast
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%"><p class="caption">
 plot of chunk ind_nowcast
 </p>
 </div>
@@ -474,7 +498,7 @@ plot of chunk ind_nowcast
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%"><p class="caption">
 plot of chunk unnamed-chunk-20
 </p>
 </div>
@@ -482,12 +506,18 @@ plot of chunk unnamed-chunk-20
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">loos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">nowcasts</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">loo</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                                     elpd_diff se_diff</span></span>
-<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0       0.0 </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                  -11.1       5.3 </span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week  -11.4       3.4 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -49.9      10.6 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -611.8      45.2</span></span></code></pre></div>
+<span><span class="co">#&gt;                                                     elpd_diff</span></span>
+<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0   </span></span>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -2.0   </span></span>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -4.1   </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -85.0   </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -645.3   </span></span>
+<span><span class="co">#&gt;                                                     se_diff</span></span>
+<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0 </span></span>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week    3.8 </span></span>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                    6.5 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                 12.1 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                       48.3</span></span></code></pre></div>
 </details><p>We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.</p>
 <p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code>scoringutils::eval_forecasts()</code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
 <p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
@@ -524,63 +554,63 @@ plot of chunk unnamed-chunk-20
 <tbody>
 <tr class="odd">
 <td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="right">9.839809</td>
-<td align="right">3.116986</td>
-<td align="right">4.333061</td>
-<td align="right">2.3892308</td>
-<td align="right">-0.0962323</td>
-<td align="right">-0.1061224</td>
-<td align="right">16.33673</td>
+<td align="right">10.427030</td>
+<td align="right">3.682110</td>
+<td align="right">3.171272</td>
+<td align="right">3.5744113</td>
+<td align="right">-0.0805338</td>
+<td align="right">-0.0357143</td>
+<td align="right">17.75510</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="right">10.012964</td>
-<td align="right">2.337862</td>
-<td align="right">6.755102</td>
-<td align="right">0.9199372</td>
-<td align="right">-0.1229199</td>
-<td align="right">-0.2142857</td>
-<td align="right">15.30612</td>
+<td align="right">10.326110</td>
+<td align="right">2.612009</td>
+<td align="right">6.783925</td>
+<td align="right">0.9307692</td>
+<td align="right">-0.1323391</td>
+<td align="right">-0.2897959</td>
+<td align="right">15.37755</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age, Report: Day of week</td>
-<td align="right">8.582860</td>
-<td align="right">2.292750</td>
-<td align="right">5.660471</td>
-<td align="right">0.6288854</td>
-<td align="right">-0.1370487</td>
-<td align="right">-0.3755102</td>
-<td align="right">14.01020</td>
+<td align="right">8.716047</td>
+<td align="right">2.501557</td>
+<td align="right">5.733846</td>
+<td align="right">0.4803768</td>
+<td align="right">-0.1229199</td>
+<td align="right">-0.4193878</td>
+<td align="right">13.08163</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="right">7.317416</td>
-<td align="right">2.796750</td>
-<td align="right">1.324270</td>
-<td align="right">3.1961695</td>
-<td align="right">-0.0083203</td>
-<td align="right">0.0816327</td>
-<td align="right">12.15306</td>
+<td align="right">7.193438</td>
+<td align="right">2.986992</td>
+<td align="right">1.432653</td>
+<td align="right">2.7744113</td>
+<td align="right">-0.0036107</td>
+<td align="right">0.0153061</td>
+<td align="right">12.61224</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age and week by age, Report: Day of week</td>
-<td align="right">6.798807</td>
-<td align="right">2.973862</td>
-<td align="right">1.943956</td>
-<td align="right">1.8810047</td>
-<td align="right">0.0167975</td>
-<td align="right">-0.1357143</td>
-<td align="right">11.23469</td>
+<td align="right">7.035887</td>
+<td align="right">2.979419</td>
+<td align="right">2.572465</td>
+<td align="right">1.4835165</td>
+<td align="right">-0.0193093</td>
+<td align="right">-0.2122449</td>
+<td align="right">11.88776</td>
 </tr>
 <tr class="even">
 <td align="left">Independent by age, Reference: Week, Report: Day of week</td>
-<td align="right">7.379049</td>
-<td align="right">3.885315</td>
-<td align="right">1.646311</td>
-<td align="right">1.8474254</td>
-<td align="right">0.0277865</td>
-<td align="right">-0.0653061</td>
-<td align="right">12.55102</td>
+<td align="right">8.061642</td>
+<td align="right">4.422364</td>
+<td align="right">1.176766</td>
+<td align="right">2.4638932</td>
+<td align="right">0.0591837</td>
+<td align="right">-0.0397959</td>
+<td align="right">13.84694</td>
 </tr>
 </tbody>
 </table>
@@ -613,7 +643,7 @@ plot of chunk unnamed-chunk-20
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>col <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Model"</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">plot</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/germany-age-stratified-nowcasting/performance-1.png" alt="plot of chunk performance" width="100%"><p class="caption">
+<img src="figures/germany-age-stratified-nowcasting-performance-1.png" alt="plot of chunk performance" width="100%"><p class="caption">
 plot of chunk performance
 </p>
 </div>

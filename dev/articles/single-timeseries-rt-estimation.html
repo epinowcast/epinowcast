@@ -161,14 +161,22 @@
 <p>In this case study, we use data sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a>. The data represent hospitalisation counts by date of positive test and date of test report in Germany. These data have been used extensively for nowcasting and forecasting COVID-19 hospitalisations in Germany and are described in detail in <a href="https://doi.org/10.1101/2023.04.17.23288668" class="external-link">Wolffram et al. (2023)</a>. We use these data as they are a good example of the type of data that are available in many settings. We first summarise the data,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">germany_covid19_hosp</span><span class="op">)</span></span>
-<span><span class="co">#&gt;  reference_date          location      age_group         confirm       </span></span>
-<span><span class="co">#&gt;  Min.   :2021-04-06   DE     : 90405   00-04:219555   Min.   :   0.00  </span></span>
-<span><span class="co">#&gt;  1st Qu.:2021-05-15   DE-BB  : 90405   00+  :219555   1st Qu.:   0.00  </span></span>
-<span><span class="co">#&gt;  Median :2021-06-23   DE-BE  : 90405   05-14:219555   Median :   1.00  </span></span>
-<span><span class="co">#&gt;  Mean   :2021-06-25   DE-BW  : 90405   15-34:219555   Mean   :  11.44  </span></span>
-<span><span class="co">#&gt;  3rd Qu.:2021-08-02   DE-BY  : 90405   35-59:219555   3rd Qu.:   6.00  </span></span>
-<span><span class="co">#&gt;  Max.   :2021-10-20   DE-HB  : 90405   60-79:219555   Max.   :1552.00  </span></span>
-<span><span class="co">#&gt;                       (Other):994455   80+  :219555                    </span></span>
+<span><span class="co">#&gt;  reference_date          location     </span></span>
+<span><span class="co">#&gt;  Min.   :2021-04-06   DE     : 90405  </span></span>
+<span><span class="co">#&gt;  1st Qu.:2021-05-15   DE-BB  : 90405  </span></span>
+<span><span class="co">#&gt;  Median :2021-06-23   DE-BE  : 90405  </span></span>
+<span><span class="co">#&gt;  Mean   :2021-06-25   DE-BW  : 90405  </span></span>
+<span><span class="co">#&gt;  3rd Qu.:2021-08-02   DE-BY  : 90405  </span></span>
+<span><span class="co">#&gt;  Max.   :2021-10-20   DE-HB  : 90405  </span></span>
+<span><span class="co">#&gt;                       (Other):994455  </span></span>
+<span><span class="co">#&gt;  age_group         confirm       </span></span>
+<span><span class="co">#&gt;  00-04:219555   Min.   :   0.00  </span></span>
+<span><span class="co">#&gt;  00+  :219555   1st Qu.:   0.00  </span></span>
+<span><span class="co">#&gt;  05-14:219555   Median :   1.00  </span></span>
+<span><span class="co">#&gt;  15-34:219555   Mean   :  11.44  </span></span>
+<span><span class="co">#&gt;  35-59:219555   3rd Qu.:   6.00  </span></span>
+<span><span class="co">#&gt;  60-79:219555   Max.   :1552.00  </span></span>
+<span><span class="co">#&gt;  80+  :219555                    </span></span>
 <span><span class="co">#&gt;   report_date        </span></span>
 <span><span class="co">#&gt;  Min.   :2021-04-06  </span></span>
 <span><span class="co">#&gt;  1st Qu.:2021-06-24  </span></span>
@@ -212,18 +220,30 @@
 <span>  <span class="fu"><a href="../reference/enw_incidence_to_linelist.html">enw_incidence_to_linelist</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">germany_covid19_hosp_linelist</span></span>
-<span><span class="co">#&gt;                 id reference_date location age_group report_date delay</span></span>
-<span><span class="co">#&gt;        1:        1     2021-04-06       DE       00+  2021-04-06     0</span></span>
-<span><span class="co">#&gt;        2:        2     2021-04-06       DE       00+  2021-04-06     0</span></span>
-<span><span class="co">#&gt;        3:        3     2021-04-06       DE       00+  2021-04-06     0</span></span>
-<span><span class="co">#&gt;        4:        4     2021-04-06       DE       00+  2021-04-06     0</span></span>
-<span><span class="co">#&gt;        5:        5     2021-04-06       DE       00+  2021-04-06     0</span></span>
-<span><span class="co">#&gt;       ---                                                             </span></span>
-<span><span class="co">#&gt; 11486202: 11486202     2021-10-20    DE-TH     15-34  2021-10-20   115</span></span>
-<span><span class="co">#&gt; 11486203: 11486203     2021-10-20    DE-TH     60-79  2021-10-20   117</span></span>
-<span><span class="co">#&gt; 11486204: 11486204     2021-10-20    DE-TH     60-79  2021-10-20   117</span></span>
-<span><span class="co">#&gt; 11486205: 11486205     2021-10-20    DE-TH     60-79  2021-10-20   117</span></span>
-<span><span class="co">#&gt; 11486206: 11486206     2021-10-20    DE-TH     60-79  2021-10-20   117</span></span></code></pre></div>
+<span><span class="co">#&gt;                 id reference_date location</span></span>
+<span><span class="co">#&gt;        1:        1     2021-04-06       DE</span></span>
+<span><span class="co">#&gt;        2:        2     2021-04-06       DE</span></span>
+<span><span class="co">#&gt;        3:        3     2021-04-06       DE</span></span>
+<span><span class="co">#&gt;        4:        4     2021-04-06       DE</span></span>
+<span><span class="co">#&gt;        5:        5     2021-04-06       DE</span></span>
+<span><span class="co">#&gt;       ---                                 </span></span>
+<span><span class="co">#&gt; 11486202: 11486202     2021-10-20    DE-TH</span></span>
+<span><span class="co">#&gt; 11486203: 11486203     2021-10-20    DE-TH</span></span>
+<span><span class="co">#&gt; 11486204: 11486204     2021-10-20    DE-TH</span></span>
+<span><span class="co">#&gt; 11486205: 11486205     2021-10-20    DE-TH</span></span>
+<span><span class="co">#&gt; 11486206: 11486206     2021-10-20    DE-TH</span></span>
+<span><span class="co">#&gt;           age_group report_date delay</span></span>
+<span><span class="co">#&gt;        1:       00+  2021-04-06     0</span></span>
+<span><span class="co">#&gt;        2:       00+  2021-04-06     0</span></span>
+<span><span class="co">#&gt;        3:       00+  2021-04-06     0</span></span>
+<span><span class="co">#&gt;        4:       00+  2021-04-06     0</span></span>
+<span><span class="co">#&gt;        5:       00+  2021-04-06     0</span></span>
+<span><span class="co">#&gt;       ---                            </span></span>
+<span><span class="co">#&gt; 11486202:     15-34  2021-10-20   115</span></span>
+<span><span class="co">#&gt; 11486203:     60-79  2021-10-20   117</span></span>
+<span><span class="co">#&gt; 11486204:     60-79  2021-10-20   117</span></span>
+<span><span class="co">#&gt; 11486205:     60-79  2021-10-20   117</span></span>
+<span><span class="co">#&gt; 11486206:     60-79  2021-10-20   117</span></span></code></pre></div>
 </details><p>This linelist could then be itself converted into the format <code>epinowcast</code> requires using the <code><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code> function,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">incidence_from_linelist</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence</a></span><span class="op">(</span></span>
@@ -235,18 +255,42 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">incidence_from_linelist</span></span>
-<span><span class="co">#&gt;          age_group location report_date reference_date new_confirm confirm delay</span></span>
-<span><span class="co">#&gt;       1:     00-04    DE-BY  2021-04-06           &lt;NA&gt;           0       0     0</span></span>
-<span><span class="co">#&gt;       2:     00-04    DE-BY  2021-04-07           &lt;NA&gt;           0       0     1</span></span>
-<span><span class="co">#&gt;       3:     00-04    DE-BY  2021-04-08           &lt;NA&gt;           0       0     2</span></span>
-<span><span class="co">#&gt;       4:     00-04    DE-BY  2021-04-09           &lt;NA&gt;           0       0     3</span></span>
-<span><span class="co">#&gt;       5:     00-04    DE-BY  2021-04-10           &lt;NA&gt;           0       0     4</span></span>
-<span><span class="co">#&gt;      ---                                                                        </span></span>
-<span><span class="co">#&gt; 2049593:       80+    DE-TH  2021-10-19     2021-10-18           0       0     1</span></span>
-<span><span class="co">#&gt; 2049594:       80+    DE-TH  2021-10-20     2021-10-18           0       0     2</span></span>
-<span><span class="co">#&gt; 2049595:       80+    DE-TH  2021-10-19     2021-10-19           1       1     0</span></span>
-<span><span class="co">#&gt; 2049596:       80+    DE-TH  2021-10-20     2021-10-19           0       1     1</span></span>
-<span><span class="co">#&gt; 2049597:       80+    DE-TH  2021-10-20     2021-10-20           0       0     0</span></span></code></pre></div>
+<span><span class="co">#&gt;          age_group location report_date</span></span>
+<span><span class="co">#&gt;       1:     00-04    DE-BY  2021-04-06</span></span>
+<span><span class="co">#&gt;       2:     00-04    DE-BY  2021-04-07</span></span>
+<span><span class="co">#&gt;       3:     00-04    DE-BY  2021-04-08</span></span>
+<span><span class="co">#&gt;       4:     00-04    DE-BY  2021-04-09</span></span>
+<span><span class="co">#&gt;       5:     00-04    DE-BY  2021-04-10</span></span>
+<span><span class="co">#&gt;      ---                               </span></span>
+<span><span class="co">#&gt; 2049593:       80+    DE-TH  2021-10-19</span></span>
+<span><span class="co">#&gt; 2049594:       80+    DE-TH  2021-10-20</span></span>
+<span><span class="co">#&gt; 2049595:       80+    DE-TH  2021-10-19</span></span>
+<span><span class="co">#&gt; 2049596:       80+    DE-TH  2021-10-20</span></span>
+<span><span class="co">#&gt; 2049597:       80+    DE-TH  2021-10-20</span></span>
+<span><span class="co">#&gt;          reference_date new_confirm confirm</span></span>
+<span><span class="co">#&gt;       1:           &lt;NA&gt;           0       0</span></span>
+<span><span class="co">#&gt;       2:           &lt;NA&gt;           0       0</span></span>
+<span><span class="co">#&gt;       3:           &lt;NA&gt;           0       0</span></span>
+<span><span class="co">#&gt;       4:           &lt;NA&gt;           0       0</span></span>
+<span><span class="co">#&gt;       5:           &lt;NA&gt;           0       0</span></span>
+<span><span class="co">#&gt;      ---                                   </span></span>
+<span><span class="co">#&gt; 2049593:     2021-10-18           0       0</span></span>
+<span><span class="co">#&gt; 2049594:     2021-10-18           0       0</span></span>
+<span><span class="co">#&gt; 2049595:     2021-10-19           1       1</span></span>
+<span><span class="co">#&gt; 2049596:     2021-10-19           0       1</span></span>
+<span><span class="co">#&gt; 2049597:     2021-10-20           0       0</span></span>
+<span><span class="co">#&gt;          delay</span></span>
+<span><span class="co">#&gt;       1:     0</span></span>
+<span><span class="co">#&gt;       2:     1</span></span>
+<span><span class="co">#&gt;       3:     2</span></span>
+<span><span class="co">#&gt;       4:     3</span></span>
+<span><span class="co">#&gt;       5:     4</span></span>
+<span><span class="co">#&gt;      ---      </span></span>
+<span><span class="co">#&gt; 2049593:     1</span></span>
+<span><span class="co">#&gt; 2049594:     2</span></span>
+<span><span class="co">#&gt; 2049595:     0</span></span>
+<span><span class="co">#&gt; 2049596:     1</span></span>
+<span><span class="co">#&gt; 2049597:     0</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>Here we have specifed the <code>reference_date</code> and <code>report_date</code> columns, the <code>by</code> columns (which are used to group the data), and the <code>max_delay</code> which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The <code><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code> function will then calculate the incidence by reference date and report date for each group.</p>
 </div>
@@ -270,18 +314,30 @@
 <code class="sourceCode R"><span><span class="va">rt_germany</span> <span class="op">&lt;-</span> <span class="va">complete_germany_hosp</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span><span class="op">)</span></span>
 <span><span class="va">rt_germany</span></span>
-<span><span class="co">#&gt;       report_date reference_date confirm new_confirm delay</span></span>
-<span><span class="co">#&gt;    1:  2021-05-01     2021-05-01     234         234     0</span></span>
-<span><span class="co">#&gt;    2:  2021-05-02     2021-05-01     352         118     1</span></span>
-<span><span class="co">#&gt;    3:  2021-05-03     2021-05-01     391          39     2</span></span>
-<span><span class="co">#&gt;    4:  2021-05-04     2021-05-01     464          73     3</span></span>
-<span><span class="co">#&gt;    5:  2021-05-05     2021-05-01     507          43     4</span></span>
-<span><span class="co">#&gt;   ---                                                     </span></span>
-<span><span class="co">#&gt; 1949:  2021-06-30     2021-06-29      31          11     1</span></span>
-<span><span class="co">#&gt; 1950:  2021-07-01     2021-06-29      35           4     2</span></span>
-<span><span class="co">#&gt; 1951:  2021-06-30     2021-06-30      20          20     0</span></span>
-<span><span class="co">#&gt; 1952:  2021-07-01     2021-06-30      37          17     1</span></span>
-<span><span class="co">#&gt; 1953:  2021-07-01     2021-07-01      20          20     0</span></span></code></pre></div>
+<span><span class="co">#&gt;       report_date reference_date confirm</span></span>
+<span><span class="co">#&gt;    1:  2021-05-01     2021-05-01     234</span></span>
+<span><span class="co">#&gt;    2:  2021-05-02     2021-05-01     352</span></span>
+<span><span class="co">#&gt;    3:  2021-05-03     2021-05-01     391</span></span>
+<span><span class="co">#&gt;    4:  2021-05-04     2021-05-01     464</span></span>
+<span><span class="co">#&gt;    5:  2021-05-05     2021-05-01     507</span></span>
+<span><span class="co">#&gt;   ---                                   </span></span>
+<span><span class="co">#&gt; 1949:  2021-06-30     2021-06-29      31</span></span>
+<span><span class="co">#&gt; 1950:  2021-07-01     2021-06-29      35</span></span>
+<span><span class="co">#&gt; 1951:  2021-06-30     2021-06-30      20</span></span>
+<span><span class="co">#&gt; 1952:  2021-07-01     2021-06-30      37</span></span>
+<span><span class="co">#&gt; 1953:  2021-07-01     2021-07-01      20</span></span>
+<span><span class="co">#&gt;       new_confirm delay</span></span>
+<span><span class="co">#&gt;    1:         234     0</span></span>
+<span><span class="co">#&gt;    2:         118     1</span></span>
+<span><span class="co">#&gt;    3:          39     2</span></span>
+<span><span class="co">#&gt;    4:          73     3</span></span>
+<span><span class="co">#&gt;    5:          43     4</span></span>
+<span><span class="co">#&gt;   ---                  </span></span>
+<span><span class="co">#&gt; 1949:          11     1</span></span>
+<span><span class="co">#&gt; 1950:           4     2</span></span>
+<span><span class="co">#&gt; 1951:          20     0</span></span>
+<span><span class="co">#&gt; 1952:          17     1</span></span>
+<span><span class="co">#&gt; 1953:          20     0</span></span></code></pre></div>
 </details><ul>
 <li>Create the retrospective dataset (<code>retro_germany</code>) by filtering the data to only include observations with reference dates (i.e. they may have been reported anytime up to the 1st of August 2021) from the 1st of May 2021 until the 1st of July 2021;</li>
 </ul>
@@ -289,34 +345,57 @@
 <code class="sourceCode R"><span><span class="va">retro_germany</span> <span class="op">&lt;-</span> <span class="va">complete_germany_hosp</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-07-01"</span><span class="op">)</span></span>
 <span><span class="va">retro_germany</span></span>
-<span><span class="co">#&gt;       report_date reference_date confirm new_confirm delay</span></span>
-<span><span class="co">#&gt;    1:  2021-05-01     2021-05-01     234         234     0</span></span>
-<span><span class="co">#&gt;    2:  2021-05-02     2021-05-01     352         118     1</span></span>
-<span><span class="co">#&gt;    3:  2021-05-03     2021-05-01     391          39     2</span></span>
-<span><span class="co">#&gt;    4:  2021-05-04     2021-05-01     464          73     3</span></span>
-<span><span class="co">#&gt;    5:  2021-05-05     2021-05-01     507          43     4</span></span>
-<span><span class="co">#&gt;   ---                                                     </span></span>
-<span><span class="co">#&gt; 3871:  2021-07-28     2021-07-01      57           0    27</span></span>
-<span><span class="co">#&gt; 3872:  2021-07-29     2021-07-01      57           0    28</span></span>
-<span><span class="co">#&gt; 3873:  2021-07-30     2021-07-01      57           0    29</span></span>
-<span><span class="co">#&gt; 3874:  2021-07-31     2021-07-01      57           0    30</span></span>
-<span><span class="co">#&gt; 3875:  2021-08-01     2021-07-01      57           0    31</span></span></code></pre></div>
+<span><span class="co">#&gt;       report_date reference_date confirm</span></span>
+<span><span class="co">#&gt;    1:  2021-05-01     2021-05-01     234</span></span>
+<span><span class="co">#&gt;    2:  2021-05-02     2021-05-01     352</span></span>
+<span><span class="co">#&gt;    3:  2021-05-03     2021-05-01     391</span></span>
+<span><span class="co">#&gt;    4:  2021-05-04     2021-05-01     464</span></span>
+<span><span class="co">#&gt;    5:  2021-05-05     2021-05-01     507</span></span>
+<span><span class="co">#&gt;   ---                                   </span></span>
+<span><span class="co">#&gt; 3871:  2021-07-28     2021-07-01      57</span></span>
+<span><span class="co">#&gt; 3872:  2021-07-29     2021-07-01      57</span></span>
+<span><span class="co">#&gt; 3873:  2021-07-30     2021-07-01      57</span></span>
+<span><span class="co">#&gt; 3874:  2021-07-31     2021-07-01      57</span></span>
+<span><span class="co">#&gt; 3875:  2021-08-01     2021-07-01      57</span></span>
+<span><span class="co">#&gt;       new_confirm delay</span></span>
+<span><span class="co">#&gt;    1:         234     0</span></span>
+<span><span class="co">#&gt;    2:         118     1</span></span>
+<span><span class="co">#&gt;    3:          39     2</span></span>
+<span><span class="co">#&gt;    4:          73     3</span></span>
+<span><span class="co">#&gt;    5:          43     4</span></span>
+<span><span class="co">#&gt;   ---                  </span></span>
+<span><span class="co">#&gt; 3871:           0    27</span></span>
+<span><span class="co">#&gt; 3872:           0    28</span></span>
+<span><span class="co">#&gt; 3873:           0    29</span></span>
+<span><span class="co">#&gt; 3874:           0    30</span></span>
+<span><span class="co">#&gt; 3875:           0    31</span></span></code></pre></div>
 </details><p>Finally we can create a dataset that contains the latest data available for each reference date. We do this using the <code><a href="../reference/enw_latest_data.html">enw_latest_data()</a></code> function,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">retro_germany</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     reference_date report_date confirm new_confirm delay</span></span>
-<span><span class="co">#&gt;  1:     2021-05-01  2021-08-01    1007           0    92</span></span>
-<span><span class="co">#&gt;  2:     2021-05-02  2021-08-01     781           0    91</span></span>
-<span><span class="co">#&gt;  3:     2021-05-03  2021-08-01     467           0    90</span></span>
-<span><span class="co">#&gt;  4:     2021-05-04  2021-08-01     823           0    89</span></span>
-<span><span class="co">#&gt;  5:     2021-05-05  2021-08-01    1028           0    88</span></span>
-<span><span class="co">#&gt;  6:     2021-05-06  2021-08-01    1016           0    87</span></span>
-<span><span class="co">#&gt;  7:     2021-05-07  2021-08-01     892           0    86</span></span>
-<span><span class="co">#&gt;  8:     2021-05-08  2021-08-01     822           0    85</span></span>
-<span><span class="co">#&gt;  9:     2021-05-09  2021-08-01     561           0    84</span></span>
-<span><span class="co">#&gt; 10:     2021-05-10  2021-08-01     364           0    83</span></span></code></pre></div>
+<span><span class="co">#&gt;     reference_date report_date confirm</span></span>
+<span><span class="co">#&gt;  1:     2021-05-01  2021-08-01    1007</span></span>
+<span><span class="co">#&gt;  2:     2021-05-02  2021-08-01     781</span></span>
+<span><span class="co">#&gt;  3:     2021-05-03  2021-08-01     467</span></span>
+<span><span class="co">#&gt;  4:     2021-05-04  2021-08-01     823</span></span>
+<span><span class="co">#&gt;  5:     2021-05-05  2021-08-01    1028</span></span>
+<span><span class="co">#&gt;  6:     2021-05-06  2021-08-01    1016</span></span>
+<span><span class="co">#&gt;  7:     2021-05-07  2021-08-01     892</span></span>
+<span><span class="co">#&gt;  8:     2021-05-08  2021-08-01     822</span></span>
+<span><span class="co">#&gt;  9:     2021-05-09  2021-08-01     561</span></span>
+<span><span class="co">#&gt; 10:     2021-05-10  2021-08-01     364</span></span>
+<span><span class="co">#&gt;     new_confirm delay</span></span>
+<span><span class="co">#&gt;  1:           0    92</span></span>
+<span><span class="co">#&gt;  2:           0    91</span></span>
+<span><span class="co">#&gt;  3:           0    90</span></span>
+<span><span class="co">#&gt;  4:           0    89</span></span>
+<span><span class="co">#&gt;  5:           0    88</span></span>
+<span><span class="co">#&gt;  6:           0    87</span></span>
+<span><span class="co">#&gt;  7:           0    86</span></span>
+<span><span class="co">#&gt;  8:           0    85</span></span>
+<span><span class="co">#&gt;  9:           0    84</span></span>
+<span><span class="co">#&gt; 10:           0    83</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -373,7 +452,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-unnamed-chunk-10-1.png" alt=""><p class="caption">Hospitalisations in Germany by date of positive test and date of report</p>
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-10-1.png" alt=""><p class="caption">Hospitalisations in Germany by date of positive test and date of report</p>
 </div>
 </div>
 </div>
@@ -447,7 +526,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gt_pmf</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-12</p>
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-12</p>
 </div>
 <div class="alert alert-warning">
 <p>Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.</p>
@@ -470,7 +549,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">reporting_pmf</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-13</p>
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-13</p>
 </div>
 <p>The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -541,22 +620,34 @@
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rt_germany_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">rt_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">rt_germany_pobs</span></span>
-<span><span class="co">#&gt;                     obs          new_confirm             latest missing_reference</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[1425x8]&gt; &lt;data.table[1425x9]&gt; &lt;data.table[62x8]&gt; &lt;data.table[0x4]&gt;</span></span>
-<span><span class="co">#&gt;     reporting_triangle      metareference          metareport          metadelay</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt; &lt;data.table[91x10]&gt; &lt;data.table[30x4]&gt;</span></span>
-<span><span class="co">#&gt;    time snapshots by groups max_delay   max_date timestep</span></span>
-<span><span class="co">#&gt; 1:   62        62         1        30 2021-07-01      day</span></span></code></pre></div>
+<span><span class="co">#&gt;                     obs          new_confirm</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[1425x8]&gt; &lt;data.table[1425x9]&gt;</span></span>
+<span><span class="co">#&gt;                latest missing_reference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[62x8]&gt; &lt;data.table[0x4]&gt;</span></span>
+<span><span class="co">#&gt;     reporting_triangle      metareference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt;</span></span>
+<span><span class="co">#&gt;             metareport          metadelay time</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[91x10]&gt; &lt;data.table[30x4]&gt;   62</span></span>
+<span><span class="co">#&gt;    snapshots by groups max_delay   max_date</span></span>
+<span><span class="co">#&gt; 1:        62         1        30 2021-07-01</span></span>
+<span><span class="co">#&gt;    timestep</span></span>
+<span><span class="co">#&gt; 1:      day</span></span></code></pre></div>
 </details><p>and do the same for the retrospective data</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_germany_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">retro_germany_pobs</span></span>
-<span><span class="co">#&gt;                     obs          new_confirm             latest missing_reference</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[1860x8]&gt; &lt;data.table[1860x9]&gt; &lt;data.table[62x8]&gt; &lt;data.table[0x4]&gt;</span></span>
-<span><span class="co">#&gt;     reporting_triangle      metareference           metareport          metadelay</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt; &lt;data.table[120x10]&gt; &lt;data.table[30x4]&gt;</span></span>
-<span><span class="co">#&gt;    time snapshots by groups max_delay   max_date timestep</span></span>
-<span><span class="co">#&gt; 1:   62        62         1        30 2021-07-30      day</span></span></code></pre></div>
+<span><span class="co">#&gt;                     obs          new_confirm</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[1860x8]&gt; &lt;data.table[1860x9]&gt;</span></span>
+<span><span class="co">#&gt;                latest missing_reference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[62x8]&gt; &lt;data.table[0x4]&gt;</span></span>
+<span><span class="co">#&gt;     reporting_triangle      metareference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt;</span></span>
+<span><span class="co">#&gt;              metareport          metadelay time</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[120x10]&gt; &lt;data.table[30x4]&gt;   62</span></span>
+<span><span class="co">#&gt;    snapshots by groups max_delay   max_date</span></span>
+<span><span class="co">#&gt; 1:        62         1        30 2021-07-30</span></span>
+<span><span class="co">#&gt;    timestep</span></span>
+<span><span class="co">#&gt; 1:      day</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -635,7 +726,7 @@
 <span>  <span class="va">germany_nowcast</span>, <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt=""><p class="caption">Nowcast of hospitalisations in Germany based on real-time data</p>
+<img src="figures/single-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt=""><p class="caption">Nowcast of hospitalisations in Germany based on real-time data</p>
 </div>
 <p>Internally, this plotting function (see <code>?plot.epinowcast()</code>) sums observed data and posterior estimates for unobserved data to produce a nowcast of the number of hospitalisations that will ultimately be reported.</p>
 <p>In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported.</p>
@@ -653,7 +744,7 @@
 <span>  <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-1.png" alt=""><p class="caption">Nowcast of hospitalisations in Germany based on retrospective data</p>
+<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-1.png" alt=""><p class="caption">Nowcast of hospitalisations in Germany based on retrospective data</p>
 </div>
 </div>
 </div>
@@ -674,7 +765,7 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2021-05-01"</span>, <span class="st">"2021-05-14"</span>, <span class="st">"2021-06-01"</span>, <span class="st">"2021-07-01"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt=""><p class="caption">Posterior predictions of hospitalisations in Germany based on retrospective data</p>
+<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt=""><p class="caption">Posterior predictions of hospitalisations in Germany based on retrospective data</p>
 </div>
 <div class="alert alert-warning">
 <p>It is clear from this plot that for these example dates the model is in the main able to predict the observed data well. However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay. This is likely due to the model not being able to account for the day of the week reporting periodicity. This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the <a href="https://package.epinowcast.org">package README</a>.</p>
@@ -716,7 +807,7 @@
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-plot-germany-rt-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the effective reproduction number in Germany</p>
+<img src="figures/single-timeseries-rt-estimation-plot-germany-rt-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the effective reproduction number in Germany</p>
 </div>
 <p>Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models. Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict. This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.</p>
 </div>
@@ -778,7 +869,7 @@
 <span>    y <span class="op">=</span> <span class="st">"Cumulative density function of the reporting distribution"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-plot-germany-delay-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</p>
+<img src="figures/single-timeseries-rt-estimation-plot-germany-delay-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</p>
 </div>
 <p>The estimates are a fairly good match indicating that the delay is being well estimated by the real-time model compared to the retrospective model and that the delay is unlikely to be changing rapidly over time in this exampel (as otherwise we would expect the estimated delays to diverge over time).</p>
 </div>
@@ -828,7 +919,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"color"</span>, <span class="st">"fill"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="articles/figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</p>
+<img src="figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</p>
 </div>
 <p>As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).</p>
 </div>
