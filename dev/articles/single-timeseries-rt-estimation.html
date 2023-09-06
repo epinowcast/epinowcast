@@ -526,7 +526,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gt_pmf</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-12</p>
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt=""><p class="caption">Probability mass function of the assumed generation interval distribution</p>
 </div>
 <div class="alert alert-warning">
 <p>Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.</p>
@@ -549,7 +549,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">reporting_pmf</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt=""><p class="caption">plot of chunk unnamed-chunk-13</p>
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt=""><p class="caption">Probability mass function of the assumed latent (unobserved) reporting distribution</p>
 </div>
 <p>The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
