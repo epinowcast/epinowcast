@@ -305,6 +305,7 @@ rt_formula <- ~ 1 + rw(week)
 Next we define the generation time distribution. As already discussed, we assume a gamma distribution with mean 4 days and a standard deviation of 3 days. These summary parameters first need to be transformed to the shape and scale parameters used for the gamma distribution. We then need to account for daily censoring and finally normalise the probability mass function (PMF) to account for right truncation.
 
 ```{r}
+#| fig.cap: "Probability mass function of the assumed generation interval distribution" # nolint
 # first transform mean and sd to shape and scale
 gamma_mean <- 4
 gamma_sd <- 3
@@ -327,7 +328,8 @@ Here and for other PMFs we set the maximum delay to be 15 days as this gives goo
 
 Now we define the latent reporting delay in a similar way remembering we specified a lognormal distribution with a mean of 5 days and a standard deviation of 2 days. We again also need to account for daily censoring and normalise the PMF to account for right truncation.
 
-```{r} 
+```{r}
+#| fig.cap: "Probability mass function of the assumed latent (unobserved) reporting distribution" # nolint
 lgn_mean <- 5
 lgn_sd <- 2
 meanlog <- log(lgn_mean^2 / sqrt(lgn_sd^2 + lgn_mean^2))

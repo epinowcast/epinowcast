@@ -489,7 +489,7 @@ gt_pmf <- simulate_double_censored_pmf(
 plot(gt_pmf)
 ```
 
-![plot of chunk unnamed-chunk-12](figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png)
+![Probability mass function of the assumed generation interval distribution](figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png)
 
 ::: {.alert .alert-warning}
 Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.
@@ -516,7 +516,7 @@ reporting_pmf <- simulate_double_censored_pmf(
 plot(reporting_pmf)
 ```
 
-![plot of chunk unnamed-chunk-13](figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png)
+![Probability mass function of the assumed latent (unobserved) reporting distribution](figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png)
 
 The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,
 
