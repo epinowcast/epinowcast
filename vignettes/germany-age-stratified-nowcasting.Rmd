@@ -63,18 +63,30 @@ retro_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-09-01") |>
   enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
-#>       reference_date location age_group confirm report_date
-#>    1:     2021-07-23       DE       00+      30  2021-07-23
-#>    2:     2021-07-24       DE       00+      31  2021-07-24
-#>    3:     2021-07-25       DE       00+       8  2021-07-25
-#>    4:     2021-07-26       DE       00+       9  2021-07-26
-#>    5:     2021-07-27       DE       00+      35  2021-07-27
-#>   ---                                                      
-#> 6023:     2021-07-23       DE     05-14       1  2021-09-01
-#> 6024:     2021-07-23       DE     15-34      21  2021-09-01
-#> 6025:     2021-07-23       DE     35-59      39  2021-09-01
-#> 6026:     2021-07-23       DE     60-79      21  2021-09-01
-#> 6027:     2021-07-23       DE       80+       5  2021-09-01
+#>       reference_date location age_group confirm
+#>    1:     2021-07-23       DE       00+      30
+#>    2:     2021-07-24       DE       00+      31
+#>    3:     2021-07-25       DE       00+       8
+#>    4:     2021-07-26       DE       00+       9
+#>    5:     2021-07-27       DE       00+      35
+#>   ---                                          
+#> 6023:     2021-07-23       DE     05-14       1
+#> 6024:     2021-07-23       DE     15-34      21
+#> 6025:     2021-07-23       DE     35-59      39
+#> 6026:     2021-07-23       DE     60-79      21
+#> 6027:     2021-07-23       DE       80+       5
+#>       report_date
+#>    1:  2021-07-23
+#>    2:  2021-07-24
+#>    3:  2021-07-25
+#>    4:  2021-07-26
+#>    5:  2021-07-27
+#>   ---            
+#> 6023:  2021-09-01
+#> 6024:  2021-09-01
+#> 6025:  2021-09-01
+#> 6026:  2021-09-01
+#> 6027:  2021-09-01
 ```
 
 Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target "true" data.
@@ -97,14 +109,18 @@ Another key modelling choice we make at this stage is to model overall hospitali
 ```r
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
 pobs
-#>                     obs           new_confirm               latest
-#> 1: <data.table[6020x9]> <data.table[6020x11]> <data.table[287x10]>
-#>    missing_reference   reporting_triangle       metareference
-#> 1: <data.table[0x6]> <data.table[287x42]> <data.table[287x9]>
-#>              metareport          metadelay time snapshots        by groups
-#> 1: <data.table[560x12]> <data.table[40x4]>   41       287 age_group      7
-#>    max_delay   max_date
-#> 1:        40 2021-09-01
+#>                     obs           new_confirm
+#> 1: <data.table[6020x9]> <data.table[6020x11]>
+#>                  latest missing_reference
+#> 1: <data.table[287x10]> <data.table[0x6]>
+#>      reporting_triangle       metareference
+#> 1: <data.table[287x42]> <data.table[287x9]>
+#>              metareport          metadelay time
+#> 1: <data.table[560x12]> <data.table[40x4]>   41
+#>    snapshots        by groups max_delay
+#> 1:       287 age_group      7        40
+#>      max_date timestep
+#> 1: 2021-09-01      day
 ```
 
 # Models 
@@ -148,7 +164,7 @@ plot(nowcast, latest_obs = latest_nat_germany) +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
 <p class="caption">plot of chunk nowcast</p>
 </div>
 
@@ -165,14 +181,22 @@ priors <- summary(
 )
 priors[, sd := sd * 2]
 priors
-#>            variable      mean    median         sd        mad        q5
-#> 1: refp_mean_int[1] 1.1212838 1.1200800 0.08829821 0.04312883 1.0465460
-#> 2:   refp_sd_int[1] 1.7304364 1.7283450 0.09136750 0.04443352 1.6572085
-#> 3:      sqrt_phi[1] 0.5943754 0.5945225 0.03663196 0.01858736 0.5650664
-#>          q20       q80       q95     rhat ess_bulk ess_tail
-#> 1: 1.0863640 1.1559380 1.1949585 1.000267 1919.003 779.4026
-#> 2: 1.6931480 1.7692440 1.8097575 1.023093 1564.573 706.6420
-#> 3: 0.5786032 0.6097982 0.6246353 1.002526 1328.925 783.8134
+#>            variable      mean    median
+#> 1: refp_mean_int[1] 1.1083702 1.0999150
+#> 2:   refp_sd_int[1] 2.5938331 2.5856750
+#> 3:      sqrt_phi[1] 0.6444396 0.6440095
+#>            sd        mad        q5     q20
+#> 1: 0.23916626 0.11090589 0.9294077 1.00725
+#> 2: 0.26334423 0.12787425 2.3918925 2.48332
+#> 3: 0.03645647 0.01747096 0.6145307 0.62941
+#>          q80       q95      rhat ess_bulk
+#> 1: 1.1955600 1.3246245 0.9991926  831.595
+#> 2: 2.6957700 2.8213280 1.0023876  791.710
+#> 3: 0.6588764 0.6761259 1.0072163 1142.299
+#>    ess_tail
+#> 1: 658.3016
+#> 2: 643.9374
+#> 3: 603.3725
 ```
 
 ## Reference day of the week effect
@@ -202,7 +226,7 @@ plot(exp_nowcast, latest_obs = latest_nat_germany) +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%" />
 <p class="caption">plot of chunk exp_nowcast</p>
 </div>
 
@@ -217,7 +241,7 @@ plot(exp_nowcast, type = "posterior") +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/simple_pp-1.png" alt="plot of chunk simple_pp" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-simple_pp-1.png" alt="plot of chunk simple_pp" width="100%" />
 <p class="caption">plot of chunk simple_pp</p>
 </div>
 
@@ -253,7 +277,7 @@ plot(dow_nowcast, latest_obs = latest_nat_germany) +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%" />
 <p class="caption">plot of chunk dow_nowcast</p>
 </div>
 
@@ -289,7 +313,7 @@ plot(age_nowcast, latest_obs = latest_nat_germany) +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%" />
 <p class="caption">plot of chunk age_nowcast</p>
 </div>
 
@@ -328,7 +352,7 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
 <p class="caption">plot of chunk week_nowcast</p>
 </div>
 
@@ -366,7 +390,7 @@ plot(age_week_nowcast, latest_obs = latest_nat_germany) +
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%" />
 <p class="caption">plot of chunk age_week_nowcast</p>
 </div>
 
@@ -433,7 +457,7 @@ enw_plot_nowcast_quantiles(
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%" />
 <p class="caption">plot of chunk ind_nowcast</p>
 </div>
 
@@ -501,7 +525,7 @@ enw_plot_nowcast_quantiles(
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%" />
 <p class="caption">plot of chunk unnamed-chunk-20</p>
 </div>
 
@@ -511,12 +535,18 @@ As a crude measure of general out of sample performance we can use the leave one
 ```r
 loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
-#>                                                     elpd_diff se_diff
-#> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age, Report: Day of week                  -11.1       5.3 
-#> Reference: Age and week by age, Report: Day of week  -11.4       3.4 
-#> Reference: Fixed, Report: Day of week                -49.9      10.6 
-#> Reference: Fixed, Report: Fixed                     -611.8      45.2
+#>                                                     elpd_diff
+#> Reference: Age and week, Report: Day of week           0.0   
+#> Reference: Age and week by age, Report: Day of week   -2.0   
+#> Reference: Age, Report: Day of week                   -4.1   
+#> Reference: Fixed, Report: Day of week                -85.0   
+#> Reference: Fixed, Report: Fixed                     -645.3   
+#>                                                     se_diff
+#> Reference: Age and week, Report: Day of week           0.0 
+#> Reference: Age and week by age, Report: Day of week    3.8 
+#> Reference: Age, Report: Day of week                    6.5 
+#> Reference: Fixed, Report: Day of week                 12.1 
+#> Reference: Fixed, Report: Fixed                       48.3
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -541,12 +571,12 @@ score |>
 
 |model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
 |:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
-|Reference: Fixed, Report: Fixed                          |       9.839809|   3.116986|        4.333061|      2.3892308|         -0.0962323| -0.1061224|  16.33673|
-|Reference: Fixed, Report: Day of week                    |      10.012964|   2.337862|        6.755102|      0.9199372|         -0.1229199| -0.2142857|  15.30612|
-|Reference: Age, Report: Day of week                      |       8.582860|   2.292750|        5.660471|      0.6288854|         -0.1370487| -0.3755102|  14.01020|
-|Reference: Age and week, Report: Day of week             |       7.317416|   2.796750|        1.324270|      3.1961695|         -0.0083203|  0.0816327|  12.15306|
-|Reference: Age and week by age, Report: Day of week      |       6.798807|   2.973862|        1.943956|      1.8810047|          0.0167975| -0.1357143|  11.23469|
-|Independent by age, Reference: Week, Report: Day of week |       7.379049|   3.885315|        1.646311|      1.8474254|          0.0277865| -0.0653061|  12.55102|
+|Reference: Fixed, Report: Fixed                          |      10.427030|   3.682110|        3.171272|      3.5744113|         -0.0805338| -0.0357143|  17.75510|
+|Reference: Fixed, Report: Day of week                    |      10.326110|   2.612009|        6.783925|      0.9307692|         -0.1323391| -0.2897959|  15.37755|
+|Reference: Age, Report: Day of week                      |       8.716047|   2.501557|        5.733846|      0.4803768|         -0.1229199| -0.4193878|  13.08163|
+|Reference: Age and week, Report: Day of week             |       7.193438|   2.986992|        1.432653|      2.7744113|         -0.0036107|  0.0153061|  12.61224|
+|Reference: Age and week by age, Report: Day of week      |       7.035887|   2.979419|        2.572465|      1.4835165|         -0.0193093| -0.2122449|  11.88776|
+|Independent by age, Reference: Week, Report: Day of week |       8.061642|   4.422364|        1.176766|      2.4638932|          0.0591837| -0.0397959|  13.84694|
 
 
 
@@ -583,7 +613,7 @@ plot
 ```
 
 <div class="figure">
-<img src="vignettes/figures/germany-age-stratified-nowcasting/performance-1.png" alt="plot of chunk performance" width="100%" />
+<img src="figures/germany-age-stratified-nowcasting-performance-1.png" alt="plot of chunk performance" width="100%" />
 <p class="caption">plot of chunk performance</p>
 </div>
 

@@ -22,7 +22,7 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "vignettes/figures/germany-age-stratified-nowcasting-",
+  fig.path = "figures/germany-age-stratified-nowcasting-",
   cache = TRUE, dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,

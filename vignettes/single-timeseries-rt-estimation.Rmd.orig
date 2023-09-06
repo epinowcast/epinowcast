@@ -22,7 +22,7 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "vignettes/figures/single-timeseries-rt-estimation-",
+  fig.path = "figures/single-timeseries-rt-estimation-",
   collapse = TRUE,
   comment = "#>",
   eval = TRUE,
