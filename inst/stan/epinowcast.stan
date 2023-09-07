@@ -98,7 +98,7 @@ data {
   int refnp_fintercept; // Should an intercept be included
   int refnp_fncol;
   int refnp_rncol;
-  matrix[refnp_fnindex, refnp_fncol + 1] refnp_fdesign;
+  matrix[refnp_fnindex, refnp_fncol + refnp_fintercept] refnp_fdesign;
   matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
   array[2, 1] real refnp_int_p;
   array[2, 1] real refnp_beta_sd_p;
@@ -281,15 +281,10 @@ transformed parameters{
   if (model_refnp) {
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
-    if (refnp_fintercept) {
-      refnp_lh = combine_effects(
-        refnp_int, refnp_beta, refnp_fdesign, rep_beta_sd, refnp_rdesign, 1
-      );
-    } else {
-      refnp_lh = combine_effects(
-        {0}, refnp_beta, refnp_fdesign, rep_beta_sd, refnp_rdesign, 1
-      );
-    }
+    refnp_lh = combine_effects(
+      refnp_int, refnp_beta, refnp_fdesign, rep_beta_sd, refnp_rdesign,
+      refnp_fintercept
+    );
     }
   }
 

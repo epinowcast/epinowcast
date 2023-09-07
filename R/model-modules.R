@@ -169,9 +169,11 @@ enw_reference <- function(
         }
       }
       if (data$model_refnp > 0) {
-        init$refnp_int <- array(rnorm(
-          1, priors$refnp_int_p[1], priors$refnp_int_p[2] / 10
-        ))
+        if (data$refnp_fintercept > 0) {
+          init$refnp_int <- array(rnorm(
+            1, priors$refnp_int_p[1], priors$refnp_int_p[2] / 10
+          ))
+        }
         if (data$refnp_fncol > 0) {
           init$refnp_beta <- array(rnorm(data$refnp_fncol, 0, 0.01))
         }
