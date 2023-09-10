@@ -282,7 +282,7 @@ transformed parameters{
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
     refnp_lh = combine_effects(
-      refnp_int, refnp_beta, refnp_fdesign, rep_beta_sd, refnp_rdesign,
+      refnp_int, refnp_beta, refnp_fdesign, refnp_beta_sd, refnp_rdesign,
       refnp_fintercept
     );
     }
