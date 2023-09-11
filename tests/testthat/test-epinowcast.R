@@ -27,8 +27,7 @@ test_that("epinowcast preprocesses data and model modules as expected", {
   class(pobs) <- c("epinowcast", class(pobs))
   expect_identical(nowcast[, c("init", "data") := NULL], pobs)
 })
-# TODO: Need to update this test if we update default arguments
-# TODO: If update defaults then copy this test and set current defaults explicitly.
+
 test_that("epinowcast runs using default arguments only", {
   skip_on_cran()
   skip_on_local()
@@ -314,4 +313,10 @@ test_that("epinowcast can fit multiple time series at once", {
   expect_lt(nowcast$max_rhat, 1.05)
 })
 # TODO: Add a test for a simple non-parametric reference date model
+test_that("epinowcast can fit a simple non-parametric reference date model", {
+
+})
 # TODO: Add a test for a simple combined parametric and non-parametric reference date model
+test_that("epinowcast can fit a simple combined parametric and non-parametric reference date model", {
+
+})

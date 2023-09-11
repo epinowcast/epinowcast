@@ -39,7 +39,6 @@
 #'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
 #'  data = enw_example("preprocessed")
 #' )
-# TODO: Consider if we wish to change the package default. If we do this it needs to be very clearly sign posted, and all the documentation needs to be reviewed.
 enw_reference <- function(
   parametric = ~1,
   distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
