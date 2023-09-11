@@ -31,3 +31,12 @@ expect_zero_length_or_not <- function(vars, vars_list) {
     vars_list[!names(vars_list) %in% vars], \(x)(expect_true(length(x) > 0))
   )
 }
+
+expect_convergence <- function(
+  nowcast, per_dts = 0.05, treedepth = 10, rhat = 1.05
+) {
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_lt(nowcast$per_divergent_transitions, per_dts)
+  expect_lt(nowcast$max_treedepth, treedepth)
+  expect_lt(nowcast$max_rhat, rhat)
+}
