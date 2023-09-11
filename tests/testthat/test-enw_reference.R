@@ -41,12 +41,4 @@ test_that("enw_reference supports parametric models", {
   )
 })
 
-# TODO: Remove this test once it starts to fail
-test_that("enw_reference does not support non-parametric models", {
-  expect_error(
-    enw_reference(non_parametric = ~ 1 + day_of_week, data = pobs)
-  )
-  expect_warning(enw_reference(distribution = "none", data = pobs))
-})
-
 # TODO: Add a tests for basic non-parametric models interface based on those currently implemented for the parametric models
