@@ -1,6 +1,16 @@
 # Use example data
 pobs <- enw_example("preprocessed")
 
+pobs_filt <- enw_preprocess_data(
+  pobs$obs[[1]][, c(".group") := NULL] |>
+  enw_filter_reference_dates(
+    latest_date = "2021-07-20"
+  ) |>
+  enw_filter_report_dates(
+    latest_date = "2021-07-20"
+  ),
+  max_delay = 2
+)
 test_that("enw_reference supports parametric models", {
   expect_snapshot({
     ref <- enw_reference(
@@ -15,8 +25,9 @@ test_that("enw_reference supports parametric models", {
     ~ 1 + (1 | day_of_week) + rw(week),
     distribution = "lognormal", data = pobs
   )
+  inits <- ref$init(ref$data, ref$priors)()
   expect_named(
-    ref$init(ref$data, ref$priors)(),
+    inits,
     c(
       "refp_mean_int", "refp_sd_int", "refp_mean_beta",
       "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
@@ -24,6 +35,13 @@ test_that("enw_reference supports parametric models", {
       "refp_mean", "refp_sd"
     )
   )
+  c(
+    "refp_mean_int", "ref_p_sd_int", "refp_mean_beta",
+    "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
+    "refp_mean", "refp_sd"
+  )
+  zero_length <- c("refnp_int", "refnp_beta", "refnp_beta_sd")
+  expect_zero_length_or_not(zero_length, inits)
 
   default_ref <- enw_reference(data = pobs)
   expect_equal(default_ref$data$model_refp, 2) # default is lognormal
@@ -39,9 +57,72 @@ test_that("enw_reference supports parametric models", {
     enw_reference(distribution = "none", non_parametric = ~ 1, data = pobs)
   )
   expect_equal(no_ref$data$model_refp, 0)
+  no_ref2 <- suppressWarnings(
+    enw_reference(parametric = ~ 0, non_parametric = ~ 1, data = pobs)
+  )
+  expect_equal(no_ref2$data$model_refp, 0)
   expect_equal(
     exp_ref$init(exp_ref$data, exp_ref$priors)()$refp_sd_int, numeric(0)
   )
 })
 
-# TODO: Add a tests for basic non-parametric models interface based on those currently implemented for the parametric models
+test_that("enw_reference supports non-parametric models", {
+  expect_snapshot({
+    ref <- enw_reference(
+      parametric = ~ 0,
+      distribution = "none",
+      non_parametric = ~ 1 + (1 | delay) + rw(week),
+      data = pobs_filt
+    )
+    ref$inits <- NULL
+    ref
+  })
+  ref <- enw_reference(
+    parametric = ~ 0,
+    distribution = "none",
+    non_parametric = ~ 1 + delay + rw(week),
+    data = pobs_filt
+  )
+  inits <- ref$init(ref$data, ref$priors)()
+  zero_length <- c(
+  "refp_mean_int", "refp_sd_int", "refp_mean_beta",
+  "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
+  "refp_mean", "refp_sd"
+  )
+  expect_zero_length_or_not(zero_length, inits)
+  # check that not having an intercept works as expected
+  ref_no_int <- enw_reference(
+      parametric = ~ 0,
+      distribution = "none",
+      non_parametric = ~ 0 + delay,
+      data = pobs_filt
+    )
+  expect_equal(colnames(ref_no_int$data$refnp_fdesign), c("delay"))
+  expect_equal(ref_no_int$data$refnp_fintercept, 0)
+  inits_no_int <- ref_no_int$init(ref_no_int$data, ref_no_int$priors)()
+  zero_length <- setdiff(names(inits_no_int), "refnp_beta")
+  expect_zero_length_or_not(zero_length, inits_no_int)
+})
+
+test_that("Parametric and non-parametric models can be jointly specified", {
+  expect_snapshot({
+    ref <- enw_reference(
+      parametric = ~ 1,
+      non_parametric = ~ 0 + (1 | delay_cat),
+      data = pobs_filt
+    )
+    ref$inits <- NULL
+    ref
+  })
+  ref <- enw_reference(
+    parametric = ~ 1,
+    non_parametric = ~ 0 + (1 | delay_cat),
+    data = pobs_filt
+  )
+  inits <- ref$init(ref$data, ref$priors)()
+  zero_length <- c(
+    "refp_mean_beta", "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
+    "refnp_int"
+  )
+  expect_zero_length_or_not(zero_length, inits)
+})

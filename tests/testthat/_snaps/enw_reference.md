@@ -1103,3 +1103,258 @@
       6: Zero truncated normal  0.0  1
       
 
+# enw_reference supports non-parametric models
+
+    Code
+      ref <- enw_reference(parametric = ~0, distribution = "none", non_parametric = ~
+        1 + (1 | delay) + rw(week), data = pobs_filt)
+      ref$inits <- NULL
+      ref
+    Output
+      $formula
+      $formula$parametric
+      [1] "~1"
+      
+      $formula$non_parametric
+      [1] "~1 + (1 | delay) + rw(week)"
+      
+      
+      $data
+      $data$refp_fdesign
+        (Intercept)
+      1           1
+      
+      $data$refp_fintercept
+      [1] 1
+      
+      $data$refp_fnrow
+      [1] 1
+      
+      $data$refp_findex
+      [1] 1 1 1 1 1 1 1 1
+      
+      $data$refp_fnindex
+      [1] 8
+      
+      $data$refp_fncol
+      [1] 0
+      
+      $data$refp_rdesign
+           (Intercept)
+      attr(,"assign")
+      [1] 0
+      
+      $data$refp_rncol
+      [1] 0
+      
+      $data$model_refp
+      [1] 0
+      
+      $data$refnp_fdesign
+         (Intercept) delay0 delay1 cweek1
+      1            1      1      0      0
+      2            1      0      1      0
+      3            1      1      0      0
+      4            1      0      1      0
+      5            1      1      0      0
+      6            1      0      1      0
+      7            1      1      0      0
+      8            1      0      1      0
+      9            1      1      0      0
+      10           1      0      1      0
+      11           1      1      0      0
+      12           1      0      1      0
+      13           1      1      0      0
+      14           1      0      1      0
+      15           1      1      0      1
+      16           1      0      1      1
+      attr(,"assign")
+      [1] 0 1 1 2
+      attr(,"contrasts")
+      attr(,"contrasts")$delay
+        0 1
+      0 1 0
+      1 0 1
+      
+      
+      $data$refnp_fintercept
+      [1] 1
+      
+      $data$refnp_fnrow
+      [1] 16
+      
+      $data$refnp_findex
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16
+      
+      $data$refnp_fnindex
+      [1] 16
+      
+      $data$refnp_fncol
+      [1] 3
+      
+      $data$refnp_rdesign
+        fixed delay rw__week
+      1     0     1        0
+      2     0     1        0
+      3     0     0        1
+      attr(,"assign")
+      [1] 1 2 3
+      
+      $data$refnp_rncol
+      [1] 2
+      
+      $data$model_refnp
+      [1] 1
+      
+      
+      $priors
+                  variable
+      1:     refp_mean_int
+      2:       refp_sd_int
+      3: refp_mean_beta_sd
+      4:   refp_sd_beta_sd
+      5:         refnp_int
+      6:     refnp_beta_sd
+                                                            description
+      1:         Log mean intercept for parametric reference date delay
+      2: Log standard deviation for the parametric reference date delay
+      3:    Standard deviation of scaled pooled parametric mean effects
+      4:      Standard deviation of scaled pooled parametric sd effects
+      5:              Intercept for non-parametric reference date delay
+      6:     Standard deviation of scaled pooled non-parametric effects
+                  distribution mean sd
+      1:                Normal  1.0  1
+      2: Zero truncated normal  0.5  1
+      3: Zero truncated normal  0.0  1
+      4: Zero truncated normal  0.0  1
+      5:                Normal  0.0  1
+      6: Zero truncated normal  0.0  1
+      
+
+# Parametric and non-parametric models can be jointly specified
+
+    Code
+      ref <- enw_reference(parametric = ~1, non_parametric = ~ 0 + (1 | delay_cat),
+      data = pobs_filt)
+      ref$inits <- NULL
+      ref
+    Output
+      $formula
+      $formula$parametric
+      [1] "~1"
+      
+      $formula$non_parametric
+      [1] "~0 + (1 | delay_cat)"
+      
+      
+      $data
+      $data$refp_fdesign
+        (Intercept)
+      1           1
+      
+      $data$refp_fintercept
+      [1] 1
+      
+      $data$refp_fnrow
+      [1] 1
+      
+      $data$refp_findex
+      [1] 1 1 1 1 1 1 1 1
+      
+      $data$refp_fnindex
+      [1] 8
+      
+      $data$refp_fncol
+      [1] 0
+      
+      $data$refp_rdesign
+           (Intercept)
+      attr(,"assign")
+      [1] 0
+      
+      $data$refp_rncol
+      [1] 0
+      
+      $data$model_refp
+      [1] 2
+      
+      $data$refnp_fdesign
+         delay_cat[0,1) delay_cat[1,2)
+      1               1              0
+      2               0              1
+      3               1              0
+      4               0              1
+      5               1              0
+      6               0              1
+      7               1              0
+      8               0              1
+      9               1              0
+      10              0              1
+      11              1              0
+      12              0              1
+      13              1              0
+      14              0              1
+      15              1              0
+      16              0              1
+      attr(,"assign")
+      [1] 1 1
+      attr(,"contrasts")
+      attr(,"contrasts")$delay_cat
+            [0,1) [1,2)
+      [0,1)     1     0
+      [1,2)     0     1
+      
+      
+      $data$refnp_fintercept
+      [1] 0
+      
+      $data$refnp_fnrow
+      [1] 16
+      
+      $data$refnp_findex
+       [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16
+      
+      $data$refnp_fnindex
+      [1] 16
+      
+      $data$refnp_fncol
+      [1] 2
+      
+      $data$refnp_rdesign
+        fixed delay_cat
+      1     0         1
+      2     0         1
+      attr(,"assign")
+      [1] 1 2
+      
+      $data$refnp_rncol
+      [1] 1
+      
+      $data$model_refnp
+      [1] 1
+      
+      
+      $priors
+                  variable
+      1:     refp_mean_int
+      2:       refp_sd_int
+      3: refp_mean_beta_sd
+      4:   refp_sd_beta_sd
+      5:         refnp_int
+      6:     refnp_beta_sd
+                                                            description
+      1:         Log mean intercept for parametric reference date delay
+      2: Log standard deviation for the parametric reference date delay
+      3:    Standard deviation of scaled pooled parametric mean effects
+      4:      Standard deviation of scaled pooled parametric sd effects
+      5:              Intercept for non-parametric reference date delay
+      6:     Standard deviation of scaled pooled non-parametric effects
+                  distribution mean sd
+      1:                Normal  1.0  1
+      2: Zero truncated normal  0.5  1
+      3: Zero truncated normal  0.0  1
+      4: Zero truncated normal  0.0  1
+      5:                Normal  0.0  1
+      6: Zero truncated normal  0.0  1
+      
+

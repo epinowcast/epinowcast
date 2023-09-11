@@ -24,3 +24,10 @@ expect_diff_abs_lt_per <- function(x, y, diff, tol = 0.1) {
 expect_diff_sum_abs_lt <- function(x, y, diff) {
   expect_lt(sum(abs(x - y)), diff)
 }
+
+expect_zero_length_or_not <- function(vars, vars_list) {
+  purrr::walk(vars_list[vars], \(x)(expect_length(x, 0)))
+  purrr::walk(
+    vars_list[!names(vars_list) %in% vars], \(x)(expect_true(length(x) > 0))
+  )
+}
