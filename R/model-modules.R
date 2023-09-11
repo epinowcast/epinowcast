@@ -45,7 +45,7 @@
 #' # Combined parametric and non-parametric model
 #' enw_reference(
 #'  parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
-#'  data = = enw_example("preprocessed")
+#'  data = enw_example("preprocessed")
 #' )
 enw_reference <- function(
   parametric = ~1,
