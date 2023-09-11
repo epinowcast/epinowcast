@@ -41,8 +41,8 @@
 #'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
 #'  data = enw_example("preprocessed")
 #' )
-#' 
-#' Combined parametric and non-parametric model
+#'
+#' # Combined parametric and non-parametric model
 #' enw_reference(
 #'  parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
 #'  data = = enw_example("preprocessed")
