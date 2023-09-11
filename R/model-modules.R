@@ -6,7 +6,7 @@
 #' [enw_preprocess_data()]. Note that this formula will be applied to all
 #' summary statistics of the chosen parametric distribution but each summary
 #' parameter will have separate effects. Use `~ 0` to not use a parametric
-#' model (note not recommended until the `non_parametric` model is implemented).
+#' model.
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
@@ -17,7 +17,9 @@
 #' defined by reference date and by delay. It draws on a linked `data.frame`
 #' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
 #' When an effect per delay is specified this approximates the cox proportional
-#' hazard model in discrete time with a single strata.
+#' hazard model in discrete time with a single strata. When used in conjunction
+#' with a parametric model it likely makes sense to disable the intercept in
+#' order to make the joint model identifiable (i.e. `~ 0 + (1 | delay)`).
 #'
 #' @return A list containing the supplied formulas, data passed into a list
 #' describing the models, a `data.frame` describing the priors used, and a
@@ -38,6 +40,12 @@
 #' enw_reference(
 #'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
 #'  data = enw_example("preprocessed")
+#' )
+#' 
+#' Combined parametric and non-parametric model
+#' enw_reference(
+#'  parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
+#'  data = = enw_example("preprocessed")
 #' )
 enw_reference <- function(
   parametric = ~1,
