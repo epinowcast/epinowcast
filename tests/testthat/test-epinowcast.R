@@ -364,7 +364,7 @@ test_that("epinowcast can fit a simple combined parametric and non-parametric re
     tolerance = 0.1
   )
   expect_equal(
-    summary(nowcast, type = "fit", variables = c("refp_mean", "refp_sd")),
+    summary(nowcast, type = "fit", variables = c("refp_mean", "refp_sd"))$mean,
     c(1.5, 3.29),
     tolerance = 0.1
   )
