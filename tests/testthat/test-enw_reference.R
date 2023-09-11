@@ -11,6 +11,28 @@ pobs_filt <- enw_preprocess_data(
   ),
   max_delay = 2
 )
+
+test_that("enw_reference requires at least one of a parametric or a non-parametric model to be specified", {
+  expect_error(
+    enw_reference(
+      parametric = ~ 0, distribution = "none", data = pobs
+    ),
+    "A non-parametric model must be specified if no parametric model"
+  )
+  expect_error(
+    enw_reference(
+      parametric = ~ 0, data = pobs
+    ),
+    "A non-parametric model must be specified if no parametric model"
+  )
+  expect_error(
+    enw_reference(
+      parametric = ~ 0, data = pobs
+    ),
+    "A non-parametric model must be specified if no parametric model"
+  )
+})
+
 test_that("enw_reference supports parametric models", {
   expect_snapshot({
     ref <- enw_reference(
