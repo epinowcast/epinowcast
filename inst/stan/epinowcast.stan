@@ -79,7 +79,8 @@ data {
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
 
-  // Reference date model
+  // Reference time model
+  // Parametric reference model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -90,7 +91,17 @@ data {
   array[2, 1] real refp_mean_int_p;
   array[2, 1] real refp_sd_int_p;
   array[2, 1] real refp_mean_beta_sd_p;
-  array[2, 1] real refp_sd_beta_sd_p; 
+  array[2, 1] real refp_sd_beta_sd_p;
+  // Non-parametric reference model
+  int model_refnp;
+  int refnp_fnindex;
+  int refnp_fintercept; // Should an intercept be included
+  int refnp_fncol;
+  int refnp_rncol;
+  matrix[refnp_fnindex, refnp_fncol + refnp_fintercept] refnp_fdesign;
+  matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
+  array[2, 1] real refnp_int_p;
+  array[2, 1] real refnp_beta_sd_p;
 
   // Reporting time model
   int model_rep;
@@ -162,12 +173,17 @@ parameters {
   vector<lower=0>[expl_rncol] expl_beta_sd;
     
   // Reference model
+  // Parametric reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
+  // Non-parametric reference model
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
+  vector[model_refnp ? refnp_fncol : 0] refnp_beta; 
+  vector<lower=0>[refnp_rncol] refnp_beta_sd;
 
   // Report model
   vector[rep_fncol] rep_beta;
@@ -190,9 +206,12 @@ transformed parameters{
   array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
   
   // Reference model
+  // Parametric reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
-  matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  matrix[dmax, refp_fnrow] refp_lh; // sparse report logit hazards
+  // Non-parametric reference model
+  vector[refnp_fnindex] refnp_lh; 
   
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
@@ -231,7 +250,8 @@ transformed parameters{
   }
 
   // Reference model
-  profile("transformed_delay_reference_time_total") {
+  // Parametric reference model
+  profile("transformed_delay_parametric_reference_time_total") {
   if (model_refp) {
     // calculate sparse reference date effects
     profile("transformed_delay_reference_time_effects") {
@@ -247,15 +267,25 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     } 
     }
-    // calculate reference date logit hazards (unless no reporting effects)
+    // calculate parametric reference date logit hazards
+    // (unless no reporting effects)
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      ref_lh[, i] = discretised_logit_hazard(
+      refp_lh[, i] = discretised_logit_hazard(
         refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
       );
     }
     }
   }  
+  }
+  if (model_refnp) {
+    // calculate non-parametric reference date logit hazards
+    profile("transformed_delay_non_parametric_reference_time_hazards") {
+    refnp_lh = combine_effects(
+      refnp_int, refnp_beta, refnp_fdesign, refnp_beta_sd, refnp_rdesign,
+      refnp_fintercept
+    );
+    }
   }
 
   // Report model
@@ -309,6 +339,7 @@ model {
   );
   
   // Reference model
+  // Parametric reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
@@ -325,6 +356,16 @@ model {
       );
     }
   }
+  // Non-parametric reference model
+  if (model_refnp) {
+    if (refnp_fintercept) {
+      refnp_int[refnp_fintercept] ~ normal(refnp_int_p[1], refnp_int_p[2]);
+    }
+    effect_priors_lp(
+      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_fncol, refnp_rncol
+    );
+  }
+
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
@@ -349,14 +390,15 @@ model {
     if (ll_aggregation) {
       target += reduce_sum(
         delay_group_lupmf, groups, 1, flat_obs, sl, csl, exp_lobs, t, sg, ts,
-        st, rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
-        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst
+        st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
+        refnp_lh, model_refnp
       );
     } else {
       target += reduce_sum(
         delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol,
-        ref_as_p, phi, model_obs
+        rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs, refnp_lh, model_refnp, sdmax, csdmax
       );
     }
     }
@@ -378,8 +420,9 @@ generated quantities {
     // Posterior predictions for observations
     profile("generated_obs") {
     log_exp_obs = expected_obs_from_snaps(
-      1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
-      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
+      1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
+      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
+      model_refnp, sdmax, csdmax
     );
     
     if (model_miss) {

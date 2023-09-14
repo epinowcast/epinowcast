@@ -1,17 +1,20 @@
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sl, array[] int csl, array[] vector imp_obs,
-                     array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix ref_lh, array[] int dpmfs, int ref_p,
-                     int rep_h, int ref_as_p, array[] real phi, int model_obs) {
+                     array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p,
+                     int rep_h, int ref_as_p, array[] real phi, int model_obs,
+                     vector refnp_lh, int ref_np, array[] int sdmax, array[] int csdmax) {
   real tar = 0;
   // Where am I?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
   array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
+
+  // What is going to be used for storage
   vector[n[3]] log_exp_obs;
 
   // combine expected final obs and time effects to get expected obs
   log_exp_obs = expected_obs_from_snaps(
-    start, end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p,
-    sl, csl, sg, st, n[3]
+    start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p,
+    sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax
   );
 
   // observation error model (across all reference dates and groups)
@@ -24,19 +27,21 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
 real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int sl, array[] int csl, array[] vector imp_obs,
                       int t, array[] int sg, array[,] int ts, array[] int st,
-                      array[,] int rdlurd, vector srdlh, matrix ref_lh,
+                      array[,] int rdlurd, vector srdlh, matrix refp_lh,
                       array[] int dpmfs, int ref_p, int rep_h, int ref_as_p,
                       array[] real phi, int model_obs, int model_miss,
                       int miss_obs, array[] int missing_reference,
                       array[,] int obs_by_report, vector miss_ref_lprop,
                       array[] int sdmax, array[] int csdmax,
-                      array[] int miss_st, array[] int miss_cst) {
+                      array[] int miss_st, array[] int miss_cst,
+                      vector refnp_lh, int ref_np) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
   int i_end = ts[t, end];
   array[3] int n = filt_obs_indexes(i_start, i_end, csl, sl);
   array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
+
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
   vector[model_miss ? miss_obs : 0]  log_exp_obs_miss;
@@ -51,7 +56,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
 
     // Calculate all expected observations
     log_exp_all = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3]
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3], refnp_lh, ref_np, sdmax, csdmax
     );
 
     // Allocate to just those actually observed
@@ -73,7 +78,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     }
   }else{
     log_exp_obs = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3]
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax
     );
   }
   // Observation error model (across all reference dates and groups)
