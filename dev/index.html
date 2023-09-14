@@ -238,7 +238,7 @@
 <span>  <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Here, <code>day</code> refers to the number of days from the start of the data.</p>
-<p>As the underlying process model is an exponential growth rate model (<span class="math inline"><em>C</em><sub><em>t</em></sub> = <em>C</em><sub><em>t</em> − 1</sub>exp<sup><em>r</em><sub><em>t</em></sub></sup></span>), specifying a random effect (i.e. <code>(1 | day)</code>) on the growth rate is equivalent to a geometric random walk on expected counts by reference date.</p>
+<p>As the underlying process model is an exponential growth rate model (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D%20%22C_t%20=%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D%22" alt="C_t = C_{t-1} \exp^{r_t}">), specifying a random effect (i.e. <code>(1 | day)</code>) on the growth rate is equivalent to a geometric random walk on expected counts by reference date.</p>
 </div>
 <div class="section level4">
 <h4 id="reporting-model-by-reference-date">Reporting model by reference date<a class="anchor" aria-label="anchor" href="#reporting-model-by-reference-date"></a>
@@ -247,7 +247,7 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 <p>Note that the default distribution is log-normal, hence the distribution argument could be omitted here. Alternatively we could model the reporting delay non-parametrically using a hazard model (see <a href="https://package.epinowcast.org/articles/model">our model description for details</a>). The following is equivalent to a cox proportional hazards model with a single baseline hazard function.</p>
-<p><code>{r eval = FALSE np_reference_module &lt;- enw_reference(   parametric = ~0, non_parametric = ~ 0 + delay, data = pobs )</code></p>
+<p><code>{r, eval = FALSE np_reference_module &lt;- enw_reference( parametric = ~0, non_parametric = ~ 0 + delay, data = pobs )</code></p>
 <p>Advanced users may wish to combine parametric and non-parametric reference date reporting models. For example, we could model the reporting delay as log-normal for delays up to 10 days and then use a hazard model for longer delays.</p>
 </div>
 <div class="section level4">
@@ -297,11 +297,11 @@
 <span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date timestep</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22      day</span></span>
 <span><span class="co">#&gt;                  fit        data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[110]&gt; &lt;list[7]&gt;     500     1.03</span></span>
+<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[110]&gt; &lt;list[7]&gt;    1000     1.03</span></span>
 <span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
 <span><span class="co">#&gt; 1:                     0                         0             8</span></span>
 <span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                  24                0.048    113.2</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:                 104                0.104     58.9</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summarising-and-plotting-the-nowcast">Summarising and plotting the nowcast<a class="anchor" aria-label="anchor" href="#summarising-and-plotting-the-nowcast"></a>
@@ -324,26 +324,26 @@
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
 <span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
 <span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.038     69 0.1913877 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.076     47 0.2799656 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.186     65 0.4469940 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.288     50 0.5528719 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.288     36 0.5564848 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.522     94 0.7284073 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.874     92 0.9591475 1.4826 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.218    100 1.1752610 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.282     87 1.1837561 1.4826 86</span></span>
-<span><span class="co">#&gt;     q95      rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt;  1:  72        NA       NA       NA</span></span>
-<span><span class="co">#&gt;  2:  69 1.0007318 486.6337 486.6337</span></span>
-<span><span class="co">#&gt;  3:  48 1.0005898 446.4292 437.5905</span></span>
-<span><span class="co">#&gt;  4:  66 1.0002389 534.6042 524.8464</span></span>
-<span><span class="co">#&gt;  5:  51 0.9985249 523.7248 502.5572</span></span>
-<span><span class="co">#&gt;  6:  37 1.0039005 393.5908 435.1257</span></span>
-<span><span class="co">#&gt;  7:  96 0.9983646 485.7884 464.8788</span></span>
-<span><span class="co">#&gt;  8:  94 0.9990439 455.2182 429.5365</span></span>
-<span><span class="co">#&gt;  9: 102 0.9995374 419.9179 553.9639</span></span>
-<span><span class="co">#&gt; 10:  90 1.0004710 584.5147 520.7526</span></span></code></pre></div>
+<span><span class="co">#&gt;  2:                 1    38             0  69.043     69 0.2078321 0.0000 69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.091     47 0.2980064 0.0000 47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.221     65 0.4778989 0.0000 65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.294     50 0.5383808 0.0000 50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.244     36 0.4885721 0.0000 36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.486     94 0.7268647 0.0000 94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.836     92 0.9316501 1.4826 91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.227    100 1.1536038 1.4826 99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.390     87 1.2702415 1.4826 86</span></span>
+<span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
+<span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
+<span><span class="co">#&gt;  2:  69 0.9982964  953.1841  947.8320</span></span>
+<span><span class="co">#&gt;  3:  48 0.9988569 1060.8947 1011.7444</span></span>
+<span><span class="co">#&gt;  4:  66 1.0027623 1031.9790 1010.2077</span></span>
+<span><span class="co">#&gt;  5:  51 1.0007326  891.7136  863.9923</span></span>
+<span><span class="co">#&gt;  6:  37 0.9999130  946.7119  981.2053</span></span>
+<span><span class="co">#&gt;  7:  96 1.0009037  965.7490  986.3829</span></span>
+<span><span class="co">#&gt;  8:  94 1.0024851  963.5720  964.9354</span></span>
+<span><span class="co">#&gt;  9: 102 0.9989603 1185.8649 1054.4110</span></span>
+<span><span class="co">#&gt; 10:  90 1.0023464  782.8883  781.3087</span></span></code></pre></div>
 <p>Similarly, the summarised nowcast can be plotted against the latest observed data using</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
@@ -378,23 +378,23 @@
 <span><span class="co">#&gt;     4:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
 <span><span class="co">#&gt;     5:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
 <span><span class="co">#&gt;    ---                                                                         </span></span>
-<span><span class="co">#&gt; 16996:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 16997:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 16998:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 16999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 17000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
+<span><span class="co">#&gt; 33996:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
+<span><span class="co">#&gt; 33997:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
+<span><span class="co">#&gt; 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
+<span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
+<span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    436</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    435</span></span>
-<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    436</span></span>
+<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    433</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    436</span></span>
+<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    433</span></span>
 <span><span class="co">#&gt;     4:                 1    33             0      1          4     4    433</span></span>
-<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    435</span></span>
+<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    434</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 16996:                 1     0             1      1        496   496   2186</span></span>
-<span><span class="co">#&gt; 16997:                 1     0             1      1        497   497   1884</span></span>
-<span><span class="co">#&gt; 16998:                 1     0             1      1        498   498   2215</span></span>
-<span><span class="co">#&gt; 16999:                 1     0             1      1        499   499   2136</span></span>
-<span><span class="co">#&gt; 17000:                 1     0             1      1        500   500   2206</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2085</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   1842</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2135</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2082</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2133</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
