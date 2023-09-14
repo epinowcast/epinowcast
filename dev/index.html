@@ -247,14 +247,17 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 <p>Note that the default distribution is log-normal, hence the distribution argument could be omitted here. Alternatively we could model the reporting delay non-parametrically using a hazard model (see <a href="https://package.epinowcast.org/articles/model">our model description for details</a>). The following is equivalent to a cox proportional hazards model with a single baseline hazard function.</p>
-<p><code>{r, eval = FALSE np_reference_module &lt;- enw_reference( parametric = ~0, non_parametric = ~ 0 + delay, data = pobs )</code></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">np_reference_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
+<span>  parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, non_parametric <span class="op">=</span> <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">delay</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
+<span><span class="op">)</span></span></code></pre></div>
 <p>Advanced users may wish to combine parametric and non-parametric reference date reporting models. For example, we could model the reporting delay as log-normal for delays up to 10 days and then use a hazard model for longer delays.</p>
 </div>
 <div class="section level4">
 <h4 id="reporting-effects-by-report-date">Reporting effects by report date<a class="anchor" aria-label="anchor" href="#reporting-effects-by-report-date"></a>
 </h4>
 <p>Even where there is evidence that reporting processes can be approximated by a single distribution, there may be additional reporting effects that are not captured by the reference model. For example, reporting may be lower on weekends or holidays. We can specify a model for these effects using a hazard formulation (which captures the conditional relationship between different reporting delays, see <a href="https://package.epinowcast.org/articles/model">our model description for details</a>) using the <code><a href="reference/enw_report.html">enw_report()</a></code> function. Here we specify a model with a random effect for the day of the week to capture weekly seasonality in the reporting delay.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -262,14 +265,14 @@
 <h3 id="precompiling-the-model">Precompiling the model<a class="anchor" aria-label="anchor" href="#precompiling-the-model"></a>
 </h3>
 <p>As <code>epinowcast</code> uses <code>cmdstan</code> to fit its models, it is necessary to first compile the model. This can be done using the <code><a href="reference/enw_model.html">enw_model()</a></code> function. Note that this step can be left to <code>epinowcast</code>, but here we want to use multiple cores per chain to speed up model fitting and therefore compile the model with this feature turned on.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_model.html">enw_model</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="bringing-it-all-together-fitting-the-model">Bringing it all together: Fitting the model<a class="anchor" aria-label="anchor" href="#bringing-it-all-together-fitting-the-model"></a>
 </h3>
 <p>We can now fit the model using the <a href="https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html" class="external-link">“No-U-Turn Sampler Markov chain Monte Carlo” method</a>. This is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core fitting method used by <code>cmdstan</code>. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specify fitting options using <code><a href="reference/enw_fit_opts.html">enw_fit_opts()</a></code> (note that the settings shown here are tuned for speed and may not be appropriate for many real world use cases). We also pass our preprocessed data (<code>pobs</code>), our pre-compiled model (<code>model</code>), and our model modules (<code>expectation_module</code>, <code>reference_module</code>, and <code>report_module</code>) to <code>epinowcast</code>, where they are combined and used to fit the model.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/epinowcast.html">epinowcast</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
@@ -288,7 +291,7 @@
 <h3 id="the-epinowcast-object">The <code>epinowcast</code> object<a class="anchor" aria-label="anchor" href="#the-epinowcast-object"></a>
 </h3>
 <p>The <code><a href="reference/epinowcast.html">epinowcast()</a></code> function returns an <code>epinowcast</code> object which includes diagnostic information, the data used for fitting, and the underlying <a href="https://mc-stan.org/cmdstanr/reference/CmdStanModel.html" class="external-link"><code>CmdStanModel</code> object</a>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span></span>
 <span><span class="co">#&gt;                    obs          new_confirm              latest</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x10]&gt;</span></span>
@@ -297,17 +300,17 @@
 <span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date timestep</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22      day</span></span>
 <span><span class="co">#&gt;                  fit        data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[110]&gt; &lt;list[7]&gt;    1000     1.03</span></span>
+<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[110]&gt; &lt;list[7]&gt;    1000     1.01</span></span>
 <span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
 <span><span class="co">#&gt; 1:                     0                         0             8</span></span>
 <span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                 104                0.104     58.9</span></span></code></pre></div>
+<span><span class="co">#&gt; 1:                  56                0.056     58.9</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="summarising-and-plotting-the-nowcast">Summarising and plotting the nowcast<a class="anchor" aria-label="anchor" href="#summarising-and-plotting-the-nowcast"></a>
 </h3>
 <p>The nowcast (the combination of currently observed and predicted unobserved data) can then be summarised using</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
@@ -324,28 +327,28 @@
 <span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
 <span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
 <span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.043     69 0.2078321 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.091     47 0.2980064 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.221     65 0.4778989 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.294     50 0.5383808 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.244     36 0.4885721 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.486     94 0.7268647 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.836     92 0.9316501 1.4826 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.227    100 1.1536038 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.390     87 1.2702415 1.4826 86</span></span>
-<span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
-<span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  69 0.9982964  953.1841  947.8320</span></span>
-<span><span class="co">#&gt;  3:  48 0.9988569 1060.8947 1011.7444</span></span>
-<span><span class="co">#&gt;  4:  66 1.0027623 1031.9790 1010.2077</span></span>
-<span><span class="co">#&gt;  5:  51 1.0007326  891.7136  863.9923</span></span>
-<span><span class="co">#&gt;  6:  37 0.9999130  946.7119  981.2053</span></span>
-<span><span class="co">#&gt;  7:  96 1.0009037  965.7490  986.3829</span></span>
-<span><span class="co">#&gt;  8:  94 1.0024851  963.5720  964.9354</span></span>
-<span><span class="co">#&gt;  9: 102 0.9989603 1185.8649 1054.4110</span></span>
-<span><span class="co">#&gt; 10:  90 1.0023464  782.8883  781.3087</span></span></code></pre></div>
+<span><span class="co">#&gt;  2:                 1    38             0  69.056     69 0.2385811 0.0000 69</span></span>
+<span><span class="co">#&gt;  3:                 1    37             0  47.074     47 0.2731274 0.0000 47</span></span>
+<span><span class="co">#&gt;  4:                 1    36             0  65.208     65 0.4614639 0.0000 65</span></span>
+<span><span class="co">#&gt;  5:                 1    35             0  50.280     50 0.5439631 0.0000 50</span></span>
+<span><span class="co">#&gt;  6:                 1    34             0  36.247     36 0.5002412 0.0000 36</span></span>
+<span><span class="co">#&gt;  7:                 1    33             0  94.524     94 0.7429509 0.0000 94</span></span>
+<span><span class="co">#&gt;  8:                 1    32             0  91.776     92 0.9058944 1.4826 91</span></span>
+<span><span class="co">#&gt;  9:                 1    31             0 100.188    100 1.1392778 1.4826 99</span></span>
+<span><span class="co">#&gt; 10:                 1    30             0  87.357     87 1.2202623 1.4826 86</span></span>
+<span><span class="co">#&gt;     q95      rhat  ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt;  1:  72        NA        NA       NA</span></span>
+<span><span class="co">#&gt;  2:  70 1.0010387  915.0611 918.7423</span></span>
+<span><span class="co">#&gt;  3:  48 0.9994211  960.8533 950.5282</span></span>
+<span><span class="co">#&gt;  4:  66 1.0018759  852.0556 898.9818</span></span>
+<span><span class="co">#&gt;  5:  51 0.9997491 1010.2418 962.3060</span></span>
+<span><span class="co">#&gt;  6:  37 1.0004014  975.3127 931.8668</span></span>
+<span><span class="co">#&gt;  7:  96 0.9991346  895.3525 931.4309</span></span>
+<span><span class="co">#&gt;  8:  93 0.9992502  975.4180 931.7529</span></span>
+<span><span class="co">#&gt;  9: 102 0.9989709 1045.2368 999.2705</span></span>
+<span><span class="co">#&gt; 10:  90 0.9987151 1074.8555 838.6333</span></span></code></pre></div>
 <p>Similarly, the summarised nowcast can be plotted against the latest observed data using</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-nowcast-1.png" width="100%"></p>
 </div>
@@ -353,7 +356,7 @@
 <h3 id="plotting-posterior-predictions">Plotting posterior predictions<a class="anchor" aria-label="anchor" href="#plotting-posterior-predictions"></a>
 </h3>
 <p>Plotting posterior predictions can be a useful way of assessing performance and checking that the model is capturing the underlying data generation process adequately. We can do this directly on the output of <code><a href="reference/epinowcast.html">epinowcast()</a></code> using</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-pp-1.png" width="100%"></p>
@@ -362,7 +365,7 @@
 <h3 id="using-package-functions-rather-than-s3-methods">Using package functions rather than S3 methods<a class="anchor" aria-label="anchor" href="#using-package-functions-rather-than-s3-methods"></a>
 </h3>
 <p>Rather than using S3 methods supplied for <code><a href="reference/epinowcast.html">epinowcast()</a></code> directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># extract samples</span></span>
 <span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"nowcast_samples"</span><span class="op">)</span></span>
 <span></span>
@@ -385,16 +388,16 @@
 <span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
 <span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
 <span><span class="co">#&gt;     1:                 1    33             0      1          1     1    433</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    436</span></span>
+<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    433</span></span>
 <span><span class="co">#&gt;     3:                 1    33             0      1          3     3    433</span></span>
-<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    433</span></span>
+<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    436</span></span>
 <span><span class="co">#&gt;     5:                 1    33             0      1          5     5    434</span></span>
 <span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   2085</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   1842</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2135</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2082</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2133</span></span>
+<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   1777</span></span>
+<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   1974</span></span>
+<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   1911</span></span>
+<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2164</span></span>
+<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2024</span></span>
 <span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
 <span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
@@ -413,7 +416,7 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use <code>epinowcast</code> in your work, please consider citing it using the following,</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"epinowcast"</span><span class="op">)</span></span></code></pre></div>
 <p>To cite package ‘epinowcast’ in publications use:</p>
 <p>Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021). “epinowcast: Flexible hierarchical nowcasting.” <em>Zenodo</em>. <a href="doi:10.5281/zenodo.5637165" class="uri">doi:10.5281/zenodo.5637165</a> <a href="https://doi.org/10.5281/zenodo.5637165" class="external-link uri">https://doi.org/10.5281/zenodo.5637165</a>, <a href="https://github.com/epinowcast/epinowcast" class="external-link uri">https://github.com/epinowcast/epinowcast</a>.</p>
