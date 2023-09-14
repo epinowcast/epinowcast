@@ -178,7 +178,7 @@ reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 
 Note that the default distribution is log-normal, hence the distribution argument could be omitted here. Alternatively we could model the reporting delay non-parametrically using a hazard model (see [our model description for details](https://package.epinowcast.org/articles/model)). The following is equivalent to a cox proportional hazards model with a single baseline hazard function.
 
-```{r, eval = FALSE
+```{r, eval = FALSE}
 np_reference_module <- enw_reference(
   parametric = ~0, non_parametric = ~ 0 + delay, data = pobs
 )

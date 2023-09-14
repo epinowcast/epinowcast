@@ -312,8 +312,11 @@ details](https://package.epinowcast.org/articles/model)). The following
 is equivalent to a cox proportional hazards model with a single baseline
 hazard function.
 
-`{r, eval = FALSE np_reference_module <- enw_reference( parametric = ~0,
-non_parametric = ~ 0 + delay, data = pobs )`
+``` r
+np_reference_module <- enw_reference(
+  parametric = ~0, non_parametric = ~ 0 + delay, data = pobs
+)
+```
 
 Advanced users may wish to combine parametric and non-parametric
 reference date reporting models. For example, we could model the
@@ -399,11 +402,11 @@ nowcast
 #>             metadelay time snapshots by groups max_delay   max_date timestep
 #> 1: <data.table[40x4]>   41        41         1        40 2021-08-22      day
 #>                  fit        data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[110]> <list[7]>    1000     1.03
+#> 1: <CmdStanMCMC[42]> <list[110]> <list[7]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                 104                0.104     58.9
+#> 1:                  56                0.056     58.9
 ```
 
 ### Summarising and plotting the nowcast
@@ -428,26 +431,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.043     69 0.2078321 0.0000 69
-#>  3:                 1    37             0  47.091     47 0.2980064 0.0000 47
-#>  4:                 1    36             0  65.221     65 0.4778989 0.0000 65
-#>  5:                 1    35             0  50.294     50 0.5383808 0.0000 50
-#>  6:                 1    34             0  36.244     36 0.4885721 0.0000 36
-#>  7:                 1    33             0  94.486     94 0.7268647 0.0000 94
-#>  8:                 1    32             0  91.836     92 0.9316501 1.4826 91
-#>  9:                 1    31             0 100.227    100 1.1536038 1.4826 99
-#> 10:                 1    30             0  87.390     87 1.2702415 1.4826 86
-#>     q95      rhat  ess_bulk  ess_tail
-#>  1:  72        NA        NA        NA
-#>  2:  69 0.9982964  953.1841  947.8320
-#>  3:  48 0.9988569 1060.8947 1011.7444
-#>  4:  66 1.0027623 1031.9790 1010.2077
-#>  5:  51 1.0007326  891.7136  863.9923
-#>  6:  37 0.9999130  946.7119  981.2053
-#>  7:  96 1.0009037  965.7490  986.3829
-#>  8:  94 1.0024851  963.5720  964.9354
-#>  9: 102 0.9989603 1185.8649 1054.4110
-#> 10:  90 1.0023464  782.8883  781.3087
+#>  2:                 1    38             0  69.056     69 0.2385811 0.0000 69
+#>  3:                 1    37             0  47.074     47 0.2731274 0.0000 47
+#>  4:                 1    36             0  65.208     65 0.4614639 0.0000 65
+#>  5:                 1    35             0  50.280     50 0.5439631 0.0000 50
+#>  6:                 1    34             0  36.247     36 0.5002412 0.0000 36
+#>  7:                 1    33             0  94.524     94 0.7429509 0.0000 94
+#>  8:                 1    32             0  91.776     92 0.9058944 1.4826 91
+#>  9:                 1    31             0 100.188    100 1.1392778 1.4826 99
+#> 10:                 1    30             0  87.357     87 1.2202623 1.4826 86
+#>     q95      rhat  ess_bulk ess_tail
+#>  1:  72        NA        NA       NA
+#>  2:  70 1.0010387  915.0611 918.7423
+#>  3:  48 0.9994211  960.8533 950.5282
+#>  4:  66 1.0018759  852.0556 898.9818
+#>  5:  51 0.9997491 1010.2418 962.3060
+#>  6:  37 1.0004014  975.3127 931.8668
+#>  7:  96 0.9991346  895.3525 931.4309
+#>  8:  93 0.9992502  975.4180 931.7529
+#>  9: 102 0.9989709 1045.2368 999.2705
+#> 10:  90 0.9987151 1074.8555 838.6333
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -503,16 +506,16 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>     1:                 1    33             0      1          1     1    433
-#>     2:                 1    33             0      1          2     2    436
+#>     2:                 1    33             0      1          2     2    433
 #>     3:                 1    33             0      1          3     3    433
-#>     4:                 1    33             0      1          4     4    433
+#>     4:                 1    33             0      1          4     4    436
 #>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2085
-#> 33997:                 1     0             1      2        497   997   1842
-#> 33998:                 1     0             1      2        498   998   2135
-#> 33999:                 1     0             1      2        499   999   2082
-#> 34000:                 1     0             1      2        500  1000   2133
+#> 33996:                 1     0             1      2        496   996   1777
+#> 33997:                 1     0             1      2        497   997   1974
+#> 33998:                 1     0             1      2        498   998   1911
+#> 33999:                 1     0             1      2        499   999   2164
+#> 34000:                 1     0             1      2        500  1000   2024
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
