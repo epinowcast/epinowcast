@@ -134,50 +134,62 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:   refp_sd_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  1.0  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.5  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal  0.0  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal  0.0  1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"fit"</span>,</span></span>
 <span class="r-in"><span> variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median         sd        mad        q5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.9094597 2.890800 0.59278054 0.61464148 1.9945040</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.7121802 3.703165 0.28684669 0.28877341 3.2485520</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3457251 0.345330 0.03066519 0.03144891 0.2978062</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          q20       q80       q95     rhat  ess_bulk ess_tail</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.3887180 3.4097680 3.9038630 1.007756  670.7265 813.1303</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.4720380 3.9641120 4.1829380 1.006129  776.8050 789.4460</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3206198 0.3716398 0.3973088 1.000220 1056.1530 709.8793</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median         sd        mad        q5      q20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.9449308 2.922580 0.62101478 0.60627220 1.9584520 2.400048</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.7248197 3.729080 0.29132231 0.30346598 3.2397740 3.472990</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3462865 0.345609 0.03170605 0.03112867 0.2945302 0.319693</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          q80       q95     rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 3.4206580 4.0363185 1.002384  651.0415 585.5119</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.9802240 4.2076655 1.000912  704.3312 691.5592</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3717352 0.3959079 1.000663 1207.3206 701.7832</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">default_priors</span>, <span class="va">fit_priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_beta_sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     refp_mean_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:       refp_sd_int</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:          sqrt_phi</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:         refnp_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     refnp_beta_sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     refp_mean_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:       refp_sd_int</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:          sqrt_phi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                    description</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:   Standard deviation of scaled pooled parametric sd effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                                                        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                                                        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:           Intercept for non-parametric reference date delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:  Standard deviation of scaled pooled non-parametric effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                                        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                                        &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean         sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.00000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                  &lt;NA&gt; 2.9094597 0.59278054</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:                  &lt;NA&gt; 3.7121802 0.28684669</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 0.3457251 0.03066519</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 2.9449308 0.62101478</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                  &lt;NA&gt; 3.7248197 0.29132231</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                  &lt;NA&gt; 0.3462865 0.03170605</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
