@@ -1,12 +1,21 @@
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
-                     array[] int sl, array[] int csl, array[] vector imp_obs,
-                     array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p,
-                     int rep_h, int ref_as_p, array[] real phi, int model_obs,
-                     vector refnp_lh, int ref_np, array[] int sdmax, array[] int csdmax) {
+                     array[] int sl, array[] int obs_lookup,
+                     array[] int csl, array[] int nsl, array[] int cnsl,
+                     array[] vector imp_obs, array[] int sg,
+                     array[] int st, array[,] int rdlurd,
+                     vector srdlh, matrix refp_lh, array[] int dpmfs,
+                     int ref_p, int rep_h, int ref_as_p, array[] real phi,
+                     int model_obs, vector refnp_lh, int ref_np,
+                     array[] int sdmax, array[] int csdmax) {
   real tar = 0;
-  // Where am I?
+  // Where am I in the observed data?
+  array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
+  // Where am I in the observed data filling in gaps?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
-  array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
+
+  // Filter observed data and observed data lookup
+  array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
+  array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
 
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
@@ -19,7 +28,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
 
   // observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
+  tar = obs_lpmf(filt_obs | log_exp_obs[filt_obs_lookup], phi, model_obs);
   }
   return(tar);
 }
