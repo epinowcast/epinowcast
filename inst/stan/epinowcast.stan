@@ -29,6 +29,8 @@ data {
   array[t, g] int ts; // snapshot index by time and group
   array[s] int sl; // number of reported obs per snapshot (snapshot length)
   array[s] int csl; // cumulative version of sl
+  array[s] int nsl; // number of reported obs per snapshot (non-consectuive)
+  array[s] int cnsl; // cumulative version of nsl
   int dmax; // maximum possible reporting delay
   array[s] int sdmax; // maximum delay by snapshot (snapshot dmax)
   array[s] int csdmax; // cumulative version of sdmax
@@ -36,6 +38,7 @@ data {
   // Observations
   array[s, dmax] int obs; // obs by reference date (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
+  array[n] int flat_obs_lookup; // How do obs relate to consecutive obs
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
@@ -389,16 +392,18 @@ model {
     profile("model_likelihood") {
     if (ll_aggregation) {
       target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, exp_lobs, t, sg, ts,
-        st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        delay_group_lupmf, groups, 1, flat_obs, sl, csl, nsl, cnsl,
+        flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
+        refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp
       );
     } else {
       target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
-        rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
-        ref_as_p, phi, model_obs, refnp_lh, model_refnp, sdmax, csdmax
+        delay_snap_lupmf, st, 1, flat_obs, sl, csl, nsl, cnsl,
+        flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
+        refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
+        model_refnp, sdmax, csdmax
       );
     }
     }
@@ -446,12 +451,14 @@ generated quantities {
     profile("generated_loglik") {
     if (ologlik) {
       for (i in 1:s) {
-        array[3] int l = filt_obs_indexes(i, i, csl, sl);
+        array[3] int l = filt_obs_indexes(i, i, cnsl, nsl);
+        array[3] int m = filt_obs_indexes(i, i, csl, sl);
         array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         log_lik[i] = 0;
-        for (j in 1:sl[i]) {
+        for (j in 1:nsl[i]) {
           log_lik[i] += obs_lpmf(
-            flat_obs[l[1] + j - 1]  | log_exp_obs[f[1] + j - 1], phi, model_obs
+            flat_obs[l[1] + j - 1]  |
+              log_exp_obs[f[1] + flat_obs_lookup[j] - l[1]], phi, model_obs
           );
         }
       }

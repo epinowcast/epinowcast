@@ -28,7 +28,9 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
 
   // observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(filt_obs | log_exp_obs[filt_obs_lookup], phi, model_obs);
+  tar = obs_lpmf(
+    filt_obs | log_exp_obs[filt_obs_lookup - n[1]], phi, model_obs
+  );
   }
   return(tar);
 }
@@ -99,7 +101,9 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   }
   // Observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(filt_obs | log_exp_obs[filt_obs_lookup], phi, model_obs);
+  tar = obs_lpmf(
+    filt_obs | log_exp_obs[filt_obs_lookup - n[1]], phi, model_obs
+  );
   if (model_miss && miss_obs) {
     array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
     array[l[3]] int filt_miss_ref = segment(missing_reference, l[1], l[3]);
