@@ -458,7 +458,8 @@ generated quantities {
         for (j in 1:nsl[i]) {
           log_lik[i] += obs_lpmf(
             flat_obs[l[1] + j - 1]  |
-              log_exp_obs[f[1] + flat_obs_lookup[j] - l[1]], phi, model_obs
+              log_exp_obs[f[1] + flat_obs_lookup[l[1] + j - 1] - l[1]],
+              phi, model_obs
           );
         }
       }
