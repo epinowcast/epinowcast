@@ -10,7 +10,8 @@ enw_complete_dates(
   max_delay,
   timestep = "day",
   missing_reference = TRUE,
-  completion_beyond_max_report = FALSE
+  completion_beyond_max_report = FALSE,
+  flag_observation = FALSE
 )
 }
 \arguments{
@@ -74,6 +75,8 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
