@@ -589,12 +589,29 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' Flag observed observations
+#'
+#' @description Flags observations based on the 'confirm' column.
+#' If the '.observed' column does not exist, it is created. Observations are
+#' flagged as observed (`TRUE``) if 'confirm' is not NA.
+#'
+#' @param obs A `data.frame` with at least a have `confirm` column.
+#'
+#' @return A `data.table` with an additional column '.observed' indicating
+#' observed observations.
+#'
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' dt <- data.frame(id = 1:3, confirm = c(NA, 1, 2))
+#' enw_flag_observed_observations(dt)
 enw_flag_observed_observations <- function(obs, copy = TRUE) {
   obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
   if (is.null(obs[[".observed"]])) {
     obs[, .observed := !is.na(confirm)]
-  } else{
-    obs[, .observed := .observed || !is.na(confirm)]
+  }else {
+    obs[, .observed := .observed & !is.na(confirm)]
   }
   return(obs[])
 }
