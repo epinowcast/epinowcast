@@ -616,12 +616,32 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
   return(obs[])
 }
 
+#' Impute NA observations
+#'
+#' @description Imputes NA values in the 'confirm' column.
+#' NA values are replaced with the last available observation or 0.
+#'
+#' @param obs A `data.frame` with at least 'confirm' and 'reference_date'
+#' columns.
+#'
+#' @return A `data.table` with imputed 'confirm' column where NA values have 
+#' been replaced with zero.
+#'
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' dt <- data.frame(
+#'  id = 1:3, confirm = c(NA, 1, 2),
+#'  reference_date = as.Date("2021-01-01")
+#' )
+#' enw_impute_na_observations(dt)
 enw_impute_na_observations <- function(obs, copy = TRUE) {
   obs <- coerce_dt(
     obs, required_cols = c("confirm", "reference_date"),
     copy = copy, group = TRUE
   )
-  data.table::setkeyv(obs, c(".group", "reference_date"))
+  data.table::setkeyv(obs, c(data.table::key(obs), ".group", "reference_date"))
     # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
