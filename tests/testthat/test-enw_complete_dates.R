@@ -1,4 +1,4 @@
-test_that("enw_complete_dates works as expected with well behaved data", {
+test_that("enw_complete_dates() works as expected with well behaved data", {
   obs <- data.frame(
     report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
     confirm = 1
@@ -35,5 +35,12 @@ test_that("enw_complete_dates works as expected with well behaved data", {
   data.table::setcolorder(exp_obs, "location")
   expect_equal(
     enw_complete_dates(obs, by = "location"), exp_obs
+  )
+  exp_obs[,
+   .observed := c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE)
+  ]
+  expect_equal(
+    enw_complete_dates(obs, by = "location", flag_observation = TRUE),
+    exp_obs[!is.na(reference_date)]
   )
 })

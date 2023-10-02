@@ -664,6 +664,13 @@ enw_impute_na_observations <- function(obs, copy = TRUE) {
 #' @param completion_beyond_max_report Logical, should entries be completed
 #' beyond the maximum date found in the data? Default: FALSE
 #'
+#' @param flag_observation Logical, should observations that have been
+#' imputed as missing be flagged as not observed?. Makes use of
+#' [enw_flag_observed_observations()] to add a `.observed` logical vector
+#' which indicates if observations have been imputed. This vector can
+#' then be passed to the `observed` argument of [enw_obs()] to control if
+#' these observations are used in the likelihood. Default: FALSE
+#'
 #' @inheritParams get_internal_timestep
 #'
 #' @return A `data.table` with completed entries for all combinations of
@@ -685,7 +692,7 @@ enw_impute_na_observations <- function(obs, copy = TRUE) {
 enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
                                missing_reference = TRUE,
                                completion_beyond_max_report  = FALSE,
-                               flag_missing = FALSE) {
+                               flag_observation = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
@@ -732,15 +739,13 @@ enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
   obs <- obs[completion, on = c(names(groups), "reference_date", "report_date")]
   # flag observations that have been imputed as missing
   # also flag NA values in the original data as missing
-  if (isTRUE(flag_missing)) {
-    obs <- enw_flag_missing_observations(obs, copy = FALSE)
+  if (isTRUE(flag_observation)) {
+    obs <- enw_flag_observed_observations(obs, copy = FALSE)
   }
 
   # impute missing as last available observation or 0
-  obs[,
-    confirm := nafill(nafill(confirm, "locf"), fill = 0),
-    by = c("reference_date", ".group")
-  ]
+  obs <- enw_impute_na_observations(obs, copy = FALSE)
+
   check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
