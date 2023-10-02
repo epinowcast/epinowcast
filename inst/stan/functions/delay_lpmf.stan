@@ -20,7 +20,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   // Index lookup to start from where we currently are
   array[nc[3]] int filt_obs_local_lookup;
   for (i in 1:nc[3]) {
-    filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1];
+    filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
   } 
 
   // What is going to be used for storage
@@ -69,7 +69,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   // Index lookup to start from where we currently are
   array[nc[3]] int filt_obs_local_lookup;
   for (i in 1:nc[3]) {
-    filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1];
+    filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
   } 
 
   // What is going to be used for storage

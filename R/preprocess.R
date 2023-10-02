@@ -589,6 +589,30 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+enw_flag_observed_observations <- function(obs, copy = TRUE) {
+  obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
+  if (is.null(obs[[".observed"]])) {
+    obs[, .observed := !is.na(confirm)]
+  } else{
+    obs[, .observed := .observed || !is.na(confirm)]
+  }
+  return(obs[])
+}
+
+enw_impute_na_observations <- function(obs, copy = TRUE) {
+  obs <- coerce_dt(
+    obs, required_cols = c("confirm", "reference_date"),
+    copy = copy, group = TRUE
+  )
+  data.table::setkeyv(obs, c(".group", "reference_date"))
+    # impute missing as last available observation or 0
+  obs[,
+    confirm := nafill(nafill(confirm, "locf"), fill = 0),
+    by = c("reference_date", ".group")
+  ]
+  return(obs[])
+}
+
 #' Complete missing reference and report dates
 #'
 #' Ensures that all reference and report dates are present for
@@ -623,7 +647,8 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
                                missing_reference = TRUE,
-                               completion_beyond_max_report  = FALSE) {
+                               completion_beyond_max_report  = FALSE,
+                               flag_missing = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
@@ -668,6 +693,12 @@ enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
   # join completion with groups and original obs
   completion <- completion[groups, on = ".group"]
   obs <- obs[completion, on = c(names(groups), "reference_date", "report_date")]
+  # flag observations that have been imputed as missing
+  # also flag NA values in the original data as missing
+  if (isTRUE(flag_missing)) {
+    obs <- enw_flag_missing_observations(obs, copy = FALSE)
+  }
+
   # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
