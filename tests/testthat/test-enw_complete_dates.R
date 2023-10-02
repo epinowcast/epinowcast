@@ -41,6 +41,6 @@ test_that("enw_complete_dates() works as expected with well behaved data", {
   ]
   expect_equal(
     enw_complete_dates(obs, by = "location", flag_observation = TRUE),
-    exp_obs[!is.na(reference_date)]
+    exp_obs
   )
 })
