@@ -1,6 +1,6 @@
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      array[] int sl, array[] int csl,
-                     array[] int obs_lookup, array[] int nsl, array[] int cnsl,
+                     array[] int nsl, array[] int cnsl, array[] int obs_lookup,
                      array[] vector imp_obs, array[] int sg,
                      array[] int st, array[,] int rdlurd,
                      vector srdlh, matrix refp_lh, array[] int dpmfs,
@@ -18,8 +18,10 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
 
   // Index lookup to start from where we currently are
-  array[nc[3]] int filt_obs_local_lookup = 
-    filt_obs_lookup - rep_array(n[1] + 1, nc[3]);
+  array[nc[3]] int filt_obs_local_lookup;
+  for (i in 1:nc[3]) {
+      filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
+  } 
 
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
@@ -40,8 +42,9 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
 }
 
 real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
-                      array[] int sl, array[] int csl,
-                      array[] int obs_lookup, array[] int nsl, array[] int cnsl,array[] vector imp_obs, int t, array[] int sg,
+                      array[] int sl, array[] int csl, array[] int nsl,
+                      array[] int cnsl, array[] int obs_lookup,
+                      array[] vector imp_obs, int t, array[] int sg,
                       array[,] int ts, array[] int st,
                       array[,] int rdlurd, vector srdlh, matrix refp_lh,
                       array[] int dpmfs, int ref_p, int rep_h, int ref_as_p,
