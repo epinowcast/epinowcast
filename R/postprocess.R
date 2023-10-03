@@ -324,7 +324,7 @@ enw_pp_summary <- function(fit, diff_obs,
 #' posterior <- enw_posterior(fit$fit[[1]], var = "expr_lelatent_int[1,1]")
 #' enw_quantiles_to_long(posterior)
 enw_quantiles_to_long <- function(posterior) {
-  long <- melt(posterior,
+  long <- melt(as.data.table(posterior),
     measure.vars = patterns("^q[0-9]"),
     value.name = "prediction", variable.name = "quantile"
   )
