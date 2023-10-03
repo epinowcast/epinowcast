@@ -1,4 +1,4 @@
-test_that("enw_obs produces the expected output", {
+test_that("enw_obs() produces the expected output", {
 
   # Load and filter germany hospitalisations
   nat_germany_hosp <-
@@ -38,4 +38,22 @@ test_that("enw_obs produces the expected output", {
   )
   expect_equal(enw_obs(family = "poisson", data = pobs)$data$model_obs, 0)
   expect_error(enw_obs(family = "wefgweefw", data = pobs))
+
+  # Check that missing data is handled as expected
+  retro_nat_germany[report_date %in% as.Date("2021-08-13"), confirm := NA]
+  retro_nat_germany <- enw_flag_observed_observations(
+    retro_nat_germany, copy = FALSE
+  )
+  retro_nat_germany <- enw_impute_na_observations(
+    retro_nat_germany, copy = FALSE
+  )
+  pobs_missing <- enw_preprocess_data(retro_nat_germany, max_delay = 5)
+  expect_snapshot({
+    obs_missing <- enw_obs(
+      family = "negbin", data = pobs_missing,
+      observation_indicator = ".observed"
+    )
+    obs_missing$inits <- NULL
+    obs_missing
+  })
 })

@@ -624,6 +624,9 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #' @param obs A `data.frame` with at least 'confirm' and 'reference_date'
 #' columns.
 #'
+#' @param by A character vector of column names to group by. Defaults to
+#' an empty vector.
+#'
 #' @return A `data.table` with imputed 'confirm' column where NA values have 
 #' been replaced with zero.
 #'
@@ -636,16 +639,16 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #'  reference_date = as.Date("2021-01-01")
 #' )
 #' enw_impute_na_observations(dt)
-enw_impute_na_observations <- function(obs, copy = TRUE) {
+enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
   obs <- coerce_dt(
-    obs, required_cols = c("confirm", "reference_date"),
-    copy = copy, group = TRUE
+    obs, required_cols = c("confirm", "reference_date", by),
+    copy = copy
   )
-  data.table::setkeyv(obs, c(data.table::key(obs), ".group", "reference_date"))
+  data.table::setkeyv(obs, c(data.table::key(obs), "reference_date"))
     # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
-    by = c("reference_date", ".group")
+    by = c("reference_date", by)
   ]
   return(obs[])
 }
@@ -744,7 +747,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
   }
 
   # impute missing as last available observation or 0
-  obs <- enw_impute_na_observations(obs, copy = FALSE)
+  obs <- enw_impute_na_observations(obs, by = ".group", copy = FALSE)
 
   check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   obs[, .group := NULL]

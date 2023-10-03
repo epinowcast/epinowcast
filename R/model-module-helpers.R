@@ -272,3 +272,55 @@ simulate_double_censored_pmf <- function(
   pmf <- c(cdf[1], diff(cdf))
   return(pmf)
 }
+
+#' Extract observation metadata
+#'
+#' This function extracts metadata from the provided dataset to be used in the
+#' observation model.
+#'
+#' @param new_confirm A data.table containing the columns: "reference_date",
+#' "delay", ".group", and "new_confirm". As produced by [enw_preprocess_data()]
+#' in the `new_confirm` output.
+#'
+#' @return A list containing:
+#'   \itemize{
+#'     \item \code{st}: time index of each snapshot (snapshot time).
+#'     \item \code{ts}: snapshot index by time and group.
+#'     \item \code{sl}: number of reported observations per snapshot (snapshot
+#'     length).
+#'     \item \code{csl}: cumulative version of sl.
+#'     \item \code{sg}: group index of each snapshot (snapshot group).
+#'   }
+#' @family modelmodulehelpers
+extract_obs_metadata <- function(new_confirm) {
+  # format vector of snapshot lengths
+  snap_length <- new_confirm
+  snap_length <- snap_length[, .SD[delay == max(delay)],
+    by = c("reference_date", ".group")
+  ]
+  snap_length <- snap_length$delay + 1
+
+  # snap lookup
+  snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
+  snap_lookup[, s := seq_len(.N)]
+  snap_lookup <- data.table::dcast(
+    snap_lookup, reference_date ~ .group,
+    value.var = "s"
+  )
+  snap_lookup <- as.matrix(snap_lookup[, -1])
+
+  # snap time
+  snap_time <- unique(new_confirm[, .(reference_date, .group)])
+  snap_time[, t := seq_len(.N), by = ".group"]
+  snap_time <- snap_time$t
+
+  # Format indexing and observed data
+  out <- list(
+    st = snap_time,
+    ts = snap_lookup,
+    sl = snap_length,
+    csl = cumsum(snap_length),
+    sg = unique(new_confirm[, .(reference_date, .group)])$.group
+  )
+  return(out)
+}

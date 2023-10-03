@@ -7,10 +7,9 @@ test_that("enw_impute_na_observations() works as expected with NA values", {
   exp_obs <- data.table::data.table(
     id = 1:4,
     confirm = c(0, 1, 1, 2),
-    reference_date = "2021-01-01",
-    .group = 1
+    reference_date = "2021-01-01"
   )
-  data.table::setkeyv(exp_obs, c(".group", "reference_date"))
+  data.table::setkeyv(exp_obs, c("reference_date"))
   expect_equal(enw_impute_na_observations(obs), exp_obs)
 })
 

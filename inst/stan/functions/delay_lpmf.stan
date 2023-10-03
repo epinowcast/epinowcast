@@ -18,10 +18,8 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
 
   // Index lookup to start from where we currently are
-  array[nc[3]] int filt_obs_local_lookup;
-  for (i in 1:nc[3]) {
-    filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
-  } 
+  array[nc[3]] int filt_obs_local_lookup = 
+    filt_obs_lookup - rep_array(n[1] + 1, nc[3]);
 
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;

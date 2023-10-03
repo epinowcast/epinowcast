@@ -4,7 +4,7 @@
 \alias{enw_obs}
 \title{Setup observation model and data}
 \usage{
-enw_obs(family = c("negbin", "poisson"), data)
+enw_obs(family = c("negbin", "poisson"), observation_indicator = NULL, data)
 }
 \arguments{
 \item{family}{Character string, the observation model to use in the
@@ -12,6 +12,15 @@ likelihood; enforced by \code{\link[base:match.arg]{base::match.arg()}}. By defa
 negative binomial ("negbin") with Poisson ("poisson") also being
 available. Support for additional observation models is planned,
 please open an issue with suggestions.}
+
+\item{observation_indicator}{A character string, the name of the column in
+the data that indicates whether an observation is observed or not (using a
+logical variable) and therefore whether or not it should be used in the
+likelihood. This variable should be present in the data input to
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. It can be generated using \code{flag_observation} in
+\code{\link[=enw_complete_dates]{enw_complete_dates()}} or it can be created directly using
+\code{\link[=enw_flag_observed_observations]{enw_flag_observed_observations()}}. If either of these approaches are used
+then the variable will be name \code{.observed}. Default is \code{NULL}.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
