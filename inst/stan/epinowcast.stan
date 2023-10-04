@@ -479,15 +479,26 @@ generated quantities {
     for (k in 1:g) {
       int start_t = t - dmax;
       for (i in 1:dmax) {
+        // Where am I?
         int i_start = ts[start_t + i, k];
         array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
+        array[3] int nl = filt_obs_indexes(i_start, i_start, cnsl, nsl);
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
-        pp_inf_obs[i, k] = sum(segment(flat_obs, l[1], l[3]));
-        if (sl[i_start] < dmax) {
-          pp_inf_obs[i, k] += sum(
-            segment(pp_obs_tmp, f[1] + sl[i_start], f[3] - sl[i_start])
-          );
-        }
+        // Add all esimated reported observations
+        pp_inf_obs[i, k] = sum(segment(pp_obs_tmp, f[1], f[3]));
+
+        // Index lookup to start from where we currently are
+        array[nl[3]] int filt_obs_local_lookup;
+        array[nl[3]] int filt_obs_lookup = segment(
+          flat_obs_lookup, nl[1], nl[3]
+        );
+        for (j in 1:nl[3]) {
+          filt_obs_local_lookup[j] = f[1] + filt_obs_lookup[j] - l[1];
+        } 
+        // Minus estimates for those that are already reported
+        pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
+        // Add observations that have been reported
+        pp_inf_obs[i, k] += sum(flat_obs[filt_obs_lookup]);
       }
     }
     if (pp) {
