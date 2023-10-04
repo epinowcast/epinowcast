@@ -9,7 +9,7 @@ test_that("enw_quantiles_to_long can manipulate posterior draws as expected", {
   )
 })
 
-test_that("enw_quantiles_to_long uses data.table::melt not deprecated reshape2::melt", {
+test_that("enw_quantiles_to_long can receive data.frame", {
   # When a data.table is passed to `melt()`, it calls `data.table::melt`, but if
   # anything else is passed to `melt()`, it calls `reshape2::melt`, which is
   # deprecated
