@@ -38,6 +38,7 @@ Other contributors:
   \item Joel Hellewell \email{joel@ebi.ac.uk} (\href{https://orcid.org/0000-0003-2683-0849}{ORCID}) [contributor]
   \item Luis Rivas \email{luisnicolasrivas@gmail.com} [contributor]
   \item Sang Woo Park \email{swp2@princeton.edu} (\href{https://orcid.org/0000-0003-2202-3361}{ORCID}) [contributor]
+  \item Nathan McIntosh \email{natemcintosh@gmail.com} [contributor]
 }
 
 }

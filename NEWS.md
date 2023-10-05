@@ -15,6 +15,7 @@ This release is in development and not yet ready for production use.
 - Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
 - Fixed a few typos in the model vignette. See #292 by @medewitt and reviewed by @seabbs.
 - Fixed a bug where snapshots (i.e. as returned as metadata in `enw_preprocess_data()`) were defined based on report vs reference date. This won't have impacted most usage but was a problem when trying to fit a model to retrospective (and so completely reported) data. See #312 by @seabbs and self-reviewed.
+- Fixed a bug where a non-`data.table` passed to `enw_quantile_to_long()` could throw an error. See #324 by @natemcintosh and reviewed by @pearsonca.
 
 ## Package
 

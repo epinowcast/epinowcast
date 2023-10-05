@@ -57,7 +57,11 @@ Authors@R:
            family = "Park",
            role = "ctb",
            email = "swp2@princeton.edu",
-           comment = c(ORCID = "0000-0003-2202-3361")))
+           comment = c(ORCID = "0000-0003-2202-3361")),
+     person(given = "Nathan",
+            family = "McIntosh",
+            role = "ctb",
+            email = "natemcintosh@gmail.com"))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
