@@ -32,6 +32,7 @@ This release is in development and not yet ready for production use.
 - Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event censoring. Due to this change models may perform slightly differently between versions and any delay distribution estimates will have means that are half a day longer (note this corrects the previous bias). See #288 by @seabbs and reviewed by @adrian-lison.
 - Updated the default prior for initialising the model to include the ascertainment rate which is inferred from the latent reporting delay distribution as this can be an improper probability mass function (i.e. one that does not sum to 1). See #312 by @seabbs and self-reviewed.
 - Added support for non-parametric reference date models as well as mixed models with both parametric and non-parametric reference date models. This enables the use of popular models such as the discrete time cox proportional hazards model. See #313 by @seabbs and self-reviewed.
+- Added support for missing data (excluding in the missing reference date model) using the `observation_indicator` argument to `enw_obs()`. Supported was also added to `enw_complete_dates()` to flag missing data. See # by @seabbs and self-reviewed.
 
 ## Documentation
 
