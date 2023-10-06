@@ -4,11 +4,14 @@
 \alias{enw_impute_na_observations}
 \title{Impute NA observations}
 \usage{
-enw_impute_na_observations(obs, copy = TRUE)
+enw_impute_na_observations(obs, by = NULL, copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} with at least 'confirm' and 'reference_date'
 columns.}
+
+\item{by}{A character vector of column names to group by. Defaults to
+an empty vector.}
 
 \item{copy}{A logical; if \code{TRUE} (the default) creates a copy; otherwise,
 modifies \code{obs} in place.}
