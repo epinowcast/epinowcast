@@ -489,12 +489,12 @@ generated quantities {
         // Add all esimated reported observations
         pp_inf_obs[i, k] = sum(segment(pp_obs_tmp, f[1], f[3]));
 
-        // Index lookup to start from where we currently are
-        array[nl[3]] int filt_obs_local_lookup;
-        array[nl[3]] int filt_obs_lookup = segment(
-          flat_obs_lookup, nl[1], nl[3]
-        );
         if (nl[3]) {
+          // Index lookup to start from where we currently are
+          array[nl[3]] int filt_obs_local_lookup;
+          array[nl[3]] int filt_obs_lookup = segment(
+            flat_obs_lookup, nl[1], nl[3]
+          );
           for (j in 1:nl[3]) {
             filt_obs_local_lookup[j] = f[1] + filt_obs_lookup[j] - l[1];
           } 
