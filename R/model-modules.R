@@ -676,13 +676,12 @@ enw_obs <- function(family = c("negbin", "poisson"),
   )
 
   # Add in incidence observation metadata
- proc_data <- c(proc_data, extract_obs_metadata(new_confirm))
-
-  # Add in incidence observation metadata - dropping missing observations
-  obs_metadata_no_missing <- extract_obs_metadata(filt_new_confirm)
-
-  proc_data$nsl <- obs_metadata_no_missing$sl
-  proc_data$cnsl <- obs_metadata_no_missing$csl
+  proc_data <- c(
+    proc_data,
+    extract_obs_metadata(
+      new_confirm, observation_indicator = observation_indicator
+    )
+  )
 
   # Add in maximum delay indexes
   proc_data <- c(

@@ -282,6 +282,8 @@ simulate_double_censored_pmf <- function(
 #' "delay", ".group", and "new_confirm". As produced by [enw_preprocess_data()]
 #' in the `new_confirm` output.
 #'
+#' @inheritParams enw_obs
+#'
 #' @return A list containing:
 #'   \itemize{
 #'     \item \code{st}: time index of each snapshot (snapshot time).
@@ -289,16 +291,29 @@ simulate_double_censored_pmf <- function(
 #'     \item \code{sl}: number of reported observations per snapshot (snapshot
 #'     length).
 #'     \item \code{csl}: cumulative version of sl.
+#'     \item \code{nsl}: number of observed observations per snapshot (snapshot
+#'     length).
+#'     \item \code{cnsl}: cumulative version of nsl.
 #'     \item \code{sg}: group index of each snapshot (snapshot group).
 #'   }
 #' @family modelmodulehelpers
-extract_obs_metadata <- function(new_confirm) {
+extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
   # format vector of snapshot lengths
   snap_length <- new_confirm
   snap_length <- snap_length[, .SD[delay == max(delay)],
     by = c("reference_date", ".group")
   ]
   snap_length <- snap_length$delay + 1
+
+  # format the vector of snapshot lengths accounting for missing data
+  if (!is.null(observation_indicator)) {
+    nc_snap_length <- new_confirm[,
+      .(s = sum(get(observation_indicator))), by = .(reference_date, .group)
+    ]$s
+  } else {
+    nc_snap_length <- snap_length
+  }
+
 
   # snap lookup
   snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
@@ -320,6 +335,8 @@ extract_obs_metadata <- function(new_confirm) {
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
+    nsl = nc_snap_length,
+    cnsl = cumsum(nc_snap_length),
     sg = unique(new_confirm[, .(reference_date, .group)])$.group
   )
   return(out)
