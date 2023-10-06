@@ -4,12 +4,21 @@
 \alias{extract_obs_metadata}
 \title{Extract observation metadata}
 \usage{
-extract_obs_metadata(new_confirm)
+extract_obs_metadata(new_confirm, observation_indicator = NULL)
 }
 \arguments{
 \item{new_confirm}{A data.table containing the columns: "reference_date",
 "delay", ".group", and "new_confirm". As produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
 in the \code{new_confirm} output.}
+
+\item{observation_indicator}{A character string, the name of the column in
+the data that indicates whether an observation is observed or not (using a
+logical variable) and therefore whether or not it should be used in the
+likelihood. This variable should be present in the data input to
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. It can be generated using \code{flag_observation} in
+\code{\link[=enw_complete_dates]{enw_complete_dates()}} or it can be created directly using
+\code{\link[=enw_flag_observed_observations]{enw_flag_observed_observations()}}. If either of these approaches are used
+then the variable will be name \code{.observed}. Default is \code{NULL}.}
 }
 \value{
 A list containing:
@@ -19,6 +28,9 @@ A list containing:
 \item \code{sl}: number of reported observations per snapshot (snapshot
 length).
 \item \code{csl}: cumulative version of sl.
+\item \code{nsl}: number of observed observations per snapshot (snapshot
+length).
+\item \code{cnsl}: cumulative version of nsl.
 \item \code{sg}: group index of each snapshot (snapshot group).
 }
 }
