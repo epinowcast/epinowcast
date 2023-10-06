@@ -501,7 +501,7 @@ generated quantities {
           // Minus estimates for those that are already reported
           pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
           // Add observations that have been reported
-          pp_inf_obs[i, k] += sum(flat_obs[filt_obs_lookup]);
+          pp_inf_obs[i, k] += sum(segment(flat_obs, nl[1], nl[3]));
         }
       }
     }
