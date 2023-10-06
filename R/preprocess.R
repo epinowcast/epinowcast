@@ -627,7 +627,7 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #' @param by A character vector of column names to group by. Defaults to
 #' an empty vector.
 #'
-#' @return A `data.table` with imputed 'confirm' column where NA values have 
+#' @return A `data.table` with imputed 'confirm' column where NA values have
 #' been replaced with zero.
 #'
 #' @inheritParams enw_preprocess_data

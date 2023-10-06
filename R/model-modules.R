@@ -660,7 +660,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Filter out missing observations
   if (!is.null(observation_indicator)) {
-    filt_new_confirm <- new_confirm[get(observation_indicator) == TRUE]
+    filt_new_confirm <- new_confirm[(get(observation_indicator))]
   } else {
     filt_new_confirm <- new_confirm
   }
