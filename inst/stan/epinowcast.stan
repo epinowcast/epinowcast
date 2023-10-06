@@ -38,7 +38,7 @@ data {
   // Observations
   array[s, dmax] int obs; // obs by reference date (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
-  array[n] int flat_obs_lookup; // How do obs relate to consecutive obs
+  array[n] int flat_obs_lookup; // How do observed obs relate to all obs
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
@@ -455,12 +455,14 @@ generated quantities {
         array[3] int m = filt_obs_indexes(i, i, csl, sl);
         array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         log_lik[i] = 0;
-        for (j in 1:nsl[i]) {
-          log_lik[i] += obs_lpmf(
-            flat_obs[l[1] + j - 1]  |
-              log_exp_obs[f[1] + flat_obs_lookup[l[1] + j - 1] - l[1]],
-              phi, model_obs
-          );
+        if (nsl[i]) {
+          for (j in 1:nsl[i]) {
+            log_lik[i] += obs_lpmf(
+              flat_obs[l[1] + j - 1]  |
+                log_exp_obs[f[1] + flat_obs_lookup[l[1] + j - 1] - l[1]],
+                phi, model_obs
+            );
+          }
         }
       }
       // Add log lik component for missing reference model
@@ -492,13 +494,15 @@ generated quantities {
         array[nl[3]] int filt_obs_lookup = segment(
           flat_obs_lookup, nl[1], nl[3]
         );
-        for (j in 1:nl[3]) {
-          filt_obs_local_lookup[j] = f[1] + filt_obs_lookup[j] - l[1];
-        } 
-        // Minus estimates for those that are already reported
-        pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
-        // Add observations that have been reported
-        pp_inf_obs[i, k] += sum(flat_obs[filt_obs_lookup]);
+        if (nl[3]) {
+          for (j in 1:nl[3]) {
+            filt_obs_local_lookup[j] = f[1] + filt_obs_lookup[j] - l[1];
+          } 
+          // Minus estimates for those that are already reported
+          pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
+          // Add observations that have been reported
+          pp_inf_obs[i, k] += sum(flat_obs[filt_obs_lookup]);
+        }
       }
     }
     if (pp) {

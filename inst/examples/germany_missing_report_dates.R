@@ -20,6 +20,7 @@ nat_germany_hosp <- enw_complete_dates(
   nat_germany_hosp,
   by = c("location", "age_group")
 )
+
 # Make a retrospective dataset
 retro_nat_germany <- enw_filter_report_dates(
   nat_germany_hosp,
@@ -29,6 +30,16 @@ retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
   include_days = 40
 )
+
+# Simulate missing data for a single reference date 
+# We can't simulate missing data across reports because this would
+# also require updating the known reporting framework
+retro_nat_germany[reference_date %in% as.Date("2021-08-20"), confirm := NA]
+
+# Add a flag for data not observed and impute for downstream preprocessing
+retro_nat_germany <- retro_nat_germany |>
+  enw_flag_observed_observations() |>
+  enw_impute_na_observations()
 
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(nat_germany_hosp)
@@ -48,5 +59,7 @@ nowcast <- epinowcast(pobs,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
   ),
-  obs = enw_obs(family = "poisson", data = pobs),
+  obs = enw_obs(
+    family = "poisson", data = pobs, observation_indicator = ".observed"
+  ),
 )

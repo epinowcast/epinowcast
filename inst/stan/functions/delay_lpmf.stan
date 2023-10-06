@@ -12,31 +12,32 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
   array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
   // Where am I in the observed data filling in gaps?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
+  if (nc[3]) {
+    // Filter observed data and observed data lookup
+    array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
+    array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
 
-  // Filter observed data and observed data lookup
-  array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
-  array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
+    // Index lookup to start from where we currently are
+    array[nc[3]] int filt_obs_local_lookup;
+    for (i in 1:nc[3]) {
+        filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
+    } 
 
-  // Index lookup to start from where we currently are
-  array[nc[3]] int filt_obs_local_lookup;
-  for (i in 1:nc[3]) {
-      filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
-  } 
+    // What is going to be used for storage
+    vector[n[3]] log_exp_obs;
 
-  // What is going to be used for storage
-  vector[n[3]] log_exp_obs;
+    // combine expected final obs and time effects to get expected obs
+    log_exp_obs = expected_obs_from_snaps(
+      start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p,
+      sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax
+    );
 
-  // combine expected final obs and time effects to get expected obs
-  log_exp_obs = expected_obs_from_snaps(
-    start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p,
-    sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax
-  );
-
-  // observation error model (across all reference dates and groups)
-  profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(
-    filt_obs | log_exp_obs[filt_obs_local_lookup], phi, model_obs
-  );
+    // observation error model (across all reference dates and groups)
+    profile("model_likelihood_neg_binomial") {
+    tar = obs_lpmf(
+      filt_obs | log_exp_obs[filt_obs_local_lookup], phi, model_obs
+    );
+    }
   }
   return(tar);
 }
@@ -69,9 +70,11 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   
   // Index lookup to start from where we currently are
   array[nc[3]] int filt_obs_local_lookup;
-  for (i in 1:nc[3]) {
-    filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
-  } 
+  if (nc[3]) {
+    for (i in 1:nc[3]) {
+      filt_obs_local_lookup[i] = filt_obs_lookup[i] - n[1] + 1;
+    } 
+  }
 
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
@@ -114,9 +117,11 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   }
   // Observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(
-    filt_obs | log_exp_obs[filt_obs_local_lookup], phi, model_obs
-  );
+  if (nc[3]) {
+    tar = obs_lpmf(
+      filt_obs | log_exp_obs[filt_obs_local_lookup], phi, model_obs
+    );
+  }
   if (model_miss && miss_obs) {
     array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
     array[l[3]] int filt_miss_ref = segment(missing_reference, l[1], l[3]);
