@@ -417,14 +417,16 @@ generated quantities {
   array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
-    vector[csdmax[s]] log_exp_obs;
-    array[csdmax[s]] int pp_obs_tmp;
+    vector[csdmax[s]] log_exp_obs_all;
     vector[miss_obs]  log_exp_miss_ref;
     vector[miss_obs ? csdmax[s] : 0] log_exp_miss_by_ref;
+    vector[csl[s]] log_exp_obs;
+    array[csdmax[s]] int pp_obs_all;
+    array[csl[s]] int pp_obs_tmp;
 
     // Posterior predictions for observations
     profile("generated_obs") {
-    log_exp_obs = expected_obs_from_snaps(
+    log_exp_obs_all = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
       model_refnp, sdmax, csdmax
@@ -433,18 +435,26 @@ generated quantities {
     if (model_miss) {
       // Allocate proportion that are not reported
       log_exp_miss_by_ref = apply_missing_reference_effects(
-        1, s, log_exp_obs, sdmax, csdmax, miss_ref_lprop
+        1, s, log_exp_obs_all, sdmax, csdmax, miss_ref_lprop
       );
       log_exp_miss_ref = log_expected_by_report(
         log_exp_miss_by_ref, obs_by_report
       );
       // Allocate proportion that are reported
-      log_exp_obs = apply_missing_reference_effects(
-        1, s, log_exp_obs, sdmax, csdmax, log1m_exp(miss_ref_lprop)
+      log_exp_obs_all = apply_missing_reference_effects(
+        1, s, log_exp_obs_all, sdmax, csdmax, log1m_exp(miss_ref_lprop)
       );
     }
+    // Allocate to just those actually observed
+    log_exp_obs = allocate_observed_obs(
+      1, s, log_exp_all, sl, csl, sdmax, csdmax
+    );
     // Draw from observation model for observed counts with report and reference
-    pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
+    pp_obs_all = obs_rng(log_exp_obs_all, phi, model_obs);
+    // Allocate to just those actually observed
+    pp_obs_tmp = allocate_observed_obs(
+      1, s, pp_obs_all, sl, csl, sdmax, csdmax
+    );
     } 
 
     // Likelihood by snapshot (rather than by observation)
@@ -453,14 +463,12 @@ generated quantities {
       for (i in 1:s) {
         array[3] int l = filt_obs_indexes(i, i, cnsl, nsl);
         array[3] int m = filt_obs_indexes(i, i, csl, sl);
-        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
         log_lik[i] = 0;
         if (nsl[i]) {
           for (j in 1:nsl[i]) {
             log_lik[i] += obs_lpmf(
-              flat_obs[l[1] + j - 1]  |
-                log_exp_obs[f[1] + flat_obs_lookup[l[1] + j - 1] - l[1]],
-                phi, model_obs
+              flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1]], 
+              phi, model_obs
             );
           }
         }
@@ -483,23 +491,20 @@ generated quantities {
       for (i in 1:dmax) {
         // Where am I?
         int i_start = ts[start_t + i, k];
+        array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
         array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
         array[3] int nl = filt_obs_indexes(i_start, i_start, cnsl, nsl);
-        array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
         // Add all esimated reported observations
-        pp_inf_obs[i, k] = sum(segment(pp_obs_tmp, f[1], f[3]));
+        pp_inf_obs[i, k] = sum(segment(pp_obs_all, f[1], f[3]));
 
         if (nl[3]) {
           // Index lookup to start from where we currently are
-          array[nl[3]] int filt_obs_local_lookup;
           array[nl[3]] int filt_obs_lookup = segment(
             flat_obs_lookup, nl[1], nl[3]
           );
-          for (j in 1:nl[3]) {
-            filt_obs_local_lookup[j] = f[1] + filt_obs_lookup[j] - l[1];
-          } 
+  
           // Minus estimates for those that are already reported
-          pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
+          pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_lookup]);
           // Add observations that have been reported
           pp_inf_obs[i, k] += sum(segment(flat_obs, nl[1], nl[3]));
         }
@@ -508,8 +513,7 @@ generated quantities {
     if (pp) {
       // If posterior predictions for all observations are needed copy
       // from a temporary object to a permanent one
-      // drop predictions without linked observations
-      pp_obs = allocate_observed_obs(1, s, pp_obs_tmp, sl, csl, sdmax, csdmax);
+      pp_obs = pp_obs_tmp
       // Posterior predictions for observations missing reference dates
       if (miss_obs) {
         pp_miss_ref = obs_rng(log_exp_miss_ref, phi, model_obs);
