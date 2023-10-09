@@ -447,7 +447,7 @@ generated quantities {
     }
     // Allocate to just those actually observed
     log_exp_obs = allocate_observed_obs(
-      1, s, log_exp_all, sl, csl, sdmax, csdmax
+      1, s, log_exp_obs_all, sl, csl, sdmax, csdmax
     );
     // Draw from observation model for observed counts with report and reference
     pp_obs_all = obs_rng(log_exp_obs_all, phi, model_obs);
@@ -467,7 +467,7 @@ generated quantities {
         if (nsl[i]) {
           for (j in 1:nsl[i]) {
             log_lik[i] += obs_lpmf(
-              flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1]], 
+              flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1], 
               phi, model_obs
             );
           }
@@ -513,7 +513,7 @@ generated quantities {
     if (pp) {
       // If posterior predictions for all observations are needed copy
       // from a temporary object to a permanent one
-      pp_obs = pp_obs_tmp
+      pp_obs = pp_obs_tmp;
       // Posterior predictions for observations missing reference dates
       if (miss_obs) {
         pp_miss_ref = obs_rng(log_exp_miss_ref, phi, model_obs);
