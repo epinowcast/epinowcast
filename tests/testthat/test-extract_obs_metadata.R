@@ -42,4 +42,8 @@ test_that("extract_obs_metadata returns correct metadata", {
   expect_equal(result$nsl, c(1, 1, 0))
   expect_equal(result$cnsl, c(1, 2, 2))
   expect_equal(result$sg, c(1, 1, 2))
+  expect_error(
+    epinowcast:::extract_obs_metadata(new_confirm, "delay"),
+    "observation_indicator must be a logical"
+  )
 })

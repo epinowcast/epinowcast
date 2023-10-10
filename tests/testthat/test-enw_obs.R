@@ -56,4 +56,11 @@ test_that("enw_obs() produces the expected output", {
     obs_missing$inits <- NULL
     obs_missing
   })
+  expect_error(
+    enw_obs(
+      family = "negbin", data = pobs_missing,
+      observation_indicator = "delay"
+    ),
+    "observation_indicator must be a logical"
+  )
 })

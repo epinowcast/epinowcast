@@ -307,6 +307,10 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
 
   # format the vector of snapshot lengths accounting for missing data
   if (!is.null(observation_indicator)) {
+    stopifnot(
+      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
+      )
+    )
     nc_snap_length <- new_confirm[,
       .(s = sum(get(observation_indicator))), by = .(reference_date, .group)
     ]$s

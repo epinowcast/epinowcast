@@ -660,6 +660,10 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Filter out missing observations
   if (!is.null(observation_indicator)) {
+    stopifnot(
+      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
+      )
+    )
     filt_new_confirm <- new_confirm[(get(observation_indicator))]
   } else {
     filt_new_confirm <- new_confirm
