@@ -470,7 +470,7 @@ generated quantities {
               flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1], 
               phi, model_obs
             );
-          }
+          } 
         }
       }
       // Add log lik component for missing reference model

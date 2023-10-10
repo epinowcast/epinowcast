@@ -33,8 +33,7 @@ retro_nat_germany <- enw_filter_reference_dates(
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
-  latest_obs,
-  remove_days = 40, include_days = 20
+  latest_obs, remove_days = 40, include_days = 20
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
