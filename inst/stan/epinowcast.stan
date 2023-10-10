@@ -462,7 +462,6 @@ generated quantities {
     if (ologlik) {
       for (i in 1:s) {
         array[3] int l = filt_obs_indexes(i, i, cnsl, nsl);
-        array[3] int m = filt_obs_indexes(i, i, csl, sl);
         log_lik[i] = 0;
         if (nsl[i]) {
           for (j in 1:nsl[i]) {
