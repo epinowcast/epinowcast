@@ -29,6 +29,8 @@ data {
   array[t, g] int ts; // snapshot index by time and group
   array[s] int sl; // number of reported obs per snapshot (snapshot length)
   array[s] int csl; // cumulative version of sl
+  array[s] int lsl; // number of reported obs per snapshot (in the likelihood)
+  array[s] int clsl; // cumulative version of sl
   array[s] int nsl; // number of reported obs per snapshot (non-consectuive)
   array[s] int cnsl; // cumulative version of nsl
   int dmax; // maximum possible reporting delay
@@ -392,7 +394,7 @@ model {
     profile("model_likelihood") {
     if (ll_aggregation) {
       target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, nsl, cnsl,
+        delay_group_lupmf, groups, 1, flat_obs, lsl, clsl, nsl, cnsl,
         flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
         refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
@@ -400,7 +402,7 @@ model {
       );
     } else {
       target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, sl, csl, nsl, cnsl,
+        delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
         flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
         refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
         model_refnp, sdmax, csdmax

@@ -645,6 +645,7 @@ enw_missing <- function(formula = ~1, data) {
 enw_obs <- function(family = c("negbin", "poisson"),
                    observation_indicator = NULL, data) {
   family <- match.arg(family)
+  check_observation_indicator(new_confirm, observation_indicator)
 
   # copy new confirm for processing
   new_confirm <- coerce_dt(
@@ -655,18 +656,16 @@ enw_obs <- function(family = c("negbin", "poisson"),
   )
   data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
 
+  # filter out observations beyond the maximum observation
+  new_confirm <- add_max_observed_delay(new_confirm, observation_indicator)
+  filt_new_confirm <- new_confirm[delay <= max_obs_delay]
+
   # Add a look up for observations
-  new_confirm[, lookup := seq_len(.N)]
+  filt_new_confirm[, lookup := seq_len(.N)]
 
   # Filter out missing observations
   if (!is.null(observation_indicator)) {
-    stopifnot(
-      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
-      )
-    )
-    filt_new_confirm <- new_confirm[(get(observation_indicator))]
-  } else {
-    filt_new_confirm <- new_confirm
+    filt_new_confirm <- filt_new_confirm[(get(observation_indicator))]
   }
 
   # Format indexing and observed data

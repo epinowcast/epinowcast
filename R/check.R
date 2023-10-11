@@ -436,3 +436,30 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   ]
   return(invisible(NULL))
 }
+
+#' Check observation indicator
+#'
+#' This function verifies if the `observation_indicator` within the provided
+#' `new_confirm` observations is logical. The check is performed to ensure
+#' that the `observation_indicator` is of the correct type.
+#'
+#' @param new_confirm A data frame containing the observations to be checked.
+#' @param observation_indicator A character string specifying the column name
+#' in `new_confirm` that represents the observation indicator. This column
+#' should be of logical type. If NULL, no check is performed.
+#'
+#' @return This function is used for its side effect of checking the observation
+#' indicator in `new_confirm`. If the check passes, the function returns
+#' invisibly. Otherwise, it stops and returns an error message.
+#' @family check
+check_observation_indicator <- function(
+  new_confirm, observation_indicator = NULL
+) {
+  if (!is.null(observation_indicator)) {
+    stopifnot(
+      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
+      )
+    )
+  }
+  return(invisible(NULL))
+}

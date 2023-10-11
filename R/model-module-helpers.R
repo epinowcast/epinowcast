@@ -273,16 +273,51 @@ simulate_double_censored_pmf <- function(
   return(pmf)
 }
 
+#' Add maximum observed delay
+#'
+#' This function calculates and adds the maximum observed delay for each group
+#' and reference date in the provided dataset. It first checks the validity of
+#' the observation indicator and then computes the maximum delay. If an
+#' observation indicator is provided, it further adjusts the maximum observed
+#' delay for unobserved data to be negative 1 (indicating no maximum observed).
+#'
+#' @inheritParams extract_obs_metadata
+#' @return A data.table with the original columns of `new_confirm` and an
+#' additional "max_obs_delay" column representing the maximum observed delay
+#' for each group and reference date. If an observation indicator is provided,
+#' unobserved data will have a "max_obs_delay" value of -1.
+#' @family modelmodulehelpers
+add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
+  check_observation_indicator(new_confirm, observation_indicator)
+  new_confirm <- new_confirm[,
+    .(max_obs_delay = max(delay), delay = delay),
+    by = c("reference_date", ".group", observation_indicator)
+  ]
+  if (!is.null(observation_indicator)) {
+    new_confirm[!get(observation_indicator), max_obs_delay := -1]
+    new_confirm <- new_confirm[,
+      .(max_obs_delay = max(max_obs_delay), delay = delay),
+      by = c("reference_date", ".group")
+    ]
+  }
+  return(new_confirm[])
+}
+
 #' Extract observation metadata
 #'
 #' This function extracts metadata from the provided dataset to be used in the
 #' observation model.
 #'
 #' @param new_confirm A data.table containing the columns: "reference_date",
-#' "delay", ".group", and "new_confirm". As produced by [enw_preprocess_data()]
-#' in the `new_confirm` output.
+#' "delay", ".group", "new_confirm", and "max_obs_delay".
+#' As produced by [enw_preprocess_data()] in the `new_confirm` output with the
+#' addition of the "max_obs_delay" column as produced by
+#' [add_max_observed_delay()].
 #'
-#' @inheritParams enw_obs
+#' @param observation_indicator A character string specifying the column name
+#' in `new_confirm` that indicates whether an observation is observed or not.
+#' This column should be a logical vector. If NULL (default), all observations
+#' are considered observed.
 #'
 #' @return A list containing:
 #'   \itemize{
@@ -291,6 +326,9 @@ simulate_double_censored_pmf <- function(
 #'     \item \code{sl}: number of reported observations per snapshot (snapshot
 #'     length).
 #'     \item \code{csl}: cumulative version of sl.
+#'     \item \code{lsl}: number of consecutive reported observations per
+#'     snapshot accounting for missing data.
+#'     \item \code{clsl}: cumulative version of lsl.
 #'     \item \code{nsl}: number of observed observations per snapshot (snapshot
 #'     length).
 #'     \item \code{cnsl}: cumulative version of nsl.
@@ -298,6 +336,7 @@ simulate_double_censored_pmf <- function(
 #'   }
 #' @family modelmodulehelpers
 extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
+  check_observation_indicator(new_confirm, observation_indicator)
   # format vector of snapshot lengths
   snap_length <- new_confirm
   snap_length <- snap_length[, .SD[delay == max(delay)],
@@ -307,14 +346,16 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
 
   # format the vector of snapshot lengths accounting for missing data
   if (!is.null(observation_indicator)) {
-    stopifnot(
-      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
-      )
-    )
+    # Get the maximum consecutive length of observed data
+    l_snap_length <- new_confirm[,
+     unique(max_obs_delay) + 1, by = c("reference_date", ".group")
+    ]
+    # Get the number of observed data points per snapshot
     nc_snap_length <- new_confirm[,
       .(s = sum(get(observation_indicator))), by = .(reference_date, .group)
     ]$s
   } else {
+    l_snap_length <- snap_length
     nc_snap_length <- snap_length
   }
 
@@ -339,6 +380,8 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
     ts = snap_lookup,
     sl = snap_length,
     csl = cumsum(snap_length),
+    lsl = l_snap_length,
+    clsl = cumsum(l_snap_length),
     nsl = nc_snap_length,
     cnsl = cumsum(nc_snap_length),
     sg = unique(new_confirm[, .(reference_date, .group)])$.group

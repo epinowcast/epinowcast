@@ -37,6 +37,7 @@ dates
 }
 \seealso{
 Helper functions for model modules
+\code{\link{add_max_observed_delay}()},
 \code{\link{add_pmfs}()},
 \code{\link{convolution_matrix}()},
 \code{\link{enw_reference_by_report}()},
