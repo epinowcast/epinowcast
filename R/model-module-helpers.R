@@ -290,14 +290,13 @@ simulate_double_censored_pmf <- function(
 add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
   check_observation_indicator(new_confirm, observation_indicator)
   new_confirm <- new_confirm[,
-    .(max_obs_delay = max(delay), delay = delay),
+    max_obs_delay := max(delay),
     by = c("reference_date", ".group", observation_indicator)
   ]
   if (!is.null(observation_indicator)) {
     new_confirm[!get(observation_indicator), max_obs_delay := -1]
     new_confirm <- new_confirm[,
-      .(max_obs_delay = max(max_obs_delay), delay = delay),
-      by = c("reference_date", ".group")
+      max_obs_delay := max(max_obs_delay), by = c("reference_date", ".group")
     ]
   }
   return(new_confirm[])
@@ -348,8 +347,8 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
   if (!is.null(observation_indicator)) {
     # Get the maximum consecutive length of observed data
     l_snap_length <- new_confirm[,
-     unique(max_obs_delay) + 1, by = c("reference_date", ".group")
-    ]
+     .(s = unique(max_obs_delay) + 1), by = c("reference_date", ".group")
+    ]$s
     # Get the number of observed data points per snapshot
     nc_snap_length <- new_confirm[,
       .(s = sum(get(observation_indicator))), by = .(reference_date, .group)
