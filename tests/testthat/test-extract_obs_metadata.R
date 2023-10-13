@@ -13,7 +13,10 @@ test_that("extract_obs_metadata returns correct metadata", {
   # Check if the result is a list
   expect_true(is.list(result))
   # Check if the list has the expected names
-  expect_equal(names(result), c("st", "ts", "sl", "csl", "nsl", "cnsl", "sg"))
+  expect_equal(
+    names(result),
+    c("st", "ts", "sl", "csl", "lsl", "clsl", "nsl", "cnsl", "sg")
+  )
   # Test the output is as expected
   expect_equal(result$st, c(1,2, 1))
   expect_equal(
@@ -26,12 +29,16 @@ test_that("extract_obs_metadata returns correct metadata", {
   expect_equal(result$sg, c(1, 1, 2))
   
   # Test with observation_indicator
+  new_confirm <- epinowcast:::add_max_observed_delay(new_confirm, ".observed")
   result <-
     epinowcast:::extract_obs_metadata(new_confirm, ".observed")
   
   expect_true(is.list(result))
   # Check if the list has the expected names
-  expect_equal(names(result), c("st", "ts", "sl", "csl", "nsl", "cnsl", "sg"))
+  expect_equal(
+    names(result),
+    c("st", "ts", "sl", "csl", "lsl", "clsl", "nsl", "cnsl", "sg")
+  )
   # Test the output is as expected
   expect_equal(result$st, c(1,2, 1))
   expect_equal(
