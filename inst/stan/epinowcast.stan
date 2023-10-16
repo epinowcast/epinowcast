@@ -425,6 +425,7 @@ generated quantities {
     vector[csl[s]] log_exp_obs;
     array[csdmax[s]] int pp_obs_all;
     array[csl[s]] int pp_obs_tmp;
+    array[clsl[s]] int pp_obs_lik;
 
     // Posterior predictions for observations
     profile("generated_obs") {
@@ -456,6 +457,10 @@ generated quantities {
     // Allocate to just those actually observed
     pp_obs_tmp = allocate_observed_obs(
       1, s, pp_obs_all, sl, csl, sdmax, csdmax
+    );
+    // Allocate to just those in the likelihod
+    pp_obs_lik = allocate_observed_obs(
+      1, s, pp_obs_tmp, lsl, clsl, sl, csl
     );
     } 
 
@@ -503,13 +508,9 @@ generated quantities {
           array[nl[3]] int filt_obs_lookup = segment(
             flat_obs_lookup, nl[1], nl[3]
           );
-          array[nl[3]] int filt_obs_local_lookup;
-          for (j in 1:nl[3]) {
-            filt_obs_local_lookup[j] = filt_obs_lookup[j] - nl[1] + l[1];
-          }
   
           // Minus estimates for those that are already reported
-          pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
+          pp_inf_obs[i, k] -= sum(pp_obs_lik[filt_obs_lookup]);
           // Add observations that have been reported
           pp_inf_obs[i, k] += sum(segment(flat_obs, nl[1], nl[3]));
         }
