@@ -2,7 +2,7 @@
 
     Code
       expectation <- enw_expectation(data = pobs)
-    Message <simpleMessage>
+    Message
       A random effect using .group is not possible as this variable has fewer than 2 unique values.
     Code
       expectation$inits <- NULL
