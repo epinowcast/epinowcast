@@ -503,9 +503,13 @@ generated quantities {
           array[nl[3]] int filt_obs_lookup = segment(
             flat_obs_lookup, nl[1], nl[3]
           );
+          array[nl[3]] int filt_obs_local_lookup;
+          for (j in 1:nl[3]) {
+            filt_obs_local_lookup[j] = filt_obs_lookup[j] - nl[1] + l[1];
+          }
   
           // Minus estimates for those that are already reported
-          pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_lookup]);
+          pp_inf_obs[i, k] -= sum(pp_obs_tmp[filt_obs_local_lookup]);
           // Add observations that have been reported
           pp_inf_obs[i, k] += sum(segment(flat_obs, nl[1], nl[3]));
         }
