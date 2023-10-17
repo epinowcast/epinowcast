@@ -423,6 +423,7 @@ generated quantities {
     vector[miss_obs]  log_exp_miss_ref;
     vector[miss_obs ? csdmax[s] : 0] log_exp_miss_by_ref;
     vector[csl[s]] log_exp_obs;
+    vector[clsl[s]] log_exp_obs_lik;
     array[csdmax[s]] int pp_obs_all;
     array[csl[s]] int pp_obs_tmp;
     array[clsl[s]] int pp_obs_lik;
@@ -451,6 +452,10 @@ generated quantities {
     // Allocate to just those actually observed
     log_exp_obs = allocate_observed_obs(
       1, s, log_exp_obs_all, sl, csl, sdmax, csdmax
+    );
+    // Allocate to just those observed (non-consecutivly)
+    log_exp_obs_lik = allocate_observed_obs(
+      1, s, log_exp_obs, lsl, clsl, sl, csl
     );
     // Draw from observation model for observed counts with report and reference
     pp_obs_all = obs_rng(log_exp_obs_all, phi, model_obs);
