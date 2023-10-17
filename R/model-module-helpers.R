@@ -358,7 +358,6 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
     nc_snap_length <- snap_length
   }
 
-
   # snap lookup
   snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
   snap_lookup[, s := seq_len(.N)]
