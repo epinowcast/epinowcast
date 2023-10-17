@@ -46,8 +46,8 @@ beyond the maximum date found in the data? Default: FALSE}
 imputed as missing be flagged as not observed?. Makes use of
 \code{\link[=enw_flag_observed_observations]{enw_flag_observed_observations()}} to add a \code{.observed} logical vector
 which indicates if observations have been imputed. This vector can
-then be passed to the \code{observed} argument of \code{\link[=enw_obs]{enw_obs()}} to control if
-these observations are used in the likelihood. Default: FALSE}
+then be passed to the \code{observation_indicator} argument of \code{\link[=enw_obs]{enw_obs()}} to
+control if these observations are used in the likelihood. Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of

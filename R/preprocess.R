@@ -671,8 +671,8 @@ enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
 #' imputed as missing be flagged as not observed?. Makes use of
 #' [enw_flag_observed_observations()] to add a `.observed` logical vector
 #' which indicates if observations have been imputed. This vector can
-#' then be passed to the `observed` argument of [enw_obs()] to control if
-#' these observations are used in the likelihood. Default: FALSE
+#' then be passed to the `observation_indicator` argument of [enw_obs()] to
+#' control if these observations are used in the likelihood. Default: FALSE
 #'
 #' @inheritParams get_internal_timestep
 #'
