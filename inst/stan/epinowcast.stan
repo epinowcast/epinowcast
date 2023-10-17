@@ -500,7 +500,7 @@ generated quantities {
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
         array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
         array[3] int nl = filt_obs_indexes(i_start, i_start, cnsl, nsl);
-        // Add all esimated reported observations
+        // Add all estimated reported observations
         pp_inf_obs[i, k] = sum(segment(pp_obs_all, f[1], f[3]));
 
         if (nl[3]) {
