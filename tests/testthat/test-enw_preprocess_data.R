@@ -57,7 +57,7 @@ test_that("enw_preprocess_data() can handle a non-default timestep as expected",
     enw_aggregate_cumulative(timestep = "week")
 
   weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
-    enw_filter_reference_dates(earliest_date = "2021-05-11")
+    enw_filter_reference_dates(earliest_date = "2021-05-10")
 
   weekly_pobs <- enw_preprocess_data(
     weekly_nat_germany_hosp, max_delay = 5, timestep = "week"
@@ -71,18 +71,18 @@ test_that("enw_preprocess_data() can handle a non-default timestep as expected",
   expect_equal(weekly_pobs$timestep[[1]], "week")
   expect_equal(
     unique(weekly_pobs$obs[[1]]$reference_date)[1:2],
-    as.IDate(c("2021-05-11", "2021-05-18"))
+    as.IDate(c("2021-05-10", "2021-05-17"))
   )
   expect_equal(
     unique(weekly_pobs$obs[[1]]$report_date)[1:2],
-    as.IDate(c("2021-05-11", "2021-05-18"))
+    as.IDate(c("2021-05-10", "2021-05-17"))
   )
   expect_equal(
     unique(weekly_pobs$metareport[[1]]$delay), 0:4
   )
   expect_equal(
     weekly_pobs$metareport[[1]]$date[20:21],
-    as.IDate(c("2021-09-21", "2021-09-28"))
+    as.IDate(c("2021-09-20", "2021-09-27"))
   )
   expect_equal(
     weekly_pobs$metadelay[[1]]$delay, 0:4

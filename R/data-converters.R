@@ -318,7 +318,9 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' ensuring alignment on the same day of week for report and reference dates.
 #' It is  useful for aggregating data to a weekly timestep, for example which
 #' may be desirable if testing using a weekly timestep or if you are very
-#' concerned about runtime.
+#' concerned about runtime. Note that the timestep will start from the
+#' minimum reference date + a single time step (i.e. the first timestep will
+#' be "2022-10-23" if the minimum reference date is "2022-10-16").
 #'
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` numeric column, and `report_date` and
@@ -352,13 +354,13 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
 
   internal_timestep <- get_internal_timestep(timestep)
 
-  # Initial filtering
+  # Initial filtering to set when the timestep will start from
   agg_obs <- obs[
-    report_date >= min(reference_date, na.rm = TRUE) + internal_timestep
+    report_date >= (min(reference_date, na.rm = TRUE) + internal_timestep - 1)
   ]
 
   stopifnot(
-    "There are no complete report dates (i.e. report_date >= reference_date + timestep)" = nrow(agg_obs) > 0 # nolint
+    "There are no complete report dates (i.e. report_date >= reference_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
   )
 
   # Set the day of the timestep based on timestep
@@ -386,7 +388,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
   )
 
   # Set day of week for reference date and filter
-  agg_obs <- agg_obs[reference_date_mod == report_date_mod[1]]
+  agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
   agg_obs <- agg_obs[reference_date >= min(report_date)]
 
   # If there are missing reference dates, aggregate over the report date
