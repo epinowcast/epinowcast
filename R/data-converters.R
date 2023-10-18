@@ -354,13 +354,13 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
 
   internal_timestep <- get_internal_timestep(timestep)
 
-  # Initial filtering
+  # Initial filtering to set when the timestep will start from
   agg_obs <- obs[
-    report_date >= (min(reference_date, na.rm = TRUE) + internal_timestep)
+    report_date >= (min(reference_date, na.rm = TRUE) + internal_timestep - 1)
   ]
 
   stopifnot(
-    "There are no complete report dates (i.e. report_date >= reference_date + timestep)" = nrow(agg_obs) > 0 # nolint
+    "There are no complete report dates (i.e. report_date >= reference_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
   )
 
   # Set the day of the timestep based on timestep
@@ -388,7 +388,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
   )
 
   # Set day of week for reference date and filter
-  agg_obs <- agg_obs[reference_date_mod == report_date_mod[1]]
+  agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
   agg_obs <- agg_obs[reference_date >= min(report_date)]
 
   # If there are missing reference dates, aggregate over the report date
