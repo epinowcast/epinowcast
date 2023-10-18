@@ -599,7 +599,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param min_date The minimum date to include in the data. Defaults to the
 #' minimum reference date found in the data.
-#' 
+#'
 #' @param max_date The maximum date to include in the data. Defaults to the
 #' maximum report date found in the data.
 #'

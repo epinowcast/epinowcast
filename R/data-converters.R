@@ -318,9 +318,10 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' ensuring alignment on the same day of week for report and reference dates.
 #' It is  useful for aggregating data to a weekly timestep, for example which
 #' may be desirable if testing using a weekly timestep or if you are very
-#' concerned about runtime. Note that the timestep will start from the
-#' minimum reference date + a single time step (i.e. the first timestep will
-#' be "2022-10-23" if the minimum reference date is "2022-10-16").
+#' concerned about runtime. Note that the start of the timestep will be
+#' determined by `min_date` + a single timestep (i.e. the 
+#' first timestep will be "2022-10-23" if the minimum reference date is
+#' "2022-10-16").
 #'
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` numeric column, and `report_date` and
@@ -329,6 +330,11 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' NA values are present in the `confirm` column then these will be set to
 #' zero before aggregation this may not be desirable if this missingness
 #' is meaningful.
+#'
+#' @param min_date The minimum reference date to start the aggregation from.
+#' Note that the timestep will start from the minimum reference date + a
+#' single time step (i.e. the first timestep will be "2022-10-23" if the
+#' minimum reference date is "2022-10-16").
 #'
 #' @inheritParams get_internal_timestep
 #' @inheritParams enw_linelist_to_incidence
@@ -340,8 +346,10 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @examples
 #' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
-enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
-                                     copy = TRUE) {
+enw_aggregate_cumulative <- function(
+  obs, timestep = "day", by = NULL,
+  min_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
+) {
   stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
   obs <- coerce_dt(
     obs,
