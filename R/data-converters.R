@@ -363,9 +363,9 @@ enw_aggregate_cumulative <- function(
   internal_timestep <- get_internal_timestep(timestep)
 
   # Initial filtering to set when the timestep will start from
-  agg_obs <- obs[
-    report_date >= (min(reference_date, na.rm = TRUE) + internal_timestep - 1)
-  ]
+  init_ref_date <- min_date + internal_timestep - 1
+  agg_obs <- obs[reference_date >= min_date]
+  agg_obs <- agg_obs[report_date >= init_ref_date]
 
   stopifnot(
     "There are no complete report dates (i.e. report_date >= reference_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
