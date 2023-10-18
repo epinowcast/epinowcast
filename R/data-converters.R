@@ -356,7 +356,7 @@ enw_aggregate_cumulative <- function(obs, timestep = "day", by = NULL,
 
   # Initial filtering
   agg_obs <- obs[
-    report_date >= min(reference_date, na.rm = TRUE) + internal_timestep - 1
+    report_date >= (min(reference_date, na.rm = TRUE) + internal_timestep)
   ]
 
   stopifnot(
