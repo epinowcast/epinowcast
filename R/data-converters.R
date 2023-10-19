@@ -368,8 +368,7 @@ enw_aggregate_cumulative <- function(
 
   # Initial filtering to set when the timestep will start from
   init_ref_date <- min_reference_date + internal_timestep - 1
-  agg_obs <- obs[reference_date >= min_reference_date]
-  agg_obs <- agg_obs[report_date >= init_ref_date]
+  agg_obs <- obs[report_date >= init_ref_date]
 
   stopifnot(
     "There are no complete report dates (i.e. report_date >= min_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
@@ -379,16 +378,18 @@ enw_aggregate_cumulative <- function(
   agg_obs <- date_to_numeric_modulus(
     agg_obs, "report_date", internal_timestep
   )
-  agg_obs <- date_to_numeric_modulus(
-    agg_obs, "reference_date", internal_timestep
-  )
-
   # Ordering by reference and report date
   setorder(agg_obs, reference_date, report_date)
 
   # Split into missing and non-missing reference dates
   agg_obs_na_ref <- agg_obs[is.na(reference_date)]
   agg_obs <- agg_obs[!is.na(reference_date)]
+
+  # Set the day of the timestep for reference dates
+  agg_obs <- agg_obs[reference_date >= min_reference_date]
+  agg_obs <- date_to_numeric_modulus(
+    agg_obs, "reference_date", internal_timestep
+  )
 
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
@@ -410,7 +411,7 @@ enw_aggregate_cumulative <- function(
       agg_obs_na_ref, internal_timestep, by = ".group"
     )
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]
-    agg_obs <- rbind(agg_obs_na_ref, agg_obs)
+    agg_obs <- rbind(agg_obs_na_ref, agg_obs, fill = TRUE)
   }
 
   # Drop internal processing columns
