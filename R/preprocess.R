@@ -636,11 +636,13 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   check_group(obs)
 
   if (missing(max_delay)) {
-    max_delay <- as.numeric(max_date - min_date)
+    max_delay <- as.numeric(as.IDate(max_date) - as.IDate(min_date))
   }
   internal_timestep <- get_internal_timestep(timestep)
 
-  dates <- seq.Date(min_date, max_date, by = internal_timestep)
+  dates <- seq.Date(
+    as.IDate(min_date), as.IDate(max_date), by = internal_timestep
+  )
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
