@@ -627,7 +627,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' # Allow completion beyond the maximum date found in the data
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
-enw_complete_dates <- function(obs, by = NULL, max_delay, 
+enw_complete_dates <- function(obs, by = NULL, max_delay,
                                min_date = min(obs$reference_date, na.rm = TRUE),
                                max_date = max(obs$report_date, na.rm = TRUE),
                                timestep = "day", missing_reference = TRUE,

@@ -319,7 +319,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' It is  useful for aggregating data to a weekly timestep, for example which
 #' may be desirable if testing using a weekly timestep or if you are very
 #' concerned about runtime. Note that the start of the timestep will be
-#' determined by `min_date` + a single timestep (i.e. the 
+#' determined by `min_date` + a single timestep (i.e. the
 #' first timestep will be "2022-10-23" if the minimum reference date is
 #' "2022-10-16").
 #'
