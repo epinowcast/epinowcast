@@ -352,7 +352,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
 enw_aggregate_cumulative <- function(
   obs, timestep = "day", by = NULL,
-  min_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
+  min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
   stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
   obs <- coerce_dt(

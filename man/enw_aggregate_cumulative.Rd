@@ -9,7 +9,7 @@ enw_aggregate_cumulative(
   obs,
   timestep = "day",
   by = NULL,
-  min_date = min(obs$reference_date, na.rm = TRUE),
+  min_reference_date = min(obs$reference_date, na.rm = TRUE),
   copy = TRUE
 )
 }
@@ -30,8 +30,6 @@ as using the \code{reference_date} and \code{report_date}). If not supplied
 then the function will aggregate by just the \code{reference_date} and
 \code{report_date}.}
 
-\item{copy}{Should \code{obs} be copied (default) or modified in place?}
-
 \item{min_reference_date}{The minimum reference date to start the
 aggregation from. Note that the timestep will start from the minimum
 reference date + a single time step (i.e. the first timestep will be
@@ -40,6 +38,8 @@ is the minimum reference date in the \code{obs} object. Other sensible values
 would be the minimum report date in the \code{obs} object + 1 day if reporting
 is already weekly and you wish to ensure that the timestep of the output
 matches the reporting timestep.}
+
+\item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
 A data.table with aggregated observations.
