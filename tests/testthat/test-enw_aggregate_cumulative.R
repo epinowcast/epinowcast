@@ -175,7 +175,7 @@ test_that(
   ]
   daily <- enw_complete_dates(data, missing_reference = FALSE)
   actual_agg <- enw_aggregate_cumulative(
-    daily, timestep = "week", min_date = min(data$report_date) - 6
+    daily, timestep = "week", min_reference_date = min(data$report_date) + 1
   )
   expect_equal(actual_agg, expected_agg)
 })

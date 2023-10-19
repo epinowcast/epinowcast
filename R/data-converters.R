@@ -331,10 +331,14 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' zero before aggregation this may not be desirable if this missingness
 #' is meaningful.
 #'
-#' @param min_date The minimum reference date to start the aggregation from.
-#' Note that the timestep will start from the minimum reference date + a
-#' single time step (i.e. the first timestep will be "2022-10-23" if the
-#' minimum reference date is "2022-10-16").
+#' @param min_reference_date The minimum reference date to start the
+#' aggregation from. Note that the timestep will start from the minimum
+#' reference date + a single time step (i.e. the first timestep will be
+#' "2022-10-23" if the minimum reference date is "2022-10-16"). The default
+#' is the minimum reference date in the `obs` object. Other sensible values
+#' would be the minimum report date in the `obs` object + 1 day if reporting
+#' is already weekly and you wish to ensure that the timestep of the output
+#' matches the reporting timestep.
 #'
 #' @inheritParams get_internal_timestep
 #' @inheritParams enw_linelist_to_incidence
@@ -363,12 +367,12 @@ enw_aggregate_cumulative <- function(
   internal_timestep <- get_internal_timestep(timestep)
 
   # Initial filtering to set when the timestep will start from
-  init_ref_date <- min_date + internal_timestep - 1
-  agg_obs <- obs[reference_date >= min_date]
+  init_ref_date <- min_reference_date + internal_timestep - 1
+  agg_obs <- obs[reference_date >= min_reference_date]
   agg_obs <- agg_obs[report_date >= init_ref_date]
 
   stopifnot(
-    "There are no complete report dates (i.e. report_date >= reference_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
+    "There are no complete report dates (i.e. report_date >= min_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
   )
 
   # Set the day of the timestep based on timestep
@@ -388,7 +392,7 @@ enw_aggregate_cumulative <- function(
 
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
-  agg_obs <- agg_obs[report_date_mod == report_date_mod[1]]
+  agg_obs <- agg_obs[report_date_mod == 0]
 
   # Aggregate over the timestep
   agg_obs <- aggregate_rolling_sum(
@@ -405,7 +409,7 @@ enw_aggregate_cumulative <- function(
     agg_obs_na_ref <- aggregate_rolling_sum(
       agg_obs_na_ref, internal_timestep, by = ".group"
     )
-    agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == report_date_mod[1]]
+    agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs)
   }
 
