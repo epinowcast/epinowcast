@@ -6,9 +6,9 @@ This release is in development and not yet ready for production use.
 
 @medewitt, @adrian-lison, and @seabbs contributed code to this release.
 
-@adrian-lison, @bisaloo, and @seabbs reviewed pull requests for this release.
+@adrian-lison, @bisaloo, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
