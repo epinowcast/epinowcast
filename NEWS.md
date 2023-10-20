@@ -20,7 +20,7 @@ This release is in development and not yet ready for production use.
 
 ## Package
 
-- Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo.
+- Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo and reviewed by @seabbs.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
 - Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
