@@ -32,7 +32,7 @@ test_that("enw_obs() produces the expected output", {
   })
   obs <- enw_obs(data = pobs)
   expect_named(
-    obs$init(obs$data, obs$priors)(),
+    obs$inits(obs$data, obs$priors)(),
     c("sqrt_phi", "phi")
   )
   expect_identical(enw_obs(family = "poisson", data = pobs)$data$model_obs, 0)

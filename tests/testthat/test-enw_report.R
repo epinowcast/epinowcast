@@ -11,7 +11,7 @@ test_that("enw_report supports non-parametric models", {
     ~ 1 + day_of_week,
     data = pobs
   )
-  expect_named(rep$init(rep$data, rep$priors)(), c("rep_beta", "rep_beta_sd"))
+  expect_named(rep$inits(rep$data, rep$priors)(), c("rep_beta", "rep_beta_sd"))
   expect_identical(
     enw_report(~0, data = pobs)$formula$non_parametric, "~1"
   )
