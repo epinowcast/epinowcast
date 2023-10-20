@@ -4,11 +4,11 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@medewitt, @adrian-lison, and @seabbs contributed code to this release.
+@medewitt, @adrian-lison, @Bisaloo and @seabbs contributed code to this release.
 
-@adrian-lison, @bisaloo, and @seabbs reviewed pull requests for this release.
+@adrian-lison, @bisaloo, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
@@ -16,9 +16,11 @@ This release is in development and not yet ready for production use.
 - Fixed a few typos in the model vignette. See #292 by @medewitt and reviewed by @seabbs.
 - Fixed a bug where snapshots (i.e. as returned as metadata in `enw_preprocess_data()`) were defined based on report vs reference date. This won't have impacted most usage but was a problem when trying to fit a model to retrospective (and so completely reported) data. See #312 by @seabbs and self-reviewed.
 - Fixed a bug where a non-`data.table` passed to `enw_quantile_to_long()` could throw an error. See #324 by @natemcintosh and reviewed by @pearsonca.
+- Fixed a bug where `enw_aggregate_cumulative()` initialised its time step from the first reference date + 1 day rather than the first reference date. See #336 by @seabbs and self-reviewed.
 
 ## Package
 
+- Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo and reviewed by @seabbs.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
 - Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
@@ -26,6 +28,8 @@ This release is in development and not yet ready for production use.
 - Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
 - Added support for non-daily reference date models (i.e., process models). For example, this allows modelling weekly data as weekly. This may be desirable when delays are very long, when computational resources are limited, or it is not possible to specify a sufficiently flexible daily model to account for observed reporting patterns in either reference or report dates. As the model is unit less this entails no changes to the model itself. See #303 by @seabbs and self-reviewed.
 - Added a new helper function `simulate_double_censored_pmf()` which helps users define "correct" probability mass functions for double censored delays based on work in `epidist` by @parksw3 and @seabbs. Note this function is likely to be spun out into its own package in the near future. See #312 by @seabbs and self-reviewed.
+- Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See # by @seabbs and reviewed by @natemcintosh.
+- Added support to `enw_complete_dates()` for `min_date` and `max_date` arguments. These arguments allow users to specify the minimum and maximum dates to include in the output. This may be useful to users who want to ensure that their data is complete for a specified time period. See #340 by @seabbs and reviewed by @natemcintosh.
 
 ## Model
 

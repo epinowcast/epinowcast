@@ -8,6 +8,8 @@ enw_complete_dates(
   obs,
   by = NULL,
   max_delay,
+  min_date = min(obs$reference_date, na.rm = TRUE),
+  max_date = max(obs$report_date, na.rm = TRUE),
   timestep = "day",
   missing_reference = TRUE,
   completion_beyond_max_report = FALSE,
@@ -32,6 +34,12 @@ distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
 (i.e. a \code{max_delay} of 1 corresponds with no delay).}
+
+\item{min_date}{The minimum date to include in the data. Defaults to the
+minimum reference date found in the data.}
+
+\item{max_date}{The maximum date to include in the data. Defaults to the
+maximum report date found in the data.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
 "week", "month") or a numeric whole number representing the number of days.}

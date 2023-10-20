@@ -661,6 +661,12 @@ enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
 #' general all features that you may consider using as grouping variables
 #' or as covariates need to be included in the `by` variable.
 #'
+#' @param min_date The minimum date to include in the data. Defaults to the
+#' minimum reference date found in the data.
+#'
+#' @param max_date The maximum date to include in the data. Defaults to the
+#' maximum report date found in the data.
+#'
 #' @param missing_reference Logical, should entries for cases with missing
 #' reference date be completed as well?, Default: TRUE
 #'
@@ -692,21 +698,22 @@ enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
 #'
 #' # Allow completion beyond the maximum date found in the data
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
-enw_complete_dates <- function(obs, by = NULL, max_delay, timestep = "day",
-                               missing_reference = TRUE,
-                               completion_beyond_max_report  = FALSE,
-                               flag_observation = FALSE) {
+enw_complete_dates <- function(obs, by = NULL, max_delay,
+                               min_date = min(obs$reference_date, na.rm = TRUE),
+                               max_date = max(obs$report_date, na.rm = TRUE),
+                               timestep = "day", missing_reference = TRUE,
+                               completion_beyond_max_report  = FALSE, flag_observation = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
-  min_date <- min(obs$reference_date, na.rm = TRUE)
-  max_date <- max(obs$report_date, na.rm = TRUE)
   if (missing(max_delay)) {
-    max_delay <- as.numeric(max_date - min_date)
+    max_delay <- as.numeric(as.IDate(max_date) - as.IDate(min_date))
   }
   internal_timestep <- get_internal_timestep(timestep)
 
-  dates <- seq.Date(min_date, max_date, by = internal_timestep)
+  dates <- seq.Date(
+    as.IDate(min_date), as.IDate(max_date), by = internal_timestep
+  )
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)

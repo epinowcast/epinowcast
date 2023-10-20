@@ -5,7 +5,13 @@
 \title{Aggregate observations over a given timestep for both report and reference
 dates.}
 \usage{
-enw_aggregate_cumulative(obs, timestep = "day", by = NULL, copy = TRUE)
+enw_aggregate_cumulative(
+  obs,
+  timestep = "day",
+  by = NULL,
+  min_reference_date = min(obs$reference_date, na.rm = TRUE),
+  copy = TRUE
+)
 }
 \arguments{
 \item{obs}{An object coercible to a \code{data.table} (such as a \code{data.frame})
@@ -24,6 +30,15 @@ as using the \code{reference_date} and \code{report_date}). If not supplied
 then the function will aggregate by just the \code{reference_date} and
 \code{report_date}.}
 
+\item{min_reference_date}{The minimum reference date to start the
+aggregation from. Note that the timestep will start from the minimum
+reference date + a single time step (i.e. the first timestep will be
+"2022-10-23" if the minimum reference date is "2022-10-16"). The default
+is the minimum reference date in the \code{obs} object. Other sensible values
+would be the minimum report date in the \code{obs} object + 1 day if reporting
+is already weekly and you wish to ensure that the timestep of the output
+matches the reporting timestep.}
+
 \item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
@@ -34,7 +49,10 @@ This function aggregates observations over a specified timestep,
 ensuring alignment on the same day of week for report and reference dates.
 It is  useful for aggregating data to a weekly timestep, for example which
 may be desirable if testing using a weekly timestep or if you are very
-concerned about runtime.
+concerned about runtime. Note that the start of the timestep will be
+determined by \code{min_date} + a single timestep (i.e. the
+first timestep will be "2022-10-23" if the minimum reference date is
+"2022-10-16").
 }
 \examples{
 nat_hosp <- germany_covid19_hosp[location == "DE"][age_group \%in\% "00+"]
