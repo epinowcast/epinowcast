@@ -105,7 +105,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   } else {
     # make list of contrast args
     contrast_args <- purrr::map(
-      no_contrasts, ~ stats::contrasts(data[[.]], contrast = FALSE)
+      no_contrasts, ~ stats::contrasts(data[[.]], contrasts = FALSE)
     )
     names(contrast_args) <- no_contrasts
 

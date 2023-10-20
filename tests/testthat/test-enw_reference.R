@@ -50,7 +50,7 @@ test_that("enw_reference supports parametric models", {
     ~ 1 + (1 | day_of_week) + rw(week),
     distribution = "lognormal", data = pobs
   )
-  inits <- ref$init(ref$data, ref$priors)()
+  inits <- ref$inits(ref$data, ref$priors)()
   expect_named(
     inits,
     c(
@@ -87,7 +87,7 @@ test_that("enw_reference supports parametric models", {
   )
   expect_identical(no_ref2$data$model_refp, 0)
   expect_identical(
-    exp_ref$init(exp_ref$data, exp_ref$priors)()$refp_sd_int, numeric(0)
+    exp_ref$inits(exp_ref$data, exp_ref$priors)()$refp_sd_int, numeric(0)
   )
 })
 
@@ -108,7 +108,7 @@ test_that("enw_reference supports non-parametric models", {
     non_parametric = ~ 1 + delay + rw(week),
     data = pobs_filt
   )
-  inits <- ref$init(ref$data, ref$priors)()
+  inits <- ref$inits(ref$data, ref$priors)()
   zero_length <- c(
     "refp_mean_int", "refp_sd_int", "refp_mean_beta",
     "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
@@ -124,7 +124,7 @@ test_that("enw_reference supports non-parametric models", {
   )
   expect_identical(colnames(ref_no_int$data$refnp_fdesign), "delay")
   expect_identical(ref_no_int$data$refnp_fintercept, 0)
-  inits_no_int <- ref_no_int$init(ref_no_int$data, ref_no_int$priors)()
+  inits_no_int <- ref_no_int$inits(ref_no_int$data, ref_no_int$priors)()
   zero_length <- setdiff(names(inits_no_int), "refnp_beta")
   expect_zero_length_or_not(zero_length, inits_no_int)
 })
@@ -144,7 +144,7 @@ test_that("Parametric and non-parametric models can be jointly specified", {
     non_parametric = ~ 0 + (1 | delay_cat),
     data = pobs_filt
   )
-  inits <- ref$init(ref$data, ref$priors)()
+  inits <- ref$inits(ref$data, ref$priors)()
   zero_length <- c(
     "refp_mean_beta", "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
     "refnp_int"
