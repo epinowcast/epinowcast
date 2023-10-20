@@ -128,17 +128,17 @@ then the function will aggregate by just the <code>reference_date</code> and
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">nat_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">enw_aggregate_cumulative</span><span class="op">(</span><span class="va">nat_hosp</span>, timestep <span class="op">=</span> <span class="st">"week"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      reference_date location age_group confirm report_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:     2021-04-13       DE       00+    3808  2021-04-13</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:     2021-04-13       DE       00+    5588  2021-04-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:     2021-04-13       DE       00+    6305  2021-04-27</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:     2021-04-13       DE       00+    6705  2021-05-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:     2021-04-13       DE       00+    6909  2021-05-11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:     2021-04-12       DE       00+    3505  2021-04-12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:     2021-04-12       DE       00+    5276  2021-04-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:     2021-04-12       DE       00+    5993  2021-04-26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:     2021-04-12       DE       00+    6362  2021-05-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:     2021-04-12       DE       00+    6594  2021-05-10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 266:     2021-10-05       DE       00+    2111  2021-10-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 267:     2021-10-05       DE       00+    2317  2021-10-19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 268:     2021-10-12       DE       00+    1417  2021-10-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 269:     2021-10-12       DE       00+    2279  2021-10-19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 270:     2021-10-19       DE       00+    1773  2021-10-19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 266:     2021-10-04       DE       00+    2091  2021-10-11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 267:     2021-10-04       DE       00+    2346  2021-10-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 268:     2021-10-11       DE       00+    1312  2021-10-11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 269:     2021-10-11       DE       00+    2163  2021-10-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 270:     2021-10-18       DE       00+    1597  2021-10-18</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
