@@ -1,4 +1,4 @@
-# enw_complete_dates works as expected with well behaved data
+# enw_complete_dates() works as expected with well behaved data
 
     Code
       enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 5)
