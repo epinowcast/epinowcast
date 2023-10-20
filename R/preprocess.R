@@ -702,7 +702,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
                                min_date = min(obs$reference_date, na.rm = TRUE),
                                max_date = max(obs$report_date, na.rm = TRUE),
                                timestep = "day", missing_reference = TRUE,
-                               completion_beyond_max_report  = FALSE, flag_observation = FALSE) {
+                               completion_beyond_max_report  = FALSE,
+                               flag_observation = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
