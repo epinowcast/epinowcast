@@ -10,7 +10,7 @@ test_that("enw_expectation produces the expected default model", {
   exp <- enw_expectation(~ 1 + day_of_week, data = pobs)
   obs <- enw_obs(data = pobs)
   expect_named(
-    exp$init(c(exp$data, obs$data), exp$priors)(),
+    exp$inits(c(exp$data, obs$data), exp$priors)(),
     c(
       "expr_beta", "expr_beta_sd", "expr_lelatent_int", "expr_r_int",
       "expl_beta", "expl_beta_sd"
@@ -69,7 +69,7 @@ test_that(
     )
     expect_identical(
       purrr::map(
-        expectation_module$init(
+        expectation_module$inits(
           c(expectation_module$data, list(g = 3)),
           expectation_module$priors
         )(),
