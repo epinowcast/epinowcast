@@ -314,8 +314,8 @@ test_that("epinowcast can fit a simple non-parametric reference date model", {
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 250, iter_sampling = 1000,
-      refresh = 0, show_messages = FALSE
+      chains = 2, iter_warmup = 500, iter_sampling = 1000,
+      refresh = 0, show_messages = FALSE, max_treedepth = 11
     ),
     model = model
   ))
@@ -350,7 +350,7 @@ test_that("epinowcast can fit a simple combined parametric and non-parametric re
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 250, iter_sampling = 1000,
+      chains = 2, iter_warmup = 500, iter_sampling = 1000,
       refresh = 0, show_messages = FALSE
     ),
     model = model
