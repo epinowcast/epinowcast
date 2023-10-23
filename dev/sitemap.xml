@@ -43,6 +43,9 @@
     <loc>package.epinowcast.org/dev/news/index.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/add_max_observed_delay.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/add_pmfs.html</loc>
   </url>
   <url>
@@ -68,6 +71,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_numeric_timestep.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_observation_indicator.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_quantiles.html</loc>
@@ -172,10 +178,16 @@
     <loc>package.epinowcast.org/dev/reference/enw_fit_opts.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/enw_flag_observed_observations.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/enw_formula.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_formula_as_data_list.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_impute_na_observations.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_incidence_to_cumulative.html</loc>
@@ -284,6 +296,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/expose_stan_fns.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/extract_obs_metadata.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/extract_sparse_matrix.html</loc>

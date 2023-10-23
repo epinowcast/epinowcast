@@ -83,7 +83,8 @@ or as covariates need to be included in the <code>by</code> variable.</p>
 <span>  max_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">report_date</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>  timestep <span class="op">=</span> <span class="st">"day"</span>,</span>
 <span>  missing_reference <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  completion_beyond_max_report <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  completion_beyond_max_report <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  flag_observation <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -137,6 +138,15 @@ reference date be completed as well?, Default: TRUE</p></dd>
 <dd><p>Logical, should entries be completed
 beyond the maximum date found in the data? Default: FALSE</p></dd>
 
+
+<dt>flag_observation</dt>
+<dd><p>Logical, should observations that have been
+imputed as missing be flagged as not observed?. Makes use of
+<code><a href="enw_flag_observed_observations.html">enw_flag_observed_observations()</a></code> to add a <code>.observed</code> logical vector
+which indicates if observations have been imputed. This vector can
+then be passed to the <code>observation_indicator</code> argument of <code><a href="enw_obs.html">enw_obs()</a></code> to
+control if these observations are used in the likelihood. Default: FALSE</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -158,6 +168,8 @@ reference dates, groups and possible report dates.</p>
 <code><a href="enw_extend_date.html">enw_extend_date</a>()</code>,
 <code><a href="enw_filter_reference_dates.html">enw_filter_reference_dates</a>()</code>,
 <code><a href="enw_filter_report_dates.html">enw_filter_report_dates</a>()</code>,
+<code><a href="enw_flag_observed_observations.html">enw_flag_observed_observations</a>()</code>,
+<code><a href="enw_impute_na_observations.html">enw_impute_na_observations</a>()</code>,
 <code><a href="enw_latest_data.html">enw_latest_data</a>()</code>,
 <code><a href="enw_metadata.html">enw_metadata</a>()</code>,
 <code><a href="enw_missing_reference.html">enw_missing_reference</a>()</code>,
