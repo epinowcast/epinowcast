@@ -493,12 +493,13 @@ generated quantities {
       }
     }
     }
-    // Posterior prediction for final reported data (i.e at t = dmax + 1)
+    // Posterior prediction for final reported data (i.e at t + dmax + 1)
     // Organise into a grouped and time structured array
     profile("generated_obs") {
     for (k in 1:g) {
-      int start_t = t - dmax;
-      for (i in 1:dmax) {
+      int start_t = max(t - dmax, 0);
+      int nowcast_t = min(dmax, t);
+      for (i in 1:nowcast_t) {
         // Where am I?
         int i_start = ts[start_t + i, k];
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
