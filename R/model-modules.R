@@ -626,6 +626,15 @@ enw_missing <- function(formula = ~1, data) {
 #' available. Support for additional observation models is planned,
 #' please open an issue with suggestions.
 #'
+#' @param observation_indicator A character string, the name of the column in
+#' the data that indicates whether an observation is observed or not (using a
+#' logical variable) and therefore whether or not it should be used in the
+#' likelihood. This variable should be present in the data input to
+#' [enw_preprocess_data()]. It can be generated using `flag_observation` in
+#' [enw_complete_dates()] or it can be created directly using
+#' [enw_flag_observed_observations()]. If either of these approaches are used
+#' then the variable will be name `.observed`. Default is `NULL`.
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -633,70 +642,83 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
-enw_obs <- function(family = c("negbin", "poisson"), data) {
+enw_obs <- function(family = c("negbin", "poisson"),
+                   observation_indicator = NULL, data) {
   family <- match.arg(family)
 
-  model_obs <- data.table::fcase(
+  # copy new confirm for processing
+  new_confirm <- coerce_dt(
+    data$new_confirm[[1]],
+    required_cols = c(
+      "reference_date", "delay", "confirm", observation_indicator
+    )
+  )
+  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
+  check_observation_indicator(new_confirm, observation_indicator)
+
+  # filter out observations beyond the maximum observation
+  new_confirm <- add_max_observed_delay(new_confirm, observation_indicator)
+  filt_new_confirm <- new_confirm[delay <= max_obs_delay]
+
+  # Add a look up for observations
+  filt_new_confirm[, lookup := seq_len(.N)]
+
+  # Filter out missing observations
+  if (!is.null(observation_indicator)) {
+    filt_new_confirm <- filt_new_confirm[(get(observation_indicator))]
+  }
+
+  # Format indexing and observed data
+  # See stan code for docs on what all of these are
+  proc_data <- list(
+    n = nrow(filt_new_confirm),
+    t = data$time[[1]],
+    s = data$snapshots[[1]],
+    g = data$groups[[1]],
+    groups = 1:data$groups[[1]]
+  )
+
+  # Add in incidence observation metadata
+  proc_data <- c(
+    proc_data,
+    extract_obs_metadata(
+      new_confirm, observation_indicator = observation_indicator
+    )
+  )
+
+  # Add in maximum delay indexes
+  proc_data <- c(
+    proc_data,
+    list(
+      dmax = data$max_delay[[1]],
+      sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
+      csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
+      obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)])
+    )
+  )
+
+  # Add in observed data in the form of the reporting triangle
+  proc_data$obs <- as.matrix(data$reporting_triangle[[1]][, -(1:2)])
+
+  # Add in observations in flat format without missing observations
+  proc_data$flat_obs <- filt_new_confirm$new_confirm
+
+  # Add link between flat observations and complete ones
+  proc_data$flat_obs_lookup <- filt_new_confirm$lookup
+
+  # How do observations relate to where we are in the data
+  # Add matrix of latest observed data
+  proc_data$latest_obs <- latest_obs_as_matrix(data$latest[[1]])
+
+  # Add a switch for the observation model
+  proc_data$model_obs <- data.table::fcase(
     family %in% "poisson", 0,
     family %in% "negbin", 1
   )
 
-  # format latest matrix
-  latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
-
-  # get new confirm for processing
-  new_confirm <- coerce_dt(data$new_confirm[[1]])
-  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
-
-  # get flat observations
-  flat_obs <- new_confirm$new_confirm
-
-  # format vector of snapshot lengths
-  snap_length <- new_confirm
-  snap_length <- snap_length[, .SD[delay == max(delay)],
-    by = c("reference_date", ".group")
-  ]
-  snap_length <- snap_length$delay + 1
-
-  # snap lookup
-  snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
-  snap_lookup[, s := seq_len(.N)]
-  snap_lookup <- data.table::dcast(
-    snap_lookup, reference_date ~ .group,
-    value.var = "s"
-  )
-  snap_lookup <- as.matrix(snap_lookup[, -1])
-
-  # snap time
-  snap_time <- unique(new_confirm[, .(reference_date, .group)])
-  snap_time[, t := seq_len(.N), by = ".group"]
-  snap_time <- snap_time$t
-
-  # Format indexing and observed data
-  # See stan code for docs on what all of these are
-  data <- list(
-    n = length(flat_obs),
-    t = data$time[[1]],
-    s = data$snapshots[[1]],
-    g = data$groups[[1]],
-    groups = 1:data$groups[[1]],
-    st = snap_time,
-    ts = snap_lookup,
-    sl = snap_length,
-    csl = cumsum(snap_length),
-    sg = unique(new_confirm[, .(reference_date, .group)])$.group,
-    dmax = data$max_delay[[1]],
-    sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
-    csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
-    obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)]),
-    flat_obs = flat_obs,
-    latest_obs = latest_matrix,
-    model_obs = model_obs
-  )
-
   out <- list()
   out$family <- family
-  out$data <- data
+  out$data <- proc_data
   out$priors <- data.table::data.table(
     variable = "sqrt_phi",
     description = "One over the square root of the reporting overdispersion",

@@ -50,12 +50,14 @@ vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
     }
     // combine expected final obs and time effects to get expected obs
     profile("expected_obs_from_index") {
-    esnap += l;
-    log_exp_obs[ssnap:esnap] = expected_obs_from_index(
-      i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t,
-      l, refnp_lh, ref_np, p
-    );
-    ssnap += l;
+    if (l) {
+      esnap += l;
+      log_exp_obs[ssnap:esnap] = expected_obs_from_index(
+        i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t,
+        l, refnp_lh, ref_np, p
+      );
+      ssnap += l;
+    }
     }
   }
   return(log_exp_obs);

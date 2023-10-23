@@ -589,6 +589,70 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' Flag observed observations
+#'
+#' @description Flags observations based on the 'confirm' column.
+#' If the '.observed' column does not exist, it is created. Observations are
+#' flagged as observed (`TRUE`) if 'confirm' is not NA.
+#'
+#' @param obs A `data.frame` with at least a have `confirm` column.
+#'
+#' @return A `data.table` with an additional column '.observed' indicating
+#' observed observations.
+#'
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' dt <- data.frame(id = 1:3, confirm = c(NA, 1, 2))
+#' enw_flag_observed_observations(dt)
+enw_flag_observed_observations <- function(obs, copy = TRUE) {
+  obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
+  if (is.null(obs[[".observed"]])) {
+    obs[, .observed := !is.na(confirm)]
+  }else {
+    obs[, .observed := .observed & !is.na(confirm)]
+  }
+  return(obs[])
+}
+
+#' Impute NA observations
+#'
+#' @description Imputes NA values in the 'confirm' column.
+#' NA values are replaced with the last available observation or 0.
+#'
+#' @param obs A `data.frame` with at least 'confirm' and 'reference_date'
+#' columns.
+#'
+#' @param by A character vector of column names to group by. Defaults to
+#' an empty vector.
+#'
+#' @return A `data.table` with imputed 'confirm' column where NA values have
+#' been replaced with zero.
+#'
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' dt <- data.frame(
+#'  id = 1:3, confirm = c(NA, 1, 2),
+#'  reference_date = as.Date("2021-01-01")
+#' )
+#' enw_impute_na_observations(dt)
+enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
+  obs <- coerce_dt(
+    obs, required_cols = c("confirm", "reference_date", by),
+    copy = copy
+  )
+  data.table::setkeyv(obs, c(data.table::key(obs), "reference_date"))
+    # impute missing as last available observation or 0
+  obs[,
+    confirm := nafill(nafill(confirm, "locf"), fill = 0),
+    by = c("reference_date", by)
+  ]
+  return(obs[])
+}
+
 #' Complete missing reference and report dates
 #'
 #' Ensures that all reference and report dates are present for
@@ -608,6 +672,13 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @param completion_beyond_max_report Logical, should entries be completed
 #' beyond the maximum date found in the data? Default: FALSE
+#'
+#' @param flag_observation Logical, should observations that have been
+#' imputed as missing be flagged as not observed?. Makes use of
+#' [enw_flag_observed_observations()] to add a `.observed` logical vector
+#' which indicates if observations have been imputed. This vector can
+#' then be passed to the `observation_indicator` argument of [enw_obs()] to
+#' control if these observations are used in the likelihood. Default: FALSE
 #'
 #' @inheritParams get_internal_timestep
 #'
@@ -631,7 +702,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
                                min_date = min(obs$reference_date, na.rm = TRUE),
                                max_date = max(obs$report_date, na.rm = TRUE),
                                timestep = "day", missing_reference = TRUE,
-                               completion_beyond_max_report  = FALSE) {
+                               completion_beyond_max_report  = FALSE,
+                               flag_observation = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
@@ -676,11 +748,15 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   # join completion with groups and original obs
   completion <- completion[groups, on = ".group"]
   obs <- obs[completion, on = c(names(groups), "reference_date", "report_date")]
+  # flag observations that have been imputed as missing
+  # also flag NA values in the original data as missing
+  if (isTRUE(flag_observation)) {
+    obs <- enw_flag_observed_observations(obs, copy = FALSE)
+  }
+
   # impute missing as last available observation or 0
-  obs[,
-    confirm := nafill(nafill(confirm, "locf"), fill = 0),
-    by = c("reference_date", ".group")
-  ]
+  obs <- enw_impute_na_observations(obs, by = ".group", copy = FALSE)
+
   check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))

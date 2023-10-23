@@ -36,6 +36,13 @@ test_that("enw_complete_dates() works as expected with well behaved data", {
   expect_equal(
     enw_complete_dates(obs, by = "location"), exp_obs
   )
+  exp_obs[,
+   .observed := c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE)
+  ]
+  expect_equal(
+    enw_complete_dates(obs, by = "location", flag_observation = TRUE),
+    exp_obs
+  )
 })
 
 test_that("enw_complete_dates() handles min_date and max_date correctly", {

@@ -12,7 +12,8 @@ enw_complete_dates(
   max_date = max(obs$report_date, na.rm = TRUE),
   timestep = "day",
   missing_reference = TRUE,
-  completion_beyond_max_report = FALSE
+  completion_beyond_max_report = FALSE,
+  flag_observation = FALSE
 )
 }
 \arguments{
@@ -48,6 +49,13 @@ reference date be completed as well?, Default: TRUE}
 
 \item{completion_beyond_max_report}{Logical, should entries be completed
 beyond the maximum date found in the data? Default: FALSE}
+
+\item{flag_observation}{Logical, should observations that have been
+imputed as missing be flagged as not observed?. Makes use of
+\code{\link[=enw_flag_observed_observations]{enw_flag_observed_observations()}} to add a \code{.observed} logical vector
+which indicates if observations have been imputed. This vector can
+then be passed to the \code{observation_indicator} argument of \code{\link[=enw_obs]{enw_obs()}} to
+control if these observations are used in the likelihood. Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of
@@ -82,6 +90,8 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
