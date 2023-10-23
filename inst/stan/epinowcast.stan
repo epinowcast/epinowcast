@@ -415,7 +415,7 @@ generated quantities {
   array[pp ? sum(sl) : 0] int pp_obs;
   array[pp ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
-  array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs_all;

@@ -28,26 +28,43 @@ retro_nat_germany <- enw_filter_report_dates(
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
-  include_days = 10
+  include_days = 20
 )
 
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 40, include_days = 10
+  remove_days = 40, include_days = 20
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
+# Expectation model
+expectation_module <- enw_expectation(
+  r = ~ rw(day), observation = ~ (1 | day_of_week), data = pobs
+)
+
+# Reference date model
+reference_module <- enw_reference(~1, data = pobs)
+
+# Report date model
+report_module <- enw_report(~ (1 | day_of_week), data = pobs)
+
+# Observation model
+obs_module <- enw_obs(family = "negbin", data = pobs)
+
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.
 nowcast <- epinowcast(pobs,
-  expectation = enw_expectation(~1, data = pobs),
+  expectation = expectation_module,
+  reference = reference_module,
+  report = report_module,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
+    adapt_delta = 0.95
   ),
-  obs = enw_obs(family = "poisson", data = pobs),
+  obs = obs_module,
 )
