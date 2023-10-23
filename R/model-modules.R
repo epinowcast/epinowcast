@@ -697,9 +697,6 @@ enw_obs <- function(family = c("negbin", "poisson"),
     )
   )
 
-  # Add in observed data in the form of the reporting triangle
-  proc_data$obs <- as.matrix(data$reporting_triangle[[1]][, -(1:2)])
-
   # Add in observations in flat format without missing observations
   proc_data$flat_obs <- filt_new_confirm$new_confirm
 

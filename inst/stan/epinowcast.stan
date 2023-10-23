@@ -38,7 +38,6 @@ data {
   array[s] int csdmax; // cumulative version of sdmax
  
   // Observations
-  array[s, dmax] int obs; // obs by reference date (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
   array[n] int flat_obs_lookup; // How do observed obs relate to all obs
   array[t, g] int latest_obs; // latest obs by time and group
