@@ -1,6 +1,6 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
-description: "A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
+description: "A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
 author: Sam Abbott
 opengraph:
   image: 
@@ -343,7 +343,7 @@ independent_nowcast <- map(
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
