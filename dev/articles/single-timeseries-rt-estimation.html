@@ -122,7 +122,7 @@
 <h3 id="what-do-we-do">What do we do<a class="anchor" aria-label="anchor" href="#what-do-we-do"></a>
 </h3>
 <ol style="list-style-type: decimal">
-<li>Visualise and contextualise the data this case study uses (COVID-19 hositalisations in Germany);</li>
+<li>Visualise and contextualise the data this case study uses (COVID-19 hospitalisations in Germany);</li>
 <li>Specify a joint model of the effective reproduction number, the delay from infection to hospitalisation and the delay from hospitalisation to report;</li>
 <li>Fit this model to both the data that would have been available in real-time, and retrospectively;</li>
 <li>Visualise the nowcast from the real-time data in comparison to the data that was ultimately observed;</li>
@@ -292,7 +292,7 @@
 <span><span class="co">#&gt; 2049596:     1</span></span>
 <span><span class="co">#&gt; 2049597:     0</span></span></code></pre></div>
 </details><div class="alert alert-warning">
-<p>Here we have specifed the <code>reference_date</code> and <code>report_date</code> columns, the <code>by</code> columns (which are used to group the data), and the <code>max_delay</code> which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The <code><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code> function will then calculate the incidence by reference date and report date for each group.</p>
+<p>Here we have specified the <code>reference_date</code> and <code>report_date</code> columns, the <code>by</code> columns (which are used to group the data), and the <code>max_delay</code> which is the maximum delay between the reference date and the report date (note that the observed delay is longer than our specified delay and so is used instead). The <code><a href="../reference/enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code> function will then calculate the incidence by reference date and report date for each group.</p>
 </div>
 </div>
 <div class="section level3">
@@ -495,7 +495,7 @@
 <h4 id="latent-reporting-delay-and-ascertainment">Latent reporting delay and ascertainment<a class="anchor" aria-label="anchor" href="#latent-reporting-delay-and-ascertainment"></a>
 </h4>
 <p>In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore “nowcastable”, a common example is the delay from exposure to symptom onset. For these settings we support modelling “latent” reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in <code>EpiNow2</code> and <code>epidemia</code> as well as other similar models<span class="citation"><sup>[<a href="#ref-EpiNow2" role="doc-biblioref">4</a>–<a href="#ref-Lison2022" role="doc-biblioref">7</a>]</sup></span>. In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).</p>
-<p>Here we assume an infection to hospistalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity. We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test. We assume that the reporting delay is the same for all days of the week. This model is defined as follows,</p>
+<p>Here we assume an infection to hospitalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity. We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test. We assume that the reporting delay is the same for all days of the week. This model is defined as follows,</p>
 <p><span class="math display">\[\begin{align}
   \lambda_{t} &amp;= \nu_{t \% 7} \sum_{\tau = 0}^{L - 1} f_{g}\left(t - \tau \right)  \lambda^l_{t - \tau} \\
   \text{log} (\nu_{i}) &amp;\sim \text{Normal}\left(-3.91, \sigma_{\nu} \right) \\
@@ -699,7 +699,7 @@
 </details><div class="alert alert-warning">
 <p>Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the <a href="#fitting-the-epinowcast-model">fitting options</a> section above).</p>
 </div>
-<p>and then on the retrospectivly observed data.</p>
+<p>and then on the retrospectively observed data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_germany_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">retro_germany_pobs</span>,</span>
@@ -749,7 +749,7 @@
 </div>
 </div>
 <div class="section level3">
-<h3 id="posterior-predictions-for-cases-by-date-of-postive-test-and-report">Posterior predictions for cases by date of postive test and report<a class="anchor" aria-label="anchor" href="#posterior-predictions-for-cases-by-date-of-postive-test-and-report"></a>
+<h3 id="posterior-predictions-for-cases-by-date-of-positive-test-and-report">Posterior predictions for cases by date of positive test and report<a class="anchor" aria-label="anchor" href="#posterior-predictions-for-cases-by-date-of-positive-test-and-report"></a>
 </h3>
 <p>To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing <code>type = "posterior_prediction"</code>) we instead use <code><a href="../reference/enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code> so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
@@ -812,7 +812,7 @@
 <p>Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models. Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict. This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.</p>
 </div>
 <div class="section level3">
-<h3 id="estimates-of-the-delay-from-testing-postive-to-hospitalisation-both-in-real-time-and-retrospectively">Estimates of the delay from testing postive to hospitalisation both in real-time and retrospectively<a class="anchor" aria-label="anchor" href="#estimates-of-the-delay-from-testing-postive-to-hospitalisation-both-in-real-time-and-retrospectively"></a>
+<h3 id="estimates-of-the-delay-from-testing-positive-to-hospitalisation-both-in-real-time-and-retrospectively">Estimates of the delay from testing positive to hospitalisation both in real-time and retrospectively<a class="anchor" aria-label="anchor" href="#estimates-of-the-delay-from-testing-positive-to-hospitalisation-both-in-real-time-and-retrospectively"></a>
 </h3>
 <p>We can also plot the posterior distribution of the delay from testing positive to hospitalisation. This is the delay that is used to estimate the number of hospitalisations that will ultimately be reported based on the number of positive tests that have been reported. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
@@ -871,14 +871,14 @@
 </details><div class="figure">
 <img src="figures/single-timeseries-rt-estimation-plot-germany-delay-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</p>
 </div>
-<p>The estimates are a fairly good match indicating that the delay is being well estimated by the real-time model compared to the retrospective model and that the delay is unlikely to be changing rapidly over time in this exampel (as otherwise we would expect the estimated delays to diverge over time).</p>
+<p>The estimates are a fairly good match indicating that the delay is being well estimated by the real-time model compared to the retrospective model and that the delay is unlikely to be changing rapidly over time in this example (as otherwise we would expect the estimated delays to diverge over time).</p>
 </div>
 <div class="section level3">
 <h3 id="estimates-of-the-number-of-expected-hospitalisations-both-in-real-time-and-retrospectively">Estimates of the number of expected hospitalisations both in real-time and retrospectively<a class="anchor" aria-label="anchor" href="#estimates-of-the-number-of-expected-hospitalisations-both-in-real-time-and-retrospectively"></a>
 </h3>
 <p>We can also plot the posterior predictions for the number of expected hospitalisations. This is the number of hospitalisations that would be reported if there was no observation error. We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing.</p>
-<p>Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may neeed to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.</p>
-<p>In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partiall unobserved).</p>
+<p>Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.</p>
+<p>In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partial unobserved).</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">get_expected_infections</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">expectation</span> <span class="op">=</span> <span class="va">expectation_module</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">exp_cases</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_posterior.html">enw_posterior</a></span><span class="op">(</span></span>
@@ -939,7 +939,7 @@ performance of the model.</p>
 <h3 id="strengths">Strengths<a class="anchor" aria-label="anchor" href="#strengths"></a>
 </h3>
 <ul>
-<li>We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propogated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a mulit-stage approach.</li>
+<li>We have used a single model to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data. This means that we have propagated uncertainty from the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases which would be difficult using a multi-stage approach.</li>
 <li>We have used a flexible model for the effective reproduction number which allows us to estimate the effective reproduction number over time and to incorporate uncertainty in the estimation of the effective reproduction number into the estimation of the expected number of latent and reported cases.</li>
 <li>We have accounted for the delay from infection to hospitalisation and the delay from hospitalisation to reporting in the estimation of the expected number of reported cases. This means that reproduction number estimates
 are currently indexed to the date of infection.</li>
@@ -961,7 +961,7 @@ are currently indexed to the date of infection.</li>
 <li>
 <a href="https://epiforecasts.io/EpiNow2" class="external-link">EpiNow2</a>: A precursor to <code>epinowcast</code> developed by members of the <code>epinowcast</code> community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than <code>epinowcast</code> with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into <code>epinowcast</code>.</li>
 <li>
-<a href="https://imperialcollegelondon.github.io/epidemia/index.html" class="external-link">epidemia</a>: This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than <code>EpiNow2</code>, in a similar way to <code>epinowcast</code>, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than <code>epinowcast</code>. However, as it is an extension of <code>rstanarm</code> it comes with a number of useful features and a famliar interface for users of <code>rstanarm</code>
+<a href="https://imperialcollegelondon.github.io/epidemia/index.html" class="external-link">epidemia</a>: This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than <code>EpiNow2</code>, in a similar way to <code>epinowcast</code>, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than <code>epinowcast</code>. However, as it is an extension of <code>rstanarm</code> it comes with a number of useful features and a familiar interface for users of <code>rstanarm</code>
 </li>
 <li>
 <a href="https://cran.r-project.org/web/packages/EpiEstim/index.html" class="external-link">EpiEstim</a>: This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.</li>
