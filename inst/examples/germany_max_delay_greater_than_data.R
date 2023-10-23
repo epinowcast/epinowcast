@@ -28,7 +28,7 @@ retro_nat_germany <- enw_filter_report_dates(
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
-  include_days = 20
+  include_days = 15
 )
 
 # Get latest observations for the same time period
@@ -43,14 +43,16 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Expectation model
 expectation_module <- enw_expectation(
-  r = ~ rw(day), observation = ~ (1 | day_of_week), data = pobs
+  r = ~ rw(week), observation = ~ (1 | day_of_week), data = pobs
 )
 
 # Reference date model
-reference_module <- enw_reference(~1, data = pobs)
+reference_module <- enw_reference(
+  parametric = ~ 0, non_parametric = ~ (1 | delay_cat), data = pobs
+)
 
 # Report date model
-report_module <- enw_report(~ (1 | day_of_week), data = pobs)
+report_module <- enw_report(~ (1 | day_of_week) + rw(week), data = pobs)
 
 # Observation model
 obs_module <- enw_obs(family = "negbin", data = pobs)
@@ -64,7 +66,7 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
-    adapt_delta = 0.95
+    adapt_delta = 0.99
   ),
   obs = obs_module,
 )
