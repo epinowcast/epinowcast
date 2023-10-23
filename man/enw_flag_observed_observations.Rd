@@ -19,7 +19,7 @@ observed observations.
 \description{
 Flags observations based on the 'confirm' column.
 If the '.observed' column does not exist, it is created. Observations are
-flagged as observed (`TRUE``) if 'confirm' is not NA.
+flagged as observed (\code{TRUE}) if 'confirm' is not NA.
 }
 \examples{
 dt <- data.frame(id = 1:3, confirm = c(NA, 1, 2))
