@@ -593,7 +593,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #'
 #' @description Flags observations based on the 'confirm' column.
 #' If the '.observed' column does not exist, it is created. Observations are
-#' flagged as observed (`TRUE``) if 'confirm' is not NA.
+#' flagged as observed (`TRUE`) if 'confirm' is not NA.
 #'
 #' @param obs A `data.frame` with at least a have `confirm` column.
 #'
