@@ -50,6 +50,7 @@ linelist
 linters
 lme
 loglogistic
+lsl
 mathbb
 modeldesign
 modeled
@@ -63,6 +64,8 @@ nowcast
 nowcastable
 nowcasting
 nowcasts
+nsl
+obs
 overpredict
 overprediction
 parameterisations
@@ -76,6 +79,7 @@ runtimes
 rw
 sd
 sim
+sl
 st
 stan
 th
