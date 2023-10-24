@@ -20,7 +20,6 @@ This release is in development and not yet ready for production use.
 
 ## Package
 
-- Fixed some typos in `single-timeseries-rt-estimation.Rmd`. The `WORDLIST` used by spelling has also been updated to eliminate false positives. Future typos will now generate an error in the continuous integration check so that we can catch them as early as possible. See #341 by @Bisaloo and reviewed by @seabbs.
 - Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo and reviewed by @seabbs.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
 - Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
@@ -38,6 +37,7 @@ This release is in development and not yet ready for production use.
 - Updated the default prior for initialising the model to include the ascertainment rate which is inferred from the latent reporting delay distribution as this can be an improper probability mass function (i.e. one that does not sum to 1). See #312 by @seabbs and self-reviewed.
 - Added support for non-parametric reference date models as well as mixed models with both parametric and non-parametric reference date models. This enables the use of popular models such as the discrete time cox proportional hazards model. See #313 by @seabbs and self-reviewed.
 - Added support for missing data (excluding in the missing reference date model) using the `observation_indicator` argument to `enw_obs()`. Support was also added to `enw_complete_dates()` to flag missing data and as part of this new helper functions (`enw_flag_observed_observations()` and `enw_impute_na_observations()`) were also added. This support is likely most useful when used in conjunction to a known reporting structure. See #327 by @seabbs and self-reviewed.
+- Added support for using a max delay that is longer than the largest available delay in the data. This maybe useful at the start of an outbreak when data is sparse but longer than observed delays are expected. Note that because this requires extrapolating beyond the support of the data users should be cautious when using this feature. See # by @seabbs and self-reviewed.
 
 ## Documentation
 
