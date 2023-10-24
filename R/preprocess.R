@@ -970,7 +970,12 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' distribution. Computation scales non-linearly with this setting so consider
 #' what maximum makes sense for your data carefully. Note that this is zero
 #' indexed and so includes the reference date and `max_delay - 1` other days
-#' (i.e. a `max_delay` of 1 corresponds with no delay).
+#' (i.e. a `max_delay` of 1 corresponds with no delay). If a `max_delay` greater
+#' than the maximum delay in the data is supplied then  [enw_preprocess_data()]
+#' will throw a warning but in some cases this may be appropriate (e.g. if
+#' at the beginning of a time series). In these cases the user should check the
+#' model specification carefully as the model will be extrapolating beyond the
+#' observed data.
 #'
 #' @param timestep The timestep to used in the process model (i.e. the
 #' reference date model). This can be a string ("day", "week", "month") or a
