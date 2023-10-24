@@ -215,7 +215,7 @@ transformed parameters{
   vector[refp_fnrow] refp_sd;
   matrix[dmax, refp_fnrow] refp_lh; // sparse report logit hazards
   // Non-parametric reference model
-  vector[refnp_fnindex] refnp_lh; 
+  vector[model_refnp > 0 ? refnp_fnindex : 0] refnp_lh; 
   
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
