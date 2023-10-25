@@ -11,7 +11,7 @@ if (not_on_cran() & on_ci()) {
   }
 }
 
-test_that("epinowcast preprocesses data and model modules as expected", {
+test_that("epinowcast() preprocesses data and model modules as expected", {
   nowcast <- suppressMessages(epinowcast(pobs,
     fit = enw_fit_opts(
       sampler = function(init, data, ...) {
@@ -28,7 +28,7 @@ test_that("epinowcast preprocesses data and model modules as expected", {
   expect_identical(nowcast[, c("init", "data") := NULL], pobs)
 })
 
-test_that("epinowcast runs using default arguments only", {
+test_that("epinowcast() runs using default arguments only", {
   skip_on_cran()
   skip_on_local()
   obs <- germany_covid19_hosp[age_group %in% "00+"][location %in% "DE"] |>
@@ -59,7 +59,7 @@ test_that("epinowcast runs using default arguments only", {
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
 })
 
-test_that("epinowcast can fit a simple reporting model", {
+test_that("epinowcast() can fit a simple reporting model", {
   skip_on_cran()
   skip_on_local()
 
@@ -94,7 +94,42 @@ test_that("epinowcast can fit a simple reporting model", {
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
 })
 
-test_that("epinowcast can fit a reporting model with a day of the week random
+test_that("epinowcast() can fit a simple reporting model where the max delay is greater than the empirical max delay", {
+  skip_on_cran()
+  skip_on_local()
+
+  pobs_long_delay <- suppressWarnings(
+    pobs$obs[[1]][, .group := NULL] |>
+    enw_filter_reference_dates(include_days = 20) |>
+    enw_preprocess_data(max_delay = 30)
+  )
+
+  nowcast <- suppressMessages(epinowcast(pobs_long_delay,
+    fit = enw_fit_opts(
+      sampler = enw_sample,
+      save_warmup = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
+      refresh = 0, show_messages = FALSE
+    ),
+    obs = enw_obs(family = "poisson", data = pobs_long_delay),
+    model = model
+  ))
+
+  expect_convergence(nowcast)
+  expect_type(nowcast$fit_args[[1]], "list")
+  expect_type(nowcast$data[[1]], "list")
+  expect_error(
+    nowcast$fit[[1]]$summary(
+      c("refp_mean_int", "refp_sd_int")
+    ), NA
+  )
+  expect_error(nowcast$fit[[1]]$summary("refp_beta"))
+  expect_error(nowcast$fit[[1]]$summary("rep_beta"))
+  expect_true(nrow(nowcast$fit[[1]]$summary("refp_lh")), 30L)
+  expect_true(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 21L)
+})
+
+test_that("epinowcast() can fit a reporting model with a day of the week random
            effect for the date of report", {
   skip_on_cran()
   skip_on_local()
@@ -152,7 +187,7 @@ test_that("epinowcast can fit a reporting model with a day of the week random
   )
 })
 
-test_that("epinowcast can fit a simple missing data model", {
+test_that("epinowcast() can fit a simple missing data model", {
   skip_on_cran()
   skip_on_local()
 
@@ -242,7 +277,7 @@ test_that("epinowcast can fit a simple missing data model", {
   )
 })
 
-test_that("epinowcast can fit multiple time series at once", {
+test_that("epinowcast() can fit multiple time series at once", {
   skip_on_cran()
   skip_on_local()
   # Load and filter germany hospitalisations
@@ -302,7 +337,7 @@ test_that("epinowcast can fit multiple time series at once", {
   expect_type(nowcast$data[[1]], "list")
 })
 
-test_that("epinowcast can fit a simple non-parametric reference date model", {
+test_that("epinowcast() can fit a simple non-parametric reference date model", {
   skip_on_cran()
   skip_on_local()
 
@@ -338,7 +373,7 @@ test_that("epinowcast can fit a simple non-parametric reference date model", {
   )
 })
 
-test_that("epinowcast can fit a simple combined parametric and non-parametric reference date model", {
+test_that("epinowcast() can fit a simple combined parametric and non-parametric reference date model", {
   skip_on_cran()
   skip_on_local()
 
