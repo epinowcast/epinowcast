@@ -24,7 +24,7 @@ nat_germany_hosp <- enw_complete_dates(
 # Make a retrospective dataset
 retro_nat_germany <- enw_filter_report_dates(
   nat_germany_hosp,
-  remove_days = 40
+  remove_days = 50
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
@@ -35,7 +35,7 @@ retro_nat_germany <- enw_filter_reference_dates(
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 40, include_days = 30
+  remove_days = 50, include_days = 30
 )
 
 # Preprocess observations (note this maximum delay is likely too short)
@@ -66,7 +66,7 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.99
+    adapt_delta = 0.99, max_treedepth = 12
   ),
   obs = obs_module,
 )
