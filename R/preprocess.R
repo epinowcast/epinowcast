@@ -439,7 +439,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
     if (!missing(latest_date)) {
       stop("`remove_days` and `latest_date` can't both be specified.")
     }
-    latest_date <- max(filt_obs$reference_date) - remove_days
+    latest_date <- max(filt_obs$reference_date, na.rm = TRUE) - remove_days
   }
   if (!missing(remove_days) || !missing(latest_date)) {
     filt_obs <- filt_obs[
