@@ -74,4 +74,11 @@ test_that("enw_filter_reference_dates filters as expected when data is present
   expect_equal(
     min(filt_date$reference_date, na.rm = TRUE), as.IDate("2021-09-01")
   )
+  
+  filt_date <- enw_filter_reference_dates(
+      nat_germany_hosp,
+      include_days = 5,
+      remove_days = 2
+    )
+  expect_snapshot(filt_date)
 })
