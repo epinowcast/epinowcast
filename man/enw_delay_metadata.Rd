@@ -28,6 +28,10 @@ A  \code{data.frame}  of delay metadata. This includes:
 \item \code{delay_cat}: The categorised delay. This may be useful for model building.
 \item \code{delay_week}: The numeric week since the delay was reported. This again
 may be useful for model building.
+\item \code{delay_head}: A logical variable defining if the delay is in the lower
+25\% of the potential delays. This may be particularly useful when building
+models that assume a parametric distribution in order to increase the weight
+of the head of the reporting distribution in a pragmatic way.
 \item \code{delay_tail}: A logical variable defining if the delay is in the upper
 75\% of the potential delays. This may be particularly useful when building
 models that assume a parametric distribution in order to increase the weight

@@ -54,6 +54,7 @@ enw_add_pooling_effect(effects, prefix = "b")
 Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_design}()},
-\code{\link{enw_effects_metadata}()}
+\code{\link{enw_effects_metadata}()},
+\code{\link{enw_hot_encode_and_bind}()}
 }
 \concept{modeldesign}

@@ -30,7 +30,7 @@ Note that cumulative membership is indexed to start with zero (i.e. the
 first observation is assigned a cumulative membership of zero).
 }
 \examples{
-metaobs <- data.frame(week = 1:3)
+metaobs <- data.frame(week = 1:6)
 enw_add_cumulative_membership(metaobs, "week")
 
 metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
@@ -40,6 +40,7 @@ enw_add_cumulative_membership(metaobs, "week")
 Functions used to formulate models
 \code{\link{enw_add_pooling_effect}()},
 \code{\link{enw_design}()},
-\code{\link{enw_effects_metadata}()}
+\code{\link{enw_effects_metadata}()},
+\code{\link{enw_hot_encode_and_bind}()}
 }
 \concept{modeldesign}

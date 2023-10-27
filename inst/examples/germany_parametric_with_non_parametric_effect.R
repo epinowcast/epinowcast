@@ -66,12 +66,10 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 6, timestep = "week")
 
+# Add one hot encoded delay variables to metadelay
+pobs$metadelay[[1]] <- enw_hot_encode_and_bind(pobs$metadelay[[1]], "delay")
 
-# Add a feature to metadelay for the first delay
-# This is used by enw_reference() for the non-parametric model
-pobs$metadelay[[1]][, delay_zero := ifelse(delay == 0, TRUE, FALSE)]
-
-# Expectation model - a random walk on the week
+ # Expectation model - a random walk on the week
 expectation_module <- enw_expectation(
   r = ~ rw(week),  data = pobs
 )
@@ -79,8 +77,10 @@ expectation_module <- enw_expectation(
 # Specify a reference model
 # Baseline delay is a log normal with an additional non-parametric effect
 # for the first delay
+# Here we use features from the metadelay table in pobs to specify the
+# non-parametric effect
 reference_module <- enw_reference(
-  parametric = ~ 1, non_parametric = ~ 0 + delay_zero
+  parametric = ~ 1, non_parametric = ~ 0 + delay0 + delay1,
   distribution = "lognormal",
   data = pobs
 )
@@ -93,7 +93,7 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 4, iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.95
+    adapt_delta = 0.95, max_treedepth= 12
   ),
   obs = enw_obs(family = "negbin", data = pobs),
 )
