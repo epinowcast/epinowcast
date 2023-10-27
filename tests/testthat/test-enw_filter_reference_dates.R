@@ -74,11 +74,19 @@ test_that("enw_filter_reference_dates filters as expected when data is present
   expect_equal(
     min(filt_date$reference_date, na.rm = TRUE), as.IDate("2021-09-01")
   )
-  
+})
+
+test_that("enw_filter_reference_dates works with both include and remove days under missing data", {
+  nat_germany_hosp <-
+    germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+  nat_germany_hosp <- enw_complete_dates(
+    nat_germany_hosp,
+    by = c("location", "age_group")
+  )
   filt_date <- enw_filter_reference_dates(
-      nat_germany_hosp,
-      include_days = 5,
-      remove_days = 2
-    )
+    nat_germany_hosp,
+    include_days = 5,
+    remove_days = 2
+  )
   expect_snapshot(filt_date)
 })
