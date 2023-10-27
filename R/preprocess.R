@@ -833,6 +833,10 @@ enw_missing_reference <- function(obs) {
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
 #'  - `delay_week`: The numeric week since the delay was reported. This again
 #'  may be useful for model building.
+#'  - `delay_head`: A logical variable defining if the delay is in the lower
+#'  25% of the potential delays. This may be particularly useful when building
+#'  models that assume a parametric distribution in order to increase the weight
+#'  of the head of the reporting distribution in a pragmatic way.
 #'  - `delay_tail`: A logical variable defining if the delay is in the upper
 #'  75% of the potential delays. This may be particularly useful when building
 #'  models that assume a parametric distribution in order to increase the weight
@@ -856,6 +860,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4, timestep = "day") {
       dig.lab = 0, right = FALSE
     ),
     delay_week = as.integer((delay * internal_timestep) / 7),
+    delay_head = delay < quantile(delay, probs = 0.25),
     delay_tail = delay > quantile(delay, probs = 0.75)
   )]
   return(delays[])
