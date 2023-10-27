@@ -216,7 +216,11 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #' @family modeldesign
 #' @export
 #' @examples
-#' metaobs <- data.frame(week = 1:3)
+#' metaobs <- data.frame(week = 1:2)
+#' enw_hot_encode_and_bind(metaobs, "week")
+#' enw_hot_encode_and_bind(metaobs, "week", contrasts = TRUE)
+#'
+#' metaobs <- data.frame(week = 1:6)
 #' enw_hot_encode_and_bind(metaobs, "week")
 #' enw_hot_encode_and_bind(metaobs, "week", contrasts = TRUE)
 enw_hot_encode_and_bind <- function(metaobs, feature, contrasts = FALSE) {
@@ -226,11 +230,11 @@ enw_hot_encode_and_bind <- function(metaobs, feature, contrasts = FALSE) {
   metaobs2[, (feature) := as.factor(get(feature))]
   if (!contrasts) {
     formula <- as.formula(paste0("~ 0 + ", feature))
-    hot_encoded <- model.matrix(formula, metaobs2)
+    hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
   } else {
     formula <- as.formula(paste0("~ 1 + ", feature))
-    hot_encoded <- model.matrix(formula, metaobs2)
-    hot_encoded <- hot_encoded[, -1]
+    hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
+    hot_encoded <- hot_encoded[, -c("(Intercept)")]
   }
 
   metaobs <- cbind(metaobs, hot_encoded)
@@ -262,7 +266,7 @@ enw_hot_encode_and_bind <- function(metaobs, feature, contrasts = FALSE) {
 #' @family modeldesign
 #' @export
 #' @examples
-#' metaobs <- data.frame(week = 1:6)
+#' metaobs <- data.frame(week = 1:2)
 #' enw_add_cumulative_membership(metaobs, "week")
 #'
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))

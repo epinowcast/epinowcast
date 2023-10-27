@@ -1,6 +1,6 @@
 test_that("enw_metadelay produces the expected features", {
   delays <- enw_delay_metadata(20, 4)
-  vars <- c("delay", "delay_cat", "delay_week", "delay_tail")
+  vars <- c("delay", "delay_cat", "delay_week", "delay_head", "delay_tail")
   expect_data_table(delays)
   expect_equal(
     colnames(delays), vars
@@ -13,6 +13,10 @@ test_that("enw_metadelay produces the expected features", {
   expect_equal(
     delays$delay_week,
     c(rep(0, 7), rep(1, 7), rep(2, 6))
+  )
+  expect_equal(
+    delays$delay_head,
+    c(rep(TRUE, 5), rep(FALSE, 15))
   )
   expect_equal(
     delays$delay_tail,
