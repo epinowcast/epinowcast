@@ -697,6 +697,15 @@ enw_obs <- function(family = c("negbin", "poisson"),
     )
   )
 
+  # Warn if maximum delay is longer than the observed time period
+  if (proc_data$t < proc_data$dmax) {
+    warning(
+      "The specified maximum delay is longer than the observed time period. ",
+      "Please be aware that epinowcast will extrapolate the delay distribution",
+      " beyond what is supported by the data."
+    )
+  }
+  
   # Add in observations in flat format without missing observations
   proc_data$flat_obs <- filt_new_confirm$new_confirm
 
