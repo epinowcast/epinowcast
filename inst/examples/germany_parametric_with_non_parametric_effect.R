@@ -26,11 +26,12 @@ nat_germany_hosp <- enw_complete_dates(
   timestep = "day"
 )
 
-# Specify the first report week
-
-# Make a variable for report week
-
 # Add 0 reports for the first 3 days from each report
+# Note that introduces a breakdown in our parametric delay distribution
+# assumption once discretised to weekly timesteps
+nat_germany_hosp <- nat_germany_hosp[,
+ confirm := ifelse(reference_date >= (report_date - 3), 0, confirm)
+]
 
 # Aggregate data to be weekly both by report and reference date
 # Do this from the first report week
@@ -66,6 +67,14 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 6, timestep = "week")
 
+# Add a positive or negative hazard modifier
+# for delay 0 and 1
+pobs$metadelay[[1]][, delay0mod := fcase(
+  delay == 0, 1,
+  delay == 1, -1,
+  default = 0)
+]
+
 # Add one hot encoded delay variables to metadelay
 pobs$metadelay[[1]] <- enw_hot_encode_and_bind(pobs$metadelay[[1]], "delay")
 
@@ -76,11 +85,15 @@ expectation_module <- enw_expectation(
 
 # Specify a reference model
 # Baseline delay is a log normal with an additional non-parametric effect
-# for the first delay
-# Here we use features from the metadelay table in pobs to specify the
-# non-parametric effect
+# for the first delay and the subsequent delay
+# We can either add this correction using delay0mod, or by adding two features 
+# delay0 and delay1 to the reference model
+# The former is more efficient as it only adds one parameter but it assumes
+# that the effect of delay 0 and 1 are the same but opposite in direction which
+# may not be the case
 reference_module <- enw_reference(
-  parametric = ~ 1, non_parametric = ~ 0 + delay0 + delay1,
+  parametric = ~ 1,
+  non_parametric = ~ 0 + delay0mod,
   distribution = "lognormal",
   data = pobs
 )
