@@ -30,8 +30,9 @@ This release is in development and not yet ready for production use.
 - Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
 - Added support for non-daily reference date models (i.e., process models). For example, this allows modelling weekly data as weekly. This may be desirable when delays are very long, when computational resources are limited, or it is not possible to specify a sufficiently flexible daily model to account for observed reporting patterns in either reference or report dates. As the model is unit less this entails no changes to the model itself. See #303 by @seabbs and self-reviewed.
 - Added a new helper function `simulate_double_censored_pmf()` which helps users define "correct" probability mass functions for double censored delays based on work in `epidist` by @parksw3 and @seabbs. Note this function is likely to be spun out into its own package in the near future. See #312 by @seabbs and self-reviewed.
-- Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See # by @seabbs and reviewed by @natemcintosh.
+- Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added support to `enw_complete_dates()` for `min_date` and `max_date` arguments. These arguments allow users to specify the minimum and maximum dates to include in the output. This may be useful to users who want to ensure that their data is complete for a specified time period. See #340 by @seabbs and reviewed by @natemcintosh.
+- Added a new helper function `enw_hot_encode_and_bind()` for one hot encoding variables and binding them into the original data. This is useful when users want to include parts of variables in their models as binary indicators - for example giving a specific delay its own effect.. See #348 by @seabbs and self-reviewed.
 
 ## Model
 
@@ -48,6 +49,7 @@ This release is in development and not yet ready for production use.
 - Added a vignette walking through how to estimate the effective reproduction number in real-time (and comparing this to retrospective estimates) on a data source that is right truncated. See #312 by @seabbs and self-reviewed.
 - Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
+- Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
 
 # epinowcast 0.2.2
 
