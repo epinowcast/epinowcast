@@ -17,6 +17,7 @@ This release is in development and not yet ready for production use.
 - Fixed a bug where snapshots (i.e. as returned as metadata in `enw_preprocess_data()`) were defined based on report vs reference date. This won't have impacted most usage but was a problem when trying to fit a model to retrospective (and so completely reported) data. See #312 by @seabbs and self-reviewed.
 - Fixed a bug where a non-`data.table` passed to `enw_quantile_to_long()` could throw an error. See #324 by @natemcintosh and reviewed by @pearsonca.
 - Fixed a bug where `enw_aggregate_cumulative()` initialised its time step from the first reference date + 1 day rather than the first reference date. See #336 by @seabbs and self-reviewed.
+- Fixed a bug in `enw_filter_reference_dates` when using `remove_days` on data with missing reference dates. See #351 by @adrian-lison.
 
 ## Package
 
