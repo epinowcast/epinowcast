@@ -93,7 +93,7 @@ expectation_module <- enw_expectation(
 # may not be the case
 reference_module <- enw_reference(
   parametric = ~ 1,
-  non_parametric = ~ 0 + delay0mod,
+  non_parametric = ~ 1 + delay0mod,
   distribution = "lognormal",
   data = pobs
 )
@@ -106,7 +106,7 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 4, iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.95, max_treedepth= 12
+    adapt_delta = 0.95, max_treedepth = 12
   ),
   obs = enw_obs(family = "negbin", data = pobs),
 )
