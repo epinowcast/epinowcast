@@ -139,7 +139,12 @@ to 1 and an integer (internally it will be coerced to one using
 distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and <code>max_delay - 1</code> other days
-(i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
+(i.e. a <code>max_delay</code> of 1 corresponds with no delay). If a <code>max_delay</code> greater
+than the maximum delay in the data is supplied then <code>enw_preprocess_data()</code>
+will throw a warning but in some cases this may be appropriate (e.g. if
+at the beginning of a time series). In these cases the user should check the
+model specification carefully as the model will be extrapolating beyond the
+observed data.</p></dd>
 
 
 <dt>timestep</dt>
@@ -232,7 +237,7 @@ nowcasting.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    missing_reference   reporting_triangle       metareference</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[0x6]&gt; &lt;data.table[198x22]&gt; &lt;data.table[198x9]&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              metareport          metadelay time snapshots by groups max_delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[217x12]&gt; &lt;data.table[20x4]&gt;  198       198         1        20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[217x12]&gt; &lt;data.table[20x5]&gt;  198       198         1        20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      max_date timestep</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-10-20      day</span>
 </code></pre></div>

@@ -111,17 +111,17 @@ columns will be <code>cweek1</code>, <code>cweek2</code>, and <code>cweek3</code
     <div class="dont-index"><p>Functions used to formulate models
 <code><a href="enw_add_pooling_effect.html">enw_add_pooling_effect</a>()</code>,
 <code><a href="enw_design.html">enw_design</a>()</code>,
-<code><a href="enw_effects_metadata.html">enw_effects_metadata</a>()</code></p></div>
+<code><a href="enw_effects_metadata.html">enw_effects_metadata</a>()</code>,
+<code><a href="enw_one_hot_encode_feature.html">enw_one_hot_encode_feature</a>()</code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">metaobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>week <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">metaobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>week <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_add_cumulative_membership</span><span class="op">(</span><span class="va">metaobs</span>, <span class="st">"week"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    week .group cweek2 cweek3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    1      1      0      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    2      1      1      0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    3      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    week .group cweek2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    2      1      1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metaobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>week <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>, .group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_add_cumulative_membership</span><span class="op">(</span><span class="va">metaobs</span>, <span class="st">"week"</span><span class="op">)</span></span></span>

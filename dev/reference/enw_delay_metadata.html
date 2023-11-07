@@ -87,7 +87,12 @@ to 1 and an integer (internally it will be coerced to one using
 distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and <code>max_delay - 1</code> other days
-(i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
+(i.e. a <code>max_delay</code> of 1 corresponds with no delay). If a <code>max_delay</code> greater
+than the maximum delay in the data is supplied then <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>
+will throw a warning but in some cases this may be appropriate (e.g. if
+at the beginning of a time series). In these cases the user should check the
+model specification carefully as the model will be extrapolating beyond the
+observed data.</p></dd>
 
 
 <dt>breaks</dt>
@@ -108,6 +113,10 @@ constructing a categorised version of numeric delays.</p></dd>
 <li><p><code>delay_cat</code>: The categorised delay. This may be useful for model building.</p></li>
 <li><p><code>delay_week</code>: The numeric week since the delay was reported. This again
 may be useful for model building.</p></li>
+<li><p><code>delay_head</code>: A logical variable defining if the delay is in the lower
+25% of the potential delays. This may be particularly useful when building
+models that assume a parametric distribution in order to increase the weight
+of the head of the reporting distribution in a pragmatic way.</p></li>
 <li><p><code>delay_tail</code>: A logical variable defining if the delay is in the upper
 75% of the potential delays. This may be particularly useful when building
 models that assume a parametric distribution in order to increase the weight
@@ -139,27 +148,27 @@ of the tail of the reporting distribution in a pragmatic way.</p></li>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">enw_delay_metadata</span><span class="op">(</span><span class="fl">20</span>, breaks <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     delay delay_cat delay_week delay_tail</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     0     [0,5)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     1     [0,5)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2     [0,5)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     3     [0,5)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     4     [0,5)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     5    [5,10)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     6    [5,10)          0      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     7    [5,10)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     8    [5,10)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     9    [5,10)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11:    10   [10,15)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12:    11   [10,15)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13:    12   [10,15)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14:    13   [10,15)          1      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15:    14   [10,15)          2      FALSE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16:    15   [15,20)          2       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17:    16   [15,20)          2       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18:    17   [15,20)          2       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19:    18   [15,20)          2       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20:    19   [15,20)          2       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     delay delay_cat delay_week delay_head delay_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:     0     [0,5)          0       TRUE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:     1     [0,5)          0       TRUE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:     2     [0,5)          0       TRUE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:     3     [0,5)          0       TRUE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:     4     [0,5)          0       TRUE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:     5    [5,10)          0      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:     6    [5,10)          0      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:     7    [5,10)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:     8    [5,10)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:     9    [5,10)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:    10   [10,15)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:    11   [10,15)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:    12   [10,15)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:    13   [10,15)          1      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:    14   [10,15)          2      FALSE      FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:    15   [15,20)          2      FALSE       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:    16   [15,20)          2      FALSE       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:    17   [15,20)          2      FALSE       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:    18   [15,20)          2      FALSE       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:    19   [15,20)          2      FALSE       TRUE</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

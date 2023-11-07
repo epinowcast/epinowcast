@@ -82,7 +82,12 @@ to 1 and an integer (internally it will be coerced to one using
 distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and <code>max_delay - 1</code> other days
-(i.e. a <code>max_delay</code> of 1 corresponds with no delay).</p></dd>
+(i.e. a <code>max_delay</code> of 1 corresponds with no delay). If a <code>max_delay</code> greater
+than the maximum delay in the data is supplied then <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>
+will throw a warning but in some cases this may be appropriate (e.g. if
+at the beginning of a time series). In these cases the user should check the
+model specification carefully as the model will be extrapolating beyond the
+observed data.</p></dd>
 
 
 <dt>timestep</dt>
