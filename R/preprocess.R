@@ -225,7 +225,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
 
   internal_timestep <- get_internal_timestep(timestep)
   new_days <- seq(internal_timestep, days, by = internal_timestep)
-  if (direction %in% "start") {
+  if (direction == "start") {
     new_days <- -new_days
     filt_fn <- min
   } else {
@@ -1040,7 +1040,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
        round(max_delay) == max_delay,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
-  if (timestep %in% "month") {
+  if (timestep == "month") {
     stop(
       "Calendar months are not currently supported. Consider using an ",
       "approximate number of days (i.e. 28), a different timestep (i.e. ",

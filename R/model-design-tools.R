@@ -83,13 +83,13 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   # make model.matrix helper
 
   if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
-    if (!no_contrasts) {
-      design <- mod_matrix(formula, data, sparse = sparse, ...)
-      return(design)
-    } else {
+    if (no_contrasts) {
       no_contrasts <- colnames(data)[
         sapply(data, function(x) is.factor(x) | is.character(x))
       ]
+    } else {
+      design <- mod_matrix(formula, data, sparse = sparse, ...)
+      return(design)
     }
   }
 
@@ -145,7 +145,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' enw_effects_metadata(design)
 enw_effects_metadata <- function(design) {
   dt <- data.table::data.table(effects = colnames(design), fixed = 1)
-  dt <- dt[!effects %in% "(Intercept)"]
+  dt <- dt[!effects == "(Intercept)"]
   return(dt[])
 }
 
@@ -227,13 +227,13 @@ enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
   metaobs2 <- copy(metaobs)
 
   metaobs2[, (feature) := as.factor(get(feature))]
-  if (!contrasts) {
-    formula <- as.formula(paste0("~ 0 + ", feature))
-    hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
-  } else {
+  if (contrasts) {
     formula <- as.formula(paste0("~ 1 + ", feature))
     hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
-    hot_encoded <- hot_encoded[, -c("(Intercept)")]
+    hot_encoded <- hot_encoded[, -"(Intercept)"]
+  } else {
+    formula <- as.formula(paste0("~ 0 + ", feature))
+    hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
   }
 
   metaobs <- cbind(metaobs, hot_encoded)
