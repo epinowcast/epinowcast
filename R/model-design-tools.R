@@ -212,18 +212,17 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #' with contrasts; if FALSE, create them without contrasts. Defaults to FALSE.
 #'
 #  @return A data.table with the one-hot encoded variables added.
-#' @inheritParams enw_add_cumulative_membership
 #' @family modeldesign
 #' @export
 #' @examples
 #' metaobs <- data.frame(week = 1:2)
-#' enw_hot_encode_and_bind(metaobs, "week")
-#' enw_hot_encode_and_bind(metaobs, "week", contrasts = TRUE)
+#' enw_one_hot_encode_feature(metaobs, "week")
+#' enw_one_hot_encode_feature(metaobs, "week", contrasts = TRUE)
 #'
 #' metaobs <- data.frame(week = 1:6)
-#' enw_hot_encode_and_bind(metaobs, "week")
-#' enw_hot_encode_and_bind(metaobs, "week", contrasts = TRUE)
-enw_hot_encode_and_bind <- function(metaobs, feature, contrasts = FALSE) {
+#' enw_one_hot_encode_feature(metaobs, "week")
+#' enw_one_hot_encode_feature(metaobs, "week", contrasts = TRUE)
+enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
   metaobs <- coerce_dt(metaobs, required_cols = feature, copy = FALSE)
   metaobs2 <- copy(metaobs)
 
@@ -265,6 +264,7 @@ enw_hot_encode_and_bind <- function(metaobs, feature, contrasts = FALSE) {
 #'
 #' @family modeldesign
 #' @export
+#' @importFrom purrr map
 #' @examples
 #' metaobs <- data.frame(week = 1:2)
 #' enw_add_cumulative_membership(metaobs, "week")
@@ -285,7 +285,7 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
       )
     }
     metaobs[, (cfeature) := get(feature)]
-    metaobs <- enw_hot_encode_and_bind(metaobs, cfeature, contrasts = TRUE)
+    metaobs <- enw_one_hot_encode_feature(metaobs, cfeature, contrasts = TRUE)
     metaobs[, (cfeature) := NULL]
 
     cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)

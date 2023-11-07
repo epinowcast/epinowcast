@@ -39,6 +39,6 @@ Functions used to formulate models
 \code{\link{enw_add_cumulative_membership}()},
 \code{\link{enw_add_pooling_effect}()},
 \code{\link{enw_design}()},
-\code{\link{enw_hot_encode_and_bind}()}
+\code{\link{enw_one_hot_encode_feature}()}
 }
 \concept{modeldesign}

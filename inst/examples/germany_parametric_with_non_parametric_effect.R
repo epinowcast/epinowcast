@@ -76,7 +76,7 @@ pobs$metadelay[[1]][, delay0mod := fcase(
 ]
 
 # Add one hot encoded delay variables to metadelay
-pobs$metadelay[[1]] <- enw_hot_encode_and_bind(pobs$metadelay[[1]], "delay")
+pobs$metadelay[[1]] <- enw_one_hot_encode_feature(pobs$metadelay[[1]], "delay")
 
  # Expectation model - a random walk on the week
 expectation_module <- enw_expectation(
