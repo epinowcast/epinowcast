@@ -20,8 +20,7 @@ columns.}
 
 \item{include_days}{if \code{earilest_date} is not given, the number
 of reference dates to include, ending with the latest reference
-date included once report dates have been removed. If specified
-this is indexed to \code{latest_date} or \code{remove_days}.}
+date included (determined by \code{latest_date} or \code{remove_days}).}
 
 \item{latest_date}{Date, the latest reference date to include in the
 returned dataset.}
@@ -30,7 +29,7 @@ returned dataset.}
 of reference dates to remove, starting from the latest date included.}
 }
 \value{
-A data.table  filtered by report date
+A \code{data.table} filtered by report date
 }
 \description{
 This is a helper function which allows users to filter
