@@ -38,7 +38,6 @@ data {
   array[s] int csdmax; // cumulative version of sdmax
  
   // Observations
-  array[s, dmax] int obs; // obs by reference date (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
   array[n] int flat_obs_lookup; // How do observed obs relate to all obs
   array[t, g] int latest_obs; // latest obs by time and group
@@ -216,7 +215,7 @@ transformed parameters{
   vector[refp_fnrow] refp_sd;
   matrix[dmax, refp_fnrow] refp_lh; // sparse report logit hazards
   // Non-parametric reference model
-  vector[refnp_fnindex] refnp_lh; 
+  vector[model_refnp > 0 ? refnp_fnindex : 0] refnp_lh; 
   
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
@@ -416,7 +415,7 @@ generated quantities {
   array[pp ? sum(sl) : 0] int pp_obs;
   array[pp ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
-  array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
     vector[csdmax[s]] log_exp_obs_all;
@@ -494,12 +493,13 @@ generated quantities {
       }
     }
     }
-    // Posterior prediction for final reported data (i.e at t = dmax + 1)
+    // Posterior prediction for final reported data (i.e at t + dmax + 1)
     // Organise into a grouped and time structured array
     profile("generated_obs") {
     for (k in 1:g) {
-      int start_t = t - dmax;
-      for (i in 1:dmax) {
+      int start_t = max(t - dmax, 0);
+      int nowcast_t = min(dmax, t);
+      for (i in 1:nowcast_t) {
         // Where am I?
         int i_start = ts[start_t + i, k];
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
