@@ -391,20 +391,20 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 
 #' Filter by reference dates
 #'
-#' @description This is a helper function which allows users to filter
-#' datasets by reference date. This is useful, for example, when evaluating
-#' nowcast performance against fully observed data. Users may wish to combine
-#' this function with [enw_filter_report_dates()]. Note that by definition it
-#' is assumed that a report date for a given reference date must be the equal
-#' or greater (i.e a report cannot happen before the event being reported
-#' occurs). This means that this function will also filter report dates earlier
-#' than the target reference dates.
+#' @description This is a helper function which allows users to filter datasets
+#' by reference date. This is useful, for example, when evaluating nowcast
+#' performance against fully observed data. Users may wish to combine this
+#' function with [enw_filter_report_dates()]. Note that by definition it is
+#' assumed that report dates must be equal or greater than the corresponding
+#' reference date (i.e a report cannot happen before the event being reported
+#' occurs). This means that this function will also filter out any report dates
+#' that are earlier than their corresponding reference date.
 #'
 #' @param earliest_date earliest reference date to include in the data set
 #'
-#' @param include_days if \code{earilest_date} is not given, the number
+#' @param include_days if \code{earliest_date} is not given, the number
 #' of reference dates to include, ending with the latest reference
-#' date included once report dates have been removed. If specified
+#' date included once report dates have been removed. If specified,
 #' this is indexed to `latest_date` or `remove_days`.
 #'
 #' @param latest_date Date, the latest reference date to include in the
@@ -413,7 +413,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @param remove_days Integer, if \code{latest_date} is not given, the number
 #' of reference dates to remove, starting from the latest date included.
 #'
-#' @param obs An `data.frame`; must have `report_date` and `reference_date`
+#' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
 #'
 #' @return A data.table  filtered by report date
@@ -970,7 +970,12 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' distribution. Computation scales non-linearly with this setting so consider
 #' what maximum makes sense for your data carefully. Note that this is zero
 #' indexed and so includes the reference date and `max_delay - 1` other days
-#' (i.e. a `max_delay` of 1 corresponds with no delay).
+#' (i.e. a `max_delay` of 1 corresponds with no delay). If a `max_delay` greater
+#' than the maximum delay in the data is supplied then [enw_preprocess_data()]
+#' will throw a warning but in some cases this may be appropriate (e.g. if
+#' at the beginning of a time series). In these cases the user should check the
+#' model specification carefully as the model will be extrapolating beyond the
+#' observed data.
 #'
 #' @param timestep The timestep to used in the process model (i.e. the
 #' reference date model). This can be a string ("day", "week", "month") or a
