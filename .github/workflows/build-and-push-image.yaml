@@ -18,7 +18,7 @@ jobs:
     steps:
 
       - name: Cancel previous builds if present
-        uses: n1hility/cancel-previous-runs@v2
+        uses: n1hility/cancel-previous-runs@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         
