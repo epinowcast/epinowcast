@@ -51,8 +51,8 @@ This release is in development and not yet ready for production use.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
 
-## Depreciation
-- `enw_delay_filter()`: Deprecated with an error in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose: see #344. 
+## Depreciations
+- `enw_delay_filter()`: Deprecated with an error in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
 # epinowcast 0.2.2
 
