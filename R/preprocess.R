@@ -495,6 +495,7 @@ enw_latest_data <- function(obs) {
 #' Filter observations to restrict the maximum reporting delay
 #'
 #' @description `r lifecycle::badge("deprecated")`
+#'
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
 #'
@@ -504,13 +505,14 @@ enw_latest_data <- function(obs) {
 #' @family preprocess
 #' @export
 enw_filter_delay <- function(obs, max_delay, timestep = "day") {
-  lifecycle::deprecate_stop(
+  lifecycle::deprecate_warn(
     when = "0.2.3",
     what = "enw_delay_filter()",
     with = "enw_filter_delay()",
     details = "Please file an issue if deprecating this \
       function has caused any issues."
   )
+  return(enw_filter_delay(obs, max_delay, timestep))
 }
 
 #' Filter observations to restrict the maximum reporting delay
