@@ -503,8 +503,8 @@ enw_latest_data <- function(obs) {
 #' @export
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
-#' enw_delay_filter(obs, max_delay = 2)
-enw_delay_filter <- function(obs, max_delay, timestep = "day") {
+#' enw_filter_delay(obs, max_delay = 2)
+enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
   internal_timestep <- get_internal_timestep(timestep)
   daily_max_delay <- internal_timestep * max_delay
@@ -1063,7 +1063,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
 
-  obs <- enw_delay_filter(
+  obs <- enw_filter_delay(
     obs, max_delay = orig_scale_max_delay, timestep = timestep
   )
 
