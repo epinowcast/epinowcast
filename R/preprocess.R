@@ -504,7 +504,7 @@ enw_latest_data <- function(obs) {
 #' @family preprocess
 #' @export
 enw_filter_delay <- function(obs, max_delay, timestep = "day") {
-  deprecate_stop(
+  lifecycle::deprecate_stop(
     when = "0.2.3",
     what = "enw_delay_filter()",
     with = "enw_filter_delay()",
