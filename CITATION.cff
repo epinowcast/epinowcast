@@ -9,7 +9,7 @@ type: software
 license: MIT
 title: 'epinowcast: Flexible Hierarchical Nowcasting'
 version: 0.2.3.2000
-doi: 10.5281/zenodo.3957489
+doi: 10.5281/zenodo.5637165
 abstract: 'Tools to enable flexible and efficient hierarchical nowcasting of right-truncated
   epidemiological time-series using a semi-mechanistic Bayesian model with support
   for a range of reporting and generative processes. Nowcasting, in this context,
@@ -70,7 +70,7 @@ preferred-citation:
     email: felixguenther1@gmx.de
     orcid: https://orcid.org/0000-0001-6582-1174
   year: 'NULL'
-  doi: 10.5281/zenodo.3957489
+  doi: 10.5281/zenodo.5637165
 repository-code: https://github.com/epinowcast/epinowcast/issues/
 url: https://package.epinowcast.org
 contact:
