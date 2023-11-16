@@ -10,6 +10,7 @@ enw_fit_opts(
   pp = FALSE,
   likelihood = TRUE,
   likelihood_aggregation = c("snapshots", "groups"),
+  threads_per_chain = 1L,
   debug = FALSE,
   output_loglik = FALSE,
   ...
@@ -42,6 +43,10 @@ Note that some model modules override this setting depending on model
 requirements. For example, the \code{\link[=enw_missing]{enw_missing()}} module model forces
 "groups" option. Generally, Users should typically want the default
 "snapshots" aggregation.}
+
+\item{threads_per_chain}{Integer, defaults to \code{1}. The number of threads to
+within each MCMC chain. If this is greater than \code{1} then components of the
+likelihood will be calculated in parallel.}
 
 \item{debug}{Logical, defaults to \code{FALSE}. Should within model debug
 information be returned.}
