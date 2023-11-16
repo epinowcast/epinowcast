@@ -1,0 +1,391 @@
+# -----------------------------------------------------------
+# CITATION file created with {cffr} R package, v0.5.0
+# See also: https://docs.ropensci.org/cffr/
+# -----------------------------------------------------------
+ 
+cff-version: 1.2.0
+message: 'To cite package "epinowcast" in publications use:'
+type: software
+license: MIT
+title: 'epinowcast: Flexible Hierarchical Nowcasting'
+version: 0.2.3.2000
+doi: 10.5281/zenodo.3957489
+abstract: 'Tools to enable flexible and efficient hierarchical nowcasting of right-truncated
+  epidemiological time-series using a semi-mechanistic Bayesian model with support
+  for a range of reporting and generative processes. Nowcasting, in this context,
+  is gaining situational awareness using currently available observations and the
+  reporting patterns of historical observations. This can be useful when tracking
+  the spread of infectious disease in real-time: without nowcasting, changes in trends
+  can be obfuscated by partial reporting or their detection may be delayed due to
+  the use of simpler methods like truncation. While the package has been designed
+  with epidemiological applications in mind, it could be applied to any set of right-truncated
+  time-series count data.'
+authors:
+- name: Sam Abbott
+  email: contact@samabbott.co.uk
+  orcid: https://orcid.org/0000-0001-8057-8037
+- family-names: Lison
+  given-names: Adrian
+  email: adrian.lison@bsse.ethz.ch
+  orcid: https://orcid.org/0000-0002-6822-8437
+- family-names: Funk
+  given-names: Sebastian
+  email: sebastian.funk@lshtm.ac.uk
+- family-names: Pearson
+  given-names: Carl
+  email: carl.ab.pearson@gmail.com
+  orcid: https://orcid.org/0000-0003-0701-7860
+- family-names: Gruson
+  given-names: Hugo
+  email: hugo.gruson@normalesup.org
+  orcid: https://orcid.org/0000-0002-4094-1476
+- family-names: Guenther
+  given-names: Felix
+  email: felixguenther1@gmx.de
+  orcid: https://orcid.org/0000-0001-6582-1174
+preferred-citation:
+  type: manual
+  title: 'epinowcast: Flexible Hierarchical Nowcasting'
+  authors:
+  - name: Sam Abbott
+    email: contact@samabbott.co.uk
+    orcid: https://orcid.org/0000-0001-8057-8037
+  - family-names: Lison
+    given-names: Adrian
+    email: adrian.lison@bsse.ethz.ch
+    orcid: https://orcid.org/0000-0002-6822-8437
+  - family-names: Funk
+    given-names: Sebastian
+    email: sebastian.funk@lshtm.ac.uk
+  - family-names: Pearson
+    given-names: Carl
+    email: carl.ab.pearson@gmail.com
+    orcid: https://orcid.org/0000-0003-0701-7860
+  - family-names: Gruson
+    given-names: Hugo
+    email: hugo.gruson@normalesup.org
+    orcid: https://orcid.org/0000-0002-4094-1476
+  - family-names: Guenther
+    given-names: Felix
+    email: felixguenther1@gmx.de
+    orcid: https://orcid.org/0000-0001-6582-1174
+  year: 'NULL'
+  doi: 10.5281/zenodo.3957489
+repository-code: https://github.com/epinowcast/epinowcast/issues/
+url: https://package.epinowcast.org
+contact:
+- name: Sam Abbott
+  email: contact@samabbott.co.uk
+  orcid: https://orcid.org/0000-0001-8057-8037
+references:
+- type: software
+  title: 'R: A Language and Environment for Statistical Computing'
+  notes: Depends
+  url: https://www.R-project.org/
+  authors:
+  - name: R Core Team
+  location:
+    name: Vienna, Austria
+  year: '2023'
+  institution:
+    name: R Foundation for Statistical Computing
+  version: '>= 3.5.0'
+- type: software
+  title: data.table
+  abstract: 'data.table: Extension of `data.frame`'
+  notes: Imports
+  url: https://r-datatable.com
+  repository: https://CRAN.R-project.org/package=data.table
+  authors:
+  - family-names: Dowle
+    given-names: Matt
+    email: mattjdowle@gmail.com
+  - family-names: Srinivasan
+    given-names: Arun
+    email: asrini@pm.me
+  year: '2023'
+- type: software
+  title: lubridate
+  abstract: 'lubridate: Make Dealing with Dates a Little Easier'
+  notes: Imports
+  url: https://lubridate.tidyverse.org
+  repository: https://CRAN.R-project.org/package=lubridate
+  authors:
+  - family-names: Spinu
+    given-names: Vitalie
+    email: spinuvit@gmail.com
+  - family-names: Grolemund
+    given-names: Garrett
+  - family-names: Wickham
+    given-names: Hadley
+  year: '2023'
+- type: software
+  title: ggplot2
+  abstract: 'ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics'
+  notes: Imports
+  url: https://ggplot2.tidyverse.org
+  repository: https://CRAN.R-project.org/package=ggplot2
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+    orcid: https://orcid.org/0000-0003-4757-117X
+  - family-names: Chang
+    given-names: Winston
+    orcid: https://orcid.org/0000-0002-1576-2126
+  - family-names: Henry
+    given-names: Lionel
+  - family-names: Pedersen
+    given-names: Thomas Lin
+    email: thomas.pedersen@posit.co
+    orcid: https://orcid.org/0000-0002-5147-4711
+  - family-names: Takahashi
+    given-names: Kohske
+  - family-names: Wilke
+    given-names: Claus
+    orcid: https://orcid.org/0000-0002-7470-9261
+  - family-names: Woo
+    given-names: Kara
+    orcid: https://orcid.org/0000-0002-5125-4188
+  - family-names: Yutani
+    given-names: Hiroaki
+    orcid: https://orcid.org/0000-0002-3385-7233
+  - family-names: Dunnington
+    given-names: Dewey
+    orcid: https://orcid.org/0000-0002-9415-4582
+  year: '2023'
+- type: software
+  title: purrr
+  abstract: 'purrr: Functional Programming Tools'
+  notes: Imports
+  url: https://purrr.tidyverse.org/
+  repository: https://CRAN.R-project.org/package=purrr
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@rstudio.com
+    orcid: https://orcid.org/0000-0003-4757-117X
+  - family-names: Henry
+    given-names: Lionel
+    email: lionel@rstudio.com
+  year: '2023'
+- type: software
+  title: rstan
+  abstract: 'rstan: R Interface to Stan'
+  notes: Imports
+  url: https://mc-stan.org/rstan/
+  repository: https://CRAN.R-project.org/package=rstan
+  authors:
+  - family-names: Guo
+    given-names: Jiqiang
+    email: guojq28@gmail.com
+  - family-names: Gabry
+    given-names: Jonah
+    email: jsg2201@columbia.edu
+  - family-names: Goodrich
+    given-names: Ben
+    email: benjamin.goodrich@columbia.edu
+  - family-names: Johnson
+    given-names: Andrew
+    email: andrew.johnson@arjohnsonau.com
+  - family-names: Weber
+    given-names: Sebastian
+    email: sdw.post@waebers.de
+  - family-names: Badr
+    given-names: Hamada S.
+    email: badr@jhu.edu
+    orcid: https://orcid.org/0000-0002-9808-2344
+  year: '2023'
+- type: software
+  title: scales
+  abstract: 'scales: Scale Functions for Visualization'
+  notes: Imports
+  url: https://scales.r-lib.org
+  repository: https://CRAN.R-project.org/package=scales
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@rstudio.com
+  - family-names: Seidel
+    given-names: Dana
+  year: '2023'
+- type: software
+  title: lifecycle
+  abstract: 'lifecycle: Manage the Life Cycle of your Package Functions'
+  notes: Imports
+  url: https://lifecycle.r-lib.org/
+  repository: https://CRAN.R-project.org/package=lifecycle
+  authors:
+  - family-names: Henry
+    given-names: Lionel
+    email: lionel@rstudio.com
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@rstudio.com
+    orcid: https://orcid.org/0000-0003-4757-117X
+  year: '2023'
+- type: software
+  title: bookdown
+  abstract: 'bookdown: Authoring Books and Technical Documents with R Markdown'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/bookdown/
+  repository: https://CRAN.R-project.org/package=bookdown
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2023'
+- type: software
+  title: loo
+  abstract: 'loo: Efficient Leave-One-Out Cross-Validation and WAIC for Bayesian Models'
+  notes: Suggests
+  url: https://mc-stan.org/loo/
+  repository: https://CRAN.R-project.org/package=loo
+  authors:
+  - family-names: Vehtari
+    given-names: Aki
+    email: Aki.Vehtari@aalto.fi
+  - family-names: Gabry
+    given-names: Jonah
+    email: jsg2201@columbia.edu
+  - family-names: Magnusson
+    given-names: Mans
+  - family-names: Yao
+    given-names: Yuling
+  - family-names: Bürkner
+    given-names: Paul-Christian
+  - family-names: Paananen
+    given-names: Topi
+  - family-names: Gelman
+    given-names: Andrew
+  year: '2023'
+  version: '>= 2.4.1'
+- type: software
+  title: knitr
+  abstract: 'knitr: A General-Purpose Package for Dynamic Report Generation in R'
+  notes: Suggests
+  url: https://yihui.org/knitr/
+  repository: https://CRAN.R-project.org/package=knitr
+  authors:
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  year: '2023'
+- type: software
+  title: rmarkdown
+  abstract: 'rmarkdown: Dynamic Documents for R'
+  notes: Suggests
+  url: https://pkgs.rstudio.com/rmarkdown/
+  repository: https://CRAN.R-project.org/package=rmarkdown
+  authors:
+  - family-names: Allaire
+    given-names: JJ
+    email: jj@posit.co
+  - family-names: Xie
+    given-names: Yihui
+    email: xie@yihui.name
+    orcid: https://orcid.org/0000-0003-0645-5666
+  - family-names: Dervieux
+    given-names: Christophe
+    email: cderv@posit.co
+    orcid: https://orcid.org/0000-0003-4474-2498
+  - family-names: McPherson
+    given-names: Jonathan
+    email: jonathan@posit.co
+  - family-names: Luraschi
+    given-names: Javier
+  - family-names: Ushey
+    given-names: Kevin
+    email: kevin@posit.co
+  - family-names: Atkins
+    given-names: Aron
+    email: aron@posit.co
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  - family-names: Cheng
+    given-names: Joe
+    email: joe@posit.co
+  - family-names: Chang
+    given-names: Winston
+    email: winston@posit.co
+  - family-names: Iannone
+    given-names: Richard
+    email: rich@posit.co
+    orcid: https://orcid.org/0000-0003-3925-190X
+  year: '2023'
+- type: software
+  title: scoringutils
+  abstract: 'scoringutils: Utilities for Scoring and Assessing Predictions'
+  notes: Suggests
+  url: https://epiforecasts.io/scoringutils/
+  repository: https://CRAN.R-project.org/package=scoringutils
+  authors:
+  - family-names: Bosse
+    given-names: Nikos
+    email: nikosbosse@gmail.com
+    orcid: https://orcid.org/0000-0002-7750-5280
+  - name: Sam Abbott
+    email: contact@samabbott.co.uk
+    orcid: https://orcid.org/0000-0001-8057-8037
+  - family-names: Gruson
+    given-names: Hugo
+    email: hugo.gruson@lshtm.ac.uk
+    orcid: https://orcid.org/0000-0002-4094-1476
+  year: '2023'
+- type: software
+  title: spelling
+  abstract: 'spelling: Tools for Spell Checking in R'
+  notes: Suggests
+  url: https://docs.ropensci.org/spelling/
+  repository: https://CRAN.R-project.org/package=spelling
+  authors:
+  - family-names: Ooms
+    given-names: Jeroen
+    email: jeroen@berkeley.edu
+    orcid: https://orcid.org/0000-0002-4035-0289
+  - family-names: Hester
+    given-names: Jim
+    email: james.hester@rstudio.com
+  year: '2023'
+- type: software
+  title: testthat
+  abstract: 'testthat: Unit Testing for R'
+  notes: Suggests
+  url: https://testthat.r-lib.org
+  repository: https://CRAN.R-project.org/package=testthat
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+  year: '2023'
+  version: '>= 3.1.9'
+- type: software
+  title: usethis
+  abstract: 'usethis: Automate Package and Project Setup'
+  notes: Suggests
+  url: https://usethis.r-lib.org
+  repository: https://CRAN.R-project.org/package=usethis
+  authors:
+  - family-names: Wickham
+    given-names: Hadley
+    email: hadley@posit.co
+    orcid: https://orcid.org/0000-0003-4757-117X
+  - family-names: Bryan
+    given-names: Jennifer
+    email: jenny@posit.co
+    orcid: https://orcid.org/0000-0002-6983-2759
+  - family-names: Barrett
+    given-names: Malcolm
+    email: malcolmbarrett@gmail.com
+    orcid: https://orcid.org/0000-0003-0299-5825
+  - family-names: Teucher
+    given-names: Andy
+    email: andy.teucher@posit.co
+    orcid: https://orcid.org/0000-0002-7840-692X
+  year: '2023'
+identifiers:
+- type: url
+  value: https://github.com/epinowcast/epinowcast/
