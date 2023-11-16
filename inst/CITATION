@@ -1,9 +1,17 @@
+# Code copied from citation()
+author <- meta$`Authors@R`
+if (length(author)) {
+    aar <- .read_authors_at_R_field(author)
+    author <- Filter(function(e) {
+        !(is.null(e$given) && is.null(e$family)) && !is.na(match("aut", 
+            e$role))
+    }, aar)
+}
+
 bibentry(
-  "Article",
-  title = "epinowcast: Flexible hierarchical nowcasting",
-  author = "Sam Abbott, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther",
-  year = 2021,
-  journal = "Zenodo",
-  doi = "10.5281/zenodo.5637165",
-  url = "https://github.com/epinowcast/epinowcast"
+  bibtype = "Manual",
+  title   = paste0(meta$Package, ": ", gsub("[[:space:]]+", " ", meta$Title)),
+  author  = author,
+  year    = format(meta$Date, "%Y"),
+  doi     = "10.5281/zenodo.3957489"
 )
