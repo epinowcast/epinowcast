@@ -51,6 +51,9 @@ This release is in development and not yet ready for production use.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
 
+## Depreciations
+- `enw_delay_filter()`: Deprecated with an error in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
+
 # epinowcast 0.2.2
 
 This is a minor release that fixes a bug in the handling of optional initial conditions that was introduced by a recent change in `cmdstan 2.32.1`. Upgrading is recommended for all users who wish to use versions of `cmdstan` beyond `2.32.0`. In addition to fixing this issue, the release also includes some minor documentation and vignette improvements, along with enhancements in input checking.
