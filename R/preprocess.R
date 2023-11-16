@@ -515,7 +515,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   return(enw_filter_delay(obs, max_delay, timestep))
 }
 
-#' Filter observations to restrict the maximum reporting delay
+#' Filter observations to have a consistent maximum delay period from reference to report date
 #'
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
