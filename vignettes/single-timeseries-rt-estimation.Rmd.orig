@@ -455,7 +455,7 @@ If you have more than 4 CPU cores available you can increase the number of threa
 We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the [README](https://package.epinowcast.org). This will take around a minute to run when called for the first time.
 
 ```{r compile-model}
-epinowcast_model <- enw_model(threads = TRUE, profile = FALSE)
+epinowcast_model <- enw_model(profile = FALSE)
 ```
 
 #### Fitting the model
