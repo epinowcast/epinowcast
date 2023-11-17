@@ -148,9 +148,6 @@
     <loc>package.epinowcast.org/dev/reference/enw_cumulative_to_incidence.html</loc>
   </url>
   <url>
-    <loc>package.epinowcast.org/dev/reference/enw_delay_filter.html</loc>
-  </url>
-  <url>
     <loc>package.epinowcast.org/dev/reference/enw_delay_metadata.html</loc>
   </url>
   <url>
@@ -167,6 +164,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_extend_date.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_filter_delay.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_filter_reference_dates.html</loc>
