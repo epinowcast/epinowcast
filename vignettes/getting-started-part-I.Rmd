@@ -12,7 +12,7 @@ bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 link-citations: true
 vignette: >
-  %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
+  %\VignetteIndexEntry{Getting Started with Epinowcast}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
