@@ -294,10 +294,11 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @param compile Logical, defaults to `TRUE`. Should the model
 #' be loaded and compiled using [cmdstanr::cmdstan_model()].
 #'
-#' @param threads Logical, defaults to `FALSE`. Should the model compile with
-#' support for multi-thread support in chain. Note that this requires the use of
-#' the `threads_per_chain` argument when model fitting using [enw_sample()],
-#' and [epinowcast()].
+#' @param threads Logical, defaults to `TRUE`. Should the model compile with
+#' support for multi-thread support in chain. Note that setting this will
+#' produce a warning that `threads_to_chain` is set and ignored. Changing this
+#' to `FALSE` is not expected to yield any performance benefits even when
+#' not using multithreading and thus not recommended.
 #'
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
@@ -331,7 +332,7 @@ enw_model <- function(model = system.file(
                         package = "epinowcast"
                       ),
                       include = system.file("stan", package = "epinowcast"),
-                      compile = TRUE, threads = FALSE, profile = FALSE,
+                      compile = TRUE, threads = TRUE, profile = FALSE,
                       target_dir = tempdir(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
