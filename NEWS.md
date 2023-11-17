@@ -53,7 +53,7 @@ This release is in development and not yet ready for production use.
 - Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
 
 ## Depreciations
-- `enw_delay_filter()`: Deprecated with an error in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
+- `enw_delay_filter()`: Deprecated with a warning in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
 # epinowcast 0.2.2
 
