@@ -771,8 +771,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' included in the model
 #'
 #' @param likelihood_aggregation Character string, aggregation over which
-#' stratify the likelihood when `threads = TRUE`; enforced by
-#' [base::match.arg()]. Currently supported options:
+#' stratify the likelihood when `threads_per_chain` is greater than 1; enforced
+#' by [base::match.arg()]. Currently supported options:
 #'  * "snapshots" which aggregates over report dates and groups (i.e the lowest
 #' level that observations are reported at),
 #'  * "groups" which aggregates across user defined groups.

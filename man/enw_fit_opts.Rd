@@ -31,8 +31,8 @@ for observed data. Useful for evaluating the performance of the model.}
 included in the model}
 
 \item{likelihood_aggregation}{Character string, aggregation over which
-stratify the likelihood when \code{threads = TRUE}; enforced by
-\code{\link[base:match.arg]{base::match.arg()}}. Currently supported options:
+stratify the likelihood when \code{threads_per_chain} is greater than 1; enforced
+by \code{\link[base:match.arg]{base::match.arg()}}. Currently supported options:
 \itemize{
 \item "snapshots" which aggregates over report dates and groups (i.e the lowest
 level that observations are reported at),
