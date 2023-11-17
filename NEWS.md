@@ -33,7 +33,7 @@ This release is in development and not yet ready for production use.
 - Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added support to `enw_complete_dates()` for `min_date` and `max_date` arguments. These arguments allow users to specify the minimum and maximum dates to include in the output. This may be useful to users who want to ensure that their data is complete for a specified time period. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added a new helper function `enw_one_hot_encode_feature()` for one hot encoding variables and binding them into the original data. This is useful when users want to include parts of variables in their models as binary indicators - for example giving a specific delay its own effect. See #348 by @seabbs and self-reviewed.
-- Enabled compiling with multithreading by default as this was found to cause no deterioration in performance even with 1 thread per chain. The likelihood calculation is now no longer parallelised when `threads_per_chain = 1`. See #366 by @sbfnk.
+- Enabled compiling with multithreading by default as this was found to cause no deterioration in performance even with 1 thread per chain. The likelihood calculation is now no longer parallelised when `threads_per_chain = 1`. See #366 by @sbfnk and reviewed by @seabbs.
 
 ## Model
 
