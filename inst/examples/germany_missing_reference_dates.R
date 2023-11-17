@@ -49,10 +49,6 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
-# Compile nowcasting model without multi-threading as only using a single
-# group and the missing reference only supports multi-threading across groups
-model <- enw_model(threads = FALSE)
-
 # Fit the nowcast model with support for observations with missing reference
 # dates and produce a nowcast
 # Note that we have reduced samples for this example to reduce runtimes
@@ -64,8 +60,7 @@ nowcast <- epinowcast(pobs,
     chains = 4, iter_warmup = 500, iter_sampling = 500,
     likelihood_aggregation = "groups", adapt_delta = 0.9
   ),
-  obs = enw_obs(family = "poisson", data = pobs),
-  model = model
+  obs = enw_obs(family = "poisson", data = pobs)
 )
 
 # Plot nowcast of observed values
