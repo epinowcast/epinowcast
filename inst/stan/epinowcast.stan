@@ -393,8 +393,8 @@ model {
   // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
     profile("model_likelihood") {
-    if (ll_aggregation) {
-      if (parallelise_likelihood) {
+    if (parallelise_likelihood) {
+      if (ll_aggregation) {
         target += reduce_sum(
           delay_group_lupmf, groups, 1, flat_obs, lsl, clsl, nsl, cnsl,
           flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
@@ -403,29 +403,21 @@ model {
           refnp_lh, model_refnp
         );
       } else {
-        target += delay_group_lupmf(
-          groups | 1, g, flat_obs, lsl, clsl, nsl, cnsl,
-          flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
-          refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
-          obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-          refnp_lh, model_refnp
-        );
-      }
-    } else {
-      if (parallelise_likelihood) {
         target += reduce_sum(
           delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
           model_refnp, sdmax, csdmax
         );
-      } else {
-        target += delay_snap_lupmf(st | 1, s, flat_obs, lsl, clsl, nsl, cnsl,
-          flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
-          refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
-          model_refnp, sdmax, csdmax
-        );
       }
+    } else {
+      groups ~ delay_group(
+        1, g, flat_obs, lsl, clsl, nsl, cnsl, flat_obs_lookup, exp_lobs, t, sg,
+        ts, st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
+        refnp_lh, model_refnp
+      );
     }
   }
   }
