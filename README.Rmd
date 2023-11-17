@@ -79,7 +79,7 @@ cmdstanr::install_cmdstan()
 *Note: This install process can be sped up using the `cores` argument and past versions can be installed using the `version` argument (which may be useful if install historical package releases).*
 </details>
 
-<details><summary>Docker</summary>
+<details><summary>Alternative: Docker</summary>
 
 We also provide a [Docker](https://www.docker.com/get-started/) image with [`epinowcast` and all dependencies installed](https://github.com/orgs/epinowcast/packages/container/package/epinowcast). This image can be used to run `epinowcast` without installing dependencies locally.
 </details>
