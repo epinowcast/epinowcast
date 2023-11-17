@@ -288,7 +288,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #'  - `effects`: A `data.frame` describing the random effect structure of the
 #' new effects.
 #' @family formulatools
-#' @importFrom rlang abort
+#' @importFrom rlang abort inform
 #' @examples
 #' data <- enw_example("preproc")$metareference[[1]]
 #'
@@ -333,9 +333,11 @@ construct_rw <- function(rw, data) {
       )
     }
     if (length(unique(fdata[[rw$by]])) < 2) {
-      message(
-        "A grouped random walk using ", rw$by,
-        " is not possible as this variable has fewer than 2 unique values."
+      rlang::inform(
+        paste0(
+          "A grouped random walk using ", rw$by,
+          " is not possible as this variable has fewer than 2 unique values."
+        )
       )
       rw$by <- NULL
     } else {
@@ -415,7 +417,7 @@ re <- function(formula) {
 #'
 #' @family formulatools
 #' @importFrom purrr map
-#' @importFrom rlang abort
+#' @importFrom rlang abort inform
 #' @examples
 #' # Simple examples
 #' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
@@ -454,9 +456,11 @@ construct_re <- function(re, data) {
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-        message(
-          "A random effect using ", current_random[2],
-          " is not possible as this variable has fewer than 2 unique values."
+        rlang::inform(
+          paste0(
+            "A random effect using ", current_random[2],
+            " is not possible as this variable has fewer than 2 unique values."
+          )
         )
         random[i] <- current_random[1]
       } else {

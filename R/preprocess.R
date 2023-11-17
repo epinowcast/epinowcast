@@ -1056,7 +1056,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   )
   if (timestep == "month") {
     rlang::abort(
-      paste(
+      paste0(
         "Calendar months are not currently supported. Consider using an ",
         "approximate number of days (i.e. 28), a different timestep (i.e. ",
         "'week'), or commenting on issue #309."

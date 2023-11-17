@@ -24,7 +24,8 @@
 #' enw_add_cumulative(dt)
 enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
   reports <- coerce_dt(
-    obs, dates = TRUE, required_cols = c(by, "new_confirm"), copy = copy
+    obs,
+    dates = TRUE, required_cols = c(by, "new_confirm"), copy = copy
   )
 
   reports <- reports[!is.na(reference_date)]
@@ -68,7 +69,8 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
                               copy = TRUE) {
   reports <- coerce_dt(
-    obs, dates = TRUE, required_cols = c(by, "confirm"), copy = copy
+    obs,
+    dates = TRUE, required_cols = c(by, "confirm"), copy = copy
   )
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := c(confirm[1], diff(confirm)),
@@ -133,6 +135,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' @family dataconverters
 #' @export
 #' @importFrom data.table as.data.table setkeyv
+#' @importFrom rlang inform
 #' @examples
 #' linelist <- data.frame(
 #'   onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
@@ -143,8 +146,9 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' # Specify a custom maximum delay and allow completion beyond the maximum
 #' # observed delay
 #' enw_linelist_to_incidence(
-#'  linelist, reference_date = "onset_date", max_delay = 5,
-#'  completion_beyond_max_report = TRUE
+#'   linelist,
+#'   reference_date = "onset_date", max_delay = 5,
+#'   completion_beyond_max_report = TRUE
 #' )
 enw_linelist_to_incidence <- function(linelist,
                                       reference_date = "reference_date",
@@ -153,7 +157,8 @@ enw_linelist_to_incidence <- function(linelist,
                                       completion_beyond_max_report = FALSE,
                                       copy = TRUE) {
   counts <- coerce_dt(
-    linelist, required_cols = c(by, reference_date, report_date), copy = copy
+    linelist,
+    required_cols = c(by, reference_date, report_date), copy = copy
   )
   data.table::setnames(
     counts,
@@ -164,28 +169,35 @@ enw_linelist_to_incidence <- function(linelist,
   counts <- coerce_dt(counts, dates = TRUE, copy = FALSE)
 
   counts <- counts[,
-    .(new_confirm = .N), keyby = c("reference_date", "report_date", by)
+    .(new_confirm = .N),
+    keyby = c("reference_date", "report_date", by)
   ]
 
   obs_delay <- max(counts$report_date) - min(counts$reference_date) + 1
   if (missing(max_delay)) {
     max_delay <- obs_delay
-    message(
-      "Using the maximum observed delay of ", max_delay, " days ",
-      "to complete the incidence data."
+    rlang::inform(
+      paste0(
+        "Using the maximum observed delay of ", max_delay, " days ",
+        "to complete the incidence data."
+      )
     )
   }
   if (max_delay < obs_delay) {
-    message(
-      "Using the maximum observed delay of ", obs_delay,
-      " days as greater than the maximum specified to complete the incidence ",
-      "data.")
-       max_delay <- obs_delay
+    rlang::inform(
+      paste0(
+        "Using the maximum observed delay of ", obs_delay,
+        " days as greater than the maximum specified to complete the incidence ",
+        "data."
+      )
+    )
+    max_delay <- obs_delay
   }
   cum_counts <- enw_add_cumulative(counts, by = by, copy = FALSE)
 
   complete_counts <- enw_complete_dates(
-    cum_counts, max_delay = max_delay, by = by,
+    cum_counts,
+    max_delay = max_delay, by = by,
     completion_beyond_max_report = completion_beyond_max_report,
     timestep = "day"
   )
@@ -221,13 +233,15 @@ enw_linelist_to_incidence <- function(linelist,
 #' @examples
 #' incidence <- enw_add_incidence(germany_covid19_hosp)
 #' incidence <- enw_filter_reference_dates(
-#'   incidence[location %in% "DE"], include_days = 10
+#'   incidence[location %in% "DE"],
+#'   include_days = 10
 #' )
 #' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
                                       report_date = "report_date") {
   obs <- coerce_dt(
-    obs, dates = TRUE, required_cols = "new_confirm", forbidden_cols = "id"
+    obs,
+    dates = TRUE, required_cols = "new_confirm", forbidden_cols = "id"
   )
   suppressWarnings(obs <- obs[, "confirm" := NULL]) # nolint
   cols <- setdiff(colnames(obs), "new_confirm")
@@ -351,9 +365,8 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
 enw_aggregate_cumulative <- function(
-  obs, timestep = "day", by = NULL,
-  min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
-) {
+    obs, timestep = "day", by = NULL,
+    min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE) {
   stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
   obs <- coerce_dt(
     obs,
@@ -397,7 +410,8 @@ enw_aggregate_cumulative <- function(
 
   # Aggregate over the timestep
   agg_obs <- aggregate_rolling_sum(
-    agg_obs, internal_timestep, by = c("report_date", ".group")
+    agg_obs, internal_timestep,
+    by = c("report_date", ".group")
   )
 
   # Set day of week for reference date and filter
@@ -408,15 +422,17 @@ enw_aggregate_cumulative <- function(
   # using the desired reporting timestep
   if (nrow(agg_obs_na_ref) > 0) {
     agg_obs_na_ref <- aggregate_rolling_sum(
-      agg_obs_na_ref, internal_timestep, by = ".group"
+      agg_obs_na_ref, internal_timestep,
+      by = ".group"
     )
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs, fill = TRUE)
   }
 
   # Drop internal processing columns
-  agg_obs[,
-   c("reference_date_mod", "report_date_mod", ".group") := NULL
+  agg_obs[
+    ,
+    c("reference_date_mod", "report_date_mod", ".group") := NULL
   ]
   return(agg_obs[])
 }

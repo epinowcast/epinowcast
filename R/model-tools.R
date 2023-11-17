@@ -342,8 +342,8 @@ enw_model <- function(model = system.file(
                       target_dir = tempdir(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", toString(include)))
+    rlang::inform(sprintf("Using model %s.", model))
+    rlang::inform(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {

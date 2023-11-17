@@ -59,7 +59,7 @@ enw_reference <- function(
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
     rlang::abort(
-      paste(
+      paste0(
         "A non-parametric model must be specified if no parametric model",
         " is specified"
       )
