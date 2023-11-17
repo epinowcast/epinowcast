@@ -13,15 +13,14 @@ enw_filter_reference_dates(
 )
 }
 \arguments{
-\item{obs}{An \code{data.frame}; must have \code{report_date} and \code{reference_date}
+\item{obs}{A \code{data.frame}; must have \code{report_date} and \code{reference_date}
 columns.}
 
 \item{earliest_date}{earliest reference date to include in the data set}
 
-\item{include_days}{if \code{earilest_date} is not given, the number
+\item{include_days}{if \code{earliest_date} is not given, the number
 of reference dates to include, ending with the latest reference
-date included once report dates have been removed. If specified
-this is indexed to \code{latest_date} or \code{remove_days}.}
+date included (determined by \code{latest_date} or \code{remove_days}).}
 
 \item{latest_date}{Date, the latest reference date to include in the
 returned dataset.}
@@ -30,17 +29,17 @@ returned dataset.}
 of reference dates to remove, starting from the latest date included.}
 }
 \value{
-A data.table  filtered by report date
+A \code{data.table} filtered by report date
 }
 \description{
-This is a helper function which allows users to filter
-datasets by reference date. This is useful, for example, when evaluating
-nowcast performance against fully observed data. Users may wish to combine
-this function with \code{\link[=enw_filter_report_dates]{enw_filter_report_dates()}}. Note that by definition it
-is assumed that a report date for a given reference date must be the equal
-or greater (i.e a report cannot happen before the event being reported
-occurs). This means that this function will also filter report dates earlier
-than the target reference dates.
+This is a helper function which allows users to filter datasets
+by reference date. This is useful, for example, when evaluating nowcast
+performance against fully observed data. Users may wish to combine this
+function with \code{\link[=enw_filter_report_dates]{enw_filter_report_dates()}}. Note that by definition it is
+assumed that report dates must be equal or greater than the corresponding
+reference date (i.e a report cannot happen before the event being reported
+occurs). This means that this function will also filter out any report dates
+that are earlier than their corresponding reference date.
 }
 \examples{
 # Filter by date
@@ -64,10 +63,12 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

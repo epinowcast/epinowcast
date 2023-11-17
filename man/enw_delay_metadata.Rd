@@ -4,7 +4,7 @@
 \alias{enw_delay_metadata}
 \title{Calculate reporting delay metadata}
 \usage{
-enw_delay_metadata(max_delay = 20, breaks = 4)
+enw_delay_metadata(max_delay = 20, breaks = 4, timestep = "day")
 }
 \arguments{
 \item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
@@ -13,10 +13,18 @@ to 1 and an integer (internally it will be coerced to one using
 distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay).}
+(i.e. a \code{max_delay} of 1 corresponds with no delay). If a \code{max_delay} greater
+than the maximum delay in the data is supplied then \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
+will throw a warning but in some cases this may be appropriate (e.g. if
+at the beginning of a time series). In these cases the user should check the
+model specification carefully as the model will be extrapolating beyond the
+observed data.}
 
 \item{breaks}{Numeric, defaults to 4. The number of breaks to use when
 constructing a categorised version of numeric delays.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A  \code{data.frame}  of delay metadata. This includes:
@@ -25,6 +33,10 @@ A  \code{data.frame}  of delay metadata. This includes:
 \item \code{delay_cat}: The categorised delay. This may be useful for model building.
 \item \code{delay_week}: The numeric week since the delay was reported. This again
 may be useful for model building.
+\item \code{delay_head}: A logical variable defining if the delay is in the lower
+25\% of the potential delays. This may be particularly useful when building
+models that assume a parametric distribution in order to increase the weight
+of the head of the reporting distribution in a pragmatic way.
 \item \code{delay_tail}: A logical variable defining if the delay is in the upper
 75\% of the potential delays. This may be particularly useful when building
 models that assume a parametric distribution in order to increase the weight
@@ -49,10 +61,12 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

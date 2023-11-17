@@ -4,7 +4,12 @@
 \alias{enw_nowcast_summary}
 \title{Summarise the posterior nowcast prediction}
 \usage{
-enw_nowcast_summary(fit, obs, probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95))
+enw_nowcast_summary(
+  fit,
+  obs,
+  probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95),
+  timestep = "day"
+)
 }
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
@@ -19,6 +24,9 @@ output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,
 and 95\% quantiles which are also the minimum set required for
 plotting functions to work.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A \code{data.frame} summarising the model posterior nowcast prediction.

@@ -18,7 +18,7 @@ defined by report date as defined in \code{metareference} as produced by
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that this formula will be applied to all
 summary statistics of the chosen parametric distribution but each summary
 parameter will have separate effects. Use \code{~ 0} to not use a parametric
-model (note not recommended until the \code{non_parametric} model is implemented).}
+model.}
 
 \item{distribution}{A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
@@ -29,8 +29,9 @@ describing the non-parametric logit hazard model. This can use features
 defined by reference date and by delay. It draws on a linked \code{data.frame}
 using \code{metareference} and \code{metadelay} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
 When an effect per delay is specified this approximates the cox proportional
-hazard model in discrete time with a single strata. Note that this model is
-currently not available for users.}
+hazard model in discrete time with a single strata. When used in conjunction
+with a parametric model it likely makes sense to disable the intercept in
+order to make the joint model identifiable (i.e. \code{~ 0 + (1 | delay)}).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
@@ -44,7 +45,23 @@ can be used to sample from a tightened version of the prior distribution.
 Reference date logit hazard reporting  model module
 }
 \examples{
-enw_reference(data = enw_example("preprocessed"))
+# Parametric model with a lognormal distribution
+enw_reference(
+ parametric = ~1, distribution = "lognormal",
+ data = enw_example("preprocessed")
+)
+
+# Non-parametric model with a random effect per delay
+enw_reference(
+ parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
+ data = enw_example("preprocessed")
+)
+
+# Combined parametric and non-parametric model
+enw_reference(
+ parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
+ data = enw_example("preprocessed")
+)
 }
 \seealso{
 Model modules

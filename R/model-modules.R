@@ -6,7 +6,7 @@
 #' [enw_preprocess_data()]. Note that this formula will be applied to all
 #' summary statistics of the chosen parametric distribution but each summary
 #' parameter will have separate effects. Use `~ 0` to not use a parametric
-#' model (note not recommended until the `non_parametric` model is implemented).
+#' model.
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
@@ -17,8 +17,9 @@
 #' defined by reference date and by delay. It draws on a linked `data.frame`
 #' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
 #' When an effect per delay is specified this approximates the cox proportional
-#' hazard model in discrete time with a single strata. Note that this model is
-#' currently not available for users.
+#' hazard model in discrete time with a single strata. When used in conjunction
+#' with a parametric model it likely makes sense to disable the intercept in
+#' order to make the joint model identifiable (i.e. `~ 0 + (1 | delay)`).
 #'
 #' @return A list containing the supplied formulas, data passed into a list
 #' describing the models, a `data.frame` describing the priors used, and a
@@ -29,25 +30,46 @@
 #' @family modelmodules
 #' @export
 #' @examples
-#' enw_reference(data = enw_example("preprocessed"))
-enw_reference <- function(parametric = ~1, distribution = c(
-                            "lognormal", "none", "exponential", "gamma",
-                            "loglogistic"
-                          ), non_parametric = ~0, data) {
+#' # Parametric model with a lognormal distribution
+#' enw_reference(
+#'  parametric = ~1, distribution = "lognormal",
+#'  data = enw_example("preprocessed")
+#' )
+#'
+#' # Non-parametric model with a random effect per delay
+#' enw_reference(
+#'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
+#'  data = enw_example("preprocessed")
+#' )
+#'
+#' # Combined parametric and non-parametric model
+#' enw_reference(
+#'  parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
+#'  data = enw_example("preprocessed")
+#' )
+enw_reference <- function(
+  parametric = ~1,
+  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+  non_parametric = ~0, data
+) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
-    parametric <- "~1"
-  }
-  if (!as_string_formula(non_parametric) %in% "~0") {
-    stop("The non-parametric reference model has not yet been implemented")
+    parametric <- ~1
   }
   distribution <- match.arg(distribution)
-  if (distribution %in% "none") {
-    warning(
-      "As non-parametric hazards have yet to be implemented a parametric hazard
-       is likely required for all real-world use cases"
+  if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
+    stop(
+      "A non-parametric model must be specified if no parametric model",
+      " is specified"
     )
   }
+  if (as_string_formula(non_parametric) %in% "~0") {
+    non_parametric <- ~1
+    model_refnp <- 0
+  }else {
+    model_refnp <- 1
+  }
+
   distribution <- data.table::fcase(
     distribution %in% "none", 0,
     distribution %in% "exponential", 1,
@@ -55,7 +77,7 @@ enw_reference <- function(parametric = ~1, distribution = c(
     distribution %in% "gamma", 3,
     distribution %in% "loglogistic", 4
   )
-
+  # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
   pdata <- enw_formula_as_data_list(
     pform,
@@ -63,21 +85,46 @@ enw_reference <- function(parametric = ~1, distribution = c(
   )
   pdata$model_refp <- distribution
 
+  # Define non-parametric model
+  metanp <- merge(
+    data.table::copy(data$metareference[[1]])[, delay := NULL][, id := 1],
+    data.table::copy(data$metadelay[[1]])[, id := 1],
+    by = "id",
+    allow.cartesian = TRUE
+  )[, id := NULL]
+
+  npform <- enw_formula(
+    non_parametric, metanp, sparse = FALSE
+  )
+  npdata <- enw_formula_as_data_list(
+    npform,
+    prefix = "refnp", drop_intercept = TRUE
+  )
+  npdata$model_refnp <- model_refnp
+
+  # Map models to output
   out <- list()
   out$formula$parametric <- pform$formula
-  out$data <- pdata
+  out$formula$non_parametric <- npform$formula
+  out$data <- c(pdata, npdata)
   out$priors <- data.table::data.table(
     variable = c(
-      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd"
+      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
+      "refnp_int", "refnp_beta_sd"
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
       "Log standard deviation for the parametric reference date delay",
       "Standard deviation of scaled pooled parametric mean effects",
-      "Standard deviation of scaled pooled parametric sd effects"
+      "Standard deviation of scaled pooled parametric sd effects",
+      "Intercept for non-parametric reference date delay",
+      "Standard deviation of scaled pooled non-parametric effects"
     ),
-    distribution = c("Normal", rep("Zero truncated normal", 3)),
-    mean = c(1, 0.5, 0, 0),
+    distribution = c(
+      "Normal", rep("Zero truncated normal", 3),
+      "Normal", "Zero truncated normal"
+    ),
+    mean = c(1, 0.5, 0, 0, 0, 0),
     sd = 1
   )
   out$inits <- function(data, priors) {
@@ -89,7 +136,10 @@ enw_reference <- function(parametric = ~1, distribution = c(
         refp_mean_beta = numeric(0),
         refp_sd_beta = numeric(0),
         refp_mean_beta_sd = numeric(0),
-        refp_sd_beta_sd = numeric(0)
+        refp_sd_beta_sd = numeric(0),
+        refnp_int = numeric(0),
+        refnp_beta = numeric(0),
+        refnp_beta_sd = numeric(0)
       )
       if (data$model_refp > 0) {
         init$refp_mean_int <- array(rnorm(
@@ -122,6 +172,22 @@ enw_reference <- function(parametric = ~1, distribution = c(
           init$refp_sd_beta_sd <- array(abs(rnorm(
             data$refp_rncol, priors$refp_sd_beta_sd_p[1],
             priors$refp_sd_beta_sd_p[2] / 10
+          )))
+        }
+      }
+      if (data$model_refnp > 0) {
+        if (data$refnp_fintercept > 0) {
+          init$refnp_int <- array(rnorm(
+            1, priors$refnp_int_p[1], priors$refnp_int_p[2] / 10
+          ))
+        }
+        if (data$refnp_fncol > 0) {
+          init$refnp_beta <- array(rnorm(data$refnp_fncol, 0, 0.01))
+        }
+        if (data$refnp_rncol > 0) {
+          init$refnp_beta_sd <- array(abs(rnorm(
+            data$refnp_rncol, priors$refnp_beta_sd_p[1],
+            priors$refnp_beta_sd_p[2] / 10
           )))
         }
       }
@@ -305,7 +371,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Initial prior for seeding observations
   latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
-  seed_obs <- latest_matrix[1, ] + 1
+  seed_obs <- (latest_matrix[1, ] + 1) * sum(latent_reporting_delay)
   seed_obs <- purrr::map(seed_obs, ~ rep(log(.), r_list$gt_n))
   seed_obs <- round(unlist(seed_obs), 1)
 
@@ -560,6 +626,15 @@ enw_missing <- function(formula = ~1, data) {
 #' available. Support for additional observation models is planned,
 #' please open an issue with suggestions.
 #'
+#' @param observation_indicator A character string, the name of the column in
+#' the data that indicates whether an observation is observed or not (using a
+#' logical variable) and therefore whether or not it should be used in the
+#' likelihood. This variable should be present in the data input to
+#' [enw_preprocess_data()]. It can be generated using `flag_observation` in
+#' [enw_complete_dates()] or it can be created directly using
+#' [enw_flag_observed_observations()]. If either of these approaches are used
+#' then the variable will be name `.observed`. Default is `NULL`.
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @return A list as required by stan.
@@ -567,70 +642,89 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
-enw_obs <- function(family = c("negbin", "poisson"), data) {
+enw_obs <- function(family = c("negbin", "poisson"),
+                   observation_indicator = NULL, data) {
   family <- match.arg(family)
 
-  model_obs <- data.table::fcase(
+  # copy new confirm for processing
+  new_confirm <- coerce_dt(
+    data$new_confirm[[1]],
+    required_cols = c(
+      "reference_date", "delay", "confirm", observation_indicator
+    )
+  )
+  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
+  check_observation_indicator(new_confirm, observation_indicator)
+
+  # filter out observations beyond the maximum observation
+  new_confirm <- add_max_observed_delay(new_confirm, observation_indicator)
+  filt_new_confirm <- new_confirm[delay <= max_obs_delay]
+
+  # Add a look up for observations
+  filt_new_confirm[, lookup := seq_len(.N)]
+
+  # Filter out missing observations
+  if (!is.null(observation_indicator)) {
+    filt_new_confirm <- filt_new_confirm[(get(observation_indicator))]
+  }
+
+  # Format indexing and observed data
+  # See stan code for docs on what all of these are
+  proc_data <- list(
+    n = nrow(filt_new_confirm),
+    t = data$time[[1]],
+    s = data$snapshots[[1]],
+    g = data$groups[[1]],
+    groups = 1:data$groups[[1]]
+  )
+
+  # Add in incidence observation metadata
+  proc_data <- c(
+    proc_data,
+    extract_obs_metadata(
+      new_confirm, observation_indicator = observation_indicator
+    )
+  )
+
+  # Add in maximum delay indexes
+  proc_data <- c(
+    proc_data,
+    list(
+      dmax = data$max_delay[[1]],
+      sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
+      csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
+      obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)])
+    )
+  )
+
+  # Warn if maximum delay is longer than the observed time period
+  if (proc_data$t < proc_data$dmax) {
+    warning(
+      "The specified maximum delay is longer than the observed time period. ",
+      "Please be aware that epinowcast will extrapolate the delay distribution",
+      " beyond what is supported by the data."
+    )
+  }
+
+  # Add in observations in flat format without missing observations
+  proc_data$flat_obs <- filt_new_confirm$new_confirm
+
+  # Add link between flat observations and complete ones
+  proc_data$flat_obs_lookup <- filt_new_confirm$lookup
+
+  # How do observations relate to where we are in the data
+  # Add matrix of latest observed data
+  proc_data$latest_obs <- latest_obs_as_matrix(data$latest[[1]])
+
+  # Add a switch for the observation model
+  proc_data$model_obs <- data.table::fcase(
     family %in% "poisson", 0,
     family %in% "negbin", 1
   )
 
-  # format latest matrix
-  latest_matrix <- latest_obs_as_matrix(data$latest[[1]])
-
-  # get new confirm for processing
-  new_confirm <- coerce_dt(data$new_confirm[[1]])
-  data.table::setkeyv(new_confirm, c(".group", "reference_date", "delay"))
-
-  # get flat observations
-  flat_obs <- new_confirm$new_confirm
-
-  # format vector of snapshot lengths
-  snap_length <- new_confirm
-  snap_length <- snap_length[, .SD[delay == max(delay)],
-    by = c("reference_date", ".group")
-  ]
-  snap_length <- snap_length$delay + 1
-
-  # snap lookup
-  snap_lookup <- unique(new_confirm[, .(reference_date, .group)])
-  snap_lookup[, s := seq_len(.N)]
-  snap_lookup <- data.table::dcast(
-    snap_lookup, reference_date ~ .group,
-    value.var = "s"
-  )
-  snap_lookup <- as.matrix(snap_lookup[, -1])
-
-  # snap time
-  snap_time <- unique(new_confirm[, .(reference_date, .group)])
-  snap_time[, t := seq_len(.N), by = ".group"]
-  snap_time <- snap_time$t
-
-  # Format indexing and observed data
-  # See stan code for docs on what all of these are
-  data <- list(
-    n = length(flat_obs),
-    t = data$time[[1]],
-    s = data$snapshots[[1]],
-    g = data$groups[[1]],
-    groups = 1:data$groups[[1]],
-    st = snap_time,
-    ts = snap_lookup,
-    sl = snap_length,
-    csl = cumsum(snap_length),
-    sg = unique(new_confirm[, .(reference_date, .group)])$.group,
-    dmax = data$max_delay[[1]],
-    sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
-    csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
-    obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)]),
-    flat_obs = flat_obs,
-    latest_obs = latest_matrix,
-    model_obs = model_obs
-  )
-
   out <- list()
   out$family <- family
-  out$data <- data
+  out$data <- proc_data
   out$priors <- data.table::data.table(
     variable = "sqrt_phi",
     description = "One over the square root of the reporting overdispersion",

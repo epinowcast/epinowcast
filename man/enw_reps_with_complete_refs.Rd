@@ -17,7 +17,12 @@ to 1 and an integer (internally it will be coerced to one using
 distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay).}
+(i.e. a \code{max_delay} of 1 corresponds with no delay). If a \code{max_delay} greater
+than the maximum delay in the data is supplied then \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
+will throw a warning but in some cases this may be appropriate (e.g. if
+at the beginning of a time series). In these cases the user should check the
+model specification carefully as the model will be extrapolating beyond the
+observed data.}
 
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
@@ -37,10 +42,13 @@ dates
 }
 \seealso{
 Helper functions for model modules
+\code{\link{add_max_observed_delay}()},
 \code{\link{add_pmfs}()},
 \code{\link{convolution_matrix}()},
 \code{\link{enw_reference_by_report}()},
+\code{\link{extract_obs_metadata}()},
 \code{\link{extract_sparse_matrix}()},
-\code{\link{latest_obs_as_matrix}()}
+\code{\link{latest_obs_as_matrix}()},
+\code{\link{simulate_double_censored_pmf}()}
 }
 \concept{modelmodulehelpers}

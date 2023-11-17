@@ -9,7 +9,7 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![Codecov test
 coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
 
-[![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/)
+[![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/epinowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/epinowcast/blob/master/LICENSE.md/)
 [![GitHub
@@ -237,8 +237,8 @@ pobs
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
 #>    missing_reference  reporting_triangle      metareference          metareport
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
-#>             metadelay time snapshots by groups max_delay   max_date
-#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
+#>             metadelay time snapshots by groups max_delay   max_date timestep
+#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22      day
 ```
 
 The returned output is in the form of a `data.table` with metadata
@@ -288,14 +288,11 @@ expectation_module <- enw_expectation(
 Here, `day` refers to the number of days from the start of the data.
 
 As the underlying process model is an exponential growth rate model
-($C_t = C_{t-1} \exp^{r_t}$), specifying a random effect
-(i.e. `(1 | day)`) on the growth rate is equivalent to a geometric
-random walk on expected counts by reference date. We are defining a
-random effect as,
-
-$$ \text{day} \sim \text{Normal}(0, \sigma) $$
-
-$$ \sigma \sim \text{Half-Normal}(0, 1).$$
+(![C\_t = C\_{t-1}
+\\exp^{r\_t}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D
+"C_t = C_{t-1} \\exp^{r_t}")), specifying a random effect (i.e. `(1 |
+day)`) on the growth rate is equivalent to a geometric random walk on
+expected counts by reference date.
 
 #### Reporting model by reference date
 
@@ -308,7 +305,23 @@ reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
 Note that the default distribution is log-normal, hence the distribution
-argument could be omitted here.
+argument could be omitted here. Alternatively we could model the
+reporting delay non-parametrically using a hazard model (see [our model
+description for
+details](https://package.epinowcast.org/articles/model)). The following
+is equivalent to a cox proportional hazards model with a single baseline
+hazard function.
+
+``` r
+np_reference_module <- enw_reference(
+  parametric = ~0, non_parametric = ~ 0 + delay, data = pobs
+)
+```
+
+Advanced users may wish to combine parametric and non-parametric
+reference date reporting models. For example, we could model the
+reporting delay as log-normal for delays up to 10 days and then use a
+hazard model for longer delays.
 
 #### Reporting effects by report date
 
@@ -386,14 +399,14 @@ nowcast
 #> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
 #>    missing_reference  reporting_triangle      metareference          metareport
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
-#>             metadelay time snapshots by groups max_delay   max_date
-#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22
-#>                  fit       data  fit_args samples max_rhat
-#> 1: <CmdStanMCMC[42]> <list[99]> <list[7]>    1000     1.02
+#>             metadelay time snapshots by groups max_delay   max_date timestep
+#> 1: <data.table[40x4]>   41        41         1        40 2021-08-22      day
+#>                  fit        data  fit_args samples max_rhat
+#> 1: <CmdStanMCMC[42]> <list[110]> <list[7]>    1000     1.01
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #> 1:                     0                         0             8
 #>    no_at_max_treedepth per_at_max_treedepth run_time
-#> 1:                  70                 0.07     75.8
+#> 1:                  56                0.056     58.9
 ```
 
 ### Summarising and plotting the nowcast
@@ -418,26 +431,26 @@ nowcast |>
 #> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad q5
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000 72
-#>  2:                 1    38             0  69.057     69 0.2362346 0.0000 69
-#>  3:                 1    37             0  47.084     47 0.2881441 0.0000 47
-#>  4:                 1    36             0  65.192     65 0.4464699 0.0000 65
-#>  5:                 1    35             0  50.256     50 0.5410700 0.0000 50
-#>  6:                 1    34             0  36.231     36 0.5058605 0.0000 36
-#>  7:                 1    33             0  94.459     94 0.7272193 0.0000 94
-#>  8:                 1    32             0  91.718     92 0.8621016 1.4826 91
-#>  9:                 1    31             0 100.048    100 1.0444074 1.4826 99
-#> 10:                 1    30             0  87.207     87 1.1240171 1.4826 86
-#>     q95      rhat  ess_bulk  ess_tail
-#>  1:  72        NA        NA        NA
-#>  2:  70 0.9997408 1141.9827 1008.0970
-#>  3:  48 0.9992307 1147.3343 1013.5831
-#>  4:  66 1.0010101  987.9730  951.6919
-#>  5:  51 0.9989981 1006.8937  985.9879
-#>  6:  37 0.9981707  990.3342  994.7808
-#>  7:  96 1.0003595  958.4646  930.9106
-#>  8:  93 0.9999599  952.8034 1050.8725
-#>  9: 102 1.0015879 1103.6075  967.2563
-#> 10:  89 0.9994770  977.9843  945.4616
+#>  2:                 1    38             0  69.056     69 0.2385811 0.0000 69
+#>  3:                 1    37             0  47.074     47 0.2731274 0.0000 47
+#>  4:                 1    36             0  65.208     65 0.4614639 0.0000 65
+#>  5:                 1    35             0  50.280     50 0.5439631 0.0000 50
+#>  6:                 1    34             0  36.247     36 0.5002412 0.0000 36
+#>  7:                 1    33             0  94.524     94 0.7429509 0.0000 94
+#>  8:                 1    32             0  91.776     92 0.9058944 1.4826 91
+#>  9:                 1    31             0 100.188    100 1.1392778 1.4826 99
+#> 10:                 1    30             0  87.357     87 1.2202623 1.4826 86
+#>     q95      rhat  ess_bulk ess_tail
+#>  1:  72        NA        NA       NA
+#>  2:  70 1.0010387  915.0611 918.7423
+#>  3:  48 0.9994211  960.8533 950.5282
+#>  4:  66 1.0018759  852.0556 898.9818
+#>  5:  51 0.9997491 1010.2418 962.3060
+#>  6:  37 1.0004014  975.3127 931.8668
+#>  7:  96 0.9991346  895.3525 931.4309
+#>  8:  93 0.9992502  975.4180 931.7529
+#>  9: 102 0.9989709 1045.2368 999.2705
+#> 10:  90 0.9987151 1074.8555 838.6333
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest
@@ -492,17 +505,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
-#>     1:                 1    33             0      1          1     1    435
+#>     1:                 1    33             0      1          1     1    433
 #>     2:                 1    33             0      1          2     2    433
-#>     3:                 1    33             0      1          3     3    435
-#>     4:                 1    33             0      1          4     4    433
-#>     5:                 1    33             0      1          5     5    435
+#>     3:                 1    33             0      1          3     3    433
+#>     4:                 1    33             0      1          4     4    436
+#>     5:                 1    33             0      1          5     5    434
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2130
-#> 33997:                 1     0             1      2        497   997   2009
-#> 33998:                 1     0             1      2        498   998   2174
-#> 33999:                 1     0             1      2        499   999   2002
-#> 34000:                 1     0             1      2        500  1000   3000
+#> 33996:                 1     0             1      2        496   996   1777
+#> 33997:                 1     0             1      2        497   997   1974
+#> 33998:                 1     0             1      2        498   998   1911
+#> 33999:                 1     0             1      2        499   999   2164
+#> 34000:                 1     0             1      2        500  1000   2024
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -529,23 +542,24 @@ issues.
 If you use `epinowcast` in your work, please consider citing it using
 the following,
 
-    #> To cite package 'epinowcast' in publications use:
-    #> 
-    #>   Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021).
-    #>   "epinowcast: Flexible hierarchical nowcasting." _Zenodo_.
-    #>   doi:10.5281/zenodo.5637165 <https://doi.org/10.5281/zenodo.5637165>,
-    #>   <https://github.com/epinowcast/epinowcast>.
-    #> 
-    #> A BibTeX entry for LaTeX users is
-    #> 
-    #>   @Article{,
-    #>     title = {epinowcast: Flexible hierarchical nowcasting},
-    #>     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther},
-    #>     year = {2021},
-    #>     journal = {Zenodo},
-    #>     doi = {10.5281/zenodo.5637165},
-    #>     url = {https://github.com/epinowcast/epinowcast},
-    #>   }
+``` r
+citation("epinowcast")
+```
+
+To cite package ‘epinowcast’ in publications use:
+
+Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021).
+“epinowcast: Flexible hierarchical nowcasting.” *Zenodo*.
+<doi:10.5281/zenodo.5637165> <https://doi.org/10.5281/zenodo.5637165>,
+<https://github.com/epinowcast/epinowcast>.
+
+A BibTeX entry for LaTeX users is
+
+@Article{, title = {epinowcast: Flexible hierarchical nowcasting},
+author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl
+Pearson and Hugo Gruson and Felix Guenther}, year = {2021}, journal =
+{Zenodo}, doi = {10.5281/zenodo.5637165}, url =
+{<https://github.com/epinowcast/epinowcast>}, }
 
 If making use of our methodology or the methodology on which ours is
 based, please cite the relevant papers from our [model

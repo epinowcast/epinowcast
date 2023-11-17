@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R-CMD-check](https://github.com/epinowcast/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
 
-[![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/)
+[![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/epinowcast)
 [![MIT
 license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/epinowcast/epinowcast/blob/master/LICENSE.md/)
 [![GitHub contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)](https://github.com/epinowcast/epinowcast/graphs/contributors)
@@ -166,11 +166,7 @@ expectation_module <- enw_expectation(
 
 Here, `day` refers to the number of days from the start of the data.
 
-As the underlying process model is an exponential growth rate model ($C_t = C_{t-1} \exp^{r_t}$), specifying a random effect (i.e. `(1 | day)`) on the growth rate is equivalent to a geometric random walk on expected counts by reference date. We are defining a random effect as,
-
-$$ \text{day} \sim \text{Normal}(0, \sigma) $$
-
-$$ \sigma \sim \text{Half-Normal}(0, 1).$$
+As the underlying process model is an exponential growth rate model ($C_t = C_{t-1} \exp^{r_t}$), specifying a random effect (i.e. `(1 | day)`) on the growth rate is equivalent to a geometric random walk on expected counts by reference date.
 
 #### Reporting model by reference date
 
@@ -180,7 +176,15 @@ Our baseline assumption for the reporting delay is that it is log-normally distr
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
-Note that the default distribution is log-normal, hence the distribution argument could be omitted here.
+Note that the default distribution is log-normal, hence the distribution argument could be omitted here. Alternatively we could model the reporting delay non-parametrically using a hazard model (see [our model description for details](https://package.epinowcast.org/articles/model)). The following is equivalent to a cox proportional hazards model with a single baseline hazard function.
+
+```{r, eval = FALSE}
+np_reference_module <- enw_reference(
+  parametric = ~0, non_parametric = ~ 0 + delay, data = pobs
+)
+```
+
+Advanced users may wish to combine parametric and non-parametric reference date reporting models. For example, we could model the reporting delay as log-normal for delays up to 10 days and then use a hazard model for longer delays.
 
 #### Reporting effects by report date
 
@@ -282,7 +286,7 @@ Here we see that the model is underestimating the incidence of hospitalisations 
 
 If you use `epinowcast` in your work, please consider citing it using the following,
 
-```{r, echo = FALSE}
+```{r, results = "asis"}
 citation("epinowcast")
 ```
 

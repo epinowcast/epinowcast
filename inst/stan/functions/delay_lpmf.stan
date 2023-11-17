@@ -1,42 +1,66 @@
 real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
-                     array[] int sl, array[] int csl, array[] vector imp_obs,
-                     array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix ref_lh, array[] int dpmfs, int ref_p,
-                     int rep_h, int ref_as_p, array[] real phi, int model_obs) {
+                     array[] int sl, array[] int csl,
+                     array[] int nsl, array[] int cnsl, array[] int obs_lookup,
+                     array[] vector imp_obs, array[] int sg,
+                     array[] int st, array[,] int rdlurd,
+                     vector srdlh, matrix refp_lh, array[] int dpmfs,
+                     int ref_p, int rep_h, int ref_as_p, array[] real phi,
+                     int model_obs, vector refnp_lh, int ref_np,
+                     array[] int sdmax, array[] int csdmax) {
   real tar = 0;
-  // Where am I?
+  // Where am I in the observed data?
+  array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
+  // Where am I in the observed data filling in gaps?
   array[3] int n = filt_obs_indexes(start, end, csl, sl);
-  array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
-  vector[n[3]] log_exp_obs;
+  if (nc[3]) {
+    // Filter observed data and observed data lookup
+    array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
+    array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
+    array[nc[3]] int filt_obs_lookup_local;
+    for (i in 1:nc[3]) {
+      filt_obs_lookup_local[i] = filt_obs_lookup[i] - n[1] + 1;
+    }
+  
+    // What is going to be used for storage
+    vector[n[3]] log_exp_obs;
 
-  // combine expected final obs and time effects to get expected obs
-  log_exp_obs = expected_obs_from_snaps(
-    start, end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p,
-    sl, csl, sg, st, n[3]
-  );
+    // combine expected final obs and time effects to get expected obs
+    log_exp_obs = expected_obs_from_snaps(
+      start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax
+    );
 
-  // observation error model (across all reference dates and groups)
-  profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
+    // observation error model (across all reference dates and groups)
+    profile("model_likelihood_neg_binomial") {
+    tar = obs_lpmf(
+      filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
+    );
+    }
   }
   return(tar);
 }
 
 real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
-                      array[] int sl, array[] int csl, array[] vector imp_obs,
-                      int t, array[] int sg, array[,] int ts, array[] int st,
-                      array[,] int rdlurd, vector srdlh, matrix ref_lh,
+                      array[] int sl, array[] int csl, array[] int nsl,
+                      array[] int cnsl, array[] int obs_lookup,
+                      array[] vector imp_obs, int t, array[] int sg,
+                      array[,] int ts, array[] int st,
+                      array[,] int rdlurd, vector srdlh, matrix refp_lh,
                       array[] int dpmfs, int ref_p, int rep_h, int ref_as_p,
                       array[] real phi, int model_obs, int model_miss,
                       int miss_obs, array[] int missing_reference,
                       array[,] int obs_by_report, vector miss_ref_lprop,
                       array[] int sdmax, array[] int csdmax,
-                      array[] int miss_st, array[] int miss_cst) {
+                      array[] int miss_st, array[] int miss_cst,
+                      vector refnp_lh, int ref_np) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
   int i_end = ts[t, end];
+  // Where am I in the observed data?
+  array[3] int nc = filt_obs_indexes(i_start, i_end, cnsl, nsl);
+  // Where am I in the observed data filling in gaps?
   array[3] int n = filt_obs_indexes(i_start, i_end, csl, sl);
-  array[n[3]] int filt_obs = segment(obs, n[1], n[3]);
+
   // What is going to be used for storage
   vector[n[3]] log_exp_obs;
   vector[model_miss ? miss_obs : 0]  log_exp_obs_miss;
@@ -51,7 +75,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
 
     // Calculate all expected observations
     log_exp_all = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3]
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3], refnp_lh, ref_np, sdmax, csdmax
     );
 
     // Allocate to just those actually observed
@@ -73,12 +97,24 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     }
   }else{
     log_exp_obs = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, ref_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3]
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax
     );
   }
   // Observation error model (across all reference dates and groups)
   profile("model_likelihood_neg_binomial") {
-  tar = obs_lpmf(filt_obs | log_exp_obs, phi, model_obs);
+  if (nc[3]) {
+    // Filter observed data and observed data lookup
+    array[nc[3]] int filt_obs = segment(obs, nc[1], nc[3]);
+    array[nc[3]] int filt_obs_lookup = segment(obs_lookup, nc[1], nc[3]);
+    array[nc[3]] int filt_obs_lookup_local;
+    for (i in 1:nc[3]) {
+      filt_obs_lookup_local[i] = filt_obs_lookup[i] - n[1] + 1;
+    }
+
+    tar = obs_lpmf(
+      filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
+    );
+  }
   if (model_miss && miss_obs) {
     array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
     array[l[3]] int filt_miss_ref = segment(missing_reference, l[1], l[3]);

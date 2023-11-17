@@ -4,7 +4,12 @@
 \alias{enw_extend_date}
 \title{Extend a time series with additional dates}
 \usage{
-enw_extend_date(metaobs, days = 20, direction = c("end", "start"))
+enw_extend_date(
+  metaobs,
+  days = 20,
+  direction = c("end", "start"),
+  timestep = "day"
+)
 }
 \arguments{
 \item{metaobs}{A \code{data.frame} with a \code{date} column.}
@@ -13,6 +18,9 @@ enw_extend_date(metaobs, days = 20, direction = c("end", "start"))
 
 \item{direction}{Should new dates be added at the beginning or end of
 the data. Default is "end" with "start" also available.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A data.table with the same columns as \code{metaobs} but with
@@ -40,10 +48,12 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

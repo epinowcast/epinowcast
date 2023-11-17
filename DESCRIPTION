@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: Flexible Hierarchical Nowcasting
-Version: 0.2.3.1000
+Version: 0.2.3.2000
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),
@@ -57,7 +57,21 @@ Authors@R:
            family = "Park",
            role = "ctb",
            email = "swp2@princeton.edu",
-           comment = c(ORCID = "0000-0003-2202-3361")))
+           comment = c(ORCID = "0000-0003-2202-3361")),
+     person(given = "Nathan",
+            family = "McIntosh",
+            role = "ctb",
+            email = "natemcintosh@gmail.com"),
+    person(given = "James Mba",
+           family = "Azam",
+           role = "ctb",
+           email = "james.azam@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0001-5782-7330")),
+    person(given = "Kath",
+           family = "Sherratt",
+           role = "ctb",
+           email = "katharine.sherratt@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0003-2049-3423")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
@@ -79,6 +93,7 @@ Imports:
     cmdstanr,
     data.table,
     lme4,
+    lubridate,
     ggplot2,
     posterior,
     purrr,
@@ -86,12 +101,13 @@ Imports:
     scales,
     lifecycle
 Suggests:
+    bookdown,
     loo (>= 2.4.1),
     knitr,
     rmarkdown,
     scoringutils,
     spelling,
-    testthat (>= 3.0.0),
+    testthat (>= 3.1.9),
     usethis,
     vdiffr
 VignetteBuilder:
@@ -100,8 +116,7 @@ Remotes:
     stan-dev/cmdstanr,
     stan-dev/loo
 Config/Needs/website:
-    r-lib/pkgdown,
-    amirmasoudabdol/preferably
+    r-lib/pkgdown
 Config/Needs/hexsticker:
     hexSticker,
     sysfonts

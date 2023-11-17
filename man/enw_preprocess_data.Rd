@@ -8,6 +8,7 @@ enw_preprocess_data(
   obs,
   by = NULL,
   max_delay = 20,
+  timestep = "day",
   set_negatives_to_zero = TRUE,
   ...,
   copy = TRUE
@@ -30,7 +31,18 @@ to 1 and an integer (internally it will be coerced to one using
 distribution. Computation scales non-linearly with this setting so consider
 what maximum makes sense for your data carefully. Note that this is zero
 indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay).}
+(i.e. a \code{max_delay} of 1 corresponds with no delay). If a \code{max_delay} greater
+than the maximum delay in the data is supplied then \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
+will throw a warning but in some cases this may be appropriate (e.g. if
+at the beginning of a time series). In these cases the user should check the
+model specification carefully as the model will be extrapolating beyond the
+observed data.}
+
+\item{timestep}{The timestep to used in the process model (i.e. the
+reference date model). This can be a string ("day", "week", "month") or a
+numeric whole number representing the number of days. If your data does not
+have this timestep then you may wish to make use of
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero. Currently
@@ -105,11 +117,13 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},

@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{check_group}
 \alias{check_group}
-\title{Check Observations for Reserved Grouping Variables}
+\title{Check observations for reserved grouping variables}
 \usage{
 check_group(obs)
 }
@@ -14,12 +14,19 @@ contain \code{.group}, \code{.old_group}, or \code{.new_group}. These are reserv
 The \code{obs} object, which will be modifiable in place.
 }
 \description{
-Check Observations for Reserved Grouping Variables
+Check observations for reserved grouping variables
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{check_calendar_timestep}()},
+\code{\link{check_group_date_unique}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_module}()},
-\code{\link{check_quantiles}()}
+\code{\link{check_numeric_timestep}()},
+\code{\link{check_observation_indicator}()},
+\code{\link{check_quantiles}()},
+\code{\link{check_timestep_by_date}()},
+\code{\link{check_timestep_by_group}()},
+\code{\link{check_timestep}()}
 }
 \concept{check}

@@ -2,12 +2,11 @@
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
-
 cols <- c(
   "obs", "new_confirm", "latest", "missing_reference", "reporting_triangle",
-  "metareference", "metareport", "metadelay", "time", "snapshots", "by", "groups", "max_delay", "max_date"
+  "metareference", "metareport", "metadelay", "time", "snapshots", "by", "groups", "max_delay", "max_date", "timestep"
 )
-test_that("Preprocessing produces expected output with default settings", {
+test_that("enw_preprocess_data() produces expected output with default settings", {
   pobs <- enw_preprocess_data(nat_germany_hosp)
   expect_data_table(pobs)
   expect_equal(colnames(pobs), cols)
@@ -23,10 +22,10 @@ test_that("Preprocessing produces expected output with default settings", {
   expect_equal(pobs$snapshots[[1]], 198)
   expect_equal(pobs$groups[[1]], 1)
   expect_equal(pobs$max_delay[[1]], 20)
+  expect_equal(pobs$timestep[[1]], "day")
 })
 
-test_that("Preprocessing produces expected output when excluding and using a
-  maximum delay of 10", {
+test_that("enw_preprocess_data() produces expected output when excluding and using a maximum delay of 10", {
   pobs <- enw_preprocess_data(
     nat_germany_hosp,
     max_delay = 10
@@ -36,9 +35,10 @@ test_that("Preprocessing produces expected output when excluding and using a
   expect_equal(pobs$snapshots[[1]], 198)
   expect_equal(pobs$groups[[1]], 1)
   expect_equal(pobs$max_delay[[1]], 10)
+  expect_equal(pobs$timestep[[1]], "day")
 })
 
-test_that("Preprocessing handles groups as expected", {
+test_that("enw_preprocess_data() handles groups as expected", {
   pobs <- enw_preprocess_data(
     germany_covid19_hosp,
     by = c("location", "age_group")
@@ -49,9 +49,47 @@ test_that("Preprocessing handles groups as expected", {
   expect_equal(pobs$snapshots[[1]], 23562)
   expect_equal(pobs$groups[[1]], 119)
   expect_equal(pobs$max_delay[[1]], 20)
+  expect_equal(pobs$timestep[[1]], "day")
 })
 
-test_that("enw_preprocess_data hasn't changed compared to saved example data", {
+test_that("enw_preprocess_data() can handle a non-default timestep as expected", {
+  weekly_nat_germany_hosp <- nat_germany_hosp |>
+    enw_aggregate_cumulative(timestep = "week")
+
+  weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
+    enw_filter_reference_dates(earliest_date = "2021-05-10")
+
+  weekly_pobs <- enw_preprocess_data(
+    weekly_nat_germany_hosp, max_delay = 5, timestep = "week"
+  )
+  expect_data_table(weekly_pobs)
+  expect_equal(colnames(weekly_pobs), cols)
+  expect_equal(weekly_pobs$time[[1]], 24)
+  expect_equal(weekly_pobs$snapshots[[1]], 24)
+  expect_equal(weekly_pobs$groups[[1]], 1)
+  expect_equal(weekly_pobs$max_delay[[1]], 5)
+  expect_equal(weekly_pobs$timestep[[1]], "week")
+  expect_equal(
+    unique(weekly_pobs$obs[[1]]$reference_date)[1:2],
+    as.IDate(c("2021-05-10", "2021-05-17"))
+  )
+  expect_equal(
+    unique(weekly_pobs$obs[[1]]$report_date)[1:2],
+    as.IDate(c("2021-05-10", "2021-05-17"))
+  )
+  expect_equal(
+    unique(weekly_pobs$metareport[[1]]$delay), 0:4
+  )
+  expect_equal(
+    weekly_pobs$metareport[[1]]$date[20:21],
+    as.IDate(c("2021-09-20", "2021-09-27"))
+  )
+  expect_equal(
+    weekly_pobs$metadelay[[1]]$delay, 0:4
+  )
+})
+
+test_that("enw_preprocess_data() hasn't changed compared to saved example data", {
   nat_germany_hosp <- enw_filter_report_dates(
     nat_germany_hosp,
     latest_date = "2021-10-01"
@@ -77,7 +115,7 @@ test_that("enw_preprocess_data hasn't changed compared to saved example data", {
   expect_equal(pobs, enw_example("preprocessed"))
 })
 
-test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
+test_that("enw_preprocess_data() passes arguments to enw_add_metaobs_features", {
   holidays <- c(
     "2021-04-04", "2021-04-05",
     "2021-05-01", "2021-05-13",
@@ -110,7 +148,7 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
 })
 
 test_that(
-  "enw_preprocess_data fails as expected with incorrect max_delay input", {
+  "enw_preprocess_data() fails as expected with incorrect max_delay input", {
     expect_error(
       suppressWarnings(
         enw_preprocess_data(nat_germany_hosp, max_delay = "junk")
@@ -118,5 +156,21 @@ test_that(
     )
     expect_error(
       enw_preprocess_data(nat_germany_hosp, max_delay = 0)
+    )
+})
+
+test_that(
+  "enw_preprocess_data fails as expected when input data is not aggregated by the specified by variables", {
+    expect_error(
+      enw_preprocess_data(germany_covid19_hosp),
+      "The input data seems to be stratified by more variables"
+    )
+    expect_error(
+      enw_preprocess_data(germany_covid19_hosp, by = "location"),
+      "The input data seems to be stratified by more variables"
+    )
+    expect_error(
+      enw_preprocess_data(germany_covid19_hosp, by = "age_group"),
+      "The input data seems to be stratified by more variables"
     )
 })

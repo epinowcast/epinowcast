@@ -1,11 +1,19 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
-description: "A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
+description: "A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
 author: Sam Abbott
 opengraph:
   image: 
-    src: figures/performance-1.png
-output: rmarkdown::html_vignette
+    src: figures/germany-age-stratified-nowcasting-performance-1.png
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,8 +22,8 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "figures/",
-  cache = TRUE, cache.path = "cache/", dpi = 330,
+  fig.path = "figures/germany-age-stratified-nowcasting-",
+  cache = TRUE, dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
   eval = TRUE
@@ -335,7 +343,7 @@ independent_nowcast <- map(
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
