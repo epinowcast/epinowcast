@@ -783,8 +783,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' "snapshots" aggregation.
 #'
 #' @param threads_per_chain Integer, defaults to `1`. The number of threads to
-#' within each MCMC chain. If this is greater than `1` then components of the
-#' likelihood will be calculated in parallel.
+#' use within each MCMC chain. If this is greater than `1` then components of the
+#' likelihood will be calculated in parallel within each chain.
 #' @param debug Logical, defaults to `FALSE`. Should within model debug
 #' information be returned.
 #'

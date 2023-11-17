@@ -196,7 +196,9 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 
 ### Bringing it all together: Fitting the model
 
-We can now fit the model using the ["No-U-Turn Sampler Markov chain Monte Carlo" method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html). This is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core fitting method used by `cmdstan`. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specify fitting options using `enw_fit_opts()` (note that the settings shown here are tuned for speed and may not be appropriate for many real world use cases). We also pass our preprocessed data (`pobs`), our pre-compiled model (`model`), and our model modules (`expectation_module`, `reference_module`, and `report_module`) to `epinowcast`, where they are combined and used to fit the model.
+We can now fit the model using the ["No-U-Turn Sampler Markov chain Monte Carlo" method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html). This is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core fitting method used by `cmdstan`. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specify fitting options using `enw_fit_opts()` (note that the settings shown here are tuned for speed and may not be appropriate for many real world use cases). We also pass our preprocessed data (`pobs`), and our model modules (`expectation_module`, `reference_module`, and `report_module`) to `epinowcast`, where they are combined and used to fit the model. 
+
+_Note: The first time `epinowcast` is run the `cmdstan` model will need to compile but for subsequent uses, it should be cached. This behaviour can also be managed manually using `enw_model()`._
 
 ```{r}
 options(mc.cores = 2)
