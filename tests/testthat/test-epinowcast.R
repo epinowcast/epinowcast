@@ -67,7 +67,7 @@ test_that("epinowcast() runs with within-chain parallelisation", {
     enw_filter_reference_dates(include_days = 10)
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(
-    epinowcast(pobs, enw_fit_opts(threads_per_chain = 2))
+    epinowcast(pobs, fit = enw_fit_opts(threads_per_chain = 2))
   )
   expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
