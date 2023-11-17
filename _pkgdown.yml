@@ -27,6 +27,10 @@ navbar:
     right: [github]
 
 articles:
+- title: Getting Started
+  navbar: Getting Started
+  contents:
+  - getting-started-part-1
 - title: Model details
   navbar: Model details
   contents:

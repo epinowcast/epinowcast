@@ -2,9 +2,6 @@
 title: "Getting Started with Epinowcast"
 description: "A quick start example demonstrating use of epinowcast."
 author: Epinowcast Team
-opengraph:
-  image: 
-    src: figures/XXX.png
 output: 
   bookdown::html_vignette2:
     fig_caption: yes
