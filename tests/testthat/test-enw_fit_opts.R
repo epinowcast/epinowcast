@@ -6,4 +6,10 @@ test_that("enw_fit_opts produces the expected output", {
       likelihood_aggregation = "groups"
     )$data$likelihood_aggregation, 1
   )
+  expect_equal(
+    enw_fit_opts(
+      likelihood_aggregation = "groups",
+      threads_per_chain = 2
+    )$data$parallelise_likelihood, 1
+  )
 })
