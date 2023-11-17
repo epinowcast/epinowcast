@@ -41,14 +41,16 @@ summary.epinowcast <- function(object, type = c(
 
   s <- with(object, switch(type,
     nowcast = enw_nowcast_summary(
-      fit[[1]], latest[[1]], timestep = timestep[[1]], ...
+      fit[[1]], latest[[1]],
+      timestep = timestep[[1]], ...
     ),
     nowcast_samples = enw_nowcast_samples(
-      fit[[1]], latest[[1]], timestep = timestep[[1]], ...
+      fit[[1]], latest[[1]],
+      timestep = timestep[[1]], ...
     ),
     fit = enw_posterior(fit[[1]], ...),
     posterior_prediction = enw_pp_summary(fit[[1]], new_confirm[[1]], ...),
-    stop(sprintf("unimplemented type: %s", type))
+    rlang::abort(sprintf("unimplemented type: %s", type))
   ))
 
   return(s)
@@ -89,7 +91,7 @@ summary.epinowcast <- function(object, type = c(
 #'
 #' # Plot posterior predictions by reference date
 #' plot(nowcast, type = "posterior_prediction") +
-#'  ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
+#'   ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
 plot.epinowcast <- function(x, latest_obs = NULL, type = c(
                               "nowcast", "posterior_prediction"
                             ), log = FALSE, ...) {
@@ -99,7 +101,7 @@ plot.epinowcast <- function(x, latest_obs = NULL, type = c(
   plot <- switch(type,
     nowcast = enw_plot_nowcast_quantiles(n, latest_obs, log = log, ...),
     posterior_prediction = enw_plot_pp_quantiles(n, log = log, ...),
-    stop(sprintf("unimplemented type: %s", type))
+    rlang::abort(sprintf("unimplemented type: %s", type))
   )
 
   return(plot)

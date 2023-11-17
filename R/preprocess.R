@@ -25,8 +25,8 @@
 #' @export
 #' @examples
 #' obs <- data.frame(
-#'  reference_date = as.Date("2021-01-01"),
-#'  report_date = as.Date("2022-01-01"), x = 1:10
+#'   reference_date = as.Date("2021-01-01"),
+#'   report_date = as.Date("2022-01-01"), x = 1:10
 #' )
 #' enw_metadata(obs, target_date = "reference_date")
 enw_metadata <- function(obs, target_date = c(
@@ -88,6 +88,7 @@ enw_metadata <- function(obs, target_date = c(
 #'
 #' @family preprocess
 #' @importFrom purrr compose
+#' @importFrom rlang warn abort
 #' @export
 #' @examples
 #'
@@ -123,7 +124,7 @@ enw_add_metaobs_features <- function(metaobs,
   # localize and check metaobs input
   metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
-    stop(sprintf("metaobs column '%s' is not a Date.", datecol))
+    rlang::abort(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
 
   # this may also error, so coercing first
@@ -132,7 +133,7 @@ enw_add_metaobs_features <- function(metaobs,
   # warn about columns that may be overwritten
   tarcols <- c("day_of_week", "day", "week", "month")
   if (any(tarcols %in% colnames(metaobs))) {
-    warning(sprintf(
+    rlang::warn(sprintf(
       "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
       intersect(tarcols, colnames(metaobs))
     ))
@@ -278,11 +279,12 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
 #' enw_assign_group(obs, by = "x")
 enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
   obs <- coerce_dt( # must have by (if present), cannot initially have .group
-    obs, required_cols = by, forbidden_cols = ".group",
+    obs,
+    required_cols = by, forbidden_cols = ".group",
     group = (length(by) == 0), # ... but should add .group, if by is empty
     copy = copy
   )
-  if (length(by) != 0) {       # if by is not empty, add more complex .group
+  if (length(by) != 0) { # if by is not empty, add more complex .group
     obs[, .group := .GRP, by = by]
   }
   # update or set key to include .group
@@ -335,7 +337,8 @@ enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
 #' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs, copy = TRUE) {
   obs <- coerce_dt(
-    obs, required_cols = "confirm", group = TRUE, dates = TRUE, copy = copy
+    obs,
+    required_cols = "confirm", group = TRUE, dates = TRUE, copy = copy
   )
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
@@ -417,6 +420,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @return A `data.table` filtered by report date
 #' @family preprocess
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -436,7 +440,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
-      stop("`remove_days` and `latest_date` can't both be specified.")
+      rlang::abort("`remove_days` and `latest_date` can't both be specified.")
     }
     latest_date <- max(filt_obs$reference_date, na.rm = TRUE) - remove_days
   }
@@ -447,7 +451,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
-      stop(
+      rlang::abort(
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
@@ -500,6 +504,7 @@ enw_latest_data <- function(obs) {
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
+#' @importFrom rlang warn
 #' @export
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
@@ -520,9 +525,11 @@ enw_delay_filter <- function(obs, max_delay, timestep = "day") {
   }
   empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empirical_max_delay < (max_delay - 1)) {
-    warning(
-      "Empirical max delay (", empirical_max_delay + 1,
-      ") is less than the specified max delay (", max_delay, ")."
+    rlang::warn(
+      paste0(
+        "Empirical max delay (", empirical_max_delay + 1,
+        ") is less than the specified max delay (", max_delay, ")."
+      )
     )
   }
   return(obs[])
@@ -541,16 +548,18 @@ enw_delay_filter <- function(obs, max_delay, timestep = "day") {
 #' @family preprocess
 #' @export
 #' @importFrom data.table dcast setorderv
+#' @importFrom rlang warn
 #' @examples
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
   obs <- coerce_dt(
-    obs, required_cols = c("new_confirm", "reference_date", "delay"),
+    obs,
+    required_cols = c("new_confirm", "reference_date", "delay"),
     group = TRUE
   )
   if (any(obs$new_confirm < 0)) {
-    warning(
+    rlang::warn(
       "Negative new confirmed cases found. This is not yet supported in
        epinowcast."
     )
@@ -609,7 +618,7 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
   obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
   if (is.null(obs[[".observed"]])) {
     obs[, .observed := !is.na(confirm)]
-  }else {
+  } else {
     obs[, .observed := .observed & !is.na(confirm)]
   }
   return(obs[])
@@ -634,17 +643,18 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #' @export
 #' @examples
 #' dt <- data.frame(
-#'  id = 1:3, confirm = c(NA, 1, 2),
-#'  reference_date = as.Date("2021-01-01")
+#'   id = 1:3, confirm = c(NA, 1, 2),
+#'   reference_date = as.Date("2021-01-01")
 #' )
 #' enw_impute_na_observations(dt)
 enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
   obs <- coerce_dt(
-    obs, required_cols = c("confirm", "reference_date", by),
+    obs,
+    required_cols = c("confirm", "reference_date", by),
     copy = copy
   )
   data.table::setkeyv(obs, c(data.table::key(obs), "reference_date"))
-    # impute missing as last available observation or 0
+  # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", by)
@@ -701,7 +711,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
                                min_date = min(obs$reference_date, na.rm = TRUE),
                                max_date = max(obs$report_date, na.rm = TRUE),
                                timestep = "day", missing_reference = TRUE,
-                               completion_beyond_max_report  = FALSE,
+                               completion_beyond_max_report = FALSE,
                                flag_observation = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
@@ -712,7 +722,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   internal_timestep <- get_internal_timestep(timestep)
 
   dates <- seq.Date(
-    as.IDate(min_date), as.IDate(max_date), by = internal_timestep
+    as.IDate(min_date), as.IDate(max_date),
+    by = internal_timestep
   )
   dates <- as.IDate(dates)
 
@@ -727,7 +738,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     .group = groups$.group,
     report_date = 0:max_delay
   )
-  completion <- completion[,
+  completion <- completion[
+    ,
     report_date := reference_date + report_date * internal_timestep
   ]
   if (!completion_beyond_max_report) {
@@ -792,7 +804,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
   obs <- coerce_dt(
-    obs, required_cols = "new_confirm", group = TRUE, dates = TRUE
+    obs,
+    required_cols = "new_confirm", group = TRUE, dates = TRUE
   )
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
@@ -1022,6 +1035,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @inheritParams enw_add_incidence
 #' @export
 #' @importFrom data.table data.table
+#' @importFrom rlang abort
 #' @examples
 #' library(data.table)
 #'
@@ -1037,14 +1051,16 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 ..., copy = TRUE) {
   stopifnot(
     "`max_delay` must be an integer and not NA" = is.numeric(max_delay) &&
-       round(max_delay) == max_delay,
+      round(max_delay) == max_delay,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
   if (timestep == "month") {
-    stop(
-      "Calendar months are not currently supported. Consider using an ",
-      "approximate number of days (i.e. 28), a different timestep (i.e. ",
-      "'week'), or commenting on issue #309."
+    rlang::abort(
+      paste(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep (i.e. ",
+        "'week'), or commenting on issue #309."
+      )
     )
   }
   internal_timestep <- get_internal_timestep(timestep)
@@ -1064,7 +1080,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
 
   obs <- enw_delay_filter(
-    obs, max_delay = orig_scale_max_delay, timestep = timestep
+    obs,
+    max_delay = orig_scale_max_delay, timestep = timestep
   )
 
   diff_obs <- enw_add_incidence(
@@ -1124,7 +1141,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # extract and add features for delays
   metadelay <- enw_delay_metadata(
-    orig_scale_max_delay, breaks = 4, timestep = timestep
+    orig_scale_max_delay,
+    breaks = 4, timestep = timestep
   )
 
   out <- enw_construct_data(

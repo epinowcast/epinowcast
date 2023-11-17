@@ -49,6 +49,7 @@
 #' @inheritParams enw_obs
 #' @importFrom purrr map transpose flatten walk
 #' @family epinowcast
+#' @importFrom rlang warn
 #' @export
 #' @examplesIf interactive()
 #' # Load data.table and ggplot2
@@ -163,12 +164,12 @@ epinowcast <- function(data,
   )
 
   if (!missing$formula %in% "~0") {
-    warning("The missing data model is highly experimental. There is a
+    rlang::warn("The missing data model is highly experimental. There is a
      significant likelihood that bugs are present in its implementation.")
   }
 
   if (!missing$formula %in% "~0") {
-    warning("The missing data model is highly experimental. There is a
+    rlang::warn("The missing data model is highly experimental. There is a
      significant likelihood that bugs are present in its implementation.")
   }
 

@@ -61,7 +61,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 #' @importFrom stats terms contrasts model.matrix
 #' @importFrom purrr map
 #' @examples
-#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2))
 #' enw_design(a ~ b + c, data)
 #' enw_design(a ~ b + c, data, no_contrasts = TRUE)
 #' enw_design(a ~ b + c, data, no_contrasts = c("b"))
@@ -140,7 +140,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' @export
 #' @importFrom data.table data.table
 #' @examples
-#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2))
 #' design <- enw_design(a ~ b + c, data)$design
 #' enw_effects_metadata(design)
 enw_effects_metadata <- function(design) {
@@ -185,7 +185,7 @@ enw_effects_metadata <- function(design) {
 #' @family modeldesign
 #' @export
 #' @examples
-#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1,1,2))
+#' data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2))
 #' design <- enw_design(a ~ b + c, data)$design
 #' effects <- enw_effects_metadata(design)
 #' enw_add_pooling_effect(effects, prefix = "b")
@@ -265,23 +265,27 @@ enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
 #' @family modeldesign
 #' @export
 #' @importFrom purrr map
+#' @importFrom rlang abort
 #' @examples
 #' metaobs <- data.frame(week = 1:2)
 #' enw_add_cumulative_membership(metaobs, "week")
 #'
-#' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
+#' metaobs <- data.frame(week = 1:3, .group = c(1, 1, 2))
 #' enw_add_cumulative_membership(metaobs, "week")
 enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
   metaobs <- coerce_dt(
-    metaobs, required_cols = feature, group = TRUE, copy = copy
+    metaobs,
+    required_cols = feature, group = TRUE, copy = copy
   )
   cfeature <- paste0("c", feature)
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (!is.numeric(metaobs[[feature]])) {
-      stop(
-        "Requested variable ", feature,
-        " is not numeric. Cumulative membership effects are only defined for ",
-        "numeric variables."
+      rlang::abort(
+        paste0(
+          "Requested variable ", feature,
+          " is not numeric. Cumulative membership effects are only defined for ",
+          "numeric variables."
+        )
       )
     }
     metaobs[, (cfeature) := get(feature)]

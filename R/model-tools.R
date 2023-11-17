@@ -22,6 +22,7 @@
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
 #' @family modeltools
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
@@ -42,13 +43,14 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      stop(
+      rlang::abort(
         "formula must be an object of class enw_formula as produced using
         enw_formula"
       )
     }
-    fintercept <-  as.numeric(any(grepl(
-      "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
+    fintercept <- as.numeric(any(grepl(
+      "(Intercept)", colnames(formula$fixed$design),
+      fixed = TRUE
     )))
     data$fdesign <- formula$fixed$design
     data$fintercept <- fintercept
@@ -119,29 +121,34 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' # Update priors from a previous model fit
 #' default_priors <- enw_reference(
-#'  distribution = "lognormal",
-#'  data = enw_example("preprocessed"),
+#'   distribution = "lognormal",
+#'   data = enw_example("preprocessed"),
 #' )$priors
 #' print(default_priors)
 #'
 #' fit_priors <- summary(
-#'  enw_example("nowcast"), type = "fit",
-#'  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+#'   enw_example("nowcast"),
+#'   type = "fit",
+#'   variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 #' )
 #' fit_priors
 #'
 #' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
   custom_priors <- coerce_dt(
-    custom_priors, select = c("variable", "mean", "sd")
+    custom_priors,
+    select = c("variable", "mean", "sd")
   )[
     ,
-    .(variable = gsub("\\[([^]]*)\\]", "", variable),
-      mean = as.numeric(mean), sd = as.numeric(sd))
+    .(
+      variable = gsub("\\[([^]]*)\\]", "", variable),
+      mean = as.numeric(mean), sd = as.numeric(sd)
+    )
   ]
   variables <- custom_priors$variable
   priors <- coerce_dt(
-    priors, required_cols = "variable"
+    priors,
+    required_cols = "variable"
   )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])

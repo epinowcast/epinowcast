@@ -9,10 +9,10 @@
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
 enw_reps_with_complete_refs <- function(
-  new_confirm, max_delay, by = NULL, copy = TRUE
-) {
+    new_confirm, max_delay, by = NULL, copy = TRUE) {
   rep_with_complete_ref <- coerce_dt(
-    new_confirm, select = c(by, "report_date"), copy = copy
+    new_confirm,
+    select = c(by, "report_date"), copy = copy
   )
   rep_with_complete_ref <- rep_with_complete_ref[,
     .(n = .N),
@@ -42,7 +42,8 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
   # Make a complete data.table of all possible reference and report dates
   miss_lk <- coerce_dt(
-    metareference, select = "date", group = TRUE
+    metareference,
+    select = "date", group = TRUE
   )
   data.table::setnames(miss_lk, "date", "reference_date")
 
@@ -108,6 +109,7 @@ latest_obs_as_matrix <- function(latest) {
 #' @family modelmodulehelpers
 #' @importFrom purrr map_dbl
 #' @importFrom utils head
+#' @importFrom rlang abort
 #' @examples
 #' # Simple convolution matrix with a static distribution
 #' convolution_matrix(c(1, 2, 3), 10)
@@ -120,11 +122,11 @@ latest_obs_as_matrix <- function(latest) {
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
-      stop("dist must equal t or be the same for all t (i.e. length 1)")
+      rlang::abort("dist must equal t or be the same for all t (i.e. length 1)")
     }
     ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
-      stop("dist must be the same length for all t")
+      rlang::abort("dist must be the same length for all t")
     }
   } else {
     ldist <- rep(length(dist), t)
@@ -258,10 +260,9 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 #' @examples
 #' simulate_double_censored_pmf(10, meanlog = 0, sdlog = 1)
 simulate_double_censored_pmf <- function(
-  max, fun_primary = stats::runif, primary_args = list(),
-  fun_dist = stats::rlnorm,
-  dist_args = list(...), n = 1e6, ...
-) {
+    max, fun_primary = stats::runif, primary_args = list(),
+    fun_dist = stats::rlnorm,
+    dist_args = list(...), n = 1e6, ...) {
   primary <- do.call(fun_primary, c(list(n), primary_args))
   secondary <- primary + do.call(fun_dist, c(list(n), dist_args))
   delay <- floor(secondary) - floor(primary)
@@ -296,7 +297,8 @@ add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
   if (!is.null(observation_indicator)) {
     new_confirm[!get(observation_indicator), max_obs_delay := -1]
     new_confirm <- new_confirm[,
-      max_obs_delay := max(max_obs_delay), by = c("reference_date", ".group")
+      max_obs_delay := max(max_obs_delay),
+      by = c("reference_date", ".group")
     ]
   }
   return(new_confirm[])
@@ -334,7 +336,7 @@ add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
 #'     \item \code{sg}: group index of each snapshot (snapshot group).
 #'   }
 #' @family modelmodulehelpers
-extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
+extract_obs_metadata <- function(new_confirm, observation_indicator = NULL) {
   check_observation_indicator(new_confirm, observation_indicator)
   # format vector of snapshot lengths
   snap_length <- new_confirm
@@ -347,11 +349,13 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
   if (!is.null(observation_indicator)) {
     # Get the maximum consecutive length of observed data
     l_snap_length <- new_confirm[,
-     .(s = unique(max_obs_delay) + 1), by = c("reference_date", ".group")
+      .(s = unique(max_obs_delay) + 1),
+      by = c("reference_date", ".group")
     ]$s
     # Get the number of observed data points per snapshot
     nc_snap_length <- new_confirm[,
-      .(s = sum(get(observation_indicator))), by = .(reference_date, .group)
+      .(s = sum(get(observation_indicator))),
+      by = .(reference_date, .group)
     ]$s
   } else {
     l_snap_length <- snap_length

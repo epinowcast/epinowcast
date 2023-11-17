@@ -28,45 +28,47 @@
 #'
 #' @inheritParams enw_obs
 #' @family modelmodules
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' # Parametric model with a lognormal distribution
 #' enw_reference(
-#'  parametric = ~1, distribution = "lognormal",
-#'  data = enw_example("preprocessed")
+#'   parametric = ~1, distribution = "lognormal",
+#'   data = enw_example("preprocessed")
 #' )
 #'
 #' # Non-parametric model with a random effect per delay
 #' enw_reference(
-#'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
-#'  data = enw_example("preprocessed")
+#'   parametric = ~0, non_parametric = ~ 1 + (1 | delay),
+#'   data = enw_example("preprocessed")
 #' )
 #'
 #' # Combined parametric and non-parametric model
 #' enw_reference(
-#'  parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
-#'  data = enw_example("preprocessed")
+#'   parametric = ~1, non_parametric = ~ 0 + (1 | delay_cat),
+#'   data = enw_example("preprocessed")
 #' )
 enw_reference <- function(
-  parametric = ~1,
-  distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
-  non_parametric = ~0, data
-) {
+    parametric = ~1,
+    distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
+    non_parametric = ~0, data) {
   if (as_string_formula(parametric) %in% "~0") {
     distribution <- "none"
     parametric <- ~1
   }
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
-    stop(
-      "A non-parametric model must be specified if no parametric model",
-      " is specified"
+    rlang::abort(
+      paste(
+        "A non-parametric model must be specified if no parametric model",
+        " is specified"
+      )
     )
   }
   if (as_string_formula(non_parametric) %in% "~0") {
     non_parametric <- ~1
     model_refnp <- 0
-  }else {
+  } else {
     model_refnp <- 1
   }
 
@@ -94,7 +96,8 @@ enw_reference <- function(
   )[, id := NULL]
 
   npform <- enw_formula(
-    non_parametric, metanp, sparse = FALSE
+    non_parametric, metanp,
+    sparse = FALSE
   )
   npdata <- enw_formula_as_data_list(
     npform,
@@ -223,12 +226,13 @@ enw_reference <- function(
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
 #' @family modelmodules
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   if (!as_string_formula(structural) %in% "~0") {
-    stop("The structural reporting model has not yet been implemented")
+    rlang::abort("The structural reporting model has not yet been implemented")
   }
 
   if (as_string_formula(non_parametric) %in% "~0") {
@@ -326,6 +330,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @family modelmodules
 #' @importFrom rstan extract_sparse_parts
 #' @importFrom purrr map2_dbl
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
@@ -333,13 +338,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) %in% "~0") {
-    stop("An expectation model formula for r must be specified")
+    rlang::abort("An expectation model formula for r must be specified")
   }
   if (as_string_formula(observation) %in% "~0") {
     observation <- ~1
   }
   if (sum(generation_time) != 1) {
-    stop("The generation time must sum to 1")
+    rlang::abort("The generation time must sum to 1")
   }
 
   # Set up growth rate features
@@ -503,6 +508,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @family modelmodules
 #' @importFrom data.table setorderv dcast
 #' @importFrom purrr map
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' # Missing model with a fixed intercept only
@@ -513,7 +519,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     !(as_string_formula(formula) %in% "~0")) {
-    stop("A missingness model has been specified but data on the proportion of
+    rlang::abort("A missingness model has been specified but data on the proportion of
           observations without reference dates is not available.")
   }
 
@@ -639,11 +645,12 @@ enw_missing <- function(formula = ~1, data) {
 #'
 #' @return A list as required by stan.
 #' @family modelmodules
+#' @importFrom rlang warn
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "poisson"),
-                   observation_indicator = NULL, data) {
+                    observation_indicator = NULL, data) {
   family <- match.arg(family)
 
   # copy new confirm for processing
@@ -682,7 +689,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
   proc_data <- c(
     proc_data,
     extract_obs_metadata(
-      new_confirm, observation_indicator = observation_indicator
+      new_confirm,
+      observation_indicator = observation_indicator
     )
   )
 
@@ -699,10 +707,12 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Warn if maximum delay is longer than the observed time period
   if (proc_data$t < proc_data$dmax) {
-    warning(
-      "The specified maximum delay is longer than the observed time period. ",
-      "Please be aware that epinowcast will extrapolate the delay distribution",
-      " beyond what is supported by the data."
+    rlang::warn(
+      paste0(
+        "The specified maximum delay is longer than the observed time period. ",
+        "Please be aware that epinowcast will extrapolate the delay distribution",
+        " beyond what is supported by the data."
+      )
     )
   }
 

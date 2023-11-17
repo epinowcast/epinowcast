@@ -192,6 +192,7 @@ remove_rw_terms <- function(formula) {
 #' @inheritParams enw_formula
 #' @importFrom lme4 nobars findbars
 #' @family formulatools
+#' @importFrom rlang abort
 #' @examples
 #' epinowcast:::parse_formula(~ 1 + age_group + location)
 #'
@@ -202,7 +203,7 @@ remove_rw_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
-    stop("'formula' must be a formula object.")
+    rlang::abort("'formula' must be a formula object.")
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
@@ -238,6 +239,7 @@ parse_formula <- function(formula) {
 #' "enw_rw_term" that can be interpreted by [construct_rw()].
 #' @export
 #' @family formulatools
+#' @importFrom rlang abort
 #' @examples
 #' rw(time)
 #'
@@ -247,7 +249,7 @@ parse_formula <- function(formula) {
 rw <- function(time, by, type = c("independent", "dependent")) {
   type <- match.arg(type)
   if (missing(time)) {
-    stop("time must be present")
+    rlang::abort("time must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -286,6 +288,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #'  - `effects`: A `data.frame` describing the random effect structure of the
 #' new effects.
 #' @family formulatools
+#' @importFrom rlang abort
 #' @examples
 #' data <- enw_example("preproc")$metareference[[1]]
 #'
@@ -294,18 +297,22 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
-    stop("rw must be a random walk term as constructed by rw")
+    rlang::abort("rw must be a random walk term as constructed by rw")
   }
 
   if (!is.numeric(data[[rw$time]])) {
-    stop(
-      "The time variable ", rw$time, " is not numeric but must be to be used ",
-      "as a random walk term."
+    rlang::abort(
+      paste0(
+        "The time variable ", rw$time, " is not numeric but must be to be used ",
+        "as a random walk term."
+      )
     )
   }
 
   if (anyNA(data[[rw$time]])) {
-    stop("The time variable ", rw$time, " contains non-numeric values.")
+    rlang::abort(
+      paste0("The time variable ", rw$time, " contains non-numeric values.")
+    )
   }
 
   # add new cumulative features to use for the random walk
@@ -318,9 +325,11 @@ construct_rw <- function(rw, data) {
   fdata <- data[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
-      stop(
-        "Requested grouping variable",
-        rw$by, " is not present in the supplied data"
+      rlang::abort(
+        paste0(
+          "Requested grouping variable",
+          rw$by, " is not present in the supplied data"
+        )
       )
     }
     if (length(unique(fdata[[rw$by]])) < 2) {
@@ -346,13 +355,15 @@ construct_rw <- function(rw, data) {
   # implement random walk structure effects
   if (is.null(rw$by) || rw$type %in% "dependent") {
     effects <- enw_add_pooling_effect(
-      effects, var_name = paste0("rw__", rw$time), prefix = ctime
+      effects,
+      var_name = paste0("rw__", rw$time), prefix = ctime
     )
   } else {
     for (i in unique(fdata[[rw$by]])) {
       nby <- paste0(rw$by, i)
       effects <- enw_add_pooling_effect(
-        effects, var_name = paste0("rw__", nby, "__", rw$time),
+        effects,
+        var_name = paste0("rw__", nby, "__", rw$time),
         finder_fn = function(effect, pattern, prefix) {
           grepl(pattern, effect) & startsWith(effect, prefix)
         },
@@ -404,6 +415,7 @@ re <- function(formula) {
 #'
 #' @family formulatools
 #' @importFrom purrr map
+#' @importFrom rlang abort
 #' @examples
 #' # Simple examples
 #' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
@@ -422,7 +434,7 @@ re <- function(formula) {
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
-    stop("re must be a random effect term as constructed by re")
+    rlang::abort("re must be a random effect term as constructed by re")
   }
 
   # extract random and fixed effects
@@ -437,7 +449,7 @@ construct_re <- function(re, data) {
 
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
-        stop(
+        rlang::abort(
           "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
         )
       }
@@ -512,27 +524,29 @@ construct_re <- function(re, data) {
     # and without rhs interactions
     for (k in j) {
       if (length(k) == 1) {
-          if (terms_int[i]) {
-            effects <- enw_add_pooling_effect(
-              effects, var_name = gsub(":", "__", k, fixed = TRUE),
-              finder_fn = function(effect, pattern) {
-                grepl(pattern[1], effect) &
-                  grepl(pattern[2], effect, fixed = TRUE) &
-                  lengths(
-                    regmatches(effect, gregexpr(":", effect, fixed = TRUE))
-                  ) == 1
-              },
-              pattern = strsplit(k, ":", fixed = TRUE)[[1]]
-            )
-          } else {
-            effects <- enw_add_pooling_effect(
-              effects, var_name = k,
-              finder_fn = function(effect, pattern) {
-                grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
-              },
-              pattern = k
-            )
-          }
+        if (terms_int[i]) {
+          effects <- enw_add_pooling_effect(
+            effects,
+            var_name = gsub(":", "__", k, fixed = TRUE),
+            finder_fn = function(effect, pattern) {
+              grepl(pattern[1], effect) &
+                grepl(pattern[2], effect, fixed = TRUE) &
+                lengths(
+                  regmatches(effect, gregexpr(":", effect, fixed = TRUE))
+                ) == 1
+            },
+            pattern = strsplit(k, ":", fixed = TRUE)[[1]]
+          )
+        } else {
+          effects <- enw_add_pooling_effect(
+            effects,
+            var_name = k,
+            finder_fn = function(effect, pattern) {
+              grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
+            },
+            pattern = k
+          )
+        }
       } else {
         if (terms_int[i]) {
           effects <- enw_add_pooling_effect(
@@ -540,13 +554,14 @@ construct_re <- function(re, data) {
             var_name = paste(gsub(":", "__", k, fixed = TRUE), collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & grepl(pattern[2], effect) &
-              grepl(pattern[3], effect)
+                grepl(pattern[3], effect)
             },
             pattern = c(k[1], strsplit(k[-1], ":", fixed = TRUE)[[1]])
           )
         } else {
           effects <- enw_add_pooling_effect(
-            effects, var_name = paste(k, collapse = "__"),
+            effects,
+            var_name = paste(k, collapse = "__"),
             finder_fn = function(effect, pattern) {
               grepl(pattern[1], effect) & grepl(pattern[2], effect)
             },
@@ -662,7 +677,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     random_terms <- unlist(random$terms)
     # Check that the user hasn't specified the same fixed and random effect
     if (any(random_terms %in% parsed_formula$fixed)) {
-      stop(
+      rlang::abort(
         "Random effect terms must not be included in the fixed effects formula",
         call. = FALSE
       )

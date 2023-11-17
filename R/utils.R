@@ -184,6 +184,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
+#' @importFrom rlang abort
 #' @family utils
 #' @examples
 #' # works
@@ -211,7 +212,7 @@ coerce_date <- function(dates) {
 
   if (anyNA(res)) {
     bads <- is.na(res)
-    stop(sprintf(
+    rlang::abort(sprintf(
       "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
       toString(dates[bads]),
       toString(which(bads))
@@ -236,26 +237,30 @@ coerce_date <- function(dates) {
 #' "week", "month" for "month",  or the input value if it is a numeric whole
 #' number.
 #' @family utils
+#' @importFrom rlang abort
 get_internal_timestep <- function(timestep) {
   # check if the input is a character
   if (is.character(timestep)) {
-    switch(
-      timestep,
+    switch(timestep,
       "day" = 1,
       "week" = 7,
-      "month" = "month",  # months are not a fixed number of days
-      stop(
-        "Invalid timestep. Acceptable string inputs are 'day', 'week',",
-        " 'month'."
+      "month" = "month", # months are not a fixed number of days
+      rlang::abort(
+        paste0(
+          "Invalid timestep. Acceptable string inputs are 'day', 'week',",
+          " 'month'."
+        )
       )
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
     # check if the input is a whole number
     return(timestep)
   } else {
-    stop(
-      "Invalid timestep. If timestep is a numeric, it should be a whole",
-      " number representing the number of days."
+    rlang::abort(
+      paste0(
+        "Invalid timestep. If timestep is a numeric, it should be a whole",
+        " number representing the number of days."
+      )
     )
   }
 }
@@ -318,9 +323,8 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   mod_col_name <- paste0(date_column, "_mod")
 
   dt[, c(mod_col_name) := as.numeric(
-        get(date_column) - min(get(date_column), na.rm = TRUE)
-      ) %% timestep
-  ]
+    get(date_column) - min(get(date_column), na.rm = TRUE)
+  ) %% timestep]
   return(dt[])
 }
 
