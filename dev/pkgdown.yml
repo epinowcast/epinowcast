@@ -6,7 +6,7 @@ articles:
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
-last_built: 2023-11-17T00:21Z
+last_built: 2023-11-17T12:20Z
 urls:
   reference: package.epinowcast.org/reference
   article: package.epinowcast.org/articles
