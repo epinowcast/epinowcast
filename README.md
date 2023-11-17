@@ -103,7 +103,7 @@ may be useful if install historical package releases).*
 </details>
 <details>
 <summary>
-Docker
+Alternative: Docker
 </summary>
 We also provide a [Docker](https://www.docker.com/get-started/) image
 with [`epinowcast` and all dependencies
