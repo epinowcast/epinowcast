@@ -34,7 +34,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 250, iter_sampling = 250,
-      threads_per_chain = 1, parallel_chains = 2
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model
@@ -51,7 +51,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 250, iter_sampling = 250,
-      threads_per_chain = 1, parallel_chains = 2
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -68,7 +68,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      threads_per_chain = 1, parallel_chains = 2
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -92,7 +92,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 250, iter_sampling = 250,
-      threads_per_chain = 1, parallel_chains = 2
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model
@@ -116,7 +116,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 250, iter_sampling = 250,
-      threads_per_chain = 1, parallel_chains = 2
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model

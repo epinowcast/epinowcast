@@ -38,4 +38,4 @@ pobs <- enw_preprocess_data(
 )
 
 # Compile the model for use outside of the benchmark
-model <- enw_model(threads = TRUE, target_dir = "touchstone")
+model <- enw_model(target_dir = "touchstone")
