@@ -61,7 +61,17 @@ Authors@R:
      person(given = "Nathan",
             family = "McIntosh",
             role = "ctb",
-            email = "natemcintosh@gmail.com"))
+            email = "natemcintosh@gmail.com"),
+    person(given = "James Mba",
+           family = "Azam",
+           role = "ctb",
+           email = "james.azam@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0001-5782-7330")),
+    person(given = "Kath",
+           family = "Sherratt",
+           role = "ctb",
+           email = "katharine.sherratt@lshtm.ac.uk",
+           comment = c(ORCID = "0000-0003-2049-3423")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
