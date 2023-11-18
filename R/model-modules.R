@@ -519,8 +519,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     !(as_string_formula(formula) %in% "~0")) {
-    rlang::abort("A missingness model has been specified but data on the proportion of
-          observations without reference dates is not available.")
+    rlang::abort(
+      paste(
+        "A missingness model has been specified but data on the proportion of",
+        "observations without reference dates is not available."
+      )
+    )
   }
 
   if (as_string_formula(formula) %in% "~0") {
@@ -708,10 +712,10 @@ enw_obs <- function(family = c("negbin", "poisson"),
   # Warn if maximum delay is longer than the observed time period
   if (proc_data$t < proc_data$dmax) {
     rlang::warn(
-      paste0(
-        "The specified maximum delay is longer than the observed time period. ",
-        "Please be aware that epinowcast will extrapolate the delay distribution",
-        " beyond what is supported by the data."
+      paste(
+        "The specified maximum delay is longer than the observed time period.",
+        "Please be aware that epinowcast will extrapolate the delay",
+        "distribution beyond what is supported by the data."
       )
     )
   }

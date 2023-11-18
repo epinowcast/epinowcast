@@ -187,8 +187,8 @@ enw_linelist_to_incidence <- function(linelist,
     rlang::inform(
       paste0(
         "Using the maximum observed delay of ", obs_delay,
-        " days as greater than the maximum specified to complete the incidence ",
-        "data."
+        " days as greater than the maximum specified to complete the incidence",
+        " data."
       )
     )
     max_delay <- obs_delay

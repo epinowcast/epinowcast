@@ -302,8 +302,8 @@ construct_rw <- function(rw, data) {
 
   if (!is.numeric(data[[rw$time]])) {
     rlang::abort(
-      paste0(
-        "The time variable ", rw$time, " is not numeric but must be to be used ",
+      paste(
+        "The time variable", rw$time, "is not numeric but must be to be used",
         "as a random walk term."
       )
     )

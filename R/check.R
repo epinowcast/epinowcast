@@ -272,8 +272,9 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
 
   if (any(diff_dates < dates[-length(dates)])) {
     rlang::abort(
-      paste0(
-        date_var, " has a shorter timestep than the specified timestep of a month"
+      paste(
+        date_var,
+        "has a shorter timestep than the specified timestep of a month"
       )
     )
   }
