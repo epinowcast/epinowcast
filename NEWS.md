@@ -33,6 +33,7 @@ This release is in development and not yet ready for production use.
 - Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added support to `enw_complete_dates()` for `min_date` and `max_date` arguments. These arguments allow users to specify the minimum and maximum dates to include in the output. This may be useful to users who want to ensure that their data is complete for a specified time period. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added a new helper function `enw_one_hot_encode_feature()` for one hot encoding variables and binding them into the original data. This is useful when users want to include parts of variables in their models as binary indicators - for example giving a specific delay its own effect. See #348 by @seabbs and self-reviewed.
+- Enabled compiling with multithreading by default as this was found to cause no deterioration in performance even with 1 thread per chain. The likelihood calculation is now no longer parallelised when `threads_per_chain = 1` which should offer a small performance improvement. See #366 by @sbfnk and reviewed by @seabbs.
 
 ## Model
 
@@ -51,9 +52,10 @@ This release is in development and not yet ready for production use.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
 - Split README to focus on package-level issues and moved quickstart into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
+- Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
 
 ## Depreciations
-- `enw_delay_filter()`: Deprecated with an error in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
+- `enw_delay_filter()`: Deprecated with a warning in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
 # epinowcast 0.2.2
 

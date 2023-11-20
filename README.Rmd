@@ -89,12 +89,9 @@ We also provide a [Docker](https://www.docker.com/get-started/) image with [`epi
 As you use the package, the documentation available via `?enw_` should be your first stop for troubleshooting. We also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.
 
 - [Package website](https://package.epinowcast.org/): This includes a function reference, model outline, and case studies using the package. The package site covers the release version, which can be installed from our Universe or from the latest GitHub release (see [installation instructions](#Installation)). Documentation for the development version (corresponding to the `main` branch on GitHub) [is also available](https://package.epinowcast.org/dev/).
-- [Package Vignettes](https://package.epinowcast.org/articles): These provide tutorials, focused discussions of particular aspects, or demonstrate case studies. The [Getting Started with Epinowcast: Nowcasting](https://package.epinowcast.org/articles/getting-started-part-1) is a good place to start.
-
+- [Package Vignettes](https://package.epinowcast.org/articles): These provide tutorials and case studies, focused discussions of particular aspects, or demonstrate case studies. The [Getting Started with Epinowcast: Nowcasting](https://package.epinowcast.org/articles/getting-started-part-1) is a good place to start.
 - [Organisation website](https://www.epinowcast.org/): This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.
-
 - [Directory of example scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples): Not as fleshed out as our complete case studies these scripts are used during package development and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.
-
 - [Community forum](https://community.epinowcast.org/): Our community forum is where development of methods and tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of `epinowcast`.
 
 ## Contributing

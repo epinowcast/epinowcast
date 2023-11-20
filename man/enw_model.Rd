@@ -8,7 +8,7 @@ enw_model(
   model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
   include = system.file("stan", package = "epinowcast"),
   compile = TRUE,
-  threads = FALSE,
+  threads = TRUE,
   profile = FALSE,
   target_dir = tempdir(),
   stanc_options = list(),
@@ -27,10 +27,11 @@ files to include in the model. If missing the package default is used.}
 \item{compile}{Logical, defaults to \code{TRUE}. Should the model
 be loaded and compiled using \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 
-\item{threads}{Logical, defaults to \code{FALSE}. Should the model compile with
-support for multi-thread support in chain. Note that this requires the use of
-the \code{threads_per_chain} argument when model fitting using \code{\link[=enw_sample]{enw_sample()}},
-and \code{\link[=epinowcast]{epinowcast()}}.}
+\item{threads}{Logical, defaults to \code{TRUE}. Should the model compile with
+support for multi-thread support in chain. Note that setting this will
+produce a warning that \code{threads_to_chain} is set and ignored. Changing this
+to \code{FALSE} is not expected to yield any performance benefits even when
+not using multithreading and thus not recommended.}
 
 \item{profile}{Logical, defaults to \code{FALSE}. Should the model be profiled?
 For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{\code{cmdstanr} documentation}. # nolint}
