@@ -67,7 +67,7 @@
 <span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"stan"</span>, <span class="st">"epinowcast.stan"</span>, package <span class="op">=</span> <span class="st">"epinowcast"</span><span class="op">)</span>,</span>
 <span>  include <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"stan"</span>, package <span class="op">=</span> <span class="st">"epinowcast"</span><span class="op">)</span>,</span>
 <span>  compile <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  threads <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  threads <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  profile <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  target_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  stanc_options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -95,10 +95,11 @@ be loaded and compiled using <code><a href="https://mc-stan.org/cmdstanr/referen
 
 
 <dt>threads</dt>
-<dd><p>Logical, defaults to <code>FALSE</code>. Should the model compile with
-support for multi-thread support in chain. Note that this requires the use of
-the <code>threads_per_chain</code> argument when model fitting using <code><a href="enw_sample.html">enw_sample()</a></code>,
-and <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
+<dd><p>Logical, defaults to <code>TRUE</code>. Should the model compile with
+support for multi-thread support in chain. Note that setting this will
+produce a warning that <code>threads_to_chain</code> is set and ignored. Changing this
+to <code>FALSE</code> is not expected to yield any performance benefits even when
+not using multithreading and thus not recommended.</p></dd>
 
 
 <dt>profile</dt>

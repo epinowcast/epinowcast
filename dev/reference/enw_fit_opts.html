@@ -69,6 +69,7 @@
 <span>  pp <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  likelihood <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  likelihood_aggregation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"snapshots"</span>, <span class="st">"groups"</span><span class="op">)</span>,</span>
+<span>  threads_per_chain <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  debug <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  output_loglik <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -100,14 +101,20 @@ included in the model</p></dd>
 
 <dt>likelihood_aggregation</dt>
 <dd><p>Character string, aggregation over which
-stratify the likelihood when <code>threads = TRUE</code>; enforced by
-<code><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">base::match.arg()</a></code>. Currently supported options:</p><ul><li><p>"snapshots" which aggregates over report dates and groups (i.e the lowest
+stratify the likelihood when <code>threads_per_chain</code> is greater than 1; enforced
+by <code><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">base::match.arg()</a></code>. Currently supported options:</p><ul><li><p>"snapshots" which aggregates over report dates and groups (i.e the lowest
 level that observations are reported at),</p></li>
 <li><p>"groups" which aggregates across user defined groups.</p></li>
 </ul><p>Note that some model modules override this setting depending on model
 requirements. For example, the <code><a href="enw_missing.html">enw_missing()</a></code> module model forces
 "groups" option. Generally, Users should typically want the default
 "snapshots" aggregation.</p></dd>
+
+
+<dt>threads_per_chain</dt>
+<dd><p>Integer, defaults to <code>1</code>. The number of threads to
+within each MCMC chain. If this is greater than <code>1</code> then components of the
+likelihood will be calculated in parallel.</p></dd>
 
 
 <dt>debug</dt>
@@ -171,7 +178,7 @@ to the sampler function when it is called.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(out[])</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5617e68e95f0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x562f620afd10&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: namespace:epinowcast&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
@@ -182,6 +189,9 @@ to the sampler function when it is called.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$likelihood_aggregation</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$parallelise_likelihood</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$pp</span>
@@ -195,6 +205,9 @@ to the sampler function when it is called.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $args</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $args$threads_per_chain</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $args$iter_sampling</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

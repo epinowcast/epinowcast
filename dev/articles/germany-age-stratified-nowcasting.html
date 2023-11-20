@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.">
+<meta name="description" content="A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.">
 <title>Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany • epinowcast</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
@@ -18,7 +18,7 @@
 <script src="../deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany">
-<meta property="og:description" content="A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.">
+<meta property="og:description" content="A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.">
 <meta property="og:image" content="figures/germany-age-stratified-nowcasting-performance-1.png">
 <meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting">
 <meta name="twitter:card" content="summary_large_image">
@@ -129,30 +129,18 @@
 <span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-09-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">retro_nat_germany</span></span>
-<span><span class="co">#&gt;       reference_date location age_group confirm</span></span>
-<span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30</span></span>
-<span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31</span></span>
-<span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8</span></span>
-<span><span class="co">#&gt;    4:     2021-07-26       DE       00+       9</span></span>
-<span><span class="co">#&gt;    5:     2021-07-27       DE       00+      35</span></span>
-<span><span class="co">#&gt;   ---                                          </span></span>
-<span><span class="co">#&gt; 6023:     2021-07-23       DE     05-14       1</span></span>
-<span><span class="co">#&gt; 6024:     2021-07-23       DE     15-34      21</span></span>
-<span><span class="co">#&gt; 6025:     2021-07-23       DE     35-59      39</span></span>
-<span><span class="co">#&gt; 6026:     2021-07-23       DE     60-79      21</span></span>
-<span><span class="co">#&gt; 6027:     2021-07-23       DE       80+       5</span></span>
-<span><span class="co">#&gt;       report_date</span></span>
-<span><span class="co">#&gt;    1:  2021-07-23</span></span>
-<span><span class="co">#&gt;    2:  2021-07-24</span></span>
-<span><span class="co">#&gt;    3:  2021-07-25</span></span>
-<span><span class="co">#&gt;    4:  2021-07-26</span></span>
-<span><span class="co">#&gt;    5:  2021-07-27</span></span>
-<span><span class="co">#&gt;   ---            </span></span>
-<span><span class="co">#&gt; 6023:  2021-09-01</span></span>
-<span><span class="co">#&gt; 6024:  2021-09-01</span></span>
-<span><span class="co">#&gt; 6025:  2021-09-01</span></span>
-<span><span class="co">#&gt; 6026:  2021-09-01</span></span>
-<span><span class="co">#&gt; 6027:  2021-09-01</span></span></code></pre></div>
+<span><span class="co">#&gt;       reference_date location age_group confirm report_date</span></span>
+<span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30  2021-07-23</span></span>
+<span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31  2021-07-24</span></span>
+<span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8  2021-07-25</span></span>
+<span><span class="co">#&gt;    4:     2021-07-26       DE       00+       9  2021-07-26</span></span>
+<span><span class="co">#&gt;    5:     2021-07-27       DE       00+      35  2021-07-27</span></span>
+<span><span class="co">#&gt;   ---                                                      </span></span>
+<span><span class="co">#&gt; 6023:     2021-07-23       DE     05-14       1  2021-09-01</span></span>
+<span><span class="co">#&gt; 6024:     2021-07-23       DE     15-34      21  2021-09-01</span></span>
+<span><span class="co">#&gt; 6025:     2021-07-23       DE     35-59      39  2021-09-01</span></span>
+<span><span class="co">#&gt; 6026:     2021-07-23       DE     60-79      21  2021-09-01</span></span>
+<span><span class="co">#&gt; 6027:     2021-07-23       DE       80+       5  2021-09-01</span></span></code></pre></div>
 </details><p>Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target “true” data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_nat_germany</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
@@ -169,18 +157,14 @@
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span>, by <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
-<span><span class="co">#&gt;                     obs           new_confirm</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt;</span></span>
-<span><span class="co">#&gt;                  latest missing_reference</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[287x10]&gt; &lt;data.table[0x6]&gt;</span></span>
-<span><span class="co">#&gt;      reporting_triangle       metareference</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
-<span><span class="co">#&gt;              metareport          metadelay time</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x4]&gt;   41</span></span>
-<span><span class="co">#&gt;    snapshots        by groups max_delay</span></span>
-<span><span class="co">#&gt; 1:       287 age_group      7        40</span></span>
-<span><span class="co">#&gt;      max_date timestep</span></span>
-<span><span class="co">#&gt; 1: 2021-09-01      day</span></span></code></pre></div>
+<span><span class="co">#&gt;                     obs           new_confirm               latest</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt; &lt;data.table[287x10]&gt;</span></span>
+<span><span class="co">#&gt;    missing_reference   reporting_triangle       metareference</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
+<span><span class="co">#&gt;              metareport          metadelay time snapshots        by groups</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x5]&gt;   41       287 age_group      7</span></span>
+<span><span class="co">#&gt;    max_delay   max_date timestep</span></span>
+<span><span class="co">#&gt; 1:        40 2021-09-01      day</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level2">
@@ -190,11 +174,9 @@
 <div class="section level3">
 <h3 id="shared-reporting-delay-distribution">Shared reporting delay distribution<a class="anchor" aria-label="anchor" href="#shared-reporting-delay-distribution"></a>
 </h3>
-<p>We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call <code>epinowcast</code>. As we want to make use of <code>CmdStan</code>’s support for within-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass <code>threads_per_chain</code> to <code>epinowcast</code>).</p>
+<p>We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time.</p>
+<p>Note that here we use two chains each using 6 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">multithread_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</details><p>Note that here we use two chains each using 6 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>, </span>
@@ -203,11 +185,10 @@
 <span>  adapt_delta <span class="op">=</span> <span class="fl">0.98</span>, max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
-<span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span></span>
+<span>  fit <span class="op">=</span> <span class="va">fit</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>We first visualise the observations available to the model, the nowcast of final reported hospitalisations and the actual reported observations.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -220,7 +201,7 @@ plot of chunk nowcast
 <h3 id="using-the-inflated-posterior-as-a-prior">Using the inflated posterior as a prior<a class="anchor" aria-label="anchor" href="#using-the-inflated-posterior-as-a-prior"></a>
 </h3>
 <p>To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcast</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"fit"</span>,</span>
@@ -228,29 +209,21 @@ plot of chunk nowcast
 <span><span class="op">)</span></span>
 <span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">priors</span></span>
-<span><span class="co">#&gt;            variable      mean    median</span></span>
-<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1083702 1.0999150</span></span>
-<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.5938331 2.5856750</span></span>
-<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6444396 0.6440095</span></span>
-<span><span class="co">#&gt;            sd        mad        q5     q20</span></span>
-<span><span class="co">#&gt; 1: 0.23916626 0.11090589 0.9294077 1.00725</span></span>
-<span><span class="co">#&gt; 2: 0.26334423 0.12787425 2.3918925 2.48332</span></span>
-<span><span class="co">#&gt; 3: 0.03645647 0.01747096 0.6145307 0.62941</span></span>
-<span><span class="co">#&gt;          q80       q95      rhat ess_bulk</span></span>
-<span><span class="co">#&gt; 1: 1.1955600 1.3246245 0.9991926  831.595</span></span>
-<span><span class="co">#&gt; 2: 2.6957700 2.8213280 1.0023876  791.710</span></span>
-<span><span class="co">#&gt; 3: 0.6588764 0.6761259 1.0072163 1142.299</span></span>
-<span><span class="co">#&gt;    ess_tail</span></span>
-<span><span class="co">#&gt; 1: 658.3016</span></span>
-<span><span class="co">#&gt; 2: 643.9374</span></span>
-<span><span class="co">#&gt; 3: 603.3725</span></span></code></pre></div>
+<span><span class="co">#&gt;            variable      mean   median        sd        mad        q5       q20</span></span>
+<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1122989 1.102345 0.2281895 0.11020907 0.9399031 1.0208280</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.5904395 2.590905 0.2584402 0.13109890 2.3903890 2.4775620</span></span>
+<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6440077 0.644365 0.0355626 0.01762737 0.6147604 0.6287058</span></span>
+<span><span class="co">#&gt;          q80       q95      rhat ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt; 1: 1.2113420 1.3143065 1.0006270 910.0689 681.4586</span></span>
+<span><span class="co">#&gt; 2: 2.6921940 2.8063915 0.9996599 843.9965 728.9121</span></span>
+<span><span class="co">#&gt; 3: 0.6580964 0.6741966 1.0060478 868.6925 656.7026</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
 <h3 id="reference-day-of-the-week-effect">Reference day of the week effect<a class="anchor" aria-label="anchor" href="#reference-day-of-the-week-effect"></a>
 </h3>
 <p>The underlying data we are trying to nowcast clearly has day of week periodicity. In our default model, a group specific random walk on the log of notified cases, this is not accounted for. Accounting for this, using a random effect on the day of the week is likely to improve nowcast performance and reduce the computation needed to fit the model. We can specify this using the <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> module and the formula interface as follows.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">expectation_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">:</span><span class="va">.group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span>
@@ -258,11 +231,10 @@ plot of chunk nowcast
 <span><span class="va">exp_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>We again visualise the nowcasts</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -275,7 +247,7 @@ plot of chunk exp_nowcast
 <h3 id="posterior-predictions">Posterior predictions<a class="anchor" aria-label="anchor" href="#posterior-predictions"></a>
 </h3>
 <p>In order to identify areas where the current model is poorly reproducing the data we plot the posterior predictions against the data. This plot is faceted age group and reference data with the y axis showing the number of observations reported on a given day for a given reference day and the x axis showing the report date. We see fairly clearly oscillations in reported cases every 7 days which is expressed in the plot by oscillations in each facet that appear to move from left to right across facets. This indicates that some kind of week day adjustment may be needed.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">exp_nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span>, <span class="va">reference_date</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -288,19 +260,18 @@ plot of chunk simple_pp
 <h3 id="reporting-day-of-the-week-effect">Reporting day of the week effect<a class="anchor" aria-label="anchor" href="#reporting-day-of-the-week-effect"></a>
 </h3>
 <p>As noted using the posterior predictions from the simple model fit above there appears to be a day of the week effect for reported observations. To adjust for this we introduce a random effect for day of the week by date of report using the following helper function which uses the metadata produced by <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that <code>epinowcast</code> uses a sparse design matrix to reduce runtimes for some modules so the design matrix shows only unique rows with <code>index</code> containing the mapping to the full design matrix.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report_module_dow</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 </details><p>We now repeat the nowcasting step with the day of the week reporting model included.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dow_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>Nowcast performance looks visually improved but there is notable variation across age groups with the 35-59 year old nowcast appearing quite poor (and as a result the aggregate nowcast also not showing great performance). We could also plot the posterior predictions for this model in the same way as for the previous model.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dow_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -313,20 +284,19 @@ plot of chunk dow_nowcast
 <h3 id="age-group-variation">Age group variation<a class="anchor" aria-label="anchor" href="#age-group-variation"></a>
 </h3>
 <p>It is quite likely that there is some variation in the reporting delay by age and that this may be driving the variation in nowcast performance noted for the last model. Here we model this using a random effect for 5 year age group (as these were the groups supplied in the data).</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
 </details><p>We again nowcast this time using both the age adjusted reference date model and the day of the week adjusted report date model.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_age</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>Fit looks slightly better with this adjustment though uncertainty has also increased for all age groups and performance for the final day of data may have reduced compared to the first model.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -339,23 +309,21 @@ plot of chunk age_nowcast
 <h3 id="variation-based-on-reference-date">Variation based on reference date<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date"></a>
 </h3>
 <p>It could be the case that reporting delays change over time as well as across age groups. One way of modelling this is to assume piecewise constant variation over time modelled with a first order weekly random walk. An attractive property of this approach is that it limits the number of report date distributions that need to be evaluated in the model to the number of weeks of data and as this is an expensive computational step using this approach to introducing a time-varying parameter limits the additional computational overhead.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_age_week</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>As before we fit the nowcasting model,</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_age_week</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
-<span></span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -368,22 +336,21 @@ plot of chunk week_nowcast
 <h3 id="variation-based-on-reference-date-stratified-by-age">Variation based on reference date stratified by age<a class="anchor" aria-label="anchor" href="#variation-based-on-reference-date-stratified-by-age"></a>
 </h3>
 <p>As a final hierarchical model it makes sense to explore whether there is evidence that reporting delays vary by week and age group jointly. In this scenario the assumption is that delays may evolve differently over time for each age group but reporting effects and measurement error are still shared across data sets.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reference_module_week_by_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="../reference/rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, by <span class="op">=</span> <span class="va">age_group</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>We can now fit this model as before.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_week_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  reference <span class="op">=</span> <span class="va">reference_module_week_by_age</span>,</span>
 <span>  report <span class="op">=</span> <span class="va">report_module_dow</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>In comparison to the previous model it looks like the introduction of variation over time has introduce a slight improvement in capturing hospitalisations in some age groups.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">age_week_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
@@ -397,7 +364,7 @@ plot of chunk age_week_nowcast
 </h3>
 <p>The obvious question to ask at this stage is if using a model that jointly fits to all age groups at once is actually beneficial. Here we explore this by fitting the same model as previously (a day of week effect for report date and a random walk on the week of the reference date stratified by age) to each age group independently.</p>
 <p>We could define this model with a single call to <code>epinowcast</code> but fitting each dataset independently but in a joint setting would likely lead to long fit times for no real benefit. Instead here we write a small helper function to preprocess our input data, define report and reference date models and then run a nowcast.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">independent_epinowcast</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">obs</span>, <span class="va">max_delay</span> <span class="op">=</span> <span class="fl">40</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">pobs_ind</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">obs</span>, max_delay <span class="op">=</span> <span class="va">max_delay</span><span class="op">)</span></span>
 <span></span>
@@ -418,7 +385,7 @@ plot of chunk age_week_nowcast
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">nowcast_summary</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 </details><p>We can now use this wrapper function on the data available for each age group, summarise the resulting nowcast, and then join these into a single data.frame.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
@@ -431,12 +398,11 @@ plot of chunk age_week_nowcast
 <span>    show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>    adapt_delta <span class="op">=</span> <span class="fl">0.95</span>, max_treedepth <span class="op">=</span> <span class="fl">12</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">multithread_model</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
-</details><p>As we now have the summarised nowcasts rather than an object of class <code>epinowcast</code> we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+</details><p>As we now have the summarised nowcasts rather than an object of class <code>epinowcast</code> we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
 <span>  <span class="va">independent_nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -460,7 +426,7 @@ plot of chunk ind_nowcast
 </h2>
 <p>As we have only nowcast a single date, and we visualised performance as we went, this evaluation is anything but complete or rigorous but we can give some examples of how we might evaluate performance more generally and potentially draw some useful initial conclusions.</p>
 <p>We first list all models (including the simplest case) and give them informative names,</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="st">"Reference: Fixed, Report: Fixed"</span> <span class="op">=</span> <span class="va">exp_nowcast</span>,</span>
 <span>  <span class="st">"Reference: Fixed, Report: Day of week"</span> <span class="op">=</span> <span class="va">dow_nowcast</span>,</span>
@@ -469,7 +435,7 @@ plot of chunk ind_nowcast
 <span>  <span class="st">"Reference: Age and week by age, Report: Day of week"</span> <span class="op">=</span> <span class="va">age_week_nowcast</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><p>and then summarise the nowcast posterior for each model and join into a tidy <code>data.frame</code> to make further analysis easier.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcasts</span>, <span class="va">summary</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.025</span>, <span class="fl">0.05</span>, <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.9</span>, by <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>, <span class="fl">0.95</span>, <span class="fl">0.975</span><span class="op">)</span></span>
@@ -492,36 +458,30 @@ plot of chunk ind_nowcast
 <span>    levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"00+"</span>, <span class="st">"00-04"</span>, <span class="st">"05-14"</span>, <span class="st">"15-34"</span>, <span class="st">"35-59"</span>, <span class="st">"60-79"</span>, <span class="st">"80+"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 </details><p>This allows us to plot nowcasts for each model and age group compared to the latest data. Looking at the plot shows some small differences across models with uncertainty generally decreasing as model complexity increases. Some age groups are clearly better nowcast than others with the 35-59 year old age group in particular having poor nowcast coverage.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
 <span>  <span class="va">summarised_nowcasts</span>, latest_obs <span class="op">=</span> <span class="va">latest_nat_germany</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">age_group</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
-<img src="figures/germany-age-stratified-nowcasting-unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%"><p class="caption">
-plot of chunk unnamed-chunk-20
+<img src="figures/germany-age-stratified-nowcasting-unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18" width="100%"><p class="caption">
+plot of chunk unnamed-chunk-18
 </p>
 </div>
 <p>As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the <code>loo</code> package though note this is not typically appropriate for time series data (<a href="https://cran.r-project.org/web//packages/loo/vignettes/loo2-lfo.html" class="external-link">where approximate LFO cross validation is likely to perform better</a>), the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">loos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">nowcasts</span>, <span class="op">~</span> <span class="va">.</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">loo</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                                     elpd_diff</span></span>
-<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0   </span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -2.0   </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -4.1   </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -85.0   </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -645.3   </span></span>
-<span><span class="co">#&gt;                                                     se_diff</span></span>
-<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0 </span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week    3.8 </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                    6.5 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                 12.1 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                       48.3</span></span></code></pre></div>
+<span><span class="co">#&gt;                                                     elpd_diff se_diff</span></span>
+<span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0       0.0 </span></span>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -2.9       3.6 </span></span>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -4.7       6.4 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -86.7      12.2 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -645.3      48.3</span></span></code></pre></div>
 </details><p>We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.</p>
 <p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code>scoringutils::eval_forecasts()</code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
 <p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">score</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_score_nowcast.html">enw_score_nowcast</a></span><span class="op">(</span></span>
 <span> <span class="va">summarised_nowcasts</span>,</span>
 <span> <span class="va">latest_nat_germany</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span> <span class="op">-</span> <span class="fl">7</span><span class="op">)</span><span class="op">]</span></span>
@@ -554,68 +514,68 @@ plot of chunk unnamed-chunk-20
 <tbody>
 <tr class="odd">
 <td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="right">10.427030</td>
-<td align="right">3.682110</td>
-<td align="right">3.171272</td>
-<td align="right">3.5744113</td>
-<td align="right">-0.0805338</td>
-<td align="right">-0.0357143</td>
-<td align="right">17.75510</td>
+<td align="right">10.370377</td>
+<td align="right">3.702182</td>
+<td align="right">3.147818</td>
+<td align="right">3.5202512</td>
+<td align="right">-0.0789639</td>
+<td align="right">-0.0285714</td>
+<td align="right">17.62245</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="right">10.326110</td>
-<td align="right">2.612009</td>
-<td align="right">6.783925</td>
-<td align="right">0.9307692</td>
-<td align="right">-0.1323391</td>
-<td align="right">-0.2897959</td>
-<td align="right">15.37755</td>
+<td align="right">10.348104</td>
+<td align="right">2.627058</td>
+<td align="right">6.824835</td>
+<td align="right">0.8963893</td>
+<td align="right">-0.1370487</td>
+<td align="right">-0.2765306</td>
+<td align="right">15.38776</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age, Report: Day of week</td>
-<td align="right">8.716047</td>
-<td align="right">2.501557</td>
-<td align="right">5.733846</td>
-<td align="right">0.4803768</td>
-<td align="right">-0.1229199</td>
-<td align="right">-0.4193878</td>
-<td align="right">13.08163</td>
+<td align="right">8.651115</td>
+<td align="right">2.503852</td>
+<td align="right">5.641287</td>
+<td align="right">0.5058085</td>
+<td align="right">-0.1260597</td>
+<td align="right">-0.4214286</td>
+<td align="right">12.96939</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="right">7.193438</td>
-<td align="right">2.986992</td>
-<td align="right">1.432653</td>
-<td align="right">2.7744113</td>
-<td align="right">-0.0036107</td>
-<td align="right">0.0153061</td>
-<td align="right">12.61224</td>
+<td align="right">7.138967</td>
+<td align="right">2.985796</td>
+<td align="right">1.510204</td>
+<td align="right">2.6428571</td>
+<td align="right">-0.0208791</td>
+<td align="right">-0.0071429</td>
+<td align="right">12.52041</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age and week by age, Report: Day of week</td>
-<td align="right">7.035887</td>
-<td align="right">2.979419</td>
-<td align="right">2.572465</td>
-<td align="right">1.4835165</td>
-<td align="right">-0.0193093</td>
-<td align="right">-0.2122449</td>
-<td align="right">11.88776</td>
+<td align="right">7.109146</td>
+<td align="right">3.022980</td>
+<td align="right">2.542857</td>
+<td align="right">1.5431711</td>
+<td align="right">-0.0083203</td>
+<td align="right">-0.2193878</td>
+<td align="right">11.91837</td>
 </tr>
 <tr class="even">
 <td align="left">Independent by age, Reference: Week, Report: Day of week</td>
-<td align="right">8.061642</td>
-<td align="right">4.422364</td>
-<td align="right">1.176766</td>
-<td align="right">2.4638932</td>
-<td align="right">0.0591837</td>
-<td align="right">-0.0397959</td>
-<td align="right">13.84694</td>
+<td align="right">7.803203</td>
+<td align="right">4.401036</td>
+<td align="right">1.183045</td>
+<td align="right">2.2169545</td>
+<td align="right">0.0654631</td>
+<td align="right">-0.0479592</td>
+<td align="right">13.05102</td>
 </tr>
 </tbody>
 </table>
 <p>Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_date_score</span> <span class="op">&lt;-</span> <span class="va">score</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fixed_score</span> <span class="op">&lt;-</span> <span class="va">age_date_score</span><span class="op">[</span></span>
