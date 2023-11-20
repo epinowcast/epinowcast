@@ -241,9 +241,9 @@ get_internal_timestep <- function(timestep) {
   if (is.character(timestep)) {
     switch(
       timestep,
-      "day" = 1,
-      "week" = 7,
-      "month" = "month",  # months are not a fixed number of days
+      "day" = 1, # nolint
+      "week" = 7, # nolint
+      "month" = "month",  # nolint: months are not a fixed number of days
       stop(
         "Invalid timestep. Acceptable string inputs are 'day', 'week',",
         " 'month'."
