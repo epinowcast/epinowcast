@@ -4,10 +4,10 @@ test_that("enw_model can compile the default model", {
   expect_error(enw_model(), NA)
 })
 
-test_that("enw_model can compile the multi-threaded model", {
+test_that("enw_model can compile the single-threaded model", {
   skip_on_cran()
   skip_on_local()
-  expect_error(enw_model(threads = TRUE), NA)
+  expect_error(enw_model(threads = FALSE), NA)
 })
 
 test_that("enw_model can compile using profiling", {

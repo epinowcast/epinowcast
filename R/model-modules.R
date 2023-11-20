@@ -771,8 +771,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' included in the model
 #'
 #' @param likelihood_aggregation Character string, aggregation over which
-#' stratify the likelihood when `threads = TRUE`; enforced by
-#' [base::match.arg()]. Currently supported options:
+#' stratify the likelihood when `threads_per_chain` is greater than 1; enforced
+#' by [base::match.arg()]. Currently supported options:
 #'  * "snapshots" which aggregates over report dates and groups (i.e the lowest
 #' level that observations are reported at),
 #'  * "groups" which aggregates across user defined groups.
@@ -782,12 +782,15 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' "groups" option. Generally, Users should typically want the default
 #' "snapshots" aggregation.
 #'
+#' @param threads_per_chain Integer, defaults to `1`. The number of threads to
+#' use within each MCMC chain. If this is greater than `1` then components of the
+#' likelihood will be calculated in parallel within each chain.
+#' @param debug Logical, defaults to `FALSE`. Should within model debug
+#' information be returned.
+#'
 #' @param output_loglik Logical, defaults to `FALSE`. Should the
 #' log-likelihood be output. Disabling this will speed up fitting
 #' if evaluating the model fit is not required.
-#'
-#' @param debug Logical, defaults to `FALSE`. Should within model debug
-#' information be returned.
 #'
 #' @param ... Additional arguments to pass to the fitting function being used
 #' by [epinowcast()]. By default this will be [enw_sample()] and so `cmdstanr`
@@ -806,6 +809,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
 enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE, likelihood = TRUE,
                          likelihood_aggregation = c("snapshots", "groups"),
+                         threads_per_chain = 1L,
                          debug = FALSE, output_loglik = FALSE, ...) {
   if (pp) {
     nowcast <- TRUE
@@ -821,10 +825,11 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
     likelihood_aggregation = likelihood_aggregation,
+    parallelise_likelihood = as.integer(threads_per_chain > 1),
     pp = as.numeric(pp),
     cast = as.numeric(nowcast),
     ologlik = as.numeric(output_loglik)
   )
-  out$args <- list(...)
+  out$args <- list(threads_per_chain = threads_per_chain, ...)
   return(out)
 }

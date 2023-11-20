@@ -59,6 +59,22 @@ test_that("epinowcast() runs using default arguments only", {
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
 })
 
+test_that("epinowcast() runs with within-chain parallelisation", {
+  skip_on_cran()
+  skip_on_local()
+  obs <- germany_covid19_hosp[age_group %in% "00+"][location %in% "DE"] |>
+    enw_filter_report_dates(remove_days = 10) |>
+    enw_filter_reference_dates(include_days = 10)
+  pobs <- enw_preprocess_data(obs, max_delay = 5)
+  nowcast <- suppressMessages(
+    epinowcast(pobs, fit = enw_fit_opts(threads_per_chain = 2))
+  )
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_lt(nowcast$per_divergent_transitions, 0.05)
+  expect_lt(nowcast$max_treedepth, 10)
+  expect_lt(nowcast$max_rhat, 1.05)
+})
+
 test_that("epinowcast() can fit a simple reporting model", {
   skip_on_cran()
   skip_on_local()
