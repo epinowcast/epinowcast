@@ -52,18 +52,18 @@ enw_reference <- function(
   distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
   non_parametric = ~0, data
 ) {
-  if (as_string_formula(parametric) %in% "~0") {
+  if (as_string_formula(parametric) == "~0") {
     distribution <- "none"
     parametric <- ~1
   }
   distribution <- match.arg(distribution)
-  if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
+  if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
     stop(
       "A non-parametric model must be specified if no parametric model",
       " is specified"
     )
   }
-  if (as_string_formula(non_parametric) %in% "~0") {
+  if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
     model_refnp <- 0
   }else {
@@ -71,11 +71,11 @@ enw_reference <- function(
   }
 
   distribution <- data.table::fcase(
-    distribution %in% "none", 0,
-    distribution %in% "exponential", 1,
-    distribution %in% "lognormal", 2,
-    distribution %in% "gamma", 3,
-    distribution %in% "loglogistic", 4
+    distribution == "none", 0,
+    distribution == "exponential", 1,
+    distribution == "lognormal", 2,
+    distribution == "gamma", 3,
+    distribution == "loglogistic", 4
   )
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
@@ -227,11 +227,11 @@ enw_reference <- function(
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(non_parametric = ~0, structural = ~0, data) {
-  if (!as_string_formula(structural) %in% "~0") {
+  if (!as_string_formula(structural) == "~0") {
     stop("The structural reporting model has not yet been implemented")
   }
 
-  if (as_string_formula(non_parametric) %in% "~0") {
+  if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
   }
 
@@ -251,7 +251,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   )
   data_list$rep_t <- data$time[[1]] + data$max_delay[[1]] - 1
   data_list$model_rep <- as.numeric(
-    !as_string_formula(non_parametric) %in% "~1"
+    !as_string_formula(non_parametric) == "~1"
   )
 
   out <- list()
@@ -332,10 +332,10 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
-  if (as_string_formula(r) %in% "~0") {
+  if (as_string_formula(r) == "~0") {
     stop("An expectation model formula for r must be specified")
   }
-  if (as_string_formula(observation) %in% "~0") {
+  if (as_string_formula(observation) == "~0") {
     observation <- ~1
   }
   if (sum(generation_time) != 1) {
@@ -399,7 +399,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   obs_list$obs <- as.numeric(
     sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
-      !as_string_formula(observation) %in% "~1"
+      !as_string_formula(observation) == "~1"
   )
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
@@ -512,12 +512,12 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' enw_missing(~0, data = enw_example("preprocessed"))
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
-    !(as_string_formula(formula) %in% "~0")) {
+    !(as_string_formula(formula) == "~0")) {
     stop("A missingness model has been specified but data on the proportion of
           observations without reference dates is not available.")
   }
 
-  if (as_string_formula(formula) %in% "~0") {
+  if (as_string_formula(formula) == "~0") {
     # empty data list required by stan
     data_list <- enw_formula_as_data_list(
       prefix = "miss", drop_intercept = FALSE
@@ -718,8 +718,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Add a switch for the observation model
   proc_data$model_obs <- data.table::fcase(
-    family %in% "poisson", 0,
-    family %in% "negbin", 1
+    family == "poisson", 0,
+    family == "negbin", 1
   )
 
   out <- list()
@@ -816,8 +816,8 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
   }
   likelihood_aggregation <- match.arg(likelihood_aggregation)
   likelihood_aggregation <- fcase(
-    likelihood_aggregation %in% "snapshots", 0,
-    likelihood_aggregation %in% "groups", 1
+    likelihood_aggregation == "snapshots", 0,
+    likelihood_aggregation == "groups", 1
   )
 
   out <- list(sampler = sampler)

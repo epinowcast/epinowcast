@@ -160,10 +160,10 @@ coerce_dt <- function(
   msg_required = "The following columns are required: ",
   msg_forbidden = "The following columns are forbidden: "
 ) {
-  if (!copy) { # if we want to keep the original data.table ...
-    dt <- data.table::setDT(data)
-  } else {     # ... otherwise, make a copy
+  if (copy) {
     dt <- data.table::as.data.table(data)
+  } else {
+    dt <- data.table::setDT(data)
   }
 
   if (dates) {
@@ -309,13 +309,13 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     check <- sum(diffs %% timestep) == 0
   }
 
-  if (!check) {
+  if (check) {
+    return(invisible(NULL))
+  }else {
     stop(
       date_var, " does not have the specified timestep of ", timestep,
       " day(s)"
     )
-  }else {
-    return(invisible(NULL))
   }
 }
 

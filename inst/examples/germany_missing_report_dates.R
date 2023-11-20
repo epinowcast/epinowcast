@@ -9,7 +9,7 @@ cmdstanr::set_cmdstan_path()
 options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-10-01"
@@ -34,7 +34,7 @@ retro_nat_germany <- enw_filter_reference_dates(
 # Simulate missing data for a single reference date 
 # We can't simulate missing data across reports because this would
 # also require updating the known reporting framework
-retro_nat_germany[reference_date %in% as.Date("2021-08-20"), confirm := NA]
+retro_nat_germany[reference_date == as.Date("2021-08-20"), confirm := NA]
 
 # Add a flag for data not observed and impute for downstream preprocessing
 retro_nat_germany <- retro_nat_germany |>

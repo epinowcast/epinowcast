@@ -163,7 +163,7 @@ made at the time compares to what was ultimately reported.
 
 ``` r
 nat_germany_hosp <-
-  germany_covid19_hosp[location == "DE"][age_group %in% "00+"] |>
+  germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-10-01")
 
 retro_nat_germany <- nat_germany_hosp |>
