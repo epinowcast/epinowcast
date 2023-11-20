@@ -1,5 +1,5 @@
 ---
-title: "Getting Started with Epinowcast"
+title: "Getting Started with Epinowcast: Nowcasting"
 description: "A quick start example demonstrating use of epinowcast."
 author: Epinowcast Team
 output: 
