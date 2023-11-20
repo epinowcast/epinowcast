@@ -1,6 +1,6 @@
 ---
 title: "Getting Started with Epinowcast: Nowcasting"
-description: "A quick start example demonstrating use of epinowcast."
+description: "A quick start example demonstrating use of epinowcast to nowcast hospital admissions."
 author: Epinowcast Team
 output: 
   bookdown::html_vignette2:
