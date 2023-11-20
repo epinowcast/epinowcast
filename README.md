@@ -127,6 +127,12 @@ with each other. Below is a short list of current resources.
   version (corresponding to the `main` branch on GitHub) [is also
   available](https://package.epinowcast.org/dev/).
 
+- [Package Vignettes](https://package.epinowcast.org/articles): These
+  provide tutorials, focused discussions of particular aspects, or
+  demonstrate case studies. The [Getting Started with Epinowcast:
+  Nowcasting](https://package.epinowcast.org/articles/getting-started-part-1)
+  is a good place to start.
+
 - [Organisation website](https://www.epinowcast.org/): This includes
   links to our other resources as well as guest posts from community
   members and schedules for any related seminars being run by community
