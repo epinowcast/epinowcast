@@ -55,7 +55,7 @@
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
                               check = FALSE, round_to = 3, ...) {
   if (!requireNamespace("scoringutils")) {
-    rlang::abort("scoringutils is required for this function to work")
+    rlang::abort("The package `scoringutils` is required for this function to work.")
   }
   long_nowcast <- enw_quantiles_to_long(nowcast)
   if (!is.null(long_nowcast[["mad"]])) {
