@@ -124,7 +124,7 @@ enw_add_metaobs_features <- function(metaobs,
   # localize and check metaobs input
   metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
-    rlang::abort(sprintf("metaobs column '%s' is not a Date.", datecol))
+    rlang::abort(sprintf("metaobs column `%s` is not a `Date`.", datecol))
   }
 
   # this may also error, so coercing first
