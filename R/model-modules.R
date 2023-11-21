@@ -227,7 +227,7 @@ enw_reference <- function(
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(non_parametric = ~0, structural = ~0, data) {
-  if (!as_string_formula(structural) == "~0") {
+  if (as_string_formula(structural) != "~0") {
     stop("The structural reporting model has not yet been implemented")
   }
 
