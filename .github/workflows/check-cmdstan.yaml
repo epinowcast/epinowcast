@@ -1,0 +1,61 @@
+name: check-cmdstan
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    paths:
+      - 'README.Rmd'
+    branches:
+      - main
+      - master
+      - develop
+  schedule:
+    - cron: '5 4 * * 1'
+  pull_request:
+    paths:
+      - 'README.Rmd'
+    branches:
+      - main
+      - master
+      - develop
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  check-cmdstan:
+    if: "! contains(github.event.head_commit.message, '[ci skip]')"
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      
+    steps:
+      - name: cmdstan env vars
+        run: |
+          echo "CMDSTAN_PATH=${HOME}/.cmdstan" >> $GITHUB_ENV
+        shell: bash
+
+      - uses: actions/checkout@v4
+        
+      - name: Install cmdstan Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev || true
+          sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev || true
+          sudo apt-get install -y libpng-dev || true
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Install cmdstan
+        run: |
+          print(list.files("C:/rtools43"))
+          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
+          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
+        shell: Rscript {0}
+
