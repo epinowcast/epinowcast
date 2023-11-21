@@ -20,3 +20,4 @@ pkgdown
 .vscode
 /figures/
 /vignettes/*_cache/
+.here

@@ -1,0 +1,139 @@
+---
+title: Resources for help with Stan
+description: "How to address issues you may encounter with Stan"
+author: Michael DeWitt
+output: rmarkdown::html_document
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+vignette: >
+  %\VignetteIndexEntry{Help with Stan}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+
+<!-->
+
+- [ ] What is Stan
+- [ ] Issues with installation
+- [ ] Issues with compilation and paths
+- [ ] Issues with model fitting
+  - [ ] Adapt Delta
+  - [ ] Max Tree Depth
+  - [ ] Number of samples, priors, Rhat/ ESS
+- [ ] Other generic resources
+
+<-->
+
+## Epinowcast and Stan
+
+[Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `epinowcast`.
+The statistical models used in `epinowcast` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
+`epinowcast` utilises the [`cmdstanr`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
+It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
+As describe in the `epinowcast` project [README](./index.html), you will need to install [`cmdstanr`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
+Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
+
+### Ensuring you have the proper toolchain {.toolchain}
+
+The Stan code that is written in the `epinowcast` package converted[^1] to optimised C++ code and then compiled to machine readable instructions.
+Because Stan needs a several programs to execute this compilation process such as the build tool [make](https://en.wikipedia.org/wiki/Make_(software)) and a C++ compiler, you will need to ensure that your system has the appropriate supporting software, known as a toolchain.
+The steps to install this additional software are in addition to R and are **platform specific**.
+As a reminder, these installation steps occur **outside of R**.
+The Stan team has assembled very detailed instructions for each platform:
+
+* [**Windows**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#windows)
+* [**MacOS**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#macos)
+* [**Linux**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#linux)
+
+
+After completing your platform specific toolshain installation, you can move on to R.
+
+
+### Now install CmdStanR and CmdStan
+
+Now you can open a session of R using your favourite IDE like Vscode or RStudio.
+You'll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
+There is a [very detailed installation guide available for CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which provides the authorative installation instructions.
+
+Install the CmdStanR package using the below code.
+
+```r
+# In a fresh R session run the following in your R console.
+install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+
+```
+
+To ensure that your toolchain instllation occured sucessfully, run the following code in your R terminal:
+
+```r
+check_cmdstan_toolchain()
+```
+
+This function will report back if the toolchain is available and set-up as follows:
+
+```r
+#> The C++ toolchain required for CmdStan is setup properly!
+```
+
+If you do not get this message, return to [the installation instuctions](#toolchain) and ensure that all steps were followed.
+
+Assuming you have the the toolchain installed, you can install CmdStanR.
+
+```r
+cmdstanr::install_cmdstan(cores = 2)
+```
+
+## Epinowcast modeling
+
+### Installation
+
+As described in the project README, you can install the `epinowcast` package within R.
+
+```r
+# Stable version from:
+install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
+
+# Development version from:
+remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
+```
+
+### Running your first model
+
+The first time you fit a model with `epinowcast` will be **slow**!
+This is normal as all of the Stan code is being compiled for the first time.
+Note that the compiled Stan binaries will live in your user package directory (or wherever you have defined your package libraries).
+Because of this package architecture
+
+- Each time you install a new version of `epinowcast` you will experience this longer compilation time the first time you fit a model.
+- If you upgrade your version of CmdStan, you will likely need to recompile your models. This may occur automatically, or necessitate re-installing `epinowcast`.
+
+
+## Other resources
+
+The Stan community is a pretty warm and opening place and receptive to helping others.
+If you find yourself having issues with `epinowcast`, reach out!
+
+### Technical issues
+
+- [epinowcast forum](https://community.epinowcast.org/)
+- [epinowcast issues](https://github.com/epinowcast/epinowcast/issues)
+- [Stan forums](https://discourse.mc-stan.org/)
+
+### Learning more about Stan and Bayesian inference
+
+- [](https://betanalpha.github.io/writing/)
+- Aki Vehtari [Bayesian Data Analysis](https://avehtari.github.io/BDA_R_demos/demos_rstan/) and [case studies](https://users.aalto.fi/~ave/casestudies.html)
+
+
+
+[^1]: The Stan code is actually first passed to a Stan specific compiled written in Ocaml called [stanc3](https://github.com/stan-dev/stanc3).
+The optimised C++ code generated from this first step is then passed to the C++ compiler.
