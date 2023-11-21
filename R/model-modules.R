@@ -399,7 +399,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   obs_list$obs <- as.numeric(
     sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
-      !as_string_formula(observation) == "~1"
+      as_string_formula(observation) != "~1"
   )
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
