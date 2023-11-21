@@ -34,7 +34,7 @@ implications of missing data for your use case.
 \examples{
 # Load and filter germany hospitalisations
 nat_germany_hosp <- subset(
-  germany_covid19_hosp, location == "DE" & age_group \%in\% "00+"
+  germany_covid19_hosp, location == "DE" & age_group == "00+"
 )
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,

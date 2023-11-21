@@ -542,7 +542,7 @@ Finally we look across all scores relative to the simple model with no variation
 age_date_score <- score |>
   summarise_scores(by = c("model", "reference_date", "age_group"))
 fixed_score <- age_date_score[
-  model %in% "Reference: Fixed, Report: Fixed",
+  model == "Reference: Fixed, Report: Fixed",
   .(reference_date, age_group, fixed_is = interval_score)
 ]
 age_date_score <- merge(
@@ -550,7 +550,7 @@ age_date_score <- merge(
 )
 
 age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
-age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
+age_date_score <- age_date_score[!model == "Reference: Fixed, Report: Fixed"]
 plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
   geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +

@@ -1,7 +1,7 @@
 
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
+nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 cols <- c(
   "obs", "new_confirm", "latest", "missing_reference", "reporting_triangle",
   "metareference", "metareport", "metadelay", "time", "snapshots", "by", "groups", "max_delay", "max_date", "timestep"

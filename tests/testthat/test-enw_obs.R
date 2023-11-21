@@ -2,7 +2,7 @@ test_that("enw_obs() produces the expected output", {
 
   # Load and filter germany hospitalisations
   nat_germany_hosp <-
-    germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+    germany_covid19_hosp[location == "DE"][age_group == "00+"]
   nat_germany_hosp <- enw_filter_report_dates(
     nat_germany_hosp,
     latest_date = "2021-10-01"
@@ -40,7 +40,7 @@ test_that("enw_obs() produces the expected output", {
   expect_error(enw_obs(family = "wefgweefw", data = pobs))
 
   # Check that missing data is handled as expected
-  retro_nat_germany[report_date %in% as.Date("2021-08-13"), confirm := NA]
+  retro_nat_germany[report_date == as.Date("2021-08-13"), confirm := NA]
   retro_nat_germany <- enw_flag_observed_observations(
     retro_nat_germany, copy = FALSE
   )

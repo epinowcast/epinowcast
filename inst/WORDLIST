@@ -16,6 +16,7 @@ ImperialCollegeLondon
 LFO
 Lifecycle
 LogNormal
+Mba
 Nowcast
 Nowcasting
 ORCID
@@ -26,7 +27,6 @@ Precompiling
 Rstan
 SEIR
 Wolffram
-Zenodo
 ae
 com
 cyclomatic

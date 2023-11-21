@@ -45,8 +45,8 @@ requirements. For example, the \code{\link[=enw_missing]{enw_missing()}} module 
 "snapshots" aggregation.}
 
 \item{threads_per_chain}{Integer, defaults to \code{1}. The number of threads to
-within each MCMC chain. If this is greater than \code{1} then components of the
-likelihood will be calculated in parallel.}
+use within each MCMC chain. If this is greater than \code{1} then components of
+the likelihood will be calculated in parallel within each chain.}
 
 \item{debug}{Logical, defaults to \code{FALSE}. Should within model debug
 information be returned.}

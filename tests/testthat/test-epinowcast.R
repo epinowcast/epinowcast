@@ -31,7 +31,7 @@ test_that("epinowcast() preprocesses data and model modules as expected", {
 test_that("epinowcast() runs using default arguments only", {
   skip_on_cran()
   skip_on_local()
-  obs <- germany_covid19_hosp[age_group %in% "00+"][location %in% "DE"] |>
+  obs <- germany_covid19_hosp[age_group == "00+"][location == "DE"] |>
     enw_filter_report_dates(remove_days = 10) |>
     enw_filter_reference_dates(include_days = 10)
   pobs <- enw_preprocess_data(obs, max_delay = 5)
@@ -209,7 +209,7 @@ test_that("epinowcast() can fit a simple missing data model", {
 
   # Load and filter germany hospitalisations
   nat_germany_hosp <-
-    germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+    germany_covid19_hosp[location == "DE"][age_group == "00+"]
   nat_germany_hosp <- enw_filter_report_dates(
     nat_germany_hosp,
     latest_date = "2021-08-01"
