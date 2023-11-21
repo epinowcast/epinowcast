@@ -311,7 +311,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 
   if (check) {
     return(invisible(NULL))
-  }else {
+  } else {
     stop(
       date_var, " does not have the specified timestep of ", timestep,
       " day(s)"
