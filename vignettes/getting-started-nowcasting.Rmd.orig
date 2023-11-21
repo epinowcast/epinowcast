@@ -2,6 +2,9 @@
 title: "Getting Started with Epinowcast: Nowcasting"
 description: "A quick start example demonstrating use of epinowcast to nowcast hospital admissions."
 author: Epinowcast Team
+opengraph:
+  image: 
+    src: figures/getting-started-nowcasting-nowcast-1.png
 output: 
   bookdown::html_vignette2:
     fig_caption: yes
@@ -19,7 +22,7 @@ vignette: >
 ```{r setup, include=FALSE}
 # exclude compile warnings from cmdstanr
 knitr::opts_chunk$set(
-  fig.path = "figures/getting-started-",
+  fig.path = "figures/getting-started-nowcasting-",
   cache = TRUE, dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
