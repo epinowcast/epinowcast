@@ -1,5 +1,9 @@
 
-all: $(subst .orig,,$(wildcard *.Rmd.orig))
+R = $(strip $(R_HOME)/bin/Rscript $^ $(1) $@)
 
-%.Rmd: %.Rmd.orig
-	Rscript knit.R $< $@
+all: knit.R
+	$(call R)
+	# ls *.Rmd.orig | sed s/.orig// | xargs make
+
+%.Rmd: knit.R %.Rmd.orig
+	$(call R)
