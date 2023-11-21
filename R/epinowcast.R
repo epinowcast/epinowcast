@@ -162,7 +162,7 @@ epinowcast <- function(data,
     enw_priors_as_data_list(priors)
   )
 
-  if (!missing$formula == "~0") {
+  if (missing$formula != "~0") {
     warning("The missing data model is highly experimental. There is a
      significant likelihood that bugs are present in its implementation.")
   }
