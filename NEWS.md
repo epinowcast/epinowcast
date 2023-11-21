@@ -51,7 +51,7 @@ This release is in development and not yet ready for production use.
 - Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
-- Split README to focus on package-level issues and moved quickstart into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
+- Split README to focus on package-level issues and moved quick start into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
 - Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
 
 ## Depreciations
