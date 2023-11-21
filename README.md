@@ -1,17 +1,7 @@
 
-<style type="text/css">
-h1 a img {
-  float : right;
-  display : float;
-  height : 139px;
-}
-summary {
-  font-weight: bold;
-}
-</style>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Flexible Hierarchical Nowcasting [![epinowcast logo](man/figures/logo.png)](https://package.epinowcast.org)
+# Flexible Hierarchical Nowcasting <a href='https://package.epinowcast.org'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
