@@ -16,10 +16,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-```{r setup, include=FALSE}
-# exclude compile warnings from cmdstanr
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
-```
+
 # Quick start
 
 In this quick start, we demonstrate using `epinowcast` to specify and fit a minimal nowcasting model of COVID-19 hospitalisations in Germany. Examples using more complex models are available in other package vignettes and in the papers referenced in the literature vignette.
@@ -28,11 +25,15 @@ In this quick start, we demonstrate using `epinowcast` to specify and fit a mini
 
 In addition to `epinowcast`, this quick start makes use of `data.table` and `ggplot2`, which are both installed as dependencies when `epinowcast` is installed.
 
-```{r echo=TRUE, results='hide'}
+
+```r
 library(epinowcast)
 library(data.table)
 library(ggplot2)
-cmdstanr::set_cmdstan_path()
+```
+
+```
+cmdstanr:::get_cmdstan_flags("STANCFLAGS")
 ```
 
 # Data
@@ -43,7 +44,8 @@ Nowcasting of right-truncated case counts involves the estimation of reporting d
 
 We first filter to create a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data. Then, we create the nowcast target which is the latest available hospitalisations by date of positive test. This will allow us to visualise how a nowcast made at the time compares to what was ultimately reported.
 
-```{r}
+
+```r
 nat_germany_hosp <-
   germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
   enw_filter_report_dates(latest_date = "2021-10-01")
@@ -52,6 +54,19 @@ retro_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(remove_days = 40) |>
   enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
+#>      reference_date location age_group confirm report_date
+#>              <IDat>   <fctr>    <fctr>   <int>      <IDat>
+#>   1:     2021-07-13       DE       00+      21  2021-07-13
+#>   2:     2021-07-14       DE       00+      22  2021-07-14
+#>   3:     2021-07-15       DE       00+      28  2021-07-15
+#>   4:     2021-07-16       DE       00+      19  2021-07-16
+#>   5:     2021-07-17       DE       00+      20  2021-07-17
+#>  ---                                                      
+#> 857:     2021-07-14       DE       00+      72  2021-08-21
+#> 858:     2021-07-15       DE       00+      69  2021-08-22
+#> 859:     2021-07-13       DE       00+      59  2021-08-21
+#> 860:     2021-07-14       DE       00+      72  2021-08-22
+#> 861:     2021-07-13       DE       00+      59  2021-08-22
 ```
 
 This data is already in a format that can be used with `epinowcast`, as it contains
@@ -62,11 +77,24 @@ This data is already in a format that can be used with `epinowcast`, as it conta
 
 The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see [Data converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)).
 
-```{r}
+
+```r
 latest_germany_hosp <- nat_germany_hosp |>
   enw_latest_data() |>
   enw_filter_reference_dates(remove_days = 40, include_days = 40)
 head(latest_germany_hosp, n = 10)
+#>     reference_date location age_group confirm report_date
+#>             <IDat>   <fctr>    <fctr>   <int>      <IDat>
+#>  1:     2021-07-13       DE       00+      60  2021-10-01
+#>  2:     2021-07-14       DE       00+      74  2021-10-01
+#>  3:     2021-07-15       DE       00+      69  2021-10-01
+#>  4:     2021-07-16       DE       00+      49  2021-10-01
+#>  5:     2021-07-17       DE       00+      67  2021-10-01
+#>  6:     2021-07-18       DE       00+      51  2021-10-01
+#>  7:     2021-07-19       DE       00+      36  2021-10-01
+#>  8:     2021-07-20       DE       00+      96  2021-10-01
+#>  9:     2021-07-21       DE       00+      94  2021-10-01
+#> 10:     2021-07-22       DE       00+      99  2021-10-01
 ```
 
 ## Preprocessing
@@ -74,9 +102,22 @@ head(latest_germany_hosp, n = 10)
 Before modelling, the input data needs to be converted into the "reporting triangle" format (see [our model description for details](https://package.epinowcast.org/articles/model)). We also need to determine metadata to facilitate the model specification. This includes the number of days of data to use for the reference and report modules, the maximum delay to consider, and, optionally, a grouping (i.e. age group, location, or both) of observations.
 We process reported data into the format required for `epinowcast` and return it in a `data.table`. At this stage, we need to specify a grouping (i.e age, location) if any. 
 
-```{r}
+
+```r
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
+#>                    obs          new_confirm              latest
+#>                 <list>               <list>              <list>
+#> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
+#>    missing_reference  reporting_triangle      metareference          metareport
+#>               <list>              <list>             <list>              <list>
+#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
+#>             metadelay  time snapshots     by groups max_delay   max_date
+#>                <list> <int>     <int> <list>  <int>     <num>     <IDat>
+#> 1: <data.table[40x5]>    41        41             1        40 2021-08-22
+#>    timestep
+#>      <char>
+#> 1:      day
 ```
 
 The returned output is in the form of a `data.table` with metadata stored as variables. It can be useful to check this output before specifying the model, just to make sure everything is as expected.
@@ -99,7 +140,8 @@ In the following sections, we specify simple models for each of these modules. T
 
 A commonly used process model in nowcasting is to model the expected counts by date of reference via a geometric random walk as this acts as a minimally informed smoothing prior and thus gives a lot of weight to the observed data. This is the default process model in `epinowcast`. Users may also specify this model for themselves using the enw_expectation() function.
 
-```{r}
+
+```r
 expectation_module <- enw_expectation(
   ~ 0 + (1 | day), data = pobs
 )
@@ -113,13 +155,15 @@ As the underlying process model is an exponential growth rate model ($C_t = C_{t
 
 Our baseline assumption for the reporting delay is that it is log-normally distributed, and static over time and strata. We can specify this model using the `enw_reference()` function,
 
-```{r}
+
+```r
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
 Note that the default distribution is log-normal, hence the distribution argument could be omitted here. Alternatively we could model the reporting delay non-parametrically using a hazard model (see [our model description for details](https://package.epinowcast.org/articles/model)). The following is equivalent to a cox proportional hazards model with a single baseline hazard function.
 
-```{r, eval = FALSE}
+
+```r
 np_reference_module <- enw_reference(
   parametric = ~0, non_parametric = ~ 0 + delay, data = pobs
 )
@@ -131,7 +175,8 @@ Advanced users may wish to combine parametric and non-parametric reference date 
 
 Even where there is evidence that reporting processes can be approximated by a single distribution, there may be additional reporting effects that are not captured by the reference model. For example, reporting may be lower on weekends or holidays. We can specify a model for these effects using a hazard formulation (which captures the conditional relationship between different reporting delays, see [our model description for details](https://package.epinowcast.org/articles/model)) using the `enw_report()` function. Here we specify a model with a random effect for the day of the week to capture weekly seasonality in the reporting delay.
 
-```{r}
+
+```r
 report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 ```
 
@@ -139,7 +184,8 @@ report_module <- enw_report(~ (1 | day_of_week), data = pobs)
 
 As `epinowcast` uses `cmdstan` to fit its models, it is necessary to first compile the model. This can be done using the `enw_model()` function. Note that this step can be left to `epinowcast`, but here we want to use multiple cores per chain to speed up model fitting and therefore compile the model with this feature turned on.
 
-```{r}
+
+```r
 model <- enw_model(threads = TRUE)
 ```
 
@@ -147,7 +193,8 @@ model <- enw_model(threads = TRUE)
 
 We can now fit the model using the ["No-U-Turn Sampler Markov chain Monte Carlo" method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html). This is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core fitting method used by `cmdstan`. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specify fitting options using `enw_fit_opts()` (note that the settings shown here are tuned for speed and may not be appropriate for many real world use cases). We also pass our preprocessed data (`pobs`), our pre-compiled model (`model`), and our model modules (`expectation_module`, `reference_module`, and `report_module`) to `epinowcast`, where they are combined and used to fit the model.
 
-```{r}
+
+```r
 options(mc.cores = 2)
 nowcast <- epinowcast(data = pobs,
   expectation = expectation_module,
@@ -167,40 +214,109 @@ nowcast <- epinowcast(data = pobs,
 
 The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying [`CmdStanModel` object](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html).
 
-```{r}
+
+```r
 nowcast
+#>                    obs          new_confirm              latest
+#>                 <list>               <list>              <list>
+#> 1: <data.table[860x9]> <data.table[860x11]> <data.table[41x10]>
+#>    missing_reference  reporting_triangle      metareference          metareport
+#>               <list>              <list>             <list>              <list>
+#> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
+#>             metadelay  time snapshots     by groups max_delay   max_date
+#>                <list> <int>     <int> <list>  <int>     <num>     <IDat>
+#> 1: <data.table[40x5]>    41        41             1        40 2021-08-22
+#>    timestep
+#>      <char>
+#> 1:      day
+#>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  fit
+#>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <list>
+#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    hessian: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    init: function () \n    init_model_methods: function (seed = 0, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian_adjustment = TRUE) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL) \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1474.48 -1483.51 -1493.88 -1481.58 -1474.04 -1478.41 -1 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 1\n    sampler_diagnostics_: 7 7 8 8 8 8 8 8 8 8 8 7 7 7 8 8 8 7 7 8 8 8 8 7 7 8 7 8  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
+#>           data  fit_args samples max_rhat divergent_transitions
+#>         <list>    <list>   <int>    <num>                 <num>
+#> 1: <list[115]> <list[7]>     500     1.03                     0
+#>    per_divergent_transitions max_treedepth no_at_max_treedepth
+#>                        <num>         <num>               <int>
+#> 1:                         0             8                 262
+#>    per_at_max_treedepth run_time
+#>                   <num>    <num>
+#> 1:                0.524    168.6
 ```
 
 # Summarising and plotting the nowcast
 
 The nowcast (the combination of currently observed and predicted unobserved data) can then be summarised using
 
-```{r}
+
+```r
 nowcast |>
   summary(probs = c(0.05, 0.95)) |>
   head(n = 10)
+#>     reference_date report_date .group max_confirm location age_group confirm
+#>             <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
+#>  1:     2021-07-14  2021-08-22      1          72       DE       00+      72
+#>  2:     2021-07-15  2021-08-22      1          69       DE       00+      69
+#>  3:     2021-07-16  2021-08-22      1          47       DE       00+      47
+#>  4:     2021-07-17  2021-08-22      1          65       DE       00+      65
+#>  5:     2021-07-18  2021-08-22      1          50       DE       00+      50
+#>  6:     2021-07-19  2021-08-22      1          36       DE       00+      36
+#>  7:     2021-07-20  2021-08-22      1          94       DE       00+      94
+#>  8:     2021-07-21  2021-08-22      1          91       DE       00+      91
+#>  9:     2021-07-22  2021-08-22      1          99       DE       00+      99
+#> 10:     2021-07-23  2021-08-22      1          86       DE       00+      86
+#>     cum_prop_reported delay prop_reported    mean median        sd    mad    q5
+#>                 <num> <num>         <num>   <num>  <num>     <num>  <num> <num>
+#>  1:                 1    39             0  72.000     72 0.0000000 0.0000    72
+#>  2:                 1    38             0  69.026     69 0.1592945 0.0000    69
+#>  3:                 1    37             0  47.086     47 0.2945803 0.0000    47
+#>  4:                 1    36             0  65.178     65 0.4274124 0.0000    65
+#>  5:                 1    35             0  50.282     50 0.5205939 0.0000    50
+#>  6:                 1    34             0  36.258     36 0.4898120 0.0000    36
+#>  7:                 1    33             0  94.470     94 0.6971887 0.0000    94
+#>  8:                 1    32             0  91.772     92 0.8885917 1.4826    91
+#>  9:                 1    31             0 100.142    100 1.1100904 1.4826    99
+#> 10:                 1    30             0  87.346     87 1.2301669 1.4826    86
+#>       q95      rhat ess_bulk ess_tail
+#>     <num>     <num>    <num>    <num>
+#>  1:    72        NA       NA       NA
+#>  2:    69 0.9994177 531.1843 531.1843
+#>  3:    48 0.9996273 495.0117 470.1348
+#>  4:    66 0.9988749 433.8773 428.8326
+#>  5:    51 0.9982300 511.6971 444.3408
+#>  6:    37 1.0154104 254.7656 248.6520
+#>  7:    96 0.9980246 421.4041 437.4958
+#>  8:    93 0.9997314 559.7468 468.6396
+#>  9:   102 1.0010800 478.1454 376.4777
+#> 10:    90 0.9983450 517.2830 516.1268
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest observed data using
 
-```{r nowcast}
+
+```r
 plot(nowcast, latest_obs = latest_germany_hosp)
 ```
+
+<img src="figures/getting-started-nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
 
 ## Plotting posterior predictions
 
 Plotting posterior predictions can be a useful way of assessing performance and checking that the model is capturing the underlying data generation process adequately. We can do this directly on the output of `epinowcast()` using
 
-```{r pp, fig.width = 16, fig.height = 16, message = FALSE}
+
+```r
 plot(nowcast, type = "posterior") +
   facet_wrap(vars(reference_date), scale = "free")
 ```
+
+<img src="figures/getting-started-pp-1.png" alt="plot of chunk pp" width="100%" />
 
 ## Using package functions rather than S3 methods
 
 Rather than using S3 methods supplied for `epinowcast()` directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.
 
-```{r week_nowcast}
+
+```r
 # extract samples
 samples <- summary(nowcast, type = "nowcast_samples")
 
@@ -209,6 +325,32 @@ cols <- c("confirm", "sample")
 samples[, (cols) := lapply(.SD, frollsum, n = 7),
   .SDcols = cols, by = ".draw"
 ][!is.na(sample)]
+#>        reference_date report_date .group max_confirm location age_group confirm
+#>                <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
+#>     1:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     2:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     3:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     4:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     5:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>    ---                                                                         
+#> 16996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 17000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
+#>                    <num> <num>         <num>  <int>      <int> <int>  <num>
+#>     1:                 1    33             0      1          1     1    434
+#>     2:                 1    33             0      1          2     2    433
+#>     3:                 1    33             0      1          3     3    433
+#>     4:                 1    33             0      1          4     4    433
+#>     5:                 1    33             0      1          5     5    433
+#>    ---                                                                     
+#> 16996:                 1     0             1      1        496   496   1848
+#> 16997:                 1     0             1      1        497   497   2362
+#> 16998:                 1     0             1      1        498   498   2160
+#> 16999:                 1     0             1      1        499   499   2106
+#> 17000:                 1     0             1      1        500   500   2014
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -220,5 +362,7 @@ sum_across_last_7_days <- enw_summarise_samples(samples)
 # Plot samples
 enw_plot_nowcast_quantiles(sum_across_last_7_days, latest_germany_hosp_7day)
 ```
+
+<img src="figures/getting-started-week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
 
 Here we see that the model is underestimating the incidence of hospitalisations that were ultimately reported. There are a range of potential reasons for this, the first being that the process model does not fully capture the trend or day of the week periodicity present in the data. See our case study vignettes for ideas on how deal with such issues.
