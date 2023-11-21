@@ -251,7 +251,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   )
   data_list$rep_t <- data$time[[1]] + data$max_delay[[1]] - 1
   data_list$model_rep <- as.numeric(
-    !as_string_formula(non_parametric) == "~1"
+    as_string_formula(non_parametric) != "~1"
   )
 
   out <- list()
