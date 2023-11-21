@@ -8,25 +8,20 @@ if (length(.args) > 0) {
     "`make`ing %.Rmd from %.Rmd.orig will not work",
     " without developmental `cmdstanr` installation."
   )
-  knitr::knit(.args[1], .args[2])
+  knit(.args[1], .args[2])
 } else if (requireNamespace("usethis")) {
   wd <- getwd()
   # assuming somewhere in the project ...
   setwd(usethis::proj_path("vignettes"))
-  
   markerpat <- "\\.orig$"
-  
   tocompile <- list.files(pattern = markerpat)
-  
   lapply(tocompile, \(x) {
-    knitr::knit(x, sub(markerpat, "", x))
+    knit(x, sub(markerpat, "", x))
   })
-  
-  setwd(wd)  
+  setwd(wd)
 } else {
   stop(
     "Precompilation requires specific source and destination files,",
     " or `usethis` package."
   )
 }
-
