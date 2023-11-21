@@ -60,7 +60,7 @@ jobs:
       - name: Compile model and check syntax
         run: |
           model <- epinowcast::enw_model()
-          expect_message(
+          testthat::expect_message(
             model$check_syntax(),
             "Stan program is syntactically correct"
           )
