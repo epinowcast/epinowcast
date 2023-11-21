@@ -30,7 +30,7 @@ articles:
 - title: Getting Started
   navbar: Getting Started
   contents:
-  - getting-started-part-1
+  - getting-started-nowcasting
 - title: Model details
   navbar: Model details
   contents:
