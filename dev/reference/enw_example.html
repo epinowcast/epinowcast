@@ -28,6 +28,9 @@ functionality without needing to install cmdstanr."><meta property="og:image" co
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <h6 class="dropdown-header" data-toc-skip>Getting Started</h6>
+    <a class="dropdown-item" href="../articles/getting-started-nowcasting.html">Getting Started with Epinowcast: Nowcasting</a>
+    <div class="dropdown-divider"></div>
     <h6 class="dropdown-header" data-toc-skip>Model details</h6>
     <a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a>
     <a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a>
@@ -156,60 +159,60 @@ the file name(s) to generate these outputs (<code>type</code> = "script")</p>
 <span class="r-in"><span><span class="co"># Load the script used to generate these examples</span></span></span>
 <span class="r-in"><span><span class="co"># Optionally source this script to regenerate the example</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"script"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "# Load epinowcast and data.table"                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "library(epinowcast)"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "library(data.table)"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "# Load and filter germany hospitalisations"                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "nat_germany_hosp &lt;- germany_covid19_hosp[location == \"DE\"][age_group %in% \"00+\"]"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "nat_germany_hosp &lt;- enw_filter_report_dates("                                        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "  nat_germany_hosp,"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "  latest_date = \"2021-10-01\""                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [10] ")"                                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [11] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "# Make sure observations are complete"                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "nat_germany_hosp &lt;- enw_complete_dates("                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "  nat_germany_hosp,"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "  by = c(\"location\", \"age_group\")"                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [16] ")"                                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [17] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "# Make a retrospective dataset"                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "retro_nat_germany &lt;- enw_filter_report_dates("                                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "  nat_germany_hosp,"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "  remove_days = 40"                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [22] ")"                                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "retro_nat_germany &lt;- enw_filter_reference_dates("                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "  retro_nat_germany,"                                                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "  include_days = 40"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] ")"                                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [27] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "# Get latest observations for the same time period"                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "latest_obs &lt;- enw_latest_data(nat_germany_hosp)"                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "latest_obs &lt;- enw_filter_reference_dates("                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "  latest_obs,"                                                                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "  remove_days = 40, include_days = 20"                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33] ")"                                                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [34] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "# Preprocess observations"                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "# Reference date model"                                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "reference_module &lt;- enw_reference(~1, data = pobs)"                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [40] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "# Report date model"                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "report_module &lt;- enw_report(~ (1 | day_of_week), data = pobs)"                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43] ""                                                                                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "# Fit nowcast model and produce a nowcast"                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "# Note that we have reduced samples for this example to reduce runtimes"             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "nowcast &lt;- epinowcast(pobs,"                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "  reference = reference_module,"                                                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "  report = report_module,"                                                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "  fit = enw_fit_opts("                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [50] "    save_warmup = FALSE, pp = TRUE,"                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "    chains = 2, threads_per_chain = 2,"                                              </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [52] "    iter_warmup = 500, iter_sampling = 500"                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "  )"                                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [54] ")"                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "# Load epinowcast and data.table"                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "library(epinowcast)"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "library(data.table)"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "# Load and filter germany hospitalisations"                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "nat_germany_hosp &lt;- germany_covid19_hosp[location == \"DE\"][age_group == \"00+\"]"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "nat_germany_hosp &lt;- enw_filter_report_dates("                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "  nat_germany_hosp,"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "  latest_date = \"2021-10-01\""                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] ")"                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "# Make sure observations are complete"                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "nat_germany_hosp &lt;- enw_complete_dates("                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "  nat_germany_hosp,"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "  by = c(\"location\", \"age_group\")"                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] ")"                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "# Make a retrospective dataset"                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "retro_nat_germany &lt;- enw_filter_report_dates("                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "  nat_germany_hosp,"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "  remove_days = 40"                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] ")"                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "retro_nat_germany &lt;- enw_filter_reference_dates("                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "  retro_nat_germany,"                                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "  include_days = 40"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] ")"                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "# Get latest observations for the same time period"                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "latest_obs &lt;- enw_latest_data(nat_germany_hosp)"                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "latest_obs &lt;- enw_filter_reference_dates("                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "  latest_obs,"                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "  remove_days = 40, include_days = 20"                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] ")"                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "# Preprocess observations"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "# Reference date model"                                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "reference_module &lt;- enw_reference(~1, data = pobs)"                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "# Report date model"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "report_module &lt;- enw_report(~ (1 | day_of_week), data = pobs)"                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "# Fit nowcast model and produce a nowcast"                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "# Note that we have reduced samples for this example to reduce runtimes"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "nowcast &lt;- epinowcast(pobs,"                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "  reference = reference_module,"                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "  report = report_module,"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "  fit = enw_fit_opts("                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [50] "    save_warmup = FALSE, pp = TRUE,"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [51] "    chains = 2, threads_per_chain = 2,"                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [52] "    iter_warmup = 500, iter_sampling = 500"                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [53] "  )"                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [54] ")"                                                                                 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
