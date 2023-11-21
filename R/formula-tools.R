@@ -344,7 +344,7 @@ construct_rw <- function(rw, data) {
   effects <- enw_effects_metadata(fixed)
 
   # implement random walk structure effects
-  if (is.null(rw$by) || rw$type %in% "dependent") {
+  if (is.null(rw$by) || rw$type == "dependent") {
     effects <- enw_add_pooling_effect(
       effects, var_name = paste0("rw__", rw$time), prefix = ctime
     )

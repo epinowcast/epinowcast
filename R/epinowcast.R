@@ -59,7 +59,7 @@
 #' options(mc.cores = 2)
 #' # Load and filter germany hospitalisations
 #' nat_germany_hosp <-
-#'   germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+#'   germany_covid19_hosp[location == "DE"][age_group == "00+"]
 #' nat_germany_hosp <- enw_filter_report_dates(
 #'   nat_germany_hosp,
 #'   latest_date = "2021-10-01"
@@ -162,12 +162,7 @@ epinowcast <- function(data,
     enw_priors_as_data_list(priors)
   )
 
-  if (!missing$formula %in% "~0") {
-    warning("The missing data model is highly experimental. There is a
-     significant likelihood that bugs are present in its implementation.")
-  }
-
-  if (!missing$formula %in% "~0") {
+  if (missing$formula != "~0") {
     warning("The missing data model is highly experimental. There is a
      significant likelihood that bugs are present in its implementation.")
   }

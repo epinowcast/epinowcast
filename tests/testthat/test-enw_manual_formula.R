@@ -10,7 +10,7 @@ pobs <- enw_preprocess_data(
   obs, by = c("age_group", "location"), max_delay = 14
 )
 data <- pobs$metareference[[1]]
-data <-  data[age_group %in% c("00+")]
+data <-  data[age_group == c("00+")]
 data <- data[day_of_week %in% c("Monday", "Tuesday")]
 
 test_that("enw_manual_formula can return a basic fixed effects formula", {

@@ -221,7 +221,7 @@ enw_linelist_to_incidence <- function(linelist,
 #' @examples
 #' incidence <- enw_add_incidence(germany_covid19_hosp)
 #' incidence <- enw_filter_reference_dates(
-#'   incidence[location %in% "DE"], include_days = 10
+#'   incidence[location == "DE"], include_days = 10
 #' )
 #' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
@@ -348,13 +348,13 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @export
 #' @family dataconverters
 #' @examples
-#' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+#' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
 enw_aggregate_cumulative <- function(
   obs, timestep = "day", by = NULL,
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
-  stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
+  stopifnot("The data already has a timestep of a day" = timestep != "day")
   obs <- coerce_dt(
     obs,
     required_cols = c("confirm", by), forbidden_cols = ".group",
