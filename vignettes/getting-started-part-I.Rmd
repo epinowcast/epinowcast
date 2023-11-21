@@ -16,7 +16,9 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) # exclude compile warnings from cmdstanr
+```
 # Quick start
 
 In this quick start, we demonstrate using `epinowcast` to specify and fit a minimal nowcasting model of COVID-19 hospitalisations in Germany. Examples using more complex models are available in other package vignettes and in the papers referenced in the literature vignette.
@@ -29,6 +31,7 @@ In addition to `epinowcast`, this quick start makes use of `data.table` and `ggp
 library(epinowcast)
 library(data.table)
 library(ggplot2)
+cmdstanr::set_cmdstan_path()
 ```
 
 # Data
