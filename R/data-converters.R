@@ -354,7 +354,7 @@ enw_aggregate_cumulative <- function(
   obs, timestep = "day", by = NULL,
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
-  stopifnot("The data already has a timestep of a day" = !timestep == "day")
+  stopifnot("The data already has a timestep of a day" = timestep != "day")
   obs <- coerce_dt(
     obs,
     required_cols = c("confirm", by), forbidden_cols = ".group",
