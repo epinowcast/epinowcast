@@ -71,7 +71,9 @@ Similarly, you can install historical releases by adding the release tag
 [`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)):
 
 ``` r
-remotes::install_github("epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0")
+remotes::install_github(
+  "epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0"
+)
 ```
 
 *Note: A similar method can be used to install a particular commit of
@@ -126,25 +128,22 @@ with each other. Below is a short list of current resources.
   instructions](#Installation)). Documentation for the development
   version (corresponding to the `main` branch on GitHub) [is also
   available](https://package.epinowcast.org/dev/).
-
 - [Package Vignettes](https://package.epinowcast.org/articles): These
-  provide tutorials, focused discussions of particular aspects, or
-  demonstrate case studies. The [Getting Started with Epinowcast:
+  provide tutorials and case studies, focused discussions of particular
+  aspects, or demonstrate case studies. The [Getting Started with
+  Epinowcast:
   Nowcasting](https://package.epinowcast.org/articles/getting-started-part-1)
   is a good place to start.
-
 - [Organisation website](https://www.epinowcast.org/): This includes
   links to our other resources as well as guest posts from community
   members and schedules for any related seminars being run by community
   members.
-
 - [Directory of example
   scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
   Not as fleshed out as our complete case studies these scripts are used
   during package development and each showcase a subset of package
   functionality. Often newly introduced features will be explored here
   before surfacing in other areas of our documentation.
-
 - [Community forum](https://community.epinowcast.org/): Our community
   forum is where development of methods and tools is discussed, along
   with related research from our members and discussions between users.
@@ -202,18 +201,16 @@ citation("epinowcast")
 
 To cite package ‘epinowcast’ in publications use:
 
-Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021).
-“epinowcast: Flexible hierarchical nowcasting.” *Zenodo*.
-<doi:10.5281/zenodo.5637165> <https://doi.org/10.5281/zenodo.5637165>,
-<https://github.com/epinowcast/epinowcast>.
+Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F (NULL).
+*epinowcast: Flexible Hierarchical Nowcasting*.
+<doi:10.5281/zenodo.5637165> <https://doi.org/10.5281/zenodo.5637165>.
 
 A BibTeX entry for LaTeX users is
 
-@Article{, title = {epinowcast: Flexible hierarchical nowcasting},
-author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl
-Pearson and Hugo Gruson and Felix Guenther}, year = {2021}, journal =
-{Zenodo}, doi = {10.5281/zenodo.5637165}, url =
-{<https://github.com/epinowcast/epinowcast>}, }
+@Manual{, title = {epinowcast: Flexible Hierarchical Nowcasting}, author
+= {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and
+Hugo Gruson and Felix Guenther}, year = {NULL}, doi =
+{10.5281/zenodo.5637165}, }
 
 If making use of our methodology or the methodology on which ours is
 based, please cite the relevant papers from our [model
