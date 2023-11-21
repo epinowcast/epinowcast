@@ -40,10 +40,6 @@ library(data.table)
 library(ggplot2)
 ```
 
-```
-cmdstanr:::get_cmdstan_flags("STANCFLAGS")
-```
-
 # Data
 
 Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data. For this, we need case counts both by when they were diagnosed (e.g. when someone tests positive; often called "reference date") and by when they were reported (i.e. when administratively recorded via public health surveillance; often called "report date"). The difference between the reference date and the report date is the reporting delay. For this quick start, we use data from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence). These data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.
