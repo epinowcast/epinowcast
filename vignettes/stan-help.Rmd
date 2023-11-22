@@ -122,6 +122,7 @@ Because of this package architecture
 The `enw_fit_opts` allows you to set several critical components for the Stan computational engine.
 These parameters are passed to Stan during the model fitting process and have an influence on computation time and quality of the model fit.
 Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
+All of the parameters are passed to the 
 
 
 # Failures modes
