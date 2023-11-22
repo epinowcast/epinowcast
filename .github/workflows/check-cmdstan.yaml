@@ -60,8 +60,14 @@ jobs:
       - name: Compile model and check syntax
         run: |
           model <- epinowcast::enw_model()
+          # If the model is not syntactically correct above will fail
+          # however it may be correct enougth to compile but still contain
+          # soft depreciated syntax and so we check the syntax again below 
+          # and test the output.
           testthat::expect_message(
-            model$check_syntax(),
+            model$check_syntax(pedantic = FALSE),
+            # We can't use TRUE here as pendatic check return lots of false
+            # positives related to our use of functions.
             "Stan program is syntactically correct"
           )
         shell: Rscript {0}
