@@ -124,7 +124,14 @@ These parameters are passed to Stan during the model fitting process and have an
 Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
 
 
-##
+# Failures modes
+
+## My model takes too long to run
+
+
+## My r_hat is high and by ess is low
+
+## The posterior estimates are very wide
 
 # Other resources
 
