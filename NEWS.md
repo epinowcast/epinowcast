@@ -54,6 +54,7 @@ This release is in development and not yet ready for production use.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
 - Split README to focus on package-level issues and moved quick start into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
 - Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
+- Removed the reference in the pull request template to updating the development version as this has been found to cause issues when multiple pull requests are open at once. See #391 by @seabbs and reviewed by @Bisaloo.
 
 ## Depreciations
 
