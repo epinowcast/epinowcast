@@ -21,11 +21,6 @@ authors:
   Sam Abbott:
     href: "https://www.samabbott.co.uk/"
 
-navbar:
-  structure:
-    left: [reference, articles, news]
-    right: [github]
-
 articles:
 - title: Model details
   navbar: Model details
