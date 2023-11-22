@@ -256,6 +256,8 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @importFrom posterior rhat
 enw_sample <- function(data, model = epinowcast::enw_model(),
                        diagnostics = TRUE, ...) {
+  dot_args <- list(...)
+  pathfinder_fit <- model$pathfinder(data, num_threads = 16, init = dot_args$inits)
   fit <- model$sample(data = data, ...)
 
   out <- data.table(
@@ -285,6 +287,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 
     timing <- round(fit$time()$total, 1)
     out[, run_time := timing]
+    out[, pathfinder := list(pathfinder_fit)]
   }
   return(out[])
 }
