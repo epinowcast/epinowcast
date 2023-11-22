@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
 
 <-->
 
-## Epinowcast and Stan
+# Epinowcast and Stan
 
 [Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `epinowcast`.
 The statistical models used in `epinowcast` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
@@ -42,7 +42,7 @@ It is important to understand that CmdStan is a program that is **distinct** fro
 As describe in the `epinowcast` project [README](./index.html), you will need to install [`cmdstanr`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
-### Ensuring you have the proper toolchain {.toolchain}
+## Ensuring you have the proper toolchain {.toolchain}
 
 The Stan code that is written in the `epinowcast` package converted[^1] to optimised C++ code and then compiled to machine readable instructions.
 Because Stan needs a several programs to execute this compilation process such as the build tool [make](https://en.wikipedia.org/wiki/Make_(software)) and a C++ compiler, you will need to ensure that your system has the appropriate supporting software, known as a toolchain.
@@ -58,7 +58,7 @@ The Stan team has assembled very detailed instructions for each platform:
 After completing your platform specific toolshain installation, you can move on to R.
 
 
-### Now install CmdStanR and CmdStan
+## Now install CmdStanR and CmdStan
 
 Now you can open a session of R using your favourite IDE like Vscode or RStudio.
 You'll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
@@ -92,9 +92,9 @@ Assuming you have the the toolchain installed, you can install CmdStanR.
 cmdstanr::install_cmdstan(cores = 2)
 ```
 
-## Epinowcast modeling
+# Epinowcast modeling
 
-### Installation
+## Installation
 
 As described in the project README, you can install the `epinowcast` package within R.
 
@@ -106,7 +106,7 @@ install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
 remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 ```
 
-### Running your first model
+## Running your first model
 
 The first time you fit a model with `epinowcast` will be **slow**!
 This is normal as all of the Stan code is being compiled for the first time.
@@ -117,18 +117,27 @@ Because of this package architecture
 - If you upgrade your version of CmdStan, you will likely need to recompile your models. This may occur automatically, or necessitate re-installing `epinowcast`.
 
 
-## Other resources
+## Setting `enw_fit_opts`
+
+The `enw_fit_opts` allows you to set several critical components for the Stan computational engine.
+These parameters are passed to Stan during the model fitting process and have an influence on computation time and quality of the model fit.
+Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
+
+
+##
+
+# Other resources
 
 The Stan community is a pretty warm and opening place and receptive to helping others.
 If you find yourself having issues with `epinowcast`, reach out!
 
-### Technical issues
+## Technical issues
 
 - [epinowcast forum](https://community.epinowcast.org/)
 - [epinowcast issues](https://github.com/epinowcast/epinowcast/issues)
 - [Stan forums](https://discourse.mc-stan.org/)
 
-### Learning more about Stan and Bayesian inference
+## Learning more about Stan and Bayesian inference
 
 - [](https://betanalpha.github.io/writing/)
 - Aki Vehtari [Bayesian Data Analysis](https://avehtari.github.io/BDA_R_demos/demos_rstan/) and [case studies](https://users.aalto.fi/~ave/casestudies.html)
