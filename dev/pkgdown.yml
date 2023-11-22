@@ -3,11 +3,11 @@ pkgdown: 2.0.7.9000
 pkgdown_sha: 5a0a31f89d7c839c04a929844e4b7216196189ca
 articles:
   distributions: distributions.html
+  epinowcast: epinowcast.html
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
-  getting-started-nowcasting: getting-started-nowcasting.html
   model: model.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
-last_built: 2023-11-22T11:44Z
+last_built: 2023-11-22T16:47Z
 urls:
   reference: package.epinowcast.org/reference
   article: package.epinowcast.org/articles
