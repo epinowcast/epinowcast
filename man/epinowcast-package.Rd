@@ -39,6 +39,8 @@ Other contributors:
   \item Luis Rivas \email{luisnicolasrivas@gmail.com} [contributor]
   \item Sang Woo Park \email{swp2@princeton.edu} (\href{https://orcid.org/0000-0003-2202-3361}{ORCID}) [contributor]
   \item Nathan McIntosh \email{natemcintosh@gmail.com} [contributor]
+  \item James Mba Azam \email{james.azam@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-5782-7330}{ORCID}) [contributor]
+  \item Kath Sherratt \email{katharine.sherratt@lshtm.ac.uk} (\href{https://orcid.org/0000-0003-2049-3423}{ORCID}) [contributor]
 }
 
 }

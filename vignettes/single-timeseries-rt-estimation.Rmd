@@ -114,7 +114,7 @@ In this case study we only consider national level data without stratification b
 
 
 ```r
-germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 germany_hosp <- germany_hosp[, .(reference_date, report_date, confirm)]
 germany_hosp
 #>        reference_date report_date confirm

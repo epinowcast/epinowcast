@@ -1050,7 +1050,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #'
 #' # Filter example hospitalisation data to be national and over all ages
 #' nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-#' nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
+#' nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 #'
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)

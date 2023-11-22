@@ -4,11 +4,11 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@medewitt, @adrian-lison, @Bisaloo and @seabbs contributed code to this release.
+@medewitt, @sbfnk, @adrian-lison, @kathsherratt, @natemcintosh, @Bisaloo and @seabbs contributed code to this release.
 
-@adrian-lison, @bisaloo, @natemcintosh, and @seabbs reviewed pull requests for this release.
+@adrian-lison, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @kathsherratt, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
@@ -18,6 +18,7 @@ This release is in development and not yet ready for production use.
 - Fixed a bug where a non-`data.table` passed to `enw_quantile_to_long()` could throw an error. See #324 by @natemcintosh and reviewed by @pearsonca.
 - Fixed a bug where `enw_aggregate_cumulative()` initialised its time step from the first reference date + 1 day rather than the first reference date. See #336 by @seabbs and self-reviewed.
 - Fixed a bug in `enw_filter_reference_dates` when using `remove_days` on data with missing reference dates. See #351 by @adrian-lison and reviewed by @seabbs.
+- Resolved code quality issues related to the use of `%in%` with a scale on the right hand side and other similar issues. See #382 by @seabbs and reviewed by @pearsonca and @Bisaloo.
 
 ## Package
 
@@ -51,9 +52,12 @@ This release is in development and not yet ready for production use.
 - Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
+- Split README to focus on package-level issues and moved quick start into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
 - Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
+- Removed the reference in the pull request template to updating the development version as this has been found to cause issues when multiple pull requests are open at once. See #391 by @seabbs and reviewed by @Bisaloo.
 
 ## Depreciations
+
 - `enw_delay_filter()`: Deprecated with a warning in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
 # epinowcast 0.2.2

@@ -7,7 +7,7 @@ library(ggplot2)
 options(mc.cores = 4)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-09-01"

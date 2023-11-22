@@ -62,7 +62,7 @@ test_that("enw_aggregate_cumulative() handles missing report dates", {
 })
 
 test_that("enw_aggregate_cumulative() when there are no complete report dates", {
-  obs_no_complete <- obs[location %in% "A"]
+  obs_no_complete <- obs[location == "A"]
   obs_no_complete <- obs_no_complete[1:20, ]
   expect_error(
     enw_aggregate_cumulative(obs_no_complete, timestep = "week"),
