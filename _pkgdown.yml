@@ -10,7 +10,7 @@ template:
     image:
       src: man/figures/README-nowcast-1.png
       alt: An R package for flexible hierarchical nowcasting
-    twitter: 
+    twitter:
       creator: "@seabbs"
       card: summary_large_image
 
@@ -20,17 +20,13 @@ development:
 authors:
   Sam Abbott:
     href: "https://www.samabbott.co.uk/"
-    
+
 navbar:
   structure:
     left: [reference, articles, news]
     right: [github]
 
 articles:
-- title: Getting Started
-  navbar: Getting Started
-  contents:
-  - getting-started-nowcasting
 - title: Model details
   navbar: Model details
   contents:
@@ -41,7 +37,7 @@ articles:
   contents:
   - germany-age-stratified-nowcasting
   - single-timeseries-rt-estimation
-  
+
 reference:
   - title: Nowcast
     desc: Functions for nowcasting.
