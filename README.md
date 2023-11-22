@@ -22,11 +22,18 @@ contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)]
 
 ## Summary
 
-Tools to enable flexible and efficient hierarchical nowcasting of
-right-truncated epidemiological time-series using a semi-mechanistic
-Bayesian model with support for a range of reporting and generative
-processes. Nowcasting, in this context, is gaining situational awareness
-using currently available observations and the reporting patterns of
+*Nowcasting* is predicting the *current* situation, addressing the
+practical reality that the data we want *now* will not be available
+until *later*. The `{epinowcast}` package provides you tools for
+nowcasting epidemiological data in a convenient, flexible, and efficient
+collection of `R` functions. Those functions implement a model of
+infectious disease spread and reporting using a semi-mechanistic
+Bayesian approach with a range of reporting and generative processes.
+
+… nowcasting particularly valuable because …
+
+Nowcasting, in this context, is gaining situational awareness using
+currently available observations and the reporting patterns of
 historical observations. This can be useful when tracking the spread of
 infectious disease in real-time: without nowcasting, changes in trends
 can be obfuscated by partial reporting or their detection may be delayed
@@ -69,6 +76,7 @@ remotes::install_github(
 *Note: A similar method can be used to install a particular commit of
 the package which may be useful for some users who are unable to use a
 fixed release but concerned about the stability of their dependencies.*
+
 </details>
 <details>
 <summary>
@@ -92,16 +100,19 @@ cmdstanr::install_cmdstan()
 *Note: This install process can be sped up using the `cores` argument
 and past versions can be installed using the `version` argument (which
 may be useful if install historical package releases).*
+
 </details>
 <details>
 <summary>
 Alternative: Docker
 </summary>
+
 We also provide a [Docker](https://www.docker.com/get-started/) image
 with [`epinowcast` and all dependencies
 installed](https://github.com/orgs/epinowcast/packages/container/package/epinowcast).
 This image can be used to run `epinowcast` without installing
 dependencies locally.
+
 </details>
 
 ## Resources
