@@ -524,7 +524,7 @@ enw_missing <- function(formula = ~1, data) {
         "A missingness model has been specified but data on the proportion of ",
         "observations without reference dates is not available."
       )
-    ) 
+    )
   }
 
   if (as_string_formula(formula) == "~0") {

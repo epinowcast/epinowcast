@@ -583,7 +583,7 @@ enw_reporting_triangle <- function(obs) {
   if (any(obs$new_confirm < 0)) {
     rlang::warn(
       paste0(
-        "Negative new confirmed cases found. ", 
+        "Negative new confirmed cases found. ",
         "This is not yet supported in epinowcast."
       )
     )

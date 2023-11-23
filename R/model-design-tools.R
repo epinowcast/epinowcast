@@ -282,8 +282,8 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
       rlang::abort(
         paste0(
           "Requested variable ", feature,
-          " is not numeric. Cumulative membership effects are only defined for ",
-          "numeric variables."
+          " is not numeric. Cumulative membership effects are only ",
+          "defined for numeric variables."
         )
       )
     }

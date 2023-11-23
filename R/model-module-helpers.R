@@ -123,7 +123,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     if (length(dist) != t) {
       rlang::abort(
         paste0(
-          "`length(dist)` must equal `t` or be the same for all t ", 
+          "`length(dist)` must equal `t` or be the same for all t ",
           "(i.e. length 1)"
         )
       )

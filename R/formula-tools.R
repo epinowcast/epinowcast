@@ -308,8 +308,8 @@ construct_rw <- function(rw, data) {
   if (!is.numeric(data[[rw$time]])) {
     rlang::abort(
       paste0(
-        "The time variable ", rw$time, " is not numeric but must be to be used ",
-        "as a random walk term."
+        "The time variable ", rw$time, " is not numeric but must be ",
+        "to be used as a random walk term."
       )
     )
   }
@@ -441,8 +441,8 @@ construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
     rlang::abort(
       paste0(
-        "Argument `re` must be a random effect term as constructed by ", 
-        "`epinowcast:::re`")
+        "Argument `re` must be a random effect term as constructed by ",
+        "`epinowcast:::re`"
       )
     )
   }

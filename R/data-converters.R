@@ -182,8 +182,8 @@ enw_linelist_to_incidence <- function(linelist,
     rlang::inform(
       paste0(
         "Using the maximum observed delay of ", obs_delay,
-        " days as greater than the maximum specified to complete the incidence ",
-        "data."
+        " days as greater than the maximum specified to complete the ",
+        "incidence data."
       )
     )
     max_delay <- obs_delay
@@ -382,7 +382,7 @@ enw_aggregate_cumulative <- function(
   if (nrow(agg_obs) == 0) {
     rlang::abort(
       paste0(
-        "There are no complete report dates ", 
+        "There are no complete report dates ",
         "(i.e. report_date >= min_date + timestep - 1)"
       )
     )
