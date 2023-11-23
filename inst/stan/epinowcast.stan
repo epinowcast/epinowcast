@@ -23,7 +23,7 @@ data {
   int t; // total number of time points 
   int s; // total number of snapshots
   int g; // total number of groups
-  array[g] int groups; // array of group ids
+  array int[s] groups; // array of group ids
   array[s] int st; // time index of each snapshot (snapshot time)
   array[s] int sg; // group index of each snapshot (snapshot group)
   array[t, g] int ts; // snapshot index by time and group
