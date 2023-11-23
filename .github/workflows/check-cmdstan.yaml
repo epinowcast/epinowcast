@@ -68,6 +68,6 @@ jobs:
             model$check_syntax(pedantic = FALSE),
             # We can't use TRUE here as pendatic check return lots of false
             # positives related to our use of functions.
-            "Stan program is syntactically correct"
+            "^Stan program is syntactically correct$"
           )
         shell: Rscript {0}
