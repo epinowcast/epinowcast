@@ -6,8 +6,6 @@ concurrency:
 
 on:
   push:
-    paths:
-      - '**.stan'
   schedule:
     - cron: '5 4 * * 1'
   pull_request:
