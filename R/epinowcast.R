@@ -44,8 +44,8 @@
 #' be used but currently require the supplied `model` to be adapted.
 #'
 #' @return A object of the class "epinowcast" which inherits from
-#' [enw_preprocess_data()] and `data.table`, and combines the output from
-#' the sampler specified in `enw_fit_opts()`.
+#' [enw_preprocess_data()] and `data.table`, and combines the input data,
+#' priors, and output from the sampler specified in `enw_fit_opts()`.
 #' @inheritParams enw_obs
 #' @importFrom purrr map transpose flatten walk
 #' @family epinowcast
