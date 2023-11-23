@@ -302,13 +302,17 @@ construct_rw <- function(rw, data) {
 
   if (!is.numeric(data[[rw$time]])) {
     rlang::abort(
-      "The time variable ", rw$time, " is not numeric but must be to be used ",
-      "as a random walk term."
+      paste0(
+        "The time variable ", rw$time, " is not numeric but must be to be used ",
+        "as a random walk term."
+      )
     )
   }
 
   if (anyNA(data[[rw$time]])) {
-    rlang::abort("The time variable ", rw$time, " contains non-numeric values.")
+    rlang::abort(
+      paste0("The time variable ", rw$time, " contains non-numeric values.")
+    )
   }
 
   # add new cumulative features to use for the random walk
@@ -322,14 +326,18 @@ construct_rw <- function(rw, data) {
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
       rlang::abort(
-        "Requested grouping variable",
-        rw$by, " is not present in the supplied data"
+        paste0(
+          "Requested grouping variable",
+          rw$by, " is not present in the supplied data"
+        )
       )
     }
     if (length(unique(fdata[[rw$by]])) < 2) {
       rlang::inform(
-        "A grouped random walk using ", rw$by,
-        " is not possible as this variable has fewer than 2 unique values."
+        paste0(
+          "A grouped random walk using ", rw$by,
+          " is not possible as this variable has fewer than 2 unique values."
+        )
       )
       rw$by <- NULL
     } else {
@@ -442,13 +450,18 @@ construct_re <- function(re, data) {
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
         rlang::abort(
-          "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
+          paste0(
+            "Interactions between more than 2 variables are not currently ",
+            "supported on the right hand side of random effects"
+          )
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
         rlang::inform(
-          "A random effect using ", current_random[2],
-          " is not possible as this variable has fewer than 2 unique values."
+          paste0(
+            "A random effect using ", current_random[2],
+            " is not possible as this variable has fewer than 2 unique values."
+          )
         )
         random[i] <- current_random[1]
       } else {

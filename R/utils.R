@@ -247,8 +247,10 @@ get_internal_timestep <- function(timestep) {
       week = 7,
       month = "month",  # months are not a fixed number of days
       rlang::abort(
-        "Invalid timestep. Acceptable string inputs are 'day', 'week',",
-        " 'month'."
+        paste0(
+          "Invalid timestep. Acceptable string inputs are 'day', 'week',",
+          " 'month'."
+        )
       )
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
@@ -256,8 +258,10 @@ get_internal_timestep <- function(timestep) {
     return(timestep)
   } else {
     rlang::abort(
-      "Invalid timestep. If timestep is a numeric, it should be a whole",
-      " number representing the number of days."
+      paste0(
+        "Invalid timestep. If timestep is a numeric, it should be a whole ",
+        "number representing the number of days."
+      )
     )
   }
 }

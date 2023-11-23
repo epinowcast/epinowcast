@@ -172,16 +172,21 @@ enw_linelist_to_incidence <- function(linelist,
   if (missing(max_delay)) {
     max_delay <- obs_delay
     rlang::inform(
-      "Using the maximum observed delay of ", max_delay, " days ",
-      "to complete the incidence data."
+      paste0(
+        "Using the maximum observed delay of ", max_delay, " days ",
+        "to complete the incidence data."
+      )
     )
   }
   if (max_delay < obs_delay) {
     rlang::inform(
-      "Using the maximum observed delay of ", obs_delay,
-      " days as greater than the maximum specified to complete the incidence ",
-      "data.")
-       max_delay <- obs_delay
+      paste0(
+        "Using the maximum observed delay of ", obs_delay,
+        " days as greater than the maximum specified to complete the incidence ",
+        "data."
+      )
+    )
+    max_delay <- obs_delay
   }
   cum_counts <- enw_add_cumulative(counts, by = by, copy = FALSE)
 

@@ -547,8 +547,10 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empirical_max_delay < (max_delay - 1)) {
     rlang::warn(
-      "Empirical max delay (", empirical_max_delay + 1,
-      ") is less than the specified max delay (", max_delay, ")."
+      paste0(
+        "Empirical max delay (", empirical_max_delay + 1,
+        ") is less than the specified max delay (", max_delay, ")."
+      )
     )
   }
   return(obs[])
@@ -578,8 +580,10 @@ enw_reporting_triangle <- function(obs) {
   )
   if (any(obs$new_confirm < 0)) {
     rlang::warn(
-      "Negative new confirmed cases found. This is not yet supported in
-       epinowcast."
+      paste0(
+        "Negative new confirmed cases found. ", 
+        "This is not yet supported in epinowcast."
+      )
     )
   }
   reports <- data.table::dcast(
@@ -1070,9 +1074,11 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   )
   if (timestep == "month") {
     rlang::abort(
-      "Calendar months are not currently supported. Consider using an ",
-      "approximate number of days (i.e. 28), a different timestep (i.e. ",
-      "'week'), or commenting on issue #309."
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep (i.e. ",
+        "'week'), or commenting on issue #309."
+      )
     )
   }
   internal_timestep <- get_internal_timestep(timestep)

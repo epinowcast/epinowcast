@@ -280,9 +280,11 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (!is.numeric(metaobs[[feature]])) {
       rlang::abort(
-        "Requested variable ", feature,
-        " is not numeric. Cumulative membership effects are only defined for ",
-        "numeric variables."
+        paste0(
+          "Requested variable ", feature,
+          " is not numeric. Cumulative membership effects are only defined for ",
+          "numeric variables."
+        )
       )
     }
     metaobs[, (cfeature) := get(feature)]
