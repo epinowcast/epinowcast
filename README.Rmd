@@ -132,7 +132,7 @@ list.files(
 
 We welcome contributions and new contributors! We particularly appreciate help on [identifying and identified issues](https://github.com/epinowcast/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epinowcast/epinowcast/pulls) and see our [contributing guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md) for more information.
 
-If you need a different underlying model for you work: `epinowcast` lets you pass your own models! If you do try new model parameterisations that expand the overall flexibility or improve the defaults, please let us know either here or on the [community forum](https://community.epinowcast.org/). We always like to hear about new use-cases, whether or not they are directed at the core `epinowcast` applications.
+If you need a different underlying model for your work: `epinowcast` lets you pass your own models! If you do try new model parameterisations that expand the overall flexibility or improve the defaults, please let us know either here or on the [community forum](https://community.epinowcast.org/). We always like to hear about new use-cases, whether or not they are directed at the core `epinowcast` applications.
 
 ### How to make a bug report or feature request
 
