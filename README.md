@@ -22,19 +22,17 @@ contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)]
 
 ## Summary
 
-*Nowcasting* is predicting the *current* situation, addressing the
-practical reality that the data we want *now* will not be available
-until *later*. The `{epinowcast}` package provides you tools for
-nowcasting epidemiological data in a convenient, flexible, and efficient
-collection of `R` functions. Those functions implement a model of
-infectious disease spread and reporting using a semi-mechanistic
-Bayesian approach with a range of reporting and generative processes.
-Using this approach, you will typically see changes in trends earlier
-and more reliably than if using methods like truncation.
-
-*Note: while we designed `epinowcast` with epidemiological applications
-in mind, and that is reflected in its core model, you could use it to
-apply your own model to other right-truncated time-series count data.*
+Tools to enable flexible and efficient hierarchical nowcasting of
+right-truncated epidemiological time-series using a semi-mechanistic
+Bayesian model with support for a range of reporting and generative
+processes. Nowcasting, in this context, is gaining situational awareness
+using currently available observations and the reporting patterns of
+historical observations. This can be useful when tracking the spread of
+infectious disease in real-time: without nowcasting, changes in trends
+can be obfuscated by partial reporting or their detection may be delayed
+due to the use of simpler methods like truncation. While the package has
+been designed with epidemiological applications in mind, it could be
+applied to any set of right-truncated time-series count data.
 
 ## Installation
 
@@ -234,21 +232,20 @@ contributing to this project, you agree to abide by its terms.
 If making use of our methodology or the methodology on which ours is
 based, please cite the relevant papers from our [model
 outline](https://package.epinowcast.org/articles/model.html). If you use
-`epinowcast` in your work, please consider citing it with:
+`epinowcast` in your work, please consider citing it with
+`citation("epinowcast")`:
 
-``` r
-citation("epinowcast")
-```
+    To cite package 'epinowcast' in publications use:
 
-To cite package ‘epinowcast’ in publications use:
+      Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F (NULL).
+      _epinowcast: Flexible Hierarchical Nowcasting_.
+      doi:10.5281/zenodo.5637165 <https://doi.org/10.5281/zenodo.5637165>.
 
-Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F (NULL).
-*epinowcast: Flexible Hierarchical Nowcasting*.
-<doi:10.5281/zenodo.5637165> <https://doi.org/10.5281/zenodo.5637165>.
+    A BibTeX entry for LaTeX users is
 
-A BibTeX entry for LaTeX users is
-
-@Manual{, title = {epinowcast: Flexible Hierarchical Nowcasting}, author
-= {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and
-Hugo Gruson and Felix Guenther}, year = {NULL}, doi =
-{10.5281/zenodo.5637165}, }
+      @Manual{,
+        title = {epinowcast: Flexible Hierarchical Nowcasting},
+        author = {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther},
+        year = {NULL},
+        doi = {10.5281/zenodo.5637165},
+      }
