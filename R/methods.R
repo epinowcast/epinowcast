@@ -19,6 +19,7 @@
 #' @method summary epinowcast
 #' @return A summary data.frame
 #' @export
+#' @importFrom rlang abort
 #' @examples
 #' nowcast <- enw_example("nowcast")
 #'
@@ -80,6 +81,7 @@ summary.epinowcast <- function(object, type = c(
 #' @inheritParams enw_plot_nowcast_quantiles
 #' @return `ggplot2` object
 #' @export
+#' @importFrom rlang abort
 #' @examples
 #' nowcast <- enw_example("nowcast")
 #' latest_obs <- enw_example("obs")

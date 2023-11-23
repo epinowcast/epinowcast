@@ -88,6 +88,7 @@ enw_metadata <- function(obs, target_date = c(
 #'
 #' @family preprocess
 #' @importFrom purrr compose
+#' @importFrom rlang abort warn
 #' @export
 #' @examples
 #'
@@ -417,6 +418,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @return A `data.table` filtered by report date
 #' @family preprocess
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -523,6 +525,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
+#' @importFrom rlang warn
 #' @export
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
@@ -564,6 +567,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' @family preprocess
 #' @export
 #' @importFrom data.table dcast setorderv
+#' @importFrom rlang warn
 #' @examples
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
@@ -1045,6 +1049,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @inheritParams enw_add_incidence
 #' @export
 #' @importFrom data.table data.table
+#' @importFrom rlang abort
 #' @examples
 #' library(data.table)
 #'

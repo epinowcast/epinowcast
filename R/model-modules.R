@@ -28,6 +28,7 @@
 #'
 #' @inheritParams enw_obs
 #' @family modelmodules
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' # Parametric model with a lognormal distribution
@@ -222,6 +223,7 @@ enw_reference <- function(
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
+#' @importFrom rlang abort
 #' @family modelmodules
 #' @export
 #' @examples
@@ -326,6 +328,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @family modelmodules
 #' @importFrom rstan extract_sparse_parts
 #' @importFrom purrr map2_dbl
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
@@ -503,6 +506,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @family modelmodules
 #' @importFrom data.table setorderv dcast
 #' @importFrom purrr map
+#' @importFrom rlang abort warn
 #' @export
 #' @examples
 #' # Missing model with a fixed intercept only

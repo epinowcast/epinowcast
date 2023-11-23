@@ -22,6 +22,7 @@
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
 #' @family modeltools
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
@@ -322,6 +323,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @return A `cmdstanr` model.
 #'
 #' @family modeltools
+#' @importFrom rlang inform
 #' @export
 #' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model

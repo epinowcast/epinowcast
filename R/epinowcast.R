@@ -48,6 +48,7 @@
 #' priors, and output from the sampler specified in `enw_fit_opts()`.
 #' @inheritParams enw_obs
 #' @importFrom purrr map transpose flatten walk
+#' @importFrom rlang warn
 #' @family epinowcast
 #' @export
 #' @examplesIf interactive()

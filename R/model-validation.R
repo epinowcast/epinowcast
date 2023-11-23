@@ -29,6 +29,7 @@
 #' @return A `data.table` as returned by [scoringutils::score()].
 #' @family modelvalidation
 #' @importFrom data.table setnames
+#' @importFrom rlang abort
 #' @export
 #' @examplesIf interactive()
 #' library(data.table)

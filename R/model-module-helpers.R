@@ -108,6 +108,7 @@ latest_obs_as_matrix <- function(latest) {
 #' @family modelmodulehelpers
 #' @importFrom purrr map_dbl
 #' @importFrom utils head
+#' @importFrom rlang abort
 #' @examples
 #' # Simple convolution matrix with a static distribution
 #' convolution_matrix(c(1, 2, 3), 10)

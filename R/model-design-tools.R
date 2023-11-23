@@ -265,6 +265,7 @@ enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
 #' @family modeldesign
 #' @export
 #' @importFrom purrr map
+#' @importFrom rlang abort
 #' @examples
 #' metaobs <- data.frame(week = 1:2)
 #' enw_add_cumulative_membership(metaobs, "week")

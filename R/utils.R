@@ -184,6 +184,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
+#' @importFrom rlang abort
 #' @family utils
 #' @examples
 #' # works
@@ -235,6 +236,7 @@ coerce_date <- function(dates) {
 #' @return A numeric value representing the number of days for "day" and
 #' "week", "month" for "month",  or the input value if it is a numeric whole
 #' number.
+#' @importFrom rlang abort
 #' @family utils
 get_internal_timestep <- function(timestep) {
   # check if the input is a character

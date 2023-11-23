@@ -191,6 +191,7 @@ remove_rw_terms <- function(formula) {
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #' @inheritParams enw_formula
 #' @importFrom lme4 nobars findbars
+#' @importFrom rlang abort
 #' @family formulatools
 #' @examples
 #' epinowcast:::parse_formula(~ 1 + age_group + location)
@@ -237,6 +238,7 @@ parse_formula <- function(formula) {
 #' @return A list defining the time frame, group, and type with class
 #' "enw_rw_term" that can be interpreted by [construct_rw()].
 #' @export
+#' @importFrom rlang abort
 #' @family formulatools
 #' @examples
 #' rw(time)
@@ -285,6 +287,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' formula.
 #'  - `effects`: A `data.frame` describing the random effect structure of the
 #' new effects.
+#' @importFrom rlang abort inform
 #' @family formulatools
 #' @examples
 #' data <- enw_example("preproc")$metareference[[1]]
@@ -404,6 +407,7 @@ re <- function(formula) {
 #'
 #' @family formulatools
 #' @importFrom purrr map
+#' @importFrom rlang abort inform
 #' @examples
 #' # Simple examples
 #' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
@@ -592,6 +596,7 @@ construct_re <- function(re, data) {
 #' @export
 #' @importFrom purrr map transpose
 #' @importFrom data.table rbindlist setnafill
+#' @importFrom rlang abort
 #' @examples
 #' # Use meta data for references dates from the Germany COVID-19
 #' # hospitalisation data.
