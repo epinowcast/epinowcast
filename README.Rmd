@@ -144,9 +144,4 @@ Please note that the `epinowcast` project is released with a [Contributor Code o
 
 ## Citation
 
-If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our [model outline](https://package.epinowcast.org/articles/model.html). If you use `epinowcast` in your work, please consider citing it with `citation("epinowcast")`:
-
-```{r, echo=FALSE}
-citation("epinowcast")
-```
-
+If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our [model outline](https://package.epinowcast.org/articles/model.html). If you use `epinowcast` in your work, please consider citing it with `citation("epinowcast")`.
