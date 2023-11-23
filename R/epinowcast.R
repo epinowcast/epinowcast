@@ -190,7 +190,7 @@ epinowcast <- function(data,
     )
   )
 
-  out <- cbind(data, fit)
+  out <- cbind(data, fit, priors = list(priors))
   class(out) <- c("epinowcast", "enw_preprocess_data", class(out))
   return(out[])
 }
