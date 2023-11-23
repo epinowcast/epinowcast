@@ -7,13 +7,12 @@
 #' c(0.5, 0.95, 0.2, 0.8).
 #'
 #' @return NULL
-#'
+#' @importFrom rlang abort
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
-  stopifnot(
-    "Please provide probabilities as numbers between 0 and 1." =
-    all(data.table::between(req_probs, 0, 1, incbounds = FALSE))
-  )
+  if (!all(between(req_probs, 0, 1, incbounds = FALSE))) {
+    rlang::abort("Please provide probabilities as numbers between 0 and 1.")
+  }
   return(coerce_dt(
     posterior, required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
     msg_required = "The following quantiles must be present (set with `probs`):"
@@ -55,10 +54,14 @@ check_group_date_unique <- function(obs) {
   obs <- coerce_dt(obs, required_cols = group_cols, copy = FALSE)
   cells <- obs[, .(count = .N), by = group_cols]
   if (any(cells[, count > 1])) {
-    rlang::abort("The input data seems to be stratified by more variables ",
-         "than specified via the `by` argument. Please provide additional ",
-         "grouping variables to `by`, ",
-         "or aggregate the observations beforehand.")
+    rlang::abort(
+      paste0(
+        "The input data seems to be stratified by more variables ",
+        "than specified via the `by` argument. Please provide additional ",
+        "grouping variables to `by`, ",
+        "or aggregate the observations beforehand."
+      )
+    )
   }
   return(invisible(NULL))
 }
@@ -74,8 +77,10 @@ check_group_date_unique <- function(obs) {
 check_module <- function(module) {
   if (!"data" %in% names(module)) {
     rlang::abort(
-      "Must contain a list component specifying the data requirements for
-       further modelling as a list"
+      paste0(
+        "Must contain a list component specifying the data requirements ",
+        "for further modelling as a list"
+      )
     )
   }
   if (!is.list(module[["data"]])) {
@@ -100,13 +105,15 @@ check_modules_compatible <- function(modules) {
       !modules[[6]]$data$likelihood_aggregation
   ) {
     rlang::warn(
-      "Incompatible model specification: A missingness model has ",
-      "been specified but likelihood aggregation is specified as ",
-      "by snapshot. Switching to likelihood aggregation by group.",
-      " This has no effect on the nowcast but limits the ",
-      "number of threads per chain to the number of groups. To ",
-      "silence this warning, set the `likelihood_aggregation` ",
-      "argument in `enw_fit_opts` to 'groups'.",
+      paste0(
+        "Incompatible model specification: A missingness model has ",
+        "been specified but likelihood aggregation is specified as ",
+        "by snapshot. Switching to likelihood aggregation by group.",
+        " This has no effect on the nowcast but limits the ",
+        "number of threads per chain to the number of groups. To ",
+        "silence this warning, set the `likelihood_aggregation` ",
+        "argument in `enw_fit_opts` to 'groups'."
+      ), 
       immediate. = TRUE
     )
   }
@@ -184,13 +191,15 @@ coerce_dt <- function(
     # check that all required columns are present
     if (!all(required_cols %in% colnames(dt))) {
       rlang::abort(
-        msg_required,
-        toString(required_cols[!(required_cols %in% colnames(dt))]),
-        " but are not present among ",
-        toString(colnames(dt)),
-        "\n(all `required_cols`: ",
-        toString(required_cols),
-        ")"
+        paste0(
+          msg_required,
+          toString(required_cols[!(required_cols %in% colnames(dt))]),
+          " but are not present among ",
+          toString(colnames(dt)),
+          "\n(all `required_cols`: ",
+          toString(required_cols),
+          ")"
+        )
       )
     }
   }
@@ -202,13 +211,15 @@ coerce_dt <- function(
     # check that no forbidden columns are present
     if (any(forbidden_cols %in% colnames(dt))) {
       rlang::abort(
-        msg_forbidden,
-        toString(forbidden_cols[forbidden_cols %in% colnames(dt)]),
-        " but are present among ",
-        toString(colnames(dt)),
-        "\n(all `forbidden_cols`: ",
-        toString(forbidden_cols),
-        ")"
+        paste0(
+          msg_forbidden,
+          toString(forbidden_cols[forbidden_cols %in% colnames(dt)]),
+          " but are present among ",
+          toString(colnames(dt)),
+          "\n(all `forbidden_cols`: ",
+          toString(forbidden_cols),
+          ")"
+        )
       )
     }
   }
@@ -260,7 +271,10 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
 
   if (any(diff_dates < dates[-length(dates)])) {
     rlang::abort(
-      date_var, " has a shorter timestep than the specified timestep of a month"
+      paste0(
+        date_var, 
+        " has a shorter timestep than the specified timestep of a month"
+      )
     )
   }
 
@@ -269,7 +283,10 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   } else {
     if (exact) {
       rlang::abort(
-        date_var, " does not have the specified timestep of month"
+        paste0(
+          date_var, 
+          " does not have the specified timestep of month"
+        )
       )
     } else {
       rlang::abort(
@@ -298,14 +315,19 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 
   if (any(diffs == 0)) {
     rlang::abort(
-      date_var, " has a duplicate date. Please remove duplicate dates."
+      paste0(
+        date_var, 
+        " has a duplicate date. Please remove duplicate dates."
+      )
     )
   }
 
   if (any(diffs < timestep)) {
     rlang::abort(
-      date_var, " has a shorter timestep than the specified timestep of ",
-      timestep, " day(s)"
+      paste0(
+        date_var, " has a shorter timestep than the specified timestep of ",
+        timestep, " day(s)"
+      )
     )
   }
 
@@ -319,8 +341,10 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     return(invisible(NULL))
   } else {
     rlang::abort(
-      date_var, " does not have the specified timestep of ", timestep,
-      " day(s)"
+      paste0(
+        date_var, " does not have the specified timestep of ", timestep,
+        " day(s)"
+      )
     )
   }
 }
@@ -352,7 +376,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
                            check_nrow = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
-    rlang::abort(date_var, " must be of class Date")
+    rlang::abort(paste0(date_var, " must be of class Date"))
   }
 
   dates <- obs[[date_var]]
@@ -426,8 +450,10 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
     rlang::abort(
-      "There must be at least two observations by group and date",
-      " combination to establish a timestep"
+      paste0(
+        "There must be at least two observations by group and date ",
+        "combination to establish a timestep"
+      )
     )
   }
   obs[,
@@ -459,15 +485,14 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
 #' @return This function is used for its side effect of checking the observation
 #' indicator in `new_confirm`. If the check passes, the function returns
 #' invisibly. Otherwise, it stops and returns an error message.
+#' @importFrom rlang abort
 #' @family check
 check_observation_indicator <- function(
   new_confirm, observation_indicator = NULL
 ) {
-  if (!is.null(observation_indicator)) {
-    stopifnot(
-      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
-      )
-    )
+  if (!is.null(observation_indicator) && 
+      !is.logical(new_confirm[[observation_indicator]])) {
+    rlang::abort("observation_indicator must be a logical")
   }
   return(invisible(NULL))
 }

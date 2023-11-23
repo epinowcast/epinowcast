@@ -370,6 +370,7 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #'
 #' @return A data.table  filtered by report date
 #' @family preprocess
+#' @importFrom rlang abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -378,10 +379,11 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' # Filter by days
 #' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 enw_filter_report_dates <- function(obs, latest_date, remove_days) {
-  stopifnot(
-    "exactly one of `remove_days` and `latest_date` must be specified." =
-      xor(missing(remove_days), missing(latest_date))
-  )
+  if (!xor(missing(remove_days), missing(latest_date))) {
+    rlang::abort(
+      "exactly one of `remove_days` and `latest_date` must be specified."
+    )
+  }
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (missing(latest_date)) {
     latest_date <- max(filt_obs$report_date) - remove_days
@@ -1067,11 +1069,12 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  stopifnot(
-    "`max_delay` must be an integer and not NA" = is.numeric(max_delay) &&
-       round(max_delay) == max_delay,
-    "`max_delay` must be greater than or equal to one" = max_delay >= 1
-  )
+  if (!is.numeric(max_delay) || round(max_delay) != max_delay) {
+    rlang::abort("`max_delay` must be an integer and not NA")
+  }
+  if (max_delay < 1) {
+    rlang::abort("`max_delay` must be greater than or equal to one")
+  }
   if (timestep == "month") {
     rlang::abort(
       paste0(

@@ -351,6 +351,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @return A data.table with aggregated observations.
 #'
 #' @importFrom data.table setorder
+#' @importFrom rlang abort
 #' @export
 #' @family dataconverters
 #' @examples
@@ -360,7 +361,9 @@ enw_aggregate_cumulative <- function(
   obs, timestep = "day", by = NULL,
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
-  stopifnot("The data already has a timestep of a day" = timestep != "day")
+  if (timestep == "day") {
+    abort("The data already has a timestep of a day")
+  }
   obs <- coerce_dt(
     obs,
     required_cols = c("confirm", by), forbidden_cols = ".group",
@@ -376,9 +379,14 @@ enw_aggregate_cumulative <- function(
   init_ref_date <- min_reference_date + internal_timestep - 1
   agg_obs <- obs[report_date >= init_ref_date]
 
-  stopifnot(
-    "There are no complete report dates (i.e. report_date >= min_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
-  )
+  if (nrow(agg_obs) == 0) {
+    rlang::abort(
+      paste0(
+        "There are no complete report dates ", 
+        "(i.e. report_date >= min_date + timestep - 1)"
+      )
+    )
+  }
 
   # Set the day of the timestep based on timestep
   agg_obs <- date_to_numeric_modulus(
