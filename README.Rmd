@@ -6,7 +6,7 @@ output: github_document
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
+  comment = "",
   fig.path = file.path("man", "figures", "README-"),
   out.width = "100%",
   dpi = 330,
@@ -30,9 +30,9 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 
 ## Summary
 
-_Nowcasting_ is predicting the *current* situation, addressing the practical reality that the data we want *now* will not be available until *later*. The `{epinowcast}` package provides you tools for nowcasting epidemiological data in a convenient, flexible, and efficient collection of `R` functions. Those functions implement a model of infectious disease spread and reporting using a semi-mechanistic Bayesian approach with a range of reporting and generative processes. Using this approach, you will typically see changes in trends earlier and more reliably than if using methods like truncation.
-
-*Note: while we designed `epinowcast` with epidemiological applications in mind, and that is reflected in its core model, you could use it to apply your own model to other right-truncated time-series count data.*
+```{r, results = "asis", echo=FALSE}
+cat(gsub("\n[ ]+"," ",packageDescription("epinowcast")$Description))
+```
 
 ## Installation
   
@@ -144,9 +144,9 @@ Please note that the `epinowcast` project is released with a [Contributor Code o
 
 ## Citation
 
-If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our [model outline](https://package.epinowcast.org/articles/model.html). If you use `epinowcast` in your work, please consider citing it with:
+If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our [model outline](https://package.epinowcast.org/articles/model.html). If you use `epinowcast` in your work, please consider citing it with `citation("epinowcast")`:
 
-```{r, results = "asis"}
+```{r, echo=FALSE}
 citation("epinowcast")
 ```
 
