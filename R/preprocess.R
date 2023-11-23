@@ -123,7 +123,7 @@ enw_add_metaobs_features <- function(metaobs,
   # localize and check metaobs input
   metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
-    stop(sprintf("metaobs column '%s' is not a Date.", datecol))
+    rlang::abort(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
 
   # this may also error, so coercing first
@@ -132,7 +132,7 @@ enw_add_metaobs_features <- function(metaobs,
   # warn about columns that may be overwritten
   tarcols <- c("day_of_week", "day", "week", "month")
   if (any(tarcols %in% colnames(metaobs))) {
-    warning(sprintf(
+    rlang::warn(sprintf(
       "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
       intersect(tarcols, colnames(metaobs))
     ))
@@ -436,7 +436,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
-      stop("`remove_days` and `latest_date` can't both be specified.")
+      rlang::abort("`remove_days` and `latest_date` can't both be specified.")
     }
     latest_date <- max(filt_obs$reference_date, na.rm = TRUE) - remove_days
   }
@@ -447,7 +447,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
-      stop(
+      rlang::abort(
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
@@ -543,7 +543,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   }
   empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empirical_max_delay < (max_delay - 1)) {
-    warning(
+    rlang::warn(
       "Empirical max delay (", empirical_max_delay + 1,
       ") is less than the specified max delay (", max_delay, ")."
     )
@@ -573,7 +573,7 @@ enw_reporting_triangle <- function(obs) {
     group = TRUE
   )
   if (any(obs$new_confirm < 0)) {
-    warning(
+    rlang::warn(
       "Negative new confirmed cases found. This is not yet supported in
        epinowcast."
     )
@@ -1064,7 +1064,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1
   )
   if (timestep == "month") {
-    stop(
+    rlang::abort(
       "Calendar months are not currently supported. Consider using an ",
       "approximate number of days (i.e. 28), a different timestep (i.e. ",
       "'week'), or commenting on issue #309."

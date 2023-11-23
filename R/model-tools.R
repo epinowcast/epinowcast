@@ -42,7 +42,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      stop(
+      rlang::abort(
         "formula must be an object of class enw_formula as produced using
         enw_formula"
       )
@@ -336,8 +336,8 @@ enw_model <- function(model = system.file(
                       target_dir = tempdir(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", toString(include)))
+    rlang::inform(sprintf("Using model %s.", model))
+    rlang::inform(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {

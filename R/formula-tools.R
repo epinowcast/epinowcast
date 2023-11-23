@@ -202,7 +202,7 @@ remove_rw_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
-    stop("'formula' must be a formula object.")
+    rlang::abort("'formula' must be a formula object.")
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
@@ -247,7 +247,7 @@ parse_formula <- function(formula) {
 rw <- function(time, by, type = c("independent", "dependent")) {
   type <- match.arg(type)
   if (missing(time)) {
-    stop("time must be present")
+    rlang::abort("time must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -294,18 +294,18 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
-    stop("rw must be a random walk term as constructed by rw")
+    rlang::abort("rw must be a random walk term as constructed by rw")
   }
 
   if (!is.numeric(data[[rw$time]])) {
-    stop(
+    rlang::abort(
       "The time variable ", rw$time, " is not numeric but must be to be used ",
       "as a random walk term."
     )
   }
 
   if (anyNA(data[[rw$time]])) {
-    stop("The time variable ", rw$time, " contains non-numeric values.")
+    rlang::abort("The time variable ", rw$time, " contains non-numeric values.")
   }
 
   # add new cumulative features to use for the random walk
@@ -318,13 +318,13 @@ construct_rw <- function(rw, data) {
   fdata <- data[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
-      stop(
+      rlang::abort(
         "Requested grouping variable",
         rw$by, " is not present in the supplied data"
       )
     }
     if (length(unique(fdata[[rw$by]])) < 2) {
-      message(
+      rlang::inform(
         "A grouped random walk using ", rw$by,
         " is not possible as this variable has fewer than 2 unique values."
       )
@@ -422,7 +422,7 @@ re <- function(formula) {
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
-    stop("re must be a random effect term as constructed by re")
+    rlang::abort("re must be a random effect term as constructed by re")
   }
 
   # extract random and fixed effects
@@ -437,12 +437,12 @@ construct_re <- function(re, data) {
 
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
-        stop(
+        rlang::abort(
           "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-        message(
+        rlang::inform(
           "A random effect using ", current_random[2],
           " is not possible as this variable has fewer than 2 unique values."
         )
@@ -662,7 +662,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     random_terms <- unlist(random$terms)
     # Check that the user hasn't specified the same fixed and random effect
     if (any(random_terms %in% parsed_formula$fixed)) {
-      stop(
+      rlang::abort(
         "Random effect terms must not be included in the fixed effects formula",
         call. = FALSE
       )

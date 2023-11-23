@@ -48,7 +48,7 @@ summary.epinowcast <- function(object, type = c(
     ),
     fit = enw_posterior(fit[[1]], ...),
     posterior_prediction = enw_pp_summary(fit[[1]], new_confirm[[1]], ...),
-    stop(sprintf("unimplemented type: %s", type))
+    rlang::abort(sprintf("unimplemented type: %s", type))
   ))
 
   return(s)
@@ -99,7 +99,7 @@ plot.epinowcast <- function(x, latest_obs = NULL, type = c(
   plot <- switch(type,
     nowcast = enw_plot_nowcast_quantiles(n, latest_obs, log = log, ...),
     posterior_prediction = enw_plot_pp_quantiles(n, log = log, ...),
-    stop(sprintf("unimplemented type: %s", type))
+    rlang::abort(sprintf("unimplemented type: %s", type))
   )
 
   return(plot)

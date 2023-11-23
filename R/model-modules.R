@@ -58,7 +58,7 @@ enw_reference <- function(
   }
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
-    stop(
+    rlang::abort(
       "A non-parametric model must be specified if no parametric model",
       " is specified"
     )
@@ -228,7 +228,7 @@ enw_reference <- function(
 #' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   if (as_string_formula(structural) != "~0") {
-    stop("The structural reporting model has not yet been implemented")
+    rlang::abort("The structural reporting model has not yet been implemented")
   }
 
   if (as_string_formula(non_parametric) == "~0") {
@@ -333,13 +333,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) == "~0") {
-    stop("An expectation model formula for r must be specified")
+    rlang::abort("An expectation model formula for r must be specified")
   }
   if (as_string_formula(observation) == "~0") {
     observation <- ~1
   }
   if (sum(generation_time) != 1) {
-    stop("The generation time must sum to 1")
+    rlang::abort("The generation time must sum to 1")
   }
 
   # Set up growth rate features
@@ -513,7 +513,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
     as_string_formula(formula) != "~0") {
-    stop("A missingness model has been specified but data on the proportion of
+    rlang::abort("A missingness model has been specified but data on the proportion of
           observations without reference dates is not available.")
   }
 
@@ -699,7 +699,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Warn if maximum delay is longer than the observed time period
   if (proc_data$t < proc_data$dmax) {
-    warning(
+    rlang::warn(
       "The specified maximum delay is longer than the observed time period. ",
       "Please be aware that epinowcast will extrapolate the delay distribution",
       " beyond what is supported by the data."

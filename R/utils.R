@@ -211,7 +211,7 @@ coerce_date <- function(dates) {
 
   if (anyNA(res)) {
     bads <- is.na(res)
-    stop(sprintf(
+    rlang::abort(sprintf(
       "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
       toString(dates[bads]),
       toString(which(bads))
@@ -244,7 +244,7 @@ get_internal_timestep <- function(timestep) {
       day = 1,
       week = 7,
       month = "month",  # months are not a fixed number of days
-      stop(
+      rlang::abort(
         "Invalid timestep. Acceptable string inputs are 'day', 'week',",
         " 'month'."
       )
@@ -253,7 +253,7 @@ get_internal_timestep <- function(timestep) {
     # check if the input is a whole number
     return(timestep)
   } else {
-    stop(
+    rlang::abort(
       "Invalid timestep. If timestep is a numeric, it should be a whole",
       " number representing the number of days."
     )

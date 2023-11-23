@@ -133,6 +133,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' @family dataconverters
 #' @export
 #' @importFrom data.table as.data.table setkeyv
+#' @importFrom rlang inform
 #' @examples
 #' linelist <- data.frame(
 #'   onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
@@ -170,13 +171,13 @@ enw_linelist_to_incidence <- function(linelist,
   obs_delay <- max(counts$report_date) - min(counts$reference_date) + 1
   if (missing(max_delay)) {
     max_delay <- obs_delay
-    message(
+    rlang::inform(
       "Using the maximum observed delay of ", max_delay, " days ",
       "to complete the incidence data."
     )
   }
   if (max_delay < obs_delay) {
-    message(
+    rlang::inform(
       "Using the maximum observed delay of ", obs_delay,
       " days as greater than the maximum specified to complete the incidence ",
       "data.")
