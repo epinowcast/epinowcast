@@ -105,52 +105,66 @@
 </h2>
 <details><summary>
 Installing the package
-</summary><p>Install the latest released version of the package with:</p>
+</summary><p>You can install the latest released version using the normal <code>R</code> function, though you need to point to <code>r-universe</code> instead of CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"epinowcast"</span>, repos <span class="op">=</span> <span class="st">"https://epinowcast.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, you can use the <a href="https://remotes.r-lib.org/" class="external-link"><code>remotes</code> package</a> to install the development version (warning: this version may contain breaking changes and/or bugs) from GitHub using:</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"epinowcast"</span>, repos <span class="op">=</span> <span class="st">"https://epinowcast.r-universe.dev"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, you can use the <a href="https://remotes.r-lib.org/" class="external-link"><code>remotes</code> package</a> to install the development version from Github (warning! this version may contain breaking changes and/or bugs):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Similarly, you can install historical releases by adding the release tag (e.g. this installs <a href="https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0" class="external-link"><code>0.2.0</code></a>):</p>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  <span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Similarly, you can install historical versions by specifying the release tag (e.g. this installs <a href="https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0" class="external-link"><code>0.2.0</code></a>):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
 <span>  <span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, ref <span class="op">=</span> <span class="st">"v0.2.0"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<em>Note: A similar method can be used to install a particular commit of the package which may be useful for some users who are unable to use a fixed release but concerned about the stability of their dependencies.</em>
+<p><em>Note: You can also use that last approach to install a specific commit if needed, e.g. if you want to try out a specific unreleased feature, but not the absolute latest developmental version.</em></p>
 </details><details><summary>
 Installing CmdStan
-</summary><p>If you wish to do model fitting and nowcasting, you will need to install <a href="https://mc-stan.org/users/interfaces/cmdstan" class="external-link">CmdStan</a>. We recommend using <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code></a> and the <code><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">cmdstanr::install_cmdstan()</a></code> to do so, which needs a suitable C++ toolchain. Instructions are provided in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with <code>cmdstanr</code></em></a> vignette. See the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code> documentation</a> for further details and support.</p>
+</summary><p>If you wish to do model fitting and nowcasting, you will need to install <a href="https://mc-stan.org/users/interfaces/cmdstan" class="external-link">CmdStan</a>, which also entails having a suitable C++ toolchain setup. We recommend using the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code> package</a>. The Stan team provides instructions in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with <code>cmdstanr</code></em></a> vignette, with other details and support at the <a href="https://mc-stan.org/cmdstanr/" class="external-link">package site</a>, but the brief version is:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<em>Note: This install process can be sped up using the <code>cores</code> argument and past versions can be installed using the <code>version</code> argument (which may be useful if install historical package releases).</em>
+<code class="sourceCode R"><span><span class="co"># if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"cmdstanr"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://mc-stan.org/r-packages/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># once `cmdstanr` is installed:</span></span>
+<span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><em>Note: You can speed up CmdStan installation using the <code>cores</code> argument. If you are installing a particular version of <code>epinowcast</code>, you may also need to install a past version of CmdStan, which you can do with the <code>version</code> argument.</em></p>
 </details><details><summary>
 Alternative: Docker
-</summary>
-We also provide a <a href="https://www.docker.com/get-started/" class="external-link">Docker</a> image with <a href="https://github.com/orgs/epinowcast/packages/container/package/epinowcast" class="external-link"><code>epinowcast</code> and all dependencies installed</a>. This image can be used to run <code>epinowcast</code> without installing dependencies locally.
+</summary><p>We also provide a <a href="https://www.docker.com/get-started/" class="external-link">Docker</a> image with <a href="https://github.com/orgs/epinowcast/packages/container/package/epinowcast" class="external-link"><code>epinowcast</code> and all dependencies installed</a>. You can use this image to run <code>epinowcast</code> without installing dependencies.</p>
 </details>
 </div>
 <div class="section level2">
 <h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
 </h2>
-<p>As you use the package, the documentation available via <code>?enw_</code> should be your first stop for troubleshooting. We also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.</p>
-<ul>
-<li>
-<a href="https://package.epinowcast.org/">Package website</a>: This includes a function reference, model outline, and case studies using the package. The package site covers the release version, which can be installed from our Universe or from the latest GitHub release (see <a href="#Installation">installation instructions</a>). Documentation for the development version (corresponding to the <code>main</code> branch on GitHub) <a href="https://package.epinowcast.org/dev/">is also available</a>.</li>
-<li>
-<a href="https://package.epinowcast.org/articles">Package Vignettes</a>: These provide tutorials and case studies, focused discussions of particular aspects, or demonstrate case studies. The <a href="https://package.epinowcast.org/articles/getting-started-part-1">Getting Started with Epinowcast: Nowcasting</a> is a good place to start.</li>
-<li>
-<a href="https://www.epinowcast.org/" class="external-link">Organisation website</a>: This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.</li>
-<li>
-<a href="https://github.com/epinowcast/epinowcast/tree/main/inst/examples" class="external-link">Directory of example scripts</a>: Not as fleshed out as our complete case studies these scripts are used during package development and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.</li>
-<li>
-<a href="https://community.epinowcast.org/" class="external-link">Community forum</a>: Our community forum is where development of methods and tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of <code>epinowcast</code>.</li>
-</ul>
+<p>As you use the package, the documentation available via <code>?enw_</code> should be your first stop for troubleshooting. We also provide a range of other documentation, case studies, and community spaces to ask (and answer!) questions:</p>
+<details><summary>
+Package Website
+</summary><p>The <a href="https://package.epinowcast.org/"><code>epinowcast</code> website</a> includes a function reference, model outline, and case studies using the package. The site mainly concerns the release version, but you can also find documentation for <a href="https://package.epinowcast.org/dev/">the latest development version</a>.</p>
+</details><details><summary>
+R Vignettes
+</summary><p>We have created <a href="https://package.epinowcast.org/articles">package vignettes</a> to help you <a href="https://package.epinowcast.org/articles/epinowcast.html">get started nowcasting</a> and to <a href="https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html">highlight other features with case studies</a>.</p>
+</details><details><summary>
+Organisation Website
+</summary><p>Our <a href="https://www.epinowcast.org/" class="external-link">organisation website</a> includes links to other resources, <a href="https://www.epinowcast.org/blog.html" class="external-link">guest posts</a>, and <a href="https://www.epinowcast.org/seminars.html" class="external-link">seminar schedule</a> for both upcoming and past recordings.</p>
+</details><details><summary>
+Community Forum
+</summary><p>Our <a href="https://community.epinowcast.org/" class="external-link">community forum</a> has areas for <a href="https://community.epinowcast.org/c/interface/15" class="external-link">question and answer</a> and <a href="https://community.epinowcast.org/c/projects/11" class="external-link">considering new methods and tools</a>, among others. If you are generally interested in real-time analysis of infectious disease, you may find this useful even if do not use <code>epinowcast</code>.</p>
+</details><details><summary>
+Package Analysis Scripts
+</summary><p>In addition to the vignettes, the package also comes with <a href="https://github.com/epinowcast/epinowcast/tree/main/inst/examples" class="external-link">example analyses</a>. These are not as polished as the vignettes, but we typically explore new features with these and they may help you if you are using a development version. After installing <code>epinowcast</code>, you can find them via:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, package <span class="op">=</span> <span class="st">"epinowcast"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</details>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
 </h2>
-<p>We welcome contributions and new contributors! We particularly appreciate help on priority problems in the <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issues</a>. Please check and add to the issues, and/or add a <a href="https://github.com/epinowcast/epinowcast/pulls" class="external-link">pull request</a>. See our <a href="https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md" class="external-link">contributing guide</a> for more information.</p>
-<p>If interested in expanding the functionality of the underlying model note that <code>epinowcast</code> allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors. Even if not wanting to add your updated model to the package please do reach out as we would love to hear about your use case.</p>
+<p>We welcome contributions and new contributors! We particularly appreciate help on <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">identifying and identified issues</a>. Please check and add to the issues, and/or add a <a href="https://github.com/epinowcast/epinowcast/pulls" class="external-link">pull request</a> and see our <a href="https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md" class="external-link">contributing guide</a> for more information.</p>
+<p>If you need a different underlying model for your work: <code>epinowcast</code> lets you pass your own models! If you do try new model parameterisations that expand the overall flexibility or improve the defaults, please let us know either here or on the <a href="https://community.epinowcast.org/" class="external-link">community forum</a>. We always like to hear about new use-cases, whether or not they are directed at the core <code>epinowcast</code> applications.</p>
 <div class="section level3">
 <h3 id="how-to-make-a-bug-report-or-feature-request">How to make a bug report or feature request<a class="anchor" aria-label="anchor" href="#how-to-make-a-bug-report-or-feature-request"></a>
 </h3>
@@ -165,14 +179,7 @@ We also provide a <a href="https://www.docker.com/get-started/" class="external-
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>If you use <code>epinowcast</code> in your work, please consider citing it using the following,</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"epinowcast"</span><span class="op">)</span></span></code></pre></div>
-<p>To cite package ‘epinowcast’ in publications use:</p>
-<p>Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F (NULL). <em>epinowcast: Flexible Hierarchical Nowcasting</em>. <a href="doi:10.5281/zenodo.5637165" class="uri">doi:10.5281/zenodo.5637165</a> <a href="https://doi.org/10.5281/zenodo.5637165" class="external-link uri">https://doi.org/10.5281/zenodo.5637165</a>.</p>
-<p>A BibTeX entry for LaTeX users is</p>
-<p>@Manual{, title = {epinowcast: Flexible Hierarchical Nowcasting}, author = {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther}, year = {NULL}, doi = {10.5281/zenodo.5637165}, }</p>
-<p>If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our <a href="https://package.epinowcast.org/articles/model.html">model outline</a>.</p>
+<p>If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our <a href="https://package.epinowcast.org/articles/model.html">model outline</a>. If you use <code>epinowcast</code> in your work, please consider citing it with <code>citation("epinowcast")</code>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
