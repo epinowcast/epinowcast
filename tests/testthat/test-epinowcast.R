@@ -25,7 +25,7 @@ test_that("epinowcast() preprocesses data and model modules as expected", {
   expect_type(nowcast$data[[1]], "list")
   expect_error(nowcast$init())
   class(pobs) <- c("epinowcast", class(pobs))
-  expect_identical(nowcast[, c("init", "data") := NULL], pobs)
+  expect_identical(nowcast[, c("init", "data", "priors") := NULL], pobs)
 })
 
 test_that("epinowcast() runs using default arguments only", {
@@ -41,7 +41,7 @@ test_that("epinowcast() runs using default arguments only", {
     c(
       "fit", "data", "fit_args", "samples", "max_rhat",
       "divergent_transitions", "per_divergent_transitions", "max_treedepth",
-      "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
+      "no_at_max_treedepth", "per_at_max_treedepth", "run_time", "priors"
     )
   )
   expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
@@ -95,7 +95,7 @@ test_that("epinowcast() can fit a simple reporting model", {
     c(
       "fit", "data", "fit_args", "samples", "max_rhat",
       "divergent_transitions", "per_divergent_transitions", "max_treedepth",
-      "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
+      "no_at_max_treedepth", "per_at_max_treedepth", "run_time", "priors"
     )
   )
   expect_convergence(nowcast)
