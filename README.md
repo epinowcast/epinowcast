@@ -202,10 +202,10 @@ request](https://github.com/epinowcast/epinowcast/pulls) and see our
 guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
 for more information.
 
-If you need a different underlying model for you work: `epinowcast` lets
-you pass your own models! If you do try new model parameterisations that
-expand the overall flexibility or improve the defaults, please let us
-know either here or on the [community
+If you need a different underlying model for your work: `epinowcast`
+lets you pass your own models! If you do try new model parameterisations
+that expand the overall flexibility or improve the defaults, please let
+us know either here or on the [community
 forum](https://community.epinowcast.org/). We always like to hear about
 new use-cases, whether or not they are directed at the core `epinowcast`
 applications.
