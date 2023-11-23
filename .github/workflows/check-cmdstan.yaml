@@ -54,7 +54,7 @@ jobs:
       - name: Install cmdstan
         run: |
           cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
+          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE, version = "2.30.1")
         shell: Rscript {0}
 
       - name: Compile model and check syntax

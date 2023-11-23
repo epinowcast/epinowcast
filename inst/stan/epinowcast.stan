@@ -18,7 +18,7 @@ functions {
 }
 
 data {
-  // Indexes and lookups
+  # Indexes and lookups
   int n; // total number of observations (obs)
   int t; // total number of time points 
   int s; // total number of snapshots
@@ -35,7 +35,7 @@ data {
   array[s] int cnsl; // cumulative version of nsl
   int dmax; // maximum possible reporting delay
   array[s] int sdmax; // maximum delay by snapshot (snapshot dmax)
-  array[s] int csdmax; // cumulative version of sdmax
+  array int[s] csdmax; // cumulative version of sdmax
  
   // Observations
   array[n] int flat_obs; // obs stored as a flat vector
