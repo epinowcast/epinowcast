@@ -203,7 +203,7 @@ remove_rw_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
-    rlang::abort("'formula' must be a formula object.")
+    rlang::abort("`formula` must be a formula object.")
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
@@ -297,7 +297,12 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
-    rlang::abort("rw must be a random walk term as constructed by rw")
+    rlang::abort(
+      paste(
+        "Argument `rw` must be a random walk term as constructed by ",
+        "`epinowcast:::rw`"
+      )
+    )
   }
 
   if (!is.numeric(data[[rw$time]])) {
@@ -434,7 +439,12 @@ re <- function(formula) {
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
-    rlang::abort("re must be a random effect term as constructed by re")
+    rlang::abort(
+      paste0(
+        "Argument `re` must be a random effect term as constructed by ", 
+        "`epinowcast:::re`")
+      )
+    )
   }
 
   # extract random and fixed effects

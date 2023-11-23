@@ -121,7 +121,12 @@ latest_obs_as_matrix <- function(latest) {
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
-      rlang::abort("dist must equal t or be the same for all t (i.e. length 1)")
+      rlang::abort(
+        paste0(
+          "`length(dist)` must equal `t` or be the same for all t ", 
+          "(i.e. length 1)"
+        )
+      )
     }
     ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
