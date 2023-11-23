@@ -233,19 +233,4 @@ If making use of our methodology or the methodology on which ours is
 based, please cite the relevant papers from our [model
 outline](https://package.epinowcast.org/articles/model.html). If you use
 `epinowcast` in your work, please consider citing it with
-`citation("epinowcast")`:
-
-    To cite package 'epinowcast' in publications use:
-
-      Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F (NULL).
-      _epinowcast: Flexible Hierarchical Nowcasting_.
-      doi:10.5281/zenodo.5637165 <https://doi.org/10.5281/zenodo.5637165>.
-
-    A BibTeX entry for LaTeX users is
-
-      @Manual{,
-        title = {epinowcast: Flexible Hierarchical Nowcasting},
-        author = {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther},
-        year = {NULL},
-        doi = {10.5281/zenodo.5637165},
-      }
+`citation("epinowcast")`.
