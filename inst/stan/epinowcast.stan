@@ -23,7 +23,7 @@ data {
   int t; // total number of time points 
   int s; // total number of snapshots
   int g; // total number of groups
-  array int[s] groups; // array of group ids
+  array[s] int groups; // array of group ids
   array[s] int st; // time index of each snapshot (snapshot time)
   array[s] int sg; // group index of each snapshot (snapshot group)
   array[t, g] int ts; // snapshot index by time and group
@@ -35,7 +35,7 @@ data {
   array[s] int cnsl; // cumulative version of nsl
   int dmax; // maximum possible reporting delay
   array[s] int sdmax; // maximum delay by snapshot (snapshot dmax)
-  array int[s] csdmax; // cumulative version of sdmax
+  array[s] int csdmax; // cumulative version of sdmax
  
   // Observations
   array[n] int flat_obs; // obs stored as a flat vector
