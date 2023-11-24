@@ -42,7 +42,7 @@ data {
   array[n] int flat_obs_lookup; // How do observed obs relate to all obs
   array[t, g] int latest_obs; // latest obs by time and group
 
-  // Expectation model
+  # Expectation model
   // ---- Growth rate submodule ----
   int expr_r_seed; // number of time points with seeded/initial latent cases
   int expr_gt_n; // maximum generation time
