@@ -64,8 +64,14 @@ jobs:
           # however it may be correct enougth to compile but still contain
           # soft depreciated syntax and so we check the syntax again below 
           # and test the output.
-          message <- capture.output(model$check_syntax(pedantic = FALSE))
+          message <- capture.output(
+            model$check_syntax(pedantic = FALSE),
+            type = "message"
+          )
           # We can't use TRUE here as pendatic check return lots of false
           # positives related to our use of functions.
-          stopifnot(message == "Stan program is syntactically correct")
+          stopifnot(
+            length(message) != 0 &&
+            all(message == "Stan program is syntactically correct")
+          )
         shell: Rscript {0}
