@@ -64,10 +64,8 @@ jobs:
           # however it may be correct enougth to compile but still contain
           # soft depreciated syntax and so we check the syntax again below 
           # and test the output.
-          testthat::expect_message(
-            model$check_syntax(pedantic = FALSE),
-            # We can't use TRUE here as pendatic check return lots of false
-            # positives related to our use of functions.
-            "^Stan program is syntactically correct$"
-          )
+          message <- capture.output(model$check_syntax(pedantic = FALSE))
+          # We can't use TRUE here as pendatic check return lots of false
+          # positives related to our use of functions.
+          stopifnot(message == "Stan program is syntactically correct")
         shell: Rscript {0}
