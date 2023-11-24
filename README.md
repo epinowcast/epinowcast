@@ -41,23 +41,28 @@ applied to any set of right-truncated time-series count data.
 Installing the package
 </summary>
 
-Install the latest released version of the package with:
+You can install the latest released version using the normal `R`
+function, though you need to point to `r-universe` instead of CRAN:
 
 ``` r
-install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
+install.packages(
+  "epinowcast", repos = "https://epinowcast.r-universe.dev"
+)
 ```
 
 Alternatively, you can use the [`remotes`
 package](https://remotes.r-lib.org/) to install the development version
-(warning: this version may contain breaking changes and/or bugs) from
-GitHub using:
+from Github (warning! this version may contain breaking changes and/or
+bugs):
 
 ``` r
-remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
+remotes::install_github(
+  "epinowcast/epinowcast", dependencies = TRUE
+)
 ```
 
-Similarly, you can install historical releases by adding the release tag
-(e.g. this installs
+Similarly, you can install historical versions by specifying the release
+tag (e.g. this installs
 [`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)):
 
 ``` r
@@ -66,9 +71,10 @@ remotes::install_github(
 )
 ```
 
-*Note: A similar method can be used to install a particular commit of
-the package which may be useful for some users who are unable to use a
-fixed release but concerned about the stability of their dependencies.*
+*Note: You can also use that last approach to install a specific commit
+if needed, e.g. if you want to try out a specific unreleased feature,
+but not the absolute latest developmental version.*
+
 </details>
 <details>
 <summary>
@@ -76,92 +82,133 @@ Installing CmdStan
 </summary>
 
 If you wish to do model fitting and nowcasting, you will need to install
-[CmdStan](https://mc-stan.org/users/interfaces/cmdstan). We recommend
-using [`cmdstanr`](https://mc-stan.org/cmdstanr/) and the
-`cmdstanr::install_cmdstan()` to do so, which needs a suitable C++
-toolchain. Instructions are provided in the [*Getting started with
+[CmdStan](https://mc-stan.org/users/interfaces/cmdstan), which also
+entails having a suitable C++ toolchain setup. We recommend using the
+[`cmdstanr` package](https://mc-stan.org/cmdstanr/). The Stan team
+provides instructions in the [*Getting started with
 `cmdstanr`*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
-vignette. See the [`cmdstanr`
-documentation](https://mc-stan.org/cmdstanr/) for further details and
-support.
+vignette, with other details and support at the [package
+site](https://mc-stan.org/cmdstanr/), but the brief version is:
 
 ``` r
+# if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies
+install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+# once `cmdstanr` is installed:
 cmdstanr::install_cmdstan()
 ```
 
-*Note: This install process can be sped up using the `cores` argument
-and past versions can be installed using the `version` argument (which
-may be useful if install historical package releases).*
+*Note: You can speed up CmdStan installation using the `cores` argument.
+If you are installing a particular version of `epinowcast`, you may also
+need to install a past version of CmdStan, which you can do with the
+`version` argument.*
+
 </details>
 <details>
 <summary>
 Alternative: Docker
 </summary>
+
 We also provide a [Docker](https://www.docker.com/get-started/) image
 with [`epinowcast` and all dependencies
 installed](https://github.com/orgs/epinowcast/packages/container/package/epinowcast).
-This image can be used to run `epinowcast` without installing
-dependencies locally.
+You can use this image to run `epinowcast` without installing
+dependencies.
+
 </details>
 
 ## Resources
 
 As you use the package, the documentation available via `?enw_` should
 be your first stop for troubleshooting. We also provide a range of other
-documentation, case studies, and spaces for the community to interact
-with each other. Below is a short list of current resources.
+documentation, case studies, and community spaces to ask (and answer!)
+questions:
 
-- [Package website](https://package.epinowcast.org/): This includes a
-  function reference, model outline, and case studies using the package.
-  The package site covers the release version, which can be installed
-  from our Universe or from the latest GitHub release (see [installation
-  instructions](#Installation)). Documentation for the development
-  version (corresponding to the `main` branch on GitHub) [is also
-  available](https://package.epinowcast.org/dev/).
-- [Package Vignettes](https://package.epinowcast.org/articles): These
-  provide tutorials and case studies, focused discussions of particular
-  aspects, or demonstrate case studies. The [Getting Started with
-  Epinowcast:
-  Nowcasting](https://package.epinowcast.org/articles/getting-started-part-1)
-  is a good place to start.
-- [Organisation website](https://www.epinowcast.org/): This includes
-  links to our other resources as well as guest posts from community
-  members and schedules for any related seminars being run by community
-  members.
-- [Directory of example
-  scripts](https://github.com/epinowcast/epinowcast/tree/main/inst/examples):
-  Not as fleshed out as our complete case studies these scripts are used
-  during package development and each showcase a subset of package
-  functionality. Often newly introduced features will be explored here
-  before surfacing in other areas of our documentation.
-- [Community forum](https://community.epinowcast.org/): Our community
-  forum is where development of methods and tools is discussed, along
-  with related research from our members and discussions between users.
-  If you are interested in real-time analysis of infectious disease this
-  is likely a good place to start regardless of if you end up making use
-  of `epinowcast`.
+<details>
+<summary>
+Package Website
+</summary>
+
+The [`epinowcast` website](https://package.epinowcast.org/) includes a
+function reference, model outline, and case studies using the package.
+The site mainly concerns the release version, but you can also find
+documentation for [the latest development
+version](https://package.epinowcast.org/dev/).
+
+</details>
+<details>
+<summary>
+R Vignettes
+</summary>
+
+We have created [package
+vignettes](https://package.epinowcast.org/articles) to help you [get
+started
+nowcasting](https://package.epinowcast.org/articles/epinowcast.html) and
+to [highlight other features with case
+studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
+
+</details>
+<details>
+<summary>
+Organisation Website
+</summary>
+
+Our [organisation website](https://www.epinowcast.org/) includes links
+to other resources, [guest posts](https://www.epinowcast.org/blog.html),
+and [seminar schedule](https://www.epinowcast.org/seminars.html) for
+both upcoming and past recordings.
+
+</details>
+<details>
+<summary>
+Community Forum
+</summary>
+
+Our [community forum](https://community.epinowcast.org/) has areas for
+[question and answer](https://community.epinowcast.org/c/interface/15)
+and [considering new methods and
+tools](https://community.epinowcast.org/c/projects/11), among others. If
+you are generally interested in real-time analysis of infectious
+disease, you may find this useful even if do not use `epinowcast`.
+
+</details>
+<details>
+<summary>
+Package Analysis Scripts
+</summary>
+
+In addition to the vignettes, the package also comes with [example
+analyses](https://github.com/epinowcast/epinowcast/tree/main/inst/examples).
+These are not as polished as the vignettes, but we typically explore new
+features with these and they may help you if you are using a development
+version. After installing `epinowcast`, you can find them via:
+
+``` r
+list.files(
+  system.file("examples", package = "epinowcast"), full.names = TRUE
+)
+```
+
+</details>
 
 ## Contributing
 
 We welcome contributions and new contributors! We particularly
-appreciate help on priority problems in the
-[issues](https://github.com/epinowcast/epinowcast/issues). Please check
+appreciate help on [identifying and identified
+issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull
-request](https://github.com/epinowcast/epinowcast/pulls). See our
+request](https://github.com/epinowcast/epinowcast/pulls) and see our
 [contributing
 guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
 for more information.
 
-If interested in expanding the functionality of the underlying model
-note that `epinowcast` allows users to pass in their own models meaning
-that alternative parameterisations, for example altering the forecast
-model used for inferring expected observations, may be easily tested
-within the package infrastructure. Once this testing has been done
-alterations that increase the flexibility of the package model and
-improves its defaults are very welcome via pull request or other
-communication with the package authors. Even if not wanting to add your
-updated model to the package please do reach out as we would love to
-hear about your use case.
+If you need a different underlying model for your work: `epinowcast`
+lets you pass your own models! If you do try new model parameterisations
+that expand the overall flexibility or improve the defaults, please let
+us know either here or on the [community
+forum](https://community.epinowcast.org/). We always like to hear about
+new use-cases, whether or not they are directed at the core `epinowcast`
+applications.
 
 ### How to make a bug report or feature request
 
@@ -182,26 +229,8 @@ contributing to this project, you agree to abide by its terms.
 
 ## Citation
 
-If you use `epinowcast` in your work, please consider citing it using
-the following,
-
-``` r
-citation("epinowcast")
-```
-
-To cite package ‘epinowcast’ in publications use:
-
-Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F (NULL).
-*epinowcast: Flexible Hierarchical Nowcasting*.
-<doi:10.5281/zenodo.5637165> <https://doi.org/10.5281/zenodo.5637165>.
-
-A BibTeX entry for LaTeX users is
-
-@Manual{, title = {epinowcast: Flexible Hierarchical Nowcasting}, author
-= {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and
-Hugo Gruson and Felix Guenther}, year = {NULL}, doi =
-{10.5281/zenodo.5637165}, }
-
 If making use of our methodology or the methodology on which ours is
 based, please cite the relevant papers from our [model
-outline](https://package.epinowcast.org/articles/model.html).
+outline](https://package.epinowcast.org/articles/model.html). If you use
+`epinowcast` in your work, please consider citing it with
+`citation("epinowcast")`.
