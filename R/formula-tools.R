@@ -298,7 +298,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
     rlang::abort(
-      paste(
+      paste0(
         "Argument `rw` must be a random walk term as constructed by ",
         "`epinowcast:::rw`"
       )
@@ -332,7 +332,7 @@ construct_rw <- function(rw, data) {
     if (is.null(fdata[[rw$by]])) {
       rlang::abort(
         paste0(
-          "Requested grouping variable",
+          "Requested grouping variable ",
           rw$by, " is not present in the supplied data"
         )
       )
