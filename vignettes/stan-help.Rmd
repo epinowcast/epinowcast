@@ -35,16 +35,16 @@ knitr::opts_chunk$set(
 
 # Epinowcast and Stan
 
-[Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `epinowcast`.
-The statistical models used in `epinowcast` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
-`epinowcast` utilises the [`cmdstanr`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
+[Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `{epinowcast}`.
+The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
+`{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
-As describe in the `epinowcast` project [README](./index.html), you will need to install [`cmdstanr`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
+As describe in the `"{epinowcast}"` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
 ## Ensuring you have the proper toolchain {.toolchain}
 
-The Stan code that is written in the `epinowcast` package converted[^1] to optimised C++ code and then compiled to machine readable instructions.
+The Stan code that is written in the `{epinowcast}` package converted[^1] to optimised C++ code and then compiled to machine readable instructions.
 Because Stan needs a several programs to execute this compilation process such as the build tool [make](https://en.wikipedia.org/wiki/Make_(software)) and a C++ compiler, you will need to ensure that your system has the appropriate supporting software, known as a toolchain.
 The steps to install this additional software are in addition to R and are **platform specific**.
 As a reminder, these installation steps occur **outside of R**.
@@ -96,7 +96,7 @@ cmdstanr::install_cmdstan(cores = 2)
 
 ## Installation
 
-As described in the project README, you can install the `epinowcast` package within R.
+As described in the project README, you can install the `"{epinowcast}"` package within R.
 
 ```r
 # Stable version from:
@@ -108,13 +108,13 @@ remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 
 ## Running your first model
 
-The first time you fit a model with `epinowcast` will be **slow**!
+The first time you fit a model with `{epinowcast}` will be **slow**!
 This is normal as all of the Stan code is being compiled for the first time.
 Note that the compiled Stan binaries will live in your user package directory (or wherever you have defined your package libraries).
 Because of this package architecture
 
-- Each time you install a new version of `epinowcast` you will experience this longer compilation time the first time you fit a model.
-- If you upgrade your version of CmdStan, you will likely need to recompile your models. This may occur automatically, or necessitate re-installing `epinowcast`.
+- Each time you install a new version of `{epinowcast}` you will experience this longer compilation time the first time you fit a model.
+- If you upgrade your version of CmdStan, you will likely need to recompile your models. This may occur automatically, or necessitate re-installing `{epinowcast}`.
 
 
 ## Setting `enw_fit_opts`
@@ -122,22 +122,69 @@ Because of this package architecture
 The `enw_fit_opts` allows you to set several critical components for the Stan computational engine.
 These parameters are passed to Stan during the model fitting process and have an influence on computation time and quality of the model fit.
 Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
-All of the parameters are passed to the 
+All of the parameters are passed to the `sampling` function available from [`{cmdstanr}`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html).
 
 
 # Failures modes
 
-## My model takes too long to run
+In this section we will discuss the most common issues when working with `{epinowcast}` specifically and CmdStan/ Bayesian inference more generally.
+The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interogate your data](#modelData) further.
+
+## Sampler settings {.samplerParams}
+
+`{epinowcast}` provides users the ability to pass arguments directly to CmdStan which can improve model run time and produce better inferences.
+These parameters can be passed the `enw_fit_opts` function.
+
+### `threads_per_chain` and `chains`
+
+One of the key components of Bayesian inference is creating draws from independent Markov chains.
+To assess convergence and the reliability of a given posterior distribution it is vital that at least two chains are used with **`4` chains** being the more common default.
+
+Stan allows for multi-threading and the Stan code used within `{epinowcast}` has tried to take advantage of these capabilities where possible.
+Multi-theading allows for the calculations to be spread across multiple threads, which could accelerate inference by allowing embarassingly parallel calculations to be spread across threads and then later combined.
+If possible, a good default is `2`, however, if you have available compute on your machine, you can increase this to a higher value and may see some fit time reductions.
+
+**The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine! 
+
+### iter_warmup and iter_sampling
+
+The number of samples using for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
+Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting. 
+Unlike with Gibbs sampling (such as the method used in JAGS), you do not need to set large values for `iter_warmup` or `iter_sampling`.
+Conversely, setting large values for iterations is a sign of poor model fit and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`)
+Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficient.
 
 
-## My r_hat is high and by ess is low
+### max_treedepth
 
-## The posterior estimates are very wide
+### adapt_delta
+
+## Model settings {.modelParams}
+
+## Exploring your data {.modelData}
+
+
+## Common failure modes
+
+### My model takes too long to run
+
+One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
+This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data.
+You can take several steps to speed up your model fitting time:
+
+1. Ensure that your priors are as informative as possible. The priors for your model can be seen using the [nw_reference](`https://package.epinowcast.org/reference/enw_reference.html`)
+1. Increase `max_treedepth` to an integer value greater than `10` up to `15`. This value controls the size of the trajectory taken by the sample (in power of 2) take for each step. If this value is too low, the smapler may terminate too early causing excess runtimes.
+
+
+
+### My `r_hat`s are high and by `ess`s are low
+
+### The posterior estimates are very wide
 
 # Other resources
 
 The Stan community is a pretty warm and opening place and receptive to helping others.
-If you find yourself having issues with `epinowcast`, reach out!
+If you find yourself having issues with `"{epinowcast}"`, reach out!
 
 ## Technical issues
 
