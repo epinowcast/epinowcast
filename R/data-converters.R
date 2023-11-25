@@ -362,7 +362,7 @@ enw_aggregate_cumulative <- function(
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
   if (timestep == "day") {
-    abort("The data already has a timestep of a day")
+    rlang::abort("The data already has a timestep of a day")
   }
   obs <- coerce_dt(
     obs,
