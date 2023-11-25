@@ -39,9 +39,9 @@ test_that("epinowcast() runs using default arguments only", {
   expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
-      "fit", "data", "fit_args", "samples", "max_rhat",
+      "priors", "fit", "data", "fit_args", "samples", "max_rhat",
       "divergent_transitions", "per_divergent_transitions", "max_treedepth",
-      "no_at_max_treedepth", "per_at_max_treedepth", "run_time", "priors"
+      "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
   expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
@@ -93,9 +93,9 @@ test_that("epinowcast() can fit a simple reporting model", {
   expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
-      "fit", "data", "fit_args", "samples", "max_rhat",
+      "priors", "fit", "data", "fit_args", "samples", "max_rhat",
       "divergent_transitions", "per_divergent_transitions", "max_treedepth",
-      "no_at_max_treedepth", "per_at_max_treedepth", "run_time", "priors"
+      "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
   expect_convergence(nowcast)
