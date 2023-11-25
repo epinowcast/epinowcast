@@ -57,13 +57,14 @@ test_that("enw_preprocess_data() handles groups as expected", {
 })
 
 test_that(
-  "enw_preprocess_data() can handle a non-default timestep as expected",
-  {
-    weekly_nat_germany_hosp <- nat_germany_hosp |>
-      enw_aggregate_cumulative(timestep = "week")
+  "enw_preprocess_data() can handle a non-default timestep as expected", {
+    weekly_nat_germany_hosp <- enw_aggregate_cumulative(
+      nat_germany_hosp, timestep = "week"
+    )
 
-    weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
-      enw_filter_reference_dates(earliest_date = "2021-05-10")
+    weekly_nat_germany_hosp <- enw_filter_reference_dates(
+      weekly_nat_germany_hosp, earliest_date = "2021-05-10"
+    )
 
     weekly_pobs <- enw_preprocess_data(
       weekly_nat_germany_hosp,
