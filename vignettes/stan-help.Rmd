@@ -144,7 +144,13 @@ Stan allows for multi-threading and the Stan code used within `{epinowcast}` has
 Multi-theading allows for the calculations to be spread across multiple threads, which could accelerate inference by allowing embarassingly parallel calculations to be spread across threads and then later combined.
 If possible, a good default is `2`, however, if you have available compute on your machine, you can increase this to a higher value and may see some fit time reductions.
 
+::: {.alert .alert-warning}
 **The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine! 
+:::
+
+
+
+
 
 ### iter_warmup and iter_sampling
 
@@ -157,9 +163,43 @@ Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficien
 
 ### max_treedepth
 
+This value controls the size of the trajectory taken by the sample (in power of 2) take for each step.
+If this value is too low, the sampler may terminate too early causing excess runtimes.
+You can increase the `max_treedepth` to an integer value greater than `10` up to `15` (or lower).
+Given the complexity of the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
+
 ### adapt_delta
 
+This parameter sets the target average proposal acceptable probability during NUTS sampling (and is a real number values between 0 and 1).
+Higher values of `adapt_delta` will result in smaller step sizes during sampling which will slow the model fitting time but can help to address *divergent transitions.*
+The default value is 0.8, but it is likely that this will need to be set slightly higher like 0.9 to 0.99 given the complexity of the models being fit.
+
+### Some decent defaults
+
+For a computer with 8 cores, a reasonable configuration would be the following:
+
+```r
+enw_fit_opts(
+    save_warmup = FALSE,
+    pp = TRUE,
+    chains = 4,
+    threads_per_chain = 2,
+    adapt_delta = 0.95,
+    max_treedepth = 12,
+    iter_sampling = 2000,
+    iter_warmup = 1000,
+    show_messages = FALSE
+)
+
+```
+
+
 ## Model settings {.modelParams}
+
+### Setting priors {.settingPriors}
+
+
+
 
 ## Exploring your data {.modelData}
 
@@ -170,14 +210,15 @@ Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficien
 
 One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
 This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data.
-You can take several steps to speed up your model fitting time:
+
 
 1. Ensure that your priors are as informative as possible. The priors for your model can be seen using the [nw_reference](`https://package.epinowcast.org/reference/enw_reference.html`)
-1. Increase `max_treedepth` to an integer value greater than `10` up to `15`. This value controls the size of the trajectory taken by the sample (in power of 2) take for each step. If this value is too low, the smapler may terminate too early causing excess runtimes.
+1. 
 
 
 
 ### My `r_hat`s are high and by `ess`s are low
+
 
 ### The posterior estimates are very wide
 
