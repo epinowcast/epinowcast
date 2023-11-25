@@ -143,16 +143,14 @@ To assess convergence and the reliability of a given posterior distribution it i
 Stan allows for multi-threading and the Stan code used within `{epinowcast}` has tried to take advantage of these capabilities where possible.
 Multi-theading allows for the calculations to be spread across multiple threads, which could accelerate inference by allowing embarassingly parallel calculations to be spread across threads and then later combined.
 If possible, a good default is `2`, however, if you have available compute on your machine, you can increase this to a higher value and may see some fit time reductions.
+Please note that the `theads_per_chain` has not impact on model convergence or fittings and is purely a means of speeding up the model fitting time.
 
 ::: {.alert .alert-warning}
 **The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine! 
 :::
 
 
-
-
-
-### iter_warmup and iter_sampling
+### iter_warmup and iter_sampling {.iters}
 
 The number of samples using for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
 Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting. 
@@ -161,14 +159,14 @@ Conversely, setting large values for iterations is a sign of poor model fit and 
 Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficient.
 
 
-### max_treedepth
+### max_treedepth {.maxTree}
 
 This value controls the size of the trajectory taken by the sample (in power of 2) take for each step.
 If this value is too low, the sampler may terminate too early causing excess runtimes.
 You can increase the `max_treedepth` to an integer value greater than `10` up to `15` (or lower).
 Given the complexity of the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
 
-### adapt_delta
+### adapt_delta {.adaptDelta}
 
 This parameter sets the target average proposal acceptable probability during NUTS sampling (and is a real number values between 0 and 1).
 Higher values of `adapt_delta` will result in smaller step sizes during sampling which will slow the model fitting time but can help to address *divergent transitions.*
@@ -198,11 +196,139 @@ enw_fit_opts(
 
 ### Setting priors {.settingPriors}
 
+Setting sensible priors is important for Bayesian inference.
+When pre-processing your data, you can retrieve the prior arguments using the `enw_reference` function.
+As shown below, you can retrieve your current files and maniupate them as needed.
 
+```r
+(default_priors <- enw_reference(data = enw_example("preprocessed")))
+#> $formula
+#> $formula$parametric
+#> [1] "~1"
+#> 
+#> 
+#> $data
+#> $data$refp_fdesign
+#>   (Intercept)
+#> 1           1
+#> 
+#> $data$refp_fintercept
+#> [1] 1
+#> 
+#> $data$refp_fnrow
+#> [1] 1
+#> 
+#> $data$refp_findex
+#>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+#> [39] 1 1 1
+#> 
+#> $data$refp_fnindex
+#> [1] 41
+#> 
+#> $data$refp_fncol
+#> [1] 0
+#> 
+#> $data$refp_rdesign
+#>      (Intercept)
+#> attr(,"assign")
+#> [1] 0
+#> 
+#> $data$refp_rncol
+#> [1] 0
+#> 
+#> $data$model_refp
+#> [1] 2
+#> 
+#> 
+#> $priors
+#>             variable
+#> 1:     refp_mean_int
+#> 2:       refp_sd_int
+#> 3: refp_mean_beta_sd
+#> 4:   refp_sd_beta_sd
+#>                                                       description
+#> 1:         Log mean intercept for parametric reference date delay
+#> 2: Log standard deviation for the parametric reference date delay
+#> 3:    Standard deviation of scaled pooled parametric mean effects
+#> 4:      Standard deviation of scaled pooled parametric sd effects
+#>             distribution mean sd
+#> 1:                Normal  1.0  1
+#> 2: Zero truncated normal  0.5  1
+#> 3: Zero truncated normal  0.0  1
+#> 4: Zero truncated normal  0.0  1
+#> 
+#> $inits
+#> function (data, priors) 
+#> {
+#>     priors <- enw_priors_as_data_list(priors)
+#>     fn <- function() {
+#>         init <- list(refp_mean_int = numeric(0), refp_sd_int = numeric(0), 
+#>             refp_mean_beta = numeric(0), refp_sd_beta = numeric(0), 
+#>             refp_mean_beta_sd = numeric(0), refp_sd_beta_sd = numeric(0))
+#>         if (data$model_refp > 0) {
+#>             init$refp_mean_int <- array(rnorm(1, priors$refp_mean_int[1], 
+#>                 priors$refp_mean_int[2]/10))
+#>         }
+#>         if (data$model_refp > 1) {
+#>             init$refp_sd_int <- array(abs(rnorm(1, priors$refp_sd_int[1], 
+#>                 priors$refp_sd_int[2]/10)))
+#>         }
+#>         init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
+#>         init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
+#>         if (data$refp_fncol > 0) {
+#>             init$refp_mean_beta <- array(rnorm(data$refp_fncol, 
+#>                 0, 0.01))
+#>             if (data$model_refp > 1) {
+#>                 init$refp_sd_beta <- array(rnorm(data$refp_fncol, 
+#>                   0, 0.01))
+#>             }
+#>         }
+#>         if (data$refp_rncol > 0) {
+#>             init$refp_mean_beta_sd <- array(abs(rnorm(data$refp_rncol, 
+#>                 priors$refp_mean_beta_sd_p[1], priors$refp_mean_beta_sd_p[2]/10)))
+#>             if (data$model_refp > 1) {
+#>                 init$refp_sd_beta_sd <- array(abs(rnorm(data$refp_rncol, 
+#>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))
+#>             }
+#>         }
+#>         return(init)
+#>     }
+#>     return(fn)
+#> }
+#> <bytecode: 0x55927f15dbb0>
+#> <environment: 0x559280451700>
+#> 
+
+```
+
+In the above example, if you have some reason to believe that the standard deviation of the means used could we smaller, you could reduce them by half to 0.5.
+
+```r
+
+new_priors <- default_priors$priors
+
+new_priors[ ,sd := 0.5]
+
+```
+
+You could then pass these new priors to the `epinowcast` function.
+
+```r
+epinowcast(pobs,
+  expectation = expectation_module,
+  fit = fit,
+  model = multithread_model,
+  priors = new_priors
+)
+```
+Similarly, you could take an emperical Bayes approach and use the posteriors of a [fitted model as described in another vignette](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html#using-the-inflated-posterior-as-a-prior).
 
 
 ## Exploring your data {.modelData}
 
+<!--
+#TODO Non-stationarity, longer time scales, multi-modality from known etiologies
+-->
 
 ## Common failure modes
 
@@ -210,17 +336,48 @@ enw_fit_opts(
 
 One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
 This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data.
+You can a few simple steps to assist with this:
 
 
-1. Ensure that your priors are as informative as possible. The priors for your model can be seen using the [nw_reference](`https://package.epinowcast.org/reference/enw_reference.html`)
-1. 
+1. Increase the [`adapt_delta`](.adaptDelta) argument to 15 which will allow longer trajectories to used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
+2. Use more [informative priors](.settingPriors). 
+3. Try to simplify the model first to understand potential degeneracies.
+4. Reduce the amount of data you are trying to fit. This might include reducing the duration of time overwhich you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting the larger data. 
 
+
+### Divergent transitions 
+
+CmdStan may alert you that you have ["divergent transitions"](https://mc-stan.org/docs/reference-manual/divergent-transitions.html) detected during your model fit.
+
+```r
+#>1: There were 32 divergent transitions after warmup.
+```
+
+A high number of divergent transitions indicates that the model outputs are not to be trusted.
+The first step in addressing this is to increase the [`adapt_delta`](#adaptDelta) argument to a numeric near one (e.g., 0.99 or 0.999).
+This will allow for a smaller step size and may result in more realiable inferences.
+Importantly, if the number of divergent transitions remains high, your model may be misspecified given the data that are available.
+At this point it may be worthwhile to investigate if the model paramterisation if correct for the data you have available.
 
 
 ### My `r_hat`s are high and by `ess`s are low
 
+High values of `r_hat`, the Gelman-Rubin statistic used to measure converge, indicates a lack of convergence.
+Values greater than 1.05 are considered unreliable.
+Similarly, lower values for the [effective sample size](https://mc-stan.org/docs/reference-manual/effective-sample-size.html) is especially problematic.
+The effective sample size provides insight into how many independent samples you have drawn from the posterior, accounting for the autocorrelation within the Markov chains.
+Ideally you want these values to be near your total number of samples passed in the `iter_sample` argument.
+If `r_hat` is large and `ess_bulk`/ `ess_tail` are low, consider:
+
+1. Increasing your [adapt_delta](#adaptDelta) argument to a numeric value near 1 (e.g., 0.99). This will reduce the step size and could help with sampling.
+2. Use more [informative priors](.settingPriors). 
+
 
 ### The posterior estimates are very wide
+
+Wide posterior values indicate that there is a high degree of uncertainity given the data and model.
+If not other warnings are shown (e.g., divergent transitions, higher ESS), then this is simply the inference given the available data.
+Posteriors could be reduced through the use of stronger, more informative [priors](#settingPriors).
 
 # Other resources
 
@@ -232,6 +389,7 @@ If you find yourself having issues with `"{epinowcast}"`, reach out!
 - [epinowcast forum](https://community.epinowcast.org/)
 - [epinowcast issues](https://github.com/epinowcast/epinowcast/issues)
 - [Stan forums](https://discourse.mc-stan.org/)
+- [Stan guide to warnings](https://mc-stan.org/misc/warnings.html)
 
 ## Learning more about Stan and Bayesian inference
 
