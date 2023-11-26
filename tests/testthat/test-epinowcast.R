@@ -12,9 +12,9 @@ if (not_on_cran() && on_ci()) {
 }
 
 # A function to filter data used in test suite
-run_window_filter <- function(x) {
-    obs <- enw_filter_report_dates(x, remove_days = 10)
-    obs <- enw_filter_reference_dates(obs, include_days = 10)
+run_window_filter <- function(x, filter_report_remove = 10, filter_reference_include = 10) {
+    obs <- enw_filter_report_dates(x, remove_days = filter_report_remove)
+    obs <- enw_filter_reference_dates(obs, include_days = filter_reference_include)
     return(obs)
 }
 
@@ -100,7 +100,7 @@ test_that("epinowcast() runs with within-chain parallelisation", {
   skip_on_cran()
   skip_on_local()
   obs <- run_window_filter(
-    germany_covid19_hosp[age_group %in% "00+"][location %in% "DE"]
+    germany_covid19_hosp[age_group == "00+"][location == "DE"]
   )
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(
