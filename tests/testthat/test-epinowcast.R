@@ -12,7 +12,7 @@ if (not_on_cran() && on_ci()) {
 }
 
 # A function to filter data used in test suite
-run_window_filter <- function(x){
+run_window_filter <- function(x) {
     obs <- enw_filter_report_dates(x, remove_days = 10)
     obs <- enw_filter_reference_dates(obs, include_days = 10)
     return(obs)
@@ -158,7 +158,7 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is
         pobs$obs[[1]][, .group := NULL],
         include_days = 20
       ),
-    max_delay = 30
+      max_delay = 30
     )
   )
 
