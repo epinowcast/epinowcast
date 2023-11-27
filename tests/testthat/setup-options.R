@@ -3,5 +3,7 @@
 options(
   warnPartialMatchAttr = TRUE,
   warnPartialMatchDollar = TRUE,
-  warnPartialMatchArgs = TRUE
+  # This needs to remain FALSE for now as one of our indirect dependencies
+  # (abind) uses partial matching in its code. See #343 for details.
+  warnPartialMatchArgs = FALSE
 )
