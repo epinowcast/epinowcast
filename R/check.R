@@ -113,7 +113,7 @@ check_modules_compatible <- function(modules) {
         "number of threads per chain to the number of groups. To ",
         "silence this warning, set the `likelihood_aggregation` ",
         "argument in `enw_fit_opts` to 'groups'."
-      ), 
+      ),
       immediate. = TRUE
     )
   }
@@ -272,7 +272,7 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   if (any(diff_dates < dates[-length(dates)])) {
     rlang::abort(
       paste0(
-        date_var, 
+        date_var,
         " has a shorter timestep than the specified timestep of a month"
       )
     )
@@ -284,7 +284,7 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
     if (exact) {
       rlang::abort(
         paste0(
-          date_var, 
+          date_var,
           " does not have the specified timestep of month"
         )
       )
@@ -316,7 +316,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
   if (any(diffs == 0)) {
     rlang::abort(
       paste0(
-        date_var, 
+        date_var,
         " has a duplicate date. Please remove duplicate dates."
       )
     )
@@ -490,7 +490,7 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
 check_observation_indicator <- function(
   new_confirm, observation_indicator = NULL
 ) {
-  if (!is.null(observation_indicator) && 
+  if (!is.null(observation_indicator) &&
       !is.logical(new_confirm[[observation_indicator]])) {
     rlang::abort("observation_indicator must be a logical")
   }
