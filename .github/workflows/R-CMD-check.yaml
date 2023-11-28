@@ -33,6 +33,7 @@ jobs:
           - {os: windows-latest, r: 'release', rtools: '43'}
           - {os: ubuntu-latest,   r: 'release', rtools: ''}
           - {os: ubuntu-latest,   r: 'oldrel-1', rtools: ''}
+          - {os: ubuntu-latest,   r: '3.5', rtools: ''}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -82,5 +83,12 @@ jobs:
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
+        if:  ${{ matrix.config.r }} != '3.5'
         with:
+          upload-snapshots: true
+
+      - uses: r-lib/actions/check-r-package@v2
+        if:  ${{ matrix.config.r }} == '3.5'
+        with:
+          args: 'c("--no-manual", "--as-cran", "--no-build-vignettes", "--ignore-vignettes")'
           upload-snapshots: true
