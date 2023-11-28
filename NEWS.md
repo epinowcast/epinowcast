@@ -39,6 +39,7 @@ This release is in development and not yet ready for production use.
 - Enabled compiling with multithreading by default as this was found to cause no deterioration in performance even with 1 thread per chain. The likelihood calculation is now no longer parallelised when `threads_per_chain = 1` which should offer a small performance improvement. See #366 by @sbfnk and reviewed by @seabbs.
 - Added a new action to check that the `cmdstan` model can be compiled and has the correct syntax. This runs on pull requests whenever stan code is changed, when code is merged onto `main` with altered stan code, and on a weekly schedule against the latest `main` branch. See #386 by @seabbs.
 - Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
+- Increased the minimum supported R version to >= R 3.6.0 from R 3.5.0 and ensured that existing function code and tests compiled with this dependency. Vignettes will continue to allow use of R >= 4.1.0 syntax (i.e., native pipe and lambda function syntax). See #389 by @medewitt and @seabbs and reviewed by @pearsonca.
 
 ## Model
 
