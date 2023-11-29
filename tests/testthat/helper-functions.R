@@ -38,3 +38,24 @@ dt_copies <- function(...) {
 dt_compare_all <- function(ref_copies, ...) {
   all(mapply(function(l, r) all(l == r), ref_copies, list(...)))
 }
+
+check_r_version <- function(min_major = 4, min_minor = 0){
+
+  current_version <- as.numeric(
+    paste0(
+      R.version[["major"]],
+      ".",
+      gsub("(\\d+)\\..*", "\\1", R.version[["minor"]])
+    )
+  )
+
+  target_min_version <- as.numeric(
+    paste0(min_major, ".",min_minor)
+  )
+
+  if (current_version >= target_min_version) {
+    return(TRUE)
+  } else {
+    return (FALSE)
+  }
+}
