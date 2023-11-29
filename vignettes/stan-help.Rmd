@@ -330,6 +330,13 @@ Similarly, you could take an emperical Bayes approach and use the posteriors of 
 #TODO Non-stationarity, longer time scales, multi-modality from known etiologies
 -->
 
+It is important to understand the data being passed to `epinowcast` and have some ideas regarding the data generating process for your data.
+For instance, if there are significant changes in your reporting triangle, this could manifest as multi-modality in the posterior distribution (i.e., Stan is trying to fit two different reporting delays with the same parameters).
+These different reporting regimes could result in long model run times, very wide posteriors, and ultimately nonsensical inferences.
+Given the nuances of your data, you may need to identify and fit different regimes of your data.
+These problems can also manifest over longer timescales, so while more data are generally better, too much data can result in ill-fitting models.
+
+
 ## Common failure modes
 
 ### My model takes too long to run
