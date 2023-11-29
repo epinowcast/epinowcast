@@ -12,6 +12,13 @@ test_that("coerce_date works for non-garbage in", {
   expect_error(
     coerce_date(NULL), NA
   )
+  expect_error(
+    coerce_date(NULL), NA
+  )
+  expect_equal(
+    coerce_date(NULL), 
+    data.table::as.IDate(.Date(numeric()))
+  )
   coerced <- coerce_date(nongarbage)
   expect_identical(coerced, refresult)
   expect_identical(class(coerced), class(refresult)) # nolint: expect_s3_class
