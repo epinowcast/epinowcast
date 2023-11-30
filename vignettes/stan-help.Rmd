@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
   - [ ] Adapt Delta
   - [ ] Max Tree Depth
   - [ ] Number of samples, priors, Rhat/ ESS
-- [ ] Other generic resources
+- [ ] Other resources
 
 <-->
 
@@ -39,7 +39,7 @@ knitr::opts_chunk$set(
 The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
 `{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
-As describe in the `"{epinowcast}"` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
+As described in the `{epinowcast}` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
 ## Ensuring you have the proper toolchain {.toolchain}
@@ -57,10 +57,9 @@ The Stan team has assembled very detailed instructions for each platform:
 
 After completing your platform specific toolshain installation, you can move on to R.
 
-
 ## Now install CmdStanR and CmdStan
 
-Now you can open a session of R using your favourite IDE like Vscode or RStudio.
+Now you can open a session of R using your favourite IDE like Rstudio or Vscode.
 You'll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
 There is a [very detailed installation guide available for CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which provides the authorative installation instructions.
 
@@ -108,7 +107,7 @@ remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 
 ## Running your first model
 
-The first time you fit a model with `{epinowcast}` will be **slow**!
+The first time you fit a model with `{epinowcast}` will be **slow** compared to future fits!
 This is normal as all of the Stan code is being compiled for the first time.
 Note that the compiled Stan binaries will live in your user package directory (or wherever you have defined your package libraries).
 Because of this package architecture
@@ -123,7 +122,6 @@ The `enw_fit_opts` allows you to set several critical components for the Stan co
 These parameters are passed to Stan during the model fitting process and have an influence on computation time and quality of the model fit.
 Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
 All of the parameters are passed to the `sampling` function available from [`{cmdstanr}`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html).
-
 
 # Failures modes
 
@@ -149,7 +147,6 @@ Please note that the `theads_per_chain` has not impact on model convergence or f
 **The product of the `thread_per_chain` and `chains`** arguments should be equal to or less than the number of cores on your machine! 
 :::
 
-
 ### iter_warmup and iter_sampling {.iters}
 
 The number of samples using for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
@@ -157,7 +154,6 @@ Stan requires a sufficient number of warmup iterations to dynamically estimate t
 Unlike with Gibbs sampling (such as the method used in JAGS), you do not need to set large values for `iter_warmup` or `iter_sampling`.
 Conversely, setting large values for iterations is a sign of poor model fit and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`)
 Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficient.
-
 
 ### max_treedepth {.maxTree}
 
@@ -188,9 +184,7 @@ enw_fit_opts(
     iter_warmup = 1000,
     show_messages = FALSE
 )
-
 ```
-
 
 ## Model settings {.modelParams}
 
@@ -364,7 +358,7 @@ A high number of divergent transitions indicates that the model outputs are not 
 The first step in addressing this is to increase the [`adapt_delta`](#adaptDelta) argument to a numeric near one (e.g., 0.99 or 0.999).
 This will allow for a smaller step size and may result in more realiable inferences.
 Importantly, if the number of divergent transitions remains high, your model may be misspecified given the data that are available.
-At this point it may be worthwhile to investigate if the model paramterisation if correct for the data you have available.
+At this point it may be worthwhile to investigate if the model paramterisation is correct for the data you have available.
 
 
 ### My `r_hat`s are high and by `ess`s are low
