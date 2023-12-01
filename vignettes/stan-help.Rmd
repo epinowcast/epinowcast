@@ -39,12 +39,13 @@ knitr::opts_chunk$set(
 The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
 `{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
-As described in the `{epinowcast}` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/)  R package which also has the ability to install CmdStan using an R interface. 
+R calling a separate program to execute calculations is similar to [`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies on the [JAGS library](https://cran.r-project.org/web/packages/rjags/INSTALL) and  [R-INLA](https://www.r-inla.org/what-is-inla).
+As described in the `{epinowcast}` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) an R package which also has the ability to install CmdStan using an R interface. 
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
 ## Ensuring you have the proper toolchain {.toolchain}
 
-The Stan code that is written in the `{epinowcast}` package converted[^1] to optimised C++ code and then compiled to machine readable instructions.
+The Stan code that is written in the `{epinowcast}` package is converted[^1] to optimised C++ code and then compiled to machine readable instructions.
 Because Stan needs a several programs to execute this compilation process such as the build tool [make](https://en.wikipedia.org/wiki/Make_(software)) and a C++ compiler, you will need to ensure that your system has the appropriate supporting software, known as a toolchain.
 The steps to install this additional software are in addition to R and are **platform specific**.
 As a reminder, these installation steps occur **outside of R**.
@@ -63,17 +64,11 @@ Now you can open a session of R using your favourite IDE like Rstudio or Vscode.
 You'll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
 There is a [very detailed installation guide available for CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which provides the authorative installation instructions.
 
-Install the CmdStanR package using the below code.
+The `{cmdstanr}` package is installed as a dependency when you install `epinowcast`.
+To ensure that your toolchain installation occured sucessfully, run the following code in your R terminal:
 
 ```r
-# In a fresh R session run the following in your R console.
-install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-
-```
-
-To ensure that your toolchain instllation occured sucessfully, run the following code in your R terminal:
-
-```r
+library(cmdstanr)
 check_cmdstan_toolchain()
 ```
 
@@ -91,7 +86,7 @@ Assuming you have the the toolchain installed, you can install CmdStanR.
 cmdstanr::install_cmdstan(cores = 2)
 ```
 
-# Epinowcast modeling
+# Epinowcast modelling
 
 ## Installation
 
@@ -157,14 +152,14 @@ Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficien
 
 ### max_treedepth {.maxTree}
 
-This value controls the size of the trajectory taken by the sample (in power of 2) take for each step.
+This value controls the size of the trajectory taken by the sample (in power of 2) for each step.
 If this value is too low, the sampler may terminate too early causing excess runtimes.
 You can increase the `max_treedepth` to an integer value greater than `10` up to `15` (or lower).
 Given the complexity of the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
 
 ### adapt_delta {.adaptDelta}
 
-This parameter sets the target average proposal acceptable probability during NUTS sampling (and is a real number values between 0 and 1).
+This parameter sets the target average proposal acceptance probability during NUTS sampling (and is a real number values between 0 and 1).
 Higher values of `adapt_delta` will result in smaller step sizes during sampling which will slow the model fitting time but can help to address *divergent transitions.*
 The default value is 0.8, but it is likely that this will need to be set slightly higher like 0.9 to 0.99 given the complexity of the models being fit.
 
@@ -358,12 +353,12 @@ A high number of divergent transitions indicates that the model outputs are not 
 The first step in addressing this is to increase the [`adapt_delta`](#adaptDelta) argument to a numeric near one (e.g., 0.99 or 0.999).
 This will allow for a smaller step size and may result in more realiable inferences.
 Importantly, if the number of divergent transitions remains high, your model may be misspecified given the data that are available.
-At this point it may be worthwhile to investigate if the model paramterisation is correct for the data you have available.
+At this point it may be worthwhile to investigate if the model parameterisation is correct for the data you have available.
 
 
 ### My `r_hat`s are high and by `ess`s are low
 
-High values of `r_hat`, the Gelman-Rubin statistic used to measure converge, indicates a lack of convergence.
+High values of `r_hat`, the Gelman-Rubin statistic used to measure convergence, indicates a lack of convergence between the different model chains.
 Values greater than 1.05 are considered unreliable.
 Similarly, lower values for the [effective sample size](https://mc-stan.org/docs/reference-manual/effective-sample-size.html) is especially problematic.
 The effective sample size provides insight into how many independent samples you have drawn from the posterior, accounting for the autocorrelation within the Markov chains.
