@@ -152,7 +152,7 @@ Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficien
 
 ### max_treedepth {.maxTree}
 
-This value controls the size of the trajectory taken by the sample (in power of 2) for each step.
+This value controls the maximum size of the trajectory taken by the sample (in power of 2) for each step.
 If this value is too low, the sampler may terminate too early causing excess runtimes.
 You can increase the `max_treedepth` to an integer value greater than `10` up to `15` (or lower).
 Given the complexity of the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
@@ -335,7 +335,7 @@ This can occur because the sampler is having difficulty exploring the posterior 
 You can a few simple steps to assist with this:
 
 
-1. Increase the [`adapt_delta`](.adaptDelta) argument to 15 which will allow longer trajectories to used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
+1. Increase the [`max_treedepth`](.maxTree) argument to 15 which will allow longer trajectories to used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
 2. Use more [informative priors](.settingPriors). 
 3. Try to simplify the model first to understand potential degeneracies.
 4. Reduce the amount of data you are trying to fit. This might include reducing the duration of time overwhich you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting the larger data. 
