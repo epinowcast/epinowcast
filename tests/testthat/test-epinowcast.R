@@ -57,6 +57,37 @@ test_that("epinowcast() runs using default arguments only", {
   )
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
+  expect_data_table(nowcast$priors[[1]])
+  expect_true(nrow(nowcast$priors[[1]]) == 14)
+  expect_named(
+    nowcast$priors[[1]],
+    c("variable", "dimension", "description", "distribution", "mean", "sd")
+  )
+  expect_identical(
+    nowcast$priors[[1]][, variable],
+    c(
+      "expr_r_int", "expr_beta_sd", "expr_lelatent_int", "expl_beta_sd",
+      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
+      "refnp_int", "refnp_beta_sd", "rep_beta_sd", "miss_int", "miss_beta_sd",
+      "sqrt_phi"
+      )
+  )
+  expect_identical(
+    nowcast$priors[[1]][, mean],
+    c(0.0, 0.0, 5.5, 0.0, 1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  )
+  expect_identical(
+    nowcast$priors[[1]][, sd],
+    c(0.2, rep(1, 13))
+  )
+  expect_identical(
+    nowcast$priors[[1]][variable %like% "exp", dimension],
+    c(1, 1, 1, 1)
+  )
+  expect_identical(
+    nowcast$priors[[1]][!variable %like% "exp", dimension],
+    rep(NA_real_, 10)
+  )
 })
 
 test_that("epinowcast() runs with within-chain parallelisation", {
