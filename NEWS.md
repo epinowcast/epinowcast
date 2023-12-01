@@ -4,11 +4,11 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@medewitt, @sbfnk, @adrian-lison, @kathsherratt, @natemcintosh, @Bisaloo and @seabbs contributed code to this release.
+@jamesmbaazam, @medewitt, @sbfnk, @adrian-lison, @kathsherratt, @natemcintosh, @Bisaloo and @seabbs contributed code to this release.
 
-@adrian-lison, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
+@jamesmbaazam, @adrian-lison, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @kathsherratt, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
@@ -44,6 +44,7 @@ This release is in development and not yet ready for production use.
 - Added support for non-parametric reference date models as well as mixed models with both parametric and non-parametric reference date models. This enables the use of popular models such as the discrete time cox proportional hazards model. See #313 by @seabbs and self-reviewed.
 - Added support for missing data (excluding in the missing reference date model) using the `observation_indicator` argument to `enw_obs()`. Support was also added to `enw_complete_dates()` to flag missing data and as part of this new helper functions (`enw_flag_observed_observations()` and `enw_impute_na_observations()`) were also added. This support is likely most useful when used in conjunction to a known reporting structure. See #327 by @seabbs and self-reviewed.
 - Added support for using a maximum delay that is longer than the largest observed delay in the data. This may be useful at the start of an outbreak, when the data is sparse and the user expects delays longer than what has been observed so far. Note that because this requires extrapolating the delay distribution beyond the support of the data, users should be cautious when using this feature. A new example, `inst/examples/germany_max_delay_greater_than_data.R`, has been added to demonstrate this feature. See # by @seabbs and self-reviewed.
+- Added the priors used for model fitting to the `<epinowcast>` object. The object returned by `epinowcast()` now has a variable called `priors` and can be accessed for inspection and downstream analyses. See #399 by @jamesmbaazam and reviewed by @pearsonca  and @seabbs.
 
 ## Documentation
 
@@ -56,6 +57,7 @@ This release is in development and not yet ready for production use.
 - Split README to focus on package-level issues and moved quick start into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
 - Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
 - Removed the reference in the pull request template to updating the development version as this has been found to cause issues when multiple pull requests are open at once. See #391 by @seabbs and reviewed by @Bisaloo.
+- Added a note to the Getting Started vignette to clarify usability with alternatives to data.table. See #406 by @kathsherratt and reviewed by @seabbs.
 
 ## Depreciations
 
