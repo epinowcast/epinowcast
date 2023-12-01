@@ -61,8 +61,8 @@ be used but currently require the supplied \code{model} to be adapted.}
 }
 \value{
 A object of the class "epinowcast" which inherits from
-\code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and \code{data.table}, and combines the output from
-the sampler specified in \code{enw_fit_opts()}.
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and \code{data.table}, and combines the input data,
+priors, and output from the sampler specified in \code{enw_fit_opts()}.
 }
 \description{
 Provides a user friendly interface around package functionality
