@@ -35,7 +35,7 @@ In this quick start, we demonstrate using `epinowcast` to specify and fit a mini
 
 # Package
 
-In addition to `epinowcast`, this quick start makes use of `data.table` and `ggplot2`, which are both installed as dependencies when `epinowcast` is installed.
+In this quick start, we also use `data.table` and `ggplot2` packages. These are both installed as dependencies when `epinowcast` is installed. Note that all output from `epinowcast` is readily useable with  other tools, including `tidyverse` packages (see [here](https://mgimond.github.io/rug_2019_12/Index.html) for a comparison).
 
 ```{r echo=TRUE, results='hide'}
 library(epinowcast)
