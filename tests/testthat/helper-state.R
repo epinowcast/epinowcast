@@ -10,7 +10,9 @@ testthat::set_state_inspector(function() {
     attached    = search(),
     connections = getAllConnections(),
     cwd         = getwd(),
-    envvars     = Sys.getenv(),
+    # cmdstanr sets `STAN_NUM_THREADS` based on the value of `threads_per_chain`
+    # https://github.com/stan-dev/cmdstanr/blob/bc60419a4d357eb531a2f755ceb7bc0e3651fb76/R/run.R#L375
+    #    envvars     = Sys.getenv(),
     handlers    = if (getRversion() >= "4.0.0") {
         globalCallingHandlers()
       } else {
