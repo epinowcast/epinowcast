@@ -200,7 +200,7 @@ issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull
 request](https://github.com/epinowcast/epinowcast/pulls) and see our
 [contributing
-guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
+guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md)
 for more information.
 
 If you need a different underlying model for your work: `epinowcast`
@@ -218,15 +218,15 @@ Please briefly describe your problem and what output you expect in an
 question, please don’t open an issue. Instead, ask on our [Q and A
 page](https://github.com/epinowcast/epinowcast/discussions/categories/q-a).
 See our [contributing
-guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md)
+guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md)
 for more information.
 
 ### Code of Conduct
 
 Please note that the `epinowcast` project is released with a
 [Contributor Code of
-Conduct](https://package.epinowcast.org/CODE_OF_CONDUCT.html). By
-contributing to this project, you agree to abide by its terms.
+Conduct](https://github.com/epinowcast/.github/blob/main/CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.
 
 ## Citation
 
