@@ -11,7 +11,7 @@
 enw_reps_with_complete_refs <- function(
   new_confirm, max_delay, by = NULL, copy = TRUE
 ) {
-  rep_with_complete_ref <- coerce_dt(
+  rep_with_complete_ref <- coerceDT(
     new_confirm, select = c(by, "report_date"), copy = copy
   )
   rep_with_complete_ref <- rep_with_complete_ref[,
@@ -41,9 +41,11 @@ enw_reps_with_complete_refs <- function(
 enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
                                     metareference, max_delay) {
   # Make a complete data.table of all possible reference and report dates
-  miss_lk <- coerce_dt(
-    metareference, select = "date", group = TRUE
+  miss_lk <- makeDT(
+    metareference, select = "date"
   )
+  # TODO
+  # , group = TRUE
   data.table::setnames(miss_lk, "date", "reference_date")
 
   miss_lk <- miss_lk[,

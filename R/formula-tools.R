@@ -38,7 +38,7 @@
 enw_manual_formula <- function(data, fixed = NULL, random = NULL,
                                custom_random = NULL, no_contrasts = FALSE,
                                add_intercept = TRUE) {
-  data <- coerce_dt(data)
+  data <- coerceDT(data)
   if (add_intercept) {
     form <- "1"
   } else {
@@ -473,8 +473,8 @@ construct_re <- function(re, data) {
   terms_int <- terms_int[!startsWith(terms, "0:")]
 
   # make all right hand side random effects factors
-  data <- coerce_dt(data, required_cols = expanded_random)[,
-    (expanded_random) := lapply(.SD, as.factor),
+  data <- makeDT(data, require = expanded_random)[,
+    c(expanded_random) := lapply(.SD, as.factor),
     .SDcols = expanded_random
   ]
 
@@ -619,7 +619,7 @@ construct_re <- function(re, data) {
 #' # to specify an independent random effect per strata.
 #' enw_formula(~ (1 + day | week:month), data = data)
 enw_formula <- function(formula, data, sparse = TRUE) {
-  data <- coerce_dt(data)
+  data <- coerceDT(data)
 
   # Parse formula
   parsed_formula <- parse_formula(formula)

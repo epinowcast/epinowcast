@@ -23,9 +23,11 @@
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' enw_add_cumulative(dt)
 enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
-  reports <- coerce_dt(
-    obs, dates = TRUE, required_cols = c(by, "new_confirm"), copy = copy
+  reports <- makeDT(
+    obs, require = c(by, "new_confirm"), copy = copy
   )
+  # TODO
+  # dates = TRUE,
 
   reports <- reports[!is.na(reference_date)]
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
@@ -67,9 +69,11 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' enw_add_incidence(dt)
 enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
                               copy = TRUE) {
-  reports <- coerce_dt(
-    obs, dates = TRUE, required_cols = c(by, "confirm"), copy = copy
+  reports <- makeDT(
+    obs, require = c(by, "confirm"), copy = copy
   )
+  # TODO
+  # dates = TRUE, 
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
   reports[, new_confirm := c(confirm[1], diff(confirm)),
     by = c("reference_date", by)
@@ -152,8 +156,8 @@ enw_linelist_to_incidence <- function(linelist,
                                       by = NULL, max_delay,
                                       completion_beyond_max_report = FALSE,
                                       copy = TRUE) {
-  counts <- coerce_dt(
-    linelist, required_cols = c(by, reference_date, report_date), copy = copy
+  counts <- makeDT(
+    linelist, require = c(by, reference_date, report_date), copy = copy
   )
   data.table::setnames(
     counts,
@@ -161,7 +165,9 @@ enw_linelist_to_incidence <- function(linelist,
     c("reference_date", "report_date")
   )
 
-  counts <- coerce_dt(counts, dates = TRUE, copy = FALSE)
+  counts <- makeDT(counts, copy = FALSE)
+  # TODO
+  # , dates = TRUE
 
   counts <- counts[,
     .(new_confirm = .N), keyby = c("reference_date", "report_date", by)
@@ -226,9 +232,11 @@ enw_linelist_to_incidence <- function(linelist,
 #' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
                                       report_date = "report_date") {
-  obs <- coerce_dt(
-    obs, dates = TRUE, required_cols = "new_confirm", forbidden_cols = "id"
+  obs <- makeDT(
+    obs, require = "new_confirm", forbid = "id"
   )
+  # TODO
+  # , dates = TRUE
   suppressWarnings(obs <- obs[, "confirm" := NULL]) # nolint
   cols <- setdiff(colnames(obs), "new_confirm")
   obs <- obs[new_confirm > 0]
@@ -355,11 +363,13 @@ enw_aggregate_cumulative <- function(
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
   stopifnot("The data already has a timestep of a day" = timestep != "day")
-  obs <- coerce_dt(
+  obs <- makeDT(
     obs,
-    required_cols = c("confirm", by), forbidden_cols = ".group",
-    dates = TRUE, copy = copy
+    require = c("confirm", by), forbid = ".group",
+    copy = copy
   )
+  # TODO
+  # dates = TRUE, 
 
   obs <- enw_assign_group(obs, by = by)
   check_timestep_by_date(obs, timestep = "day", exact = TRUE)

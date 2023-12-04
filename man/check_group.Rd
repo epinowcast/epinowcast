@@ -7,8 +7,7 @@
 check_group(obs)
 }
 \arguments{
-\item{obs}{An object that will be \code{coerce_dt}d in place, that does not
-contain \code{.group}, \code{.old_group}, or \code{.new_group}. These are reserved names.}
+\item{obs}{An object that will be \code{\link[coerceDT:makeDT]{coerceDT::makeDT()}}\verb{d in place, that does not contain }.group\verb{, }.old_group\verb{, or }.new_group`. These are reserved names.}
 }
 \value{
 The \code{obs} object, which will be modifiable in place.
