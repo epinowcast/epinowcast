@@ -338,15 +338,16 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #' @inheritParams get_internal_timestep
 #' @inheritParams check_calendar_timestep
 #'
+#' @importFrom coerceDT makeDT
+#' 
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
 #' @family check
 check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
                            check_nrow = TRUE) {
-  obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
-  if (!is.Date(obs[[date_var]])) {
-    stop(date_var, " must be of class Date")
-  }
+  reqstmt <- list()
+  reqstmt[[date_var]] <- "Date"
+  obs <- makeDT(obs, require = date_var, copy = FALSE)
 
   dates <- obs[[date_var]]
   dates <- sort(dates)

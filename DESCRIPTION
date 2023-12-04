@@ -99,7 +99,8 @@ Imports:
     purrr,
     rstan,
     scales,
-    lifecycle
+    lifecycle,
+    coerceDT
 Suggests:
     bookdown,
     loo (>= 2.4.1),
