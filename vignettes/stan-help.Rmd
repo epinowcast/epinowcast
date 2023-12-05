@@ -39,7 +39,7 @@ knitr::opts_chunk$set(
 The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
 `{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
-R calling a separate program to execute calculations is similar to [`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies on the [JAGS library](https://cran.r-project.org/web/packages/rjags/INSTALL) and  [R-INLA](https://www.r-inla.org/what-is-inla).
+R calling a separate program to execute calculations is similar to [`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies on the [JAGS library](https://cran.r-project.org/web/packages/rjags/INSTALL) and [R-INLA](https://www.r-inla.org/what-is-inla).
 As described in the `{epinowcast}` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) an R package which also has the ability to install CmdStan using an R interface. 
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
