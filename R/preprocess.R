@@ -124,7 +124,7 @@ enw_add_metaobs_features <- function(metaobs,
   # localize and check metaobs input
   metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
-    cli::cli_abort(sprintf("metaobs column `%s` is not a `Date`.", datecol))
+    cli::cli_abort("metaobs column {datecol} is not a `Date`.")
   }
 
   # this may also error, so coercing first
@@ -133,10 +133,9 @@ enw_add_metaobs_features <- function(metaobs,
   # warn about columns that may be overwritten
   tarcols <- c("day_of_week", "day", "week", "month")
   if (any(tarcols %in% colnames(metaobs))) {
-    cli::cli_warn(sprintf(
-      "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
-      intersect(tarcols, colnames(metaobs))
-    ))
+    cli::cli_warn("Pre-existing columns in `metaobs` will be overwritten:", 
+              "{intersect(tarcols, colnames(metaobs))}."
+    )
   }
   # sort by current sorting and datacol
   data.table::setkeyv(metaobs, union(data.table::key(metaobs), datecol))

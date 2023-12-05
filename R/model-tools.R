@@ -340,8 +340,8 @@ enw_model <- function(model = system.file(
                       target_dir = tempdir(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    cli::cli_inform(sprintf("Using model %s.", model))
-    cli::cli_inform(sprintf("include is %s.", toString(include)))
+    cli::cli_inform("Using model {model}.")
+    cli::cli_inform("include is {toString(include)}.")
   }
 
   if (!profile) {
