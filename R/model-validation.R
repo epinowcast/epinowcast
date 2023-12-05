@@ -29,7 +29,7 @@
 #' @return A `data.table` as returned by [scoringutils::score()].
 #' @family modelvalidation
 #' @importFrom data.table setnames
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @export
 #' @examplesIf interactive()
 #' library(data.table)
@@ -55,7 +55,7 @@
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
                               check = FALSE, round_to = 3, ...) {
   if (!requireNamespace("scoringutils")) {
-    rlang::abort(
+    cli::cli_abort(
       "The package `scoringutils` is required for this function to work."
     )
   }

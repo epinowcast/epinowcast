@@ -133,7 +133,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' @family dataconverters
 #' @export
 #' @importFrom data.table as.data.table setkeyv
-#' @importFrom rlang inform
+#' @importFrom cli cli_inform
 #' @examples
 #' linelist <- data.frame(
 #'   onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
@@ -171,7 +171,7 @@ enw_linelist_to_incidence <- function(linelist,
   obs_delay <- max(counts$report_date) - min(counts$reference_date) + 1
   if (missing(max_delay)) {
     max_delay <- obs_delay
-    rlang::inform(
+    cli::cli_inform(
       paste0(
         "Using the maximum observed delay of ", max_delay, " days ",
         "to complete the incidence data."
@@ -179,7 +179,7 @@ enw_linelist_to_incidence <- function(linelist,
     )
   }
   if (max_delay < obs_delay) {
-    rlang::inform(
+    cli::cli_inform(
       paste0(
         "Using the maximum observed delay of ", obs_delay,
         " days as greater than the maximum specified to complete the ",
@@ -351,7 +351,7 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @return A data.table with aggregated observations.
 #'
 #' @importFrom data.table setorder
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @export
 #' @family dataconverters
 #' @examples
@@ -362,7 +362,7 @@ enw_aggregate_cumulative <- function(
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
   if (timestep == "day") {
-    rlang::abort("The data already has a timestep of a day")
+    cli::cli_abort("The data already has a timestep of a day")
   }
   obs <- coerce_dt(
     obs,
@@ -380,7 +380,7 @@ enw_aggregate_cumulative <- function(
   agg_obs <- obs[report_date >= init_ref_date]
 
   if (nrow(agg_obs) == 0) {
-    rlang::abort(
+    cli::cli_abort(
       paste0(
         "There are no complete report dates ",
         "(i.e. report_date >= min_date + timestep - 1)"

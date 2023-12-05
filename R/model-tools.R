@@ -22,7 +22,7 @@
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
 #' @family modeltools
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
@@ -43,7 +43,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      rlang::abort(
+      cli::cli_abort(
         paste0(
           "formula must be an object of class enw_formula as produced using ",
           "enw_formula"
@@ -325,7 +325,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @return A `cmdstanr` model.
 #'
 #' @family modeltools
-#' @importFrom rlang inform
+#' @importFrom cli cli_inform
 #' @export
 #' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model
@@ -340,8 +340,8 @@ enw_model <- function(model = system.file(
                       target_dir = tempdir(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    rlang::inform(sprintf("Using model %s.", model))
-    rlang::inform(sprintf("include is %s.", toString(include)))
+    cli::cli_inform(sprintf("Using model %s.", model))
+    cli::cli_inform(sprintf("include is %s.", toString(include)))
   }
 
   if (!profile) {

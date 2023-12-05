@@ -108,7 +108,7 @@ latest_obs_as_matrix <- function(latest) {
 #' @family modelmodulehelpers
 #' @importFrom purrr map_dbl
 #' @importFrom utils head
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @examples
 #' # Simple convolution matrix with a static distribution
 #' convolution_matrix(c(1, 2, 3), 10)
@@ -121,7 +121,7 @@ latest_obs_as_matrix <- function(latest) {
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
-      rlang::abort(
+      cli::cli_abort(
         paste0(
           "`length(dist)` must equal `t` or be the same for all t ",
           "(i.e. length 1)"
@@ -130,7 +130,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
     }
     ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
-      rlang::abort("dist must be the same length for all t")
+      cli::cli_abort("dist must be the same length for all t")
     }
   } else {
     ldist <- rep(length(dist), t)

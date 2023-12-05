@@ -265,7 +265,7 @@ enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
 #' @family modeldesign
 #' @export
 #' @importFrom purrr map
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @examples
 #' metaobs <- data.frame(week = 1:2)
 #' enw_add_cumulative_membership(metaobs, "week")
@@ -279,7 +279,7 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
   cfeature <- paste0("c", feature)
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (!is.numeric(metaobs[[feature]])) {
-      rlang::abort(
+      cli::cli_abort(
         paste0(
           "Requested variable ", feature,
           " is not numeric. Cumulative membership effects are only ",

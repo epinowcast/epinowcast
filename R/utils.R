@@ -184,7 +184,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @family utils
 #' @examples
 #' # works
@@ -212,7 +212,7 @@ coerce_date <- function(dates) {
 
   if (anyNA(res)) {
     bads <- is.na(res)
-    rlang::abort(sprintf(
+    cli::cli_abort(sprintf(
       "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
       toString(dates[bads]),
       toString(which(bads))
@@ -236,7 +236,7 @@ coerce_date <- function(dates) {
 #' @return A numeric value representing the number of days for "day" and
 #' "week", "month" for "month",  or the input value if it is a numeric whole
 #' number.
-#' @importFrom rlang abort
+#' @importFrom cli cli_abort
 #' @family utils
 get_internal_timestep <- function(timestep) {
   # check if the input is a character
@@ -246,7 +246,7 @@ get_internal_timestep <- function(timestep) {
       day = 1,
       week = 7,
       month = "month",  # months are not a fixed number of days
-      rlang::abort(
+      cli::cli_abort(
         paste0(
           "Invalid timestep. Acceptable string inputs are 'day', 'week',",
           " 'month'."
@@ -257,7 +257,7 @@ get_internal_timestep <- function(timestep) {
     # check if the input is a whole number
     return(timestep)
   } else {
-    rlang::abort(
+    cli::cli_abort(
       paste0(
         "Invalid timestep. If timestep is a numeric, it should be a whole ",
         "number representing the number of days."
