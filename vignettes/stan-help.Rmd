@@ -373,7 +373,12 @@ If `r_hat` is large and `ess_bulk`/ `ess_tail` are low, consider:
 
 Wide posterior values indicate that there is a high degree of uncertainity given the data and model.
 If not other warnings are shown (e.g., divergent transitions, higher ESS), then this is simply the inference given the available data.
-Posteriors could be reduced through the use of stronger, more informative [priors](#settingPriors).
+If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood. 
+
+However, Bayesian model building is often an iterative process [@gelmanBayesianWorkflow2020] and, in practice, it's common to realize that that the model's prior likelihood doesn't accurately reflect your prior beliefs. 
+Priors that were thought to be non-informative can turn out to [strongly influence the posterior](http://www.stat.columbia.edu/~gelman/research/published/entropy-19-00555-v2.pdf), often in unexpected and undesirable ways.
+If you suspect that this might be the case, it can make sense to revisit your priors, iteratively inspecting the joint prior model through prior predictive simulation and tweaking marginal distributions over individual parameters.
+The (Stan Prior Choice wiki)[https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations] is often a useful guide to this process.
 
 # Other resources
 
