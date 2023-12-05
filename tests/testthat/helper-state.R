@@ -11,8 +11,8 @@ testthat::set_state_inspector(function() {
     connections = getAllConnections(),
     cwd         = getwd(),
     envvars     = Sys.getenv(),
-    handlers    = if (check_r_version(4, 0 )) {
-      globalCallingHandlers()
+    handlers    = if (getRversion() >= "4.0.0") {
+        globalCallingHandlers()
       } else {
         Sys.getenv("error")
       },
