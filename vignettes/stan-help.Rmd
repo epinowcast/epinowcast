@@ -147,8 +147,10 @@ Please note that the `theads_per_chain` has not impact on model convergence or f
 The number of samples using for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
 Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting. 
 Unlike with Gibbs sampling (such as the method used in JAGS), you do not need to set large values for `iter_warmup` or `iter_sampling`.
-Conversely, setting large values for iterations is a sign of poor model fit and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`)
-Typically, 1000-2000 samples for `iter_warmup` and `iter_sampling` are sufficient.
+Conversely, setting large values for iterations could be a sign of poor model fit (unlinke rjags and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`).
+A [general heuristic](https://mc-stan.org/rstan/reference/Rhat.html#:~:text=Both%20bulk%2DESS%20and%20tail,respective%20posterior%20quantiles%20are%20reliable) is to have your bulk and tail effective sample sizes (ESS) greater than 100.
+However, [depending on the complexity of your problem](https://discourse.mc-stan.org/t/number-of-iterations/1674/13) increasing the number of iterations can be appropriate (i.e., your [$\hatR$ values are near 1](https://arxiv.org/pdf/1903.08008.pdf), [your Monte Carlo Standard errors](https://mc-stan.org/docs/cmdstan-guide/stansummary.html) are low) especially if you want to make inferences regarding tail behaviours.
+Typically we have found that 1000-2000 samples per chain for `iter_warmup` and `iter_sampling` are good starting values for initial model fitting.
 
 ### max_treedepth {.maxTree}
 
@@ -326,12 +328,13 @@ Given the nuances of your data, you may need to identify and fit different regim
 These problems can also manifest over longer timescales, so while more data are generally better, too much data can result in ill-fitting models.
 
 
-## Common failure modes
+## Approachs to solve common problems
 
 ### My model takes too long to run
 
 One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
-This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data.
+This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the [Folk Theorm of Statistical Computing](https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/) "when you have computational problems, often there's a problem with your model").
+In other words, you may have have a mismatch between your data and the model you are trying to fit.
 You can a few simple steps to assist with this:
 
 
@@ -349,7 +352,7 @@ CmdStan may alert you that you have ["divergent transitions"](https://mc-stan.or
 #>1: There were 32 divergent transitions after warmup.
 ```
 
-A high number of divergent transitions indicates that the model outputs are not to be trusted.
+A higher number of divergent transitions indicates that the model outputs are not to be trusted.
 The first step in addressing this is to increase the [`adapt_delta`](#adaptDelta) argument to a numeric near one (e.g., 0.99 or 0.999).
 This will allow for a smaller step size and may result in more realiable inferences.
 Importantly, if the number of divergent transitions remains high, your model may be misspecified given the data that are available.
