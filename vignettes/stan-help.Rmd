@@ -102,6 +102,10 @@ remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
 
 ## Running your first model
 
+As a reminder, in each session, each time you run a model, Stan will compile your model code.
+The first time you run this model is will take a moment for the compilation to occur.
+
+<!--
 The first time you fit a model with `{epinowcast}` will be **slow** compared to future fits!
 This is normal as all of the Stan code is being compiled for the first time.
 Note that the compiled Stan binaries will live in your user package directory (or wherever you have defined your package libraries).
@@ -109,7 +113,7 @@ Because of this package architecture
 
 - Each time you install a new version of `{epinowcast}` you will experience this longer compilation time the first time you fit a model.
 - If you upgrade your version of CmdStan, you will likely need to recompile your models. This may occur automatically, or necessitate re-installing `{epinowcast}`.
-
+-->
 
 ## Setting `enw_fit_opts`
 
