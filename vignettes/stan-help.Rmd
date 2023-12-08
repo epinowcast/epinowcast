@@ -93,12 +93,7 @@ cmdstanr::install_cmdstan(cores = 2)
 
 As described in the project README, you can install the `"{epinowcast}"` package within R.
 
-```r
-# Stable version from:
-install.packages("epinowcast", repos = "https://epinowcast.r-universe.dev")
-
-# Development version from:
-remotes::install_github("epinowcast/epinowcast", dependencies = TRUE)
+```{r, child=c('_readme-install-epinowcast.Rmd')}
 ```
 
 ## Running your first model

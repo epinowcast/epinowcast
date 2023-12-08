@@ -38,28 +38,7 @@ cat(gsub("\n[ ]+"," ",packageDescription("epinowcast")$Description))
   
 <details><summary>Installing the package</summary>
 
-You can install the latest released version using the normal `R` function, though you need to point to `r-universe` instead of CRAN:
-
-```{r, eval = FALSE}
-install.packages(
-  "epinowcast", repos = "https://epinowcast.r-universe.dev"
-)
-```
-
-Alternatively, you can use the [`remotes` package](https://remotes.r-lib.org/) to install the development version from Github (warning! this version may contain breaking changes and/or bugs):
-
-```{r, eval = FALSE}
-remotes::install_github(
-  "epinowcast/epinowcast", dependencies = TRUE
-)
-```
-
-Similarly, you can install historical versions by specifying the release tag (e.g. this installs [`0.2.0`](https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0)):
-
-```{r, eval = FALSE}
-remotes::install_github(
-  "epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0"
-)
+```{r, child=c('_readme-install-epinowcast.Rmd')}
 ```
 
 *Note: You can also use that last approach to install a specific commit if needed, e.g. if you want to try out a specific unreleased feature, but not the absolute latest developmental version.*
