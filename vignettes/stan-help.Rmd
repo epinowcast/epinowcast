@@ -122,7 +122,7 @@ All of the parameters are passed to the `sampling` function available from [`{cm
 # Investigating the quality of the model fit
 
 In this section we will discuss the most common approaches when working with `{epinowcast}` specifically and CmdStan/ Bayesian inference more generally.
-A major component of Bayesian inference and a key component of the Bayesian workflow if validiting the quality of the model fit. 
+A major component of Bayesian inference and a key component of the Bayesian workflow if validating the quality of the model fit. 
 As a consequence, the Bayesian workflow utilises tools that make issues of fit very apparent.[@gelmanBayesianWorkflow2020]
 Additionally, `{epinowcast}` provides supplemental information to complement the existing Stan messages to help you spot and diagnose potential model fitting issues.
 The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interrogate your data](#modelData) further.
@@ -334,7 +334,7 @@ For instance, if there are significant changes in your reporting triangle, this 
 These different reporting regimes could result in long model run times, very wide posteriors, and ultimately nonsensical inferences.
 Given the nuances of your data, you may need to identify and fit different regimes of your data.
 These problems can also manifest over longer timescales, so while more data are generally better, too much data can result in ill-fitting models.
-Sometimes it is easier to examine these features before you fit your model due to domain knowledge; however, a key component of the Bayesan Workflow is to examine your [posterior predictions](#posteriorPreds).
+Sometimes it is easier to examine these features before you fit your model due to domain knowledge; however, a key component of the Bayesian Workflow is to examine your [posterior predictions](#posteriorPreds).
 
 ## Posterior predictions {.posteriorPreds}
 
@@ -391,7 +391,7 @@ If `r_hat` is large and `ess_bulk`/ `ess_tail` are low, consider:
 
 ### The posterior estimates are very wide
 
-Wide posterior values indicate that there is a high degree of uncertainity given the data and model.
+Wide posterior values indicate that there is a high degree of uncertainty given the data and model.
 If not other warnings are shown (e.g., divergent transitions, higher ESS), then this is simply the inference given the available data.
 If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood. 
 
@@ -414,7 +414,7 @@ If you find yourself having issues with `"{epinowcast}"`, reach out!
 
 ## Learning more about Stan and Bayesian inference
 
-- [](https://betanalpha.github.io/writing/)
+- [Michael Betancourt's case studies](https://betanalpha.github.io/writing/)
 - Aki Vehtari [Bayesian Data Analysis](https://avehtari.github.io/BDA_R_demos/demos_rstan/) and [case studies](https://users.aalto.fi/~ave/casestudies.html)
 
 
