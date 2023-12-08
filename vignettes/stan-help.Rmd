@@ -156,8 +156,8 @@ Please note that the `theads_per_chain` has not impact on model convergence or f
 
 The number of samples using for the warmup phase of Stan and the number of sampling iterations are controlled by the `iter_warmup` and `iter_sampling` arguments, respectively.
 Stan requires a sufficient number of warmup iterations to dynamically estimate the step change sizes during model fitting. 
-Unlike with Gibbs sampling (such as the method used in JAGS), you generally do not need to set large values for `iter_warmup` or `iter_sampling`.
-Conversely, setting large values for iterations could be a sign of poor model fit (unlinke rjags and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`).
+Unlike with Gibbs sampling (such as the method used in JAGS), you generally do not need to set large values for `iter_warmup` or `iter_sampling`, but this can vary based on the [match between your data and your model](https://discourse.mc-stan.org/t/number-of-iterations/1674/3).
+Conversely, setting large values for iterations could be a sign of poor model fit and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`).
 A [general heuristic](https://mc-stan.org/rstan/reference/Rhat.html#:~:text=Both%20bulk%2DESS%20and%20tail,respective%20posterior%20quantiles%20are%20reliable) is to have your bulk and tail effective sample sizes (ESS) greater than 100.
 However, [depending on the complexity of your problem](https://discourse.mc-stan.org/t/number-of-iterations/1674/13) increasing the number of iterations can be appropriate (i.e., your [$\hatR$ values are near 1](https://arxiv.org/pdf/1903.08008.pdf), [your Monte Carlo Standard errors](https://mc-stan.org/docs/cmdstan-guide/stansummary.html) are low) especially if you want to make inferences regarding tail behaviours.
 Typically we have found that 1000-2000 samples per chain for `iter_warmup` and `iter_sampling` are good starting values for initial model fitting.
@@ -166,8 +166,9 @@ Typically we have found that 1000-2000 samples per chain for `iter_warmup` and `
 
 This value controls the maximum size of the trajectory taken by the sample (in power of 2) for each step.
 If this value is too low, the sampler may terminate too early causing excess runtimes.
+While this does not necessary indicate model fit issues, it does represent a runtime performance opportunity (i.e., more efficient sampling).
 You can increase the `max_treedepth` to an integer value greater than `10` up to `15` (or lower).
-Given the complexity of the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
+For the models used in `{epinowcast}` it is common to have the `max_treedepth` set between 12 and 15.
 
 ### adapt_delta {.adaptDelta}
 
