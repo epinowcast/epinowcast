@@ -119,8 +119,9 @@ Because of this package architecture
 
 The `enw_fit_opts` allows you to set several critical components for the Stan computational engine.
 These parameters are passed to Stan during the model fitting process and have an influence on computation time and quality of the model fit.
+These options are inference engine agnostic and will be parsed depending on the sampler you choose (e.g., `epinowcast::enw_sample` for full Bayesian inference).
 Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
-All of the parameters are passed to the `sampling` function available from [`{cmdstanr}`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html).
+All of the parameters are passed to the `sampling` function available from [`{cmdstanr}`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html) when used with the default approach of `epinowcast::enw_sample`.
 
 # Failures modes
 
