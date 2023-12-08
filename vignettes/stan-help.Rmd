@@ -123,9 +123,12 @@ These options are inference engine agnostic and will be parsed depending on the 
 Knowing when and if the defaults need to be changed is an important part of the Bayesian workflow.[@gelmanBayesianWorkflow2020]
 All of the parameters are passed to the `sampling` function available from [`{cmdstanr}`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html) when used with the default approach of `epinowcast::enw_sample`.
 
-# Failures modes
+# Investigating the quality of the model fit
 
-In this section we will discuss the most common issues when working with `{epinowcast}` specifically and CmdStan/ Bayesian inference more generally.
+In this section we will discuss the most common approaches when working with `{epinowcast}` specifically and CmdStan/ Bayesian inference more generally.
+A major component of Bayesian inference and a key component of the Bayesian workflow if validiting the quality of the model fit. 
+As a consequence, the Bayesian workflow utilises tools that make issues of fit very apparent.[@gelmanBayesianWorkflow2020]
+Additionally, `{epinowcast}` provides supplemental information to complement the existing Stan messages to help you spot and diagnose potential model fitting issues.
 The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interrogate your data](#modelData) further.
 
 ## Sampler settings {.samplerParams}
@@ -133,10 +136,12 @@ The solutions to these issues typically require you to investigate your [sampler
 `{epinowcast}` provides users the ability to pass arguments directly to CmdStan which can improve model run time and produce better inferences.
 These parameters can be passed the `enw_fit_opts` function.
 
-### `threads_per_chain` and `chains`
+### `chains`
 
 One of the key components of Bayesian inference is creating draws from independent Markov chains.
 To assess convergence and the reliability of a given posterior distribution it is vital that at least two chains are used with **`4` chains** being the more common default.
+
+### `threads_per_chain`
 
 Stan allows for multi-threading and the Stan code used within `{epinowcast}` has tried to take advantage of these capabilities where possible.
 Multi-threading allows for the calculations to be spread across multiple threads, which could accelerate inference by allowing embarrassingly parallel calculations to be spread across threads and then later combined.
