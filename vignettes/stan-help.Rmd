@@ -37,7 +37,7 @@ knitr::opts_chunk$set(
 
 [Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `{epinowcast}`.
 The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
-`{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to inferface with CmdStan, the program which excutes the models written in the Stan programming language.
+`{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
 R calling a separate program to execute calculations is similar to [`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies on the [JAGS library](https://cran.r-project.org/web/packages/rjags/INSTALL) and [R-INLA](https://www.r-inla.org/what-is-inla).
 As described in the `{epinowcast}` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) an R package which also has the ability to install CmdStan using an R interface. 
@@ -56,16 +56,16 @@ The Stan team has assembled very detailed instructions for each platform:
 * [**Linux**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#linux)
 
 
-After completing your platform specific toolshain installation, you can move on to R.
+After completing your platform specific toolchain installation, you can move on to R.
 
 ## Now install CmdStanR and CmdStan
 
 Now you can open a session of R using your favourite IDE like Rstudio or Vscode.
 You'll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
-There is a [very detailed installation guide available for CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which provides the authorative installation instructions.
+There is a [very detailed installation guide available for CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which provides the authoritative installation instructions.
 
 The `{cmdstanr}` package is installed as a dependency when you install `epinowcast`.
-To ensure that your toolchain installation occured sucessfully, run the following code in your R terminal:
+To ensure that your toolchain installation occurred successfully, run the following code in your R terminal:
 
 ```r
 library(cmdstanr)
@@ -78,7 +78,7 @@ This function will report back if the toolchain is available and set-up as follo
 #> The C++ toolchain required for CmdStan is setup properly!
 ```
 
-If you do not get this message, return to [the installation instuctions](#toolchain) and ensure that all steps were followed.
+If you do not get this message, return to [the installation instructions](#toolchain) and ensure that all steps were followed.
 
 Assuming you have the the toolchain installed, you can install CmdStanR.
 
@@ -125,7 +125,7 @@ All of the parameters are passed to the `sampling` function available from [`{cm
 # Failures modes
 
 In this section we will discuss the most common issues when working with `{epinowcast}` specifically and CmdStan/ Bayesian inference more generally.
-The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interogate your data](#modelData) further.
+The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interrogate your data](#modelData) further.
 
 ## Sampler settings {.samplerParams}
 
@@ -138,7 +138,7 @@ One of the key components of Bayesian inference is creating draws from independe
 To assess convergence and the reliability of a given posterior distribution it is vital that at least two chains are used with **`4` chains** being the more common default.
 
 Stan allows for multi-threading and the Stan code used within `{epinowcast}` has tried to take advantage of these capabilities where possible.
-Multi-theading allows for the calculations to be spread across multiple threads, which could accelerate inference by allowing embarassingly parallel calculations to be spread across threads and then later combined.
+Multi-threading allows for the calculations to be spread across multiple threads, which could accelerate inference by allowing embarrassingly parallel calculations to be spread across threads and then later combined.
 If possible, a good default is `2`, however, if you have available compute on your machine, you can increase this to a higher value and may see some fit time reductions.
 Please note that the `theads_per_chain` has not impact on model convergence or fittings and is purely a means of speeding up the model fitting time.
 
@@ -193,7 +193,7 @@ enw_fit_opts(
 
 Setting sensible priors is important for Bayesian inference.
 When pre-processing your data, you can retrieve the prior arguments using the `enw_reference` function.
-As shown below, you can retrieve your current files and maniupate them as needed.
+As shown below, you can retrieve your current files and manipulate them as needed.
 
 ```r
 (default_priors <- enw_reference(data = enw_example("preprocessed")))
@@ -316,7 +316,7 @@ epinowcast(pobs,
   priors = new_priors
 )
 ```
-Similarly, you could take an emperical Bayes approach and use the posteriors of a [fitted model as described in another vignette](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html#using-the-inflated-posterior-as-a-prior).
+Similarly, you could take an empirical Bayes approach and use the posteriors of a [fitted model as described in another vignette](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html#using-the-inflated-posterior-as-a-prior).
 
 
 ## Exploring your data {.modelData}
@@ -332,12 +332,12 @@ Given the nuances of your data, you may need to identify and fit different regim
 These problems can also manifest over longer timescales, so while more data are generally better, too much data can result in ill-fitting models.
 
 
-## Approachs to solve common problems
+## Approaches to solve common problems
 
 ### My model takes too long to run
 
 One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
-This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the [Folk Theorm of Statistical Computing](https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/) "when you have computational problems, often there's a problem with your model").
+This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the [Folk Theorem of Statistical Computing](https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/) "when you have computational problems, often there's a problem with your model").
 In other words, you may have have a mismatch between your data and the model you are trying to fit.
 You can a few simple steps to assist with this:
 
@@ -345,7 +345,7 @@ You can a few simple steps to assist with this:
 1. Increase the [`max_treedepth`](.maxTree) argument to 15 which will allow longer trajectories to used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
 2. Use more [informative priors](.settingPriors). 
 3. Try to simplify the model first to understand potential degeneracies.
-4. Reduce the amount of data you are trying to fit. This might include reducing the duration of time overwhich you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting the larger data. 
+4. Reduce the amount of data you are trying to fit. This might include reducing the duration of time over which you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting the larger data. 
 
 
 ### Divergent transitions 
@@ -358,7 +358,7 @@ CmdStan may alert you that you have ["divergent transitions"](https://mc-stan.or
 
 A higher number of divergent transitions indicates that the model outputs are not to be trusted.
 The first step in addressing this is to increase the [`adapt_delta`](#adaptDelta) argument to a numeric near one (e.g., 0.99 or 0.999).
-This will allow for a smaller step size and may result in more realiable inferences.
+This will allow for a smaller step size and may result in more reliable inferences.
 Importantly, if the number of divergent transitions remains high, your model may be misspecified given the data that are available.
 At this point it may be worthwhile to investigate if the model parameterisation is correct for the data you have available.
 
