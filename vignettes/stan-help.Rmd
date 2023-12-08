@@ -373,13 +373,13 @@ At this point it may be worthwhile to investigate if the model parameterisation 
 ### My `r_hat`s are high and by `ess`s are low
 
 High values of `r_hat`, the Gelman-Rubin statistic used to measure convergence, indicates a lack of convergence between the different model chains.
-Values greater than 1.05 are considered unreliable.
+Values greater than 1.01 to 1.05 are [considered unreliable](https://projecteuclid.org/journals/bayesian-analysis/volume-16/issue-2/Rank-Normalization-Folding-and-Localization--An-Improved-R%CB%86-for/10.1214/20-BA1221.full), but more [important measures](https://discourse.mc-stan.org/t/summarising-rhat-values-over-multiple-variables-fits/23957/5) are the effective sample size and [MCSE](https://avehtari.github.io/rhat_ess/ess_comparison.html#Comparison_of_ESS_estimators_for_bimodal_distribution).
 Similarly, lower values for the [effective sample size](https://mc-stan.org/docs/reference-manual/effective-sample-size.html) is especially problematic.
 The effective sample size provides insight into how many independent samples you have drawn from the posterior, accounting for the autocorrelation within the Markov chains.
 Ideally you want these values to be near your total number of samples passed in the `iter_sample` argument.
 If `r_hat` is large and `ess_bulk`/ `ess_tail` are low, consider:
 
-1. Increasing your [adapt_delta](#adaptDelta) argument to a numeric value near 1 (e.g., 0.99). This will reduce the step size and could help with sampling.
+1. Increasing your [adapt_delta](#adaptDelta) argument to a numeric value near 1 (e.g., 0.99). This will reduce the step size and could help with sampling at the risk of possible increases in runtime.
 2. Use more [informative priors](.settingPriors). 
 
 
