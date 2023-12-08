@@ -339,6 +339,15 @@ For instance, if there are significant changes in your reporting triangle, this 
 These different reporting regimes could result in long model run times, very wide posteriors, and ultimately nonsensical inferences.
 Given the nuances of your data, you may need to identify and fit different regimes of your data.
 These problems can also manifest over longer timescales, so while more data are generally better, too much data can result in ill-fitting models.
+Sometimes it is easier to examine these features before you fit your model due to domain knowledge; however, a key component of the Bayesan Workflow is to examine your [posterior predictions](#posteriorPreds).
+
+## Posterior predictions {.posteriorPreds}
+
+[Posterior predictions](https://mc-stan.org/docs/stan-users-guide/ppcs.html), in addition to model fitting diagnostics, provides a way to examine how well [your model captured your data](https://betanalpha.github.io/assets/case_studies/principled_bayesian_workflow.html#Step_Fourteen:_Posterior_Retrodictive_Checks65).
+If your model poorly captured your data (e.g., your data points were consistently outside of the posterior credible intervals), your model will likely lead to poor inferences.
+However, by examining the posterior predictions with your data, you may be able to both qualitatively and quantitatively discern if your posteriors captured your data and if there are patterns which hint at issues.
+Issues in your posterior predictions without any warnings from the diagnostics could indicate that you need to examine your [priors](.settingPriors) and your underlying data.
+Utilise the `enw_plot_pp_quantiles` to examine the posterior predictive quantiles from the nowcast fits.
 
 
 ## Approaches to solve common problems
