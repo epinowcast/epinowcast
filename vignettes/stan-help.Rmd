@@ -353,7 +353,7 @@ You can a few simple steps to assist with this:
 2. Use more [informative priors](.settingPriors). 
 3. Try to simplify the model first to understand potential degeneracies.
 4. Reduce the amount of data you are trying to fit. This might include reducing the duration of time over which you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting the larger data. 
-
+5. Head to the [community forum](https://community.epinowcast.org/) and ask for some assistance.
 
 ### Divergent transitions 
 
