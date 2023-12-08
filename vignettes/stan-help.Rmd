@@ -29,6 +29,7 @@ knitr::opts_chunk$set(
   - [ ] Adapt Delta
   - [ ] Max Tree Depth
   - [ ] Number of samples, priors, Rhat/ ESS
+- [ ] Working with posteriors
 - [ ] Other resources
 
 <-->
@@ -130,6 +131,7 @@ A major component of Bayesian inference and a key component of the Bayesian work
 As a consequence, the Bayesian workflow utilises tools that make issues of fit very apparent.[@gelmanBayesianWorkflow2020]
 Additionally, `{epinowcast}` provides supplemental information to complement the existing Stan messages to help you spot and diagnose potential model fitting issues.
 The solutions to these issues typically require you to investigate your [sampler settings](#samplerParams), [model settings](#modelParams), or [interrogate your data](#modelData) further.
+It is also important to examine your posterior predictive 
 
 ## Sampler settings {.samplerParams}
 
