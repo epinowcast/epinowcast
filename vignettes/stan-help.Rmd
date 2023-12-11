@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
   comment = "#>",
   eval = FALSE
 )
+library(epinowcast)
 ```
 
 # Epinowcast and Stan
@@ -176,105 +177,8 @@ Setting sensible priors is important for Bayesian inference.
 When pre-processing your data, you can retrieve the prior arguments using the `enw_reference` function.
 As shown below, you can retrieve your current files and manipulate them as needed.
 
-```r
+```{r}
 (default_priors <- enw_reference(data = enw_example("preprocessed")))
-#> $formula
-#> $formula$parametric
-#> [1] "~1"
-#> 
-#> 
-#> $data
-#> $data$refp_fdesign
-#>   (Intercept)
-#> 1           1
-#> 
-#> $data$refp_fintercept
-#> [1] 1
-#> 
-#> $data$refp_fnrow
-#> [1] 1
-#> 
-#> $data$refp_findex
-#>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
-#> [39] 1 1 1
-#> 
-#> $data$refp_fnindex
-#> [1] 41
-#> 
-#> $data$refp_fncol
-#> [1] 0
-#> 
-#> $data$refp_rdesign
-#>      (Intercept)
-#> attr(,"assign")
-#> [1] 0
-#> 
-#> $data$refp_rncol
-#> [1] 0
-#> 
-#> $data$model_refp
-#> [1] 2
-#> 
-#> 
-#> $priors
-#>             variable
-#> 1:     refp_mean_int
-#> 2:       refp_sd_int
-#> 3: refp_mean_beta_sd
-#> 4:   refp_sd_beta_sd
-#>                                                       description
-#> 1:         Log mean intercept for parametric reference date delay
-#> 2: Log standard deviation for the parametric reference date delay
-#> 3:    Standard deviation of scaled pooled parametric mean effects
-#> 4:      Standard deviation of scaled pooled parametric sd effects
-#>             distribution mean sd
-#> 1:                Normal  1.0  1
-#> 2: Zero truncated normal  0.5  1
-#> 3: Zero truncated normal  0.0  1
-#> 4: Zero truncated normal  0.0  1
-#> 
-#> $inits
-#> function (data, priors) 
-#> {
-#>     priors <- enw_priors_as_data_list(priors)
-#>     fn <- function() {
-#>         init <- list(refp_mean_int = numeric(0), refp_sd_int = numeric(0), 
-#>             refp_mean_beta = numeric(0), refp_sd_beta = numeric(0), 
-#>             refp_mean_beta_sd = numeric(0), refp_sd_beta_sd = numeric(0))
-#>         if (data$model_refp > 0) {
-#>             init$refp_mean_int <- array(rnorm(1, priors$refp_mean_int[1], 
-#>                 priors$refp_mean_int[2]/10))
-#>         }
-#>         if (data$model_refp > 1) {
-#>             init$refp_sd_int <- array(abs(rnorm(1, priors$refp_sd_int[1], 
-#>                 priors$refp_sd_int[2]/10)))
-#>         }
-#>         init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
-#>         init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
-#>         if (data$refp_fncol > 0) {
-#>             init$refp_mean_beta <- array(rnorm(data$refp_fncol, 
-#>                 0, 0.01))
-#>             if (data$model_refp > 1) {
-#>                 init$refp_sd_beta <- array(rnorm(data$refp_fncol, 
-#>                   0, 0.01))
-#>             }
-#>         }
-#>         if (data$refp_rncol > 0) {
-#>             init$refp_mean_beta_sd <- array(abs(rnorm(data$refp_rncol, 
-#>                 priors$refp_mean_beta_sd_p[1], priors$refp_mean_beta_sd_p[2]/10)))
-#>             if (data$model_refp > 1) {
-#>                 init$refp_sd_beta_sd <- array(abs(rnorm(data$refp_rncol, 
-#>                   priors$refp_sd_beta_sd_p[1], priors$refp_sd_beta_sd_p[2]/10)))
-#>             }
-#>         }
-#>         return(init)
-#>     }
-#>     return(fn)
-#> }
-#> <bytecode: 0x55927f15dbb0>
-#> <environment: 0x559280451700>
-#> 
-
 ```
 
 In the above example, if you have some reason to believe that the standard deviation of the means used could we smaller, you could reduce them by half to 0.5.
