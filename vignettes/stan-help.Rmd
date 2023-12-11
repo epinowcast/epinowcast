@@ -132,7 +132,9 @@ Unlike with Gibbs sampling (such as the method used in JAGS), you generally do n
 Conversely, setting large values for iterations could be a sign of poor model fit and indicates that other approaches need to be employed (e.g., `priors`, `adapt_delta`, `max_treedepth`).
 A [general heuristic](https://mc-stan.org/rstan/reference/Rhat.html#:~:text=Both%20bulk%2DESS%20and%20tail,respective%20posterior%20quantiles%20are%20reliable) is to have your bulk and tail effective sample sizes (ESS) greater than 100.
 However, [depending on the complexity of your problem](https://discourse.mc-stan.org/t/number-of-iterations/1674/13) increasing the number of iterations can be appropriate (i.e., your [$\hatR$ values are near 1](https://arxiv.org/pdf/1903.08008.pdf), [your Monte Carlo Standard errors](https://mc-stan.org/docs/cmdstan-guide/stansummary.html) are low) especially if you want to make inferences regarding tail behaviours.
-Typically we have found that 1000-2000 samples per chain for `iter_warmup` and `iter_sampling` are good starting values for initial model fitting.
+During the initial model fitting process, you may start with a lower number for `iter_warmup` such as 500-750 iterations per chain and increase to 1000-2000 per chain (or more) if needed.
+Starting with slightly short warm-ups can speed up model development timelines.
+Typically we have found that 1000-2000 samples per chain for `iter_sampling` are good starting values for initial model fitting.
 
 ### max_treedepth {.maxTree}
 
