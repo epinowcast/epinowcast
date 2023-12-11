@@ -38,7 +38,7 @@ cat(gsub("\n[ ]+"," ",packageDescription("epinowcast")$Description))
   
 <details><summary>Installing the package</summary>
 
-```{r, child=c('_readme-install-epinowcast.Rmd')}
+```{r, child=c('man/chunks/_readme-install-epinowcast.Rmd')}
 ```
 
 *Note: You can also use that last approach to install a specific commit if needed, e.g. if you want to try out a specific unreleased feature, but not the absolute latest developmental version.*

@@ -79,7 +79,7 @@ cmdstanr::install_cmdstan(cores = 2)
 
 As described in the project README, you can install the `"{epinowcast}"` package within R.
 
-```{r, child=c('_readme-install-epinowcast.Rmd')}
+```{r, child=c('man/chunks/_readme-install-epinowcast.Rmd')}
 ```
 
 ## Running your first model
