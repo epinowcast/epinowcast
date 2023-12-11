@@ -19,21 +19,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-<!-->
-
-- [ ] What is Stan
-- [ ] Issues with installation
-- [ ] Issues with compilation and paths
-- [ ] Issues with model fitting
-  - [ ] Adapt Delta
-  - [ ] Max Tree Depth
-  - [ ] Number of samples, priors, Rhat/ ESS
-- [ ] Working with posteriors
-- [ ] Other resources
-
-<-->
-
 # Epinowcast and Stan
 
 [Stan](https://mc-stan.org/) is the probabilistic programming language and statistical platform for statistical modelling that powers the Bayesian inference in `{epinowcast}`.
@@ -100,16 +85,6 @@ As described in the project README, you can install the `"{epinowcast}"` package
 
 As a reminder, in each session, each time you run a model, Stan will compile your model code.
 The first time you run this model is will take a moment for the compilation to occur.
-
-<!--
-The first time you fit a model with `{epinowcast}` will be **slow** compared to future fits!
-This is normal as all of the Stan code is being compiled for the first time.
-Note that the compiled Stan binaries will live in your user package directory (or wherever you have defined your package libraries).
-Because of this package architecture
-
-- Each time you install a new version of `{epinowcast}` you will experience this longer compilation time the first time you fit a model.
-- If you upgrade your version of CmdStan, you will likely need to recompile your models. This may occur automatically, or necessitate re-installing `{epinowcast}`.
--->
 
 ## Setting `enw_fit_opts`
 
@@ -325,10 +300,6 @@ Similarly, you could take an empirical Bayes approach and use the posteriors of 
 
 ## Exploring your data {.modelData}
 
-<!--
-#TODO Non-stationarity, longer time scales, multi-modality from known etiologies
--->
-
 It is important to understand the data being passed to `epinowcast` and have some ideas regarding the data generating process for your data.
 For instance, if there are significant changes in your reporting triangle, this could manifest as multi-modality in the posterior distribution (i.e., Stan is trying to fit two different reporting delays with the same parameters).
 These different reporting regimes could result in long model run times, very wide posteriors, and ultimately nonsensical inferences.
@@ -343,7 +314,6 @@ If your model poorly captured your data (e.g., your data points were consistentl
 However, by examining the posterior predictions with your data, you may be able to both qualitatively and quantitatively discern if your posteriors captured your data and if there are patterns which hint at issues.
 Issues in your posterior predictions without any warnings from the diagnostics could indicate that you need to examine your [priors](.settingPriors) and your underlying data.
 Utilise the `enw_plot_pp_quantiles` to examine the posterior predictive quantiles from the nowcast fits.
-
 
 ## Approaches to solve common problems
 
@@ -416,7 +386,6 @@ If you find yourself having issues with `"{epinowcast}"`, reach out!
 
 - [Michael Betancourt's case studies](https://betanalpha.github.io/writing/)
 - Aki Vehtari [Bayesian Data Analysis](https://avehtari.github.io/BDA_R_demos/demos_rstan/) and [case studies](https://users.aalto.fi/~ave/casestudies.html)
-
 
 
 [^1]: The Stan code is actually first passed to a Stan specific compiled written in Ocaml called [stanc3](https://github.com/stan-dev/stanc3).
