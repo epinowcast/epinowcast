@@ -88,7 +88,10 @@ entails having a suitable C++ toolchain setup. We recommend using the
 provides instructions in the [*Getting started with
 `cmdstanr`*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
 vignette, with other details and support at the [package
-site](https://mc-stan.org/cmdstanr/), but the brief version is:
+site](https://mc-stan.org/cmdstanr/) along with some key instructions
+available in the [Stan resources package
+vignette](https://package.epinowcast.org/articles/stan-help.html#toolchain),
+but the brief version is:
 
 ``` r
 # if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies
