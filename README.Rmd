@@ -31,14 +31,14 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 ## Summary
 
 ```{r, results = "asis", echo=FALSE}
-cat(gsub("\n[ ]+"," ",packageDescription("epinowcast")$Description))
+cat(gsub("\n[ ]+", " ", packageDescription("epinowcast")$Description))
 ```
 
 ## Installation
   
 <details><summary>Installing the package</summary>
 
-```{r, child=c('man/chunks/_readme-install-epinowcast.Rmd')}
+```{r, child="vignettes/chunks/_readme-install-epinowcast.Rmd"}
 ```
 
 *Note: You can also use that last approach to install a specific commit if needed, e.g. if you want to try out a specific unreleased feature, but not the absolute latest developmental version.*

@@ -24,9 +24,9 @@
 ^vignettes/precompile\.R$
 ^vignettes/germany-age-stratified-nowcasting\.Rmd\.orig$
 ^vignettes/single-timeseries-rt-estimation\.Rmd\.orig$
+^vignettes/chunks$
 ^doc$
 ^Meta$
 ^touchstone$
 ^\.vscode$
 ^CITATION\.cff$
-^man/chunks\.Rmd$
