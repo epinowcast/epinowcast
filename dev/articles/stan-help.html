@@ -103,6 +103,9 @@
 
     
     
+<div class="alert alert-warning">
+<p>Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practioners (including the authors of <a href="https://package.epinowcast.org">epinowcast</a>) are still learning on the job. Having problems that you may need to work through is part of the process. Part of the aim of the <a href="https://package.epinowcast.org">epinowcast</a> community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.</p>
+</div>
 <div class="section level2">
 <h2 id="epinowcast-and-stan">Epinowcast and Stan<a class="anchor" aria-label="anchor" href="#epinowcast-and-stan"></a>
 </h2>
@@ -215,7 +218,7 @@ Stan requires a sufficient number of warmup iterations to dynamically estimate t
 Unlike with Gibbs sampling (such as the method used in JAGS), you generally do not need to set large values for <code>iter_warmup</code> or <code>iter_sampling</code>, but this can vary based on the <a href="https://discourse.mc-stan.org/t/number-of-iterations/1674/3" class="external-link">match between your data and your model</a>.
 Conversely, setting large values for iterations could be a sign of poor model fit and indicates that other approaches need to be employed (e.g., <code>priors</code>, <code>adapt_delta</code>, <code>max_treedepth</code>).
 A <a href="https://mc-stan.org/rstan/reference/Rhat.html#:~:text=Both%20bulk%2DESS%20and%20tail,respective%20posterior%20quantiles%20are%20reliable" class="external-link">general heuristic</a> is to have your bulk and tail effective sample sizes (ESS) greater than 100.
-However, <a href="https://discourse.mc-stan.org/t/number-of-iterations/1674/13" class="external-link">depending on the complexity of your problem</a> increasing the number of iterations can be appropriate (i.e., your <a href="https://arxiv.org/pdf/1903.08008.pdf" class="external-link"><span class="math inline">\(\hatR\)</span> values are near 1</a>, <a href="https://mc-stan.org/docs/cmdstan-guide/stansummary.html" class="external-link">your Monte Carlo Standard errors</a> are low) especially if you want to make inferences regarding tail behaviours.
+However, <a href="https://discourse.mc-stan.org/t/number-of-iterations/1674/13" class="external-link">depending on the complexity of your problem</a> increasing the number of iterations can be appropriate (i.e., your <a href="https://arxiv.org/pdf/1903.08008.pdf" class="external-link"><span class="math inline">\(\hat{R}\)</span> values are near 1</a>, <a href="https://mc-stan.org/docs/cmdstan-guide/stansummary.html" class="external-link">your Monte Carlo Standard errors</a> are low) especially if you want to make inferences regarding tail behaviours.
 During the initial model fitting process, you may want to start with a lower number for <code>iter_warmup</code> such as 500 iterations per chain and increase to 750-1000 per chain (or more) if needed.
 Starting with slightly short warm-ups can speed up model development timelines.
 Typically we have found that 1000-2000 samples per chain for <code>iter_sampling</code> are good starting values for initial model fitting.</p>
@@ -252,7 +255,9 @@ The default value is 0.8, but this will likely need to be set slightly higher li
 <span>    iter_warmup <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>    show_messages <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details>
+</details><div class="alert alert-warning">
+<p>For very simple models <code>threads_per_chain = 1</code> may lead to models fitting faster even if more cores are available due to the overhead from within chain multi-threading. This may also be the case for models with very complex generative processes (i.e. models that use complex <span class="math inline">\(R_t\)</span> formulas). We suggest you explore what works best for your data and models.</p>
+</div>
 </div>
 </div>
 <div class="section level3">
@@ -269,8 +274,7 @@ As shown below, you can retrieve your current files and manipulate them as neede
 <span><span class="va">default_priors</span></span></code></pre></div>
 </details><p>In the above example, if you have some reason to believe that the standard deviation of the means used could we smaller, you could reduce them by half to 0.5.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="va">new_priors</span> <span class="op">&lt;-</span> <span class="va">default_priors</span><span class="op">$</span><span class="va">priors</span></span>
+<code class="sourceCode R"><span><span class="va">new_priors</span> <span class="op">&lt;-</span> <span class="va">default_priors</span><span class="op">$</span><span class="va">priors</span></span>
 <span></span>
 <span><span class="va">new_priors</span><span class="op">[</span> ,<span class="va">sd</span> <span class="op">:=</span> <span class="fl">0.5</span><span class="op">]</span></span></code></pre></div>
 </details><p>You could then pass these new priors to the <code>epinowcast</code> function.</p>
@@ -312,12 +316,12 @@ Utilise the <code>enw_plot_pp_quantiles</code> to examine the posterior predicti
 <p>One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
 This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the <a href="https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/" class="external-link">Folk Theorem of Statistical Computing</a> “when you have computational problems, often there’s a problem with your model”).
 In other words, you may have a mismatch between your data and the model you are trying to fit.
-You can a few simple steps to assist with this:</p>
+There a few simple steps to assist with this:</p>
 <ol style="list-style-type: decimal">
 <li>Increase the <a href=".maxTree"><code>max_treedepth</code></a> argument to 15 which will allow longer trajectories to be used for steps when sampling. This is especially important if the <code>per_at_max_treedepth</code> value is high in the returned CmdStan diagnostics.</li>
 <li>Use more <a href=".settingPriors">informative priors</a>.</li>
-<li>Try to simplify the model first to understand potential degeneracies.</li>
-<li>Reduce the amount of data you are trying to fit. This might include reducing the duration of time over which you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting the larger data.</li>
+<li>Try to simplify the model to understand potential degeneracies.</li>
+<li>Reduce the amount of data you are trying to fit. This might include reducing the duration of time points over which you are trying to fit. Once you can confirm that the model will fit your data, it may just be a question of computational power when fitting larger data.</li>
 <li>Head to the <a href="https://community.epinowcast.org/" class="external-link">community forum</a> and ask for some assistance.</li>
 </ol>
 </div>
@@ -328,17 +332,19 @@ You can a few simple steps to assist with this:</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt;1: There were 32 divergent transitions after warmup.</span></span></code></pre></div>
 </details><p>A higher number of divergent transitions indicates that the model outputs are not to be trusted.
-The first step in addressing this is to increase the <a href="#adaptDelta"><code>adapt_delta</code></a> argument to a numeric near one (e.g., 0.99 or 0.999).
+The first step in addressing this is to increase the <a href="#adaptDelta"><code>adapt_delta</code></a> argument to a numeric near one (e.g., 0.99 or 0.99).
 This will allow for a smaller step size and may result in more reliable inferences.
 Importantly, if the number of divergent transitions remains high, your model may be misspecified given the available data.
-At this point, it may be worthwhile to investigate if the model parameterisation is correct for the data you have available.</p>
+Regardless of if this resolves your problem, exploring divergent transitions can be a helpful way to improve your models so we don’t recommend just setting <code>adapt_delta</code> to be high without checking to see if you can improve things!
+Sensible places to start are to investigate if the model parameterisation is correct for the data you have available and if your priors are reasonable.</p>
 </div>
 <div class="section level4">
-<h4 id="my-r_hats-are-high-and-by-esss-are-low">My <code>r_hat</code>s are high and by <code>ess</code>s are low<a class="anchor" aria-label="anchor" href="#my-r_hats-are-high-and-by-esss-are-low"></a>
+<h4 id="my-hatrs-are-high-and-my-esss-are-low">My <span class="math inline">\(\hat{R}\)</span>s are high and my <code>ess</code>s are low<a class="anchor" aria-label="anchor" href="#my-hatrs-are-high-and-my-esss-are-low"></a>
 </h4>
-<p>High values of <code>r_hat</code>, the Gelman-Rubin statistic used to measure convergence, indicate a lack of convergence between the different model chains.
-Values greater than 1.01 to 1.05 are <a href="https://projecteuclid.org/journals/bayesian-analysis/volume-16/issue-2/Rank-Normalization-Folding-and-Localization--An-Improved-R%CB%86-for/10.1214/20-BA1221.full" class="external-link">considered unreliable</a>, but more <a href="https://discourse.mc-stan.org/t/summarising-rhat-values-over-multiple-variables-fits/23957/5" class="external-link">important measures</a> are the effective sample size and <a href="https://avehtari.github.io/rhat_ess/ess_comparison.html#Comparison_of_ESS_estimators_for_bimodal_distribution" class="external-link">MCSE</a>.
-Similarly, lower values for the <a href="https://mc-stan.org/docs/reference-manual/effective-sample-size.html" class="external-link">effective sample size</a> are especially problematic.
+<p>High values of <span class="math inline">\(\hat{R}\)</span>, the Gelman-Rubin statistic used to measure convergence, indicate a lack of convergence between the different model chains.
+Values greater than 1.01 to 1.05 are <a href="https://projecteuclid.org/journals/bayesian-analysis/volume-16/issue-2/Rank-Normalization-Folding-and-Localization--An-Improved-R%CB%86-for/10.1214/20-BA1221.full" class="external-link">considered unreliable</a>.
+Once you have used <span class="math inline">\(\hat{R}\)</span> to assess convergence other <a href="https://discourse.mc-stan.org/t/summarising-rhat-values-over-multiple-variables-fits/23957/5" class="external-link">important measures</a> are the effective sample size and <a href="https://avehtari.github.io/rhat_ess/ess_comparison.html#Comparison_of_ESS_estimators_for_bimodal_distribution" class="external-link">MCSE</a>.
+Lower values for the <a href="https://mc-stan.org/docs/reference-manual/effective-sample-size.html" class="external-link">effective sample size</a> are especially problematic.
 The effective sample size provides insight into how many independent samples you have drawn from the posterior, accounting for the autocorrelation within the Markov chains.
 Ideally, you want these values to be near your total number of samples passed in the <code>iter_sample</code> argument.
 If <code>r_hat</code> is large and <code>ess_bulk</code>/ <code>ess_tail</code> are low, consider:</p>
@@ -362,8 +368,8 @@ The (Stan Prior Choice wiki)[<a href="https://github.com/stan-dev/stan/wiki/Prio
 <div class="section level2">
 <h2 id="other-resources">Other resources<a class="anchor" aria-label="anchor" href="#other-resources"></a>
 </h2>
-<p>The Stan community is a pretty warm and open place and receptive to helping others.
-If you find yourself having issues with <code>"{epinowcast}"</code>, reach out!</p>
+<p>Both the Epinowcast and Stan communitiesa are pretty warm and open places and are receptive to helping others.
+If you find yourself having issues with <a href="https://package.epinowcast.org">epinowcast</a>, reach out!</p>
 <div class="section level3">
 <h3 id="technical-issues">Technical issues<a class="anchor" aria-label="anchor" href="#technical-issues"></a>
 </h3>
