@@ -178,7 +178,8 @@ When pre-processing your data, you can retrieve the prior arguments using the `e
 As shown below, you can retrieve your current files and manipulate them as needed.
 
 ```{r}
-(default_priors <- enw_reference(data = enw_example("preprocessed")))
+default_priors <- enw_reference(data = enw_example("preprocessed"))
+default_priors
 ```
 
 In the above example, if you have some reason to believe that the standard deviation of the means used could we smaller, you could reduce them by half to 0.5.
