@@ -2,7 +2,12 @@
 title: Resources for help with Stan
 description: "How to address issues you may encounter with Stan"
 author: Michael E. DeWitt, Sam Abbott, Zachary Susswein, Carl A. B. Pearson
-output: rmarkdown::html_document
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
 bibliography: library.bib
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 vignette: >
@@ -79,7 +84,7 @@ cmdstanr::install_cmdstan(cores = 2)
 
 As described in the project README, you can install the `"{epinowcast}"` package within R.
 
-```{r, child=c('man/chunks/_readme-install-epinowcast.Rmd')}
+```{r, child=c('../man/chunks/_readme-install-epinowcast.Rmd')}
 ```
 
 ## Running your first model
