@@ -32,6 +32,7 @@ articles:
   contents:
   - germany-age-stratified-nowcasting
   - single-timeseries-rt-estimation
+  - stan-help
 
 reference:
   - title: Nowcast
