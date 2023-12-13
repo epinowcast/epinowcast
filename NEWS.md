@@ -58,6 +58,7 @@ This release is in development and not yet ready for production use.
 - Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
 - Removed the reference in the pull request template to updating the development version as this has been found to cause issues when multiple pull requests are open at once. See #391 by @seabbs and reviewed by @Bisaloo.
 - Added a note to the Getting Started vignette to clarify usability with alternatives to data.table. See #406 by @kathsherratt and reviewed by @seabbs.
+- Added a new vignette to provide users with a configuration and troubleshooting guide for Stan while working with `epinowcast`. See #405 by @medewitt and reviewed by @seabbs, @zsusswein, and @pearsonca.
 
 ## Depreciations
 

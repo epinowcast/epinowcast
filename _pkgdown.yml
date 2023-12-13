@@ -32,6 +32,10 @@ articles:
   contents:
   - germany-age-stratified-nowcasting
   - single-timeseries-rt-estimation
+- title: Working with epinowcast
+  navbar: Working with epinowcast
+  contents:
+  - stan-help
 
 reference:
   - title: Nowcast

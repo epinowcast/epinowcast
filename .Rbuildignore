@@ -29,3 +29,4 @@
 ^touchstone$
 ^\.vscode$
 ^CITATION\.cff$
+^man/chunks\.Rmd$
