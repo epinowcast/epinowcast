@@ -70,7 +70,7 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
 enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
                        ...) {
   # make data.table and copy
-  data <- coerce_dt(data)
+  data <- coerceDT(data)
 
   # make all character variables factors
   chars <- colnames(data)[sapply(data, is.character)]
@@ -191,7 +191,7 @@ enw_effects_metadata <- function(design) {
 #' enw_add_pooling_effect(effects, prefix = "b")
 enw_add_pooling_effect <- function(effects, var_name = "sd",
                                    finder_fn = startsWith, ...) {
-  effects <- coerce_dt(effects, copy = FALSE)
+  effects <- coerceDT(effects, copy = FALSE)
   effects[, (var_name) := as.numeric(finder_fn(effects, ...))]
   effects[finder_fn(effects, ...), fixed := 0]
   return(effects[])
@@ -223,7 +223,7 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #' enw_one_hot_encode_feature(metaobs, "week")
 #' enw_one_hot_encode_feature(metaobs, "week", contrasts = TRUE)
 enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
-  metaobs <- coerce_dt(metaobs, required_cols = feature, copy = FALSE)
+  metaobs <- makeDT(metaobs, require = feature, copy = FALSE)
   metaobs2 <- copy(metaobs)
 
   metaobs2[, (feature) := as.factor(get(feature))]
@@ -272,9 +272,11 @@ enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
 #' enw_add_cumulative_membership(metaobs, "week")
 enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
-  metaobs <- coerce_dt(
-    metaobs, required_cols = feature, group = TRUE, copy = copy
+  metaobs <- makeDT(
+    metaobs, require = feature, copy = copy
   )
+  # TODO
+  # , group = TRUE
   cfeature <- paste0("c", feature)
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (!is.numeric(metaobs[[feature]])) {

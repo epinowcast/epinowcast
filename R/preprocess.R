@@ -37,7 +37,9 @@ enw_metadata <- function(obs, target_date = c(
   date_to_drop <- setdiff(choices, target_date)
 
   metaobs <- data.table::setnames(
-    coerce_dt(obs, required_cols = target_date, group = TRUE),
+    makeDT(obs, require = target_date),
+    # TODO
+    # , group = TRUE
     target_date, "date"
   )
 
@@ -121,7 +123,7 @@ enw_add_metaobs_features <- function(metaobs,
                                      holidays_to = "Sunday",
                                      datecol = "date") {
   # localize and check metaobs input
-  metaobs <- coerce_dt(metaobs, required_cols = datecol)
+  metaobs <- makeDT(metaobs, require = datecol)
   if (!is.Date(metaobs[[datecol]])) {
     stop(sprintf("metaobs column '%s' is not a Date.", datecol))
   }
@@ -231,7 +233,9 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   } else {
     filt_fn <- max
   }
-  metaobs <- coerce_dt(metaobs, group = TRUE)
+  metaobs <- coerceDT(metaobs)
+  # TODO
+  # , group = TRUE
   exts <- metaobs[, .SD[date == filt_fn(date)], by = .group]
   exts <- split(exts, by = ".group")
   exts <- purrr::map(
@@ -277,11 +281,13 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
 #' enw_assign_group(obs)
 #' enw_assign_group(obs, by = "x")
 enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
-  obs <- coerce_dt( # must have by (if present), cannot initially have .group
-    obs, required_cols = by, forbidden_cols = ".group",
-    group = (length(by) == 0), # ... but should add .group, if by is empty
+  obs <- makeDT( # must have by (if present), cannot initially have .group
+    obs, require = by, forbid = ".group",
     copy = copy
   )
+  # TODO
+  # group = (length(by) == 0), # ... but should add .group, if by is empty
+
   if (length(by) != 0) {       # if by is not empty, add more complex .group
     obs[, .group := .GRP, by = by]
   }
@@ -306,7 +312,9 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
 enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
-  obs <- coerce_dt(obs, dates = TRUE, copy = copy)
+  obs <- coerceDT(obs, copy = copy)
+  # TODO
+  # dates = TRUE,
   internal_timestep <- get_internal_timestep(timestep)
   obs[, delay := as.numeric(report_date - reference_date) / internal_timestep]
   return(obs[])
@@ -334,9 +342,11 @@ enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
 #' obs$confirm <- 1:3
 #' enw_add_max_reported(obs)
 enw_add_max_reported <- function(obs, copy = TRUE) {
-  obs <- coerce_dt(
-    obs, required_cols = "confirm", group = TRUE, dates = TRUE, copy = copy
+  obs <- makeDT(
+    obs, require = "confirm", copy = copy
   )
+  # TODO
+  # , group = TRUE, dates = TRUE
   orig_latest <- enw_latest_data(obs)
   orig_latest <- orig_latest[
     ,
@@ -381,7 +391,8 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
     "exactly one of `remove_days` and `latest_date` must be specified." =
       xor(missing(remove_days), missing(latest_date))
   )
-  filt_obs <- coerce_dt(obs, dates = TRUE)
+  filt_obs <- coerceDT(obs)
+  # , dates = TRUE
   if (missing(latest_date)) {
     latest_date <- max(filt_obs$report_date) - remove_days
   }
@@ -433,7 +444,9 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' )
 enw_filter_reference_dates <- function(obs, earliest_date, include_days,
                                        latest_date, remove_days) {
-  filt_obs <- coerce_dt(obs, dates = TRUE)
+  filt_obs <- coerceDT(obs)
+  # TODO
+  # , dates = TRUE
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
       stop("`remove_days` and `latest_date` can't both be specified.")
@@ -482,7 +495,9 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
 #' # Filter for latest reported data
 #' enw_latest_data(germany_covid19_hosp)
 enw_latest_data <- function(obs) {
-  latest_data <- coerce_dt(obs, dates = TRUE)
+  latest_data <- coerceDT(obs)
+  # TODO
+  # , dates = TRUE
 
   latest_data <- latest_data[,
     .SD[report_date == (max(report_date)) | is.na(reference_date)],
@@ -528,7 +543,9 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_filter_delay(obs, max_delay = 2)
 enw_filter_delay <- function(obs, max_delay, timestep = "day") {
-  obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
+  obs <- makeDT(obs, require = "reference_date")
+  # TODO
+  # , group = TRUE
   internal_timestep <- get_internal_timestep(timestep)
   daily_max_delay <- internal_timestep * max_delay
   obs <- obs[,
@@ -568,10 +585,11 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
 enw_reporting_triangle <- function(obs) {
-  obs <- coerce_dt(
-    obs, required_cols = c("new_confirm", "reference_date", "delay"),
-    group = TRUE
+  obs <- makeDT(
+    obs, require = c("new_confirm", "reference_date", "delay")
   )
+  # TODO
+  # , group = TRUE
   if (any(obs$new_confirm < 0)) {
     warning(
       "Negative new confirmed cases found. This is not yet supported in
@@ -601,7 +619,9 @@ enw_reporting_triangle <- function(obs) {
 #' rt <- enw_reporting_triangle(obs)
 #' enw_reporting_triangle_to_long(rt)
 enw_reporting_triangle_to_long <- function(obs) {
-  obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
+  obs <- makeDT(obs, require = "reference_date")
+  # TODO
+  # , group = TRUE)
   reports_long <- data.table::melt(
     obs,
     id.vars = c("reference_date", ".group"),
@@ -629,10 +649,10 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' dt <- data.frame(id = 1:3, confirm = c(NA, 1, 2))
 #' enw_flag_observed_observations(dt)
 enw_flag_observed_observations <- function(obs, copy = TRUE) {
-  obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
+  obs <- makeDT(obs, require = "confirm", copy = copy)
   if (is.null(obs[[".observed"]])) {
     obs[, .observed := !is.na(confirm)]
-  }else {
+  } else {
     obs[, .observed := .observed & !is.na(confirm)]
   }
   return(obs[])
@@ -662,8 +682,8 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #' )
 #' enw_impute_na_observations(dt)
 enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
-  obs <- coerce_dt(
-    obs, required_cols = c("confirm", "reference_date", by),
+  obs <- makeDT(
+    obs, require = c("confirm", "reference_date", by),
     copy = copy
   )
   data.table::setkeyv(obs, c(data.table::key(obs), "reference_date"))
@@ -726,7 +746,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
                                timestep = "day", missing_reference = TRUE,
                                completion_beyond_max_report  = FALSE,
                                flag_observation = FALSE) {
-  obs <- coerce_dt(obs, dates = TRUE)
+  obs <- coerceDT(obs)
+  # TODO
+  # , dates = TRUE
   check_group(obs)
 
   if (missing(max_delay)) {
@@ -814,9 +836,11 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
 #' obs <- enw_add_incidence(obs)
 #' enw_missing_reference(obs)
 enw_missing_reference <- function(obs) {
-  obs <- coerce_dt(
-    obs, required_cols = "new_confirm", group = TRUE, dates = TRUE
+  obs <- makeDT(
+    obs, require = "new_confirm"
   )
+  # TODO
+  # , group = TRUE, dates = TRUE
   ref_avail <- obs[!is.na(reference_date)]
   ref_avail <- ref_avail[,
     .(.confirm_avail = sum(new_confirm)),
@@ -1075,7 +1099,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   max_delay <- max_delay * internal_timestep
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
-  obs <- coerce_dt(obs, dates = TRUE, copy = copy)
+  obs <- coerceDT(obs, copy = copy)
+  # TODO
+  # , dates = TRUE
   check_group(obs)
   data.table::setkeyv(obs, "reference_date")
 

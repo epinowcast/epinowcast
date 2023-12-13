@@ -8,7 +8,7 @@ to \code{reference_date} and \code{report_date}}
 check_group_date_unique(obs)
 }
 \arguments{
-\item{obs}{An object that will be \code{coerce_dt}d in place, that contains
+\item{obs}{An object that will be \code{\link[coerceDT:makeDT]{coerceDT::makeDT()}}d in place, that contains
 \code{.group}, \code{reference_date}, and \code{report_date} columns.}
 }
 \description{

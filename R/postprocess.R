@@ -96,9 +96,11 @@ enw_nowcast_summary <- function(fit, obs,
   max_delay <- nrow(nowcast) / max(obs$.group)
   internal_timestep <- get_internal_timestep(timestep)
 
-  ord_obs <- coerce_dt(
-    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  ord_obs <- coerceDT(
+    obs, require = c("reference_date", "confirm")
   )
+  # TODO
+  # , group = TRUE
   check_timestep_by_group(
     ord_obs, "reference_date", timestep, exact = TRUE
   )
@@ -139,8 +141,8 @@ enw_nowcast_samples <- function(fit, obs, timestep = "day") {
     variables = "pp_inf_obs",
     format = "draws_df"
   )
-  nowcast <- coerce_dt(
-    nowcast, required_cols = c(".chain", ".iteration", ".draw")
+  nowcast <- makeDT(
+    nowcast, require = c(".chain", ".iteration", ".draw")
   )
   nowcast <- melt(
     nowcast,
@@ -150,9 +152,11 @@ enw_nowcast_samples <- function(fit, obs, timestep = "day") {
   max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
   internal_timestep <- get_internal_timestep(timestep)
 
-  ord_obs <- coerce_dt(
-    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  ord_obs <- makeDT(
+    obs, require = c("reference_date", "confirm")
   )
+  # TODO
+  # , group = TRUE
   check_timestep_by_group(
     ord_obs, "reference_date", timestep, exact = TRUE
   )
@@ -256,7 +260,9 @@ enw_summarise_samples <- function(samples, probs = c(
 #' nowcast <- summary(fit, type = "nowcast")
 #' enw_add_latest_obs_to_nowcast(nowcast, obs)
 enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
-  obs <- coerce_dt(obs, select = c("reference_date", "confirm"), group = TRUE)
+  obs <- coerceDT(obs, select = c("reference_date", "confirm"))
+  # TODO
+  # , group = TRUE
   data.table::setnames(obs, "confirm", "latest_confirm")
   out <- merge(
     nowcast, obs,
@@ -298,9 +304,11 @@ enw_pp_summary <- function(fit, diff_obs,
     probs = probs
   )
 
-  ord_obs <- coerce_dt(
-    diff_obs,  required_cols = "new_confirm", dates = TRUE, group = TRUE
+  ord_obs <- makeDT(
+    diff_obs,  require = "new_confirm"
   )
+  # TODO
+  # , dates = TRUE, group = TRUE
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   pp <- cbind(
     ord_obs,
@@ -324,7 +332,7 @@ enw_pp_summary <- function(fit, diff_obs,
 #' posterior <- enw_posterior(fit$fit[[1]], var = "expr_lelatent_int[1,1]")
 #' enw_quantiles_to_long(posterior)
 enw_quantiles_to_long <- function(posterior) {
-  posterior <- coerce_dt(posterior)
+  posterior <- coerceDT(posterior)
   long <- melt(posterior,
     measure.vars = patterns("^q[0-9]"),
     value.name = "prediction", variable.name = "quantile"

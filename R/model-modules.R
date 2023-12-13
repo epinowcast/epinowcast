@@ -545,16 +545,16 @@ enw_missing <- function(formula = ~1, data) {
     )
 
     # Get the indexes for when grouped observations start and end
-    miss_lookup <- coerce_dt(rep_w_complete_ref)
+    miss_lookup <- coerceDT(rep_w_complete_ref)
     data_list$miss_st <- miss_lookup[, n := seq_len(.N), by = ".group"]
     data_list$miss_st <- data_list$miss_st[, .(n = max(n)), by = ".group"]$n
     data_list$miss_cst <- miss_lookup[, n := seq_len(.N)]
     data_list$miss_cst <- data_list$miss_cst[, .(n = max(n)), by = ".group"]$n
 
     # Get (and order) reported cases with a missing reference date
-    missing_reference <- coerce_dt(data$missing_reference[[1]])
+    missing_reference <- coerceDT(data$missing_reference[[1]])
     data.table::setkeyv(missing_reference, c(".group", "report_date"))
-    data_list$missing_reference <- coerce_dt(missing_reference)[
+    data_list$missing_reference <- coerceDT(missing_reference)[
       rep_w_complete_ref,
       on = c("report_date", ".group")
     ][, confirm]
@@ -647,9 +647,9 @@ enw_obs <- function(family = c("negbin", "poisson"),
   family <- match.arg(family)
 
   # copy new confirm for processing
-  new_confirm <- coerce_dt(
+  new_confirm <- makeDT(
     data$new_confirm[[1]],
-    required_cols = c(
+    require = c(
       "reference_date", "delay", "confirm", observation_indicator
     )
   )

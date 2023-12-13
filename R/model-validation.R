@@ -60,7 +60,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   if (!is.null(long_nowcast[["mad"]])) {
     long_nowcast[, "mad" := NULL]
   }
-  latest_obs <- coerce_dt(latest_obs)
+  latest_obs <- coerceDT(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
   latest_obs[, report_date := NULL]
   cols <- intersect(colnames(nowcast), colnames(latest_obs))

@@ -81,7 +81,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 #' priors <- data.frame(variable = "x", mean = 1, sd = 2)
 #' enw_priors_as_data_list(priors)
 enw_priors_as_data_list <- function(priors) {
-  priors <- coerce_dt(priors, select = c("variable", "mean", "sd"))
+  priors <- coerceDT(priors, select = c("variable", "mean", "sd"))
   priors[, variable := paste0(variable, "_p")]
   priors <- split(priors, by = "variable", keep.by = FALSE)
   priors <- purrr::map(priors, ~ as.array(t(.)))
@@ -132,7 +132,7 @@ enw_priors_as_data_list <- function(priors) {
 #'
 #' enw_replace_priors(default_priors, fit_priors)
 enw_replace_priors <- function(priors, custom_priors) {
-  custom_priors <- coerce_dt(
+  custom_priors <- coerceDT(
     custom_priors, select = c("variable", "mean", "sd")
   )[
     ,
@@ -140,8 +140,8 @@ enw_replace_priors <- function(priors, custom_priors) {
       mean = as.numeric(mean), sd = as.numeric(sd))
   ]
   variables <- custom_priors$variable
-  priors <- coerce_dt(
-    priors, required_cols = "variable"
+  priors <- makeDT(
+    priors, require = "variable"
   )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
   return(priors[])

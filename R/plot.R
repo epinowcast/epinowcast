@@ -52,7 +52,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     )
 
   if (!is.null(latest_obs)) {
-    latest_obs <- coerce_dt(latest_obs)
+    latest_obs <- coerceDT(latest_obs)
     latest_obs[, latest_confirm := confirm]
     plot <- plot +
       geom_point(
@@ -150,7 +150,7 @@ enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
 #' enw_plot_pp_quantiles(nowcast) +
 #'  ggplot2::facet_wrap(ggplot2::vars(reference_date), scales = "free")
 enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
-  pp <- coerce_dt(pp)
+  pp <- coerceDT(pp)
   pp[, confirm := new_confirm]
   plot <- enw_plot_quantiles(
     pp,
