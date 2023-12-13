@@ -63,6 +63,9 @@
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -368,9 +371,9 @@ plot of chunk pp
 <span><span class="co">#&gt; 16998:             1      1        498   498   2058</span></span>
 <span><span class="co">#&gt; 16999:             1      1        499   499   2168</span></span>
 <span><span class="co">#&gt; 17000:             1      1        500   500   2030</span></span>
-<span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
+<span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
-<span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
+<span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
 <span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Summarise samples</span></span>

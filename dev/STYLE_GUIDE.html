@@ -34,6 +34,9 @@
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -80,7 +83,7 @@
 </ul></div>
 <div class="section level2">
 <h2 id="input-types-and-checking">Input types and checking<a class="anchor" aria-label="anchor" href="#input-types-and-checking"></a></h2>
-<ul><li>We support inputs that are coercible to <code>data.table</code> objects using <code><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>. This includes <code>data.frame</code> and <code>tibble</code> objects. This should be clearly documented in the function documentation.</li>
+<ul><li>We support inputs that are coercible to <code>data.table</code> objects using <code><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>. This includes <code>data.frame</code> and <code>tibble</code> objects. This should be clearly documented in the function documentation.</li>
 <li>Any required inputs should be clearly documented in the function documentation.</li>
 <li>We use an internal function <code><a href="reference/coerce_dt.html">coerce_dt()</a></code> to check inputs are coercible to <code>data.table</code> objects and have the correct columns. This function is used in all functions that take data as input. The following function demonstrates this pattern (note this requires the use of <code>devtools::load_all()</code> in the package directory):</li>
 </ul><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
@@ -108,12 +111,12 @@
 </ul><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="co"># we prefer this</span></span>
-<span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
+<span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span></span>
 <span><span class="va">dt</span><span class="op">[</span>, <span class="va">mpg</span> <span class="op">:=</span> <span class="va">mpg</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="va">dt</span><span class="op">[</span><span class="va">mpg</span> <span class="op">&gt;</span> <span class="fl">20</span>, <span class="va">cyl</span> <span class="op">:=</span> <span class="fl">10</span><span class="op">]</span></span>
 <span><span class="va">dt</span><span class="op">[</span>, <span class="va">cyl</span> <span class="op">:=</span> <span class="va">cyl</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span></span>
 <span><span class="co">#over this</span></span>
-<span><span class="va">dt_chain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">[</span>, <span class="va">mpg</span> <span class="op">:=</span> <span class="va">mpg</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span><span class="op">[</span><span class="va">mpg</span> <span class="op">&gt;</span> <span class="fl">20</span>, <span class="va">cyl</span> <span class="op">:=</span> <span class="fl">10</span><span class="op">]</span><span class="op">[</span>, <span class="va">cyl</span> <span class="op">:=</span> <span class="va">cyl</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span></span></code></pre></div>
+<span><span class="va">dt_chain</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span><span class="op">[</span>, <span class="va">mpg</span> <span class="op">:=</span> <span class="va">mpg</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span><span class="op">[</span><span class="va">mpg</span> <span class="op">&gt;</span> <span class="fl">20</span>, <span class="va">cyl</span> <span class="op">:=</span> <span class="fl">10</span><span class="op">]</span><span class="op">[</span>, <span class="va">cyl</span> <span class="op">:=</span> <span class="va">cyl</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span></span></code></pre></div>
 <ul><li>We also use <code>list</code> structures for more complex objects or where <code>data.table</code> is not appropriate. If the appropriate data structure is unclear for the problem at hand please flag this in the issue you are addressing or in the PR discussion.</li>
 </ul></div>
 <div class="section level2">

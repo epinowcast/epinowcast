@@ -63,6 +63,9 @@
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -339,9 +342,9 @@
 </h3>
 <p>Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in <code>epinowcast</code> to visualise the data, but we can use the <code>ggplot2</code> package to do this manually as follows,</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
+<code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
-<span>  <span class="va">report_date</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/fcase.html" class="external-link">fcase</a></span><span class="op">(</span></span>
+<span>  <span class="va">report_date</span> <span class="op">:=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fcase.html" class="external-link">fcase</a></span><span class="op">(</span></span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-05-15"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-05-15"</span><span class="op">)</span>,</span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span>,</span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-15"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-15"</span><span class="op">)</span>,</span>
@@ -747,18 +750,18 @@
 <span>    <span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>      <span class="va">x</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">draws</span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean"</span>, <span class="st">"refp_sd"</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">draws</span><span class="op">[</span></span>
 <span>    ,</span>
 <span>    <span class="va">cdf</span> <span class="op">:=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span></span>
 <span>      <span class="va">`refp_mean[1]`</span>, <span class="va">`refp_sd[1]`</span>,</span>
-<span>      <span class="op">~</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
+<span>      <span class="op">~</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
 <span>        delay <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, cdf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">plnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">plnorm</a></span><span class="op">(</span><span class="fl">30</span>, <span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">]</span></span>
-<span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>, <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>, <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>,</span>
 <span>    <span class="fu">.</span><span class="op">(</span></span>
 <span>      mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span>,</span>
@@ -774,7 +777,7 @@
 <span>  <span class="st">"Retrospective"</span> <span class="op">=</span> <span class="va">retro_germany_nowcast</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">extract_epinowcast_cdf</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>idcol <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>idcol <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">nowcast_cdf</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">delay</span>, y <span class="op">=</span> <span class="va">mean</span>, col <span class="op">=</span> <span class="va">Data</span>, fill <span class="op">=</span> <span class="va">Data</span><span class="op">)</span> <span class="op">+</span></span>

@@ -40,6 +40,9 @@ implications of missing data for your use case."><meta property="og:image" conte
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -131,17 +134,17 @@ proportion of observations now having a missing reference date.</p>
 <span class="r-in"><span>  proportion <span class="op">=</span> <span class="fl">0.35</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"location"</span>, <span class="st">"age_group"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       location age_group report_date reference_date confirm</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       DE       00+  2021-04-06           &lt;NA&gt;      46</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       DE       00+  2021-04-07           &lt;NA&gt;     145</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       DE       00+  2021-04-08           &lt;NA&gt;     264</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       DE       00+  2021-04-09           &lt;NA&gt;     269</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       DE       00+  2021-04-10           &lt;NA&gt;     254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       DE       00+  2021-04-06           &lt;NA&gt;      47</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       DE       00+  2021-04-07           &lt;NA&gt;     152</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       DE       00+  2021-04-08           &lt;NA&gt;     221</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       DE       00+  2021-04-09           &lt;NA&gt;     262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       DE       00+  2021-04-10           &lt;NA&gt;     236</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7135:       DE       00+  2021-07-31     2021-07-30      34</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7136:       DE       00+  2021-08-01     2021-07-30      35</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7137:       DE       00+  2021-07-31     2021-07-31      25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7135:       DE       00+  2021-07-31     2021-07-30      35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7136:       DE       00+  2021-08-01     2021-07-30      36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7137:       DE       00+  2021-07-31     2021-07-31      23</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7138:       DE       00+  2021-08-01     2021-07-31      33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7139:       DE       00+  2021-08-01     2021-08-01       4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7139:       DE       00+  2021-08-01     2021-08-01       6</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

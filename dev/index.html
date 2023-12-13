@@ -63,6 +63,9 @@
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -123,7 +126,7 @@ Installing the package
 <p><em>Note: You can also use that last approach to install a specific commit if needed, e.g. if you want to try out a specific unreleased feature, but not the absolute latest developmental version.</em></p>
 </details><details><summary>
 Installing CmdStan
-</summary><p>If you wish to do model fitting and nowcasting, you will need to install <a href="https://mc-stan.org/users/interfaces/cmdstan" class="external-link">CmdStan</a>, which also entails having a suitable C++ toolchain setup. We recommend using the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code> package</a>. The Stan team provides instructions in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with <code>cmdstanr</code></em></a> vignette, with other details and support at the <a href="https://mc-stan.org/cmdstanr/" class="external-link">package site</a>, but the brief version is:</p>
+</summary><p>If you wish to do model fitting and nowcasting, you will need to install <a href="https://mc-stan.org/users/interfaces/cmdstan" class="external-link">CmdStan</a>, which also entails having a suitable C++ toolchain setup. We recommend using the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code> package</a>. The Stan team provides instructions in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with <code>cmdstanr</code></em></a> vignette, with other details and support at the <a href="https://mc-stan.org/cmdstanr/" class="external-link">package site</a> along with some key instructions available in the <a href="https://package.epinowcast.org/articles/stan-help.html#toolchain">Stan resources package vignette</a>, but the brief version is:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"cmdstanr"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://mc-stan.org/r-packages/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>

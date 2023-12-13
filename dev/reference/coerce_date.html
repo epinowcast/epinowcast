@@ -36,6 +36,9 @@ with error handling"><meta property="og:image" content="package.epinowcast.org/r
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -63,7 +66,7 @@ with error handling"><meta property="og:image" content="package.epinowcast.org/r
     </div>
 
     <div class="ref-description section level2">
-    <p>Provides consistent coercion of inputs to <a href="https://Rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>
+    <p>Provides consistent coercion of inputs to <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>
 with error handling</p>
     </div>
 
@@ -76,22 +79,22 @@ with error handling</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>dates</dt>
 <dd><p>A vector-like input, which the function attempts
-to coerce via <code><a href="https://Rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>.</p></dd>
+to coerce via <code><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>An <a href="https://Rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a> vector.</p>
+<p>An <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a> vector.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If any of the elements of <code>dates</code> cannot be coerced,
 this function will result in an error, indicating all indices
-which cannot be coerced to <a href="https://Rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>.</p>
+which cannot be coerced to <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>.</p>
 <p>Internal methods of <a href="epinowcast.html">epinowcast</a> assume dates are represented
-as <a href="https://Rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>.</p>
+as <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

@@ -63,6 +63,9 @@
     <h6 class="dropdown-header" data-toc-skip>Case studies</h6>
     <a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
     <a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    <div class="dropdown-divider"></div>
+    <h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6>
+    <a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a>
   </div>
 </li>
 <li class="nav-item">
@@ -403,7 +406,7 @@ plot of chunk age_week_nowcast
 <span>  <span class="op">)</span>,</span>
 <span>  priors <span class="op">=</span> <span class="va">priors</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">independent_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">independent_nowcast</span><span class="op">)</span></span></code></pre></div>
 </details><p>As we now have the summarised nowcasts rather than an object of class <code>epinowcast</code> we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span></span>
@@ -445,7 +448,7 @@ plot of chunk ind_nowcast
 <span><span class="op">)</span></span>
 <span><span class="va">summarised_nowcasts</span><span class="op">$</span><span class="va">`Independent by age, Reference: Week, Report: Day of week`</span> <span class="op">&lt;-</span> <span class="va">independent_nowcast</span> <span class="co"># nolint</span></span>
 <span></span>
-<span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span>,</span>
+<span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span>,</span>
 <span>                                 use.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">summarised_nowcasts</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
