@@ -247,6 +247,42 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   return(dt[])
 }
 
+#' Set caching location for Stan models
+#' 
+#' This function allows the user to set a cache location for
+#' Stan models rather than a temp directory. This can reduce the
+#' need for model compilation on every new model run.
+#' 
+#' @param enw_cache_location A valid filepath representing the desired cache location
+#' 
+#' @return The string of the filepath set
+#' 
+#' @export 
+
+enw_set_cache <- function(enw_cache_location = NULL){
+
+}
+
+#' Retrieve Stan cache location
+#' 
+#' Retrieves the user set cache location for Stan models. This
+#' path can be set through the `enw_cache_location` function call.
+#' 
+#' @return The string of the filepath
+#' 
+#' @export 
+
+get_enw_cache <- function(){
+  cache_location <- Sys.getenv("enw_cache_location")
+
+  if ( is.null(cache_location) ) {
+    cache_location <- tempdir()
+  }
+
+  return(cache_location)
+
+}
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",
