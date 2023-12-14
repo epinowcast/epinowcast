@@ -22,7 +22,7 @@ test_that("check_timestep() works correctly", {
   # test with "week" timestep and exact = TRUE, should fail
   expect_error(
     check_timestep(obs, date_var = "date", timestep = "week", exact = TRUE),
-    "date has a shorter timestep than the specified timestep of 7 day\\(s\\)"
+    "date has a shorter timestep than the specified timestep of\n7 day\\(s\\)"
   )
 
   # test with "month" timestep and exact = FALSE, should fail
