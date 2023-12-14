@@ -24,8 +24,9 @@ knitr::opts_chunk$set(
 )
 library(epinowcast)
 ```
+
 ::: {.alert .alert-warning}
-Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practioners (including the authors of `{epinowcast}`) are still learning on the job. Having problems that you may need to work through is part of the process. Part of the aim of the `{epinowcast}` community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.
+Before we start, it is important to know that Bayesian modelling can be complex and most, if not all, practitioners (including the authors of `{epinowcast}`) are still learning on the job. Having problems that you may need to work through is part of the process. Part of the aim of the `{epinowcast}` community is to lower the barriers to entry for this type of modelling in real-time infectious disease analysis so we really appreciate any input into how to make our documentation easier to use.
 :::
 
 # Epinowcast and Stan
@@ -240,7 +241,6 @@ This can occur because the sampler is having difficulty exploring the posterior 
 In other words, you may have a mismatch between your data and the model you are trying to fit.
 There a few simple steps to assist with this:
 
-
 1. Increase the [`max_treedepth`](.maxTree) argument to 15 which will allow longer trajectories to be used for steps when sampling. This is especially important if the `per_at_max_treedepth` value is high in the returned CmdStan diagnostics.
 2. Use more [informative priors](.settingPriors). 
 3. Try to simplify the model to understand potential degeneracies.
@@ -287,7 +287,7 @@ The (Stan Prior Choice wiki)[https://github.com/stan-dev/stan/wiki/Prior-Choice-
 
 # Other resources
 
-Both the Epinowcast and Stan communitiesa are pretty warm and open places and are receptive to helping others.
+Both the Epinowcast and Stan communities are pretty warm and open places and are receptive to helping others.
 If you find yourself having issues with `{epinowcast}`, reach out!
 
 ## Technical issues
