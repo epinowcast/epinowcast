@@ -15,5 +15,12 @@ The string of the filepath set
 \description{
 This function allows the user to set a cache location for
 Stan models rather than a temp directory. This can reduce the
-need for model compilation on every new model run.
+need for model compilation on every new model run across sessions.
+}
+\examples{
+# Set to local directory
+dir.create("test")
+enw_set_cache("test")
+enw_get_cache()
+
 }

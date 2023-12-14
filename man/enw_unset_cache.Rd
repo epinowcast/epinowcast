@@ -11,7 +11,12 @@ the prior cache location, if it existed
 }
 \description{
 Removes \code{enw_cache_location} environment variable from
-the user .Renviron file.
+the user .Renviron file and removes it from the local
+environment.
+}
+\examples{
+enw_unset_cache()
+
 }
 \seealso{
 Utility functions
