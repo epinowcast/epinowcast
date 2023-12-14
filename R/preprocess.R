@@ -133,7 +133,7 @@ enw_add_metaobs_features <- function(metaobs,
   # warn about columns that may be overwritten
   tarcols <- c("day_of_week", "day", "week", "month")
   if (any(tarcols %in% colnames(metaobs))) {
-    cli::cli_warn("Pre-existing columns in `metaobs` will be overwritten:", 
+    cli::cli_warn("Pre-existing columns in `metaobs` will be overwritten:",
               "{intersect(tarcols, colnames(metaobs))}."
     )
   }
@@ -548,9 +548,9 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empirical_max_delay < (max_delay - 1)) {
     cli::cli_warn(
-      paste0(
-        "Empirical max delay (", empirical_max_delay + 1,
-        ") is less than the specified max delay (", max_delay, ")."
+      c(
+        "Empirical max delay ({empirical_max_delay + 1})",
+        "is less than the specified max delay ({max_delay})."
       )
     )
   }
@@ -581,7 +581,7 @@ enw_reporting_triangle <- function(obs) {
   )
   if (any(obs$new_confirm < 0)) {
     cli::cli_warn(
-      paste0(
+      c(
         "Negative new confirmed cases found. ",
         "This is not yet supported in epinowcast."
       )
@@ -1076,7 +1076,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   }
   if (timestep == "month") {
     cli::cli_abort(
-      paste0(
+      c(
         "Calendar months are not currently supported. Consider using an ",
         "approximate number of days (i.e. 28), a different timestep (i.e. ",
         "'week'), or commenting on issue #309."

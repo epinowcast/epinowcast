@@ -193,7 +193,7 @@ coerce_dt <- function(
           "{toString(required_cols[!(required_cols %in% colnames(dt))])}",
           "but are not present among ",
           "{toString(colnames(dt))}",
-          "(all `required_cols`: {toString(required_cols)})",
+          "(all `required_cols`: {toString(required_cols)})"
         )
       )
     }
@@ -263,9 +263,9 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   all_sequential_dates <- all(sequential_dates)
 
   if (any(diff_dates < dates[-length(dates)])) {
-    cli::cli_abort(c(
+    cli::cli_abort(
       "{date_var} has a shorter timestep than the specified timestep of a month"
-    ))
+    )
   }
 
   if (all_sequential_dates) {
@@ -273,9 +273,7 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   } else {
     if (exact) {
       cli::cli_abort(
-        c(
-          "{date_var} does not have the specified timestep of month"
-        )
+        "{date_var} does not have the specified timestep of month"
       )
     } else {
       cli::cli_abort(
@@ -304,9 +302,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 
   if (any(diffs == 0)) {
     cli::cli_abort(
-      c(
-        "{date_var} has a duplicate date. Please remove duplicate dates."
-      )
+      "{date_var} has a duplicate date. Please remove duplicate dates."
     )
   }
 
@@ -329,9 +325,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     return(invisible(NULL))
   } else {
     cli::cli_abort(
-      c(
-        "{date_var} does not have the specified timestep of {timestep} day(s)"
-      )
+      "{date_var} does not have the specified timestep of {timestep} day(s)"
     )
   }
 }
@@ -363,7 +357,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
                            check_nrow = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
-    cli::cli_abort(c("{date_var} must be of class Date"))
+    cli::cli_abort("{date_var} must be of class Date")
   }
 
   dates <- obs[[date_var]]

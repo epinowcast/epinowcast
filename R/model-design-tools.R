@@ -279,13 +279,10 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
   cfeature <- paste0("c", feature)
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (!is.numeric(metaobs[[feature]])) {
-      cli::cli_abort(
-        paste0(
-          "Requested variable ", feature,
-          " is not numeric. Cumulative membership effects are only ",
-          "defined for numeric variables."
-        )
-      )
+      cli::cli_abort(c(
+        "Requested variable {feature} is not numeric.",
+        "Cumulative membership effects are only defined for numeric variables."
+      ))
     }
     metaobs[, (cfeature) := get(feature)]
     metaobs <- enw_one_hot_encode_feature(metaobs, cfeature, contrasts = TRUE)

@@ -213,7 +213,8 @@ coerce_date <- function(dates) {
   if (anyNA(res)) {
     bads <- is.na(res)
     cli::cli_abort(
-      "Failed to parse with `as.IDate`: {toString(dates[bads])} (indices {toString(which(bads))})." # nolint
+      "Failed to parse with `as.IDate`: {toString(dates[bads])}", 
+      "(indices {toString(which(bads))})."
     )
   } else {
     return(res)
@@ -245,7 +246,7 @@ get_internal_timestep <- function(timestep) {
       week = 7,
       month = "month",  # months are not a fixed number of days
       cli::cli_abort(
-        paste0(
+        c(
           "Invalid timestep. Acceptable string inputs are 'day', 'week',",
           " 'month'."
         )
@@ -256,7 +257,7 @@ get_internal_timestep <- function(timestep) {
     return(timestep)
   } else {
     cli::cli_abort(
-      paste0(
+      c(
         "Invalid timestep. If timestep is a numeric, it should be a whole ",
         "number representing the number of days."
       )
