@@ -299,7 +299,7 @@ construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
     cli::cli_abort(
       c(
-        "Argument `rw` must be a random walk term as constructed by ",
+        "Argument `rw` must be a random walk term as constructed by",
         "`epinowcast:::rw`"
       )
     )
@@ -439,7 +439,7 @@ construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
     cli::cli_abort(
       c(
-        "Argument `re` must be a random effect term as constructed by ",
+        "Argument `re` must be a random effect term as constructed by",
         "`epinowcast:::re`"
       )
     )
@@ -459,7 +459,7 @@ construct_re <- function(re, data) {
       if (length(current_random) > 2) {
         cli::cli_abort(
           c(
-            "Interactions between more than 2 variables are not currently ",
+            "Interactions between more than 2 variables are not currently",
             "supported on the right hand side of random effects"
           )
         )

@@ -56,8 +56,8 @@ check_group_date_unique <- function(obs) {
   if (any(cells[, count > 1])) {
     cli::cli_abort(
       c(
-        "The input data seems to be stratified by more variables than ",
-        "specified via the `by` argument. Please provide additional grouping ",
+        "The input data seems to be stratified by more variables than",
+        "specified via the `by` argument. Please provide additional grouping",
         "variables to `by`, or aggregate the observations beforehand."
       )
     )
@@ -77,7 +77,7 @@ check_module <- function(module) {
   if (!"data" %in% names(module)) {
     cli::cli_abort(
       c(
-        "Must contain a list component specifying the data requirements ",
+        "Must contain a list component specifying the data requirements",
         "for further modelling as a list"
       )
     )
@@ -103,12 +103,12 @@ check_modules_compatible <- function(modules) {
   ) {
     cli::cli_warn(
       c(
-        "Incompatible model specification: A missingness model has ",
-        "been specified but likelihood aggregation is specified as ",
-        "by snapshot. Switching to likelihood aggregation by group.",
-        " This has no effect on the nowcast but limits the ",
-        "number of threads per chain to the number of groups. To ",
-        "silence this warning, set the `likelihood_aggregation` ",
+        "Incompatible model specification: A missingness model has been",
+        "specified but likelihood aggregation is specified as by snapshot.",
+        "Switching to likelihood aggregation by group.",
+        "This has no effect on the nowcast but limits the number of threads",
+        "per chain to the number of groups.",
+        "To silence this warning, set the `likelihood_aggregation`",
         "argument in `enw_fit_opts` to 'groups'."
       ),
       immediate. = TRUE
@@ -191,7 +191,7 @@ coerce_dt <- function(
         c(
           "{msg_required}",
           "{toString(required_cols[!(required_cols %in% colnames(dt))])}",
-          "but are not present among ",
+          "but are not present among",
           "{toString(colnames(dt))}",
           "(all `required_cols`: {toString(required_cols)})"
         )
@@ -209,7 +209,7 @@ coerce_dt <- function(
         c(
           "{msg_forbidden}",
           "{toString(forbidden_cols[forbidden_cols %in% colnames(dt)])}",
-          "but are present among ",
+          "but are present among",
           "{toString(colnames(dt))}",
           "(all `forbidden_cols`: {toString(forbidden_cols)})"
         )
@@ -309,7 +309,7 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
   if (any(diffs < timestep)) {
     cli::cli_abort(
       c(
-        "{date_var} has a shorter timestep than the specified timestep of ",
+        "{date_var} has a shorter timestep than the specified timestep of",
         "{timestep} day(s)"
       )
     )
@@ -432,7 +432,7 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
     cli::cli_abort(
       c(
-        "There must be at least two observations by group and date ",
+        "There must be at least two observations by group and date",
         "combination to establish a timestep"
       )
     )

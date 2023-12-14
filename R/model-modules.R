@@ -61,7 +61,7 @@ enw_reference <- function(
   if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
     cli::cli_abort(
       c(
-        "A non-parametric model must be specified if no parametric model ",
+        "A non-parametric model must be specified if no parametric model",
         "is specified"
       )
     )
@@ -523,7 +523,7 @@ enw_missing <- function(formula = ~1, data) {
     as_string_formula(formula) != "~0") {
     cli::cli_abort(
       c(
-        "A missingness model has been specified but data on the proportion of ",
+        "A missingness model has been specified but data on the proportion of",
         "observations without reference dates is not available."
       )
     )
@@ -713,8 +713,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
   if (proc_data$t < proc_data$dmax) {
     cli::cli_warn(
       c(
-        "The specified maximum delay is longer than the observed time period. ",
-        "Please be aware that epinowcast will extrapolate the delay ",
+        "The specified maximum delay is longer than the observed time period.",
+        "Please be aware that epinowcast will extrapolate the delay",
         "distribution beyond what is supported by the data."
       )
     )

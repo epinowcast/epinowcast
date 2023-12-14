@@ -582,7 +582,7 @@ enw_reporting_triangle <- function(obs) {
   if (any(obs$new_confirm < 0)) {
     cli::cli_warn(
       c(
-        "Negative new confirmed cases found. ",
+        "Negative new confirmed cases found.",
         "This is not yet supported in epinowcast."
       )
     )
@@ -1077,9 +1077,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   if (timestep == "month") {
     cli::cli_abort(
       c(
-        "Calendar months are not currently supported. Consider using an ",
-        "approximate number of days (i.e. 28), a different timestep (i.e. ",
-        "'week'), or commenting on issue #309."
+        "Calendar months are not currently supported. Consider using an",
+        "approximate number of days (i.e. 28), a different timestep",
+        "(i.e.'week'), or commenting on issue #309."
       )
     )
   }

@@ -122,10 +122,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
       cli::cli_abort(
-        c(
-          "`length(dist)` must equal `t` or be the same for all t ",
-          "(i.e. length 1)"
-        )
+        "`length(dist)` must equal `t` or be the same for all t (i.e. length 1)"
       )
     }
     ldist <- lengths(dist)

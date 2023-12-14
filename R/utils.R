@@ -258,7 +258,7 @@ get_internal_timestep <- function(timestep) {
   } else {
     cli::cli_abort(
       c(
-        "Invalid timestep. If timestep is a numeric, it should be a whole ",
+        "Invalid timestep. If timestep is a numeric, it should be a whole",
         "number representing the number of days."
       )
     )

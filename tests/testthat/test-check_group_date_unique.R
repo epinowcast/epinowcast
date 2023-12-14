@@ -18,7 +18,7 @@ test_that("check_group_date_unique stops with duplicated groups", {
 
   # Expect error due to duplicated combination
   expect_error(check_group_date_unique(obs),
-               "The input data seems to be stratified by more variables than specified via the `by` argument. Please provide additional grouping variables to `by`, or aggregate the observations beforehand.")
+               "The input data seems to be stratified by more variables than \nspecified via the `by` argument. Please provide additional grouping \nvariables to `by`, or aggregate the observations beforehand.")
 })
 
 test_that("check_group_date_unique works with empty data frame", {
