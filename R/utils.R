@@ -213,7 +213,7 @@ coerce_date <- function(dates) {
   if (anyNA(res)) {
     bads <- is.na(res)
     cli::cli_abort(
-      "Failed to parse with `as.IDate`: {toString(dates[bads])}", 
+      "Failed to parse with `as.IDate`: {toString(dates[bads])}",
       "(indices {toString(which(bads))})."
     )
   } else {
