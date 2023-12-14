@@ -19,5 +19,5 @@ test_that("enw_impute_na_observations() throws error when confirm or reference_d
   obs <- data.frame(id = 1:3, confirm = c(NA, 1, 0))
   expect_error(enw_impute_na_observations(obs), "The following columns are required:\nreference_date")
   obs <- data.frame(id = 1:3, reference_date = "2021-02-01")
-  expect_error(enw_impute_na_observations(obs), "The following columns are required: confirm but are not present")
+  expect_error(enw_impute_na_observations(obs), "The following columns are required:\nconfirm\nbut are not present")
 })
