@@ -55,11 +55,10 @@ check_group_date_unique <- function(obs) {
   cells <- obs[, .(count = .N), by = group_cols]
   if (any(cells[, count > 1])) {
     cli::cli_abort(
-      paste0(
-        "The input data seems to be stratified by more variables ",
-        "than specified via the `by` argument. Please provide additional ",
-        "grouping variables to `by`, ",
-        "or aggregate the observations beforehand."
+      c(
+        "The input data seems to be stratified by more variables than ",
+        "specified via the `by` argument. Please provide additional grouping ",
+        "variables to `by`, or aggregate the observations beforehand."
       )
     )
   }
@@ -77,16 +76,14 @@ check_group_date_unique <- function(obs) {
 check_module <- function(module) {
   if (!"data" %in% names(module)) {
     cli::cli_abort(
-      paste0(
+      c(
         "Must contain a list component specifying the data requirements ",
         "for further modelling as a list"
       )
     )
   }
   if (!is.list(module[["data"]])) {
-    cli::cli_abort(
-      "data must be a list of required data"
-    )
+    cli::cli_abort("data must be a list of required data")
   }
   return(invisible(NULL))
 }
@@ -105,7 +102,7 @@ check_modules_compatible <- function(modules) {
       !modules[[6]]$data$likelihood_aggregation
   ) {
     cli::cli_warn(
-      paste0(
+      c(
         "Incompatible model specification: A missingness model has ",
         "been specified but likelihood aggregation is specified as ",
         "by snapshot. Switching to likelihood aggregation by group.",
@@ -191,14 +188,12 @@ coerce_dt <- function(
     # check that all required columns are present
     if (!all(required_cols %in% colnames(dt))) {
       cli::cli_abort(
-        paste0(
-          msg_required,
-          toString(required_cols[!(required_cols %in% colnames(dt))]),
-          " but are not present among ",
-          toString(colnames(dt)),
-          "\n(all `required_cols`: ",
-          toString(required_cols),
-          ")"
+        c(
+          "{msg_required}",
+          "{toString(required_cols[!(required_cols %in% colnames(dt))])}",
+          "but are not present among ",
+          "{toString(colnames(dt))}",
+          "(all `required_cols`: {toString(required_cols)})",
         )
       )
     }
@@ -211,14 +206,12 @@ coerce_dt <- function(
     # check that no forbidden columns are present
     if (any(forbidden_cols %in% colnames(dt))) {
       cli::cli_abort(
-        paste0(
-          msg_forbidden,
-          toString(forbidden_cols[forbidden_cols %in% colnames(dt)]),
-          " but are present among ",
-          toString(colnames(dt)),
-          "\n(all `forbidden_cols`: ",
-          toString(forbidden_cols),
-          ")"
+        c(
+          "{msg_forbidden}",
+          "{toString(forbidden_cols[forbidden_cols %in% colnames(dt)])}",
+          "but are present among ",
+          "{toString(colnames(dt))}",
+          "(all `forbidden_cols`: {toString(forbidden_cols)})"
         )
       )
     }
@@ -270,12 +263,9 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   all_sequential_dates <- all(sequential_dates)
 
   if (any(diff_dates < dates[-length(dates)])) {
-    cli::cli_abort(
-      paste0(
-        date_var,
-        " has a shorter timestep than the specified timestep of a month"
-      )
-    )
+    cli::cli_abort(c(
+      "{date_var} has a shorter timestep than the specified timestep of a month"
+    ))
   }
 
   if (all_sequential_dates) {
@@ -283,9 +273,8 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   } else {
     if (exact) {
       cli::cli_abort(
-        paste0(
-          date_var,
-          " does not have the specified timestep of month"
+        c(
+          "{date_var} does not have the specified timestep of month"
         )
       )
     } else {
@@ -315,18 +304,17 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 
   if (any(diffs == 0)) {
     cli::cli_abort(
-      paste0(
-        date_var,
-        " has a duplicate date. Please remove duplicate dates."
+      c(
+        "{date_var} has a duplicate date. Please remove duplicate dates."
       )
     )
   }
 
   if (any(diffs < timestep)) {
     cli::cli_abort(
-      paste0(
-        date_var, " has a shorter timestep than the specified timestep of ",
-        timestep, " day(s)"
+      c(
+        "{date_var} has a shorter timestep than the specified timestep of ",
+        "{timestep} day(s)"
       )
     )
   }
@@ -341,9 +329,8 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     return(invisible(NULL))
   } else {
     cli::cli_abort(
-      paste0(
-        date_var, " does not have the specified timestep of ", timestep,
-        " day(s)"
+      c(
+        "{date_var} does not have the specified timestep of {timestep} day(s)"
       )
     )
   }
@@ -376,7 +363,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
                            check_nrow = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
-    cli::cli_abort(paste0(date_var, " must be of class Date"))
+    cli::cli_abort(c("{date_var} must be of class Date"))
   }
 
   dates <- obs[[date_var]]
@@ -450,7 +437,7 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
     cli::cli_abort(
-      paste0(
+      c(
         "There must be at least two observations by group and date ",
         "combination to establish a timestep"
       )
