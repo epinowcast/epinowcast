@@ -10,7 +10,7 @@ enw_model(
   compile = TRUE,
   threads = TRUE,
   profile = FALSE,
-  target_dir = tempdir(),
+  target_dir = enw_get_cache(),
   stanc_options = list(),
   cpp_options = list(),
   verbose = TRUE,

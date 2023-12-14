@@ -2,10 +2,8 @@
 % Please edit documentation in R/model-module-helpers.R
 \name{extract_sparse_matrix}
 \alias{extract_sparse_matrix}
-\title{Extract Sparse Matrix Elements}
+\title{Extract sparse matrix elements}
 \usage{
-extract_sparse_matrix(mat, prefix = "")
-
 extract_sparse_matrix(mat, prefix = "")
 }
 \arguments{
@@ -29,11 +27,6 @@ rows of \code{mat}.
 }
 }
 \description{
-This function extracts elements from a matrix to create a sparse matrix representation.
-It follows a method akin to \code{\link[rstan:extract_sparse_parts]{rstan::extract_sparse_parts()}}, producing a named
-list suitable for use with Stan. The function is primarily utilized in building
-the expectation model (refer to \code{\link[=enw_expectation]{enw_expectation()}} for more details).
-
 This helper function allows the extraction of a sparse matrix from a matrix
 using a similar approach to that implemented in
 \code{\link[rstan:extract_sparse_parts]{rstan::extract_sparse_parts()}} and returns these elements in a named
@@ -44,27 +37,10 @@ expectation model (see \code{\link[=enw_expectation]{enw_expectation()}}).
 mat <- matrix(1:12, nrow = 4)
 mat[2, 2] <- 0
 mat[3, 1] <- 0
-sparse_mat <- extract_sparse_matrix(mat)
-# The sparse_mat list now contains the sparse matrix representation of 'mat'
-mat <- matrix(1:12, nrow = 4)
-mat[2, 2] <- 0
-mat[3, 1] <- 0
 extract_sparse_matrix(mat)
 }
 \seealso{
 \code{\link[=enw_expectation]{enw_expectation()}}
-
-\code{\link[=enw_expectation]{enw_expectation()}}
-
-Helper functions for model modules
-\code{\link{add_max_observed_delay}()},
-\code{\link{add_pmfs}()},
-\code{\link{convolution_matrix}()},
-\code{\link{enw_reference_by_report}()},
-\code{\link{enw_reps_with_complete_refs}()},
-\code{\link{extract_obs_metadata}()},
-\code{\link{latest_obs_as_matrix}()},
-\code{\link{simulate_double_censored_pmf}()}
 
 Helper functions for model modules
 \code{\link{add_max_observed_delay}()},

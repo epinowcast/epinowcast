@@ -9,8 +9,8 @@ stan_fns_as_string(files, include)
 \arguments{
 \item{files}{A character vector specifying the names of Stan files to be
 exposed. These must be in the \code{include} directory. Defaults to all Stan
-files in the \code{include} directory. Note that the following files are
-overloaded and cannot be exposed: "delay_lpmf.stan",
+files in the \code{include} directory. Note that the following files contain
+overloaded functions and cannot be exposed: "delay_lpmf.stan",
 "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".}
 
 \item{include}{A character string specifying the directory containing Stan
@@ -29,6 +29,8 @@ Utility functions
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{date_to_numeric_modulus}()},
+\code{\link{enw_get_cache}()},
+\code{\link{enw_unset_cache}()},
 \code{\link{get_internal_timestep}()},
 \code{\link{is.Date}()}
 }
