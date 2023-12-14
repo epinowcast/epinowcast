@@ -253,15 +253,62 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' Stan models rather than a temp directory. This can reduce the
 #' need for model compilation on every new model run.
 #' 
-#' @param enw_cache_location A valid filepath representing the desired cache location
+#' @param path A valid filepath representing the desired cache location
 #' 
 #' @return The string of the filepath set
 #' 
 #' @export 
 
-enw_set_cache <- function(enw_cache_location = NULL){
+enw_set_cache <- function(path = NULL) {
+
+  if ( is.null(path)) {
+    cli::cli_abort("`path` must be a valid file path.")
+  }
+
+  prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
+
+  if (!check_environment_setting(prior_cache)) {
+    cli::cli_alert("{prior_cache} exists and will be overwritten")
+  }
+  env_contents_active <- enw_get_environment_contents()
+
+  #!TODO should we normalise the path?
+  candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
+
+  enw_environment <- paste0( "enw_cache_location=\"", candidate_path, "\"\n")
+
+  new_env_contents <- append(env_contents_active, enw_environment)
+
+  writeLines(new_env_contents, con = env_path, sep = "\n")
+
+  readRenviron(env_path)
+
+  invisible(candidate_path)
 
 }
+
+#' Unset Stan cache location
+#' 
+#' Removes `enw_cache_location` environment variable from 
+#' the user .Renviron file.
+#' 
+#' @return the prior cache location, if it existed
+#' 
+#' @family utils
+#' @export 
+
+enw_unset_cache <- function() {
+  
+  prior_location <- Sys.getenv("enw_cache_location")
+
+  Sys.unsetenv("enw_cache_location")
+
+  enw_get_environment_contents(remove_enw_cache_location = TRUE)
+
+  return(invisible(prior_location))
+
+}
+
 
 #' Retrieve Stan cache location
 #' 
@@ -270,17 +317,46 @@ enw_set_cache <- function(enw_cache_location = NULL){
 #' 
 #' @return The string of the filepath
 #' 
+#' @return something
+#' 
+#' @family utils
 #' @export 
 
-get_enw_cache <- function(){
+enw_get_cache <- function() {
+  
   cache_location <- Sys.getenv("enw_cache_location")
 
-  if ( is.null(cache_location) ) {
+  if (is.null(cache_location) || cache_location == "") {
     cache_location <- tempdir()
+  } else {
+    cli::cli_inform("Using `{cache_location}` for the cache location.")
   }
 
   return(cache_location)
 
+}
+
+check_environment_setting <- function(x) {
+  is.null(x) || x == ""
+}
+
+enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) { 
+  env_location <- Sys.getenv("HOME")
+  env_path <- file.path(env_location, ".Renviron")
+
+  if (!file.exists(env_path)) {
+    file.create(env_path)
+  }
+
+  env_contents <- readLines(env_path)
+
+  if (remove_enw_cache_location) {
+    old_location <- grepl("enw_cache_location", env_contents, fixed = TRUE)
+    env_contents <- env_contents[!old_location]
+  }
+  
+
+  return(env_contents_active)
 }
 
 utils::globalVariables(
