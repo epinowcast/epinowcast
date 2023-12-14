@@ -251,12 +251,18 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #'
 #' This function allows the user to set a cache location for
 #' Stan models rather than a temp directory. This can reduce the
-#' need for model compilation on every new model run.
+#' need for model compilation on every new model run across sessions.
 #'
 #' @param path A valid filepath representing the desired cache location
 #'
 #' @return The string of the filepath set
+#' @examples
+#' # Set to local directory
+#' dir.create("test")
+#' enw_set_cache("test")
+#' enw_get_cache()
 #'
+#' @importFrom cli cli_abort cli_alert
 #' @export
 
 enw_set_cache <- function(path = NULL) {
@@ -296,9 +302,13 @@ enw_set_cache <- function(path = NULL) {
 #' Unset Stan cache location
 #'
 #' Removes `enw_cache_location` environment variable from
-#' the user .Renviron file.
+#' the user .Renviron file and removes it from the local
+#' environment.
 #'
 #' @return the prior cache location, if it existed
+#'
+#' @examples
+#' enw_unset_cache()
 #'
 #' @family utils
 #' @export
@@ -319,10 +329,14 @@ enw_unset_cache <- function() {
 #'
 #' Retrieves the user set cache location for Stan models. This
 #' path can be set through the `enw_cache_location` function call.
+#' If no environmental variable is available the output from
+#' `tempdir` will be returned.
 #'
 #' @return The string of the filepath
 #'
-#' @return something
+#' @return a string representing the file path for the cache location
+#'
+#' @importFrom cli cli_inform
 #'
 #' @family utils
 #' @export
