@@ -185,7 +185,7 @@ remove_profiling <- function(s) {
 #'
 #' @family modeltools
 write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
-                                        target_dir = tempdir()) {
+                                        target_dir = enw_get_cache()) {
   # remove profiling from main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
   code_main_model_no_profile <- remove_profiling(code_main_model)
@@ -195,7 +195,8 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
   main_model <- cmdstanr::write_stan_file(
     code_main_model_no_profile,
     dir = target_dir,
-    basename = basename(stan_file)
+    basename = basename(stan_file),
+    force_overwrite = FALSE
   )
 
   # remove profiling from included .stan files
@@ -223,7 +224,8 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
       cmdstanr::write_stan_file(
         code_include_paths_no_profile,
         dir = include_paths_no_profile_fdir,
-        basename = basename(f)
+        basename = basename(f),
+        force_overwrite = FALSE
       )
     }
   }
@@ -337,7 +339,7 @@ enw_model <- function(model = system.file(
                       ),
                       include = system.file("stan", package = "epinowcast"),
                       compile = TRUE, threads = TRUE, profile = FALSE,
-                      target_dir = tempdir(), stanc_options = list(),
+                      target_dir = enw_get_cache(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
     cli::cli_inform("Using model {model}.")
