@@ -20,7 +20,7 @@ test_that("get_internal_timestep() works as expected", {
   # test with non-whole number timestep
   expect_error(
     get_internal_timestep(1.5),
-    "Invalid timestep. If timestep is a numeric, it should be a whole number"
+    "Invalid timestep. If timestep is a numeric, it should be a whole\nnumber"
   )
 })
 
