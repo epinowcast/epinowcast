@@ -248,20 +248,20 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 }
 
 #' Set caching location for Stan models
-#' 
+#'
 #' This function allows the user to set a cache location for
 #' Stan models rather than a temp directory. This can reduce the
 #' need for model compilation on every new model run.
-#' 
+#'
 #' @param path A valid filepath representing the desired cache location
-#' 
+#'
 #' @return The string of the filepath set
-#' 
-#' @export 
+#'
+#' @export
 
 enw_set_cache <- function(path = NULL) {
 
-  if ( is.null(path)) {
+  if (is.null(path)) {
     cli::cli_abort("`path` must be a valid file path.")
   }
 
@@ -275,11 +275,17 @@ enw_set_cache <- function(path = NULL) {
   #!TODO should we normalise the path?
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
 
-  enw_environment <- paste0( "enw_cache_location=\"", candidate_path, "\"\n")
+  enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
 
-  new_env_contents <- append(env_contents_active[["env_contents"]], enw_environment)
+  new_env_contents <- append(
+    env_contents_active[["env_contents"]],
+    enw_environment
+  )
 
-  writeLines(new_env_contents, con = env_contents_active[["env_path"]], sep = "\n")
+  writeLines(
+    new_env_contents,
+    con = env_contents_active[["env_path"]], sep = "\n"
+  )
 
   readRenviron(env_contents_active[["env_path"]])
 
@@ -288,22 +294,21 @@ enw_set_cache <- function(path = NULL) {
 }
 
 #' Unset Stan cache location
-#' 
-#' Removes `enw_cache_location` environment variable from 
+#'
+#' Removes `enw_cache_location` environment variable from
 #' the user .Renviron file.
-#' 
+#'
 #' @return the prior cache location, if it existed
-#' 
+#'
 #' @family utils
-#' @export 
+#' @export
 
 enw_unset_cache <- function() {
-  
   prior_location <- Sys.getenv("enw_cache_location")
 
   Sys.unsetenv("enw_cache_location")
 
-  out <- enw_get_environment_contents(remove_enw_cache_location = TRUE)
+  invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
 
   return(invisible(prior_location))
 
@@ -311,19 +316,18 @@ enw_unset_cache <- function() {
 
 
 #' Retrieve Stan cache location
-#' 
+#'
 #' Retrieves the user set cache location for Stan models. This
 #' path can be set through the `enw_cache_location` function call.
-#' 
+#'
 #' @return The string of the filepath
-#' 
+#'
 #' @return something
-#' 
+#'
 #' @family utils
-#' @export 
+#' @export
 
 enw_get_cache <- function() {
-  
   cache_location <- Sys.getenv("enw_cache_location")
 
   if (is.null(cache_location) || cache_location == "") {
@@ -336,11 +340,13 @@ enw_get_cache <- function() {
 
 }
 
+# Internal function to get for environment variables
 check_environment_setting <- function(x) {
   is.null(x) || x == ""
 }
 
-enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) { 
+# Internal function to identify the cache location
+enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
   env_location <- Sys.getenv("HOME")
   env_path <- file.path(env_location, ".Renviron")
 
@@ -354,7 +360,7 @@ enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
     old_location <- grepl("enw_cache_location", env_contents, fixed = TRUE)
     env_contents <- env_contents[!old_location]
   }
-  
+
   output <- list(
     env_contents = env_contents,
     env_path = env_path
