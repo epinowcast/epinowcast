@@ -14,7 +14,7 @@ test_that("get_internal_timestep() works as expected", {
   # test with invalid string timestep
   expect_error(
     get_internal_timestep("invalid"),
-    "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
+    "Invalid timestep. Acceptable string inputs are 'day', 'week',\n'month'."
   )
   
   # test with non-whole number timestep

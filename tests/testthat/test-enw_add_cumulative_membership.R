@@ -36,6 +36,6 @@ test_that("enw_add_cumulative_membership fails as expected", {
   )
   expect_error(
     enw_add_cumulative_membership(metaobs[, week := as.factor(week)], "week"),
-    regexp = "Requested variable week is not numeric. Cumulative membership effects"
+    regexp = "Requested variable week is not numeric.\nCumulative membership effects"
   )
 })

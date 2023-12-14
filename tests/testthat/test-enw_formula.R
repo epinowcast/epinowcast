@@ -81,7 +81,7 @@ test_that("enw_formula can handle complex combined formulas", {
 test_that("enw_formula fails when incorrect random walks are defined", {
   expect_error(
     enw_formula(~ 1 + rw(day), data = mtcars),
-    regexp = "The time variable day is not numeric but must be to be"
+    regexp = "The time variable day is not numeric but must be\nto be"
   )
 })
 
