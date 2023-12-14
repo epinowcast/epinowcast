@@ -193,7 +193,7 @@ coerce_dt <- function(
           "{toString(required_cols[!(required_cols %in% colnames(dt))])}",
           "but are not present among",
           "{toString(colnames(dt))}",
-          "(all `required_cols`: {toString(required_cols)})"
+          "(all {.arg required_cols}: {toString(required_cols)})"
         )
       )
     }
