@@ -277,11 +277,11 @@ enw_set_cache <- function(path = NULL) {
 
   enw_environment <- paste0( "enw_cache_location=\"", candidate_path, "\"\n")
 
-  new_env_contents <- append(env_contents_active, enw_environment)
+  new_env_contents <- append(env_contents_active[["env_contents"]], enw_environment)
 
-  writeLines(new_env_contents, con = env_path, sep = "\n")
+  writeLines(new_env_contents, con = env_contents_active[["env_path"]], sep = "\n")
 
-  readRenviron(env_path)
+  readRenviron(env_contents_active[["env_path"]])
 
   invisible(candidate_path)
 
@@ -303,7 +303,7 @@ enw_unset_cache <- function() {
 
   Sys.unsetenv("enw_cache_location")
 
-  enw_get_environment_contents(remove_enw_cache_location = TRUE)
+  out <- enw_get_environment_contents(remove_enw_cache_location = TRUE)
 
   return(invisible(prior_location))
 
@@ -355,8 +355,12 @@ enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
     env_contents <- env_contents[!old_location]
   }
   
+  output <- list(
+    env_contents = env_contents,
+    env_path = env_path
+  )
 
-  return(env_contents_active)
+  return(output)
 }
 
 utils::globalVariables(
