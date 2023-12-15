@@ -34,6 +34,7 @@ PMF
 PMFs
 Poisson
 Precompiling
+Renviron
 Rstudio
 SEIR
 Vehtari
@@ -51,6 +52,7 @@ dt
 enw
 epidemia
 etc
+filepath
 formulatools
 frac
 geq
@@ -115,37 +117,3 @@ underpredicting
 underprediction
 unmodelled
 warmup
-<<<<<<< HEAD
-=======
-zenodo
-’s
-adaptDelta
-Aki
-CmdStanR
-ESS
-Gelman
-INLA
-iter
-iters
-maxTree
-modelData
-modelParams
-Ocaml
-OCaml
-rjags
-Rstudio
-samplerParams
-settingPriors
-stanc
-Vehtari
-Vscode
-Betancourt
-MCSE
-Rhat
-posteriorPreds
-hatR
-treedepth
-Betancourt's
-troubleshooting
-unset
->>>>>>> 25f9d742 (add to wl)
