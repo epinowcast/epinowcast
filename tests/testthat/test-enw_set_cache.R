@@ -1,6 +1,5 @@
 
 persistent_tempdir <- tempdir()
-devtools::load_all()
 test_model_cache <- function(){
     withr::with_envvar(
         new = c(enw_cache_location = persistent_tempdir), {

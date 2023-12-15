@@ -6,9 +6,11 @@ test_that("enw_get_cache can retrieve the enw_cache_location as expected", {
     )
     )
 
+    withr::with_envvar( new = c(enw_cache_location = ""),
     expect_equal(
         enw_get_cache(), 
         tempdir()
+    )
     )
 })
 
