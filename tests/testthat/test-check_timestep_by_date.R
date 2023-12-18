@@ -76,8 +76,8 @@ test_that("check_timestep_by_date() handles insufficient data correctly", {
   # Create a dataset with two identical dates and group
   obs_identical_dates <- data.table::data.table(
     .group = c("A", "A"),
-    report_date = c(as.Date("2020-01-01"), as.Date("2020-01-01")),
-    reference_date = c(as.Date("2020-01-01"), as.Date("2020-01-01"))
+    report_date = as.Date(c("2020-01-01", "2020-01-01")),
+    reference_date = as.Date(c("2020-01-01", "2020-01-01"))
   )
 
   # Test for identical dates

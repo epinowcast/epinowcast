@@ -171,7 +171,7 @@ test_that("check_timestep() handles problematic inputs", {
 
   # 5. Test with non-sequential days when exact is TRUE
   obs_non_sequential <- data.frame(
-    date = c(as.Date("2020-01-01"), as.Date("2020-01-04"), as.Date("2020-01-05"))
+    date = as.Date(c("2020-01-01", "2020-01-04", "2020-01-05"))
   )
   expect_error(
     check_timestep(obs_non_sequential, date_var = "date", timestep = "day", exact = TRUE),
