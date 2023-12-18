@@ -22,5 +22,8 @@ need for model compilation on every new model run across sessions.
 dir.create("test")
 enw_set_cache("test")
 enw_get_cache()
-
+# Use  the package cache in R >= 4.0
+if(R.version.string >= 4.0) {
+  enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
+}
 }
