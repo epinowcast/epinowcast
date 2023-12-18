@@ -8,7 +8,7 @@ test_that("extract_obs_metadata returns correct metadata", {
     .observed = c(TRUE, TRUE, FALSE) # Mock observation_indicator
   )
 
-  result <- epinowcast:::extract_obs_metadata(new_confirm)
+  result <- extract_obs_metadata(new_confirm)
 
   # Check if the result is a list
   expect_true(is.list(result))
@@ -29,9 +29,8 @@ test_that("extract_obs_metadata returns correct metadata", {
   expect_identical(result$sg, c(1, 1, 2))
 
   # Test with observation_indicator
-  new_confirm <- epinowcast:::add_max_observed_delay(new_confirm, ".observed")
-  result <-
-    epinowcast:::extract_obs_metadata(new_confirm, ".observed")
+  new_confirm <- add_max_observed_delay(new_confirm, ".observed")
+  result <- extract_obs_metadata(new_confirm, ".observed")
 
   expect_true(is.list(result))
   # Check if the list has the expected names
@@ -50,7 +49,7 @@ test_that("extract_obs_metadata returns correct metadata", {
   expect_identical(result$cnsl, c(1L, 2L, 2L))
   expect_identical(result$sg, c(1, 1, 2))
   expect_error(
-    epinowcast:::extract_obs_metadata(new_confirm, "delay"),
+    extract_obs_metadata(new_confirm, "delay"),
     "observation_indicator must be a logical"
   )
 })

@@ -7,7 +7,7 @@ mock_data <- data.table(
 )
 
 test_that("add_max_observed_delay works without observation_indicator", {
-  result <- epinowcast:::add_max_observed_delay(mock_data)
+  result <- add_max_observed_delay(mock_data)
 
   expected <- copy(mock_data)
   expected[, max_obs_delay := c(5, 10, 3, 7)]

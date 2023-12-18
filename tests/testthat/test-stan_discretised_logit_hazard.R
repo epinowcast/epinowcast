@@ -4,7 +4,7 @@ skip_on_os("mac")
 skip_on_os("linux")
 skip_on_local()
 
-epinowcast:::expose_stan_fns(
+expose_stan_fns(
   c("discretised_logit_hazard.stan", "hazard.stan"),
   system.file("stan/functions", package = "epinowcast")
 )
