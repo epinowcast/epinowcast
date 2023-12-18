@@ -11,11 +11,20 @@ test_model_cache <- function() {
     )
 }
 
-
-
 test_that("enw_model can access enw_cache_location", {
     skip_on_cran()
     run_initial <- test_model_cache()
     run_secondary <- test_model_cache()
     expect_true(run_secondary < run_initial)
+})
+
+cli::test_that_cli("alert", {
+    skip_on_cran()
+    local_edition(3)
+    testthat::expect_snapshot({
+    withr::with_envvar(
+        new = c(enw_cache_location = "initial_location"), {
+            enw_set_cache("second_location")
+        })
+  })
 })
