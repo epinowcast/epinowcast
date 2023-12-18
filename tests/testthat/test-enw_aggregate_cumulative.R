@@ -50,7 +50,7 @@ test_that("enw_aggregate_cumulative() handles missing reference dates", {
   obs_with_na[1:5, reference_date := NA]
 
   result <- enw_aggregate_cumulative(obs_with_na, timestep = 3)
-  expect_true(any(is.na(result$reference_date)))
+  expect_true(anyNA(result$reference_date))
   expect_identical(result$confirm[1], 1)
   expect_identical(unique(result[-1, ]$confirm), 3)
 })
