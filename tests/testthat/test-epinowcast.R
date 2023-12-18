@@ -5,7 +5,7 @@ if (not_on_cran() && on_ci()) {
   options(mc.cores = 2)
   silent_enw_sample <- function(...) {
     utils::capture.output(
-      fit <- suppressMessages(enw_sample(...))
+      fit <- suppressMessages(enw_sample(...)) # nolint: implicit_assignment_linter
     )
     return(fit)
   }

@@ -40,6 +40,7 @@ test_that("enw_add_metaobs_features overwrites columns with a warning", {
   dow <- "Placeholder"
   dummy[, day_of_week := dow]
   expect_warning(
+    # nolint next: implicit_assignment_linter.
     metaobs <- enw_add_metaobs_features(dummy, datecol = "reference_date")
   )
   expect_no_match(
