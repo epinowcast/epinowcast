@@ -23,7 +23,7 @@ test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)",
 })
 
 test_that("enw_add_metaobs_features always adds all columns", {
-  expect_equal(
+  expect_identical(
     sort(intersect(
       colnames(enw_add_metaobs_features(
         nat_germany_hosp,
@@ -68,14 +68,14 @@ test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` pro
     holidays = NULL,
     holidays_to = "Holiday"
   )
-  expect_equal(mobs[day_of_week == "Holiday", .N], 0)
+  expect_identical(mobs[day_of_week == "Holiday", .N], 0L)
   mobs <- enw_add_metaobs_features(
     nat_germany_hosp,
     datecol = "reference_date",
     holidays = c(),
     holidays_to = "Holiday"
   )
-  expect_equal(mobs[day_of_week == "Holiday", .N], 0)
+  expect_identical(mobs[day_of_week == "Holiday", .N], 0L)
 })
 
 test_that("enw_add_metaobs_features count from zero", {
@@ -85,7 +85,7 @@ test_that("enw_add_metaobs_features count from zero", {
     holidays = NULL,
     holidays_to = "Holiday"
   )
-  expect_equal(mobs[1, c(day, week, month)], c(0, 0, 0))
+  expect_identical(mobs[1, c(day, week, month)], c(0, 0, 0))
 })
 
 test_that("enw_add_metaobs_features resulting day, week, month always ascending", {
@@ -101,7 +101,7 @@ test_that("enw_add_metaobs_features resulting day, week, month always ascending"
     holidays = NULL,
     holidays_to = "Holiday"
   )
-  expect_equal(mobs[, c(
+  expect_identical(mobs[, c(
     all(diff(day) >= 0), all(diff(week) >= 0), all(diff(month) >= 0)
   )], c(TRUE, TRUE, TRUE))
 })

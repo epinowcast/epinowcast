@@ -11,7 +11,7 @@ epinowcast:::expose_stan_fns(
 
 test_that("discretised_logit_hazard returns log probabilities that sum to 1", {
   expect_equal_to_1 <- function(lp) {
-    expect_equal(sum(exp(lp)), 1)
+    expect_equal(sum(exp(lp)), 1.0)
   }
   # Exponential
   expect_equal_to_1(discretised_logit_hazard(1, 0.5, 10, 1, 2, 1))
@@ -29,7 +29,7 @@ test_that("discretised_logit_hazard returns probabilities as logit hazards that
     lh <- plogis(lh)
     lh <- hazard_to_log_prob(lh)
     p <- exp(lh)
-    expect_equal(sum(p), 1)
+    expect_equal(sum(p), 1.0)
   }
   # Exponential
   expect_equal_to_1(discretised_logit_hazard(1, 0.5, 10, 1, 2, 0))
@@ -50,7 +50,7 @@ test_that("discretised_logit_hazard returns the same thing in both log
     lh <- plogis(lh)
     lh <- hazard_to_log_prob(lh)
     expect_equal(
-      round(exp(lp), 4), round(exp(lh), 4)
+      round(exp(lp), 4), round(exp(lh), 4) # nolint: expect_identical_linter
     )
   }
   # Exponential

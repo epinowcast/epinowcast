@@ -17,6 +17,6 @@ test_that("add_pmfs can combine two Poisson distributions", {
 
 test_that("add_pmfs returns the input PMF when only one is passed", {
   pmf <- c(0.1, 0.2, 0.3)
-  expect_equal(add_pmfs(pmf), pmf)
-  expect_equal(add_pmfs(list(pmf)), pmf)
+  expect_identical(add_pmfs(pmf), pmf)
+  expect_identical(add_pmfs(list(pmf)), pmf)
 })

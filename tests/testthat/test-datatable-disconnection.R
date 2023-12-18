@@ -7,7 +7,7 @@ test_that("coerce_dt gives new data.table object", {
 test_that("coerce_dt gives new data.table object, unless asked not to", {
   dummy <- data.table::data.table(dummy = 1:10)
   newdt <- coerce_dt(dummy, copy = FALSE)
-  expect_true(data.table::address(newdt) == data.table::address(dummy))
+  expect_identical(data.table::address(newdt), data.table::address(dummy))
 })
 
 test_that("coerce_dt requires required_cols", {
@@ -51,7 +51,7 @@ test_that("coerce_dt(date = TRUE) works for example data", {
   )
   obs <- coerce_dt(germany_covid19_hosp, dates = TRUE)
   expect_data_table(obs)
-  expect_equal(colnames(obs), colnames(germany_covid19_hosp))
+  expect_identical(colnames(obs), colnames(germany_covid19_hosp))
   expect_equal(class(obs$reference_date), c("IDate", "Date"))
   expect_equal(class(obs$report_date), c("IDate", "Date"))
 })

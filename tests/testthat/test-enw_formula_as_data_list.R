@@ -44,7 +44,7 @@ test_that("enw_formula_as_data_list produces expected output using a more comple
 })
 
 test_that("enw_formula_as_data_list produces expected default output", {
-  expect_equal(
+  expect_identical(
     enw_formula_as_data_list(
       prefix = "c"
     ),

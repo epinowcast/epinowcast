@@ -58,7 +58,7 @@ test_that("epinowcast() runs using default arguments only", {
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
   expect_data_table(nowcast$priors[[1]])
-  expect_true(nrow(nowcast$priors[[1]]) == 14)
+  expect_identical(nrow(nowcast$priors[[1]]), 14L)
   expect_named(
     nowcast$priors[[1]],
     c("variable", "dimension", "description", "distribution", "mean", "sd")
@@ -172,8 +172,8 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is 
   )
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
-  expect_equal(nrow(nowcast$fit[[1]]$summary("refp_lh")), 30L)
-  expect_equal(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 21L)
+  expect_identical(nrow(nowcast$fit[[1]]$summary("refp_lh")), 30L)
+  expect_identical(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 21L)
 })
 
 test_that("epinowcast() can fit a reporting model with a day of the week random
@@ -403,8 +403,8 @@ test_that("epinowcast() can fit a simple non-parametric reference date model", {
     model = model
   ))
   expect_convergence(nowcast)
-  expect_equal(
-    nrow(summary(nowcast, type = "fit", variables = "refnp_beta")), 20
+  expect_identical(
+    nrow(summary(nowcast, type = "fit", variables = "refnp_beta")), 20L
   )
   expect_equal(
     summary(nowcast, type = "fit", variables = "refnp_int")$mean, -1.66,

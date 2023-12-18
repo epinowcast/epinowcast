@@ -5,7 +5,7 @@ test_that("enw_replace_priors can replace a default prior with a custom
   exp_priors <- data.table::data.table(
     variable = c("y", "x"), mean = c(2, 10), sd = c(2, 2)
   )
-  expect_equal(enw_replace_priors(priors, custom_priors), exp_priors)
+  expect_identical(enw_replace_priors(priors, custom_priors), exp_priors)
 })
 
 test_that("enw_replace_priors can replace a default prior with a custom
@@ -15,7 +15,7 @@ test_that("enw_replace_priors can replace a default prior with a custom
   exp_priors <- data.table::data.table(
     variable = c("y", "x"), mean = c(2, 10), sd = c(2, 2)
   )
-  expect_equal(enw_replace_priors(priors, custom_priors), exp_priors)
+  expect_identical(enw_replace_priors(priors, custom_priors), exp_priors)
 })
 
 test_that("enw_replace_priors can replace default priors with those from an
@@ -33,10 +33,10 @@ test_that("enw_replace_priors can replace default priors with those from an
   ]
   default_priors <- enw_reference(distribution = "lognormal", data = obs)$priors
   updated_priors <- enw_replace_priors(default_priors, fit_priors)
-  expect_equal(
+  expect_identical(
     updated_priors[variable %in% variables]$mean, as.numeric(fit_priors$mean)
   )
-  expect_equal(
+  expect_identical(
     updated_priors[variable %in% variables]$sd, as.numeric(fit_priors$sd)
   )
 })

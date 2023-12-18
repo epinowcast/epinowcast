@@ -7,7 +7,7 @@ test_that("enw_latest_data works as expected with well behaved data", {
     reference_date = as.IDate(c("2021-10-01", "2021-11-01")),
     report_date = as.IDate(c("2021-11-01", "2021-12-01"))
   )
-  expect_equal(enw_latest_data(obs), exp_obs)
+  expect_identical(enw_latest_data(obs), exp_obs)
 })
 
 test_that("enw_latest_data works as expected with poorly behaved data", {
@@ -19,7 +19,7 @@ test_that("enw_latest_data works as expected with poorly behaved data", {
     reference_date = as.IDate(c("2021-10-01", "2021-11-01")),
     report_date = as.IDate(c("2021-10-01", "2021-12-01"))
   )
-  expect_equal(enw_latest_data(obs), exp_obs)
+  expect_identical(enw_latest_data(obs), exp_obs)
   obs$reference_date <- NULL
   expect_error(enw_latest_data(obs))
 })

@@ -10,7 +10,7 @@ test_that("convolution matrix can construct matrices of the correct form", {
   )
 
   # Use a list of distributions
-  expect_equal(
+  expect_identical(
     convolution_matrix(rep(list(c(1, 2, 3)), 10), 10),
     convolution_matrix(c(1, 2, 3), 10)
   )

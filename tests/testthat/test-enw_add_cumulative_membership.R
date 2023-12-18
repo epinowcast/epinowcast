@@ -1,7 +1,7 @@
 test_that("enw_add_cumulative_membership adds features as expected", {
   metaobs <- data.frame(week = 1:3)
   metaobs <- enw_add_cumulative_membership(metaobs, "week")
-  expect_equal(
+  expect_identical(
     metaobs,
     data.table::data.table(
       week = 1:3,
@@ -18,7 +18,7 @@ test_that(
   {
     metaobs <- data.frame(week = 1:3, .group = c(1, 1, 2))
     metaobs <- enw_add_cumulative_membership(metaobs, "week")
-  expect_equal(
+  expect_identical(
       metaobs,
       data.table::data.table(
         week = 1:3,

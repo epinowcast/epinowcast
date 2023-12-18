@@ -13,8 +13,8 @@ test_that("coerce_date works for non-garbage in", {
     coerce_date(c()), NA
   )
   coerced <- coerce_date(nongarbage)
-  expect_equal(coerced, refresult)
-  expect_equal(class(coerced), class(refresult))
+  expect_identical(coerced, refresult)
+  expect_identical(class(coerced), class(refresult))
 })
 
 test_that("coerce_date errors for garbage in", {

@@ -18,15 +18,15 @@ test_that("extract_obs_metadata returns correct metadata", {
     c("st", "ts", "sl", "csl", "lsl", "clsl", "nsl", "cnsl", "sg")
   )
   # Test the output is as expected
-  expect_equal(result$st, c(1, 2, 1))
-  expect_equal(
-    unname(as.matrix(result$ts)), t(matrix(c(1, NA, 2, NA, NA, 3), nrow = 2))
+  expect_identical(result$st, c(1L, 2L, 1L))
+  expect_identical(
+    unname(as.matrix(result$ts)), t(matrix(c(1L, NA, 2L, NA, NA, 3L), nrow = 2))
   )
-  expect_equal(result$sl, c(2, 3, 4))
-  expect_equal(result$csl, c(2, 5, 9))
-  expect_equal(result$nsl, c(2, 3, 4))
-  expect_equal(result$cnsl, c(2, 5, 9))
-  expect_equal(result$sg, c(1, 1, 2))
+  expect_identical(result$sl, c(2, 3, 4))
+  expect_identical(result$csl, c(2, 5, 9))
+  expect_identical(result$nsl, c(2, 3, 4))
+  expect_identical(result$cnsl, c(2, 5, 9))
+  expect_identical(result$sg, c(1, 1, 2))
 
   # Test with observation_indicator
   new_confirm <- epinowcast:::add_max_observed_delay(new_confirm, ".observed")
@@ -40,15 +40,15 @@ test_that("extract_obs_metadata returns correct metadata", {
     c("st", "ts", "sl", "csl", "lsl", "clsl", "nsl", "cnsl", "sg")
   )
   # Test the output is as expected
-  expect_equal(result$st, c(1, 2, 1))
-  expect_equal(
-    unname(as.matrix(result$ts)), t(matrix(c(1, NA, 2, NA, NA, 3), nrow = 2))
+  expect_identical(result$st, c(1L, 2L, 1L))
+  expect_identical(
+    unname(as.matrix(result$ts)), t(matrix(c(1L, NA, 2L, NA, NA, 3L), nrow = 2))
   )
-  expect_equal(result$sl, c(2, 3, 4))
-  expect_equal(result$csl, c(2, 5, 9))
-  expect_equal(result$nsl, c(1, 1, 0))
-  expect_equal(result$cnsl, c(1, 2, 2))
-  expect_equal(result$sg, c(1, 1, 2))
+  expect_identical(result$sl, c(2, 3, 4))
+  expect_identical(result$csl, c(2, 5, 9))
+  expect_identical(result$nsl, c(1L, 1L, 0L))
+  expect_identical(result$cnsl, c(1L, 2L, 2L))
+  expect_identical(result$sg, c(1, 1, 2))
   expect_error(
     epinowcast:::extract_obs_metadata(new_confirm, "delay"),
     "observation_indicator must be a logical"

@@ -10,8 +10,8 @@ test_that("enw_priors_as_data_list produces expected output", {
   rownames(priors_list$x_p) <- c("mean", "sd")
   rownames(priors_list$y_p) <- c("mean", "sd")
   rownames(priors_list$z_p) <- c("mean", "sd")
-  
-  expect_equal(
+
+  expect_identical(
     enw_priors_as_data_list(priors), priors_list
   )
 })

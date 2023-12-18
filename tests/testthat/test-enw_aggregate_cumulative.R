@@ -17,22 +17,22 @@ obs <- data.table::data.table(
 test_that("enw_aggregate_cumulative() basic functionality works", {
   obs <- obs[location == "A"]
   result <- enw_aggregate_cumulative(obs, timestep = "week")
-  expect_equal(unique(result$confirm), 7) # 7 days in a week
+  expect_identical(unique(result$confirm), 7) # 7 days in a week
 })
 
 test_that("enw_aggregate_cumulative() works with different timesteps", {
   obs <- obs[location == "A"]
   # Test with a week as numeric
   result_week <- enw_aggregate_cumulative(obs, timestep = 7)
-  expect_equal(unique(result_week$confirm), 7)
-  
+  expect_identical(unique(result_week$confirm), 7)
+
   # Test with a 5-day period
   result_5days <- enw_aggregate_cumulative(obs, timestep = 5)
-  expect_equal(unique(result_5days$confirm), 5)
+  expect_identical(unique(result_5days$confirm), 5)
 
   # Test with a 3-day period
   result_5days <- enw_aggregate_cumulative(obs, timestep = 3)
-  expect_equal(unique(result_5days$confirm), 3)
+  expect_identical(unique(result_5days$confirm), 3)
 })
 
 test_that("enw_aggregate_cumulative() with groups", {
@@ -41,25 +41,25 @@ test_that("enw_aggregate_cumulative() with groups", {
     obs,
     timestep = "week", by = "location"
   )
-  expect_equal(unique(result_with_group$confirm), 7)
+  expect_identical(unique(result_with_group$confirm), 7)
 })
 
 test_that("enw_aggregate_cumulative() handles missing reference dates", {
   obs_with_na <- obs[location %in% "A"]
   setorder(obs_with_na, location, reference_date)
   obs_with_na[1:5, reference_date := NA]
-  
+
   result <- enw_aggregate_cumulative(obs_with_na, timestep = 3)
   expect_true(any(is.na(result$reference_date)))
-  expect_equal(result$confirm[1], 1)
-  expect_equal(unique(result[-1, ]$confirm), 3)
+  expect_identical(result$confirm[1], 1)
+  expect_identical(unique(result[-1, ]$confirm), 3)
 })
 
 test_that("enw_aggregate_cumulative() handles missing report dates", {
   obs_with_na <- obs[location %in% "A"]
   obs_with_na[1:5, report_date := NA]
   result <- enw_aggregate_cumulative(obs_with_na, timestep = "week")
-  expect_equal(unique(result$confirm), 7)
+  expect_identical(unique(result$confirm), 7)
 })
 
 test_that("enw_aggregate_cumulative() when there are no complete report dates", {
@@ -83,7 +83,7 @@ test_that("enw_aggregate_cumulative() handles missing values in 'confirm'", {
   obs_na_confirm <- obs[location == "A"]
   obs_na_confirm[1:5, confirm := NA]
   result <- enw_aggregate_cumulative(obs_na_confirm, timestep = "week")
-  expect_equal(unique(result$confirm), 7)
+  expect_identical(unique(result$confirm), 7)
 })
 
 test_that("enw_aggregate_cumulative() when 'by' grouping does not exist", {
@@ -135,7 +135,7 @@ test_that(
     )
     daily <- enw_complete_dates(data, missing_reference = FALSE)
     actual_agg <- enw_aggregate_cumulative(daily, timestep = "week")
-    expect_equal(actual_agg, expected_agg)
+    expect_identical(actual_agg, expected_agg)
   }
 )
 
@@ -183,6 +183,6 @@ test_that(
       daily,
       timestep = "week", min_reference_date = min(data$report_date) + 1
     )
-    expect_equal(actual_agg, expected_agg)
+    expect_identical(actual_agg, expected_agg)
   }
 )

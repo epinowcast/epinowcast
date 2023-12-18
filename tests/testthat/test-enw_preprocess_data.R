@@ -8,7 +8,7 @@ cols <- c(
 test_that("enw_preprocess_data() produces expected output with default settings", {
   pobs <- enw_preprocess_data(nat_germany_hosp)
   expect_data_table(pobs)
-  expect_equal(colnames(pobs), cols)
+  expect_identical(colnames(pobs), cols)
   expect_data_table(pobs$obs[[1]])
   expect_data_table(pobs$new_confirm[[1]])
   expect_data_table(pobs$latest[[1]])
@@ -17,11 +17,11 @@ test_that("enw_preprocess_data() produces expected output with default settings"
   expect_data_table(pobs$metareference[[1]])
   expect_data_table(pobs$metareport[[1]])
   expect_data_table(pobs$metadelay[[1]])
-  expect_equal(pobs$time[[1]], 198)
-  expect_equal(pobs$snapshots[[1]], 198)
-  expect_equal(pobs$groups[[1]], 1)
-  expect_equal(pobs$max_delay[[1]], 20)
-  expect_equal(pobs$timestep[[1]], "day")
+  expect_identical(pobs$time[[1]], 198L)
+  expect_identical(pobs$snapshots[[1]], 198L)
+  expect_identical(pobs$groups[[1]], 1L)
+  expect_identical(pobs$max_delay[[1]], 20)
+  expect_identical(pobs$timestep[[1]], "day")
 })
 
 test_that("enw_preprocess_data() produces expected output when excluding and using a maximum delay of 10", {
@@ -30,11 +30,11 @@ test_that("enw_preprocess_data() produces expected output when excluding and usi
     max_delay = 10
   )
   expect_data_table(pobs)
-  expect_equal(pobs$time[[1]], 198)
-  expect_equal(pobs$snapshots[[1]], 198)
-  expect_equal(pobs$groups[[1]], 1)
-  expect_equal(pobs$max_delay[[1]], 10)
-  expect_equal(pobs$timestep[[1]], "day")
+  expect_identical(pobs$time[[1]], 198L)
+  expect_identical(pobs$snapshots[[1]], 198L)
+  expect_identical(pobs$groups[[1]], 1L)
+  expect_identical(pobs$max_delay[[1]], 10)
+  expect_identical(pobs$timestep[[1]], "day")
 })
 
 test_that("enw_preprocess_data() handles groups as expected", {
@@ -43,12 +43,12 @@ test_that("enw_preprocess_data() handles groups as expected", {
     by = c("location", "age_group")
   )
   expect_data_table(pobs)
-  expect_equal(colnames(pobs), cols)
-  expect_equal(pobs$time[[1]], 198)
-  expect_equal(pobs$snapshots[[1]], 23562)
-  expect_equal(pobs$groups[[1]], 119)
-  expect_equal(pobs$max_delay[[1]], 20)
-  expect_equal(pobs$timestep[[1]], "day")
+  expect_identical(colnames(pobs), cols)
+  expect_identical(pobs$time[[1]], 198L)
+  expect_identical(pobs$snapshots[[1]], 23562L)
+  expect_identical(pobs$groups[[1]], 119L)
+  expect_identical(pobs$max_delay[[1]], 20)
+  expect_identical(pobs$timestep[[1]], "day")
 })
 
 test_that("enw_preprocess_data() can handle a non-default timestep as expected", {
@@ -63,28 +63,28 @@ test_that("enw_preprocess_data() can handle a non-default timestep as expected",
     max_delay = 5, timestep = "week"
   )
   expect_data_table(weekly_pobs)
-  expect_equal(colnames(weekly_pobs), cols)
-  expect_equal(weekly_pobs$time[[1]], 24)
-  expect_equal(weekly_pobs$snapshots[[1]], 24)
-  expect_equal(weekly_pobs$groups[[1]], 1)
-  expect_equal(weekly_pobs$max_delay[[1]], 5)
-  expect_equal(weekly_pobs$timestep[[1]], "week")
-  expect_equal(
+  expect_identical(colnames(weekly_pobs), cols)
+  expect_identical(weekly_pobs$time[[1]], 24L)
+  expect_identical(weekly_pobs$snapshots[[1]], 24L)
+  expect_identical(weekly_pobs$groups[[1]], 1L)
+  expect_identical(weekly_pobs$max_delay[[1]], 5)
+  expect_identical(weekly_pobs$timestep[[1]], "week")
+  expect_identical(
     unique(weekly_pobs$obs[[1]]$reference_date)[1:2],
     as.IDate(c("2021-05-10", "2021-05-17"))
   )
-  expect_equal(
+  expect_identical(
     unique(weekly_pobs$obs[[1]]$report_date)[1:2],
     as.IDate(c("2021-05-10", "2021-05-17"))
   )
-  expect_equal(
-    unique(weekly_pobs$metareport[[1]]$delay), 0:4
+  expect_identical(
+    unique(weekly_pobs$metareport[[1]]$delay), seq(0.0, 4.0)
   )
-  expect_equal(
+  expect_identical(
     weekly_pobs$metareport[[1]]$date[20:21],
     as.IDate(c("2021-09-20", "2021-09-27"))
   )
-  expect_equal(
+  expect_identical(
     weekly_pobs$metadelay[[1]]$delay, 0:4
   )
 })
@@ -112,7 +112,7 @@ test_that("enw_preprocess_data() hasn't changed compared to saved example data",
 
   # Preprocess observations
   pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
-  expect_equal(pobs, enw_example("preprocessed"))
+  expect_identical(pobs, enw_example("preprocessed"))
 })
 
 test_that("enw_preprocess_data() passes arguments to enw_add_metaobs_features", {
@@ -122,19 +122,19 @@ test_that("enw_preprocess_data() passes arguments to enw_add_metaobs_features", 
     "2021-05-24"
   )
   pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
-  expect_equal(
+  expect_identical(
     as.character(
       pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
     ),
     "Sunday"
   )
-  expect_equal(
+  expect_identical(
     as.character(
       pobs$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]
     ),
     "Sunday"
   )
-  expect_equal(
+  expect_identical(
     as.character(enw_preprocess_data(
       nat_germany_hosp,
       holidays = holidays,

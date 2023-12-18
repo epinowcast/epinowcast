@@ -66,24 +66,24 @@ test_that("enw_reference supports parametric models", {
   expect_zero_length_or_not(zero_length, inits)
 
   default_ref <- enw_reference(data = pobs)
-  expect_equal(default_ref$data$model_refp, 2) # default is lognormal
+  expect_identical(default_ref$data$model_refp, 2) # default is lognormal
   exp_ref <- enw_reference(distribution = "exponential", data = pobs)
-  expect_equal(exp_ref$data$model_refp, 1)
+  expect_identical(exp_ref$data$model_refp, 1)
   lognormal_ref <- enw_reference(distribution = "lognormal", data = pobs)
-  expect_equal(lognormal_ref$data$model_refp, 2)
+  expect_identical(lognormal_ref$data$model_refp, 2)
   gamma_ref <- enw_reference(distribution = "gamma", data = pobs)
-  expect_equal(gamma_ref$data$model_refp, 3)
+  expect_identical(gamma_ref$data$model_refp, 3)
   loglogistic_ref <- enw_reference(distribution = "loglogistic", data = pobs)
-  expect_equal(loglogistic_ref$data$model_refp, 4)
+  expect_identical(loglogistic_ref$data$model_refp, 4)
   no_ref <- suppressWarnings(
     enw_reference(distribution = "none", non_parametric = ~1, data = pobs)
   )
-  expect_equal(no_ref$data$model_refp, 0)
+  expect_identical(no_ref$data$model_refp, 0)
   no_ref2 <- suppressWarnings(
     enw_reference(parametric = ~0, non_parametric = ~1, data = pobs)
   )
-  expect_equal(no_ref2$data$model_refp, 0)
-  expect_equal(
+  expect_identical(no_ref2$data$model_refp, 0)
+  expect_identical(
     exp_ref$init(exp_ref$data, exp_ref$priors)()$refp_sd_int, numeric(0)
   )
 })
@@ -119,8 +119,9 @@ test_that("enw_reference supports non-parametric models", {
     non_parametric = ~ 0 + delay,
     data = pobs_filt
   )
-  expect_equal(colnames(ref_no_int$data$refnp_fdesign), c("delay"))
-  expect_equal(ref_no_int$data$refnp_fintercept, 0)
+
+  expect_identical(colnames(ref_no_int$data$refnp_fdesign), c("delay"))
+  expect_identical(ref_no_int$data$refnp_fintercept, 0)
   inits_no_int <- ref_no_int$init(ref_no_int$data, ref_no_int$priors)()
   zero_length <- setdiff(names(inits_no_int), "refnp_beta")
   expect_zero_length_or_not(zero_length, inits_no_int)
