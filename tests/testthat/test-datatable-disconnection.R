@@ -57,9 +57,15 @@ test_that("coerce_dt(date = TRUE) works for example data", {
 })
 
 test_that("coerce_dt(date = TRUE) requires reference and report dates", {
-  ref_dates <- data.frame(reference_date = "2021-10-01")
+  ref_dates <- data.frame(
+    reference_date = "2021-10-01",
+    stringsAsFactors = FALSE
+  )
   expect_error(coerce_dt(ref_dates, dates = TRUE))
-  report_dates <- data.frame(report_dates = "2021-10-01")
+  report_dates <- data.frame(
+    report_dates = "2021-10-01",
+    stringsAsFactors = FALSE
+  )
   expect_error(coerce_dt(report_dates, dates = TRUE))
   expect_error(coerce_dt(mtcars, dates = TRUE))
 })

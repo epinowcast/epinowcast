@@ -153,7 +153,10 @@ test_that("check_timestep() handles problematic inputs", {
   )
 
   # 3. Test with non-Date class data
-  obs_char <- data.frame(date = c("2020-01-01", "2020-01-02", "2020-01-03"))
+  obs_char <- data.frame(
+    date = c("2020-01-01", "2020-01-02", "2020-01-03"),
+    stringsAsFactors = FALSE
+  )
   expect_error(
     check_timestep(obs_char, date_var = "date", timestep = "day", exact = TRUE),
     "date must be of class Date"

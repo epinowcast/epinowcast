@@ -11,7 +11,8 @@ test_that("enw_missing_reference works as expected given correct input data", {
       "2021-10-04", rep(NA, 4)
     ),
     confirm = c(rep(1, 3), rep(0, 9), 4),
-    new_confirm = c(1, rep(0, 11), 4)
+    new_confirm = c(1, rep(0, 11), 4),
+    stringsAsFactors = FALSE
   )
   exp_obs <- data.table::data.table(
     report_date = as.IDate(
@@ -37,7 +38,8 @@ test_that("enw_missing_reference works as expected when no missingness is
       "2021-10-04"
     ),
     confirm = c(rep(1, 3), rep(0, 6)),
-    new_confirm = c(1, rep(0, 8))
+    new_confirm = c(1, rep(0, 8)),
+    stringsAsFactors = FALSE
   )
   expect_identical(nrow(enw_missing_reference(obs)), 0L)
 })

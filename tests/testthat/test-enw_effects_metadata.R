@@ -4,7 +4,8 @@ test_that(
     data <- data.frame(
       a = 1:3,
       b = as.character(1:3),
-      c = c(1, 1, 2)
+      c = c(1, 1, 2),
+      stringsAsFactors = FALSE
     )
     design <- enw_design(a ~ b + c, data)$design
     expect_identical(

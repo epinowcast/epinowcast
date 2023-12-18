@@ -2,7 +2,8 @@ test_that("enw_impute_na_observations() works as expected with NA values", {
   obs <- data.frame(
     id = 1:4,
     confirm = c(NA, 1, NA, 2),
-    reference_date = "2021-01-01"
+    reference_date = "2021-01-01",
+    stringsAsFactors = FALSE
   )
   exp_obs <- data.table::data.table(
     id = 1:4,
@@ -18,6 +19,6 @@ test_that("enw_impute_na_observations() throws error when confirm or reference_d
   expect_error(enw_impute_na_observations(obs), "The following columns are required: confirm, reference_date but are not present among")
   obs <- data.frame(id = 1:3, confirm = c(NA, 1, 0))
   expect_error(enw_impute_na_observations(obs), "he following columns are required: reference_date")
-  obs <- data.frame(id = 1:3, reference_date = "2021-02-01")
+  obs <- data.frame(id = 1:3, reference_date = "2021-02-01", stringsAsFactors = FALSE)
   expect_error(enw_impute_na_observations(obs), "The following columns are required: confirm but are not present")
 })

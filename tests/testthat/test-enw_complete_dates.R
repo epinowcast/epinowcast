@@ -1,7 +1,8 @@
 test_that("enw_complete_dates() works as expected with well behaved data", {
   obs <- data.frame(
     report_date = c("2021-10-01", "2021-10-03"), reference_date = "2021-10-01",
-    confirm = 1
+    confirm = 1,
+    stringsAsFactors = FALSE
   )
   exp_obs <- data.table::data.table(
     report_date = as.IDate(
@@ -50,7 +51,8 @@ test_that("enw_complete_dates() handles min_date and max_date correctly", {
   obs <- data.frame(
     report_date = c("2021-10-01", "2021-10-03"),
     reference_date = "2021-10-01",
-    confirm = 1
+    confirm = 1,
+    stringsAsFactors = FALSE
   )
   # Test when defaults are provided explicitly
   expect_identical(

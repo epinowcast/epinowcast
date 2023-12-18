@@ -1,5 +1,5 @@
 test_that("enw_add_pooling_effect can add a pooling effect", {
-  data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2))
+  data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2), stringsAsFactors = FALSE)
   design <- enw_design(a ~ b + c, data)$design
   effects <- enw_effects_metadata(design)
   expect_identical(
@@ -13,7 +13,7 @@ test_that("enw_add_pooling_effect can add a pooling effect", {
 })
 
 test_that("enw_add_pooling_effect handles more general functions", {
-  data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2))
+  data <- data.frame(a = 1:3, b = as.character(1:3), c = c(1, 1, 2), stringsAsFactors = FALSE)
   design <- enw_design(a ~ b + c, data)$design
   effects1 <- enw_effects_metadata(design)
   effects2 <- enw_effects_metadata(design)
