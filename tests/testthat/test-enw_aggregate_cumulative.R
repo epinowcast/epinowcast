@@ -45,7 +45,7 @@ test_that("enw_aggregate_cumulative() with groups", {
 })
 
 test_that("enw_aggregate_cumulative() handles missing reference dates", {
-  obs_with_na <- obs[location %in% "A"]
+  obs_with_na <- obs[location == "A"]
   setorder(obs_with_na, location, reference_date)
   obs_with_na[1:5, reference_date := NA]
 
@@ -56,7 +56,7 @@ test_that("enw_aggregate_cumulative() handles missing reference dates", {
 })
 
 test_that("enw_aggregate_cumulative() handles missing report dates", {
-  obs_with_na <- obs[location %in% "A"]
+  obs_with_na <- obs[location == "A"]
   obs_with_na[1:5, report_date := NA]
   result <- enw_aggregate_cumulative(obs_with_na, timestep = "week")
   expect_identical(unique(result$confirm), 7)

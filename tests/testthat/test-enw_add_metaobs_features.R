@@ -1,6 +1,6 @@
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- data.table::setkey(germany_covid19_hosp[
-  (location == "DE") & (age_group %in% "00+")
+  (location == "DE") & (age_group == "00+")
 ], reference_date)
 
 holidays <- c(

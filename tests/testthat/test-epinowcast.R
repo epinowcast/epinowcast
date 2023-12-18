@@ -93,7 +93,7 @@ test_that("epinowcast() runs using default arguments only", {
 test_that("epinowcast() runs with within-chain parallelisation", {
   skip_on_cran()
   skip_on_local()
-  obs <- germany_covid19_hosp[age_group %in% "00+"][location %in% "DE"] |>
+  obs <- germany_covid19_hosp[age_group == "00+"][location == "DE"] |>
     enw_filter_report_dates(remove_days = 10) |>
     enw_filter_reference_dates(include_days = 10)
   pobs <- enw_preprocess_data(obs, max_delay = 5)
