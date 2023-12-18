@@ -70,7 +70,7 @@ test_that("epinowcast() runs using default arguments only", {
       "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refnp_int", "refnp_beta_sd", "rep_beta_sd", "miss_int", "miss_beta_sd",
       "sqrt_phi"
-      )
+    )
   )
   expect_identical(
     nowcast$priors[[1]][, mean],
@@ -147,8 +147,8 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is 
 
   pobs_long_delay <- suppressWarnings(
     pobs$obs[[1]][, .group := NULL] |>
-    enw_filter_reference_dates(include_days = 20) |>
-    enw_preprocess_data(max_delay = 30)
+      enw_filter_reference_dates(include_days = 20) |>
+      enw_preprocess_data(max_delay = 30)
   )
 
   nowcast <- suppressMessages(epinowcast(pobs_long_delay,
@@ -352,7 +352,8 @@ test_that("epinowcast() can fit multiple time series at once", {
   )
   # Preprocess observations (note this maximum delay is likely too short)
   pobs <- enw_preprocess_data(
-    retro_nat_germany, by = "age_group", max_delay = 10
+    retro_nat_germany,
+    by = "age_group", max_delay = 10
   )
   nowcast <- suppressWarnings(
     suppressMessages(
@@ -366,7 +367,7 @@ test_that("epinowcast() can fit multiple time series at once", {
           data = pobs
         ),
         reference = enw_reference(~1, data = pobs),
-        report = enw_report(~(1 | day_of_week), data = pobs),
+        report = enw_report(~ (1 | day_of_week), data = pobs),
         fit = enw_fit_opts(
           sampler = silent_enw_sample,
           save_warmup = FALSE, pp = FALSE,
@@ -390,7 +391,7 @@ test_that("epinowcast() can fit a simple non-parametric reference date model", {
 
   nowcast <- suppressMessages(epinowcast(pobs,
     reference = enw_reference(
-      parametric = ~ 0, non_parametric = ~  1 + (1 | delay),
+      parametric = ~0, non_parametric = ~ 1 + (1 | delay),
       data = pobs
     ),
     fit = enw_fit_opts(
@@ -411,7 +412,8 @@ test_that("epinowcast() can fit a simple non-parametric reference date model", {
   )
   expect_error(
     summary(
-      nowcast, type = "fit",
+      nowcast,
+      type = "fit",
       variables = c(
         "refp_mean_int", "refp_sd_int", "refp_mean_beta", "refp_sd_beta"
       )
@@ -426,7 +428,7 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric 
 
   nowcast <- suppressMessages(epinowcast(pobs,
     reference = enw_reference(
-      parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
+      parametric = ~1, non_parametric = ~ 0 + (1 | delay_cat),
       data = pobs
     ),
     fit = enw_fit_opts(
@@ -440,7 +442,8 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric 
   expect_convergence(nowcast)
   expect_equal(
     summary(
-      nowcast, type = "fit", variables = c("refnp_beta_sd", "refnp_beta")
+      nowcast,
+      type = "fit", variables = c("refnp_beta_sd", "refnp_beta")
     )$mean,
     c(0.27, -0.47, 0.57, 0.56, -0.64),
     tolerance = 0.1
@@ -452,7 +455,8 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric 
   )
   expect_error(
     summary(
-      nowcast, type = "fit",
+      nowcast,
+      type = "fit",
       variables = c(
         "refp_mean_beta", "refnp_int"
       )

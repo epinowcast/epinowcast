@@ -5,7 +5,8 @@ test_that("enw_add_max_reported adds a max_reported as expected", {
   expect_equal(
     enw_add_max_reported(obs),
     data.table::setcolorder(
-      data.table::as.data.table(obs)[,
+      data.table::as.data.table(obs)[
+        ,
         `:=`(.group = 1, max_confirm = 3, cum_prop_reported = confirm / 3)
       ],
       c(

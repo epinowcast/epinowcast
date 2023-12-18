@@ -6,7 +6,7 @@ test_that("extract_sparse_matrix can extract a sparse matrix", {
   expect_equal(sparse_mat$nv, 9)
   expect_equal(sparse_mat$v, c(1, 2, 3, 1, 2, 3, 1, 2, 3))
   expect_equal(sparse_mat$nu, 4)
-  expect_equal(sparse_mat$u, c(1 , 4, 7, 10))
+  expect_equal(sparse_mat$u, c(1, 4, 7, 10))
 })
 
 test_that("extract_sparse_matrix can extract a sparse matrix with a prefix", {
@@ -17,5 +17,5 @@ test_that("extract_sparse_matrix can extract a sparse matrix with a prefix", {
   expect_equal(sparse_mat$prefix_nv, 9)
   expect_equal(sparse_mat$prefix_v, c(1, 2, 3, 1, 2, 3, 1, 2, 3))
   expect_equal(sparse_mat$prefix_nu, 4)
-  expect_equal(sparse_mat$prefix_u, c(1 , 4, 7, 10))
+  expect_equal(sparse_mat$prefix_u, c(1, 4, 7, 10))
 })

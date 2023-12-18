@@ -1,7 +1,7 @@
 # Mock data
 mock_data <- data.table(
-  reference_date = as.Date(c('2023-01-01', '2023-01-01', '2023-01-02', '2023-01-02')),
-  .group = c('A', 'B', 'A', 'B'),
+  reference_date = as.Date(c("2023-01-01", "2023-01-01", "2023-01-02", "2023-01-02")),
+  .group = c("A", "B", "A", "B"),
   delay = c(5, 10, 3, 7),
   observed = c(TRUE, FALSE, TRUE, TRUE)
 )

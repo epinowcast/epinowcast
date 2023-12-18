@@ -73,29 +73,28 @@ test_that("discretised_logit_hazard returns the same thing in both log
 
 # Discretisation for double censoring
 double_censored_pmf <- function(n, alpha, beta, fun = plnorm) {
-  cdf <- fun(1:(n+1), alpha, beta)
-  pmf  <- vector("numeric", n)
+  cdf <- fun(1:(n + 1), alpha, beta)
+  pmf <- vector("numeric", n)
   pmf[1] <- cdf[1]
-  pmf[2] <- cdf[2] 
-  pmf[3:n] <- cdf[3:n] - cdf[1:(n-2)]
+  pmf[2] <- cdf[2]
+  pmf[3:n] <- cdf[3:n] - cdf[1:(n - 2)]
   pmf <- pmf / sum(pmf)
   return(pmf)
 }
 
 # Discretisation for single censoring
-single_censored_pmf <- function(n ,alpha, beta, fun = plnorm) {
-  cdf <- fun(1:(n+1), alpha, beta)
-  pmf  <- vector("numeric", n)
+single_censored_pmf <- function(n, alpha, beta, fun = plnorm) {
+  cdf <- fun(1:(n + 1), alpha, beta)
+  pmf <- vector("numeric", n)
   pmf[1] <- cdf[1]
-  pmf[2:n] <- cdf[2:n] - cdf[1:(n-1)]
+  pmf[2:n] <- cdf[2:n] - cdf[1:(n - 1)]
   pmf <- pmf / cdf[n]
   return(pmf)
 }
 
 # Simulate double censored data
 simulate_double_censored_pmf <- function(
-  alpha, beta, max, fun = rlnorm, n = 1000
-) {
+    alpha, beta, max, fun = rlnorm, n = 1000) {
   primary <- runif(n, 0, 1)
   secondary <- primary + fun(n, alpha, beta)
   delay <- floor(secondary) - floor(primary)
@@ -114,8 +113,8 @@ test_that("double_censored_pmf and discretised_logit_hazard are similar", {
     for (alpha in alphas) {
       for (beta in betas) {
         expect_equal(
-          round(double_censored_pmf(truncation, alpha, beta), 4), 
-          round(exp(discretised_logit_hazard(alpha, beta, truncation, 2, 2, 1)), 4), 
+          round(double_censored_pmf(truncation, alpha, beta), 4),
+          round(exp(discretised_logit_hazard(alpha, beta, truncation, 2, 2, 1)), 4),
           tolerance = 1e-4
         )
       }

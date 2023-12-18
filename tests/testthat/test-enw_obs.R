@@ -1,5 +1,4 @@
 test_that("enw_obs() produces the expected output", {
-
   # Load and filter germany hospitalisations
   nat_germany_hosp <-
     germany_covid19_hosp[location == "DE"][age_group == "00+"]
@@ -42,10 +41,12 @@ test_that("enw_obs() produces the expected output", {
   # Check that missing data is handled as expected
   retro_nat_germany[report_date == as.Date("2021-08-13"), confirm := NA]
   retro_nat_germany <- enw_flag_observed_observations(
-    retro_nat_germany, copy = FALSE
+    retro_nat_germany,
+    copy = FALSE
   )
   retro_nat_germany <- enw_impute_na_observations(
-    retro_nat_germany, copy = FALSE
+    retro_nat_germany,
+    copy = FALSE
   )
   pobs_missing <- enw_preprocess_data(retro_nat_germany, max_delay = 5)
   expect_snapshot({

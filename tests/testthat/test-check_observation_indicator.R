@@ -1,11 +1,11 @@
 # Mock data
 mock_data_logical <- data.table(
-  reference_date = as.Date(c('2023-01-01', '2023-01-01')),
+  reference_date = as.Date(c("2023-01-01", "2023-01-01")),
   observed = c(TRUE, FALSE)
 )
 
 mock_data_non_logical <- data.table(
-  reference_date = as.Date(c('2023-01-01', '2023-01-01')),
+  reference_date = as.Date(c("2023-01-01", "2023-01-01")),
   observed = c(1, 2)
 )
 

@@ -2,14 +2,14 @@
 obs <- data.table::data.table(
   location = c(rep("A", 50), rep("B", 50)),
   report_date = as.Date(rep(
-      rep(seq(as.Date("2020-01-05"), by = "day", length.out = 5), each = 10), 2
-    ), origin = "1970-01-01"
-  ),
+    rep(seq(as.Date("2020-01-05"), by = "day", length.out = 5), each = 10), 2
+  ), origin = "1970-01-01"),
   reference_date = as.Date(
     rep(
       replicate(5, seq(as.Date("2020-01-01"), by = "day", length.out = 10)),
       2
-    ), origin = "1970-01-01"
+    ),
+    origin = "1970-01-01"
   ),
   confirm = 1
 )
@@ -38,7 +38,8 @@ test_that("enw_aggregate_cumulative() works with different timesteps", {
 test_that("enw_aggregate_cumulative() with groups", {
   # With groups
   result_with_group <- enw_aggregate_cumulative(
-    obs, timestep = "week", by = "location"
+    obs,
+    timestep = "week", by = "location"
   )
   expect_equal(unique(result_with_group$confirm), 7)
 })
@@ -51,7 +52,7 @@ test_that("enw_aggregate_cumulative() handles missing reference dates", {
   result <- enw_aggregate_cumulative(obs_with_na, timestep = 3)
   expect_true(any(is.na(result$reference_date)))
   expect_equal(result$confirm[1], 1)
-  expect_equal(unique(result[-1,]$confirm), 3)
+  expect_equal(unique(result[-1, ]$confirm), 3)
 })
 
 test_that("enw_aggregate_cumulative() handles missing report dates", {
@@ -88,8 +89,10 @@ test_that("enw_aggregate_cumulative() handles missing values in 'confirm'", {
 test_that("enw_aggregate_cumulative() when 'by' grouping does not exist", {
   expect_error(
     enw_aggregate_cumulative(
-      obs, timestep = "week", by = "non_existent_column")
+      obs,
+      timestep = "week", by = "non_existent_column"
     )
+  )
 })
 
 test_that("enw_aggregate_cumulative() when 'obs' is empty", {
@@ -101,81 +104,85 @@ test_that("enw_aggregate_cumulative() when 'obs' is empty", {
 })
 
 test_that(
-  "enw_aggregate_cumulative() works as expected with weekly reported data", {
-  data <- data.table(
-    report_date = as.Date(c(
-      "2022-10-25", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01",
-      "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-08",
-      "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08",
-      "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08"
-    )),
-    reference_date = as.Date(c(
-      "2022-10-22", "2022-10-22", "2022-10-23", "2022-10-24", "2022-10-25",
-      "2022-10-26", "2022-10-27", "2022-10-28", "2022-10-29", "2022-10-22",
-      "2022-10-23", "2022-10-24", "2022-10-25", "2022-10-26", "2022-10-27",
-      "2022-10-28", "2022-10-29", "2022-10-30", "2022-10-31", "2022-11-01"
-    )),
-    confirm = c(
-      34, 46, 47, 41, 68, 59, 62, 30, 40,
-      48, 53, 46, 75, 67, 84, 47, 67, 69, 81, 88
+  "enw_aggregate_cumulative() works as expected with weekly reported data",
+  {
+    data <- data.table(
+      report_date = as.Date(c(
+        "2022-10-25", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01",
+        "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-08",
+        "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08",
+        "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08"
+      )),
+      reference_date = as.Date(c(
+        "2022-10-22", "2022-10-22", "2022-10-23", "2022-10-24", "2022-10-25",
+        "2022-10-26", "2022-10-27", "2022-10-28", "2022-10-29", "2022-10-22",
+        "2022-10-23", "2022-10-24", "2022-10-25", "2022-10-26", "2022-10-27",
+        "2022-10-28", "2022-10-29", "2022-10-30", "2022-10-31", "2022-11-01"
+      )),
+      confirm = c(
+        34, 46, 47, 41, 68, 59, 62, 30, 40,
+        48, 53, 46, 75, 67, 84, 47, 67, 69, 81, 88
+      )
     )
-  )
-  expected_agg <- data.table(
-    report_date = as.IDate(c(
-      "2022-10-28", "2022-11-04", "2022-11-04"
-    )),
-    reference_date = as.IDate(c(
-      "2022-10-28", "2022-10-28", "2022-11-04"
-
-    )),
-    confirm = c(34, 353, 40)
-  )
-  daily <- enw_complete_dates(data, missing_reference = FALSE)
-  actual_agg <- enw_aggregate_cumulative(daily, timestep = "week")
-  expect_equal(actual_agg, expected_agg)
-})
+    expected_agg <- data.table(
+      report_date = as.IDate(c(
+        "2022-10-28", "2022-11-04", "2022-11-04"
+      )),
+      reference_date = as.IDate(c(
+        "2022-10-28", "2022-10-28", "2022-11-04"
+      )),
+      confirm = c(34, 353, 40)
+    )
+    daily <- enw_complete_dates(data, missing_reference = FALSE)
+    actual_agg <- enw_aggregate_cumulative(daily, timestep = "week")
+    expect_equal(actual_agg, expected_agg)
+  }
+)
 
 test_that(
-  "enw_aggregate_cumulative() works as expected with a custom min_date", {
-  data <- data.table(
-    report_date = as.Date(c(
-      "2022-10-25", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01",
-      "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-08",
-      "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08",
-      "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08"
-    )),
-    reference_date = as.Date(c(
-      "2022-10-22", "2022-10-22", "2022-10-23", "2022-10-24", "2022-10-25",
-      "2022-10-26", "2022-10-27", "2022-10-28", "2022-10-29", "2022-10-22",
-      "2022-10-23", "2022-10-24", "2022-10-25", "2022-10-26", "2022-10-27",
-      "2022-10-28", "2022-10-29", "2022-10-30", "2022-10-31", "2022-11-01"
-    )),
-    confirm = c(
-      34, 46, 47, 41, 68, 59, 62, 30, 40,
-      48, 53, 46, 75, 67, 84, 47, 67, 69, 81, 88
+  "enw_aggregate_cumulative() works as expected with a custom min_date",
+  {
+    data <- data.table(
+      report_date = as.Date(c(
+        "2022-10-25", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01",
+        "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-01", "2022-11-08",
+        "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08",
+        "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08", "2022-11-08"
+      )),
+      reference_date = as.Date(c(
+        "2022-10-22", "2022-10-22", "2022-10-23", "2022-10-24", "2022-10-25",
+        "2022-10-26", "2022-10-27", "2022-10-28", "2022-10-29", "2022-10-22",
+        "2022-10-23", "2022-10-24", "2022-10-25", "2022-10-26", "2022-10-27",
+        "2022-10-28", "2022-10-29", "2022-10-30", "2022-10-31", "2022-11-01"
+      )),
+      confirm = c(
+        34, 46, 47, 41, 68, 59, 62, 30, 40,
+        48, 53, 46, 75, 67, 84, 47, 67, 69, 81, 88
+      )
     )
-  )
-  expected_agg <- data.table(
-    report_date = as.IDate(
-      c(
-        "2022-10-25", "2022-11-01", "2022-11-08", "2022-11-01", "2022-11-08",
-        "2022-11-08"
-      )
-    ),
-    reference_date = as.IDate(
-      c(
-        "2022-10-25", "2022-10-25", "2022-10-25", "2022-11-01", "2022-11-01",
-        "2022-11-08"
-      )
-    ),
-    confirm = c(34, 202, 222, 191, 503, 0)
-  )
-  expected_agg <- expected_agg[
-  report_date != as.Date("2022-10-25")][reference_date != as.Date("2022-10-25")
-  ]
-  daily <- enw_complete_dates(data, missing_reference = FALSE)
-  actual_agg <- enw_aggregate_cumulative(
-    daily, timestep = "week", min_reference_date = min(data$report_date) + 1
-  )
-  expect_equal(actual_agg, expected_agg)
-})
+    expected_agg <- data.table(
+      report_date = as.IDate(
+        c(
+          "2022-10-25", "2022-11-01", "2022-11-08", "2022-11-01", "2022-11-08",
+          "2022-11-08"
+        )
+      ),
+      reference_date = as.IDate(
+        c(
+          "2022-10-25", "2022-10-25", "2022-10-25", "2022-11-01", "2022-11-01",
+          "2022-11-08"
+        )
+      ),
+      confirm = c(34, 202, 222, 191, 503, 0)
+    )
+    expected_agg <- expected_agg[
+      report_date != as.Date("2022-10-25")
+    ][reference_date != as.Date("2022-10-25")]
+    daily <- enw_complete_dates(data, missing_reference = FALSE)
+    actual_agg <- enw_aggregate_cumulative(
+      daily,
+      timestep = "week", min_reference_date = min(data$report_date) + 1
+    )
+    expect_equal(actual_agg, expected_agg)
+  }
+)

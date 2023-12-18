@@ -1,4 +1,3 @@
-
 nongarbage <- c("2020-05-12", "2021-05-12", "2022-05-12")
 refresult <- as.IDate(nongarbage)
 garbage <- c("2020-50-12", "2020-O5-12")

@@ -8,28 +8,31 @@ obs <- enw_filter_report_dates(
 )
 obs <- enw_filter_reference_dates(obs, include_days = 14)
 pobs <- enw_preprocess_data(
-  obs, by = c("age_group", "location"), max_delay = 14
+  obs,
+  by = c("age_group", "location"), max_delay = 14
 )
 data <- pobs$metareference[[1]]
-data <-  data[age_group %in% c("00+", "15-34")]
+data <- data[age_group %in% c("00+", "15-34")]
 data <- data[day_of_week %in% c("Monday", "Tuesday")]
 
 test_that("enw_formula can return a basic fixed effects formula", {
-  expect_snapshot(enw_formula( ~ 1 + age_group, data))
+  expect_snapshot(enw_formula(~ 1 + age_group, data))
 })
 
 test_that("enw_formula can return a basic random effects formula", {
   expect_snapshot(
-    enw_formula(~ 1 + (1 | age_group),  data)
+    enw_formula(~ 1 + (1 | age_group), data)
   )
 })
 
 test_that(
-  "enw_formula can return a random effects formula with an internal interaction", {
-  expect_snapshot(
-    enw_formula(~ 1 + (1 + month | day_of_week:age_group), data)
-  )
-})
+  "enw_formula can return a random effects formula with an internal interaction",
+  {
+    expect_snapshot(
+      enw_formula(~ 1 + (1 + month | day_of_week:age_group), data)
+    )
+  }
+)
 
 test_that("enw_formula can return a random effects formula with an internal interaction with only one contrast by falling back to no interaction", {
   expect_snapshot(

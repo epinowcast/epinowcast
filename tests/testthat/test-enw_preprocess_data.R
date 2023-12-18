@@ -1,4 +1,3 @@
-
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
@@ -60,7 +59,8 @@ test_that("enw_preprocess_data() can handle a non-default timestep as expected",
     enw_filter_reference_dates(earliest_date = "2021-05-10")
 
   weekly_pobs <- enw_preprocess_data(
-    weekly_nat_germany_hosp, max_delay = 5, timestep = "week"
+    weekly_nat_germany_hosp,
+    max_delay = 5, timestep = "week"
   )
   expect_data_table(weekly_pobs)
   expect_equal(colnames(weekly_pobs), cols)
@@ -148,7 +148,8 @@ test_that("enw_preprocess_data() passes arguments to enw_add_metaobs_features", 
 })
 
 test_that(
-  "enw_preprocess_data() fails as expected with incorrect max_delay input", {
+  "enw_preprocess_data() fails as expected with incorrect max_delay input",
+  {
     expect_error(
       suppressWarnings(
         enw_preprocess_data(nat_germany_hosp, max_delay = "junk")
@@ -157,10 +158,12 @@ test_that(
     expect_error(
       enw_preprocess_data(nat_germany_hosp, max_delay = 0)
     )
-})
+  }
+)
 
 test_that(
-  "enw_preprocess_data fails as expected when input data is not aggregated by the specified by variables", {
+  "enw_preprocess_data fails as expected when input data is not aggregated by the specified by variables",
+  {
     expect_error(
       enw_preprocess_data(germany_covid19_hosp),
       "The input data seems to be stratified by more variables"
@@ -173,4 +176,5 @@ test_that(
       enw_preprocess_data(germany_covid19_hosp, by = "age_group"),
       "The input data seems to be stratified by more variables"
     )
-})
+  }
+)

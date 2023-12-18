@@ -1,4 +1,3 @@
-
 test_that("Nowcasts can be returned as expected", {
   expect_data_table(enw_example(type = "nowcast"))
   expect_data_table(enw_example(type = "now"))

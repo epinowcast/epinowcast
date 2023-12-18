@@ -36,8 +36,9 @@ test_that("enw_complete_dates() works as expected with well behaved data", {
   expect_equal(
     enw_complete_dates(obs, by = "location"), exp_obs
   )
-  exp_obs[,
-   .observed := c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE)
+  exp_obs[
+    ,
+    .observed := c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE)
   ]
   expect_equal(
     enw_complete_dates(obs, by = "location", flag_observation = TRUE),
@@ -54,14 +55,16 @@ test_that("enw_complete_dates() handles min_date and max_date correctly", {
   # Test when defaults are provided explicitly
   expect_equal(
     enw_complete_dates(
-      obs, min_date = as.Date("2021-10-01"), max_date = as.Date("2021-10-03")
-    ), 
+      obs,
+      min_date = as.Date("2021-10-01"), max_date = as.Date("2021-10-03")
+    ),
     enw_complete_dates(obs)
   )
 
   # Test when min_date is before the minimum reference_date in obs
   complete_dates <- enw_complete_dates(
-    obs, min_date = as.IDate("2021-09-30"), missing_reference = FALSE
+    obs,
+    min_date = as.IDate("2021-09-30"), missing_reference = FALSE
   )
   expect_equal(min(complete_dates$report_date), as.IDate("2021-09-30"))
   expect_equal(min(complete_dates$reference_date), as.IDate("2021-09-30"))
@@ -70,7 +73,8 @@ test_that("enw_complete_dates() handles min_date and max_date correctly", {
 
   # Test when max_date is after the maximum report_date in obs
   complete_dates <- enw_complete_dates(
-    obs, max_date = as.IDate("2021-10-04"), missing_reference = FALSE
+    obs,
+    max_date = as.IDate("2021-10-04"), missing_reference = FALSE
   )
   expect_equal(min(complete_dates$report_date), as.IDate("2021-10-01"))
   expect_equal(min(complete_dates$reference_date), as.IDate("2021-10-01"))

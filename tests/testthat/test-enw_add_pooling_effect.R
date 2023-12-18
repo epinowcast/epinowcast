@@ -18,11 +18,12 @@ test_that("enw_add_pooling_effect handles more general functions", {
   effects1 <- enw_effects_metadata(design)
   effects2 <- enw_effects_metadata(design)
   dummyfn <- function(x, prefix, dummy) {
-     startsWith(x, prefix) & dummy
-    }
+    startsWith(x, prefix) & dummy
+  }
   expect_equal(
     enw_add_pooling_effect(
-      effects1, finder_fn = dummyfn, prefix = "b", dummy = TRUE
+      effects1,
+      finder_fn = dummyfn, prefix = "b", dummy = TRUE
     ),
     data.table::data.table(
       effects = c("b2", "b3", "c"),
@@ -32,7 +33,8 @@ test_that("enw_add_pooling_effect handles more general functions", {
   )
   expect_equal(
     enw_add_pooling_effect(
-      effects2, finder_fn = dummyfn, prefix = "b", dummy = FALSE
+      effects2,
+      finder_fn = dummyfn, prefix = "b", dummy = FALSE
     ),
     data.table::data.table(
       effects = c("b2", "b3", "c"),
