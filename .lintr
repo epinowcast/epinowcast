@@ -9,7 +9,12 @@ linters: linters_with_tags(
     cyclocomp_linter(25L)
   )
 exclusions: c(
-    list.files("tests", recursive = TRUE, full.names = TRUE),
     list.files("inst", recursive = TRUE, full.names = TRUE),
-    "vignettes/germany-age-stratified-nowcasting.Rmd.orig"
+    "vignettes/germany-age-stratified-nowcasting.Rmd.orig",
+    "tests/testthat" = list(
+      line_length_linter = Inf
+    ),
+    "tests/testthat.R" = list(
+      unused_import_linter = Inf
+    )
   )
