@@ -12,7 +12,8 @@ exclusions: c(
     list.files("inst", recursive = TRUE, full.names = TRUE),
     "vignettes/germany-age-stratified-nowcasting.Rmd.orig",
     "tests/testthat" = list(
-      line_length_linter = Inf
+      line_length_linter = Inf,
+      object_usage_linter = Inf
     ),
     "tests/testthat.R" = list(
       unused_import_linter = Inf
