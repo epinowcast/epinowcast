@@ -6,7 +6,7 @@ test_that("enw_design can make a design matrix", {
   )
   expect_snapshot(enw_design(a ~ b + c, data))
   expect_snapshot(enw_design(a ~ b + c, data, no_contrasts = TRUE))
-  expect_snapshot(enw_design(a ~ b + c, data, no_contrasts = c("b")))
+  expect_snapshot(enw_design(a ~ b + c, data, no_contrasts = "b"))
   expect_snapshot(enw_design(a ~ c, data, sparse = TRUE))
   expect_snapshot(enw_design(a ~ c, data, sparse = FALSE))
 })

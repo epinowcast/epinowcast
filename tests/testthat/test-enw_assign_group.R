@@ -5,13 +5,13 @@ test_that("enw_assign_group assigns groups as expected", {
   ref2 <- as.data.table(ref)[, .group := x]
   expect_identical(
     enw_assign_group(ref),
-    data.table::setkeyv(ref1, c(".group"))
+    data.table::setkeyv(ref1, ".group")
   )
   expect_identical(
     enw_assign_group(ref, by = "x"),
     data.table::setkeyv(
       ref2,
-      c(".group")
+      ".group"
     )
   )
   expect_identical(

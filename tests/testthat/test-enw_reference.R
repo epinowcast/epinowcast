@@ -2,7 +2,7 @@
 pobs <- enw_example("preprocessed")
 
 pobs_filt <- enw_preprocess_data(
-  pobs$obs[[1]][, c(".group") := NULL] |>
+  pobs$obs[[1]][, ".group" := NULL] |>
     enw_filter_reference_dates(
       latest_date = "2021-07-20"
     ) |>
@@ -119,8 +119,7 @@ test_that("enw_reference supports non-parametric models", {
     non_parametric = ~ 0 + delay,
     data = pobs_filt
   )
-
-  expect_identical(colnames(ref_no_int$data$refnp_fdesign), c("delay"))
+  expect_identical(colnames(ref_no_int$data$refnp_fdesign), "delay")
   expect_identical(ref_no_int$data$refnp_fintercept, 0)
   inits_no_int <- ref_no_int$init(ref_no_int$data, ref_no_int$priors)()
   zero_length <- setdiff(names(inits_no_int), "refnp_beta")

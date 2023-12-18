@@ -3,7 +3,7 @@ expect_data_table <- function(dt) {
 }
 
 expect_dates_unique <- function(dt) {
-  expect_identical(nrow(dt[, .(n = .N), by = c("date")][n > 1]), 0L)
+  expect_identical(nrow(dt[, .(n = .N), by = "date"][n > 1]), 0L)
 }
 
 expect_ggplot <- function(p) {

@@ -9,7 +9,7 @@ holidays <- c(
   "2021-05-24"
 )
 
-junk <- c("Garbage Date")
+junk <- "Garbage Date"
 
 metadatacols <- c("day_of_week", "day", "week", "month")
 
@@ -72,7 +72,7 @@ test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` pro
   mobs <- enw_add_metaobs_features(
     nat_germany_hosp,
     datecol = "reference_date",
-    holidays = c(),
+    holidays = NULL,
     holidays_to = "Holiday"
   )
   expect_identical(mobs[day_of_week == "Holiday", .N], 0L)

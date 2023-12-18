@@ -9,7 +9,7 @@ test_that("enw_impute_na_observations() works as expected with NA values", {
     confirm = c(0, 1, 1, 2),
     reference_date = "2021-01-01"
   )
-  data.table::setkeyv(exp_obs, c("reference_date"))
+  data.table::setkeyv(exp_obs, "reference_date")
   expect_identical(enw_impute_na_observations(obs), exp_obs)
 })
 
