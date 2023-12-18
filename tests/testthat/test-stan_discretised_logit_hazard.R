@@ -6,7 +6,7 @@ skip_on_local()
 
 expose_stan_fns(
   c("discretised_logit_hazard.stan", "hazard.stan"),
-  system.file("stan/functions", package = "epinowcast")
+  system.file("stan", "functions", package = "epinowcast")
 )
 
 test_that("discretised_logit_hazard returns log probabilities that sum to 1", {
