@@ -22,7 +22,8 @@ test_that("check_timestep() works correctly", {
   # test with "week" timestep and exact = TRUE, should fail
   expect_error(
     check_timestep(obs, date_var = "date", timestep = "week", exact = TRUE),
-    "date has a shorter timestep than the specified timestep of 7 day\\(s\\)"
+    "date has a shorter timestep than the specified timestep of 7 day(s)",
+    fixed = TRUE
   )
 
   # test with "month" timestep and exact = FALSE, should fail
@@ -57,7 +58,8 @@ test_that("check_timestep() works with weekly data", {
   # test with default "day" timestep and exact = TRUE, should fail
   expect_error(
     check_timestep(obs_weekly, date_var = "date", exact = TRUE),
-    "date does not have the specified timestep of 1 day\\(s\\)"
+    "date does not have the specified timestep of 1 day(s)",
+    fixed = TRUE
   )
 
   # Weekly data with some weeks missing
@@ -67,9 +69,10 @@ test_that("check_timestep() works with weekly data", {
   expect_error(
     check_timestep(
       obs_weekly_missing,
-      date_var = "date", timestep = "week", exact = TRUE,
-      "date does not have the specified timestep of 7 day\\(s\\)"
-    )
+      date_var = "date", timestep = "week", exact = TRUE
+    ),
+    "date does not have the specified timestep of 7 day(s)",
+    fixed = TRUE
   )
 
   # test with "week" timestep and exact = FALSE, should still pass
@@ -135,7 +138,8 @@ test_that("check_timestep() handles problematic inputs", {
   )
   expect_error(
     check_timestep(obs_na, date_var = "date", timestep = "day", exact = TRUE),
-    "date does not have the specified timestep of 1 day\\(s\\)"
+    "date does not have the specified timestep of 1 day(s)",
+    fixed = TRUE
   )
 
   # 2. Test with only one observation
@@ -175,6 +179,7 @@ test_that("check_timestep() handles problematic inputs", {
   )
   expect_error(
     check_timestep(obs_non_sequential, date_var = "date", timestep = "day", exact = TRUE),
-    "date does not have the specified timestep of 1 day\\(s\\)"
+    "date does not have the specified timestep of 1 day(s)",
+    fixed = TRUE
   )
 })

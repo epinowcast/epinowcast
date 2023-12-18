@@ -40,7 +40,8 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
   obs[1, report_date := as.Date("2019-01-02")]
   expect_error(
     check_timestep_by_date(obs),
-    "report_date does not have the specified timestep of 1 day\\(s\\)"
+    "report_date does not have the specified timestep of 1 day(s)",
+    fixed = TRUE
   )
 
   # Reset the discrepancy and introduce a discrepancy in one of the groups

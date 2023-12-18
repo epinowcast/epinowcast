@@ -30,13 +30,15 @@ test_that("check_timestep_by_group() handles groups correctly", {
   new_duplicated[1, date := as.Date("2020-12-31")]
   expect_error(
     check_timestep_by_group(new_duplicated, date_var = "date"),
-    "date does not have the specified timestep of 1 day\\(s\\)"
+    "date does not have the specified timestep of 1 day(s)",
+    fixed = TRUE
   )
 
   # Test with "week" timestep and exact = TRUE, should fail
   expect_error(
     check_timestep_by_group(obs, date_var = "date", timestep = "week", exact = TRUE),
-    "date has a shorter timestep than the specified timestep of 7 day\\(s\\)"
+    "date has a shorter timestep than the specified timestep of 7 day(s)",
+    fixed = TRUE
   )
 
   # Test with "month" timestep and exact = FALSE, should fail
