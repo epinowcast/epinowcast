@@ -77,8 +77,8 @@ test_that("enw_preprocess_data() can handle a non-default timestep as expected",
     unique(weekly_pobs$obs[[1]]$report_date)[1:2],
     as.IDate(c("2021-05-10", "2021-05-17"))
   )
-  expect_identical(
-    unique(weekly_pobs$metareport[[1]]$delay), seq(0.0, 4.0)
+  expect_setequal(
+    weekly_pobs$metareport[[1]]$delay, 0:4
   )
   expect_identical(
     weekly_pobs$metareport[[1]]$date[20:21],

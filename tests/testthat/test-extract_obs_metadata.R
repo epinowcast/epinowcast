@@ -11,10 +11,10 @@ test_that("extract_obs_metadata returns correct metadata", {
   result <- extract_obs_metadata(new_confirm)
 
   # Check if the result is a list
-  expect_true(is.list(result))
+  expect_type(result, "list")
   # Check if the list has the expected names
-  expect_equal(
-    names(result),
+  expect_named(
+    result,
     c("st", "ts", "sl", "csl", "lsl", "clsl", "nsl", "cnsl", "sg")
   )
   # Test the output is as expected
@@ -32,10 +32,10 @@ test_that("extract_obs_metadata returns correct metadata", {
   new_confirm <- add_max_observed_delay(new_confirm, ".observed")
   result <- extract_obs_metadata(new_confirm, ".observed")
 
-  expect_true(is.list(result))
+  expect_type(result, "list")
   # Check if the list has the expected names
-  expect_equal(
-    names(result),
+  expect_named(
+    result,
     c("st", "ts", "sl", "csl", "lsl", "clsl", "nsl", "cnsl", "sg")
   )
   # Test the output is as expected

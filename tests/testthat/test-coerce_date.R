@@ -14,7 +14,7 @@ test_that("coerce_date works for non-garbage in", {
   )
   coerced <- coerce_date(nongarbage)
   expect_identical(coerced, refresult)
-  expect_identical(class(coerced), class(refresult))
+  expect_identical(class(coerced), class(refresult)) # nolint: expect_s3_class
 })
 
 test_that("coerce_date errors for garbage in", {

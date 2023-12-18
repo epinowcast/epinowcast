@@ -52,8 +52,8 @@ test_that("coerce_dt(date = TRUE) works for example data", {
   obs <- coerce_dt(germany_covid19_hosp, dates = TRUE)
   expect_data_table(obs)
   expect_identical(colnames(obs), colnames(germany_covid19_hosp))
-  expect_equal(class(obs$reference_date), c("IDate", "Date"))
-  expect_equal(class(obs$report_date), c("IDate", "Date"))
+  expect_s3_class(obs$reference_date, c("IDate", "Date"))
+  expect_s3_class(obs$report_date, c("IDate", "Date"))
 })
 
 test_that("coerce_dt(date = TRUE) requires reference and report dates", {
