@@ -1,10 +1,10 @@
 
-persistent_tempdir <- tempdir()
-test_model_cache <- function(){
+persistent_tempdir <- file.path(tempdir(), "enw_set_cache")
+test_model_cache <- function() {
     withr::with_envvar(
         new = c(enw_cache_location = persistent_tempdir), {
             time_start <- Sys.time()
-            enw_model()
+            enw_model(verbose = FALSE)
             time_out <- Sys.time()
             difftime(time_out, time_start, units = "secs")[[1]]
         }
@@ -15,7 +15,7 @@ test_model_cache <- function(){
 
 test_that("enw_model can access enw_cache_location", {
     skip_on_cran()
-    run_inital <- test_model_cache()
+    run_initial <- test_model_cache()
     run_secondary <- test_model_cache()
-    expect_true(run_secondary < run_inital)
+    expect_true(run_secondary < run_initial)
 })
