@@ -49,8 +49,8 @@ test_that("discretised_logit_hazard returns the same thing in both log
     lh <- discretised_logit_hazard(alpha, beta, 10, dist, 2, 0)
     lh <- plogis(lh)
     lh <- hazard_to_log_prob(lh)
-    expect_equal(
-      round(exp(lp), 4), round(exp(lh), 4) # nolint: expect_identical_linter
+    expect_equal( # nolint: expect_identical_linter.
+      round(exp(lp), 4), round(exp(lh), 4)
     )
   }
   # Exponential
