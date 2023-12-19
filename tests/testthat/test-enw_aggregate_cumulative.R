@@ -62,14 +62,17 @@ test_that("enw_aggregate_cumulative() handles missing report dates", {
   expect_identical(unique(result$confirm), 7)
 })
 
-test_that("enw_aggregate_cumulative() when there are no complete report dates", {
-  obs_no_complete <- obs[location == "A"]
-  obs_no_complete <- obs_no_complete[1:20, ]
-  expect_error(
-    enw_aggregate_cumulative(obs_no_complete, timestep = "week"),
-    "There are no complete report dates"
-  )
-})
+test_that(
+  "enw_aggregate_cumulative() when there are no complete report dates",
+  {
+    obs_no_complete <- obs[location == "A"]
+    obs_no_complete <- obs_no_complete[1:20, ]
+    expect_error(
+      enw_aggregate_cumulative(obs_no_complete, timestep = "week"),
+      "There are no complete report dates"
+    )
+  }
+)
 
 test_that("enw_aggregate_cumulative() when timestep is set to 'day'", {
   obs_day <- obs[location == "A"]

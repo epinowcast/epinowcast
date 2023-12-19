@@ -2,7 +2,7 @@ test_that("check_timestep_by_group() handles groups correctly", {
   # Create a dataset with a date column and two groups
   obs <- data.table(
     .group = c(rep("A", 5), rep("B", 5)),
-    date = as.Date(rep(seq(as.Date("2020-01-01"), by = "day", length.out = 5), 2))
+    date = rep(seq(as.Date("2020-01-01"), by = "day", length.out = 5), 2)
   )
 
   # Test for correct timestep
@@ -36,14 +36,18 @@ test_that("check_timestep_by_group() handles groups correctly", {
 
   # Test with "week" timestep and exact = TRUE, should fail
   expect_error(
-    check_timestep_by_group(obs, date_var = "date", timestep = "week", exact = TRUE),
+    check_timestep_by_group(
+      obs, date_var = "date", timestep = "week", exact = TRUE
+    ),
     "date has a shorter timestep than the specified timestep of 7 day(s)",
     fixed = TRUE
   )
 
   # Test with "month" timestep and exact = FALSE, should fail
   expect_error(
-    check_timestep_by_group(obs, date_var = "date", timestep = "month", exact = FALSE),
+    check_timestep_by_group(
+      obs, date_var = "date", timestep = "month", exact = FALSE
+    ),
     "date has a shorter timestep than the specified timestep of a month"
   )
 })

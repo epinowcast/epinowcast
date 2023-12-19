@@ -20,7 +20,8 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
     check_timestep_by_date(obs)
   )
 
-  # Introduce a discrepancy by adding a duplicate report_date for a given reference_date and group
+  # Introduce a discrepancy by adding a duplicate report_date for a given
+  # reference_date and group
   obs <- rbind(
     obs,
     data.table::data.table(
@@ -35,7 +36,8 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
     "report_date has a duplicate date. Please remove duplicate dates."
   )
 
-  # Remove the discrepancy and introduce a discrepancy in one of the date columns
+  # Remove the discrepancy and introduce a discrepancy in one of the date
+  # columns
   obs <- obs[-nrow(obs)]
   obs[1, report_date := as.Date("2019-01-02")]
   expect_error(

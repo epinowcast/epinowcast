@@ -54,11 +54,17 @@ test_that("enw_replace_priors can replace default priors with those from an
 })
 
 test_that("enw_replace_priors does not modify input `data.table`s", {
-  priors <- data.table::data.table(variable = c("x", "y"), mean = c(1, 2), sd = c(1, 2))
+  priors <- data.table::data.table(
+    variable = c("x", "y"),
+    mean = c(1, 2),
+    sd = c(1, 2)
+  )
   custom_priors <- data.table::data.table(variable = "x[1]", mean = 10, sd = 2)
   refs <- dt_copies(priors, custom_priors)
   newpriors <- enw_replace_priors(priors, custom_priors)
   expect_true(data.table::address(newpriors) != data.table::address(priors))
-  expect_true(data.table::address(newpriors) != data.table::address(custom_priors))
+  expect_true(
+    data.table::address(newpriors) != data.table::address(custom_priors)
+  )
   expect_true(dt_compare_all(refs, priors, custom_priors))
 })

@@ -141,7 +141,8 @@ test_that("epinowcast() can fit a simple reporting model", {
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
 })
 
-test_that("epinowcast() can fit a simple reporting model where the max delay is greater than the empirical max delay", {
+test_that("epinowcast() can fit a simple reporting model where the max delay is
+          greater than the empirical max delay", {
   skip_on_cran()
   skip_on_local()
 
@@ -422,7 +423,8 @@ test_that("epinowcast() can fit a simple non-parametric reference date model", {
   )
 })
 
-test_that("epinowcast() can fit a simple combined parametric and non-parametric reference date model", {
+test_that("epinowcast() can fit a simple combined parametric and non-parametric
+          reference date model", {
   skip_on_cran()
   skip_on_local()
 

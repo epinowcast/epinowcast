@@ -122,40 +122,45 @@ test_that("double_censored_pmf and discretised_logit_hazard are similar", {
   }
 })
 
-test_that("double_censored_pmf approximates simulated_double_censored_pmf well enough", {
-  # Approximation does not perform well at shorter delays due to issues
-  # with the discretisation near 0
-  for (alpha in seq(0.4, 1.5, by = 0.1)) {
-    for (beta in seq(0.3, 1.5, by = 0.1)) {
-      sim <- simulate_double_censored_pmf(alpha, beta, 100, rlnorm, 1000)
-      n <- length(sim)
-      # Double censoring should have the same mean as the simulated data
-      expect_equal(
-        mean(sim),
-        mean(double_censored_pmf(n, alpha, beta)),
-        tolerance = 0.1
-      )
-      # Double censoring should have the same variance as the simulated data
-      expect_equal(
-        var(sim),
-        var(double_censored_pmf(n, alpha, beta)),
-        tolerance = 0.1
-      )
-      # Double censoring should not give an error greater than 0.1 for any single value
-      expect_lt(
-        max(abs(sim - double_censored_pmf(n, alpha, beta))),
-        0.125
-      )
-      # Double censoring should not have a median error greater than 0.01
-      expect_lt(
-        median(abs(sim - double_censored_pmf(n, alpha, beta))),
-        0.01
-      )
-      # Double censoring should be closer to the simulated data than single censoring
-      expect_lte(
-        sum(abs(sim - double_censored_pmf(n, alpha, beta))),
-        sum(abs(sim - single_censored_pmf(n, alpha, beta)))
-      )
+test_that(
+  "double_censored_pmf approximates simulated_double_censored_pmf well enough",
+  {
+    # Approximation does not perform well at shorter delays due to issues
+    # with the discretisation near 0
+    for (alpha in seq(0.4, 1.5, by = 0.1)) {
+      for (beta in seq(0.3, 1.5, by = 0.1)) {
+        sim <- simulate_double_censored_pmf(alpha, beta, 100, rlnorm, 1000)
+        n <- length(sim)
+        # Double censoring should have the same mean as the simulated data
+        expect_equal(
+          mean(sim),
+          mean(double_censored_pmf(n, alpha, beta)),
+          tolerance = 0.1
+        )
+        # Double censoring should have the same variance as the simulated data
+        expect_equal(
+          var(sim),
+          var(double_censored_pmf(n, alpha, beta)),
+          tolerance = 0.1
+        )
+        # Double censoring should not give an error greater than 0.1 for any
+        # single value
+        expect_lt(
+          max(abs(sim - double_censored_pmf(n, alpha, beta))),
+          0.125
+        )
+        # Double censoring should not have a median error greater than 0.01
+        expect_lt(
+          median(abs(sim - double_censored_pmf(n, alpha, beta))),
+          0.01
+        )
+        # Double censoring should be closer to the simulated data than single
+        # censoring
+        expect_lte(
+          sum(abs(sim - double_censored_pmf(n, alpha, beta))),
+          sum(abs(sim - single_censored_pmf(n, alpha, beta)))
+        )
+      }
     }
   }
-})
+)

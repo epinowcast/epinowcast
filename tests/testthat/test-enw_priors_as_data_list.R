@@ -1,6 +1,7 @@
 test_that("enw_priors_as_data_list produces expected output", {
   priors <- data.frame(
-    variable = c("x", "y", "z", "z"), mean = c(1, 2, 2, 3), sd = c(2, 2.2, 3, 1),
+    variable = c("x", "y", "z", "z"),
+    mean = c(1, 2, 2, 3), sd = c(2, 2.2, 3, 1),
     stringsAsFactors = FALSE
   )
   priors_list <- list(

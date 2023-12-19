@@ -21,7 +21,7 @@ test_that("check_group_date_unique stops with duplicated groups", {
   # Expect error due to duplicated combination
   expect_error(
     check_group_date_unique(obs),
-    "The input data seems to be stratified by more variables than specified via the `by` argument. Please provide additional grouping variables to `by`, or aggregate the observations beforehand."
+    "stratified by more variables than specified via the `by` argument"
   )
 })
 
@@ -44,7 +44,8 @@ test_that("check_group_date_unique stops with missing required columns", {
   )
 
   # Expect error as required columns are missing
-  # This test might need modification depending on how coerce_dt handles missing columns
+  # This test might need modification depending on how coerce_dt handles missing
+  # columns
   expect_error(
     check_group_date_unique(obs),
     "reference_date, report_date but are not present among .group"

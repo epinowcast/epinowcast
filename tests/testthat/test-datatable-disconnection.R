@@ -21,7 +21,10 @@ test_that("coerce_dt forbids forbidden_cols", {
   present <- data.table::data.table(present = 1:10)
   absent <- data.table::data.table(absent = 1:10)
   expect_no_error(coerce_dt(absent, forbidden_cols = "present"))
-  expect_error(coerce_dt(present, forbidden_cols = "present"), regexp = "present")
+  expect_error(
+    coerce_dt(present, forbidden_cols = "present"),
+    regexp = "present"
+  )
 })
 
 test_that("coerce_dt selects select", {

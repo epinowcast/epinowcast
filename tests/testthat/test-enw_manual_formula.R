@@ -22,6 +22,9 @@ test_that("enw_manual_formula can return a basic random effects formula", {
   expect_snapshot(enw_manual_formula(data, random = "day_of_week"))
 })
 
-test_that("enw_manual_formula can return a basic custom random effects formula", {
-  expect_snapshot(enw_manual_formula(data, custom_random = "day_of"))
-})
+test_that(
+  "enw_manual_formula can return a basic custom random effects formula",
+  {
+    expect_snapshot(enw_manual_formula(data, custom_random = "day_of"))
+  }
+)

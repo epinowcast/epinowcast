@@ -16,7 +16,7 @@ test_that("enw_quantiles_to_long can receive data.frame", {
   # anything else is passed to `melt()`, it calls `reshape2::melt`, which is
   # deprecated
   # See this StackOverflow answer
-  # https://stackoverflow.com/questions/42141989/why-do-i-get-this-error-message-could-not-find-function-patterns-when-using-t
+  # https://stackoverflow.com/q/42141989/4439357
   fit <- enw_example("nowcast")
   smry <- as.data.frame(summary(fit))
   expect_no_error(enw_quantiles_to_long(smry))

@@ -169,7 +169,9 @@ test_that("check_timestep() handles problematic inputs", {
   # 4. Test with duplicate dates
   obs_duplicate <- data.frame(date = rep(as.Date("2020-01-01"), 3))
   expect_error(
-    check_timestep(obs_duplicate, date_var = "date", timestep = "day", exact = TRUE),
+    check_timestep(
+      obs_duplicate, date_var = "date", timestep = "day", exact = TRUE
+    ),
     "date has a duplicate date. Please remove duplicate dates."
   )
 
@@ -178,7 +180,9 @@ test_that("check_timestep() handles problematic inputs", {
     date = as.Date(c("2020-01-01", "2020-01-04", "2020-01-05"))
   )
   expect_error(
-    check_timestep(obs_non_sequential, date_var = "date", timestep = "day", exact = TRUE),
+    check_timestep(
+      obs_non_sequential, date_var = "date", timestep = "day", exact = TRUE
+    ),
     "date does not have the specified timestep of 1 day(s)",
     fixed = TRUE
   )
