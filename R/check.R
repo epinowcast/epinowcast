@@ -8,9 +8,10 @@
 #'
 #' @return NULL
 #' @importFrom cli cli_abort
+#' @importFrom data.table between
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
-  if (!all(between(req_probs, 0, 1, incbounds = FALSE))) {
+  if (!all(data.table::between(req_probs, 0, 1, incbounds = FALSE))) {
     cli::cli_abort("Please provide probabilities as numbers between 0 and 1.")
   }
   return(coerce_dt(
