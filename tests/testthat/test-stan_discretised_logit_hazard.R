@@ -113,8 +113,8 @@ test_that("double_censored_pmf and discretised_logit_hazard are similar", {
     for (alpha in alphas) {
       for (beta in betas) {
         expect_equal(
-          round(double_censored_pmf(truncation, alpha, beta), 4),
-          round(exp(discretised_logit_hazard(alpha, beta, truncation, 2, 2, 1)), 4),
+          double_censored_pmf(truncation, alpha, beta),
+          exp(discretised_logit_hazard(alpha, beta, truncation, 2, 2, 1)),
           tolerance = 1e-4
         )
       }
