@@ -116,7 +116,8 @@ Remotes:
     stan-dev/cmdstanr,
     stan-dev/loo
 Config/Needs/website:
-    r-lib/pkgdown
+    r-lib/pkgdown,
+    epinowcast/enwtheme
 Config/Needs/hexsticker:
     hexSticker,
     sysfonts
