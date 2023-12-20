@@ -267,7 +267,6 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' }
 #' @importFrom cli cli_abort cli_alert
 #' @export
-
 enw_set_cache <- function(path = NULL) {
 
   if (is.null(path)) {
@@ -298,8 +297,7 @@ enw_set_cache <- function(path = NULL) {
 
   readRenviron(env_contents_active[["env_path"]])
 
-  invisible(candidate_path)
-
+  return(invisible(candidate_path))
 }
 
 #' Unset Stan cache location
@@ -315,18 +313,15 @@ enw_set_cache <- function(path = NULL) {
 #'
 #' @family utils
 #' @export
-
 enw_unset_cache <- function() {
   prior_location <- Sys.getenv("enw_cache_location")
-
+  
   Sys.unsetenv("enw_cache_location")
-
+  
   invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
-
+  
   return(invisible(prior_location))
-
 }
-
 
 #' Retrieve Stan cache location
 #'
@@ -343,23 +338,22 @@ enw_unset_cache <- function() {
 #'
 #' @family utils
 #' @export
-
 enw_get_cache <- function() {
   cache_location <- Sys.getenv("enw_cache_location")
 
   if (is.null(cache_location) || cache_location == "") {
     cache_location <- tempdir()
+    cli_inform("`enw_cache_location` not specified. Using `tempdir` at {cache_location}")
   } else {
-    cli::cli_inform("Using `{cache_location}` for the cache location.")
+    cli_inform("Using `{cache_location}` for the cache location.")
   }
 
   return(cache_location)
-
 }
 
 # Internal function to get for environment variables
 check_environment_setting <- function(x) {
-  is.null(x) || x == ""
+  return(is.null(x) || x == "")
 }
 
 # Internal function to identify the cache location
