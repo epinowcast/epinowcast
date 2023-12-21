@@ -256,6 +256,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @param path A valid filepath representing the desired cache location
 #'
 #' @return The string of the filepath set
+#' 
 #' @examples
 #' # Set to local directory
 #' dir.create("test")
@@ -269,7 +270,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @export
 enw_set_cache <- function(path = NULL) {
 
-  if (is.null(path)) {
+  if (is.null(path) || missing(path)) {
     cli::cli_abort("`path` must be a valid file path.")
   }
 
@@ -330,12 +331,8 @@ enw_unset_cache <- function() {
 #' If no environmental variable is available the output from
 #' `tempdir` will be returned.
 #'
-#' @return The string of the filepath
-#'
 #' @return a string representing the file path for the cache location
-#'
 #' @importFrom cli cli_inform
-#'
 #' @family utils
 #' @export
 enw_get_cache <- function() {
