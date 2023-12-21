@@ -338,7 +338,7 @@ enw_unset_cache <- function() {
 enw_get_cache <- function() {
   cache_location <- Sys.getenv("enw_cache_location")
 
-  if (is.null(cache_location) || cache_location == "") {
+  if (check_environment_setting(cache_location)) {
     cache_location <- tempdir()
     cli_inform("`enw_cache_location` not specified. Using `tempdir` at {cache_location}")
   } else {
