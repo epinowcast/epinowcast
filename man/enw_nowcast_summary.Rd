@@ -7,7 +7,7 @@
 enw_nowcast_summary(
   fit,
   obs,
-  metamaxdelay = NULL,
+  max_delay = NULL,
   probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95)
 )
 }
@@ -20,8 +20,10 @@ most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
 output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 
-\item{metamaxdelay}{Metadata for the maximum delay produced using
-\code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
+\item{max_delay}{Maximum delay to which nowcasts should be summarised. Must
+be equal (default) or larger than the modelled maximum delay. If it is
+larger, then nowcasts for unmodelled dates are added by assuming that case
+counts beyond the modelled maximum delay are fully observed.}
 
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,
@@ -42,7 +44,11 @@ the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
 }
 \examples{
 fit <- enw_example("nowcast")
-enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
+enw_nowcast_summary(
+  fit$fit[[1]],
+  fit$latest[[1]],
+  fit$metamaxdelay[[1]][type == "modelled", delay]
+  )
 }
 \seealso{
 \code{\link[=summary.epinowcast]{summary.epinowcast()}}

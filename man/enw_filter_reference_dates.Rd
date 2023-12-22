@@ -13,12 +13,12 @@ enw_filter_reference_dates(
 )
 }
 \arguments{
-\item{obs}{An \code{data.frame}; must have \code{report_date} and \code{reference_date}
+\item{obs}{A \code{data.frame}; must have \code{report_date} and \code{reference_date}
 columns.}
 
 \item{earliest_date}{earliest reference date to include in the data set}
 
-\item{include_days}{if \code{earilest_date} is not given, the number
+\item{include_days}{if \code{earliest_date} is not given, the number
 of reference dates to include, ending with the latest reference
 date included once report dates have been removed. If specified
 this is indexed to \code{latest_date} or \code{remove_days}.}

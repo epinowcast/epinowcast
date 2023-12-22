@@ -4,7 +4,15 @@
 \alias{check_max_delay}
 \title{Check appropriateness of maximum delay}
 \usage{
-check_max_delay(obs, max_delay = 20, cum_coverage = 0.8, warn = TRUE)
+check_max_delay(
+  obs,
+  max_delay = 20,
+  by = NULL,
+  cum_coverage = 0.8,
+  quantile_outlier = 0.97,
+  set_negatives_to_zero = TRUE,
+  warn = TRUE
+)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
@@ -28,19 +36,46 @@ date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 correspon
 no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
 distribution for a given maximum delay.}
 
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
+
 \item{cum_coverage}{The aspired percentage of cases that the maximum delay
 should cover. Defaults to 0.8 (80\%).}
+
+\item{quantile_outlier}{Only reference dates sufficiently far in the past,
+determined based on the maximum observed delay, are included (see details).
+Instead of the overall maximum observed delay, a quantile of the maximum
+observed delay over all reference dates is used. This is more robust
+against outliers. Defaults to 0.97 (97\%).}
+
+\item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
+counts (for calculated incidence of observations) be set to zero? Currently
+downstream modelling does not support negative counts and so setting must be
+TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 
 \item{warn}{Should a warning be issued if the cumulative case count is
 below \code{cum_coverage} for the majority of reference dates?}
 }
 \value{
-Numeric, the share of reference dates where the cumulative case count
-is below \code{cum_coverage}.
+A \code{data.table} with the share of reference dates where the
+cumulative case count is below \code{cum_coverage}, stratified by group.
 }
 \description{
 Check if maximum delay specified by the user is long enough and
-raise potential warnings.
+raise potential warnings. This is achieved by computing the share of reference dates where the
+cumulative case count is below some aspired coverage.
+}
+\details{
+The coverage is with respect to the maximum observed case count for
+the corresponding reference date. As the maximum observed case count is
+likely smaller than the true overall case count for not yet fully observed
+reference dates (due to right truncation), only reference dates that are
+more than the maximum observed delay ago are included. Still, because we
+can only use the maximum observed delay, not the unknown true maximum
+delay, the computed coverage values should be interpreted with care, as they
+are only proxies for the true coverage.
 }
 \examples{
 check_max_delay(germany_covid19_hosp, max_delay = 20, cum_coverage = 0.8)

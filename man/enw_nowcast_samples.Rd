@@ -4,7 +4,7 @@
 \alias{enw_nowcast_samples}
 \title{Extract posterior samples for the nowcast prediction}
 \usage{
-enw_nowcast_samples(fit, obs, metamaxdelay = NULL)
+enw_nowcast_samples(fit, obs, max_delay = NULL)
 }
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
@@ -15,8 +15,10 @@ most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
 output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 
-\item{metamaxdelay}{Metadata for the maximum delay produced using
-\code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.}
+\item{max_delay}{Maximum delay to which nowcasts should be summarised. Must
+be equal (default) or larger than the modelled maximum delay. If it is
+larger, then nowcasts for unmodelled dates are added by assuming that case
+counts beyond the modelled maximum delay are fully observed.}
 }
 \value{
 A \code{data.frame} of posterior samples for the nowcast prediction.
@@ -32,7 +34,11 @@ the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
 }
 \examples{
 fit <- enw_example("nowcast")
-enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]], fit$metamaxdelay[[1]])
+enw_nowcast_samples(
+  fit$fit[[1]],
+  fit$latest[[1]],
+  fit$metamaxdelay[[1]][type == "modelled", delay]
+  )
 }
 \seealso{
 Functions used for postprocessing of model fits
