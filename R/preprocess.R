@@ -814,7 +814,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
   return(enw_metadata_delay(max_delay, breaks))
 }
 
-#' Get the user-specified, observed, and modelled maximum delay
+#' Get the observed, and modelled maximum delay
 #'
 #' @description This metadata function records the different types of maximum
 #'   delays relevant for modeling. To obtain statistics on individual delays for
@@ -822,17 +822,15 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   reporting delay is used to make the modeling of reporting delays tractable
 #'   by right-truncating the delay distribution at a reasonable number of days.
 #'   The maximum delay is specified by the user, and can be smaller or larger
-#'   than the maximum delay observed in the data. Importantly, epinowcast will
-#'   currently always use the smaller one of the two maximum delays for
-#'   modeling. This means that observations with a delay larger than the
-#'   specified maximum delay will be dropped from the analysis. In some
-#'   settings, for example outbreaks where little data is available, this may
-#'   not be ideal. If this is an issue for you, please get in touch with the
-#'   developers by opening an issue on GitHub.
+#'   than the maximum delay observed in the data. Observations with a delay
+#'   larger than the specified maximum delay will be dropped from the analysis.
+#'   In some settings, for example outbreaks where little data is available,
+#'   this may not be ideal. If this is an issue for you, please get in touch
+#'   with the developers by opening an issue on GitHub.
 #'
 #' @return A `data.table` containing metadata about the different maximum
 #'   delays, with the following columns:
-#'  - `type`: specified, observed or modelled
+#'  - `type`: observed or modelled
 #'  - `delay`: length of the corresponding maximum delay
 #'  - `dates_too_short`: share of reference dates for which the corresponding
 #'   maximum delay is too short, based on [check_max_delay()]
@@ -848,12 +846,10 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
   obs <- enw_add_delay(obs)
 
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
-  max_delay_model <- min(max_delay_obs, max_delay)
   if (max_delay_obs < max_delay) {
     warning(
       "You specified a maximum delay of ", max_delay, " days, ",
-      "but epinowcast will only use the maximum observed delay (",
-      max_delay_obs, " days) for modeling. ",
+      "but the maximum observed delay is only ", max_delay_obs, " days).",
       "Consider adding unobserved delays with zero reports to your data using ",
       "`enw_complete_dates` to avoid truncated delay distributions (if you ",
       "believe that these are truly zero). Otherwise consider opening an ",
@@ -868,16 +864,15 @@ enw_metadata_maxdelay <- function(obs, max_delay = 20) {
         obs, x, by = ".group", warn = warn
       )[.group == "all", below_coverage]
     },
-    x = c(max_delay, max_delay_obs, max_delay_model),
-    warn = c(TRUE, FALSE, FALSE)
+    x = c(max_delay_obs, max_delay),
+    warn = c(FALSE, TRUE)
   )
 
   metamaxdelay <- data.table::data.table(
-    type = c("specified", "observed", "modelled"),
-    delay = c(max_delay, max_delay_obs, max_delay_model),
+    type = c("observed", "modelled"),
+    delay = c(max_delay_obs, max_delay),
     dates_too_short = dates_too_short,
     description = c(
-      "maximum delay specified by the user",
       "maximum delay observed in the data",
       "maximum delay used in model"
     )

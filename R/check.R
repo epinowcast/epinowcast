@@ -229,10 +229,10 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
 #' should cover. Defaults to 0.8 (80%).
 #' 
-#' @param quantile_outlier Only reference dates sufficiently far in the past,
-#' determined based on the maximum observed delay, are included (see details).
-#' Instead of the overall maximum observed delay, a quantile of the maximum
-#' observed delay over all reference dates is used. This is more robust
+#' @param maxdelay_quantile_outlier Only reference dates sufficiently far in 
+#' the past, determined based on the maximum observed delay, are included (see 
+#' details). Instead of the overall maximum observed delay, a quantile of the 
+#' maximum observed delay over all reference dates is used. This is more robust
 #' against outliers. Defaults to 0.97 (97%).
 #'
 #' @param warn Should a warning be issued if the cumulative case count is
@@ -249,7 +249,7 @@ check_max_delay <- function(obs,
                             max_delay = 20,
                             by = NULL,
                             cum_coverage = 0.8,
-                            quantile_outlier = 0.97,
+                            maxdelay_quantile_outlier = 0.97,
                             set_negatives_to_zero = TRUE,
                             warn = TRUE) {
 
@@ -259,8 +259,8 @@ check_max_delay <- function(obs,
     "`max_delay` must be greater than or equal to one" = max_delay >= 1,
     "`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." =
       cum_coverage > 0 & cum_coverage <= 1,
-    "`quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
-      quantile_outlier > 0 & quantile_outlier <= 1
+    "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
+      maxdelay_quantile_outlier > 0 & maxdelay_quantile_outlier <= 1
   )
 
   obs <- coerce_dt(obs, dates = TRUE, copy = TRUE)
@@ -295,18 +295,19 @@ check_max_delay <- function(obs,
     obs[, .group := NULL]
     obs <- enw_assign_group(obs, by = by, copy = FALSE)
   }
-
-  max_delay_ref <- obs[
-    !is.na(reference_date),
-    .SD[, .(delay = max(delay, na.rm = TRUE)), by = reference_date]
+  
+  max_delay_ref <-  obs[
+    !is.na(reference_date) & cum_prop_reported == 1, .(reference_date, delay)
+    ]
+  data.table::setorderv(max_delay_ref, c("reference_date", "delay"))
+  max_delay_ref <- max_delay_ref[ ,
+    .SD[, .(delay = first(delay)), by = reference_date]
   ]
   max_delay_obs <- ceiling(
-    max_delay_ref[, quantile(delay, quantile_outlier, na.rm = TRUE)]
+    max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
   ) + 1
 
-  # Note that we if we here filter by the user-specified maximum delay, any
-  # warnings obtained would also apply to a modelled, potentially shorter,
-  # maximum delay.
+  # Note that we here filter by the user-specified maximum delay
   obs <- enw_filter_delay(obs, max_delay = max_delay)
 
   # filter by earliest observed report date
@@ -323,14 +324,14 @@ check_max_delay <- function(obs,
     latest_date = fully_observed_date
   )
 
-  if (latest_obs[, .N] < 5) {
+  if (warn && (latest_obs[, .N] < 5)) {
     warning(
       "There are only very few (", latest_obs[, .N], ") reference dates",
       " that are sufficiently far in the past (beyond maximum observed delay ",
       "of ", max_delay_obs, " days) to compute coverage statistics. ",
       "The maximum delay check may thus not be reliable. ",
       "If you think the maximum observed delay of ", max_delay_obs, " days is ",
-      "an outlier, consider decreasing `quantile_outlier`."
+      "an outlier, consider decreasing `maxdelay_quantile_outlier`."
     )
   }
 
