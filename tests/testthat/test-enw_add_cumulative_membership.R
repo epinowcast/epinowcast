@@ -32,10 +32,10 @@ test_that("enw_add_cumulative_membership fails as expected", {
   metaobs <- data.table::data.table(week = 1:3)
   expect_error(
     enw_add_cumulative_membership(metaobs, "day"),
-    regexp = "The following columns are required:\nday"
+    regexp = "The following columns are required: day"
   )
   expect_error(
     enw_add_cumulative_membership(metaobs[, week := as.factor(week)], "week"),
-    regexp = "Requested variable week is not numeric.\nCumulative membership effects"
+    regexp = "Requested variable week is not numeric. Cumulative membership effects"
   )
 })

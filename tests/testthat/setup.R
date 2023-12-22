@@ -1,5 +1,5 @@
 if (not_on_cran() & FALSE) {
-  cli::cli_inform("Running tests setup")
+  message("Running tests setup")
   options(mc.cores = 2)
   utils::capture.output(
     source(enw_example("script"))
