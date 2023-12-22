@@ -44,8 +44,8 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
       cli::cli_abort(
-        c(
-          "formula must be an object of class enw_formula as produced using",
+        paste0(
+          "formula must be an object of class enw_formula as produced using ",
           "`enw_formula()`"
         )
       )

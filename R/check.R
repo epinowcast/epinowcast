@@ -56,9 +56,9 @@ check_group_date_unique <- function(obs) {
   cells <- obs[, .(count = .N), by = group_cols]
   if (any(cells[, count > 1])) {
     cli::cli_abort(
-      c(
-        "The input data seems to be stratified by more variables than",
-        "specified via the `by` argument. Please provide additional grouping",
+      paste0(
+        "The input data seems to be stratified by more variables than ",
+        "specified via the `by` argument. Please provide additional grouping ",
         "variables to `by`, or aggregate the observations beforehand."
       )
     )
@@ -77,14 +77,14 @@ check_group_date_unique <- function(obs) {
 check_module <- function(module) {
   if (!"data" %in% names(module)) {
     cli::cli_abort(
-      c(
-        "Must contain a list component specifying the data requirements",
-        "for further modelling as a list"
+      paste0(
+        "Must contain a list component specifying the data requirements for ",
+        "further modelling as a list"
       )
     )
   }
   if (!is.list(module[["data"]])) {
-    cli::cli_abort("data must be a list of required data")
+    cli::cli_abort("`data` must be a list of required data")
   }
   return(invisible(NULL))
 }
@@ -104,13 +104,17 @@ check_modules_compatible <- function(modules) {
   ) {
     cli::cli_warn(
       c(
-        "Incompatible model specification: A missingness model has been",
-        "specified but likelihood aggregation is specified as by snapshot.",
-        "Switching to likelihood aggregation by group.",
-        "This has no effect on the nowcast but limits the number of threads",
-        "per chain to the number of groups.",
-        "To silence this warning, set the `likelihood_aggregation`",
-        "argument in `enw_fit_opts` to 'groups'."
+        paste0(
+          "Incompatible model specification: A missingness model has been ",
+          "specified but likelihood aggregation is specified as by snapshot. ",
+          "Switching to likelihood aggregation by group. ",
+          "This has no effect on the nowcast but limits the number of threads ",
+          "per chain to the number of groups."
+        ),
+        paste0(
+          "To silence this warning, set the `likelihood_aggregation` argument ",
+          "in `enw_fit_opts` to 'groups'. "
+        )
       ),
       immediate. = TRUE
     )
@@ -189,11 +193,11 @@ coerce_dt <- function(
     # check that all required columns are present
     if (!all(required_cols %in% colnames(dt))) {
       cli::cli_abort(
-        c(
+        paste0(
           "{msg_required}",
-          "{toString(required_cols[!(required_cols %in% colnames(dt))])}",
-          "but are not present among",
-          "{toString(colnames(dt))}",
+          "{toString(required_cols[!(required_cols %in% colnames(dt))])} ",
+          "but are not present among ",
+          "{toString(colnames(dt))} ",
           "(all {.arg required_cols}: {toString(required_cols)})"
         )
       )
@@ -207,7 +211,7 @@ coerce_dt <- function(
     # check that no forbidden columns are present
     if (any(forbidden_cols %in% colnames(dt))) {
       cli::cli_abort(
-        c(
+        paste0(
           "{msg_forbidden}",
           "{toString(forbidden_cols[forbidden_cols %in% colnames(dt)])}",
           "but are present among",
@@ -273,9 +277,7 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
     return(invisible(NULL))
   } else {
     if (exact) {
-      cli::cli_abort(
-        "{date_var} does not have the specified timestep of month"
-      )
+      cli::cli_abort("{date_var} does not have the specified timestep of month")
     } else {
       cli::cli_abort(
         "Non-sequential dates are not currently supported for monthly data"
@@ -309,8 +311,8 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 
   if (any(diffs < timestep)) {
     cli::cli_abort(
-      c(
-        "{date_var} has a shorter timestep than the specified timestep of",
+      paste0(
+        "{date_var} has a shorter timestep than the specified timestep of ",
         "{timestep} day(s)"
       )
     )
@@ -432,7 +434,7 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
     cli::cli_abort(
-      c(
+      paste0(
         "There must be at least two observations by group and date",
         "combination to establish a timestep"
       )
