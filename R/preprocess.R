@@ -1068,6 +1068,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     max_delay = max_delay,
     by = by
   )
+  
+  # apply checks
+  check_max_delay(out[])
 
   return(out[])
 }

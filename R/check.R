@@ -210,8 +210,9 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @title Check appropriateness of maximum delay
 #'
 #' @description Check if maximum delay specified by the user is long enough and
-#' raise potential warnings. This is achieved by computing the share of reference dates where the
-#' cumulative case count is below some aspired coverage.
+#' raise potential warnings. This is achieved by computing the share of
+#' reference dates where the cumulative case count is below some aspired
+#' coverage.
 #'
 #' @details The coverage is with respect to the maximum observed case count for
 #' the corresponding reference date. As the maximum observed case count is
@@ -224,7 +225,7 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #'
 #' @inheritParams enw_preprocess_data
 #' 
-#' @inheritParams enw_add_incidence
+#' @param data Output from [enw_preprocess_data()].
 #'
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
 #' should cover. Defaults to 0.8 (80%).
@@ -244,15 +245,18 @@ coerce_dt <- function(data, select = NULL, required_cols = select,
 #' @family check
 #' @export
 #' @examples
-#' check_max_delay(germany_covid19_hosp, max_delay = 20, cum_coverage = 0.8)
-check_max_delay <- function(obs,
-                            max_delay = 20,
-                            by = NULL,
+#' pobs <- enw_example(type = "preprocessed_observations")
+#' check_max_delay(pobs, max_delay = 20, cum_coverage = 0.8)
+check_max_delay <- function(data,
+                            max_delay = NULL,
                             cum_coverage = 0.8,
                             maxdelay_quantile_outlier = 0.97,
-                            set_negatives_to_zero = TRUE,
                             warn = TRUE) {
 
+  if (is.null(max_delay)) {
+    max_delay <- data$max_delay
+  }
+  
   max_delay <- as.integer(max_delay)
   stopifnot(
     "`max_delay` must be an integer and not NA" = is.integer(max_delay),
@@ -263,46 +267,30 @@ check_max_delay <- function(obs,
       maxdelay_quantile_outlier > 0 & maxdelay_quantile_outlier <= 1
   )
 
-  obs <- coerce_dt(obs, dates = TRUE, copy = TRUE)
-  data.table::setkeyv(obs, "reference_date")
-
-  if (!is.null(by)) {
-    if (by != ".group") {
-      check_group(obs)
-      obs <- enw_assign_group(obs, by = by, copy = FALSE)
-    } else {
-      stopifnot(
-        "Column `.group` is not present in the data" =
-          ".group" %in% colnames(obs)
-      )
-    }
-  }
-  obs <- enw_add_max_reported(obs, copy = FALSE)
-  obs <- enw_add_delay(obs, copy = FALSE)
-
-  diff_obs <- enw_add_incidence(
-    obs, set_negatives_to_zero = set_negatives_to_zero, by = by
-  )
-
-  # filter obs based on diff constraints
-  obs <- merge(
-    obs, diff_obs[, .(reference_date, report_date, .group)],
-    by = c("reference_date", "report_date", ".group")
-  )
-
-  # update grouping in case any are now missing
-  if (!(is.null(by) || by == ".group")) {
-    obs[, .group := NULL]
-    obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  obs <- data$obs[[1]]
+  
+  max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + 1
+  if (max_delay_obs < max_delay) {
+    warning(
+      "You specified a maximum delay of ", max_delay, " days, ",
+      "but the maximum observed delay is only ", max_delay_obs, " days).",
+      "Consider adding unobserved delays with zero reports to your data using ",
+      "`enw_complete_dates` to avoid truncated delay distributions (if you ",
+      "believe that these are truly zero). Otherwise consider opening an ",
+      "issue.",
+      immediate. = TRUE
+    )
   }
   
   max_delay_ref <-  obs[
-    !is.na(reference_date) & cum_prop_reported == 1, .(reference_date, delay)
+    !is.na(reference_date) & cum_prop_reported == 1,
+    .(.group, reference_date, delay)
     ]
-  data.table::setorderv(max_delay_ref, c("reference_date", "delay"))
+  data.table::setorderv(max_delay_ref, c(".group", "reference_date", "delay"))
   max_delay_ref <- max_delay_ref[ ,
     .SD[, .(delay = first(delay)), by = reference_date]
-  ]
+  ] # we here assume the same maximum delay for all groups
+  
   max_delay_obs <- ceiling(
     max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
   ) + 1
