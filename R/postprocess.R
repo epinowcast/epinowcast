@@ -89,7 +89,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' enw_nowcast_summary(
 #'   fit$fit[[1]],
 #'   fit$latest[[1]],
-#'   fit$metamaxdelay[[1]][type == "modelled", delay]
+#'   fit$max_delay
 #'   )
 enw_nowcast_summary <- function(fit, obs, max_delay = NULL,
                                 probs = c(
@@ -163,7 +163,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL,
 #' enw_nowcast_samples(
 #'   fit$fit[[1]],
 #'   fit$latest[[1]],
-#'   fit$metamaxdelay[[1]][type == "modelled", delay]
+#'   fit$max_delay
 #'   )
 enw_nowcast_samples <- function(fit, obs, max_delay = NULL) {
   nowcast <- fit$draws(
@@ -180,7 +180,8 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL) {
     id.vars = c(".chain", ".iteration", ".draw")
   )
 
-  max_delay_model <- nrow(nowcast) / max(obs$.group) / max(nowcast$.draw)
+  max_delay_model <- nrow(nowcast) / max(obs$.group) / max(nowcast$.draw, 
+                                                           na.rm = TRUE)
   if (is.null(max_delay)) {
     max_delay <- max_delay_model
   }
@@ -201,7 +202,8 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL) {
   ord_obs <- ord_obs[order(.group, reference_date)]
 
   # add observations for modelled dates
-  obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
+  obs_model <- ord_obs[reference_date > (max(reference_date, na.rm = TRUE) - 
+                                           max_delay_model)]
   nowcast <- cbind(obs_model, nowcast)
 
   # add artificial samples for not-modelled earlier dates
@@ -209,7 +211,10 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL) {
     obs_spec <- ord_obs[
       reference_date <= (max(reference_date) - max_delay_model)
       ]
-    obs_spec[, c(".chain", ".iteration", ".draw", "variable") := NA]
+    obs_spec[, c(".chain", ".iteration") := NA]
+    obs_spec[, .draw := rep(1:max(nowcast$.draw, na.rm = TRUE),
+                            nrow(obs_spec)/max(nowcast$.draw, na.rm = TRUE))]
+    obs_spec[, variable := NA]
     obs_spec[, sample := confirm]
     nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
   }
@@ -252,7 +257,7 @@ enw_summarise_samples <- function(samples, probs = c(
                                   ),
                                   by = c("reference_date", ".group"),
                                   link_with_obs = TRUE) {
-  obs <- samples[.draw == min(.draw)]
+  obs <- samples[.draw == min(.draw, na.rm = TRUE)]
   suppressWarnings(obs[, c(".draw", ".iteration", "sample", ".chain") := NULL])
 
   summary <- samples[,

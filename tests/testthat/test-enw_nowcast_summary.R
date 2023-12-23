@@ -4,7 +4,7 @@ test_that(
     fit <- enw_example("nowcast")
     nowcast <- enw_nowcast_summary(
       fit$fit[[1]], fit$latest[[1]],
-      max_delay = fit$metamaxdelay[[1]][type == "modelled", delay]
+      max_delay = fit$max_delay
     )
     expect_snapshot(
       round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
@@ -16,7 +16,7 @@ test_that("enw_nowcast_summary can extract the summarised nowcast with custom qu
   fit <- enw_example("nowcast")
   nowcast <- enw_nowcast_summary(
     fit$fit[[1]], fit$latest[[1]],
-    max_delay = fit$metamaxdelay[[1]][type == "modelled", delay],
+    max_delay = fit$max_delay,
     probs = c(0.05, 0.5, 0.95)
   )
   expect_snapshot(

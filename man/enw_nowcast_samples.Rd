@@ -37,7 +37,7 @@ fit <- enw_example("nowcast")
 enw_nowcast_samples(
   fit$fit[[1]],
   fit$latest[[1]],
-  fit$metamaxdelay[[1]][type == "modelled", delay]
+  fit$max_delay
   )
 }
 \seealso{

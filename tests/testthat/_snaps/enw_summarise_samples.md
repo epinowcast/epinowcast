@@ -43,25 +43,36 @@
       summary[1:10]
     Output
           reference_date .group report_date max_confirm location age_group confirm
-       1:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       2:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       3:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       4:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       5:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       6:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       7:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       8:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-       9:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-      10:           <NA>     NA        <NA>          NA     <NA>      <NA>      NA
-          cum_prop_reported delay prop_reported mean median sd mad q5 q50 q95
-       1:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       2:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       3:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       4:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       5:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       6:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       7:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       8:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-       9:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
-      10:                NA    NA            NA   NA     NA NA  NA NA  NA  NA
+       1:     2021-08-01      1  2021-08-20          77       DE       00+      77
+       2:     2021-08-02      1  2021-08-21          59       DE       00+      59
+       3:     2021-08-03      1  2021-08-22         149       DE       00+     149
+       4:     2021-08-04      1  2021-08-22         166       DE       00+     166
+       5:     2021-08-05      1  2021-08-22         133       DE       00+     133
+       6:     2021-08-06      1  2021-08-22         137       DE       00+     137
+       7:     2021-08-07      1  2021-08-22         139       DE       00+     139
+       8:     2021-08-08      1  2021-08-22          97       DE       00+      97
+       9:     2021-08-09      1  2021-08-22          58       DE       00+      58
+      10:     2021-08-10      1  2021-08-22         175       DE       00+     175
+          cum_prop_reported delay prop_reported    mean median       sd    mad  q5
+       1:                 1    19   0.000000000  77.000     77 0.000000 0.0000  77
+       2:                 1    19   0.016949153  59.000     59 0.000000 0.0000  59
+       3:                 1    19   0.000000000 149.000    149 0.000000 0.0000 149
+       4:                 1    18   0.000000000 167.482    167 1.354811 1.4826 166
+       5:                 1    17   0.000000000 135.770    135 1.847299 1.4826 133
+       6:                 1    16   0.000000000 141.177    141 2.404881 2.9652 138
+       7:                 1    15   0.007194245 145.725    145 2.990705 2.9652 141
+       8:                 1    14   0.000000000 103.732    103 3.133368 2.9652  99
+       9:                 1    13   0.000000000  62.737     63 2.405331 2.9652  59
+      10:                 1    12   0.000000000 185.234    185 3.845261 4.4478 180
+          q50    q95
+       1:  77  77.00
+       2:  59  59.00
+       3: 149 149.00
+       4: 167 170.00
+       5: 135 139.00
+       6: 141 145.05
+       7: 145 151.00
+       8: 103 109.00
+       9:  63  67.00
+      10: 185 192.00
 

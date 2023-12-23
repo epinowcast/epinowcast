@@ -68,8 +68,7 @@ the standard reporting triangle matrix format.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{metadelay}: Metadata for reporting delays produced using
 \code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.
-\item \code{metamaxdelay}: Metadata for reporting delays produced using
-\code{\link[=enw_metadata_maxdelay]{enw_metadata_maxdelay()}}.
+\item \code{max_delay}: Maximum delay to be modelled by epinowcast.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
@@ -120,7 +119,6 @@ Preprocessing functions
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
-\code{\link{enw_metadata_maxdelay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_reporting_triangle_to_long}()},

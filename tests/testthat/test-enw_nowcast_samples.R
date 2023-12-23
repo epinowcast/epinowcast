@@ -4,7 +4,7 @@ test_that("enw_nowcast_samples can extract nowcast samples as expected", {
     round_numerics(
       enw_nowcast_samples(
         fit$fit[[1]], fit$latest[[1]],
-        max_delay = fit$metamaxdelay[[1]][type == "modelled", delay]
+        max_delay = fit$max_delay
       )[1:10]
     )
   )

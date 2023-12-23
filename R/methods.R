@@ -40,15 +40,17 @@ summary.epinowcast <- function(object, type = c(
   type <- match.arg(type)
 
   if (is.null(max_delay)) {
-    max_delay = object$metamaxdelay[[1]][type == "modelled", delay]
+    spec_max_delay = object$max_delay
+  } else {
+    spec_max_delay = max_delay
   }
   
   s <- with(object, switch(type,
     nowcast = enw_nowcast_summary(
-      fit = fit[[1]], obs = latest[[1]], max_delay = max_delay, ...
+      fit = fit[[1]], obs = latest[[1]], max_delay = spec_max_delay, ...
     ),
     nowcast_samples = enw_nowcast_samples(
-      fit = fit[[1]], obs = latest[[1]], max_delay = max_delay, ...
+      fit = fit[[1]], obs = latest[[1]], max_delay = spec_max_delay, ...
       ),
     fit = enw_posterior(fit[[1]], ...),
     posterior_prediction = enw_pp_summary(fit[[1]], new_confirm[[1]], ...),

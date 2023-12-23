@@ -4,13 +4,13 @@ test_that("summary.epinowcast passes to lower level functions as expected", {
   expect_equal(
     summary(fit, type = "nowcast"),
     with(fit, enw_nowcast_summary(
-      fit[[1]], latest[[1]], metamaxdelay[[1]][type == "modelled", delay]
+      fit[[1]], latest[[1]], max_delay
       ))
   )
   expect_equal(
     summary(fit, type = "nowcast_samples"),
     with(fit, enw_nowcast_samples(
-      fit[[1]], latest[[1]], metamaxdelay[[1]][type == "modelled", delay]
+      fit[[1]], latest[[1]], max_delay
       ))
   )
   expect_equal(
