@@ -191,6 +191,7 @@ remove_rw_terms <- function(formula) {
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #' @inheritParams enw_formula
 #' @importFrom lme4 nobars findbars
+#' @importFrom cli cli_abort
 #' @family formulatools
 #' @examples
 #' epinowcast:::parse_formula(~ 1 + age_group + location)
@@ -202,7 +203,7 @@ remove_rw_terms <- function(formula) {
 #' epinowcast:::parse_formula(~ 1 + (1 | location) + rw(week, location))
 parse_formula <- function(formula) {
   if (!inherits(formula, "formula")) {
-    stop("'formula' must be a formula object.")
+    cli::cli_abort("`formula` must be a formula object.")
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
@@ -237,6 +238,7 @@ parse_formula <- function(formula) {
 #' @return A list defining the time frame, group, and type with class
 #' "enw_rw_term" that can be interpreted by [construct_rw()].
 #' @export
+#' @importFrom cli cli_abort
 #' @family formulatools
 #' @examples
 #' rw(time)
@@ -247,7 +249,7 @@ parse_formula <- function(formula) {
 rw <- function(time, by, type = c("independent", "dependent")) {
   type <- match.arg(type)
   if (missing(time)) {
-    stop("time must be present")
+    cli::cli_abort("time must be present")
   } else {
     time <- deparse(substitute(time))
   }
@@ -285,6 +287,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' formula.
 #'  - `effects`: A `data.frame` describing the random effect structure of the
 #' new effects.
+#' @importFrom cli cli_abort cli_inform
 #' @family formulatools
 #' @examples
 #' data <- enw_example("preproc")$metareference[[1]]
@@ -294,18 +297,25 @@ rw <- function(time, by, type = c("independent", "dependent")) {
 #' epinowcast:::construct_rw(rw(week, day_of_week), data)
 construct_rw <- function(rw, data) {
   if (!inherits(rw, "enw_rw_term")) {
-    stop("rw must be a random walk term as constructed by rw")
+    cli::cli_abort(
+      paste0(
+        "Argument `rw` must be a random walk term as constructed by ",
+        "`epinowcast:::rw`"
+      )
+    )
   }
 
   if (!is.numeric(data[[rw$time]])) {
-    stop(
-      "The time variable ", rw$time, " is not numeric but must be to be used ",
-      "as a random walk term."
+    cli::cli_abort(
+      paste0(
+        "The time variable {rw$time} is not numeric but must be ",
+        "to be used as a random walk term."
+      )
     )
   }
 
   if (anyNA(data[[rw$time]])) {
-    stop("The time variable ", rw$time, " contains non-numeric values.")
+    cli::cli_abort("The time variable {rw$time} contains non-numeric values.")
   }
 
   # add new cumulative features to use for the random walk
@@ -318,15 +328,19 @@ construct_rw <- function(rw, data) {
   fdata <- data[, c(terms, rw$by), with = FALSE]
   if (!is.null(rw$by)) {
     if (is.null(fdata[[rw$by]])) {
-      stop(
-        "Requested grouping variable",
-        rw$by, " is not present in the supplied data"
+      cli::cli_abort(
+        paste0(
+          "Requested grouping variable, {rw$by} is not present in the ",
+          "supplied data"
+        )
       )
     }
     if (length(unique(fdata[[rw$by]])) < 2) {
-      message(
-        "A grouped random walk using ", rw$by,
-        " is not possible as this variable has fewer than 2 unique values."
+      cli::cli_inform(
+        paste0(
+          "A grouped random walk using {rw$by} is not possible as this ",
+          "variable has fewer than 2 unique values."
+        )
       )
       rw$by <- NULL
     } else {
@@ -404,6 +418,7 @@ re <- function(formula) {
 #'
 #' @family formulatools
 #' @importFrom purrr map
+#' @importFrom cli cli_abort cli_inform
 #' @examples
 #' # Simple examples
 #' form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
@@ -422,7 +437,12 @@ re <- function(formula) {
 #' epinowcast:::construct_re(random_effect2, mtcars)
 construct_re <- function(re, data) {
   if (!inherits(re, "enw_re_term")) {
-    stop("re must be a random effect term as constructed by re")
+    cli::cli_abort(
+      paste0(
+        "Argument `re` must be a random effect term as constructed by ",
+        "`epinowcast:::re`"
+      )
+    )
   }
 
   # extract random and fixed effects
@@ -437,14 +457,19 @@ construct_re <- function(re, data) {
 
     if (length(current_random) > 1) {
       if (length(current_random) > 2) {
-        stop(
-          "Interactions between more than 2 variables are not currently supported on the right hand side of random effects" # nolint
+        cli::cli_abort(
+          paste0(
+            "Interactions between more than 2 variables are not currently ",
+            "supported on the right hand side of random effects"
+          )
         )
       }
       if (length(unique(data[[current_random[2]]])) < 2) {
-        message(
-          "A random effect using ", current_random[2],
-          " is not possible as this variable has fewer than 2 unique values."
+        cli::cli_inform(
+          paste0(
+            "A random effect using {current_random[2]} is not possible as ",
+            "this variable has fewer than 2 unique values."
+          )
         )
         random[i] <- current_random[1]
       } else {
@@ -592,6 +617,7 @@ construct_re <- function(re, data) {
 #' @export
 #' @importFrom purrr map transpose
 #' @importFrom data.table rbindlist setnafill
+#' @importFrom cli cli_abort
 #' @examples
 #' # Use meta data for references dates from the Germany COVID-19
 #' # hospitalisation data.
@@ -662,7 +688,7 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     random_terms <- unlist(random$terms)
     # Check that the user hasn't specified the same fixed and random effect
     if (any(random_terms %in% parsed_formula$fixed)) {
-      stop(
+      cli::cli_abort(
         "Random effect terms must not be included in the fixed effects formula",
         call. = FALSE
       )
