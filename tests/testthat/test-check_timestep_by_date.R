@@ -10,7 +10,8 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
       rep(
         replicate(5, seq(as.Date("2020-01-01"), by = "day", length.out = 10)),
         2
-      ), origin = "1970-01-01"
+      ),
+      origin = "1970-01-01"
     )
   )
 
@@ -19,11 +20,12 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
     check_timestep_by_date(obs)
   )
 
-  # Introduce a discrepancy by adding a duplicate report_date for a given reference_date and group
+  # Introduce a discrepancy by adding a duplicate report_date for a given
+  # reference_date and group
   obs <- rbind(
-    obs, 
+    obs,
     data.table::data.table(
-      .group = "A", 
+      .group = "A",
       report_date = as.Date("2020-01-01"),
       reference_date = as.Date("2020-01-01")
     )
@@ -34,12 +36,14 @@ test_that("check_timestep_by_date() handles dates and groups correctly", {
     "report_date has a duplicate date. Please remove duplicate dates."
   )
 
-  # Remove the discrepancy and introduce a discrepancy in one of the date columns
+  # Remove the discrepancy and introduce a discrepancy in one of the date
+  # columns
   obs <- obs[-nrow(obs)]
   obs[1, report_date := as.Date("2019-01-02")]
   expect_error(
     check_timestep_by_date(obs),
-    "report_date does not have the specified timestep of 1 day\\(s\\)"
+    "report_date does not have the specified timestep of 1 day(s)",
+    fixed = TRUE
   )
 
   # Reset the discrepancy and introduce a discrepancy in one of the groups
@@ -75,8 +79,8 @@ test_that("check_timestep_by_date() handles insufficient data correctly", {
   # Create a dataset with two identical dates and group
   obs_identical_dates <- data.table::data.table(
     .group = c("A", "A"),
-    report_date = c(as.Date("2020-01-01"), as.Date("2020-01-01")),
-    reference_date = c(as.Date("2020-01-01"), as.Date("2020-01-01"))
+    report_date = as.Date(c("2020-01-01", "2020-01-01")),
+    reference_date = as.Date(c("2020-01-01", "2020-01-01"))
   )
 
   # Test for identical dates

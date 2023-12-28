@@ -22,7 +22,7 @@ skip_on_local <- function() {
   if (on_ci()) {
     return(invisible(TRUE))
   }
-  skip("Not on CI")
+  testthat::skip("Not on CI")
 }
 
 round_numerics <- function(dt) {
