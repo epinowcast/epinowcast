@@ -436,7 +436,7 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
     cli::cli_abort(
       paste0(
         "There must be at least two observations by group and date",
-        "combination to establish a timestep"
+        " combination to establish a timestep"
       )
     )
   }
