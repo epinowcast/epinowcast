@@ -15,10 +15,6 @@ template:
 development:
   mode: auto
 
-authors:
-  Sam Abbott:
-    href: "https://www.samabbott.co.uk/"
-
 articles:
 - title: Model details
   navbar: Model details
