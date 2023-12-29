@@ -1,9 +1,6 @@
 url: package.epinowcast.org/
 template:
   package: enwtheme
-  bootstrap: 5
-  bootswatch: flatly
-  theme: monokai
   twitter:
     creator: "@seabbs"
     card: summary_large_image
