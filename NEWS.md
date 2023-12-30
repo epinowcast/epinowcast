@@ -22,6 +22,7 @@ This release is in development and not yet ready for production use.
 
 ## Package
 
+- pkgdown theming elements have moved to an [organization-level pkgdown theme](https://github.com/epinowcast/enwtheme) to increase re-usability and [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself)-ness across the organization. See #419 by @Bisaloo and reviewed by @pearsonca and @seabbs.
 - Fixed some typos in `single-timeseries-rt-estimation.Rmd`. The `WORDLIST` used by spelling has also been updated to eliminate false positives. Future typos will now generate an error in the continuous integration check so that we can catch them as early as possible. See #341 by @Bisaloo and reviewed by @seabbs.
 - Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo and reviewed by @seabbs.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
