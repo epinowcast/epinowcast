@@ -1,7 +1,7 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
 description: "A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
-author: Sam Abbott
+author: Epinowcast Team
 opengraph:
   image: 
     src: figures/germany-age-stratified-nowcasting-performance-1.png
