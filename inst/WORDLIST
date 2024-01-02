@@ -61,7 +61,6 @@ iters
 leq
 linelist
 linters
-lintr
 lme
 loglogistic
 lsl
@@ -76,6 +75,7 @@ modelmodules
 modeltools
 modelvalidation
 negbin
+ness
 nolint
 nowcast
 nowcastable
