@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>package.epinowcast.org/dev/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/dev/CONTRIBUTING.html</loc>
-  </url>
-  <url>
     <loc>package.epinowcast.org/dev/LICENSE-text.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/dev/PULL_REQUEST_TEMPLATE.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/dev/STYLE_GUIDE.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/articles/distributions.html</loc>
