@@ -1,4 +1,5 @@
-# enw_filter_reference_dates works with both include and remove days under missing data
+# enw_filter_reference_dates works with both include and remove days
+          under missing data
 
     Code
       filt_date

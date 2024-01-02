@@ -48,6 +48,7 @@
 #' priors, and output from the sampler specified in `enw_fit_opts()`.
 #' @inheritParams enw_obs
 #' @importFrom purrr map transpose flatten walk
+#' @importFrom cli cli_warn
 #' @family epinowcast
 #' @export
 #' @examplesIf interactive()
@@ -163,8 +164,12 @@ epinowcast <- function(data,
   )
 
   if (missing$formula != "~0") {
-    warning("The missing data model is highly experimental. There is a
-     significant likelihood that bugs are present in its implementation.")
+    cli::cli_warn(
+      paste0(
+        "The missing data model is highly experimental. There is a ",
+        "significant likelihood that bugs are present in its implementation."
+      )
+    )
   }
 
   inits <- purrr::compact(modules$inits)

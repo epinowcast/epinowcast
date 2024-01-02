@@ -88,6 +88,7 @@ enw_metadata <- function(obs, target_date = c(
 #'
 #' @family preprocess
 #' @importFrom purrr compose
+#' @importFrom cli cli_abort cli_warn
 #' @export
 #' @examples
 #'
@@ -123,7 +124,7 @@ enw_add_metaobs_features <- function(metaobs,
   # localize and check metaobs input
   metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
-    stop(sprintf("metaobs column '%s' is not a Date.", datecol))
+    cli::cli_abort("metaobs column {datecol} is not a `Date`.")
   }
 
   # this may also error, so coercing first
@@ -132,9 +133,9 @@ enw_add_metaobs_features <- function(metaobs,
   # warn about columns that may be overwritten
   tarcols <- c("day_of_week", "day", "week", "month")
   if (any(tarcols %in% colnames(metaobs))) {
-    warning(sprintf(
-      "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
-      intersect(tarcols, colnames(metaobs))
+    cli::cli_warn(paste0(
+      "Pre-existing columns in `metaobs` will be overwritten: ",
+      "{intersect(tarcols, colnames(metaobs))}."
     ))
   }
   # sort by current sorting and datacol
@@ -369,6 +370,7 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #'
 #' @return A data.table  filtered by report date
 #' @family preprocess
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -377,10 +379,11 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' # Filter by days
 #' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 enw_filter_report_dates <- function(obs, latest_date, remove_days) {
-  stopifnot(
-    "exactly one of `remove_days` and `latest_date` must be specified." =
-      xor(missing(remove_days), missing(latest_date))
-  )
+  if (!xor(missing(remove_days), missing(latest_date))) {
+    cli::cli_abort(
+      "exactly one of `remove_days` and `latest_date` must be specified."
+    )
+  }
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (missing(latest_date)) {
     latest_date <- max(filt_obs$report_date) - remove_days
@@ -417,6 +420,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @return A `data.table` filtered by report date
 #' @family preprocess
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -436,7 +440,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
-      stop("`remove_days` and `latest_date` can't both be specified.")
+      cli::cli_abort("`remove_days` and `latest_date` can't both be specified.")
     }
     latest_date <- max(filt_obs$reference_date, na.rm = TRUE) - remove_days
   }
@@ -447,7 +451,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
-      stop(
+      cli::cli_abort(
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
@@ -523,6 +527,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
+#' @importFrom cli cli_warn
 #' @export
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
@@ -543,9 +548,11 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   }
   empirical_max_delay <- obs[, max(delay, na.rm = TRUE)]
   if (empirical_max_delay < (max_delay - 1)) {
-    warning(
-      "Empirical max delay (", empirical_max_delay + 1,
-      ") is less than the specified max delay (", max_delay, ")."
+    cli::cli_warn(
+      paste0(
+        "Empirical max delay ({empirical_max_delay + 1}) ",
+        "is less than the specified max delay ({max_delay})."
+      )
     )
   }
   return(obs[])
@@ -564,6 +571,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' @family preprocess
 #' @export
 #' @importFrom data.table dcast setorderv
+#' @importFrom cli cli_warn
 #' @examples
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
@@ -573,9 +581,11 @@ enw_reporting_triangle <- function(obs) {
     group = TRUE
   )
   if (any(obs$new_confirm < 0)) {
-    warning(
-      "Negative new confirmed cases found. This is not yet supported in
-       epinowcast."
+    cli::cli_warn(
+      paste0(
+        "Negative new confirmed cases found. ",
+        "This is not yet supported in epinowcast."
+      )
     )
   }
   reports <- data.table::dcast(
@@ -1045,6 +1055,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @inheritParams enw_add_incidence
 #' @export
 #' @importFrom data.table data.table
+#' @importFrom cli cli_abort
 #' @examples
 #' library(data.table)
 #'
@@ -1058,16 +1069,19 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  stopifnot(
-    "`max_delay` must be an integer and not NA" = is.numeric(max_delay) &&
-       round(max_delay) == max_delay,
-    "`max_delay` must be greater than or equal to one" = max_delay >= 1
-  )
+  if (!is.numeric(max_delay) || round(max_delay) != max_delay) {
+    cli::cli_abort("`max_delay` must be an integer and not NA")
+  }
+  if (max_delay < 1) {
+    cli::cli_abort("`max_delay` must be greater than or equal to one")
+  }
   if (timestep == "month") {
-    stop(
-      "Calendar months are not currently supported. Consider using an ",
-      "approximate number of days (i.e. 28), a different timestep (i.e. ",
-      "'week'), or commenting on issue #309."
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
     )
   }
   internal_timestep <- get_internal_timestep(timestep)

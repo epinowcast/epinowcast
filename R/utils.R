@@ -184,6 +184,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
+#' @importFrom cli cli_abort
 #' @family utils
 #' @examples
 #' # works
@@ -210,11 +211,9 @@ coerce_date <- function(dates) {
   }, FUN.VALUE = data.table::as.IDate(0)))
 
   if (anyNA(res)) {
-    bads <- is.na(res)
-    stop(sprintf(
-      "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
-      toString(dates[bads]),
-      toString(which(bads))
+    cli::cli_abort(paste0(
+      "Failed to parse with `as.IDate`: {toString(dates[is.na(res)])} ",
+      "(indices {toString(which(is.na(res)))})."
     ))
   } else {
     return(res)
@@ -235,6 +234,7 @@ coerce_date <- function(dates) {
 #' @return A numeric value representing the number of days for "day" and
 #' "week", "month" for "month",  or the input value if it is a numeric whole
 #' number.
+#' @importFrom cli cli_abort
 #' @family utils
 get_internal_timestep <- function(timestep) {
   # check if the input is a character
@@ -244,18 +244,19 @@ get_internal_timestep <- function(timestep) {
       day = 1,
       week = 7,
       month = "month",  # months are not a fixed number of days
-      stop(
-        "Invalid timestep. Acceptable string inputs are 'day', 'week',",
-        " 'month'."
+      cli::cli_abort(
+        "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
       )
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
     # check if the input is a whole number
     return(timestep)
   } else {
-    stop(
-      "Invalid timestep. If timestep is a numeric, it should be a whole",
-      " number representing the number of days."
+    cli::cli_abort(
+      paste0(
+        "Invalid timestep. If timestep is a numeric, it should be a whole ",
+        "number representing the number of days."
+      )
     )
   }
 }

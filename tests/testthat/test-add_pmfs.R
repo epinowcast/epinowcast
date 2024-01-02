@@ -12,11 +12,11 @@ test_that("add_pmfs can combine two Poisson distributions", {
   conv_cdf <- cumsum(conv_pmf)
   # Empirical convolution of PMFs
   cdf <- ecdf(z)(0:41)
-  expect_true(sum(abs(conv_cdf - cdf)) < 0.02)
+  expect_lt(sum(abs(conv_cdf - cdf)), 0.02)
 })
 
 test_that("add_pmfs returns the input PMF when only one is passed", {
   pmf <- c(0.1, 0.2, 0.3)
-  expect_equal(add_pmfs(pmf), pmf)
-  expect_equal(add_pmfs(list(pmf)), pmf)
+  expect_identical(add_pmfs(pmf), pmf)
+  expect_identical(add_pmfs(list(pmf)), pmf)
 })
