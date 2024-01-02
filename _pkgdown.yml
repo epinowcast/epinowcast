@@ -1,8 +1,6 @@
 url: package.epinowcast.org/
 template:
-  bootstrap: 5
-  bootswatch: flatly
-  theme: monokai
+  package: enwtheme
   twitter:
     creator: "@seabbs"
     card: summary_large_image
@@ -16,10 +14,6 @@ template:
 
 development:
   mode: auto
-
-authors:
-  Sam Abbott:
-    href: "https://www.samabbott.co.uk/"
 
 articles:
 - title: Model details
