@@ -18,7 +18,7 @@
  * @return A vector representing the expected observations for each date by
  * date of report. The length of the vector matches the length of `lh`.
  * 
- * @notes
+ * @note
  * Dependencies:
  * - `inv_logit`: Used to convert logit hazards to probabilities.
  * - `hazard_to_log_prob`: Used for converting hazards to log probabilities.
@@ -91,14 +91,4 @@ vector expected_obs(real tar_obs, vector lh, int ref_as_p) {
     }
   }
   return(exp_obs);
-}
-
-
-
- * Dependencies:
- * - `inv_logit`: Used to convert logit hazards to probabilities.
- * - `hazard_to_log_prob`: Used for converting hazards to log probabilities.
-
-vector expected_obs(real tar_obs, vector lh, int ref_as_p) {
-  // [Function implementation]
 }
