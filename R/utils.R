@@ -199,9 +199,8 @@ enw_example <- function(type = c(
 #' )
 coerce_date <- function(dates) {
   if (is.null(dates)) {
-    return(data.table::as.IDate(.Date(numeric())))
+    return(data.table::as.IDate(c()))
   }
-
   if (length(dates) == 0) {
     return(data.table::as.IDate(dates))
   }
