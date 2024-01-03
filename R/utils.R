@@ -281,7 +281,6 @@ enw_set_cache <- function(path) {
   }
   env_contents_active <- enw_get_environment_contents()
 
-  #!TODO should we normalise the path?
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
 
   enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
