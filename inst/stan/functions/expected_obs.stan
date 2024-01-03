@@ -1,20 +1,22 @@
 /**
- * Calculate expected observations
+ * Calculate expected observations on the log scale
  * 
- * Calculate expected observations (on the log scale) over time from a
- * combination of final expected observations, the probability of reporting
- * on a given day (or alternatively the logit hazard of this). 
+ * Computes expected observations over time based on final expected
+ * observations and reporting probabilities. It handles both probabilities and
+ * logit hazards for reporting on each day.
  * 
- * @param tar_obs The log of final expected observations that will be reported
- * for a given date on the log scale.
+ * @param tar_obs The logarithm of the final expected observations for a given
+ * date. It should be a real number representing logged observations.
  * 
- * @param lh A vector of conditional log probabilities a report occurs on a
- * given day. Optionally when ref_as_p = 0 this should be transformed first
- * into the logit hazard.
+ * @param lh A vector of conditional log probabilities of a report occurring on
+ * a given day. When `ref_as_p` is 0, this should be the logit hazard instead
+ * of probability.
  * 
- * @param ref_as_p Logical (0/1), should the reference date input be treatsd as 
- * a probability. Useful when no report date effects are present.
- * @return A vector of expected observations for a given date by date of report
+ * @param ref_as_p An integer flag (0 or 1) indicating whether the reference date input should be treated as a logit hazard or probability. Set to 1 when
+ * no report date effects are present, otherwise 0.
+ * 
+ * @return A vector representing the expected observations for each date by
+ * date of report. The length of the vector matches the length of `lh`.
  * 
  * @examples
  * # compile function for use in R
