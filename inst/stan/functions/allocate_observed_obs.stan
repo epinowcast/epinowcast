@@ -1,3 +1,29 @@
+/**
+ * Allocate observed observations for a given time range
+ * 
+ * This function allocates observed observations within a specified time range
+ * based on input observation data (either vector or integer array) and 
+ * various supporting arrays. This function is overloaded to support both
+ * vector and array[int] types for observed data.
+ * 
+ * @param start The start index for the allocation range.
+ *
+ * @param end The end index for the allocation range.
+ *
+ * @param obs Observations to be allocated. Can be a vector (for continuous 
+ * data) or an array of integers (for count data).
+ *
+ * @param sl Array of start index for each observation period.
+ *
+ * @param csl Array of cumulative start indices.
+ *
+ * @param sdmax Array of maximum start dates for each period.
+ *
+ * @param csdmax Array of cumulative start dates.
+ * 
+ * @return Allocated observations within the specified time range. The return 
+ *         type matches the type of `obs` (either vector or array[int]).
+ */
 vector allocate_observed_obs(int start, int end, vector obs, 
                              array[] int sl, array[] int csl,
                              array[] int sdmax, array[] int csdmax) {
