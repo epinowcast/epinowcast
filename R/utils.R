@@ -270,7 +270,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @export
 enw_set_cache <- function(path) {
 
-  if (is.character(path) {
+  if (is.character(path)) {
     cli::cli_abort("`path` must be a valid file path.")
   }
 
