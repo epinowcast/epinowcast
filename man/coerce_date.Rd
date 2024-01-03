@@ -8,7 +8,8 @@ coerce_date(dates)
 }
 \arguments{
 \item{dates}{A vector-like input, which the function attempts
-to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}.}
+to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}. Defaults to NULL (i.e. an
+empty vector).}
 }
 \value{
 An \link{IDate} vector.

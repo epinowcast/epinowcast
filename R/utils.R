@@ -171,7 +171,8 @@ enw_example <- function(type = c(
 #' with error handling
 #'
 #' @param dates A vector-like input, which the function attempts
-#' to coerce via [data.table::as.IDate()].
+#' to coerce via [data.table::as.IDate()]. Defaults to NULL (i.e. an
+#' empty vector).
 #'
 #' @return An [IDate] vector.
 #'
@@ -184,7 +185,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
-#' @importFrom cli cli_abort
+#' @importFrom cli cli_abort cli_warn
 #' @family utils
 #' @examples
 #' # works
