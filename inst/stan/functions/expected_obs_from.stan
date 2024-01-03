@@ -37,6 +37,11 @@
  *       2. Aggregates various hazard effects using `combine_logit_hazards`.
  *       3. Combines the final expected observation with the time-varying
  *          effects  to compute the expected observations using `expected_obs`.
+ *
+ * Dependencies:
+ *  - `combine_logit_hazards`
+ *  - `expected_obs`
+ *
  */
 vector expected_obs_from_index(int i, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
@@ -106,6 +111,9 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
  *          expected observations.
  *       4. Aggregates these individual expected observations into a single 
  *          vector corresponding to the entire range.
+ * 
+ * Dependencies:
+ *  - `expected_obs_from_index`
  */
 vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,

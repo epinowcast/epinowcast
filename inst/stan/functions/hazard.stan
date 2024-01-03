@@ -68,6 +68,9 @@ vector cumulative_converse_log_hazard(vector h) {
  *  @f[ p_i = \log(h_i) + \text{cumulative_converse_log_hazard}(h_i) @f]
  *  This function calls `cumulative_converse_log_hazard` for part of its
  *  computation.
+ *
+ * Dependencies:
+ *  - cumulative_converse_log_hazard
  */
 vector hazard_to_log_prob(vector h) {
   int l = num_elements(h);

@@ -23,6 +23,10 @@
  * 
  * @return Allocated observations within the specified time range. The return 
  *         type matches the type of `obs` (either vector or array[int]).
+ *
+ * @note
+ * Dependencies:
+ *   - filt_obs_indexes
  */
 vector allocate_observed_obs(int start, int end, vector obs, 
                              array[] int sl, array[] int csl,

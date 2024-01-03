@@ -1,4 +1,27 @@
 /**
+ * @file Custom Functions Dependencies
+ *
+ * This script contains definitions for `delay_snap_lpmf` and 
+ * `delay_group_lpmf` functions.
+ *
+ * Dependencies:
+ * - `filt_obs_indexes`: Used to determine the relevant range of observed data 
+ *   and lookup indexes for both `delay_snap_lpmf` and `delay_group_lpmf` 
+ * functions.
+ * - `expected_obs_from_snaps`: Computes expected log observations based on 
+ *   various model inputs. It is integral to the computation of log probability 
+ *   mass in both `delay_snap_lpmf` and `delay_group_lpmf`.
+ * - `obs_lpmf`: Applies the observation error model. This function is used in
+ * both `delay_snap_lpmf` and `delay_group_lpmf` for calculating the log
+ * probability mass of filtered observations.
+ * - `allocate_observed_obs`
+ * - `apply_missing_reference_effects`
+ * - `log_expected_by_report`.
+ *
+ */
+
+
+/**
  * Log probability mass function for delayed snapshot data
  * 
  * Computes the log probability mass for a range of time indexes in delayed
@@ -21,7 +44,12 @@
  *  2. Filters the observed data and lookup indexes for the specified range.
  *  3. Computes expected log observations using `expected_obs_from_snaps`.
  *  4. Applies the observation error model using `obs_lpmf`.
- *     
+ *
+* Dependencies:
+ * - `filt_obs_indexes`
+ * - `expected_obs_from_snaps`
+ * - `obs_lpmf`
+ *
  * This function is similar to `delay_group_lpmf` but operates on snapshot
  * data rather than group data.
  */
@@ -88,6 +116,14 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  *  5. Additionally, handles missing data using
  *    `apply_missing_reference_effects` and `log_expected_by_report`
  *     if `model_miss` is 1.
+ * 
+ * Dependencies:
+ * - `filt_obs_indexes`
+ * - `expected_obs_from_snaps`
+ * - `obs_lpmf`
+ * - `allocate_observed_obs`
+ * - `apply_missing_reference_effects`
+ * - `log_expected_by_report`.
  *
  * This function is similar to `delay_snap_lpmf` but is specifically designed 
  * for group data and includes additional steps for missing data.

@@ -20,6 +20,10 @@
  * 
  * @return A vector of adjusted observations, with missing reference effects
  * applied.
+ * 
+ * @note
+ * Dependencies:
+ *   - filt_obs_indexes
  */
 vector apply_missing_reference_effects(int start, int end, vector obs, 
                                        array[] int sl, array[] int csl,

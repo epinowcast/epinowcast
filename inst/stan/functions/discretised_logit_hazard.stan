@@ -259,6 +259,13 @@ vector log_hazard_to_logit_hazard(vector lhaz, int n) {
  *       4. If `ref_as_p` is 0, it further processes these probabilities into 
  *          logit hazards using `lprob_to_uniform_double_censored_log_hazard`
  *          and `log_hazard_to_logit_hazard`.
+ * 
+ * Dependencies:
+ *   - `lcdf_vectorised`
+ *   - `normalise_lcdf_as_uniform_double_censored`
+ *   - `lcdf_to_uniform_double_censored_log_prob`
+ *   - `lprob_to_uniform_double_censored_log_hazard`
+ *   - `log_hazard_to_logit_hazard`
  */
 vector discretised_logit_hazard(real mu, real sigma, int n, int dist, 
                                 int max_strat, int ref_as_p) {
