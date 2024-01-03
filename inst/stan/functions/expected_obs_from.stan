@@ -1,4 +1,43 @@
-// Calculate  expected observations for a given index
+/**
+ * Calculate expected observations for a given index
+ * 
+ * Computes the expected observations for a specific time index by combining
+ * final observed/imputed expected observation with time effects. This function
+ * integrates various hazard effects and reference adjustments to produce the 
+ * expected observations.
+ * 
+ * @param i Index for accessing elements in various arrays.
+ *
+ * @param imp_obs Array of imputed observed data, organized by group and time.
+ *
+ * @param rdlurd Array indicating reporting dates lookup reference data.
+ *
+ * @param srdlh Vector of standardized reporting date log hazards.
+ *
+ * @param refp_lh Matrix of reference date logit hazards.
+ *
+ * @param dpmfs Array of indices for accessing reference date effects in 
+ * `refp_lh`.
+ *
+ * @param ref_p, rep_h, ref_as_p Flags indicating presence of reference date,
+ * reporting hazards, and reference-as-probability.
+
+ * @param g, t, l, p Group, time, length, and position parameters for data 
+ * access and processing.
+ *
+ * @param refnp_lh Vector of non-parametric reference log hazards.
+ *
+ * @param ref_np Flag indicating presence of non-parametric reference effects.
+ * 
+ * @return A vector of expected observations for the given index.
+ * 
+ * @note This function performs several steps:
+ *       1. Retrieves the final observed/imputed expected observation for the 
+ *          given group and time.
+ *       2. Aggregates various hazard effects using `combine_logit_hazards`.
+ *       3. Combines the final expected observation with the time-varying
+ *          effects  to compute the expected observations using `expected_obs`.
+ */
 vector expected_obs_from_index(int i, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
                                matrix refp_lh, array[] int dpmfs, int ref_p,
@@ -24,7 +63,50 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   return(log_exp_obs);
 }
 
-// Calculate  expected observations for a set of indexes
+/**
+ * Calculate expected observations for a set of indexes
+ * 
+ * Computes expected observations for a range of time indexes, effectively 
+ * aggregating individual calculations over a specified range. This function
+ * considers various factors like hazard effects, reference adjustments, and 
+ * grouping to produce expected observations for each index within the range.
+ * 
+ * @param start, end Start and end indexes for the allocation range.
+ *
+ * @param imp_obs Array of imputed observed data, organized by group and time.
+ *
+ * @param rdlurd Array indicating reporting dates lookup reference data.
+ *
+ * @param srdlh Vector of standardized reporting date log hazards.
+ *
+ * @param refp_lh Matrix of reference date logit hazards.
+ *
+ * @param dpmfs, sl, csl, sg, st Arrays for accessing various indices and 
+ * supporting data.
+ *
+ * @param ref_p, rep_h, ref_as_p Flags for presence of different hazard effects.
+ *
+ * @param n Number of discrete points for observations.
+ *
+ * @param refnp_lh Vector of non-parametric reference log hazards.
+ *
+ * @param ref_np Flag for non-parametric reference effects.
+ *
+ * @param sdmax, csdmax Arrays of maximum start dates and cumulative start
+*  dates.
+ * 
+ * @return A vector of expected observations across the specified range of 
+ *         indexes.
+ * 
+ * @note This function executes the following steps:
+ *       1. Iteratively processes each index in the specified range.
+ *       2. For each index, it identifies the relevant group, time, and length 
+ *          parameters necessary for the calculation.
+ *       3. Calls `expected_obs_from_index` for each index to compute the 
+ *          expected observations.
+ *       4. Aggregates these individual expected observations into a single 
+ *          vector corresponding to the entire range.
+ */
 vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
                                array[,] int rdlurd, vector srdlh,
                                matrix refp_lh, array[] int dpmfs,
