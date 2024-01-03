@@ -268,9 +268,9 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' }
 #' @importFrom cli cli_abort cli_alert
 #' @export
-enw_set_cache <- function(path = NULL) {
+enw_set_cache <- function(path) {
 
-  if (is.null(path) || missing(path)) {
+  if (is.character(path) {
     cli::cli_abort("`path` must be a valid file path.")
   }
 
