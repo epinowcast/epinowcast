@@ -6,7 +6,7 @@ This release is in development and not yet ready for production use.
 
 @jamesmbaazam, @medewitt, @sbfnk, @adrian-lison, @kathsherratt, @natemcintosh, @Bisaloo and @seabbs contributed code to this release.
 
-@jamesmbaazam, @adrian-lison, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
+@jamesmbaazam, @adrian-lison, @sbfnk, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
 @jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
@@ -40,6 +40,7 @@ This release is in development and not yet ready for production use.
 - Added a new action to check that the `cmdstan` model can be compiled and has the correct syntax. This runs on pull requests whenever stan code is changed, when code is merged onto `main` with altered stan code, and on a weekly schedule against the latest `main` branch. See #386 by @seabbs.
 - Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
 - Increased the minimum supported R version to >= R 3.6.0 from R 3.5.0 and ensured that existing function code and tests compiled with this dependency. Vignettes will continue to allow use of R >= 4.1.0 syntax (i.e., native pipe and lambda function syntax). See #389 by @medewitt and @seabbs and reviewed by @pearsonca.
+- Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
 
 ## Model
 
