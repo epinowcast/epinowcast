@@ -1,27 +1,4 @@
 /**
- * @file Custom Functions Dependencies
- *
- * This script contains definitions for `delay_snap_lpmf` and 
- * `delay_group_lpmf` functions.
- *
- * Dependencies:
- * - `filt_obs_indexes`: Used to determine the relevant range of observed data 
- *   and lookup indexes for both `delay_snap_lpmf` and `delay_group_lpmf` 
- * functions.
- * - `expected_obs_from_snaps`: Computes expected log observations based on 
- *   various model inputs. It is integral to the computation of log probability 
- *   mass in both `delay_snap_lpmf` and `delay_group_lpmf`.
- * - `obs_lpmf`: Applies the observation error model. This function is used in
- * both `delay_snap_lpmf` and `delay_group_lpmf` for calculating the log
- * probability mass of filtered observations.
- * - `allocate_observed_obs`
- * - `apply_missing_reference_effects`
- * - `log_expected_by_report`.
- *
- */
-
-
-/**
  * Log probability mass function for delayed snapshot data
  * 
  * Computes the log probability mass for a range of time indexes in delayed
@@ -218,7 +195,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
  *
  * @param obs Array of observed data, stored as a flat vector.
  *
- * @param sl Array of start indexes for each observation period.
+ * @param sl Array of start index for each observation period.
  *
  * @param csl Array of cumulative start indexes.
  *
