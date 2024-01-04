@@ -9,14 +9,12 @@ test_that("coerce_date works for non-garbage in", {
   expect_error(
     coerce_date(refresult), NA
   )
-  expect_error(
-    coerce_date(NULL), NA
-  )
-  expect_error(
-    coerce_date(NULL), NA
-  )
   expect_identical(
     coerce_date(NULL),
+    data.table::as.IDate(.Date(numeric()))
+  )
+  expect_identical(
+    coerce_date(integer()),
     data.table::as.IDate(.Date(numeric()))
   )
   coerced <- coerce_date(nongarbage)
