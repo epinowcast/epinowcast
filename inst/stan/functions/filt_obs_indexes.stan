@@ -12,7 +12,7 @@
  *
  * @param csl Array of cumulative start indexes for each snapshot.
  *
- * @param sl Array of start indexes for each snapshot.
+ * @param sl Array of start index for each observation period.
  * 
  * @return An array containing three elements: the index of the first
  * observation in the starting snapshot, the index of the last observation in
