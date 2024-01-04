@@ -8,7 +8,7 @@ articles:
   model: model.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
   stan-help: stan-help.html
-last_built: 2024-01-03T23:12Z
+last_built: 2024-01-04T15:52Z
 urls:
   reference: package.epinowcast.org/reference
   article: package.epinowcast.org/articles
