@@ -4,12 +4,11 @@
 \alias{coerce_date}
 \title{Coerce Dates}
 \usage{
-coerce_date(dates)
+coerce_date(dates = NULL)
 }
 \arguments{
 \item{dates}{A vector-like input, which the function attempts
-to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}. Defaults to NULL (i.e. an
-empty vector).}
+to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}. Defaults to NULL.}
 }
 \value{
 An \link{IDate} vector.
