@@ -283,22 +283,22 @@ vector log_hazard_to_logit_hazard(vector lhaz) {
  *   - `lprob_to_uniform_double_censored_log_hazard`
  *   - `log_hazard_to_logit_hazard`
  */
-vector discretised_logit_hazard(real mu, real sigma, int n, int dist, 
+vector discretised_logit_hazard(real mu, real sigma, int dmax, int dist, 
                                 int max_strat, int ref_as_p) {
-  vector[n] lcdf;
-  vector[n] lprob;
-  vector[n] logit_haz; 
-  lcdf = lcdf_discretised(mu, sigma, n, dist);
-  lcdf = normalise_lcdf_as_uniform_double_censored(lcdf, n, max_strat);
-  lprob = lcdf_to_uniform_double_censored_log_prob(lcdf, n);
+  vector[dmax] lcdf;
+  vector[dmax] lprob;
+  vector[dmax] logit_haz; 
+  lcdf = lcdf_discretised(mu, sigma, dmax, dist);
+  lcdf = normalise_lcdf_as_uniform_double_censored(lcdf, dmax, max_strat);
+  lprob = lcdf_to_uniform_double_censored_log_prob(lcdf, dmax);
   if (ref_as_p == 1) {
     // In the mode where there are no hazard effects downstream functions
     // make use of the log probability directly so we return it here without
     // converting to the logit hazard.
     logit_haz = lprob;
   }else{
-    vector[n] lhaz;
-    lhaz = lprob_to_uniform_double_censored_log_hazard(lprob, lcdf, n);
+    vector[dmax] lhaz;
+    lhaz = lprob_to_uniform_double_censored_log_hazard(lprob, lcdf, dmax);
     logit_haz = log_hazard_to_logit_hazard(lhaz);
   }
   return(logit_haz);
