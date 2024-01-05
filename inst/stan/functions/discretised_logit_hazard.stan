@@ -37,7 +37,7 @@ real loglogistic_lcdf (real y, real alpha, real beta) {
  * 
  * @note Uses `loglogistic_lcdf` for the log-logistic distribution.
  */
-vector lcdf_vectorised(real mu, real sigma, int n, int dist) {
+vector lcdf_discretised(real mu, real sigma, int n, int dist) {
   vector[n] integer_lcdf;
   if (dist == 1) {
     real emu = exp(-mu);
@@ -79,7 +79,7 @@ vector lcdf_vectorised(real mu, real sigma, int n, int dist) {
  * 
  * @return Vector of adjusted LCDF values.
  * 
- * @note Used on the output of `lcdf_vectorised`.
+ * @note Used on the output of `lcdf_discretised`.
  */
 vector normalise_lcdf_as_uniform_double_censored(vector lcdf, int n,
   int max_strat) {
@@ -251,7 +251,7 @@ vector log_hazard_to_logit_hazard(vector lhaz, int n) {
  * @return A vector of discretised logit hazards or log probabilities.
  * 
  * @note This function integrates several steps:
- *       1. Generates LCDF values using `lcdf_vectorised`.
+ *       1. Generates LCDF values using `lcdf_discretised`.
  *       2. Normalises these LCDF values with
  *          `normalise_lcdf_as_uniform_double_censored`.
  *       3. Converts LCDF to log probabilities using
@@ -261,7 +261,7 @@ vector log_hazard_to_logit_hazard(vector lhaz, int n) {
  *          and `log_hazard_to_logit_hazard`.
  * 
  * Dependencies:
- *   - `lcdf_vectorised`
+ *   - `lcdf_discretised`
  *   - `normalise_lcdf_as_uniform_double_censored`
  *   - `lcdf_to_uniform_double_censored_log_prob`
  *   - `lprob_to_uniform_double_censored_log_hazard`
@@ -272,7 +272,7 @@ vector discretised_logit_hazard(real mu, real sigma, int n, int dist,
   vector[n] lcdf;
   vector[n] lprob;
   vector[n] logit_haz; 
-  lcdf = lcdf_vectorised(mu, sigma, n, dist);
+  lcdf = lcdf_discretised(mu, sigma, n, dist);
   lcdf = normalise_lcdf_as_uniform_double_censored(lcdf, n, max_strat);
   lprob = lcdf_to_uniform_double_censored_log_prob(lcdf, n);
   if (ref_as_p == 1) {
