@@ -4,7 +4,7 @@
 \alias{enw_set_cache}
 \title{Set caching location for Stan models}
 \usage{
-enw_set_cache(path = NULL)
+enw_set_cache(path)
 }
 \arguments{
 \item{path}{A valid filepath representing the desired cache location}

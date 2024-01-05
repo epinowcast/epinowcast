@@ -8,7 +8,7 @@ with all profiling statements removed.}
 write_stan_files_no_profile(
   stan_file,
   include_paths = NULL,
-  target_dir = enw_get_cache()
+  target_dir = epinowcast::enw_get_cache()
 )
 }
 \arguments{

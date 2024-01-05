@@ -7,8 +7,6 @@
 enw_get_cache()
 }
 \value{
-The string of the filepath
-
 a string representing the file path for the cache location
 }
 \description{
