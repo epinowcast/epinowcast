@@ -176,19 +176,19 @@ vector lcdf_to_uniform_double_censored_log_prob(vector lcdf, int u) {
  *
  * @f[
  * \begin{align*}
- *   \text{Let } & h_n = \text{ hazard at time } n, \\
- *               & p_n = \text{ probability at time } n, \\
- *               & cdf_n = \text{ cumulative distribution function at time } n, \\
- *               & ccdf_n = \text{ complementary cumulative distribution function at time } n = 1 - cdf_n. \\
+ *   \text{Let } & h_d = \text{ hazard at delay } d, \\
+ *               & p_d = \text{ probability at delay } d, \\
+ *               & F_d = \text{ cumulative distribution function (cdf) evaluated at } d, \\
+ *               & 1 - F_d = \text{ complementary cumulative distribution function (ccdf) evaluated at } d. \\
  *   \\
  *   % Hazard definition
- *   h_n &= \frac{p_n}{1 - \sum_{d=0}^{n-1} p_d} \\
- *       &= \frac{cdf_{n+1} - cdf_{n-1}}{1 - \sum_{d=0}^{n-1} (cdf_{d+1} - cdf_{d-1})} \\
- *       &= \frac{cdf_{n+1} - cdf_{n-1}}{1 - (cdf_n + cdf_{n-1})} \\
- *       &= \frac{cdf_{n+1} - cdf_{n-1}}{ccdf_n - cdf_{n-1}}. \\
+ *   h_d &= \frac{p_d}{1 - \sum_{i=0}^{d-1} p_i} \\
+ *       &= \frac{F_{d+1} - F_{d-1}}{1 - \sum_{i=0}^{d-1} (F_{i+1} - F_{i-1})} \\
+ *       &= \frac{F_{d+1} - F_{d-1}}{1 - (F_d + F_{d-1})} \\
+ *       &= \frac{F_{d+1} - F_{d-1}}{(1 - F_d) - F_{d-1}}. \\
  *   \\
  *   % Log transformation
- *   \log(h_n) &= \log(cdf_{n+1} - cdf_{n-1}) - \log(ccdf_n - cdf_{n-1}).
+ *   \log(h_d) &= \log(F_{d+1} - F_{d-1}) - \log((1 - F_d) - F_{d-1}).
  * \end{align*}
  * @f]
  */
@@ -197,18 +197,20 @@ vector lprob_to_uniform_double_censored_log_hazard(vector lprob, vector lcdf,
   vector[u] lhaz;
   // h_0 = F_1
   lhaz[1] = lcdf[1];
-  // h_n = p_n / (1 - sum^{n-1}_{d=0} p_d)
-  // h_n = (cdf_n+1 - cdf_n-1) / (1 - sum^{n-1}_{d=0} cdf_d+1 - cdf_d-1)
-  // h_n = (cdf_n+1 - cdf_n-1) / (1 - (cdf_n + cdf_n-1))
-  // h_n = (cdf_n+1 - cdf_n-1) / (1 - cdf_n - cdf_n-1)
-  // h_n = (cdf_n+1 - cdf_n-1) / (ccdf_n - cdf_n-1)
-  // log(h_n) = log(cdf_n+1 - cdf_n-1) - log(ccdf_n - cdf_n-1)
-  if (n > 1) {
-    vector[n-2] lccdf;
-    // cccdf_n = 1 - cdf_n
-    lccdf = log1m_exp(lcdf[1:(n-2)]);
+  // h_d = p_d / (1 - sum^{d-1}_{i=0} p_i)
+  // h_d = (F_d+1 - F_d-1) / (1 - sum^{d-1}_{i=0} F_i+1 - F_i-1)
+  // h_d = (F_d+1 - F_d-1) / (1 - (F_d + F_d-1))
+  // h_d = (F_d+1 - F_d-1) / ((1 - F_d) - F_d-1)
+  // log(h_d) = log(F_d+1 - F_d-1) - log((1 - F_d) - F_d-1)
+  if (u > 1) {
+    vector[u-2] lccdf;
+    // ccdf_i = 1 - cdf_i
+    lccdf = log1m_exp(lcdf[1:(u-2)]);
     lhaz[2] = lprob[2] - lccdf[1];
     if (u > 2) {
+      // Note that lprob[1] = log(p_0), lcdf[1] = log(F_1), lccdf[1] = log(1 - F_1)
+      // e.g. lhaz[3] = lprob[3] - log_diff_exp(lccdf[2], lcdf[1])
+      // means log(h_2) = log(p_2) - log(1 - F_2, F_1)
       lhaz[3:(u-1)] = lprob[3:(u-1)] - log_diff_exp(lccdf[2:(u-2)], lcdf[1:(u-3)]);
     }
   }
