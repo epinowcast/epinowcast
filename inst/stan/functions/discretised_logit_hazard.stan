@@ -225,14 +225,13 @@ vector lprob_to_uniform_double_censored_log_hazard(vector lprob, vector lcdf,
  * distributions to logit hazards.
  * 
  * @param lhaz Vector of log hazards.
- *
- * @param n Number of hazards.
  * 
  * @return Vector of logit hazards.
  * 
  * @note Final transformation step in `discretised_logit_hazard`.
  */
-vector log_hazard_to_logit_hazard(vector lhaz, int n) {
+vector log_hazard_to_logit_hazard(vector lhaz) {
+  int n = num_elements(lhaz);
   vector[n] logit_haz;
   // Logit transformation
   logit_haz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
@@ -300,7 +299,7 @@ vector discretised_logit_hazard(real mu, real sigma, int n, int dist,
   }else{
     vector[n] lhaz;
     lhaz = lprob_to_uniform_double_censored_log_hazard(lprob, lcdf, n);
-    logit_haz = log_hazard_to_logit_hazard(lhaz, n);
+    logit_haz = log_hazard_to_logit_hazard(lhaz);
   }
   return(logit_haz);
 }
