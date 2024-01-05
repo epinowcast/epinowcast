@@ -107,10 +107,10 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
     max_delay <- max_delay_model
   }
   if (max_delay < max_delay_model) {
-    stop(
+    cli::cli_abort(paste0(
       "The specified maximum delay must be equal to or larger than ",
       "the modeled maximum delay."
-    )
+    ))
   }
 
   internal_timestep <- get_internal_timestep(timestep)
@@ -197,10 +197,10 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
     max_delay <- max_delay_model
   }
   if (max_delay < max_delay_model) {
-    stop(
+    cli::cli_abort(paste0(
       "The specified maximum delay must be equal to or larger than ",
       "the modeled maximum delay."
-    )
+    ))
   }
 
   internal_timestep <- get_internal_timestep(timestep)

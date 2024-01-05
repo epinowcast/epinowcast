@@ -301,14 +301,21 @@ check_max_delay <- function(data,
   timestep <- data$timestep
   
   max_delay <- as.integer(max_delay)
-  stopifnot(
-    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
-    "`max_delay` must be greater than or equal to one" = max_delay >= 1,
-    "`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%." =
-      cum_coverage > 0 & cum_coverage <= 1,
-    "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%." =
-      maxdelay_quantile_outlier > 0 & maxdelay_quantile_outlier <= 1
-  )
+  
+  if (!is.integer(max_delay)) {
+    cli::cli_abort("`max_delay` must be an integer and not NA")
+  }
+  if (max_delay < 1) {
+    cli::cli_abort("`max_delay` must be greater than or equal to one")
+  }
+  if (!(cum_coverage > 0 & cum_coverage <= 1)) {
+    cli::cli_abort("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%.")
+  }
+  if (!(maxdelay_quantile_outlier > 0 & maxdelay_quantile_outlier <= 1)) {
+    cli::cli_abort(
+      "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%."
+      )
+  }
   
   internal_timestep <- get_internal_timestep(timestep)
   daily_max_delay <- internal_timestep * max_delay
@@ -361,14 +368,14 @@ check_max_delay <- function(data,
   )
 
   if (warn && (latest_obs[, .N] < 5)) {
-    warning(
+    cli::cli_warn(paste0(
       "There are only very few (", latest_obs[, .N], ") reference dates",
       " that are sufficiently far in the past (beyond maximum observed delay ",
       "of ", max_delay_obs, " days) to compute coverage statistics. ",
       "The maximum delay check may thus not be reliable. ",
       "If you think the maximum observed delay of ", max_delay_obs, " days is ",
       "an outlier, consider decreasing `maxdelay_quantile_outlier`."
-    )
+      ))
   }
 
   low_coverage <- latest_obs[, .(
@@ -379,7 +386,7 @@ check_max_delay <- function(data,
   mean_coverage <- low_coverage[, mean(below_coverage)]
 
   if (warn && mean_coverage > 0.5) {
-    warning(
+    cli::cli_warn(paste0(
       "The specified maximum reporting delay ",
       "(", daily_max_delay, " days) ",
       "covers less than ", 100 * cum_coverage,
@@ -387,7 +394,7 @@ check_max_delay <- function(data,
       "Consider using a larger maximum delay to avoid potential model ",
       "misspecification.",
       immediate. = TRUE
-    )
+    ))
   }
 
   low_coverage <- rbind(low_coverage, list("all", mean_coverage))
