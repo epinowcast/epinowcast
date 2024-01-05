@@ -9,7 +9,7 @@ cmdstanr::set_cmdstan_path()
 options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-10-01"
@@ -33,8 +33,7 @@ retro_nat_germany <- enw_filter_reference_dates(
 # Get latest observations for the same time period
 latest_obs <- enw_latest_data(nat_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
-  latest_obs,
-  remove_days = 40, include_days = 20
+  latest_obs, remove_days = 40, include_days = 20
 )
 
 # Preprocess observations (note this maximum delay is likely too short)

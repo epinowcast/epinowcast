@@ -1,7 +1,6 @@
-
 # Filter example hospitalisation data to be natioanl and over all ages
 nat_germany_hosp <- data.table::setkey(germany_covid19_hosp[
-  (location == "DE") & (age_group %in% "00+")
+  (location == "DE") & (age_group == "00+")
 ], reference_date)
 
 holidays <- c(
@@ -10,20 +9,26 @@ holidays <- c(
   "2021-05-24"
 )
 
-junk <- c("Garbage Date")
+junk <- "Garbage Date"
 
 metadatacols <- c("day_of_week", "day", "week", "month")
 
-test_that("enw_add_metaobs_features datecol arg validated (exists and is.Date)", {
-  expect_error(enw_add_metaobs_features(
-    nat_germany_hosp, datecol = "reference_date"), NA
-  )
-  expect_error(enw_add_metaobs_features(nat_germany_hosp))
-  expect_error(enw_add_metaobs_features(nat_germany_hosp, datecol = "location"))
-})
+test_that(
+  "enw_add_metaobs_features datecol arg validated (exists and is.Date)",
+  {
+    expect_error(enw_add_metaobs_features(
+      nat_germany_hosp,
+      datecol = "reference_date"
+    ), NA)
+    expect_error(enw_add_metaobs_features(nat_germany_hosp))
+    expect_error(
+      enw_add_metaobs_features(nat_germany_hosp, datecol = "location")
+    )
+  }
+)
 
 test_that("enw_add_metaobs_features always adds all columns", {
-  expect_equal(
+  expect_identical(
     sort(intersect(
       colnames(enw_add_metaobs_features(
         nat_germany_hosp,
@@ -40,6 +45,7 @@ test_that("enw_add_metaobs_features overwrites columns with a warning", {
   dow <- "Placeholder"
   dummy[, day_of_week := dow]
   expect_warning(
+    # nolint next: implicit_assignment_linter.
     metaobs <- enw_add_metaobs_features(dummy, datecol = "reference_date")
   )
   expect_no_match(
@@ -61,22 +67,25 @@ test_that("enw_add_metaobs_features errors when provided unparseable dates.", {
   ))
 })
 
-test_that("enw_add_metaobs_features does not set holidays if `c()` or `NULL` provided", {
-  mobs <- enw_add_metaobs_features(
-    nat_germany_hosp,
-    datecol = "reference_date",
-    holidays = NULL,
-    holidays_to = "Holiday"
-  )
-  expect_equal(mobs[day_of_week == "Holiday", .N], 0)
-  mobs <- enw_add_metaobs_features(
-    nat_germany_hosp,
-    datecol = "reference_date",
-    holidays = c(),
-    holidays_to = "Holiday"
-  )
-  expect_equal(mobs[day_of_week == "Holiday", .N], 0)
-})
+test_that(
+  "enw_add_metaobs_features does not set holidays if `c()` or `NULL` provided",
+  {
+    mobs <- enw_add_metaobs_features(
+      nat_germany_hosp,
+      datecol = "reference_date",
+      holidays = NULL,
+      holidays_to = "Holiday"
+    )
+    expect_identical(mobs[day_of_week == "Holiday", .N], 0L)
+    mobs <- enw_add_metaobs_features(
+      nat_germany_hosp,
+      datecol = "reference_date",
+      holidays = NULL,
+      holidays_to = "Holiday"
+    )
+    expect_identical(mobs[day_of_week == "Holiday", .N], 0L)
+  }
+)
 
 test_that("enw_add_metaobs_features count from zero", {
   mobs <- enw_add_metaobs_features(
@@ -85,22 +94,26 @@ test_that("enw_add_metaobs_features count from zero", {
     holidays = NULL,
     holidays_to = "Holiday"
   )
-  expect_equal(mobs[1, c(day, week, month)], c(0, 0, 0))
+  expect_identical(mobs[1, c(day, week, month)], c(0, 0, 0))
 })
 
-test_that("enw_add_metaobs_features resulting day, week, month always ascending", {
-  mobs <- enw_add_metaobs_features(
-    rbind(
-      data.table::copy(nat_germany_hosp)[,
-       reference_date := reference_date - 365
-      ],
-      nat_germany_hosp
-    ),
-    datecol = "reference_date",
-    holidays = NULL,
-    holidays_to = "Holiday"
-  )
-  expect_equal(mobs[, c(
-    all(diff(day) >= 0), all(diff(week) >= 0), all(diff(month) >= 0)
-  )], c(TRUE, TRUE, TRUE))
-})
+test_that(
+  "enw_add_metaobs_features resulting day, week, month always ascending",
+  {
+    mobs <- enw_add_metaobs_features(
+      rbind(
+        data.table::copy(nat_germany_hosp)[
+          ,
+          reference_date := reference_date - 365
+        ],
+        nat_germany_hosp
+      ),
+      datecol = "reference_date",
+      holidays = NULL,
+      holidays_to = "Holiday"
+    )
+    expect_identical(mobs[, c(
+      all(diff(day) >= 0), all(diff(week) >= 0), all(diff(month) >= 0)
+    )], c(TRUE, TRUE, TRUE))
+  }
+)

@@ -83,13 +83,13 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   # make model.matrix helper
 
   if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
-    if (!no_contrasts) {
-      design <- mod_matrix(formula, data, sparse = sparse, ...)
-      return(design)
-    } else {
+    if (no_contrasts) {
       no_contrasts <- colnames(data)[
         sapply(data, function(x) is.factor(x) | is.character(x))
       ]
+    } else {
+      design <- mod_matrix(formula, data, sparse = sparse, ...)
+      return(design)
     }
   }
 
@@ -145,7 +145,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' enw_effects_metadata(design)
 enw_effects_metadata <- function(design) {
   dt <- data.table::data.table(effects = colnames(design), fixed = 1)
-  dt <- dt[!effects %in% "(Intercept)"]
+  dt <- dt[!effects == "(Intercept)"]
   return(dt[])
 }
 
@@ -197,6 +197,49 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
   return(effects[])
 }
 
+#' One-hot encode a variable and column-bind it to the original data.table
+#'
+#' This function takes a data.frame and a categorical variable, performs
+#' one-hot encoding, and column-binds the encoded variables back to the
+#' data.frame.
+#'
+#' @param metaobs A data.frame containing the data to be encoded.
+#'
+#' @param feature The name of the categorical variable to one-hot encode as a
+#' character string.
+#'
+#' @param contrasts Logical. If TRUE, create one-hot encoded variables
+#' with contrasts; if FALSE, create them without contrasts. Defaults to FALSE.
+#'
+#  @return A data.table with the one-hot encoded variables added.
+#' @family modeldesign
+#' @export
+#' @examples
+#' metaobs <- data.frame(week = 1:2)
+#' enw_one_hot_encode_feature(metaobs, "week")
+#' enw_one_hot_encode_feature(metaobs, "week", contrasts = TRUE)
+#'
+#' metaobs <- data.frame(week = 1:6)
+#' enw_one_hot_encode_feature(metaobs, "week")
+#' enw_one_hot_encode_feature(metaobs, "week", contrasts = TRUE)
+enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
+  metaobs <- coerce_dt(metaobs, required_cols = feature, copy = FALSE)
+  metaobs2 <- copy(metaobs)
+
+  metaobs2[, (feature) := as.factor(get(feature))]
+  if (contrasts) {
+    formula <- as.formula(paste0("~ 1 + ", feature))
+    hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
+    hot_encoded <- hot_encoded[, -"(Intercept)"]
+  } else {
+    formula <- as.formula(paste0("~ 0 + ", feature))
+    hot_encoded <- as.data.table(model.matrix(formula, metaobs2))
+  }
+
+  metaobs <- cbind(metaobs, hot_encoded)
+  return(metaobs[])
+}
+
 #' @title Add a cumulative membership effect to a `data.frame`
 #'
 #' @description This function adds a cumulative membership effect to a data
@@ -221,8 +264,10 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
 #'
 #' @family modeldesign
 #' @export
+#' @importFrom purrr map
+#' @importFrom cli cli_abort
 #' @examples
-#' metaobs <- data.frame(week = 1:3)
+#' metaobs <- data.frame(week = 1:2)
 #' enw_add_cumulative_membership(metaobs, "week")
 #'
 #' metaobs <- data.frame(week = 1:3, .group = c(1,1,2))
@@ -232,22 +277,17 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
     metaobs, required_cols = feature, group = TRUE, copy = copy
   )
   cfeature <- paste0("c", feature)
-
   if (!any(grepl(cfeature, colnames(metaobs)))) {
     if (!is.numeric(metaobs[[feature]])) {
-      stop(
-        "Requested variable ", feature,
-        " is not numeric. Cumulative membership effects are only defined for ",
-        "numeric variables."
-      )
+      cli::cli_abort(paste0(
+        "Requested variable {feature} is not numeric. ",
+        "Cumulative membership effects are only defined for numeric variables."
+      ))
     }
-    metaobs[, (cfeature) := as.factor(get(feature))]
-    metaobs <- cbind(
-      metaobs, model.matrix(as.formula(paste0("~ 0 + ", cfeature)), metaobs)
-    )
+    metaobs[, (cfeature) := get(feature)]
+    metaobs <- enw_one_hot_encode_feature(metaobs, cfeature, contrasts = TRUE)
     metaobs[, (cfeature) := NULL]
-    min_avail <- min(metaobs[, get(feature)])
-    metaobs[, (paste0(cfeature, as.character(min_avail))) := NULL]
+
     cfeatures <- grep(cfeature, colnames(metaobs), value = TRUE)
     metaobs[,
       (cfeatures) := purrr::map(.SD, ~ as.numeric(cumsum(.) > 0)),

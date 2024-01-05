@@ -8,6 +8,7 @@ enw_preprocess_data(
   obs,
   by = NULL,
   max_delay = 20,
+  timestep = "day",
   set_negatives_to_zero = TRUE,
   ...,
   copy = TRUE
@@ -39,6 +40,12 @@ be too short. Note that delays are zero indexed and so include the reference
 date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
 no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
 distribution for a given maximum delay.}
+
+\item{timestep}{The timestep to used in the process model (i.e. the
+reference date model). This can be a string ("day", "week", "month") or a
+numeric whole number representing the number of days. If your data does not
+have this timestep then you may wish to make use of
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
 counts (for calculated incidence of observations) be set to zero? Currently
@@ -99,7 +106,7 @@ library(data.table)
 
 # Filter example hospitalisation data to be national and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
+nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
@@ -117,6 +124,8 @@ Preprocessing functions
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},

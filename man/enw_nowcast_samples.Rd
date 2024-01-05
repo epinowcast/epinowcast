@@ -4,7 +4,7 @@
 \alias{enw_nowcast_samples}
 \title{Extract posterior samples for the nowcast prediction}
 \usage{
-enw_nowcast_samples(fit, obs, max_delay = NULL)
+enw_nowcast_samples(fit, obs, timestep = "day", max_delay = NULL)
 }
 \arguments{
 \item{fit}{A \code{cmdstanr} fit object.}
@@ -14,6 +14,9 @@ columns of the same length as the number of rows in the posterior and the
 most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
 output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 
 \item{max_delay}{Maximum delay to which nowcasts should be summarised. Must
 be equal (default) or larger than the modelled maximum delay. If it is
@@ -37,6 +40,7 @@ fit <- enw_example("nowcast")
 enw_nowcast_samples(
   fit$fit[[1]],
   fit$latest[[1]],
+  "day",
   fit$max_delay
   )
 }

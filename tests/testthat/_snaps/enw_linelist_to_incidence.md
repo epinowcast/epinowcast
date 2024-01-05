@@ -2,7 +2,7 @@
 
     Code
       enw_linelist_to_incidence(linelist, reference_date = "onset_date", report_date = "test_date")
-    Message <simpleMessage>
+    Message
       Using the maximum observed delay of 4 days to complete the incidence data.
     Output
           report_date reference_date new_confirm confirm delay
@@ -25,7 +25,7 @@
 
     Code
       enw_linelist_to_incidence(linelist_right_names, max_delay = 2)
-    Message <simpleMessage>
+    Message
       Using the maximum observed delay of 4 days to complete the incidence data, as this is greater than the user-specified maximum delay.
     Output
           report_date reference_date new_confirm confirm delay
@@ -69,7 +69,7 @@
 
     Code
       enw_linelist_to_incidence(linelist_right_names, by = "age")
-    Message <simpleMessage>
+    Message
       Using the maximum observed delay of 4 days to complete the incidence data.
     Output
           age report_date reference_date new_confirm confirm delay

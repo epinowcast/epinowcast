@@ -1,9 +1,15 @@
 ---
 title: Model definition and implementation
 description: "Model formulation and implementation details"
-author: Sam Abbott, Adrian Lison, Felix Günther, Sebastian Funk
-output: rmarkdown::html_document
+author: Epinowcast Team
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
 bibliography: library.bib
+link-citations: true
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Model definition and implementation}
@@ -82,6 +88,8 @@ We model the expected number of infections/latent notifications ($\lambda^l$) us
   \lambda^l_{g,t} &\sim \text{LogNormal}\left(\mu^{l}_{g,t}, \sigma^{l}_{g,t} \right),\ t \leq P \\
   \lambda^l_{g,t} &= R_{g,t} \sum_{p = 1}^{P} G_{g}\left(p, t - p \right)  \lambda^l_{g, t-p},\ t \gt P  
 \end{align}
+
+Where $G_{g}\left(p, t - p \right)$ is the probability of an infection $p$ days after infection $t - p$ days ago for group $g$, and $P$ is the maximum generation time. To initialise the model we assume that the first $P$ latent notifications are log-normally distributed with mean $\mu^{l}_{g,t}$ and standard deviation $\sigma^{l}_{g,t}$. This is equivalent to assuming that the first $P$ latent notifications are independent and identically distributed. The mean of the log-normal distribution for each group is the log of the latest reported case count for the first reference date for that group scaled by the sum of the latent reporting delay. The standard deviation is assumed to be 1. Both of these assumptions can be altered by the user.
 
 ## Latent reporting delay and ascertainment
 

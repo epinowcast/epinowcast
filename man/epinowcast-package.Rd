@@ -28,16 +28,20 @@ Authors:
   \item Carl Pearson \email{carl.ab.pearson@gmail.com} (\href{https://orcid.org/0000-0003-0701-7860}{ORCID})
   \item Hugo Gruson \email{hugo.gruson@normalesup.org} (\href{https://orcid.org/0000-0002-4094-1476}{ORCID})
   \item Felix Guenther \email{felixguenther1@gmx.de} (\href{https://orcid.org/0000-0001-6582-1174}{ORCID})
+  \item Michael DeWitt \email{me.dewitt.jr@gmail.com} (\href{https://orcid.org/0000-0001-8940-1967}{ORCID})
 }
 
 Other contributors:
 \itemize{
-  \item Michael DeWitt \email{me.dewitt.jr@gmail.com} (\href{https://orcid.org/0000-0001-8940-1967}{ORCID}) [contributor]
   \item Hannah Choi \email{hannah.choi1@lshtm.ac.uk} [contributor]
   \item Pratik Gupte \email{pratik.gupte@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-5294-7819}{ORCID}) [contributor]
   \item Joel Hellewell \email{joel@ebi.ac.uk} (\href{https://orcid.org/0000-0003-2683-0849}{ORCID}) [contributor]
   \item Luis Rivas \email{luisnicolasrivas@gmail.com} [contributor]
   \item Sang Woo Park \email{swp2@princeton.edu} (\href{https://orcid.org/0000-0003-2202-3361}{ORCID}) [contributor]
+  \item Nathan McIntosh \email{natemcintosh@gmail.com} [contributor]
+  \item James Mba Azam \email{james.azam@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-5782-7330}{ORCID}) [contributor]
+  \item Kath Sherratt \email{katharine.sherratt@lshtm.ac.uk} (\href{https://orcid.org/0000-0003-2049-3423}{ORCID}) [contributor]
+  \item Nikos Bosse \email{nikos.bosse@lshtm.ac.uk} (\href{https://orcid.org/0000-0002-7750-5280}{ORCID}) [contributor]
 }
 
 }

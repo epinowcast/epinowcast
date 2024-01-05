@@ -4,7 +4,9 @@
 \alias{enw_filter_delay}
 \title{Filter observations to restrict the maximum reporting delay}
 \usage{
-enw_filter_delay(obs, max_delay)
+enw_filter_delay(obs, max_delay, timestep = "day")
+
+enw_filter_delay(obs, max_delay, timestep = "day")
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
@@ -27,13 +29,22 @@ be too short. Note that delays are zero indexed and so include the reference
 date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
 no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
 distribution for a given maximum delay.}
+
+\item{timestep}{The timestep to used in the process model (i.e. the
+reference date model). This can be a string ("day", "week", "month") or a
+numeric whole number representing the number of days. If your data does not
+have this timestep then you may wish to make use of
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 }
 \value{
 A \code{data.frame} filtered so that dates by report are less than or
 equal the reference date plus the maximum delay.
+
+A \code{data.frame} filtered so that dates by report are less than or
+equal the reference date plus the maximum delay.
 }
 \description{
-Filter observations to restrict the maximum reporting delay
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \examples{
 obs <- enw_example("preprocessed")$obs[[1]]
@@ -50,6 +61,28 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
+\code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
+\code{\link{enw_metadata}()},
+\code{\link{enw_missing_reference}()},
+\code{\link{enw_preprocess_data}()},
+\code{\link{enw_reporting_triangle_to_long}()},
+\code{\link{enw_reporting_triangle}()}
+
+Preprocessing functions
+\code{\link{enw_add_delay}()},
+\code{\link{enw_add_max_reported}()},
+\code{\link{enw_add_metaobs_features}()},
+\code{\link{enw_assign_group}()},
+\code{\link{enw_complete_dates}()},
+\code{\link{enw_construct_data}()},
+\code{\link{enw_extend_date}()},
+\code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},

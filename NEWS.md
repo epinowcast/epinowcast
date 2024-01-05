@@ -4,31 +4,70 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@adrian-lison, @medewitt, and @seabbs contributed code to this release.
+@jamesmbaazam, @medewitt, @sbfnk, @adrian-lison, @kathsherratt, @natemcintosh, @Bisaloo and @seabbs contributed code to this release.
 
-@adrian-lison and @seabbs reviewed pull requests for this release.
+@jamesmbaazam, @adrian-lison, @sbfnk, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @adrian-lison, @medewitt, @parksw3, and @seabbs reported bugs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
 - Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
 - Fixed a few typos in the model vignette. See #292 by @medewitt and reviewed by @seabbs.
+- Fixed a bug where snapshots (i.e. as returned as metadata in `enw_preprocess_data()`) were defined based on report vs reference date. This won't have impacted most usage but was a problem when trying to fit a model to retrospective (and so completely reported) data. See #312 by @seabbs and self-reviewed.
+- Fixed a bug where a non-`data.table` passed to `enw_quantile_to_long()` could throw an error. See #324 by @natemcintosh and reviewed by @pearsonca.
+- Fixed a bug where `enw_aggregate_cumulative()` initialised its time step from the first reference date + 1 day rather than the first reference date. See #336 by @seabbs and self-reviewed.
+- Fixed a bug in `enw_filter_reference_dates` when using `remove_days` on data with missing reference dates. See #351 by @adrian-lison and reviewed by @seabbs.
+- Resolved code quality issues related to the use of `%in%` with a scale on the right hand side and other similar issues. See #382 by @seabbs and reviewed by @pearsonca and @Bisaloo.
 
 ## Package
 
+- `pkgdown` theming elements have moved to an [organization-level `pkgdown` theme](https://github.com/epinowcast/enwtheme) to increase re-usability and [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself)-ness across the organization. See #419 by @Bisaloo and reviewed by @pearsonca and @seabbs.
+- `lintr` checks are now run also on the `tests/` directory. See #418 by @Bisaloo and reviewed by @seabbs.
+- Fixed some typos in `single-timeseries-rt-estimation.Rmd`. The `WORDLIST` used by spelling has also been updated to eliminate false positives. Future typos will now generate an error in the continuous integration check so that we can catch them as early as possible. See #341 by @Bisaloo and reviewed by @seabbs.
+- Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo and reviewed by @seabbs.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
 - Added an integration test for `epinowcast()` to check models with multiple time series can be fit as expected on example data. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added a `{touchstone}` benchmark that includes multiple time-series to ensure that this functionality is appropriately tested. See #282 by @seabbs and reviewed by @adrian-lison.
 - Added the `merge_group` option to all required GitHub Actions. This enables the use of a merge queue for pull requests. See #300 by @seabbs and self-reviewed.
+- Added an internal `check_group_date_unique()` function which ensures that user supplied groups result in unique combinations of group and dates. This function is used in `enw_preprocess_data()` and `enw_complete_dates()` to ensure that the user supplied groups are valid. See #295 by @adrian-lison and reviewed by @seabbs.
+- Added support for non-daily reference date models (i.e., process models). For example, this allows modelling weekly data as weekly. This may be desirable when delays are very long, when computational resources are limited, or it is not possible to specify a sufficiently flexible daily model to account for observed reporting patterns in either reference or report dates. As the model is unit less this entails no changes to the model itself. See #303 by @seabbs and self-reviewed.
+- Added a new helper function `simulate_double_censored_pmf()` which helps users define "correct" probability mass functions for double censored delays based on work in `epidist` by @parksw3 and @seabbs. Note this function is likely to be spun out into its own package in the near future. See #312 by @seabbs and self-reviewed.
+- Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See #340 by @seabbs and reviewed by @natemcintosh.
+- Added support to `enw_complete_dates()` for `min_date` and `max_date` arguments. These arguments allow users to specify the minimum and maximum dates to include in the output. This may be useful to users who want to ensure that their data is complete for a specified time period. See #340 by @seabbs and reviewed by @natemcintosh.
+- Added a new helper function `enw_one_hot_encode_feature()` for one hot encoding variables and binding them into the original data. This is useful when users want to include parts of variables in their models as binary indicators - for example giving a specific delay its own effect. See #348 by @seabbs and self-reviewed.
+- Enabled compiling with multithreading by default as this was found to cause no deterioration in performance even with 1 thread per chain. The likelihood calculation is now no longer parallelised when `threads_per_chain = 1` which should offer a small performance improvement. See #366 by @sbfnk and reviewed by @seabbs.
+- Added a new action to check that the `cmdstan` model can be compiled and has the correct syntax. This runs on pull requests whenever stan code is changed, when code is merged onto `main` with altered stan code, and on a weekly schedule against the latest `main` branch. See #386 by @seabbs.
+- Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
+- Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
 
 ## Model
 
 - Update the internal handling of PMF discretisation to assume a uniform window of two days centred on the delay of interest rather than a window of one day starting on the delay of interest. This better approximates the underlying continuous distribution with primary and secondary event censoring. Due to this change models may perform slightly differently between versions and any delay distribution estimates will have means that are half a day longer (note this corrects the previous bias). See #288 by @seabbs and reviewed by @adrian-lison.
+- Updated the default prior for initialising the model to include the ascertainment rate which is inferred from the latent reporting delay distribution as this can be an improper probability mass function (i.e. one that does not sum to 1). See #312 by @seabbs and self-reviewed.
+- Added support for non-parametric reference date models as well as mixed models with both parametric and non-parametric reference date models. This enables the use of popular models such as the discrete time cox proportional hazards model. See #313 by @seabbs and self-reviewed.
+- Added support for missing data (excluding in the missing reference date model) using the `observation_indicator` argument to `enw_obs()`. Support was also added to `enw_complete_dates()` to flag missing data and as part of this new helper functions (`enw_flag_observed_observations()` and `enw_impute_na_observations()`) were also added. This support is likely most useful when used in conjunction to a known reporting structure. See #327 by @seabbs and self-reviewed.
+- Added support for using a maximum delay that is longer than the largest observed delay in the data. This may be useful at the start of an outbreak, when the data is sparse and the user expects delays longer than what has been observed so far. Note that because this requires extrapolating the delay distribution beyond the support of the data, users should be cautious when using this feature. A new example, `inst/examples/germany_max_delay_greater_than_data.R`, has been added to demonstrate this feature. See # by @seabbs and self-reviewed.
+- Added the priors used for model fitting to the `<epinowcast>` object. The object returned by `epinowcast()` now has a variable called `priors` and can be accessed for inspection and downstream analyses. See #399 by @jamesmbaazam and reviewed by @pearsonca  and @seabbs.
 
 ## Documentation
 
 - Updated the distributions vignette to match the updated handling of discretisation. See #288 by @seabbs and reviewed by @adrian-lison.
+- Updated the use of the `citation()` function in the README so that the command is shown to users and the output is treated like normal text. See #272 by @seabbs and self-reviewed.
+- Added a vignette walking through how to estimate the effective reproduction number in real-time (and comparing this to retrospective estimates) on a data source that is right truncated. See #312 by @seabbs and self-reviewed.
+- Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
+- Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
+- Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
+- Split README to focus on package-level issues and moved quick start into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
+- Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
+- Removed the reference in the pull request template to updating the development version as this has been found to cause issues when multiple pull requests are open at once. See #391 by @seabbs and reviewed by @Bisaloo.
+- Added a note to the Getting Started vignette to clarify usability with alternatives to data.table. See #406 by @kathsherratt and reviewed by @seabbs.
+- Added a new vignette to provide users with a configuration and troubleshooting guide for Stan while working with `epinowcast`. See #405 by @medewitt and reviewed by @seabbs, @zsusswein, and @pearsonca.
+- Removed named individuals from vignettes and moved to a team authorship. See # by @seabbs and reviewed by .
+
+## Depreciations
+
+- `enw_delay_filter()`: Deprecated with a warning in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
 # epinowcast 0.2.2
 

@@ -184,6 +184,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
+#' @importFrom cli cli_abort
 #' @family utils
 #' @examples
 #' # works
@@ -210,15 +211,118 @@ coerce_date <- function(dates) {
   }, FUN.VALUE = data.table::as.IDate(0)))
 
   if (anyNA(res)) {
-    bads <- is.na(res)
-    stop(sprintf(
-      "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
-      toString(dates[bads]),
-      toString(which(bads))
+    cli::cli_abort(paste0(
+      "Failed to parse with `as.IDate`: {toString(dates[is.na(res)])} ",
+      "(indices {toString(which(is.na(res)))})."
     ))
   } else {
     return(res)
   }
+}
+
+#' Get internal timestep
+#'
+#' This function converts the string representation of the timestep to its
+#' corresponding numeric value or returns the numeric input (if it is a whole
+#' number). For "day", "week", it returns 1 and 7 respectively.
+#' For "month", it returns "month" as months are not a fixed number of days.
+#' If the input is a numeric whole number, it is returned as is.
+#'
+#' @param timestep The timestep to used. This can be a string ("day",
+#' "week", "month") or a numeric whole number representing the number of days.
+#'
+#' @return A numeric value representing the number of days for "day" and
+#' "week", "month" for "month",  or the input value if it is a numeric whole
+#' number.
+#' @importFrom cli cli_abort
+#' @family utils
+get_internal_timestep <- function(timestep) {
+  # check if the input is a character
+  if (is.character(timestep)) {
+    switch(
+      timestep,
+      day = 1,
+      week = 7,
+      month = "month",  # months are not a fixed number of days
+      cli::cli_abort(
+        "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
+      )
+    )
+  } else if (is.numeric(timestep) && timestep == round(timestep)) {
+    # check if the input is a whole number
+    return(timestep)
+  } else {
+    cli::cli_abort(
+      paste0(
+        "Invalid timestep. If timestep is a numeric, it should be a whole ",
+        "number representing the number of days."
+      )
+    )
+  }
+}
+
+#' Internal function to perform rolling sum aggregation
+#'
+#' This function takes a data.table and applies a rolling sum over a given
+#' timestep,
+#' aggregating by specified columns. It's particularly useful for aggregating
+#' observations over certain periods.
+#'
+#' @param dt A `data.table` to be aggregated.
+#' @param internal_timestep An integer indicating the period over which to
+#' aggregate.
+#' @param by A character vector specifying the columns to aggregate by.
+#'
+#' @return A modified data.table with aggregated observations.
+#'
+#' @importFrom data.table frollsum
+#' @family utils
+aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL) {
+  dt <- dt[,
+    `:=`(
+      confirm = {
+        n_vals <- if (.N <= internal_timestep) {
+          seq_len(.N)
+        } else {
+          c(
+            1:(internal_timestep - 1),
+            rep(internal_timestep, .N - (internal_timestep - 1))
+          )
+        }
+        frollsum(confirm, n_vals, adaptive = TRUE)
+      }
+    ),
+    by = by
+  ]
+  return(dt[])
+}
+
+#' Convert date column to numeric and calculate its modulus with given timestep.
+#'
+#' This function processes a date column in a `data.table`, converting it to a
+#' numeric representation and then computing the modulus with the provided
+#' timestep.
+#'
+#' @param dt A data.table.
+#'
+#' @param date_column A character string representing the name of the date
+#' column in dt.
+#'
+#' @param timestep An integer representing the internal timestep.
+#'
+#' @return A modified data.table with two new columns: one for the numeric
+#' representation of the date minus the minimum date and another for its
+#' modulus with the timestep.
+#'
+#' @family utils
+date_to_numeric_modulus <- function(dt, date_column, timestep) {
+  mod_col_name <- paste0(date_column, "_mod")
+
+  dt[, c(mod_col_name) := as.numeric(
+        get(date_column) - min(get(date_column), na.rm = TRUE)
+      ) %% timestep
+  ]
+  return(dt[])
 }
 
 utils::globalVariables(
@@ -234,6 +338,8 @@ utils::globalVariables(
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
     "formula", ".id", "n", ".confirm_avail", "prediction", "true_value",
-    "person", "id", "latest", "type", "below_coverage"
+    "person", "id", "latest", "type", "below_coverage", "num_reference_date", 
+    "num_report_date", "rep_mod", "ref_mod", "count", "reference_date_mod", 
+    "report_date_mod", "timestep", ".observed", "lookup", "max_obs_delay"
   )
 )

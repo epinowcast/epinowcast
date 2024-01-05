@@ -29,13 +29,17 @@ data {
   array[t, g] int ts; // snapshot index by time and group
   array[s] int sl; // number of reported obs per snapshot (snapshot length)
   array[s] int csl; // cumulative version of sl
+  array[s] int lsl; // number of reported obs per snapshot (in the likelihood)
+  array[s] int clsl; // cumulative version of sl
+  array[s] int nsl; // number of reported obs per snapshot (non-consectuive)
+  array[s] int cnsl; // cumulative version of nsl
   int dmax; // maximum possible reporting delay
   array[s] int sdmax; // maximum delay by snapshot (snapshot dmax)
   array[s] int csdmax; // cumulative version of sdmax
  
   // Observations
-  array[s, dmax] int obs; // obs by reference date (row) and delay (column)
   array[n] int flat_obs; // obs stored as a flat vector
+  array[n] int flat_obs_lookup; // How do observed obs relate to all obs
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
@@ -79,7 +83,8 @@ data {
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
 
-  // Reference date model
+  // Reference time model
+  // Parametric reference model
   int model_refp;
   int refp_fnrow;
   array[s] int refp_findex;
@@ -90,7 +95,17 @@ data {
   array[2, 1] real refp_mean_int_p;
   array[2, 1] real refp_sd_int_p;
   array[2, 1] real refp_mean_beta_sd_p;
-  array[2, 1] real refp_sd_beta_sd_p; 
+  array[2, 1] real refp_sd_beta_sd_p;
+  // Non-parametric reference model
+  int model_refnp;
+  int refnp_fnindex;
+  int refnp_fintercept; // Should an intercept be included
+  int refnp_fncol;
+  int refnp_rncol;
+  matrix[refnp_fnindex, refnp_fncol + refnp_fintercept] refnp_fdesign;
+  matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
+  array[2, 1] real refnp_int_p;
+  array[2, 1] real refnp_beta_sd_p;
 
   // Reporting time model
   int model_rep;
@@ -136,6 +151,8 @@ data {
   int likelihood; // should the likelihood be included?
   // type of aggregation scheme (0 = snaps, 1 = groups)
   int likelihood_aggregation;
+  // should the likelihood calculation be parallelised (0 = no; 1 = yes)?
+  int parallelise_likelihood;
   int pp; // should posterior predictions be produced?
   int cast; // should a nowcast be produced?
   int ologlik; // should the pointwise log likelihood be calculated?
@@ -162,12 +179,17 @@ parameters {
   vector<lower=0>[expl_rncol] expl_beta_sd;
     
   // Reference model
+  // Parametric reference model
   array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
+  // Non-parametric reference model
+  array[model_refnp && refnp_fintercept ? 1 : 0] real refnp_int;
+  vector[model_refnp ? refnp_fncol : 0] refnp_beta; 
+  vector<lower=0>[refnp_rncol] refnp_beta_sd;
 
   // Report model
   vector[rep_fncol] rep_beta;
@@ -190,9 +212,12 @@ transformed parameters{
   array[g] vector[t]  exp_lobs; // expected obs by reference date (log)
   
   // Reference model
+  // Parametric reference model
   vector[refp_fnrow] refp_mean;
   vector[refp_fnrow] refp_sd;
-  matrix[dmax, refp_fnrow] ref_lh; // sparse report logit hazards
+  matrix[dmax, refp_fnrow] refp_lh; // sparse report logit hazards
+  // Non-parametric reference model
+  vector[model_refnp > 0 ? refnp_fnindex : 0] refnp_lh; 
   
   // Report model
   vector[rep_fnrow] srdlh; // sparse reporting time logit hazards
@@ -231,7 +256,8 @@ transformed parameters{
   }
 
   // Reference model
-  profile("transformed_delay_reference_time_total") {
+  // Parametric reference model
+  profile("transformed_delay_parametric_reference_time_total") {
   if (model_refp) {
     // calculate sparse reference date effects
     profile("transformed_delay_reference_time_effects") {
@@ -247,15 +273,25 @@ transformed parameters{
       refp_sd = exp(refp_sd);
     } 
     }
-    // calculate reference date logit hazards (unless no reporting effects)
+    // calculate parametric reference date logit hazards
+    // (unless no reporting effects)
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
-      ref_lh[, i] = discretised_logit_hazard(
+      refp_lh[, i] = discretised_logit_hazard(
         refp_mean[i], refp_sd[i], dmax, model_refp, 2, ref_as_p
       );
     }
     }
   }  
+  }
+  if (model_refnp) {
+    // calculate non-parametric reference date logit hazards
+    profile("transformed_delay_non_parametric_reference_time_hazards") {
+    refnp_lh = combine_effects(
+      refnp_int, refnp_beta, refnp_fdesign, refnp_beta_sd, refnp_rdesign,
+      refnp_fintercept
+    );
+    }
   }
 
   // Report model
@@ -309,6 +345,7 @@ model {
   );
   
   // Reference model
+  // Parametric reference model
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
@@ -325,6 +362,16 @@ model {
       );
     }
   }
+  // Non-parametric reference model
+  if (model_refnp) {
+    if (refnp_fintercept) {
+      refnp_int[refnp_fintercept] ~ normal(refnp_int_p[1], refnp_int_p[2]);
+    }
+    effect_priors_lp(
+      refnp_beta, refnp_beta_sd, refnp_beta_sd_p, refnp_fncol, refnp_rncol
+    );
+  }
+
   // Report model
   effect_priors_lp(rep_beta, rep_beta_sd, rep_beta_sd_p, rep_fncol, rep_rncol);
   
@@ -346,70 +393,107 @@ model {
   // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
     profile("model_likelihood") {
-    if (ll_aggregation) {
-      target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, sl, csl, exp_lobs, t, sg, ts,
-        st, rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
-        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst
-      );
+    if (parallelise_likelihood) {
+      if (ll_aggregation) {
+        target += reduce_sum(
+          delay_group_lupmf, groups, 1, flat_obs, lsl, clsl, nsl, cnsl,
+          flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
+          refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+          obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
+          refnp_lh, model_refnp
+        );
+      } else {
+        target += reduce_sum(
+          delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
+          flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
+          refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
+          model_refnp, sdmax, csdmax
+        );
+      }
     } else {
-      target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, sl, csl,  exp_lobs, sg, st,
-        rep_findex, srdlh, ref_lh, refp_findex, model_refp, rep_fncol,
-        ref_as_p, phi, model_obs
+      groups ~ delay_group(
+        1, g, flat_obs, lsl, clsl, nsl, cnsl, flat_obs_lookup, exp_lobs, t, sg,
+        ts, st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+        obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
+        refnp_lh, model_refnp
       );
-    }
     }
   }
+  }
 }
+
 
 generated quantities {
   array[pp ? sum(sl) : 0] int pp_obs;
   array[pp ? miss_obs : 0] int pp_miss_ref;
   vector[ologlik ? s : 0] log_lik;
-  array[cast ? dmax : 0, cast ? g : 0] int pp_inf_obs;
+  array[cast ? min(dmax, t) : 0, cast ? g : 0] int pp_inf_obs;
   profile("generated_total") {
   if (cast) {
-    vector[csdmax[s]] log_exp_obs;
-    array[csdmax[s]] int pp_obs_tmp;
+    vector[csdmax[s]] log_exp_obs_all;
     vector[miss_obs]  log_exp_miss_ref;
     vector[miss_obs ? csdmax[s] : 0] log_exp_miss_by_ref;
+    vector[csl[s]] log_exp_obs;
+    vector[clsl[s]] log_exp_obs_lik;
+    array[csdmax[s]] int pp_obs_all;
+    array[csl[s]] int pp_obs_tmp;
+    array[clsl[s]] int pp_obs_lik;
 
     // Posterior predictions for observations
     profile("generated_obs") {
-    log_exp_obs = expected_obs_from_snaps(
-      1, s,  exp_lobs, rep_findex, srdlh, ref_lh, refp_findex, model_refp,
-      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s]
+    log_exp_obs_all = expected_obs_from_snaps(
+      1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
+      rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
+      model_refnp, sdmax, csdmax
     );
     
     if (model_miss) {
       // Allocate proportion that are not reported
       log_exp_miss_by_ref = apply_missing_reference_effects(
-        1, s, log_exp_obs, sdmax, csdmax, miss_ref_lprop
+        1, s, log_exp_obs_all, sdmax, csdmax, miss_ref_lprop
       );
       log_exp_miss_ref = log_expected_by_report(
         log_exp_miss_by_ref, obs_by_report
       );
       // Allocate proportion that are reported
-      log_exp_obs = apply_missing_reference_effects(
-        1, s, log_exp_obs, sdmax, csdmax, log1m_exp(miss_ref_lprop)
+      log_exp_obs_all = apply_missing_reference_effects(
+        1, s, log_exp_obs_all, sdmax, csdmax, log1m_exp(miss_ref_lprop)
       );
     }
+    // Allocate to just those actually observed
+    log_exp_obs = allocate_observed_obs(
+      1, s, log_exp_obs_all, sl, csl, sdmax, csdmax
+    );
+    // Allocate to just those observed (non-consecutivly)
+    log_exp_obs_lik = allocate_observed_obs(
+      1, s, log_exp_obs, lsl, clsl, sl, csl
+    );
     // Draw from observation model for observed counts with report and reference
-    pp_obs_tmp = obs_rng(log_exp_obs, phi, model_obs);
+    pp_obs_all = obs_rng(log_exp_obs_all, phi, model_obs);
+    // Allocate to just those actually observed
+    pp_obs_tmp = allocate_observed_obs(
+      1, s, pp_obs_all, sl, csl, sdmax, csdmax
+    );
+    // Allocate to just those in the likelihod
+    pp_obs_lik = allocate_observed_obs(
+      1, s, pp_obs_tmp, lsl, clsl, sl, csl
+    );
     } 
 
     // Likelihood by snapshot (rather than by observation)
     profile("generated_loglik") {
     if (ologlik) {
       for (i in 1:s) {
-        array[3] int l = filt_obs_indexes(i, i, csl, sl);
-        array[3] int f = filt_obs_indexes(i, i, csdmax, sdmax);
+        array[3] int l = filt_obs_indexes(i, i, cnsl, nsl);
         log_lik[i] = 0;
-        for (j in 1:sl[i]) {
-          log_lik[i] += obs_lpmf(
-            flat_obs[l[1] + j - 1]  | log_exp_obs[f[1] + j - 1], phi, model_obs
-          );
+        if (nsl[i]) {
+          for (j in 1:nsl[i]) {
+            log_lik[i] += obs_lpmf(
+              flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1], 
+              phi, model_obs
+            );
+          } 
         }
       }
       // Add log lik component for missing reference model
@@ -422,28 +506,38 @@ generated quantities {
       }
     }
     }
-    // Posterior prediction for final reported data (i.e at t = dmax + 1)
+    // Posterior prediction for final reported data (i.e at t + dmax + 1)
     // Organise into a grouped and time structured array
     profile("generated_obs") {
     for (k in 1:g) {
-      int start_t = t - dmax;
-      for (i in 1:dmax) {
+      int start_t = max(t - dmax, 0);
+      int nowcast_t = min(dmax, t);
+      for (i in 1:nowcast_t) {
+        // Where am I?
         int i_start = ts[start_t + i, k];
-        array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
         array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
-        pp_inf_obs[i, k] = sum(segment(flat_obs, l[1], l[3]));
-        if (sl[i_start] < dmax) {
-          pp_inf_obs[i, k] += sum(
-            segment(pp_obs_tmp, f[1] + sl[i_start], f[3] - sl[i_start])
+        array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
+        array[3] int nl = filt_obs_indexes(i_start, i_start, cnsl, nsl);
+        // Add all estimated reported observations
+        pp_inf_obs[i, k] = sum(segment(pp_obs_all, f[1], f[3]));
+
+        if (nl[3]) {
+          // Index lookup to start from where we currently are
+          array[nl[3]] int filt_obs_lookup = segment(
+            flat_obs_lookup, nl[1], nl[3]
           );
+  
+          // Minus estimates for those that are already reported
+          pp_inf_obs[i, k] -= sum(pp_obs_lik[filt_obs_lookup]);
+          // Add observations that have been reported
+          pp_inf_obs[i, k] += sum(segment(flat_obs, nl[1], nl[3]));
         }
       }
     }
     if (pp) {
       // If posterior predictions for all observations are needed copy
       // from a temporary object to a permanent one
-      // drop predictions without linked observations
-      pp_obs = allocate_observed_obs(1, s, pp_obs_tmp, sl, csl, sdmax, csdmax);
+      pp_obs = pp_obs_tmp;
       // Posterior predictions for observations missing reference dates
       if (miss_obs) {
         pp_miss_ref = obs_rng(log_exp_miss_ref, phi, model_obs);

@@ -1,11 +1,19 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
-description: "A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
-author: Sam Abbott
+description: "A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
+author: Epinowcast Team
 opengraph:
   image: 
-    src: figures/performance-1.png
-output: rmarkdown::html_vignette
+    src: figures/germany-age-stratified-nowcasting-performance-1.png
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,8 +22,8 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  fig.path = "figures/",
-  cache = TRUE, cache.path = "cache/", dpi = 330,
+  fig.path = "figures/germany-age-stratified-nowcasting-",
+  cache = TRUE, dpi = 330,
   collapse = TRUE, comment = "#>", out.width = "100%",
   message = FALSE, warning = FALSE, error = FALSE,
   eval = TRUE
@@ -88,15 +96,7 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 ## Shared reporting delay distribution 
 
-We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for within-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
-
-```{r, include = FALSE, message = FALSE}
-multithread_model <- enw_model(threads = TRUE)
-```
-
-```{r, message = FALSE, eval = FALSE}
-multithread_model <- enw_model(threads = TRUE)
-```
+We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time.
 
 Note that here we use two chains each using `r  threads` threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
@@ -109,8 +109,7 @@ fit <- enw_fit_opts(
   adapt_delta = 0.98, max_treedepth = 15
 )
 nowcast <- epinowcast(pobs,
-  fit = fit,
-  model = multithread_model
+  fit = fit
 )
 ```
 
@@ -147,7 +146,6 @@ expectation_module <- enw_expectation(
 exp_nowcast <- epinowcast(pobs,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -184,7 +182,6 @@ dow_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -212,7 +209,6 @@ age_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -242,8 +238,6 @@ week_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
-
   priors = priors
 )
 ```
@@ -273,7 +267,6 @@ age_week_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -329,13 +322,12 @@ independent_nowcast <- map(
     show_messages = FALSE, refresh = 0,
     adapt_delta = 0.95, max_treedepth = 12
   ),
-  model = multithread_model,
   priors = priors
 )
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
@@ -434,7 +426,7 @@ Finally we look across all scores relative to the simple model with no variation
 age_date_score <- score |>
   summarise_scores(by = c("model", "reference_date", "age_group"))
 fixed_score <- age_date_score[
-  model %in% "Reference: Fixed, Report: Fixed",
+  model == "Reference: Fixed, Report: Fixed",
   .(reference_date, age_group, fixed_is = interval_score)
 ]
 age_date_score <- merge(
@@ -442,7 +434,7 @@ age_date_score <- merge(
 )
 
 age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
-age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
+age_date_score <- age_date_score[!model == "Reference: Fixed, Report: Fixed"]
 plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
   geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +

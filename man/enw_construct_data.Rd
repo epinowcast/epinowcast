@@ -14,6 +14,7 @@ enw_construct_data(
   metareference,
   metadelay,
   max_delay,
+  timestep,
   by
 )
 }
@@ -40,6 +41,12 @@ date in the standard reporting triangle matrix format.}
 \code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.}
 
 \item{max_delay}{Maximum delay to be modelled by epinowcast.}
+
+\item{timestep}{The timestep to used in the process model (i.e. the
+reference date model). This can be a string ("day", "week", "month") or a
+numeric whole number representing the number of days. If your data does not
+have this timestep then you may wish to make use of
+\code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
@@ -90,6 +97,7 @@ enw_construct_data(
   metareference = pobs$metareference[[1]],
   metadelay = pobs$metadelay[[1]],
   max_delay = pobs$max_delay,
+  timestep = pobs$timestep[[1]]
   by = c()
 )
 }
@@ -104,6 +112,8 @@ Preprocessing functions
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},

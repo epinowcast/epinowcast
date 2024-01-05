@@ -4,13 +4,16 @@
 \alias{enw_add_delay}
 \title{Add a delay variable to the observations}
 \usage{
-enw_add_delay(obs, copy = TRUE)
+enw_add_delay(obs, timestep = "day", copy = TRUE)
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
 \verb{reference date} (index date of interest), \code{report_date} (report date for
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
 
 \item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
@@ -38,6 +41,8 @@ Preprocessing functions
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},

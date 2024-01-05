@@ -1,11 +1,19 @@
 ---
 title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany"
-description: "A case study exploring heirarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
-author: Sam Abbott
+description: "A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
+author: Epinowcast Team
 opengraph:
   image: 
-    src: figures/performance-1.png
-output: rmarkdown::html_vignette
+    src: figures/germany-age-stratified-nowcasting-performance-1.png
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany}
   %\VignetteEngine{knitr::rmarkdown}
@@ -94,9 +102,9 @@ pobs
 #>    missing_reference   reporting_triangle       metareference
 #> 1: <data.table[0x6]> <data.table[287x42]> <data.table[287x9]>
 #>              metareport          metadelay time snapshots        by groups
-#> 1: <data.table[560x12]> <data.table[40x4]>   41       287 age_group      7
-#>    max_delay   max_date
-#> 1:        40 2021-09-01
+#> 1: <data.table[560x12]> <data.table[40x5]>   41       287 age_group      7
+#>    max_delay   max_date timestep
+#> 1:        40 2021-09-01      day
 ```
 
 # Models 
@@ -105,14 +113,7 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 ## Shared reporting delay distribution 
 
-We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time. As this model is the default we simply call `epinowcast`. As we want to make use of `CmdStan`'s support for within-chain parallelisation we first compile the default model with this enabled (because of this we also need to pass `threads_per_chain` to `epinowcast`).
-
-
-
-
-```r
-multithread_model <- enw_model(threads = TRUE)
-```
+We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time.
 
 Note that here we use two chains each using 6 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
@@ -126,8 +127,7 @@ fit <- enw_fit_opts(
   adapt_delta = 0.98, max_treedepth = 15
 )
 nowcast <- epinowcast(pobs,
-  fit = fit,
-  model = multithread_model
+  fit = fit
 )
 ```
 
@@ -139,7 +139,10 @@ plot(nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-nowcast-1.png" alt="plot of chunk nowcast" width="100%" />
+<p class="caption">plot of chunk nowcast</p>
+</div>
 
 ## Using the inflated posterior as a prior
 
@@ -154,14 +157,14 @@ priors <- summary(
 )
 priors[, sd := sd * 2]
 priors
-#>            variable      mean    median         sd        mad        q5
-#> 1: refp_mean_int[1] 1.1207624 1.1204600 0.09072471 0.04619040 1.0462980
-#> 2:   refp_sd_int[1] 1.7311648 1.7296850 0.09567793 0.04728753 1.6547720
-#> 3:      sqrt_phi[1] 0.5955124 0.5953265 0.03710977 0.01839165 0.5659246
-#>          q20      q80       q95      rhat ess_bulk ess_tail
-#> 1: 1.0818620 1.158388 1.1980045 0.9996327 1851.653 663.5543
-#> 2: 1.6903560 1.772894 1.8116325 0.9991851 2428.449 756.0963
-#> 3: 0.5804142 0.611261 0.6269922 0.9989755 1151.603 747.4970
+#>            variable      mean   median        sd        mad        q5       q20
+#> 1: refp_mean_int[1] 1.1122989 1.102345 0.2281895 0.11020907 0.9399031 1.0208280
+#> 2:   refp_sd_int[1] 2.5904395 2.590905 0.2584402 0.13109890 2.3903890 2.4775620
+#> 3:      sqrt_phi[1] 0.6440077 0.644365 0.0355626 0.01762737 0.6147604 0.6287058
+#>          q80       q95      rhat ess_bulk ess_tail
+#> 1: 1.2113420 1.3143065 1.0006270 910.0689 681.4586
+#> 2: 2.6921940 2.8063915 0.9996599 843.9965 728.9121
+#> 3: 0.6580964 0.6741966 1.0060478 868.6925 656.7026
 ```
 
 ## Reference day of the week effect
@@ -177,7 +180,6 @@ expectation_module <- enw_expectation(
 exp_nowcast <- epinowcast(pobs,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -190,7 +192,10 @@ plot(exp_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-exp_nowcast-1.png" alt="plot of chunk exp_nowcast" width="100%" />
+<p class="caption">plot of chunk exp_nowcast</p>
+</div>
 
 ## Posterior predictions
 
@@ -202,7 +207,10 @@ plot(exp_nowcast, type = "posterior") +
   facet_wrap(vars(age_group, reference_date), scales = "free")
 ```
 
-<img src="figures/simple_pp-1.png" alt="plot of chunk simple_pp" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-simple_pp-1.png" alt="plot of chunk simple_pp" width="100%" />
+<p class="caption">plot of chunk simple_pp</p>
+</div>
 
 
 ## Reporting day of the week effect
@@ -222,7 +230,6 @@ dow_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -235,7 +242,10 @@ plot(dow_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-dow_nowcast-1.png" alt="plot of chunk dow_nowcast" width="100%" />
+<p class="caption">plot of chunk dow_nowcast</p>
+</div>
 
 ## Age group variation
 
@@ -255,7 +265,6 @@ age_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -268,7 +277,10 @@ plot(age_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-age_nowcast-1.png" alt="plot of chunk age_nowcast" width="100%" />
+<p class="caption">plot of chunk age_nowcast</p>
+</div>
 
 ## Variation based on reference date
 
@@ -290,8 +302,6 @@ week_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
-
   priors = priors
 )
 ```
@@ -304,7 +314,10 @@ plot(week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-week_nowcast-1.png" alt="plot of chunk week_nowcast" width="100%" />
+<p class="caption">plot of chunk week_nowcast</p>
+</div>
 
 ## Variation based on reference date stratified by age
 
@@ -326,7 +339,6 @@ age_week_nowcast <- epinowcast(pobs,
   report = report_module_dow,
   expectation = expectation_module,
   fit = fit,
-  model = multithread_model,
   priors = priors
 )
 ```
@@ -339,7 +351,10 @@ plot(age_week_nowcast, latest_obs = latest_nat_germany) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-age_week_nowcast-1.png" alt="plot of chunk age_week_nowcast" width="100%" />
+<p class="caption">plot of chunk age_week_nowcast</p>
+</div>
 
 
 ## Independent models  for each age group.
@@ -387,13 +402,12 @@ independent_nowcast <- map(
     show_messages = FALSE, refresh = 0,
     adapt_delta = 0.95, max_treedepth = 12
   ),
-  model = multithread_model,
   priors = priors
 )
 independent_nowcast <- rbindlist(independent_nowcast)
 ```
 
-As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the heirarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
+As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 
 ```r
@@ -403,7 +417,10 @@ enw_plot_nowcast_quantiles(
   facet_wrap(vars(age_group), scales = "free_y")
 ```
 
-<img src="figures/ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-ind_nowcast-1.png" alt="plot of chunk ind_nowcast" width="100%" />
+<p class="caption">plot of chunk ind_nowcast</p>
+</div>
 
 
 ## Alternative models
@@ -468,7 +485,10 @@ enw_plot_nowcast_quantiles(
   facet_grid(vars(age_group), vars(model), scales = "free_y")
 ```
 
-<img src="figures/unnamed-chunk-20-1.png" alt="plot of chunk unnamed-chunk-20" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18" width="100%" />
+<p class="caption">plot of chunk unnamed-chunk-18</p>
+</div>
 
 As a crude measure of general out of sample performance we can use the leave one out information criterion as supplied by the `loo` package though note this is not typically appropriate for time series data ([where approximate LFO cross validation is likely to perform better](https://cran.r-project.org/web//packages/loo/vignettes/loo2-lfo.html)), the approximation used here to avoid refitting is likely to be poor, and we are not accounting for this by refitting the model as required.
 
@@ -478,10 +498,10 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age, Report: Day of week                  -11.1       5.2 
-#> Reference: Age and week by age, Report: Day of week  -11.7       3.3 
-#> Reference: Fixed, Report: Day of week                -50.7      10.5 
-#> Reference: Fixed, Report: Fixed                     -611.9      45.2
+#> Reference: Age and week by age, Report: Day of week   -2.9       3.6 
+#> Reference: Age, Report: Day of week                   -4.7       6.4 
+#> Reference: Fixed, Report: Day of week                -86.7      12.2 
+#> Reference: Fixed, Report: Fixed                     -645.3      48.3
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -506,12 +526,14 @@ score |>
 
 |model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
 |:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
-|Reference: Fixed, Report: Fixed                          |       9.786248|   3.158477|        4.225981|      2.4019466|         -0.1087912| -0.1020408|  16.29592|
-|Reference: Fixed, Report: Day of week                    |      10.100157|   2.326279|        6.827567|      0.9466248|         -0.1386185| -0.2428571|  15.48980|
-|Reference: Age, Report: Day of week                      |       8.630703|   2.267425|        5.730863|      0.6326531|         -0.1417582| -0.3673469|  13.91837|
-|Reference: Age and week, Report: Day of week             |       7.314954|   2.790201|        1.396860|      3.1275510|         -0.0193093|  0.0826531|  12.02041|
-|Reference: Age and week by age, Report: Day of week      |       6.887651|   3.004575|        2.028258|      1.8546939|          0.0058085| -0.1387755|  11.29592|
-|Independent by age, Reference: Week, Report: Day of week |       7.292314|   3.869724|        1.583673|      1.8387755|          0.0340659| -0.0622449|  12.31633|
+|Reference: Fixed, Report: Fixed                          |      10.370377|   3.702182|        3.147818|      3.5202512|         -0.0789639| -0.0285714|  17.62245|
+|Reference: Fixed, Report: Day of week                    |      10.348104|   2.627058|        6.824835|      0.8963893|         -0.1370487| -0.2765306|  15.38776|
+|Reference: Age, Report: Day of week                      |       8.651115|   2.503852|        5.641287|      0.5058085|         -0.1260597| -0.4214286|  12.96939|
+|Reference: Age and week, Report: Day of week             |       7.138967|   2.985796|        1.510204|      2.6428571|         -0.0208791| -0.0071429|  12.52041|
+|Reference: Age and week by age, Report: Day of week      |       7.109146|   3.022980|        2.542857|      1.5431711|         -0.0083203| -0.2193878|  11.91837|
+|Independent by age, Reference: Week, Report: Day of week |       7.803203|   4.401036|        1.183045|      2.2169545|          0.0654631| -0.0479592|  13.05102|
+
+
 
 Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
@@ -520,7 +542,7 @@ Finally we look across all scores relative to the simple model with no variation
 age_date_score <- score |>
   summarise_scores(by = c("model", "reference_date", "age_group"))
 fixed_score <- age_date_score[
-  model %in% "Reference: Fixed, Report: Fixed",
+  model == "Reference: Fixed, Report: Fixed",
   .(reference_date, age_group, fixed_is = interval_score)
 ]
 age_date_score <- merge(
@@ -528,7 +550,7 @@ age_date_score <- merge(
 )
 
 age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
-age_date_score <- age_date_score[!model %in% "Reference: Fixed, Report: Fixed"]
+age_date_score <- age_date_score[!model == "Reference: Fixed, Report: Fixed"]
 plot <- ggplot(age_date_score) +
   aes(x = reference_date, y = interval_score, col = model) +
   geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +
@@ -545,7 +567,10 @@ plot <- enw_plot_theme(plot) +
 plot
 ```
 
-<img src="figures/performance-1.png" alt="plot of chunk performance" width="100%" />
+<div class="figure">
+<img src="figures/germany-age-stratified-nowcasting-performance-1.png" alt="plot of chunk performance" width="100%" />
+<p class="caption">plot of chunk performance</p>
+</div>
 
 # Summary
 

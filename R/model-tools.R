@@ -22,6 +22,7 @@
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
 #' @family modeltools
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' f <- enw_formula(~ 1 + (1 | cyl), mtcars)
@@ -42,9 +43,11 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
-      stop(
-        "formula must be an object of class enw_formula as produced using
-        enw_formula"
+      cli::cli_abort(
+        paste0(
+          "formula must be an object of class enw_formula as produced using ",
+          "`enw_formula()`"
+        )
       )
     }
     fintercept <-  as.numeric(any(grepl(
@@ -294,10 +297,11 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @param compile Logical, defaults to `TRUE`. Should the model
 #' be loaded and compiled using [cmdstanr::cmdstan_model()].
 #'
-#' @param threads Logical, defaults to `FALSE`. Should the model compile with
-#' support for multi-thread support in chain. Note that this requires the use of
-#' the `threads_per_chain` argument when model fitting using [enw_sample()],
-#' and [epinowcast()].
+#' @param threads Logical, defaults to `TRUE`. Should the model compile with
+#' support for multi-thread support in chain. Note that setting this will
+#' produce a warning that `threads_to_chain` is set and ignored. Changing this
+#' to `FALSE` is not expected to yield any performance benefits even when
+#' not using multithreading and thus not recommended.
 #'
 #' @param verbose Logical, defaults to `TRUE`. Should verbose
 #' messages be shown.
@@ -321,6 +325,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @return A `cmdstanr` model.
 #'
 #' @family modeltools
+#' @importFrom cli cli_inform
 #' @export
 #' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model
@@ -331,12 +336,12 @@ enw_model <- function(model = system.file(
                         package = "epinowcast"
                       ),
                       include = system.file("stan", package = "epinowcast"),
-                      compile = TRUE, threads = FALSE, profile = FALSE,
+                      compile = TRUE, threads = TRUE, profile = FALSE,
                       target_dir = tempdir(), stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    message(sprintf("Using model %s.", model))
-    message(sprintf("include is %s.", toString(include)))
+    cli::cli_inform("Using model {model}.")
+    cli::cli_inform("include is {toString(include)}.")
   }
 
   if (!profile) {

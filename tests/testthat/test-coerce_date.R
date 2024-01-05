@@ -1,4 +1,3 @@
-
 nongarbage <- c("2020-05-12", "2021-05-12", "2022-05-12")
 refresult <- as.IDate(nongarbage)
 garbage <- c("2020-50-12", "2020-O5-12")
@@ -11,11 +10,11 @@ test_that("coerce_date works for non-garbage in", {
     coerce_date(refresult), NA
   )
   expect_error(
-    coerce_date(c()), NA
+    coerce_date(NULL), NA
   )
   coerced <- coerce_date(nongarbage)
-  expect_equal(coerced, refresult)
-  expect_equal(class(coerced), class(refresult))
+  expect_identical(coerced, refresult)
+  expect_identical(class(coerced), class(refresult)) # nolint: expect_s3_class
 })
 
 test_that("coerce_date errors for garbage in", {

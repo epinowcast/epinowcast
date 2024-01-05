@@ -88,6 +88,7 @@ enw_metadata <- function(obs, target_date = c(
 #'
 #' @family preprocess
 #' @importFrom purrr compose
+#' @importFrom cli cli_abort cli_warn
 #' @export
 #' @examples
 #'
@@ -123,7 +124,7 @@ enw_add_metaobs_features <- function(metaobs,
   # localize and check metaobs input
   metaobs <- coerce_dt(metaobs, required_cols = datecol)
   if (!is.Date(metaobs[[datecol]])) {
-    stop(sprintf("metaobs column '%s' is not a Date.", datecol))
+    cli::cli_abort("metaobs column {datecol} is not a `Date`.")
   }
 
   # this may also error, so coercing first
@@ -132,9 +133,9 @@ enw_add_metaobs_features <- function(metaobs,
   # warn about columns that may be overwritten
   tarcols <- c("day_of_week", "day", "week", "month")
   if (any(tarcols %in% colnames(metaobs))) {
-    warning(sprintf(
-      "Pre-existing columns in `metaobs` will be overwritten: {%s}.",
-      intersect(tarcols, colnames(metaobs))
+    cli::cli_warn(paste0(
+      "Pre-existing columns in `metaobs` will be overwritten: ",
+      "{intersect(tarcols, colnames(metaobs))}."
     ))
   }
   # sort by current sorting and datacol
@@ -203,6 +204,8 @@ enw_add_metaobs_features <- function(metaobs,
 #' @param direction Should new dates be added at the beginning or end of
 #' the data. Default is "end" with "start" also available.
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A data.table with the same columns as `metaobs` but with
 #' additional rows for each date in the range of `date` to `date + days`
 #' (or `date - days` if `direction = "start"`). An additional variable
@@ -217,11 +220,13 @@ enw_add_metaobs_features <- function(metaobs,
 #' metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
 #' enw_extend_date(metaobs, days = 2)
 #' enw_extend_date(metaobs, days = 2, direction = "start")
-enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start")) {
+enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
+                            timestep = "day") {
   direction <- match.arg(direction)
 
-  new_days <- 1:days
-  if (direction %in% "start") {
+  internal_timestep <- get_internal_timestep(timestep)
+  new_days <- seq(internal_timestep, days, by = internal_timestep)
+  if (direction == "start") {
     new_days <- -new_days
     filt_fn <- min
   } else {
@@ -296,15 +301,17 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' @return A `data.table` of observations with a new column `delay`.
 #' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_add_incidence
+#' @inheritParams get_internal_timestep
 #' @family preprocess
 #' @export
 #' @examples
 #' obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
-enw_add_delay <- function(obs, copy = TRUE) {
+enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
-  obs[, delay := as.numeric(report_date - reference_date)]
+  internal_timestep <- get_internal_timestep(timestep)
+  obs[, delay := as.numeric(report_date - reference_date) / internal_timestep]
   return(obs[])
 }
 
@@ -371,6 +378,7 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #'
 #' @return A data.table  filtered by report date
 #' @family preprocess
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -379,10 +387,11 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
 #' # Filter by days
 #' enw_filter_report_dates(germany_covid19_hosp, remove_days = 10)
 enw_filter_report_dates <- function(obs, latest_date, remove_days) {
-  stopifnot(
-    "exactly one of `remove_days` and `latest_date` must be specified." =
-      xor(missing(remove_days), missing(latest_date))
-  )
+  if (!xor(missing(remove_days), missing(latest_date))) {
+    cli::cli_abort(
+      "exactly one of `remove_days` and `latest_date` must be specified."
+    )
+  }
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (missing(latest_date)) {
     latest_date <- max(filt_obs$report_date) - remove_days
@@ -393,14 +402,14 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 
 #' Filter by reference dates
 #'
-#' @description This is a helper function which allows users to filter
-#' datasets by reference date. This is useful, for example, when evaluating
-#' nowcast performance against fully observed data. Users may wish to combine
-#' this function with [enw_filter_report_dates()]. Note that by definition it
-#' is assumed that a report date for a given reference date must be the equal
-#' or greater (i.e a report cannot happen before the event being reported
-#' occurs). This means that this function will also filter report dates earlier
-#' than the target reference dates.
+#' @description This is a helper function which allows users to filter datasets
+#' by reference date. This is useful, for example, when evaluating nowcast
+#' performance against fully observed data. Users may wish to combine this
+#' function with [enw_filter_report_dates()]. Note that by definition it is
+#' assumed that report dates must be equal or greater than the corresponding
+#' reference date (i.e a report cannot happen before the event being reported
+#' occurs). This means that this function will also filter out any report dates
+#' that are earlier than their corresponding reference date.
 #'
 #' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
@@ -409,8 +418,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #'
 #' @param include_days if `earliest_date` is not given, the number
 #' of reference dates to include, ending with the latest reference
-#' date included once report dates have been removed. If specified
-#' this is indexed to `latest_date` or `remove_days`.
+#' date included (determined by `latest_date` or `remove_days`).
 #'
 #' @param latest_date Date, the latest reference date to include in the
 #' returned dataset.
@@ -418,8 +426,9 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @param remove_days Integer, if `latest_date` is not given, the number
 #' of reference dates to remove, starting from the latest date included.
 #'
-#' @return A data.table  filtered by report date
+#' @return A `data.table` filtered by report date
 #' @family preprocess
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' # Filter by date
@@ -439,9 +448,9 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   filt_obs <- coerce_dt(obs, dates = TRUE)
   if (!missing(remove_days)) {
     if (!missing(latest_date)) {
-      stop("`remove_days` and `latest_date` can't both be specified.")
+      cli::cli_abort("`remove_days` and `latest_date` can't both be specified.")
     }
-    latest_date <- max(filt_obs$reference_date) - remove_days
+    latest_date <- max(filt_obs$reference_date, na.rm = TRUE) - remove_days
   }
   if (!missing(remove_days) || !missing(latest_date)) {
     filt_obs <- filt_obs[
@@ -450,7 +459,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
   }
   if (!missing(include_days)) {
     if (!missing(earliest_date)) {
-      stop(
+      cli::cli_abort(
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
@@ -496,21 +505,48 @@ enw_latest_data <- function(obs) {
 
 #' Filter observations to restrict the maximum reporting delay
 #'
+#' @description `r lifecycle::badge("deprecated")`
+#'
+#' @return A `data.frame` filtered so that dates by report are less than or
+#' equal the reference date plus the maximum delay.
+#'
+#' @inheritParams enw_add_incidence
+#' @inheritParams enw_preprocess_data
+#' @importFrom lifecycle deprecate_stop
+#' @family preprocess
+#' @export
+enw_filter_delay <- function(obs, max_delay, timestep = "day") {
+  lifecycle::deprecate_warn(
+    when = "0.2.3",
+    what = "enw_delay_filter()",
+    with = "enw_filter_delay()",
+    details = "Please file an issue if deprecating this \
+      function has caused any issues."
+  )
+  return(enw_filter_delay(obs, max_delay, timestep))
+}
+
+#' Filter observations to have a consistent maximum delay period
+#'
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
 #'
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
+#' @importFrom cli cli_warn
 #' @export
 #' @examples
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_filter_delay(obs, max_delay = 2)
-enw_filter_delay <- function(obs, max_delay) {
+enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
+  internal_timestep <- get_internal_timestep(timestep)
+  daily_max_delay <- internal_timestep * max_delay
   obs <- obs[,
     .SD[
-      report_date <= (reference_date + max_delay - 1) | is.na(reference_date)
+      report_date <= (reference_date + daily_max_delay - 1) |
+        is.na(reference_date)
     ],
     by = c("reference_date", ".group")
   ]
@@ -553,6 +589,7 @@ enw_delay_filter <- function(obs, max_delay) {
 #' @family preprocess
 #' @export
 #' @importFrom data.table dcast setorderv
+#' @importFrom cli cli_warn
 #' @examples
 #' obs <- enw_example("preprocessed")$new_confirm
 #' enw_reporting_triangle(obs)
@@ -563,9 +600,11 @@ enw_reporting_triangle <- function(obs) {
     group = TRUE
   )
   if (any(obs$new_confirm < 0)) {
-    warning(
-      "Negative new confirmed cases found. This is not yet supported in
-       epinowcast."
+    cli::cli_warn(
+      paste0(
+        "Negative new confirmed cases found. ",
+        "This is not yet supported in epinowcast."
+      )
     )
   }
   reports <- data.table::dcast(
@@ -601,6 +640,70 @@ enw_reporting_triangle_to_long <- function(obs) {
   return(reports_long[])
 }
 
+#' Flag observed observations
+#'
+#' @description Flags observations based on the 'confirm' column.
+#' If the '.observed' column does not exist, it is created. Observations are
+#' flagged as observed (`TRUE`) if 'confirm' is not NA.
+#'
+#' @param obs A `data.frame` with at least a have `confirm` column.
+#'
+#' @return A `data.table` with an additional column '.observed' indicating
+#' observed observations.
+#'
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' dt <- data.frame(id = 1:3, confirm = c(NA, 1, 2))
+#' enw_flag_observed_observations(dt)
+enw_flag_observed_observations <- function(obs, copy = TRUE) {
+  obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
+  if (is.null(obs[[".observed"]])) {
+    obs[, .observed := !is.na(confirm)]
+  }else {
+    obs[, .observed := .observed & !is.na(confirm)]
+  }
+  return(obs[])
+}
+
+#' Impute NA observations
+#'
+#' @description Imputes NA values in the 'confirm' column.
+#' NA values are replaced with the last available observation or 0.
+#'
+#' @param obs A `data.frame` with at least 'confirm' and 'reference_date'
+#' columns.
+#'
+#' @param by A character vector of column names to group by. Defaults to
+#' an empty vector.
+#'
+#' @return A `data.table` with imputed 'confirm' column where NA values have
+#' been replaced with zero.
+#'
+#' @inheritParams enw_preprocess_data
+#' @family preprocess
+#' @export
+#' @examples
+#' dt <- data.frame(
+#'  id = 1:3, confirm = c(NA, 1, 2),
+#'  reference_date = as.Date("2021-01-01")
+#' )
+#' enw_impute_na_observations(dt)
+enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
+  obs <- coerce_dt(
+    obs, required_cols = c("confirm", "reference_date", by),
+    copy = copy
+  )
+  data.table::setkeyv(obs, c(data.table::key(obs), "reference_date"))
+    # impute missing as last available observation or 0
+  obs[,
+    confirm := nafill(nafill(confirm, "locf"), fill = 0),
+    by = c("reference_date", by)
+  ]
+  return(obs[])
+}
+
 #' Complete missing reference and report dates
 #'
 #' Ensures that all reference and report dates are present for
@@ -609,11 +712,26 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' general all features that you may consider using as grouping variables
 #' or as covariates need to be included in the `by` variable.
 #'
+#' @param min_date The minimum date to include in the data. Defaults to the
+#' minimum reference date found in the data.
+#'
+#' @param max_date The maximum date to include in the data. Defaults to the
+#' maximum report date found in the data.
+#'
 #' @param missing_reference Logical, should entries for cases with missing
 #' reference date be completed as well?, Default: TRUE
 #'
 #' @param completion_beyond_max_report Logical, should entries be completed
 #' beyond the maximum date found in the data? Default: FALSE
+#'
+#' @param flag_observation Logical, should observations that have been
+#' imputed as missing be flagged as not observed?. Makes use of
+#' [enw_flag_observed_observations()] to add a `.observed` logical vector
+#' which indicates if observations have been imputed. This vector can
+#' then be passed to the `observation_indicator` argument of [enw_obs()] to
+#' control if these observations are used in the likelihood. Default: FALSE
+#'
+#' @inheritParams get_internal_timestep
 #'
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
@@ -632,21 +750,27 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' # Allow completion beyond the maximum date found in the data
 #' enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 enw_complete_dates <- function(obs, by = NULL, max_delay,
-                               missing_reference = TRUE,
-                               completion_beyond_max_report = FALSE) {
+                               min_date = min(obs$reference_date, na.rm = TRUE),
+                               max_date = max(obs$report_date, na.rm = TRUE),
+                               timestep = "day", missing_reference = TRUE,
+                               completion_beyond_max_report = FALSE,
+                               flag_observation = FALSE) {
   obs <- coerce_dt(obs, dates = TRUE)
   check_group(obs)
 
-  min_date <- min(obs$reference_date, na.rm = TRUE)
-  max_date <- max(obs$report_date, na.rm = TRUE)
   if (missing(max_delay)) {
-    max_delay <- as.numeric(max_date - min_date)
+    max_delay <- as.numeric(as.IDate(max_date) - as.IDate(min_date))
   }
+  internal_timestep <- get_internal_timestep(timestep)
 
-  dates <- seq.Date(min_date, max_date, by = 1)
+  dates <- seq.Date(
+    as.IDate(min_date), as.IDate(max_date), by = internal_timestep
+  )
   dates <- as.IDate(dates)
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  check_group_date_unique(obs)
+
   by_with_group_id <- c(".group", by) # nolint: object_usage_linter
   groups <- unique(obs[, ..by_with_group_id])
 
@@ -655,7 +779,9 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     .group = groups$.group,
     report_date = 0:max_delay
   )
-  completion <- completion[, report_date := reference_date + report_date]
+  completion <- completion[,
+    report_date := reference_date + report_date * internal_timestep
+  ]
   if (!completion_beyond_max_report) {
     completion <- completion[report_date <= max_date]
   }
@@ -673,11 +799,16 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   # join completion with groups and original obs
   completion <- completion[groups, on = ".group"]
   obs <- obs[completion, on = c(names(groups), "reference_date", "report_date")]
+  # flag observations that have been imputed as missing
+  # also flag NA values in the original data as missing
+  if (isTRUE(flag_observation)) {
+    obs <- enw_flag_observed_observations(obs, copy = FALSE)
+  }
+
   # impute missing as last available observation or 0
-  obs[,
-    confirm := nafill(nafill(confirm, "locf"), fill = 0),
-    by = c("reference_date", ".group")
-  ]
+  obs <- enw_impute_na_observations(obs, by = ".group", copy = FALSE)
+
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
   data.table::setcolorder(obs, c(by, "report_date", "reference_date"))
@@ -748,11 +879,17 @@ enw_missing_reference <- function(obs) {
 #' @param breaks Numeric, defaults to 4. The number of breaks to use when
 #' constructing a categorised version of numeric delays.
 #'
+#' @inheritParams get_internal_timestep
+#'
 #' @return A  `data.frame`  of delay metadata. This includes:
 #'  - `delay`: The numeric delay from reference date to report.
 #'  - `delay_cat`: The categorised delay. This may be useful for model building.
 #'  - `delay_week`: The numeric week since the delay was reported. This again
 #'  may be useful for model building.
+#'  - `delay_head`: A logical variable defining if the delay is in the lower
+#'  25% of the potential delays. This may be particularly useful when building
+#'  models that assume a parametric distribution in order to increase the weight
+#'  of the head of the reporting distribution in a pragmatic way.
 #'  - `delay_tail`: A logical variable defining if the delay is in the upper
 #'  75% of the potential delays. This may be particularly useful when building
 #'  models that assume a parametric distribution in order to increase the weight
@@ -762,9 +899,10 @@ enw_missing_reference <- function(obs) {
 #' @export
 #' @examples
 #' enw_metadata_delay(max_delay = 20, breaks = 4)
-enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
+enw_metadata_delay <- function(max_delay = 20, breaks = 4, timestep = "day") {
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
+  internal_timestep <- get_internal_timestep(timestep)
   delays <- delays[, `:=`(
     delay = delay,
     delay_cat = cut(
@@ -774,7 +912,8 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4) {
       ),
       dig.lab = 0, right = FALSE
     ),
-    delay_week = as.integer(delay / 7),
+    delay_week = as.integer((delay * internal_timestep) / 7),
+    delay_head = delay < quantile(delay, probs = 0.25),
     delay_tail = delay > quantile(delay, probs = 0.75)
   )]
   return(delays[])
@@ -861,11 +1000,12 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   metareference = pobs$metareference[[1]],
 #'   metadelay = pobs$metadelay[[1]],
 #'   max_delay = pobs$max_delay,
+#'   timestep = pobs$timestep[[1]]
 #'   by = c()
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
                                reporting_triangle, metareport, metareference,
-                               metadelay, max_delay, by) {
+                               metadelay, max_delay, timestep, by) {
   out <- data.table::data.table(
     obs = list(obs),
     new_confirm = list(new_confirm),
@@ -877,10 +1017,13 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     metadelay = list(metadelay),
     max_delay = max_delay,
     time = nrow(latest[.group == 1]),
-    snapshots = nrow(unique(obs[, .(.group, report_date)])),
+    snapshots = nrow(
+      unique(obs[!is.na(reference_date)][, .(.group, reference_date)])
+    ),
     by = list(by),
     groups = length(unique(obs$.group)),
-    max_date = max(obs$report_date)
+    max_date = max(obs$report_date),
+    timestep = timestep
   )
   class(out) <- c("enw_preprocess_data", class(out))
   return(out[])
@@ -930,12 +1073,20 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' no delay). See [enw_metadata_delay()] for checking the coverage of a delay
 #' distribution for a given maximum delay.
 #'
+#' @param timestep The timestep to used in the process model (i.e. the
+#' reference date model). This can be a string ("day", "week", "month") or a
+#' numeric whole number representing the number of days. If your data does not
+#' have this timestep then you may wish to make use of
+#' [enw_aggregate_cumulative()] to aggregate your data to the desired timestep.
+#'
 #' @param ... Other arguments to [enw_add_metaobs_features()],
 #'   e.g. `holidays`, which sets commonly used metadata
 #'   (e.g. day of week, days since start of time series)
 #'
 #' @param copy A logical; if `TRUE` (the default) creates a copy; otherwise,
 #' modifies `obs` in place.
+#'
+#' @inheritParams get_internal_timestep
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
@@ -963,24 +1114,38 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' @inheritParams enw_add_incidence
 #' @export
 #' @importFrom data.table data.table
+#' @importFrom cli cli_abort
 #' @examples
 #' library(data.table)
 #'
 #' # Filter example hospitalisation data to be national and over all ages
 #' nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-#' nat_germany_hosp <- nat_germany_hosp[age_group %in% "00+"]
+#' nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 #'
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
 enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
-                                set_negatives_to_zero = TRUE,
+                                timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  max_delay <- as.integer(max_delay)
-  stopifnot(
-    "`max_delay` must be an integer and not NA" = is.integer(max_delay),
-    "`max_delay` must be greater than or equal to one" = max_delay >= 1
-  )
+  if (!is.numeric(max_delay) || round(max_delay) != max_delay) {
+    cli::cli_abort("`max_delay` must be an integer and not NA")
+  }
+  if (max_delay < 1) {
+    cli::cli_abort("`max_delay` must be greater than or equal to one")
+  }
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
+  internal_timestep <- get_internal_timestep(timestep)
+  orig_scale_max_delay <- max_delay
+  max_delay <- max_delay * internal_timestep
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
@@ -988,13 +1153,15 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   data.table::setkeyv(obs, "reference_date")
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
+  check_group_date_unique(obs)
+  check_timestep_by_date(obs, timestep = timestep, exact = TRUE)
+
   obs <- enw_add_max_reported(obs, copy = FALSE)
-  obs <- enw_add_delay(obs, copy = FALSE)
+  obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
 
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(
-    obs,
-    max_delay = max_delay
+    obs, max_delay = orig_scale_max_delay, timestep = timestep
   )
 
   diff_obs <- enw_add_incidence(
@@ -1011,6 +1178,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   # update grouping in case any are now missing
   setnames(obs, ".group", ".old_group")
   obs <- enw_assign_group(obs, by)
+  check_group_date_unique(obs)
 
   # update diff data groups using updated groups
   diff_obs <- merge(
@@ -1039,7 +1207,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   metareport <- enw_metadata(reference_available, target_date = "report_date")
   metareport <- enw_extend_date(
     metareport,
-    days = max_delay - 1, direction = "end"
+    days = max_delay - 1, direction = "end", timestep = timestep
   )
   metareport <- enw_add_metaobs_features(metareport, ...)
 
@@ -1052,8 +1220,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   # extract and add features for delays
   metadelay <- enw_metadata_delay(
-    max_delay,
-    breaks = 4
+    orig_scale_max_delay, breaks = 4, timestep = timestep
   )
 
   out <- enw_construct_data(
@@ -1065,8 +1232,9 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     metareference = metareference,
     metareport = metareport,
     metadelay = metadelay,
-    max_delay = max_delay,
-    by = by
+    max_delay = orig_scale_max_delay,
+    by = by,
+    timestep = timestep
   )
   
   # apply checks

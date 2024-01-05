@@ -20,10 +20,13 @@ Read in a stan function file as a character string
 }
 \seealso{
 Utility functions
+\code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{convert_cmdstan_to_rstan}()},
+\code{\link{date_to_numeric_modulus}()},
 \code{\link{expose_stan_fns}()},
+\code{\link{get_internal_timestep}()},
 \code{\link{is.Date}()}
 }
 \concept{utils}

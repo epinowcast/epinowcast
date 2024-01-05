@@ -35,7 +35,7 @@ it to a line list where each row represents a case.
 \examples{
 incidence <- enw_add_incidence(germany_covid19_hosp)
 incidence <- enw_filter_reference_dates(
-  incidence[location \%in\% "DE"], include_days = 10
+  incidence[location == "DE"], include_days = 10
 )
 enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 }
@@ -43,6 +43,7 @@ enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 Data converters
 \code{\link{enw_add_cumulative}()},
 \code{\link{enw_add_incidence}()},
+\code{\link{enw_aggregate_cumulative}()},
 \code{\link{enw_cumulative_to_incidence}()},
 \code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_linelist_to_incidence}()}

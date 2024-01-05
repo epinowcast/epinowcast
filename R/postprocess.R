@@ -75,6 +75,7 @@ enw_posterior <- function(fit, variables = NULL,
 #' larger, then nowcasts for unmodelled dates are added by assuming that case 
 #' counts beyond the modelled maximum delay are fully observed.
 #' 
+#' @inheritParams get_internal_timestep
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
 #' This uses observed data where available and the posterior prediction
 #' where not.
@@ -91,7 +92,7 @@ enw_posterior <- function(fit, variables = NULL,
 #'   fit$latest[[1]],
 #'   fit$max_delay
 #'   )
-enw_nowcast_summary <- function(fit, obs, max_delay = NULL,
+enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
                                 )) {
@@ -112,8 +113,17 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL,
     )
   }
 
-  ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  internal_timestep <- get_internal_timestep(timestep)
+
+  ord_obs <- coerce_dt(
+    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  )
+  check_timestep_by_group(
+    ord_obs, "reference_date", timestep, exact = TRUE
+  )
+  ord_obs <- ord_obs[
+    reference_date > (max(reference_date) - max_delay * internal_timestep)
+  ]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
 
   # add observations for modelled dates
@@ -163,9 +173,10 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL,
 #' enw_nowcast_samples(
 #'   fit$fit[[1]],
 #'   fit$latest[[1]],
-#'   fit$max_delay
+#'   fit$max_delay,
+#'   "day",
 #'   )
-enw_nowcast_samples <- function(fit, obs, max_delay = NULL) {
+enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
     format = "draws_df"
@@ -192,8 +203,17 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL) {
     )
   }
 
-  ord_obs <- coerce_dt(obs)
-  ord_obs <- ord_obs[reference_date > (max(reference_date) - max_delay)]
+  internal_timestep <- get_internal_timestep(timestep)
+
+  ord_obs <- coerce_dt(
+    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  )
+  check_timestep_by_group(
+    ord_obs, "reference_date", timestep, exact = TRUE
+  )
+  ord_obs <- ord_obs[
+    reference_date > (max(reference_date) - max_delay * internal_timestep)
+  ]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   ord_obs <- data.table::data.table(
     .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
@@ -348,7 +368,9 @@ enw_pp_summary <- function(fit, diff_obs,
     probs = probs
   )
 
-  ord_obs <- coerce_dt(diff_obs)
+  ord_obs <- coerce_dt(
+    diff_obs,  required_cols = "new_confirm", dates = TRUE, group = TRUE
+  )
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   pp <- cbind(
     ord_obs,
@@ -372,6 +394,7 @@ enw_pp_summary <- function(fit, diff_obs,
 #' posterior <- enw_posterior(fit$fit[[1]], var = "expr_lelatent_int[1,1]")
 #' enw_quantiles_to_long(posterior)
 enw_quantiles_to_long <- function(posterior) {
+  posterior <- coerce_dt(posterior)
   long <- melt(posterior,
     measure.vars = patterns("^q[0-9]"),
     value.name = "prediction", variable.name = "quantile"

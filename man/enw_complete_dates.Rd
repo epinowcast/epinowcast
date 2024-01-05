@@ -8,8 +8,12 @@ enw_complete_dates(
   obs,
   by = NULL,
   max_delay,
+  min_date = min(obs$reference_date, na.rm = TRUE),
+  max_date = max(obs$report_date, na.rm = TRUE),
+  timestep = "day",
   missing_reference = TRUE,
-  completion_beyond_max_report = FALSE
+  completion_beyond_max_report = FALSE,
+  flag_observation = FALSE
 )
 }
 \arguments{
@@ -39,11 +43,27 @@ date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 correspon
 no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
 distribution for a given maximum delay.}
 
+\item{min_date}{The minimum date to include in the data. Defaults to the
+minimum reference date found in the data.}
+
+\item{max_date}{The maximum date to include in the data. Defaults to the
+maximum report date found in the data.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
+
 \item{missing_reference}{Logical, should entries for cases with missing
 reference date be completed as well?, Default: TRUE}
 
 \item{completion_beyond_max_report}{Logical, should entries be completed
 beyond the maximum date found in the data? Default: FALSE}
+
+\item{flag_observation}{Logical, should observations that have been
+imputed as missing be flagged as not observed?. Makes use of
+\code{\link[=enw_flag_observed_observations]{enw_flag_observed_observations()}} to add a \code{.observed} logical vector
+which indicates if observations have been imputed. This vector can
+then be passed to the \code{observation_indicator} argument of \code{\link[=enw_obs]{enw_obs()}} to
+control if these observations are used in the likelihood. Default: FALSE}
 }
 \value{
 A \code{data.table} with completed entries for all combinations of
@@ -77,6 +97,8 @@ Preprocessing functions
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_flag_observed_observations}()},
+\code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
