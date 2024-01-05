@@ -57,3 +57,55 @@ test_that("check_max_delay produces the expected output", {
   )
 })
 
+test_that(
+  "check_max_delay() works with different timesteps",
+  {
+    nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
+    nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
+    weekly_nat_germany_hosp <- nat_germany_hosp |>
+      enw_aggregate_cumulative(timestep = "week")
+    
+    weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
+      enw_filter_reference_dates(earliest_date = "2021-05-10")
+    
+    # week
+    weekly_pobs <- enw_preprocess_data(
+      weekly_nat_germany_hosp,
+      max_delay = 5, timestep = "week"
+    )
+    
+    expect_snapshot(
+      check_max_delay(weekly_pobs)
+    )
+    
+    expect_warning(
+      check_max_delay(weekly_pobs, max_delay = 1),
+      "specified maximum reporting delay \\(7 days\\) covers less"
+    )
+    
+    # month
+    weekly_nat_germany_hosp <- nat_germany_hosp |>
+      enw_aggregate_cumulative(timestep = 14)
+    
+    weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
+      enw_filter_reference_dates(earliest_date = "2021-05-10")
+    
+    weekly_pobs <- enw_preprocess_data(
+      weekly_nat_germany_hosp,
+      max_delay = 2, timestep = 14
+    )
+    
+    expect_snapshot(
+      check_max_delay(weekly_pobs)
+    )
+    
+    expect_warning(
+      check_max_delay(weekly_pobs, max_delay = 1),
+      "specified maximum reporting delay \\(14 days\\) covers less"
+    )
+    
+    expect_snapshot(
+      suppressWarnings(check_max_delay(weekly_pobs, max_delay = 1))
+    )
+  }
+)
