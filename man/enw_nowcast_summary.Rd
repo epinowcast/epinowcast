@@ -8,8 +8,8 @@ enw_nowcast_summary(
   fit,
   obs,
   max_delay = NULL,
-  probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95),
-  timestep = "day"
+  timestep = "day",
+  probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95)
 )
 }
 \arguments{
@@ -26,13 +26,13 @@ be equal (default) or larger than the modelled maximum delay. If it is
 larger, then nowcasts for unmodelled dates are added by assuming that case
 counts beyond the modelled maximum delay are fully observed.}
 
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
+
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,
 and 95\% quantiles which are also the minimum set required for
 plotting functions to work.}
-
-\item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A \code{data.frame} summarising the model posterior nowcast prediction.

@@ -66,26 +66,26 @@
       30:     2021-08-03  2021-08-22      1         149       DE       00+     149
           reference_date report_date .group max_confirm location age_group confirm
           cum_prop_reported delay prop_reported .chain .iteration .draw sample
-       1:                 1    19             0     NA         NA    NA     77
-       2:                 1    19             0     NA         NA    NA     77
-       3:                 1    19             0     NA         NA    NA     77
-       4:                 1    19             0     NA         NA    NA     77
-       5:                 1    19             0     NA         NA    NA     77
-       6:                 1    19             0     NA         NA    NA     77
-       7:                 1    19             0     NA         NA    NA     77
-       8:                 1    19             0     NA         NA    NA     77
-       9:                 1    19             0     NA         NA    NA     77
-      10:                 1    19             0     NA         NA    NA     77
-      11:                 1    19             0     NA         NA    NA     59
-      12:                 1    19             0     NA         NA    NA     59
-      13:                 1    19             0     NA         NA    NA     59
-      14:                 1    19             0     NA         NA    NA     59
-      15:                 1    19             0     NA         NA    NA     59
-      16:                 1    19             0     NA         NA    NA     59
-      17:                 1    19             0     NA         NA    NA     59
-      18:                 1    19             0     NA         NA    NA     59
-      19:                 1    19             0     NA         NA    NA     59
-      20:                 1    19             0     NA         NA    NA     59
+       1:                 1    19             0     NA         NA     1     77
+       2:                 1    19             0     NA         NA     2     77
+       3:                 1    19             0     NA         NA     3     77
+       4:                 1    19             0     NA         NA     4     77
+       5:                 1    19             0     NA         NA     5     77
+       6:                 1    19             0     NA         NA     6     77
+       7:                 1    19             0     NA         NA     7     77
+       8:                 1    19             0     NA         NA     8     77
+       9:                 1    19             0     NA         NA     9     77
+      10:                 1    19             0     NA         NA    10     77
+      11:                 1    19             0     NA         NA     1     59
+      12:                 1    19             0     NA         NA     2     59
+      13:                 1    19             0     NA         NA     3     59
+      14:                 1    19             0     NA         NA     4     59
+      15:                 1    19             0     NA         NA     5     59
+      16:                 1    19             0     NA         NA     6     59
+      17:                 1    19             0     NA         NA     7     59
+      18:                 1    19             0     NA         NA     8     59
+      19:                 1    19             0     NA         NA     9     59
+      20:                 1    19             0     NA         NA    10     59
       21:                 1    19             0      1          1     1    149
       22:                 1    19             0      1          2     2    149
       23:                 1    19             0      1          3     3    149

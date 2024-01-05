@@ -1,45 +1,48 @@
 test_that("check_max_delay produces the expected warnings", {
-  obs <- enw_example(type = "preprocessed_observations")$obs[[1]]
+  obs <- enw_example(type = "preprocessed_observations")
   expect_warning(
-    check_max_delay(obs, max_delay = 5, by = ".group"),
+    check_max_delay(obs, max_delay = 5),
     regexp = "covers less than 80% of cases for the majority"
   )
 
   expect_no_warning(
-    check_max_delay(obs, max_delay = 5, by = ".group", warn = FALSE)
+    check_max_delay(obs, max_delay = 5, warn = FALSE)
   )
 
   expect_warning(
-    check_max_delay(obs, max_delay = 8, cum_coverage = 0.9, by = ".group"),
+    check_max_delay(obs, max_delay = 8, cum_coverage = 0.9),
     regexp = "covers less than 90% of cases for the majority"
   )
 
   expect_no_warning(
-    check_max_delay(obs, 10, by = ".group")
+    check_max_delay(obs, 10)
   )
 })
 
 test_that("check_max_delay produces the expected output", {
-  obs <- enw_example(type = "preprocessed_observations")$obs[[1]]
+  obs <- enw_example(type = "preprocessed_observations")
 
   expect_equal(
-    check_max_delay(obs, max_delay = 10, by = ".group"),
+    check_max_delay(obs, max_delay = 10),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8),
-      below_coverage = c(0.136363636, 0.136363636)
+      below_coverage = c(0.22727273, 0.22727273)
     )
   )
 
+  expect_warning(check_max_delay(obs, max_delay = 13, cum_coverage = 0.9))
+  
   expect_equal(
-    check_max_delay(obs, max_delay = 13, cum_coverage = 0.9, by = ".group"),
+    check_max_delay(obs, max_delay = 10, cum_coverage = 0.7),
     data.table(
-      .group = c(1, "all"), coverage = c(0.9, 0.9),
-      below_coverage = c(0.409090909, 0.409090909)
-    )
+      .group = c(1, "all"), coverage = c(0.7, 0.7),
+      below_coverage = c(0.04545455, 0.04545455)
+    ),
+    tolerance = 0.0001
   )
 
   expect_equal(
-    check_max_delay(obs, max_delay = 20, by = ".group"),
+    check_max_delay(obs, max_delay = 20),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8), below_coverage = c(0, 0)
     )
@@ -48,18 +51,9 @@ test_that("check_max_delay produces the expected output", {
   expect_error(check_max_delay(obs, max_delay = 10, cum_coverage = 80))
 
   nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
+  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 15, by = "age_group")
   expect_snapshot(
-    check_max_delay(nat_germany_hosp, max_delay = 15, by = "age_group")
+    check_max_delay(pobs, max_delay = 15)
   )
 })
 
-test_that("check_max_delay does same preprocessing as enw_preprocess_data", {
-  nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
-  pobs <- suppressWarnings(enw_preprocess_data(
-    nat_germany_hosp, max_delay = 999, by = "age_group"
-  ))
-  expect_equal(
-      check_max_delay(nat_germany_hosp, max_delay = 15, "age_group"),
-      check_max_delay(pobs$obs, max_delay = 15, by = ".group")
-  )
-})
