@@ -37,8 +37,9 @@ applied to any set of right-truncated time-series count data.
 ## Installation
 
 <details>
-
-<summary>Installing the package</summary>
+<summary>
+Installing the package
+</summary>
 
 You can install the latest released version using the normal `R`
 function, though you need to point to `r-universe` instead of CRAN:
@@ -51,7 +52,7 @@ install.packages(
 
 Alternatively, you can use the [`remotes`
 package](https://remotes.r-lib.org/) to install the development version
-from Github (warning\! this version may contain breaking changes and/or
+from Github (warning! this version may contain breaking changes and/or
 bugs):
 
 ``` r
@@ -75,10 +76,10 @@ if needed, e.g. if you want to try out a specific unreleased feature,
 but not the absolute latest developmental version.*
 
 </details>
-
 <details>
-
-<summary>Installing CmdStan</summary>
+<summary>
+Installing CmdStan
+</summary>
 
 If you wish to do model fitting and nowcasting, you will need to install
 [CmdStan](https://mc-stan.org/users/interfaces/cmdstan), which also
@@ -105,10 +106,10 @@ need to install a past version of CmdStan, which you can do with the
 `version` argument.*
 
 </details>
-
 <details>
-
-<summary>Alternative: Docker</summary>
+<summary>
+Alternative: Docker
+</summary>
 
 We also provide a [Docker](https://www.docker.com/get-started/) image
 with [`epinowcast` and all dependencies
@@ -122,12 +123,13 @@ dependencies.
 
 As you use the package, the documentation available via `?enw_` should
 be your first stop for troubleshooting. We also provide a range of other
-documentation, case studies, and community spaces to ask (and answer\!)
+documentation, case studies, and community spaces to ask (and answer!)
 questions:
 
 <details>
-
-<summary>Package Website</summary>
+<summary>
+Package Website
+</summary>
 
 The [`epinowcast` website](https://package.epinowcast.org/) includes a
 function reference, model outline, and case studies using the package.
@@ -136,10 +138,10 @@ documentation for [the latest development
 version](https://package.epinowcast.org/dev/).
 
 </details>
-
 <details>
-
-<summary>R Vignettes</summary>
+<summary>
+R Vignettes
+</summary>
 
 We have created [package
 vignettes](https://package.epinowcast.org/articles) to help you [get
@@ -149,10 +151,10 @@ to [highlight other features with case
 studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
-
 <details>
-
-<summary>Organisation Website</summary>
+<summary>
+Organisation Website
+</summary>
 
 Our [organisation website](https://www.epinowcast.org/) includes links
 to other resources, [guest posts](https://www.epinowcast.org/blog.html),
@@ -160,10 +162,10 @@ and [seminar schedule](https://www.epinowcast.org/seminars.html) for
 both upcoming and past recordings.
 
 </details>
-
 <details>
-
-<summary>Community Forum</summary>
+<summary>
+Community Forum
+</summary>
 
 Our [community forum](https://community.epinowcast.org/) has areas for
 [question and answer](https://community.epinowcast.org/c/interface/15)
@@ -173,10 +175,10 @@ you are generally interested in real-time analysis of infectious
 disease, you may find this useful even if do not use `epinowcast`.
 
 </details>
-
 <details>
-
-<summary>Package Analysis Scripts</summary>
+<summary>
+Package Analysis Scripts
+</summary>
 
 In addition to the vignettes, the package also comes with [example
 analyses](https://github.com/epinowcast/epinowcast/tree/main/inst/examples).
@@ -194,7 +196,7 @@ list.files(
 
 ## Contributing
 
-We welcome contributions and new contributors\! We particularly
+We welcome contributions and new contributors! We particularly
 appreciate help on [identifying and identified
 issues](https://github.com/epinowcast/epinowcast/issues). Please check
 and add to the issues, and/or add a [pull
@@ -204,9 +206,9 @@ guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md)
 for more information.
 
 If you need a different underlying model for your work: `epinowcast`
-lets you pass your own models\! If you do try new model
-parameterisations that expand the overall flexibility or improve the
-defaults, please let us know either here or on the [community
+lets you pass your own models! If you do try new model parameterisations
+that expand the overall flexibility or improve the defaults, please let
+us know either here or on the [community
 forum](https://community.epinowcast.org/). We always like to hear about
 new use-cases, whether or not they are directed at the core `epinowcast`
 applications.
