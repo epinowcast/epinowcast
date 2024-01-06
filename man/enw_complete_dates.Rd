@@ -18,8 +18,8 @@ enw_complete_dates(
 }
 \arguments{
 \item{obs}{A \code{data.frame} containing at least the following variables:
-\code{reference_date} (index date of interest), \code{report_date} (report date for
-observations), \code{confirm} (cumulative observations by reference and report
+\verb{reference date} (index date of interest), \code{report_date} (report date for
+observations), and \code{confirm} (cumulative observations by reference and report
 date).}
 
 \item{by}{A character vector describing the stratification of
@@ -27,21 +27,20 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
-equal to 1 and an integer (internally it will be coerced to one using
-\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
-distribution. Observations with delays larger then the maximum delay will be
-dropped. If the specified maximum delay is too short, nowcasts can be biased
-as important parts of the true delay distribution are cut off. At the same
-time, computational cost scales non-linearly with this setting, so you want
-the maximum delay to be as long as necessary, but not much longer. Consider
-what delays are realistic for your application, and when in doubt, check if
-increasing the maximum delay noticeably changes the delay distribution or
-nowcasts as estimated by epinowcast. If it does, your maximum delay may still
-be too short. Note that delays are zero indexed and so include the reference
-date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
-no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
-distribution for a given maximum delay.}
+\item{max_delay}{The maximum number of days to model in the delay
+distribution. Must be an integer greater than or equal to 1. Observations
+with delays larger then the maximum delay will be dropped. If the specified
+maximum delay is too short, nowcasts can be biased as important parts of the
+true delay distribution are cut off. At the same time, computational cost
+scales non-linearly with this setting, so you want the maximum delay to be as
+long as necessary, but not much longer. Consider what delays are realistic
+for your application, and when in doubt, check if increasing the maximum
+delay noticeably changes the delay distribution or nowcasts as estimated by
+epinowcast. If it does, your maximum delay may still be too short.
+Note that delays are zero indexed and so include the reference date and
+\code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
+no delay). You can use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a delay
+distribution for different maximum delays.}
 
 \item{min_date}{The minimum date to include in the data. Defaults to the
 minimum reference date found in the data.}

@@ -7,7 +7,7 @@
 enw_preprocess_data(
   obs,
   by = NULL,
-  max_delay = 20,
+  max_delay = "observed",
   timestep = "day",
   set_negatives_to_zero = TRUE,
   ...,
@@ -25,21 +25,22 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric, defaults to 20 and needs to be greater than or
-equal to 1 and an integer (internally it will be coerced to one using
-\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
-distribution. Observations with delays larger then the maximum delay will be
-dropped. If the specified maximum delay is too short, nowcasts can be biased
-as important parts of the true delay distribution are cut off. At the same
-time, computational cost scales non-linearly with this setting, so you want
-the maximum delay to be as long as necessary, but not much longer. Consider
-what delays are realistic for your application, and when in doubt, check if
-increasing the maximum delay noticeably changes the delay distribution or
-nowcasts as estimated by epinowcast. If it does, your maximum delay may still
-be too short. Note that delays are zero indexed and so include the reference
-date and \code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
-no delay). See \code{\link[=enw_metadata_delay]{enw_metadata_delay()}} for checking the coverage of a delay
-distribution for a given maximum delay.}
+\item{max_delay}{The maximum number of days to model in the delay
+distribution. If \code{max_delay = "observed"} (default), the maximum observed
+delay is assumed to be the true maximum delay in the model. Otherwise, an
+integer greater than or equal to 1 can be specified. Observations with delays
+larger then the maximum delay will be dropped. If the specified maximum delay
+is too short, nowcasts can be biased as important parts of the true delay
+distribution are cut off. At the same time, computational cost scales
+non-linearly with this setting, so you want the maximum delay to be as long
+as necessary, but not much longer. Consider what delays are realistic for
+your application, and when in doubt, check if increasing the maximum delay
+noticeably changes the delay distribution or nowcasts as estimated by
+epinowcast. If it does, your maximum delay may still be too short.
+Note that delays are zero indexed and so include the reference date and
+\code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
+no delay). You can use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a delay
+distribution for different maximum delays.}
 
 \item{timestep}{The timestep to used in the process model (i.e. the
 reference date model). This can be a string ("day", "week", "month") or a
@@ -100,6 +101,10 @@ the impact this may have (if \code{cum_prop_reported} is significantly below 1 a
 longer \code{max_delay} may be appropriate). Also note that if missing reference
 or report dates are suspected to occur in your data then these need to be
 completed with \code{\link[=enw_complete_dates]{enw_complete_dates()}}.
+}
+\details{
+If \code{max_delay} is numeric, it will be internally coerced to integer
+using \code{\link[=as.integer]{as.integer()}}).
 }
 \examples{
 library(data.table)

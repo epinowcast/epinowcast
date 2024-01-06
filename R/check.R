@@ -265,6 +265,7 @@ coerce_dt <- function(
 #' delay, the computed coverage values should be interpreted with care, as they
 #' are only proxies for the true coverage.
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' 
 #' @param data Output from [enw_preprocess_data()].

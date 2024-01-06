@@ -510,6 +510,7 @@ enw_latest_data <- function(obs) {
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @importFrom lifecycle deprecate_stop
@@ -527,10 +528,26 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 }
 
 #' Filter observations to have a consistent maximum delay period
+#' 
+#' @param max_delay The maximum number of days to model in the delay 
+#' distribution. Must be an integer greater than or equal to 1. Observations 
+#' with delays larger then the maximum delay will be dropped. If the specified 
+#' maximum delay is too short, nowcasts can be biased as important parts of the 
+#' true delay distribution are cut off. At the same time, computational cost 
+#' scales non-linearly with this setting, so you want the maximum delay to be as
+#' long as necessary, but not much longer. Consider what delays are realistic 
+#' for your application, and when in doubt, check if increasing the maximum 
+#' delay noticeably changes the delay distribution or nowcasts as estimated by 
+#' epinowcast. If it does, your maximum delay may still be too short. 
+#' Note that delays are zero indexed and so include the reference date and 
+#' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
+#' no delay). You can use [check_max_delay()] to check the coverage of a delay
+#' distribution for different maximum delays.
 #'
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
@@ -651,6 +668,7 @@ enw_reporting_triangle_to_long <- function(obs) {
 #' @return A `data.table` with an additional column '.observed' indicating
 #' observed observations.
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
@@ -680,7 +698,8 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #'
 #' @return A `data.table` with imputed 'confirm' column where NA values have
 #' been replaced with zero.
-#'
+#' 
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
@@ -736,6 +755,7 @@ enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
 #' @return A `data.table` with completed entries for all combinations of
 #' reference dates, groups and possible report dates.
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @export
 #' @importFrom data.table CJ
@@ -894,6 +914,8 @@ enw_missing_reference <- function(obs) {
 #'  75% of the potential delays. This may be particularly useful when building
 #'  models that assume a parametric distribution in order to increase the weight
 #'  of the tail of the reporting distribution in a pragmatic way.
+#'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
 #' @export
@@ -983,7 +1005,8 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'  [enw_metadata_delay()].
 #'
 #' @param max_delay Maximum delay to be modelled by epinowcast.
-#
+#'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @inherit enw_preprocess_data return
 #' @family preprocess
@@ -1057,21 +1080,22 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay Numeric, defaults to 20 and needs to be greater than or
-#' equal to 1 and an integer (internally it will be coerced to one using
-#' [as.integer()]). The maximum number of days to include in the delay
-#' distribution. Observations with delays larger then the maximum delay will be
-#' dropped. If the specified maximum delay is too short, nowcasts can be biased
-#' as important parts of the true delay distribution are cut off. At the same
-#' time, computational cost scales non-linearly with this setting, so you want
-#' the maximum delay to be as long as necessary, but not much longer. Consider
-#' what delays are realistic for your application, and when in doubt, check if
-#' increasing the maximum delay noticeably changes the delay distribution or
-#' nowcasts as estimated by epinowcast. If it does, your maximum delay may still
-#' be too short. Note that delays are zero indexed and so include the reference
-#' date and `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
-#' no delay). See [enw_metadata_delay()] for checking the coverage of a delay
-#' distribution for a given maximum delay.
+#' @param max_delay The maximum number of days to model in the delay 
+#' distribution. If `max_delay = "observed"` (default), the maximum observed
+#' delay is assumed to be the true maximum delay in the model. Otherwise, an
+#' integer greater than or equal to 1 can be specified. Observations with delays 
+#' larger then the maximum delay will be dropped. If the specified maximum delay 
+#' is too short, nowcasts can be biased as important parts of the true delay 
+#' distribution are cut off. At the same time, computational cost scales 
+#' non-linearly with this setting, so you want the maximum delay to be as long 
+#' as necessary, but not much longer. Consider what delays are realistic for 
+#' your application, and when in doubt, check if increasing the maximum delay 
+#' noticeably changes the delay distribution or nowcasts as estimated by 
+#' epinowcast. If it does, your maximum delay may still be too short. 
+#' Note that delays are zero indexed and so include the reference date and 
+#' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
+#' no delay). You can use [check_max_delay()] to check the coverage of a delay
+#' distribution for different maximum delays.
 #'
 #' @param timestep The timestep to used in the process model (i.e. the
 #' reference date model). This can be a string ("day", "week", "month") or a
@@ -1087,6 +1111,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' modifies `obs` in place.
 #'
 #' @inheritParams get_internal_timestep
+#' 
+#' @details If `max_delay` is numeric, it will be internally coerced to integer 
+#' using [as.integer()]).
 #'
 #' @return A data.table containing processed observations as a series of nested
 #' data.frames as well as variables containing metadata. These are:
@@ -1125,15 +1152,9 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
+enw_preprocess_data <- function(obs, by = NULL, max_delay = "observed",
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  if (!is.numeric(max_delay) || round(max_delay) != max_delay) {
-    cli::cli_abort("`max_delay` must be an integer and not NA")
-  }
-  if (max_delay < 1) {
-    cli::cli_abort("`max_delay` must be greater than or equal to one")
-  }
   if (timestep == "month") {
     cli::cli_abort(
       paste0(
@@ -1144,8 +1165,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
     )
   }
   internal_timestep <- get_internal_timestep(timestep)
-  orig_scale_max_delay <- max_delay
-  max_delay <- max_delay * internal_timestep
+  
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
@@ -1158,6 +1178,30 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
 
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
+  
+  # max delay
+  if (max_delay == "observed") {
+    max_delay <- obs[, max(delay, na.rm = TRUE)] + 1
+    cli::cli_inform(
+      c(
+        paste0(
+          "Using the maximum observed delay of ", max_delay * internal_timestep, 
+          " days. You may want to specify a shorter (or, in special cases, ",
+          "longer) maximum delay via the `max_delay` argument. See {.help ",
+          "[help(enw_preprocess_data)](epinowcast::enw_preprocess_data)} ",
+          "for details."
+        )
+      )
+    )
+  }
+  if (!is.numeric(max_delay) || round(max_delay) != max_delay) {
+    cli::cli_abort("`max_delay` must be an integer and not NA")
+  }
+  if (max_delay < 1) {
+    cli::cli_abort("`max_delay` must be greater than or equal to one")
+  }
+  orig_scale_max_delay <- max_delay
+  max_delay <- max_delay * internal_timestep
 
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(

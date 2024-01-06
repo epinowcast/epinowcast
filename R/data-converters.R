@@ -5,6 +5,7 @@
 #' observations), and `new_confirm` (incident observations by reference and
 #' report date).
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #'
@@ -48,6 +49,7 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #'
 #' @param copy Should `obs` be copied (default) or modified in place?
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #'
 #' @return The input `data.frame` with a new variable `new_confirm`. If
@@ -267,6 +269,8 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
 #' @return The input `data.frame` with a new variable `new_confirm`. If
 #' `max_confirm` was present in the `data.frame` then the proportion
 #' reported on each day (`prop_reported`) is also added.
+#' 
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
 #' @keywords internal
@@ -298,6 +302,8 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' report date).
 #'
 #' @return The input `data.frame` with a new variable `confirm`.
+#' 
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
 #' @keywords internal
