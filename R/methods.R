@@ -11,6 +11,11 @@
 #'  * "fit" which returns the summarised `cmdstanr` fit with [enw_posterior()],
 #'  * "posterior_prediction" which returns summarised posterior predictions for
 #'  the observations after fitting using [enw_pp_summary()].
+#'  
+#' @param max_delay Maximum delay to which nowcasts should be summarised. Must 
+#' be equal (default) or larger than the modelled maximum delay. If it is 
+#' larger, then nowcasts for unmodelled dates are added by assuming that case 
+#' counts beyond the modelled maximum delay are fully observed.
 #'
 #' @param ... Additional arguments passed to summary specified by `type`.
 #'
