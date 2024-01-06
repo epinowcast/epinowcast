@@ -40,7 +40,7 @@ This release is in development and not yet ready for production use.
 - Added a new action to check that the `cmdstan` model can be compiled and has the correct syntax. This runs on pull requests whenever stan code is changed, when code is merged onto `main` with altered stan code, and on a weekly schedule against the latest `main` branch. See #386 by @seabbs.
 - Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
 - Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
-- Changed `enw_preprocess_data()` to use the maximum delay observed in the data by default (before, the default was 20 days). Added a function `check_max_delay()` which allows to obtain coverage statistics for the assumed maximum delay based on the observed data. Further improved documentation and warnings around `max_delay`. See #224 by @adrian-lison and @seabbs and reviewed by @seabbs.
+- Changed `enw_preprocess_data()` to use the maximum delay observed in the data by default (before, the default was 20 days). Added a function `check_max_delay()` which allows to obtain coverage statistics for the assumed maximum delay based on the observed data. Enhanced postprocessing functions to accept a different max_delay than used in the model, by adding artificial samples/summaries for not-modeled dates. Further improved documentation and warnings around `max_delay`. See #224 by @adrian-lison and @seabbs and reviewed by @seabbs.
 
 ## Model
 
