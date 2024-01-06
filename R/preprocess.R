@@ -515,6 +515,7 @@ enw_latest_data <- function(obs) {
 #' @inheritParams enw_preprocess_data
 #' @importFrom lifecycle deprecate_stop
 #' @family preprocess
+#' @keywords internal
 #' @export
 enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   lifecycle::deprecate_warn(
@@ -568,29 +569,6 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
     by = c("reference_date", ".group")
   ]
   return(obs[])
-}
-
-#' Filter observations to restrict the maximum reporting delay
-#'
-#' @description `r lifecycle::badge('deprecated')`
-#'
-#' @description `enw_delay_filter()` was renamed to `enw_filter_delay()` for
-#'   better consistency.
-#'
-#' @return A `data.frame` filtered so that dates by report are less than or
-#'   equal the reference date plus the maximum delay.
-#'
-#' @inheritParams enw_filter_delay
-#' @keywords internal
-#' @export
-#' @examples
-#' obs <- enw_example("preprocessed")$obs[[1]]
-#' enw_delay_filter(obs, max_delay = 2)
-enw_delay_filter <- function(obs, max_delay) {
-  lifecycle::deprecate_warn(
-    "0.2.3", "enw_delay_filter()", "enw_filter_delay()"
-  )
-  return(enw_filter_delay(obs, max_delay))
 }
 
 #' Construct the reporting triangle
