@@ -25,7 +25,8 @@ test_that("enw_add_max_reported is robust to repeated application", {
     enw_add_max_reported(enw_add_max_reported(obs)),
     data.table::setcolorder(
       data.table::as.data.table(obs)[,
-         `:=`(.group = 1, max_confirm = 3, cum_prop_reported = confirm / 3)
+         `:=`(.group = 1, max_confirm = 3L,
+              cum_prop_reported = as.double(confirm / 3))
       ],
       c(
         "reference_date", "report_date", ".group", "max_confirm", "confirm",

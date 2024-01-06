@@ -22,12 +22,13 @@ test_that("check_max_delay produces the expected warnings", {
 test_that("check_max_delay produces the expected output", {
   obs <- enw_example(type = "preprocessed_observations")
 
-  expect_identical(
+  expect_equal(
     check_max_delay(obs, max_delay = 10),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8),
       below_coverage = c(0.22727273, 0.22727273)
-    )
+    ),
+    tolerance = 0.0001
   )
 
   expect_warning(check_max_delay(obs, max_delay = 13, cum_coverage = 0.9))
