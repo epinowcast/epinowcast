@@ -15,9 +15,62 @@ test_that("check_max_delay produces the expected warnings", {
   )
 
   expect_no_warning(
-    check_max_delay(obs, 10)
+    check_max_delay(obs, max_delay = 10)
+  )
+
+  expect_warning(
+    check_max_delay(obs, max_delay = 40),
+    regexp = "but the maximum observed delay is only"
+  )
+
+  obs_left_trunc <- obs
+  obs_left_trunc$obs[[1]] <- obs_left_trunc$obs[[1]][
+    reference_date > "2021-08-10",
+    ]
+  expect_warning(
+    check_max_delay(obs_left_trunc, max_delay = 10),
+    regexp = "you can decrease `maxdelay_quantile_outlier` to"
+  )
+  expect_warning(
+    check_max_delay(obs_left_trunc, max_delay = 10, warn = "internal"),
+    regexp = "You can test different maximum delays and obtain coverage"
   )
 })
+
+test_that("check_max_delay aborts on invalid inputs", {
+  obs <- enw_example(type = "preprocessed_observations")
+
+  expect_error(
+    check_max_delay(obs, max_delay = "something"),
+    regexp = "must be an integer and not NA"
+  )
+
+  expect_error(
+    check_max_delay(obs, max_delay = NA),
+    regexp = "must be an integer and not NA"
+  )
+
+  expect_error(
+    check_max_delay(obs, max_delay = 0),
+    regexp = "must be greater than or equal to one"
+  )
+
+  expect_error(
+    check_max_delay(obs, max_delay = -1),
+    regexp = "must be greater than or equal to one"
+  )
+
+  expect_error(
+    check_max_delay(obs, max_delay = 20, cum_coverage = 20),
+    regexp = "must be between 0 and 1, e.g. 0.8 for"
+  )
+
+  expect_error(
+    check_max_delay(obs, max_delay = 20, maxdelay_quantile_outlier = 97),
+    regexp = "must be between 0 and 1, e.g. 0.97 for"
+  )
+})
+
 
 test_that("check_max_delay produces the expected output", {
   obs <- enw_example(type = "preprocessed_observations")
