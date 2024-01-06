@@ -310,11 +310,10 @@ check_max_delay <- function(data,
     internal <- FALSE
   }
 
-  max_delay <- as.integer(max_delay)
-
-  if (!is.integer(max_delay)) {
+  if (!is.numeric(max_delay)) {
     cli::cli_abort("`max_delay` must be an integer and not NA")
   }
+  max_delay <- as.integer(max_delay)
   if (max_delay < 1) {
     cli::cli_abort("`max_delay` must be greater than or equal to one")
   }
