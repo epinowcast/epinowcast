@@ -9,7 +9,7 @@ cols <- c(
 test_that(
   "enw_preprocess_data() produces expected output with default settings",
   {
-    pobs <- enw_preprocess_data(nat_germany_hosp)
+    pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 20)
     expect_data_table(pobs)
     expect_identical(colnames(pobs), cols)
     expect_data_table(pobs$obs[[1]])
@@ -48,6 +48,7 @@ test_that("enw_preprocess_data() produces expected output when excluding and
 test_that("enw_preprocess_data() handles groups as expected", {
   pobs <- enw_preprocess_data(
     germany_covid19_hosp,
+    max_delay = 20,
     by = c("location", "age_group")
   )
   expect_data_table(pobs)
@@ -136,7 +137,9 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
     "2021-05-01", "2021-05-13",
     "2021-05-24"
   )
-  pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
+  pobs <- enw_preprocess_data(
+    nat_germany_hosp, max_delay = 20, holidays = holidays
+    )
   expect_identical(
     as.character(
       pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
@@ -152,13 +155,14 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
   expect_identical(
     as.character(enw_preprocess_data(
       nat_germany_hosp,
+      max_delay = 20,
       holidays = holidays,
       holidays_to = "Holiday"
     )$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]),
     "Holiday"
   )
   expect_error(
-    enw_preprocess_data(nat_germany_hosp, holidays = junk)
+    enw_preprocess_data(nat_germany_hosp, max_delay = 20, holidays = junk)
   )
 })
 
