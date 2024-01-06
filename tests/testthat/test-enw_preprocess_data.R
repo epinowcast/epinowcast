@@ -117,6 +117,18 @@ test_that(
   }
 )
 
+test_that("enw_preprocess_data() throws error when using months", {
+  expect_error(
+    enw_preprocess_data(
+      nat_germany_hosp,
+      max_delay = 20,
+      timestep = "month"
+    ),
+    regexp = "Calendar months are not currently supported"
+  )
+}
+)
+
 test_that(
   "enw_preprocess_data() hasn't changed compared to saved example data",
   {
