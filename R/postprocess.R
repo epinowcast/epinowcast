@@ -174,7 +174,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
 #'   fit$fit[[1]],
 #'   fit$latest[[1]],
 #'   fit$max_delay,
-#'   "day",
+#'   "day"
 #'   )
 enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
   nowcast <- fit$draws(
