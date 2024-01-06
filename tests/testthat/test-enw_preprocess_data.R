@@ -46,6 +46,20 @@ test_that("enw_preprocess_data() produces expected output when excluding and
   expect_identical(pobs$timestep[[1]], "day")
 })
 
+test_that("enw_preprocess_data() produces expected output when using 
+          max_delay = observed", {
+  expect_message(
+    # nolint next: implicit_assignment_linter.
+    pobs <- enw_preprocess_data(
+      nat_germany_hosp,
+      max_delay = "observed"
+    ),
+    regexp = "the maximum observed delay"
+  )
+  expect_data_table(pobs)
+  expect_identical(pobs$max_delay, 82)
+})
+
 test_that("enw_preprocess_data() handles groups as expected", {
   pobs <- enw_preprocess_data(
     germany_covid19_hosp,
