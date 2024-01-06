@@ -392,9 +392,9 @@ check_max_delay <- function(data,
       ),
       "*" = paste0(
         "There are only very few (", latest_obs[, .N], ") reference dates",
-        " that are sufficiently far in the past (beyond maximum observed ",
-        "delay of ", max_delay_obs_q, " days) to compute delay coverage ",
-        "statistics. "
+        " that are sufficiently far in the past (more than ",
+        max_delay_obs_q, " days) to compute coverage statistics for the ",
+        "maximum delay. "
       )
     )
     if (internal) {
@@ -409,9 +409,10 @@ check_max_delay <- function(data,
       warning_message <- c(
         warning_message,
         "*" = paste0(
-          "If you think the maximum observed delay of ", max_delay_obs_q, " ",
-          "days is an outlier, consider decreasing ",
-          "`maxdelay_quantile_outlier`."
+          "If you think the truncation threshold of ", max_delay_obs_q, " ",
+          "days is based on an outlier, and the true maximum delay is likely ",
+          "shorter, you can decrease `maxdelay_quantile_outlier` to ",
+          "silence this warning."
         )
       )
     }
