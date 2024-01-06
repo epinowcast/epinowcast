@@ -23,3 +23,16 @@ test_that(paste(
     )
   )
 })
+
+test_that(
+  "enw_nowcast_samples throws error when max_delay shorter than modeled",
+  {
+    fit <- enw_example("nowcast")
+    expect_error(
+      enw_nowcast_samples(
+        fit$fit[[1]], fit$latest[[1]], max_delay = fit$max_delay - 1
+      ),
+      "specified maximum delay must be equal to or larger than the modeled"
+    )
+  }
+)
