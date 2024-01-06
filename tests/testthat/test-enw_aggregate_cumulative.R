@@ -189,3 +189,19 @@ test_that(
     expect_identical(actual_agg, expected_agg)
   }
 )
+test_that("enw_aggregate_cumulative() functionality works with month", {
+  obs <- data.table::data.table(
+    reference_date = as.Date(
+      rep(seq(as.Date("2020-01-01"), by = "day", length.out = 40), 40),
+      origin = "1970-01-01"
+    ),
+    report_date = as.Date(rep(
+      seq(as.Date("2020-01-01"), by = "day", length.out = 40), each = 40),
+      origin = "1970-01-01"),
+    confirm = 1
+  )
+  obs <- obs[report_date < as.Date("2020-01-15") & report_date >= reference_date, ]
+  data.table::setorderv(obs, "reference_date")
+  
+  expect_no_error(enw_aggregate_cumulative(obs, timestep = "month"))
+})
