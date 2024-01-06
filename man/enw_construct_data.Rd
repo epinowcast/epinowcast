@@ -97,7 +97,7 @@ enw_construct_data(
   metareference = pobs$metareference[[1]],
   metadelay = pobs$metadelay[[1]],
   max_delay = pobs$max_delay,
-  timestep = pobs$timestep[[1]]
+  timestep = pobs$timestep[[1]],
   by = c()
 )
 }

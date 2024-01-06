@@ -1001,7 +1001,7 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'   metareference = pobs$metareference[[1]],
 #'   metadelay = pobs$metadelay[[1]],
 #'   max_delay = pobs$max_delay,
-#'   timestep = pobs$timestep[[1]]
+#'   timestep = pobs$timestep[[1]],
 #'   by = c()
 #' )
 enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
