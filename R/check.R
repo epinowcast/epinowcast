@@ -402,7 +402,8 @@ check_max_delay <- function(data,
         warning_message,
         "*" = paste0(
           "You can test different maximum delays and obtain coverage ",
-          "statistics using the function check_max_delay()."
+          "statistics using the function ",
+          "{.help [check_max_delay()](epinowcast::check_max_delay)}."
         )
       )
     } else {
