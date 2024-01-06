@@ -1238,7 +1238,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = 20,
   )
   
   # apply checks
-  check_max_delay(out[])
+  check_max_delay(out[], warn = "internal")
 
   return(out[])
 }

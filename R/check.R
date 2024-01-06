@@ -300,6 +300,15 @@ check_max_delay <- function(data,
   }
   timestep <- data$timestep
   
+  if (warn == "internal") {
+    # adjust warnings to not confuse the user since
+    # they didn't call check_max_delay() explicitly
+    internal = TRUE
+    warn = TRUE
+  } else {
+    internal = FALSE
+  }
+  
   max_delay <- as.integer(max_delay)
   
   if (!is.integer(max_delay)) {
@@ -326,13 +335,21 @@ check_max_delay <- function(data,
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
   if (max_delay_obs < daily_max_delay) {
     cli::cli_warn(
-      paste0(
-      "You specified a maximum delay of ", daily_max_delay, " days, ",
-      "but the maximum observed delay is only ", max_delay_obs, " days. ",
-      "Consider adding unobserved delays with zero reports to your data using ",
-      "`enw_complete_dates` to avoid truncated delay distributions (if you ",
-      "believe that these are truly zero). Otherwise consider opening an ",
-      "issue."
+      c(
+        paste0(
+          "You specified a maximum delay of ", daily_max_delay, " days, ",
+          "but the maximum observed delay is only ", max_delay_obs, " days. "
+        ),
+        "*" = paste0(
+          "This is justified if you don't have much data yet (e.g. early ",
+          "phase of an outbreak) and expect a longer maximum delay than ",
+          "currently observed. epinowcast will then extrapolate the delay ",
+          "distribution beyond the observed maximum delay."
+        ),
+        "*" = paste0(
+          "Otherwise, we recommend using a shorter maximum delay to speed up ",
+          "the nowcasting."
+        )
       )
     )
   }
@@ -346,7 +363,7 @@ check_max_delay <- function(data,
     .SD[, .(delay = first(delay)), by = reference_date]
   ] # we here assume the same maximum delay for all groups
   
-  max_delay_obs <- ceiling(
+  max_delay_obs_q <- ceiling(
     max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
   ) + 1
 
@@ -360,22 +377,45 @@ check_max_delay <- function(data,
   ]
 
   latest_obs <- enw_latest_data(obs)
-  fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs + 1
+  fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs_q + 1
   # filter by the maximum observed delay to reduce right truncation bias
   latest_obs <- enw_filter_reference_dates(
     latest_obs,
     latest_date = fully_observed_date
   )
 
-  if (warn && (latest_obs[, .N] < 5)) {
-    cli::cli_warn(paste0(
-      "There are only very few (", latest_obs[, .N], ") reference dates",
-      " that are sufficiently far in the past (beyond maximum observed delay ",
-      "of ", max_delay_obs, " days) to compute coverage statistics. ",
-      "The maximum delay check may thus not be reliable. ",
-      "If you think the maximum observed delay of ", max_delay_obs, " days is ",
-      "an outlier, consider decreasing `maxdelay_quantile_outlier`."
-      ))
+  if (warn && !(max_delay_obs < daily_max_delay) && (latest_obs[, .N] < 5)) {
+    warning_message <- c(
+      paste0(
+        "The coverage of the specified maximum delay could not be ",
+        "reliably checked."
+      ),
+      "*" = paste0(
+        "There are only very few (", latest_obs[, .N], ") reference dates",
+        " that are sufficiently far in the past (beyond maximum observed ",
+        "delay of ", max_delay_obs_q, " days) to compute delay coverage ",
+        "statistics. "
+      )
+    )
+    if (internal) {
+      warning_message <- c(
+        warning_message,
+        "*" = paste0(
+          "You can test different maximum delays and obtain coverage ",
+          "statistics using the function check_max_delay()."
+        )
+      )
+    } else {
+      warning_message <- c(
+        warning_message,
+        "*" = paste0(
+          "If you think the maximum observed delay of ", max_delay_obs_q, " ",
+          "days is an outlier, consider decreasing ",
+          "`maxdelay_quantile_outlier`."
+        )
+      )
+    }
+    cli::cli_warn(warning_message)
   }
 
   low_coverage <- latest_obs[, .(
