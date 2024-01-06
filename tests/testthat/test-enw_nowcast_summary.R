@@ -11,7 +11,8 @@ test_that(
   }
 )
 
-test_that("enw_nowcast_summary can extract the summarised nowcast with custom quantiles", {
+test_that(
+  "enw_nowcast_summary can extract summarised nowcast with custom quantiles", {
   fit <- enw_example("nowcast")
   nowcast <- enw_nowcast_summary(
     fit$fit[[1]], fit$latest[[1]], max_delay = fit$max_delay,

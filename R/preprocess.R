@@ -529,18 +529,18 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 }
 
 #' Filter observations to have a consistent maximum delay period
-#' 
-#' @param max_delay The maximum number of days to model in the delay 
-#' distribution. Must be an integer greater than or equal to 1. Observations 
-#' with delays larger then the maximum delay will be dropped. If the specified 
-#' maximum delay is too short, nowcasts can be biased as important parts of the 
-#' true delay distribution are cut off. At the same time, computational cost 
+#'
+#' @param max_delay The maximum number of days to model in the delay
+#' distribution. Must be an integer greater than or equal to 1. Observations
+#' with delays larger then the maximum delay will be dropped. If the specified
+#' maximum delay is too short, nowcasts can be biased as important parts of the
+#' true delay distribution are cut off. At the same time, computational cost
 #' scales non-linearly with this setting, so you want the maximum delay to be as
-#' long as necessary, but not much longer. Consider what delays are realistic 
-#' for your application, and when in doubt, check if increasing the maximum 
-#' delay noticeably changes the delay distribution or nowcasts as estimated by 
-#' epinowcast. If it does, your maximum delay may still be too short. 
-#' Note that delays are zero indexed and so include the reference date and 
+#' long as necessary, but not much longer. Consider what delays are realistic
+#' for your application, and when in doubt, check if increasing the maximum
+#' delay noticeably changes the delay distribution or nowcasts as estimated by
+#' epinowcast. If it does, your maximum delay may still be too short.
+#' Note that delays are zero indexed and so include the reference date and
 #' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
 #' no delay). You can use [check_max_delay()] to check the coverage of a delay
 #' distribution for different maximum delays.
@@ -676,7 +676,7 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #'
 #' @return A `data.table` with imputed 'confirm' column where NA values have
 #' been replaced with zero.
-#' 
+#'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family preprocess
@@ -1058,19 +1058,19 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay The maximum number of days to model in the delay 
+#' @param max_delay The maximum number of days to model in the delay
 #' distribution. If `max_delay = "observed"` (default), the maximum observed
 #' delay is assumed to be the true maximum delay in the model. Otherwise, an
-#' integer greater than or equal to 1 can be specified. Observations with delays 
-#' larger then the maximum delay will be dropped. If the specified maximum delay 
-#' is too short, nowcasts can be biased as important parts of the true delay 
-#' distribution are cut off. At the same time, computational cost scales 
-#' non-linearly with this setting, so you want the maximum delay to be as long 
-#' as necessary, but not much longer. Consider what delays are realistic for 
-#' your application, and when in doubt, check if increasing the maximum delay 
-#' noticeably changes the delay distribution or nowcasts as estimated by 
-#' epinowcast. If it does, your maximum delay may still be too short. 
-#' Note that delays are zero indexed and so include the reference date and 
+#' integer greater than or equal to 1 can be specified. Observations with delays
+#' larger then the maximum delay will be dropped. If the specified maximum delay
+#' is too short, nowcasts can be biased as important parts of the true delay
+#' distribution are cut off. At the same time, computational cost scales
+#' non-linearly with this setting, so you want the maximum delay to be as long
+#' as necessary, but not much longer. Consider what delays are realistic for
+#' your application, and when in doubt, check if increasing the maximum delay
+#' noticeably changes the delay distribution or nowcasts as estimated by
+#' epinowcast. If it does, your maximum delay may still be too short.
+#' Note that delays are zero indexed and so include the reference date and
 #' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
 #' no delay). You can use [check_max_delay()] to check the coverage of a delay
 #' distribution for different maximum delays.
@@ -1089,8 +1089,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' modifies `obs` in place.
 #'
 #' @inheritParams get_internal_timestep
-#' 
-#' @details If `max_delay` is numeric, it will be internally coerced to integer 
+#'
+#' @details If `max_delay` is numeric, it will be internally coerced to integer
 #' using [as.integer()]).
 #'
 #' @return A data.table containing processed observations as a series of nested
@@ -1143,7 +1143,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = "observed",
     )
   }
   internal_timestep <- get_internal_timestep(timestep)
-  
+
   # coerce obs - at this point, either making a copy or not
   # after, we are modifying the copy/not copy
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
@@ -1156,14 +1156,14 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = "observed",
 
   obs <- enw_add_max_reported(obs, copy = FALSE)
   obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
-  
+
   # max delay
   if (max_delay == "observed") {
     max_delay <- obs[, max(delay, na.rm = TRUE)] + 1
     cli::cli_inform(
       c(
         paste0(
-          "Using the maximum observed delay of ", max_delay * internal_timestep, 
+          "Using the maximum observed delay of ", max_delay * internal_timestep,
           " days. You may want to specify a shorter (or, in special cases, ",
           "longer) maximum delay via the `max_delay` argument. See {.help ",
           "[help(enw_preprocess_data)](epinowcast::enw_preprocess_data)} ",
@@ -1258,7 +1258,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = "observed",
     by = by,
     timestep = timestep
   )
-  
+
   # apply checks
   check_max_delay(out[], warn = "internal")
 

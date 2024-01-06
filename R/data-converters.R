@@ -269,7 +269,7 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
 #' @return The input `data.frame` with a new variable `new_confirm`. If
 #' `max_confirm` was present in the `data.frame` then the proportion
 #' reported on each day (`prop_reported`) is also added.
-#' 
+#'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
@@ -302,7 +302,7 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' report date).
 #'
 #' @return The input `data.frame` with a new variable `confirm`.
-#' 
+#'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters

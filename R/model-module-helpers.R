@@ -6,7 +6,7 @@
 #'
 #' @return A `data.frame` containing a `report_date` variable, and grouping
 #' variables specified for report dates that have complete reporting.
-#' 
+#'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers
@@ -38,7 +38,7 @@ enw_reps_with_complete_refs <- function(
 #'
 #' @return A wide `data.frame` with each row being a complete report date and'
 #' the columns being the observation index for each reporting delay
-#' 
+#'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family modelmodulehelpers

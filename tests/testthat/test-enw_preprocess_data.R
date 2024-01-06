@@ -3,7 +3,7 @@ nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 cols <- c(
   "obs", "new_confirm", "latest", "missing_reference", "reporting_triangle",
-  "metareference", "metareport", "metadelay", "max_delay", "time", "snapshots", 
+  "metareference", "metareport", "metadelay", "max_delay", "time", "snapshots",
   "by", "groups", "max_date", "timestep"
 )
 test_that(
@@ -31,6 +31,7 @@ test_that(
 test_that("enw_preprocess_data() produces expected output when excluding and
           using a maximum delay of 10", {
   expect_warning(
+    # nolint next: implicit_assignment_linter.
     pobs <- enw_preprocess_data(
       nat_germany_hosp,
       max_delay = 10

@@ -267,15 +267,15 @@ coerce_dt <- function(
 #'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
-#' 
+#'
 #' @param data Output from [enw_preprocess_data()].
 #'
 #' @param cum_coverage The aspired percentage of cases that the maximum delay
 #' should cover. Defaults to 0.8 (80%).
-#' 
-#' @param maxdelay_quantile_outlier Only reference dates sufficiently far in 
-#' the past, determined based on the maximum observed delay, are included (see 
-#' details). Instead of the overall maximum observed delay, a quantile of the 
+#'
+#' @param maxdelay_quantile_outlier Only reference dates sufficiently far in
+#' the past, determined based on the maximum observed delay, are included (see
+#' details). Instead of the overall maximum observed delay, a quantile of the
 #' maximum observed delay over all reference dates is used. This is more robust
 #' against outliers. Defaults to 0.97 (97%).
 #'
@@ -300,70 +300,70 @@ check_max_delay <- function(data,
     max_delay <- data$max_delay
   }
   timestep <- data$timestep
-  
+
   if (warn == "internal") {
     # adjust warnings to not confuse the user since
     # they didn't call check_max_delay() explicitly
-    internal = TRUE
-    warn = TRUE
+    internal <- TRUE
+    warn <- TRUE
   } else {
-    internal = FALSE
+    internal <- FALSE
   }
-  
+
   max_delay <- as.integer(max_delay)
-  
+
   if (!is.integer(max_delay)) {
     cli::cli_abort("`max_delay` must be an integer and not NA")
   }
   if (max_delay < 1) {
     cli::cli_abort("`max_delay` must be greater than or equal to one")
   }
-  if (!(cum_coverage > 0 & cum_coverage <= 1)) {
+  if (!(cum_coverage > 0 && cum_coverage <= 1)) {
     cli::cli_abort("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%.")
   }
-  if (!(maxdelay_quantile_outlier > 0 & maxdelay_quantile_outlier <= 1)) {
+  if (!(maxdelay_quantile_outlier > 0 && maxdelay_quantile_outlier <= 1)) {
     cli::cli_abort(
       "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%."
       )
   }
-  
+
   internal_timestep <- get_internal_timestep(timestep)
   daily_max_delay <- internal_timestep * max_delay
 
   obs <- data.table::copy(data$obs[[1]])
   obs[, delay := internal_timestep * delay]
-  
+
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
   if (max_delay_obs < daily_max_delay) {
-    cli::cli_warn(
-      c(
-        paste0(
-          "You specified a maximum delay of ", daily_max_delay, " days, ",
-          "but the maximum observed delay is only ", max_delay_obs, " days. "
-        ),
-        "*" = paste0(
-          "This is justified if you don't have much data yet (e.g. early ",
-          "phase of an outbreak) and expect a longer maximum delay than ",
-          "currently observed. epinowcast will then extrapolate the delay ",
-          "distribution beyond the observed maximum delay."
-        ),
-        "*" = paste0(
-          "Otherwise, we recommend using a shorter maximum delay to speed up ",
-          "the nowcasting."
-        )
+    warning_message <- c(
+      paste0(
+        "You specified a maximum delay of ", daily_max_delay, " days, ",
+        "but the maximum observed delay is only ", max_delay_obs, " days. "
+      ),
+      paste0(
+        "This is justified if you don't have much data yet (e.g. early ",
+        "phase of an outbreak) and expect a longer maximum delay than ",
+        "currently observed. epinowcast will then extrapolate the delay ",
+        "distribution beyond the observed maximum delay."
+      ),
+      paste0(
+        "Otherwise, we recommend using a shorter maximum delay to speed up ",
+        "the nowcasting."
       )
     )
+    names(warning_message) <- c("", "*", "*")
+    cli::cli_warn(warning_message)
   }
-  
+
   max_delay_ref <-  obs[
     !is.na(reference_date) & cum_prop_reported == 1,
     .(.group, reference_date, delay)
     ]
   data.table::setorderv(max_delay_ref, c(".group", "reference_date", "delay"))
-  max_delay_ref <- max_delay_ref[ ,
+  max_delay_ref <- max_delay_ref[,
     .SD[, .(delay = first(delay)), by = reference_date]
   ] # we here assume the same maximum delay for all groups
-  
+
   max_delay_obs_q <- ceiling(
     max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
   ) + 1

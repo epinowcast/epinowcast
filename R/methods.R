@@ -11,10 +11,10 @@
 #'  * "fit" which returns the summarised `cmdstanr` fit with [enw_posterior()],
 #'  * "posterior_prediction" which returns summarised posterior predictions for
 #'  the observations after fitting using [enw_pp_summary()].
-#'  
-#' @param max_delay Maximum delay to which nowcasts should be summarised. Must 
-#' be equal (default) or larger than the modelled maximum delay. If it is 
-#' larger, then nowcasts for unmodelled dates are added by assuming that case 
+#'
+#' @param max_delay Maximum delay to which nowcasts should be summarised. Must
+#' be equal (default) or larger than the modelled maximum delay. If it is
+#' larger, then nowcasts for unmodelled dates are added by assuming that case
 #' counts beyond the modelled maximum delay are fully observed.
 #'
 #' @param ... Additional arguments passed to summary specified by `type`.
@@ -46,14 +46,16 @@ summary.epinowcast <- function(object, type = c(
   type <- match.arg(type)
 
   if (is.null(max_delay)) {
-    spec_max_delay = object$max_delay
+    # nolint next: object_usage_linter.
+    spec_max_delay <- object$max_delay
   } else {
-    spec_max_delay = max_delay
+    # nolint next: object_usage_linter.
+    spec_max_delay <- max_delay
   }
-  
+
   s <- with(object, switch(type,
     nowcast = enw_nowcast_summary(
-      fit = fit[[1]], obs = latest[[1]], max_delay = spec_max_delay, 
+      fit = fit[[1]], obs = latest[[1]], max_delay = spec_max_delay,
       timestep = timestep[[1]], ...
     ),
     nowcast_samples = enw_nowcast_samples(

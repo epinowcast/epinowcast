@@ -338,8 +338,8 @@ utils::globalVariables(
     "run_time", "cum_prop_reported", "..by_with_group_id",
     "reference_missing", "prop_missing", "day", "posteriors",
     "formula", ".id", "n", ".confirm_avail", "prediction", "true_value",
-    "person", "id", "latest", "type", "below_coverage", "num_reference_date", 
-    "num_report_date", "rep_mod", "ref_mod", "count", "reference_date_mod", 
+    "person", "id", "latest", "type", "below_coverage", "num_reference_date",
+    "num_report_date", "rep_mod", "ref_mod", "count", "reference_date_mod",
     "report_date_mod", "timestep", ".observed", "lookup", "max_obs_delay",
     "coverage"
   )

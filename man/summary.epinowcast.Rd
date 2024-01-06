@@ -24,6 +24,11 @@
 the observations after fitting using \code{\link[=enw_pp_summary]{enw_pp_summary()}}.
 }}
 
+\item{max_delay}{Maximum delay to which nowcasts should be summarised. Must
+be equal (default) or larger than the modelled maximum delay. If it is
+larger, then nowcasts for unmodelled dates are added by assuming that case
+counts beyond the modelled maximum delay are fully observed.}
+
 \item{...}{Additional arguments passed to summary specified by \code{type}.}
 }
 \value{

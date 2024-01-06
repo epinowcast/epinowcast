@@ -22,7 +22,7 @@ test_that("check_max_delay produces the expected warnings", {
 test_that("check_max_delay produces the expected output", {
   obs <- enw_example(type = "preprocessed_observations")
 
-  expect_equal(
+  expect_identical(
     check_max_delay(obs, max_delay = 10),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8),
@@ -31,7 +31,7 @@ test_that("check_max_delay produces the expected output", {
   )
 
   expect_warning(check_max_delay(obs, max_delay = 13, cum_coverage = 0.9))
-  
+
   expect_equal(
     check_max_delay(obs, max_delay = 10, cum_coverage = 0.7),
     data.table(
@@ -41,7 +41,7 @@ test_that("check_max_delay produces the expected output", {
     tolerance = 0.0001
   )
 
-  expect_equal(
+  expect_identical(
     check_max_delay(obs, max_delay = 20),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8), below_coverage = c(0, 0)
@@ -51,7 +51,9 @@ test_that("check_max_delay produces the expected output", {
   expect_error(check_max_delay(obs, max_delay = 10, cum_coverage = 80))
 
   nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 15, by = "age_group")
+  pobs <- enw_preprocess_data(
+    nat_germany_hosp, max_delay = 15, by = "age_group"
+    )
   expect_snapshot(
     check_max_delay(pobs, max_delay = 15)
   )
@@ -64,46 +66,46 @@ test_that(
     nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
     weekly_nat_germany_hosp <- nat_germany_hosp |>
       enw_aggregate_cumulative(timestep = "week")
-    
+
     weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
       enw_filter_reference_dates(earliest_date = "2021-05-10")
-    
+
     # week
     weekly_pobs <- enw_preprocess_data(
       weekly_nat_germany_hosp,
       max_delay = 5, timestep = "week"
     )
-    
+
     expect_snapshot(
       check_max_delay(weekly_pobs)
     )
-    
+
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
       "specified maximum reporting delay \\(7 days\\) covers less"
     )
-    
+
     # month
     weekly_nat_germany_hosp <- nat_germany_hosp |>
       enw_aggregate_cumulative(timestep = 14)
-    
+
     weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
       enw_filter_reference_dates(earliest_date = "2021-05-10")
-    
+
     weekly_pobs <- enw_preprocess_data(
       weekly_nat_germany_hosp,
       max_delay = 2, timestep = 14
     )
-    
+
     expect_snapshot(
       check_max_delay(weekly_pobs)
     )
-    
+
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
       "specified maximum reporting delay \\(14 days\\) covers less"
     )
-    
+
     expect_snapshot(
       suppressWarnings(check_max_delay(weekly_pobs, max_delay = 1))
     )

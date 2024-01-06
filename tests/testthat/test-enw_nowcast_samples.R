@@ -19,7 +19,7 @@ test_that(paste(
     round_numerics(
       enw_nowcast_samples(
         fit$fit[[1]], fit$latest[[1]], max_delay = 22
-      )[c(1:10,1001:1010,2001:2010)]
+      )[c(1:10, 1001:1010, 2001:2010)]
     )
   )
 })
