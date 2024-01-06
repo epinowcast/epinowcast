@@ -42,3 +42,10 @@ test_that("enw_metadata_delay produces the expected features", {
     c(rep(FALSE, 14), rep(TRUE, 5))
   )
 })
+
+test_that("enw_delay_metadata throws deprecation warning", {
+  lifecycle::expect_deprecated(
+    enw_delay_metadata(20, 4),
+    regexp = "was deprecated in epinowcast 0.2.3"
+  )
+})
