@@ -41,7 +41,7 @@ enw_nowcast_samples(
   fit$fit[[1]],
   fit$latest[[1]],
   fit$max_delay,
-  "day",
+  "day"
   )
 }
 \seealso{
