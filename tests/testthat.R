@@ -1,6 +1,6 @@
 library(testthat)
 library(vdiffr)
-library(widthr)
+library(withr)
 library(epinowcast)
 
 test_check("epinowcast")
