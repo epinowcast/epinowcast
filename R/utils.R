@@ -256,7 +256,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @param path A valid filepath representing the desired cache location
 #'
 #' @return The string of the filepath set
-#' 
+#'
 #' @examples
 #' # Set to local directory
 #' my_enw_cache <- dir.create(tempdir(), "test")
@@ -317,11 +317,11 @@ enw_set_cache <- function(path) {
 #' @export
 enw_unset_cache <- function() {
   prior_location <- Sys.getenv("enw_cache_location")
-  
+
   Sys.unsetenv("enw_cache_location")
-  
+
   invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
-  
+
   return(invisible(prior_location))
 }
 
@@ -341,7 +341,9 @@ enw_get_cache <- function() {
 
   if (check_environment_setting(cache_location)) {
     cache_location <- tempdir()
-    cli_inform("`enw_cache_location` not specified. Using `tempdir` at {cache_location}")
+    cli_inform(
+      "`enw_cache_location` not specified. Using `tempdir` at {cache_location}"
+    )
   } else {
     cli_inform("Using `{cache_location}` for the cache location.")
   }

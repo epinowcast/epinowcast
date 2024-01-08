@@ -6,15 +6,16 @@
     packageStartupMessage(cli_inform(enw_startup_message()))
 }
 
-enw_startup_message <- function(){
+enw_startup_message <- function() {
     cache_location <- Sys.getenv("enw_cache_location")
     if (check_environment_setting(cache_location)) {
         msg <- c(
-            "!" = "`enw_cache_location` is not set. Set it using `enw_set_cache` to reduce future Stan compilation times.",
-            "i" = "For example: `enw_set_cache(tools::R_user_dir(package = \"epinowcast\", \"cache\"))`.",
+            "!" = "`enw_cache_location` is not set. Set it using `enw_set_cache`
+            to reduce future Stan compilation times.",
+            "i" = "For example: `enw_set_cache(tools::R_user_dir(package =
+            \"epinowcast\", \"cache\"))`.",
             "i" = "See `?enw_set_cache` for details."
         )
-            
 
     } else {
         msg <- sprintf("Using `%s` for the epinowcast model cache location.", cache_location)
