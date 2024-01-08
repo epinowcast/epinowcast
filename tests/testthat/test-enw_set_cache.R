@@ -1,7 +1,7 @@
 
 persistent_tempdir <- file.path(tempdir(), "enw_set_cache")
 test_model_cache <- function() {
-    withr::with_envvar(
+    with_envvar(
         new = c(enw_cache_location = persistent_tempdir), {
             time_start <- Sys.time()
             enw_model(verbose = FALSE)
@@ -22,7 +22,7 @@ cli::test_that_cli("alert", {
     skip_on_cran()
     local_edition(3)
     testthat::expect_snapshot({
-    withr::with_envvar(
+    with_envvar(
         new = c(enw_cache_location = "initial_location"), {
             enw_set_cache("second_location")
         })
