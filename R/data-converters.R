@@ -65,19 +65,33 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' # Make use of maximum reported to calculate empirical daily reporting
 #' dt <- enw_add_max_reported(dt)
 #' enw_add_incidence(dt)
+
+# --------------
+##  temporary placeholder
+enw_check_date_sequence  <- function(obs, by=NULL, copy=TRUE) {
+
+  obs <- obs[, .SD[reference_date >= min(report_date) | is.na(reference_date)],
+    by = by
+  ]
+}
+# --------------
+
 enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
                               copy = TRUE) {
   reports <- coerce_dt(
     obs, dates = TRUE, required_cols = c(by, "confirm"), copy = copy
   )
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
+
   reports[, new_confirm := c(confirm[1], diff(confirm)),
     by = c("reference_date", by)
   ]
-  reports <- reports[,
-    .SD[reference_date >= min(report_date) | is.na(reference_date)],
-    by = by
-  ]
+
+# --------------
+  ## temporary
+  reports  <- enw_check_date_sequence(reports)
+# --------------
+
   reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", by)]
 
   if (!is.null(reports$max_confirm)) {
