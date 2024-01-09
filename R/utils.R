@@ -105,13 +105,17 @@ convert_cmdstan_to_rstan <- function(functions) {
 #'
 #' @return NULL (indivisibly)
 #' @family utils
-#' @importFrom cmstanr cmdstan_model write_stan_file
-#' @importFrom rstan expose_stan_functions stanc
+#' @importFrom cmdstanr cmdstan_model write_stan_file
 expose_stan_fns <- function(files, target_dir, ...) {
-  # Make functions into a string
   functions <- stan_fns_as_string(files, target_dir)
-  function_file <- cmdstanr::write_stan_file(functions, dir = tempdir())
-  mod <- cmdstanr::cmdstan_model(function_file, compile_standalone = TRUE)
+  function_file <- cmdstanr::write_stan_file(functions)
+  mod <- cmdstanr::cmdstan_model(
+    function_file,
+    include_paths = target_dir,
+    compile_standalone = TRUE,
+    ...
+  )
+  mod$expose_functions(global = TRUE)
   return(mod)
 }
 

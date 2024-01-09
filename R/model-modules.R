@@ -330,7 +330,6 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
-#' @importFrom rstan extract_sparse_parts
 #' @importFrom purrr map2_dbl
 #' @importFrom cli cli_abort
 #' @export

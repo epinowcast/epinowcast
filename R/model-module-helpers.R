@@ -215,7 +215,6 @@ add_pmfs <- function(pmfs) {
 #' - `u` the non-zero column identifiers of the matrix.
 #' @export
 #' @family modelmodulehelpers
-#' @importFrom rstan extract_sparse_parts
 #' @examples
 #' mat <- matrix(1:9, nrow = 3)
 #' extract_sparse_matrix(mat)
