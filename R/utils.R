@@ -35,58 +35,6 @@ stan_fns_as_string <- function(files, target_dir) {
   return(functions)
 }
 
-#' Convert Cmdstan to Rstan
-#'
-#' @param functions A character string of stan functions as produced using
-#' [stan_fns_as_string()].
-#'
-#' @return A character string of stan functions converted for use in `rstan`.
-#' @family utils
-convert_cmdstan_to_rstan <- function(functions) {
-  # nolint start: nonportable_path_linter
-  # replace bars in CDF with commas
-  functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
-  # nolint end
-  # replace lupmf with lpmf
-  functions <- gsub("_lupmf", "_lpmf", functions, fixed = TRUE)
-  # replace array syntax
-  #   case 1a: array[] real x -> real[] x
-  functions <- gsub(
-    "array\\[(,?)\\] ([^ ]*) ([a-z_]+)", "\\2[\\1] \\3", functions
-  )
-  #   case 1b: array[n] real x -> real x[n], including the nested case
-  functions <- gsub(
-    "array\\[([a-z0-9_]+(\\[[^]]*\\])?)\\] ([^ ]*) ([a-z_]+)",
-    "\\3 \\4[\\1]", functions
-  )
-  #   case 2: array[n] real x -> real x[n]
-  functions <- gsub(
-    "array\\[([^]]*)\\]\\s+([a-z_]+)\\s+([a-z_]+)", "\\2 \\3[\\1]", functions
-  )
-  #   case 3: array[nl, np] matrix[n, l] x -> matrix[n, l] x[nl, np]
-  functions <- gsub(
-    "array\\[([^]]*)\\]\\s+([a-z_]+)\\[([^]]*)\\]\\s+([a-z_]+)",
-    "\\2[\\3] \\4[\\1]", functions
-  )
-
-  # Custom replacement of log_diff_exp usage
-  functions <- gsub(
-    "lpmf[3:n] = log_diff_exp(lcdf[3:n], lcdf[1:(n-2)])",
-    "for (i in 3:n) lpmf[i] = log_diff_exp(lcdf[i], lcdf[i-2]);",
-    functions,
-    fixed = TRUE
-  )
-  functions <- gsub(
-    "lhaz[3:(n-1)] = lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);", # nolint
-    "for (i in 3:(n-1)) lhaz[i] =  lprob[i] - log_diff_exp(lccdf[i-1], lcdf[i-2]);", # nolint
-    functions,
-    fixed = TRUE
-  )
-  # remove profiling code
-  functions <- remove_profiling(functions)
-  return(functions)
-}
-
 #' Expose stan functions in R
 #'
 #' @description This function builds on top of
