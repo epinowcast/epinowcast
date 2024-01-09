@@ -396,6 +396,7 @@ enw_model <- function(model = system.file(
 #'
 #' @param ... Additional arguments passed to [enw_model]().
 #'
+#' @inheritParams enw_model
 #' @return An object of class `cmdstanmodel` with functions from the model
 #' exposed for use in R.
 #'
@@ -416,8 +417,20 @@ enw_stan_to_r <- function(
     file.path("stan", "functions"), package = "epinowcast"
   ),
   global = TRUE,
+  verbose = TRUE,
   ...
 ) {
+  overloaded_fns <- c(
+    "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
+    "effects_priors_lp.stan"
+  )
+  if (any(files %in% overloaded_fns)) {
+    cli::cli_warn(c(
+      "The following functions are overloaded and cannot be exposed: ",
+       toString(overloaded_fns)
+    ))
+    files <- files[!files %in% overloaded_fns]
+  }
   include_files <- list.files(include)
   if (!all(files %in% include_files) ||
        length(files) == 0 || is.null(files)
@@ -431,23 +444,12 @@ enw_stan_to_r <- function(
       toString(include_files)
     ))
   }
-
-  overloaded_fns <- c(
-    "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
-    "effects_priors_lp.stan"
-  )
-  if (any(files %in% overloaded_fns)) {
-    cli::cli_warn(c(
-      "The following functions are overloaded and cannot be exposed: ",
-       toString(overloaded_fns)
-    ))
-    files <- files[!files %in% overloaded_fns]
-  }
   functions <- stan_fns_as_string(files, include)
   function_file <- cmdstanr::write_stan_file(functions)
   mod <- enw_model(
     model = function_file,
     include = include,
+    verbose = verbose,
     compile_standalone = TRUE,
     ...
   )

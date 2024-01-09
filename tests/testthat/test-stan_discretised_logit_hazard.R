@@ -1,15 +1,16 @@
 skip_on_cran()
 skip_on_os("windows")
 skip_on_os("mac")
-skip_on_os("linux")
 skip_on_local()
 
-expose_stan_fns(
+enw_stan_to_r(
   c("discretised_logit_hazard.stan", "hazard.stan"),
   system.file("stan", "functions", package = "epinowcast")
 )
+# note these tests require enw_stan_to_r() to be run first
 
-test_that("discretised_logit_hazard returns log probabilities that sum to 1", {
+test_that(
+  "discretised_logit_hazard() returns log probabilities that sum to 1", {
   expect_equal_to_1 <- function(lp) {
     expect_equal(sum(exp(lp)), 1.0)
   }
@@ -23,8 +24,9 @@ test_that("discretised_logit_hazard returns log probabilities that sum to 1", {
   expect_equal_to_1(discretised_logit_hazard(1, 0.5, 15, 4, 2, 1))
 })
 
-test_that("discretised_logit_hazard returns probabilities as logit hazards that
-           sum to 1", {
+test_that(
+  "discretised_logit_hazard() returns probabilities as logit hazards that
+   sum to 1", {
   expect_equal_to_1 <- function(lh) {
     lh <- plogis(lh)
     lh <- hazard_to_log_prob(lh)
@@ -41,7 +43,7 @@ test_that("discretised_logit_hazard returns probabilities as logit hazards that
   expect_equal_to_1(discretised_logit_hazard(1, 0.5, 15, 4, 2, 0))
 })
 
-test_that("discretised_logit_hazard returns the same thing in both log
+test_that("discretised_logit_hazard() returns the same thing in both log
            probability and logit hazard mode when everything is mapped to
            the probability scale", {
   expect_equal_prob <- function(alpha, beta, dist) {
@@ -104,7 +106,7 @@ simulate_double_censored_pmf <- function(
 }
 
 # Assume that you have the function hazard_to_log_prob, as it's not provided.
-test_that("double_censored_pmf and discretised_logit_hazard are similar", {
+test_that("double_censored_pmf() and discretised_logit_hazard() are similar", {
   truncations <- seq(10, 100, by = 10) # Choose your desired truncation levels
   alphas <- seq(0.1, 2, by = 0.1)
   betas <- seq(0.1, 2, by = 0.1)
@@ -123,7 +125,8 @@ test_that("double_censored_pmf and discretised_logit_hazard are similar", {
 })
 
 test_that(
-  "double_censored_pmf approximates simulated_double_censored_pmf well enough",
+  "double_censored_pmf() approximates simulated_double_censored_pmf() well
+   enough",
   {
     # Approximation does not perform well at shorter delays due to issues
     # with the discretisation near 0
