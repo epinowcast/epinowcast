@@ -53,15 +53,48 @@ stan_fns_as_string <- function(files, target_dir) {
 #'
 #' @return NULL (indivisibly)
 #' @family utils
-#' @importFrom cmdstanr cmdstan_model write_stan_file
-expose_stan_fns <- function(files, target_dir, ...) {
-  functions <- stan_fns_as_string(files, target_dir)
+#' @importFrom cmdstanr write_stan_file
+enw_stan_to_r <- function(
+  files = list.files(include),
+  include = system.file(
+    file.path("stan", "functions"), package = "epinowcast"
+  ), ...) {
+  include_files <- list.files(include)
+  if (any(!files %in% include_files) ||
+       length(files) == 0 || is.null(files)
+    ) {
+    cli::cli_abort(c(
+      paste0(
+        "The following files are not in the include directory: ",
+        toString(files[!files %in% include_files])
+      ),
+      paste0(
+        "The following files are in the include directory: ",
+        toString(include_files)
+      )
+    ))
+  }
+
+  overloaded_fns <- c(
+    "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
+    "effects_priors_lp.stan"
+  )
+  if (any(files %in% overloaded_fns)) {
+    cli::cli_warn(
+      paste0(
+        "The following functions are overloaded and cannot be exposed ",
+        "using `expose_stan_functions`: ",
+        toString(overloaded_fns)
+      )
+    )
+    files <- files[!files %in% overloaded_fns]
+  }
+  functions <- stan_fns_as_string(files, include)
   function_file <- cmdstanr::write_stan_file(functions)
-  mod <- cmdstanr::cmdstan_model(
-    function_file,
-    include_paths = target_dir,
-    compile_standalone = TRUE,
-    ...
+  mod <- enw_model(
+    model = function_file,
+    include = include,
+    compile_standalone = TRUE
   )
   mod$expose_functions(global = TRUE)
   return(mod)
