@@ -5,8 +5,8 @@ Betancourt's
 CMD
 COVID
 CmdStan
+CmdStanModel
 CmdStanR
-Cmdstan
 Codecov
 Discretisation
 Discretised
@@ -34,7 +34,6 @@ PMF
 PMFs
 Poisson
 Precompiling
-Rstan
 Rstudio
 SEIR
 Vehtari
@@ -42,6 +41,7 @@ Vscode
 Wolffram
 adaptDelta
 ae
+cmdstanr
 com
 cyclomatic
 dataconverters
@@ -63,6 +63,8 @@ linelist
 linters
 lme
 loglogistic
+lp
+lpmf
 lsl
 mathbb
 maxTree
@@ -108,6 +110,7 @@ tidyverse
 timeseries
 toolset
 treedepth
+u
 underpredicting
 underprediction
 unmodelled
