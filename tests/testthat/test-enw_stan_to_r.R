@@ -50,7 +50,8 @@ test_that("enw_stan_to_r() warns for overloaded functions", {
         files = "delay_lpmf.stan", include = tempdir(), verbose = FALSE
       ),
       "The following functions are overloaded and cannot be exposed"
-    )
+    ),
+    "No non-overloaded files specified. Please specify files to expose"
   )
   unlink(temp_overloaded_stan_file_path)
 })
@@ -60,14 +61,14 @@ test_that("enw_stan_to_r() handles empty or NULL file input", {
     enw_stan_to_r(
       files = NULL, include = tempdir(), verbose = FALSE
     ),
-    "The following files are not in the include directory"
+    "No non-overloaded files specified. Please specify files to expose"
   )
 
   expect_error(
     enw_stan_to_r(
       files = character(0), include = tempdir(), verbose = FALSE
     ),
-    "The following files are not in the include directory"
+    "No non-overloaded files specified. Please specify files to expose"
   )
 })
 

@@ -431,10 +431,14 @@ enw_stan_to_r <- function(
     ))
     files <- files[!files %in% overloaded_fns]
   }
+  if (length(files) == 0 || is.null(files)) {
+    cli::cli_abort(paste0(
+      "No non-overloaded files specified. Please specify files to expose ",
+      "using the `files` argument."
+    ))
+  }
   include_files <- list.files(include)
-  if (!all(files %in% include_files) ||
-       length(files) == 0 || is.null(files)
-    ) {
+  if (!all(files %in% include_files)) {
     cli::cli_abort(c(
       paste0(
         "The following files are not in the include directory: ",
