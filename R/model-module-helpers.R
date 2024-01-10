@@ -217,6 +217,8 @@ add_pmfs <- function(pmfs) {
 #' @family modelmodulehelpers
 #' @examples
 #' mat <- matrix(1:9, nrow = 3)
+#' mat[2, 2] <- 0
+#' mat[3, 1] <- 0
 #' extract_sparse_matrix(mat)
 extract_sparse_matrix <- function(mat, prefix = "") {
   sparse_mat <- rstan::extract_sparse_parts(mat)
@@ -231,6 +233,31 @@ extract_sparse_matrix <- function(mat, prefix = "") {
   if (prefix != "") {
     names(sparse_mat) <- paste0(prefix, "_", names(sparse_mat))
   }
+  return(sparse_mat)
+}
+
+extract_sparse_matrix_2 <- function(mat, prefix = "") {
+  # Identifying non-zero elements
+  non_zero_indices <- which(mat != 0, arr.ind = TRUE)
+  w <- mat[non_zero_indices]  # Non-zero elements of the matrix
+
+  # Extracting row and column indices of non-zero elements
+  v <- non_zero_indices[, 1]
+  u <- non_zero_indices[, 2]
+
+  sparse_mat <- list(
+    nw = length(w),
+    w = w,
+    nv = length(v),
+    v = v,
+    nu = length(u),
+    u = u
+  )
+
+  if (prefix != "") {
+    names(sparse_mat) <- paste0(prefix, "_", names(sparse_mat))
+  }
+
   return(sparse_mat)
 }
 
