@@ -235,9 +235,19 @@ extract_sparse_matrix <- function(mat, prefix = "") {
 
   # Extracting column non-zero elements
   v <- non_zero_indices[, 1]
-  # Identifying unique row indices locations
-  u <- non_zero_indices[, 2]
-  u <- which(c(0, u) != c(u, 0))
+    u_original <- non_zero_indices[, 2]  # Column indices (used to compute u)
+
+  # Compute the 'u' vector in CSR format
+  u <- rep(0, nrow(mat) + 1)
+  u[1] <- 1  # index starts from 1, so we adjust accordingly
+  for (i in seq_along(u_original)) {
+      u[u_original[i] + 1] <- i + 1
+  }
+
+  # Ensure that all elements in u are at least as large as the previous one
+  for (i in 2:length(u)) {
+      u[i] <- max(u[i], u[i - 1])
+  }
 
   sparse_mat <- list(
     nw = length(w),
@@ -245,7 +255,7 @@ extract_sparse_matrix <- function(mat, prefix = "") {
     nv = length(v),
     v = v,
     nu = length(u),
-    u = u
+    u = as.integer(u)
   )
 
   if (prefix != "") {

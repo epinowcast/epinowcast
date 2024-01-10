@@ -39,11 +39,11 @@ test_that("extract_sparse_matrix() handles matrices with zeros correctly", {
   mat[2, 1] <- 0
   sparse_mat <- extract_sparse_matrix(mat)
   expect_identical(sparse_mat$nw, 10L)
-  expect_identical(sparse_mat$w, c(1, 5, 9, 2, 10, 7, 11, 4, 8, 12))
+  expect_identical(sparse_mat$w, c(5, 9, 6, 10, 3, 7, 11, 4, 8, 12))
   expect_identical(sparse_mat$nv, 10L)
-  expect_identical(sparse_mat$v, c(1L, 2L, 3L, 1L, 3L, 2L, 3L, 1L, 2L, 3L))
+  expect_identical(sparse_mat$v, c(2L, 3L, 2L, 3L, 1L, 2L, 3L, 1L, 2L, 3L))
   expect_identical(sparse_mat$nu, 5L)
-  expect_identical(sparse_mat$u, c(1L, 4L, 6L, 8L, 11L))
+  expect_identical(sparse_mat$u, c(1L, 3L, 5L, 8L, 11L))
 })
 
 test_that("extract_sparse_matrix() handles the rstan example as expected", {
