@@ -1,10 +1,13 @@
 # Using this approach from the cli package on startup messages.
 
+
 ## nocov start
+# nolint start
 
 .onAttach <- function(libname, pkgname) {
     packageStartupMessage(cli_inform(enw_startup_message()))
 }
+# nolint end
 
 enw_startup_message <- function() {
     cache_location <- Sys.getenv("enw_cache_location")
@@ -18,10 +21,13 @@ enw_startup_message <- function() {
         )
 
     } else {
-        msg <- sprintf("Using `%s` for the epinowcast model cache location.", cache_location)
+        msg <- sprintf("Using `%s` for the epinowcast model cache location.",
+          cache_location)
     }
 
     return(msg)
 }
+
+
 
 ## nocov end
