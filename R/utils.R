@@ -259,7 +259,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #'
 #' @examples
 #' # Set to local directory
-#' my_enw_cache <- dir.create(tempdir(), "test")
+#' my_enw_cache <- file.path(tempdir(), "test")
 #' enw_set_cache(my_enw_cache)
 #' enw_get_cache()
 #' \dontrun{
