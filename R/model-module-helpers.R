@@ -197,6 +197,30 @@ add_pmfs <- function(pmfs) {
   )
 }
 
+#' Extract Sparse Matrix Elements
+#'
+#' This function extracts elements from a matrix to create a sparse matrix representation.
+#' It follows a method akin to [rstan::extract_sparse_parts()], producing a named
+#' list suitable for use with Stan. The function is primarily utilized in building
+#' the expectation model (refer to [enw_expectation()] for more details).
+#'
+#' @param mat A matrix from which the sparse matrix elements are to be extracted.
+#' @param prefix An optional string prefix for the names of elements in the returned list.
+#'
+
+#' @export
+#' @family modelmodulehelpers
+#' @seealso [enw_expectation()]
+#' @examples
+#' mat <- matrix(1:12, nrow = 4)
+#' mat[2, 2] <- 0
+#' mat[3, 1] <- 0
+#' sparse_mat <- extract_sparse_matrix(mat)
+#' # The sparse_mat list now contains the sparse matrix representation of 'mat'
+extract_sparse_matrix <- function(mat, prefix = "") {
+  # [Function implementation remains unchanged]
+}
+
 #' Extract sparse matrix elements
 #'
 #' This helper function allows the extraction of a sparse matrix from a matrix
@@ -208,29 +232,39 @@ add_pmfs <- function(pmfs) {
 #' @param mat A matrix to extract the sparse matrix from.
 #' @param prefix A character string to prefix the names of the returned list.
 #'
-#' @return Return a list that describes the sparse matrix this includes:
-#'  - `nw` the number of non-zero elements in the matrix.
-#'  - `w` the non-zero elements of the matrix.
-#'  - `nv` the number of non-zero row identifiers in the matrix.
-#'  - `v` the non-zero row identifiers of the matrix.
-#' - `nu` the number of non-zero column identifiers in the matrix.
-#' - `u` the non-zero column identifiers of the matrix.
+#' @return A list representing the sparse matrix, containing:
+#'  - `nw`: Count of non-zero elements in `mat`.
+#'  - `w`: Vector of non-zero elements in `mat`. Equivalent to the numeric
+#'     values from `mat` excluding zeros.
+#'  - `nv`: Length of v.
+#'  - `v`: Vector of row indices corresponding to each non-zero element in `w`.
+#'     Indicates the row location in `mat` for each non-zero value.
+#'  - `nu`: Length of u.
+#'  - `u`: Vector indicating the starting indices in `w` for non-zero elements
+#'     of each row in `mat`. Helps identify the partition of `w` into different
+#'     rows of `mat`.
 #' @export
 #' @family modelmodulehelpers
 #' @seealso [enw_expectation()]
 #' @examples
-#' mat <- matrix(1:9, nrow = 3)
+#' mat <- matrix(1:12, nrow = 4)
 #' mat[2, 2] <- 0
 #' mat[3, 1] <- 0
 #' extract_sparse_matrix(mat)
 extract_sparse_matrix <- function(mat, prefix = "") {
   # Identifying non-zero elements
+  mat <- t(mat)
   non_zero_indices <- which(mat != 0, arr.ind = TRUE)
   w <- mat[non_zero_indices]  # Non-zero elements of the matrix
 
-  # Extracting row and column indices of non-zero elements
+  # Extracting column non-zero elements
   v <- non_zero_indices[, 1]
+  # Identifying unique row indices locations
   u <- non_zero_indices[, 2]
+  u <- c(
+    which(c(TRUE, u[-1] != u[-length(u)])),
+    length(u) + 1
+  )
 
   sparse_mat <- list(
     nw = length(w),
