@@ -2,7 +2,7 @@ functions {
 #include functions/utils.stan
 #include functions/zero_truncated_normal.stan
 #include functions/combine_effects.stan
-#include functions/effect_priors_lp.stan
+#include functions/effects_priors_lp.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/discretised_logit_hazard.stan
