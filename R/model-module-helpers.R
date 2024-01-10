@@ -197,30 +197,6 @@ add_pmfs <- function(pmfs) {
   )
 }
 
-#' Extract Sparse Matrix Elements
-#'
-#' This function extracts elements from a matrix to create a sparse matrix representation.
-#' It follows a method akin to [rstan::extract_sparse_parts()], producing a named
-#' list suitable for use with Stan. The function is primarily utilized in building
-#' the expectation model (refer to [enw_expectation()] for more details).
-#'
-#' @param mat A matrix from which the sparse matrix elements are to be extracted.
-#' @param prefix An optional string prefix for the names of elements in the returned list.
-#'
-
-#' @export
-#' @family modelmodulehelpers
-#' @seealso [enw_expectation()]
-#' @examples
-#' mat <- matrix(1:12, nrow = 4)
-#' mat[2, 2] <- 0
-#' mat[3, 1] <- 0
-#' sparse_mat <- extract_sparse_matrix(mat)
-#' # The sparse_mat list now contains the sparse matrix representation of 'mat'
-extract_sparse_matrix <- function(mat, prefix = "") {
-  # [Function implementation remains unchanged]
-}
-
 #' Extract sparse matrix elements
 #'
 #' This helper function allows the extraction of a sparse matrix from a matrix
@@ -261,10 +237,7 @@ extract_sparse_matrix <- function(mat, prefix = "") {
   v <- non_zero_indices[, 1]
   # Identifying unique row indices locations
   u <- non_zero_indices[, 2]
-  u <- c(
-    which(c(TRUE, u[-1] != u[-length(u)])),
-    length(u) + 1
-  )
+  u <- which(c(0, u) != c(u, 0))
 
   sparse_mat <- list(
     nw = length(w),
