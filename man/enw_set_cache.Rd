@@ -19,7 +19,7 @@ need for model compilation on every new model run across sessions.
 }
 \examples{
 # Set to local directory
-my_enw_cache <- dir.create(tempdir(), "test")
+my_enw_cache <- file.path(tempdir(), "test")
 enw_set_cache(my_enw_cache)
 enw_get_cache()
 \dontrun{
