@@ -7,6 +7,7 @@ stan_function_code <- "
 
 test_that("enw_stan_to_r() exposes Stan functions from test_functions.stan", {
   skip_on_local()
+  skip_on_cran()
   temp_dir <- tempdir()
   temp_stan_file_path <- file.path(temp_dir, "test_functions.stan")
   writeLines(stan_function_code, temp_stan_file_path)
@@ -72,6 +73,7 @@ test_that("enw_stan_to_r() handles empty or NULL file input", {
 
 test_that("enw_stan_to_r() global exposure flag functionality", {
   skip_on_local()
+  skip_on_cran()
   temp_stan_file_path <- file.path(tempdir(), "test_global_exposure.stan")
   writeLines(stan_function_code, temp_stan_file_path)
 
