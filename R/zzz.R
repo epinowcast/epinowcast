@@ -1,5 +1,3 @@
-# Using this approach from the cli package on startup messages.
-
 
 ## nocov start
 # nolint start
@@ -19,7 +17,6 @@ enw_startup_message <- function() {
             \"epinowcast\", \"cache\"))`.",
             "i" = "See `?enw_set_cache` for details."
         )
-
     } else {
         msg <- sprintf("Using `%s` for the epinowcast model cache location.",
           cache_location)
