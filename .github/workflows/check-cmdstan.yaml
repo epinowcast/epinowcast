@@ -75,3 +75,8 @@ jobs:
             all(message == "Stan program is syntactically correct")
           )
         shell: Rscript {0}
+
+      - name: Compile and expose stan functions
+        run: |
+          model <- epinowcast::enw_stan_to_r()
+        shell: Rscript {0}
