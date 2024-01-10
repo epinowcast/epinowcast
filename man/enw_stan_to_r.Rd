@@ -8,6 +8,7 @@ enw_stan_to_r(
   files = list.files(include),
   include = system.file(file.path("stan", "functions"), package = "epinowcast"),
   global = TRUE,
+  verbose = TRUE,
   ...
 )
 }
@@ -24,18 +25,21 @@ package.}
 
 \item{global}{A logical value indicating whether to expose the functions
 globally. Defaults to \code{TRUE}. Passed to the \code{\link[=expose_functions]{expose_functions()}} method of
-\link[cmdstanr:cmdstanmodel]{cmdstanr::cmdstanmodel}.}
+\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}.}
+
+\item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
+messages be shown.}
 
 \item{...}{Additional arguments passed to \url{enw_model}.}
 }
 \value{
-An object of class \code{cmdstanmodel} with functions from the model
+An object of class \code{CmdStanModel} with functions from the model
 exposed for use in R.
 }
 \description{
 This function facilitates the exposure of Stan functions from
 the \url{epinowcast} package in R. It utilizes the \code{\link[=expose_functions]{expose_functions()}} method
-of \link[cmdstanr:cmdstanmodel]{cmdstanr::cmdstanmodel} or this purpose. This function is useful for
+of \link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel} or this purpose. This function is useful for
 developers and contributors to the \link{epinowcast} package, as well as for
 users interested in exploring and prototyping with model functionalities.
 }

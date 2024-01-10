@@ -24,14 +24,20 @@ Return a list that describes the sparse matrix this includes:
 }
 \description{
 This helper function allows the extraction of a sparse matrix from a matrix
-using \code{rstan::extract_sparse_parsts()} and returns these elements in a named
-list for use in stan.
+using a similar approach to that implemented in
+\code{\link[rstan:extract_sparse_parts]{rstan::extract_sparse_parts()}} and returns these elements in a named
+list for use in stan. This function is used in the construction of the
+expectation model (see \code{\link[=enw_expectation]{enw_expectation()}}).
 }
 \examples{
 mat <- matrix(1:9, nrow = 3)
+mat[2, 2] <- 0
+mat[3, 1] <- 0
 extract_sparse_matrix(mat)
 }
 \seealso{
+\code{\link[=enw_expectation]{enw_expectation()}}
+
 Helper functions for model modules
 \code{\link{add_max_observed_delay}()},
 \code{\link{add_pmfs}()},

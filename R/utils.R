@@ -16,17 +16,17 @@ is.Date <- function(x) {
 
 #' Read in a stan function file as a character string
 #'
-#' @inheritParams expose_stan_fns
+#' @inheritParams enw_stan_to_r
 #' @return A character string in the of stan functions.
 #' @family utils
 #' @importFrom purrr map_chr
-stan_fns_as_string <- function(files, target_dir) {
+stan_fns_as_string <- function(files, include) {
   functions <- paste0(
     "\n functions{ \n",
     paste(
       purrr::map_chr(
         files,
-        ~ paste(readLines(file.path(target_dir, .)), collapse = "\n")
+        ~ paste(readLines(file.path(include, .)), collapse = "\n")
       ),
       collapse = "\n"
     ),

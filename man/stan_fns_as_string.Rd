@@ -4,7 +4,18 @@
 \alias{stan_fns_as_string}
 \title{Read in a stan function file as a character string}
 \usage{
-stan_fns_as_string(files, target_dir)
+stan_fns_as_string(files, include)
+}
+\arguments{
+\item{files}{A character vector specifying the names of Stan files to be
+exposed. These must be in the \code{include} directory. Defaults to all Stan
+files in the \code{include} directory. Note that the following files are
+overloaded and cannot be exposed: "delay_lpmf.stan",
+"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".}
+
+\item{include}{A character string specifying the directory containing Stan
+files. Defaults to the 'stan/functions' directory of the \code{\link[=epinowcast]{epinowcast()}}
+package.}
 }
 \value{
 A character string in the of stan functions.

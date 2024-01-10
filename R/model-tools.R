@@ -376,7 +376,7 @@ enw_model <- function(model = system.file(
 #'
 #' @description This function facilitates the exposure of Stan functions from
 #' the [epinowcast]() package in R. It utilizes the [expose_functions()] method
-#' of [cmdstanr::cmdstanmodel] or this purpose. This function is useful for
+#' of [cmdstanr::CmdStanModel] or this purpose. This function is useful for
 #' developers and contributors to the [epinowcast] package, as well as for
 #' users interested in exploring and prototyping with model functionalities.
 #'
@@ -392,12 +392,12 @@ enw_model <- function(model = system.file(
 #'
 #' @param global A logical value indicating whether to expose the functions
 #' globally. Defaults to `TRUE`. Passed to the [expose_functions()] method of
-#' [cmdstanr::cmdstanmodel].
+#' [cmdstanr::CmdStanModel].
 #'
 #' @param ... Additional arguments passed to [enw_model]().
 #'
 #' @inheritParams enw_model
-#' @return An object of class `cmdstanmodel` with functions from the model
+#' @return An object of class `CmdStanModel` with functions from the model
 #' exposed for use in R.
 #'
 #' @family modeltools

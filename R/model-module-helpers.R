@@ -200,8 +200,10 @@ add_pmfs <- function(pmfs) {
 #' Extract sparse matrix elements
 #'
 #' This helper function allows the extraction of a sparse matrix from a matrix
-#' using `rstan::extract_sparse_parsts()` and returns these elements in a named
-#' list for use in stan.
+#' using a similar approach to that implemented in
+#' [rstan::extract_sparse_parts()] and returns these elements in a named
+#' list for use in stan. This function is used in the construction of the
+#' expectation model (see [enw_expectation()]).
 #'
 #' @param mat A matrix to extract the sparse matrix from.
 #' @param prefix A character string to prefix the names of the returned list.
@@ -215,28 +217,13 @@ add_pmfs <- function(pmfs) {
 #' - `u` the non-zero column identifiers of the matrix.
 #' @export
 #' @family modelmodulehelpers
+#' @seealso [enw_expectation()]
 #' @examples
 #' mat <- matrix(1:9, nrow = 3)
 #' mat[2, 2] <- 0
 #' mat[3, 1] <- 0
 #' extract_sparse_matrix(mat)
 extract_sparse_matrix <- function(mat, prefix = "") {
-  sparse_mat <- rstan::extract_sparse_parts(mat)
-  sparse_mat <- list(
-    nw = length(sparse_mat$w),
-    w = sparse_mat$w,
-    nv = length(sparse_mat$v),
-    v = sparse_mat$v,
-    nu = length(sparse_mat$u),
-    u = sparse_mat$u
-  )
-  if (prefix != "") {
-    names(sparse_mat) <- paste0(prefix, "_", names(sparse_mat))
-  }
-  return(sparse_mat)
-}
-
-extract_sparse_matrix_2 <- function(mat, prefix = "") {
   # Identifying non-zero elements
   non_zero_indices <- which(mat != 0, arr.ind = TRUE)
   w <- mat[non_zero_indices]  # Non-zero elements of the matrix
