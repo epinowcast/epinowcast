@@ -6,7 +6,7 @@
 \usage{
 enw_stan_to_r(
   files = list.files(include),
-  include = system.file(file.path("stan", "functions"), package = "epinowcast"),
+  include = system.file("stan", "functions", package = "epinowcast"),
   global = TRUE,
   verbose = TRUE,
   ...
