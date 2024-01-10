@@ -17,7 +17,7 @@ toy_cumulative <- data.table::copy(toy_incidence)
 toy_cumulative <- toy_cumulative[, confirm := cumsum(new_confirm)]
 toy_cumulative <- toy_cumulative[sample(.N, .N)][, new_confirm := NULL]
 
-if (on_ci() && Sys.info()["sysname"] == "Linux") {
+if (on_ci() && Sys.info()["sysname"] == "Linux" && !on_cran()) {
   # we only expose stan functions on linux CI
   # because we only test these functions on linux
   enw_stan_to_r()
