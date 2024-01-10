@@ -109,6 +109,7 @@ Suggests:
     bookdown,
     loo (>= 2.4.1),
     knitr,
+    RcppEigen,
     rmarkdown,
     scoringutils,
     spelling,
