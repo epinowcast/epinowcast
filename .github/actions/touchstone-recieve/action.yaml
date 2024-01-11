@@ -97,11 +97,9 @@ runs:
           any::ggplot2
           any::dplyr
           any::gert
-          any::glue
           github::lorenzwalthert/touchstone${{ inputs.touchstone_ref}}
     - name: Install cmdstan
       run: |
-        print(list.files("C:/rtools42"))
         cmdstanr::check_cmdstan_toolchain(fix = TRUE)
         cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
       shell: Rscript {0}
