@@ -1,7 +1,7 @@
 # alert [plain]
 
     Code
-      with_envvar(new = c(enw_cache_location = "initial_location"), {
+      withr::with_envvar(new = c(enw_cache_location = "initial_location"), {
         enw_set_cache("second_location")
       })
     Message
@@ -10,7 +10,7 @@
 # alert [ansi]
 
     Code
-      with_envvar(new = c(enw_cache_location = "initial_location"), {
+      withr::with_envvar(new = c(enw_cache_location = "initial_location"), {
         enw_set_cache("second_location")
       })
     Message
