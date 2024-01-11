@@ -16,7 +16,7 @@ enw_startup_message <- function() {
             "i" = "For example: `enw_set_cache(tools::R_user_dir(package =
             \"epinowcast\", \"cache\"))`.",
             "i" = "See `?enw_set_cache` for details."
-        )
+        ) #nolint
     } else {
         msg <- sprintf("Using `%s` for the epinowcast model cache location.",
           cache_location)
