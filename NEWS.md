@@ -8,8 +8,7 @@ This release is in development and not yet ready for production use.
 
 @jamesmbaazam, @adrian-lison, @sbfnk, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, 
-@adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
