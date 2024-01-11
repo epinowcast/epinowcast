@@ -1,15 +1,17 @@
 # Use example data
 pobs <- enw_example("preprocessed")
 
+pobs_intermediate <- enw_filter_reference_dates(
+  pobs$obs[[1]][, ".group" := NULL], latest_date = "2021-07-20"
+)
+
+pobs_intermediate <- enw_filter_report_dates(
+  pobs_intermediate,
+  latest_date = "2021-07-20"
+)
+
 pobs_filt <- enw_preprocess_data(
-  pobs$obs[[1]][, ".group" := NULL] |>
-    enw_filter_reference_dates(
-      latest_date = "2021-07-20"
-    ) |>
-    enw_filter_report_dates(
-      latest_date = "2021-07-20"
-    ),
-  max_delay = 2
+  pobs_intermediate, max_delay = 2
 )
 
 test_that("enw_reference requires at least one of a parametric or a

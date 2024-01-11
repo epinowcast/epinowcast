@@ -26,9 +26,11 @@ expect_diff_sum_abs_lt <- function(x, y, diff) {
 }
 
 expect_zero_length_or_not <- function(vars, vars_list) {
-  purrr::walk(vars_list[vars], testthat::expect_length, 0)
+  purrr::walk(vars_list[vars], testthat::expect_length, n = 0)
   purrr::walk(
-    vars_list[!names(vars_list) %in% vars], ~ testthat::expect_gt(length(.x), 0)
+    vars_list[!names(vars_list) %in% vars], function(x) {
+      testthat::expect_gt(length(x), 0)
+    }
   )
 }
 

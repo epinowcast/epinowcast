@@ -11,6 +11,17 @@ if (not_on_cran() && on_ci()) {
   }
 }
 
+# A function to filter data used in test suite
+run_window_filter <- function(
+  x, filter_report_remove = 10, filter_reference_include = 10
+) {
+  obs <- enw_filter_report_dates(x, remove_days = filter_report_remove)
+  obs <- enw_filter_reference_dates(
+    obs, include_days = filter_reference_include
+  )
+  return(obs)
+}
+
 test_that("epinowcast() preprocesses data and model modules as expected", {
   nowcast <- suppressMessages(epinowcast(pobs,
     fit = enw_fit_opts(
@@ -31,9 +42,10 @@ test_that("epinowcast() preprocesses data and model modules as expected", {
 test_that("epinowcast() runs using default arguments only", {
   skip_on_cran()
   skip_on_local()
-  obs <- germany_covid19_hosp[age_group == "00+"][location == "DE"] |>
-    enw_filter_report_dates(remove_days = 10) |>
-    enw_filter_reference_dates(include_days = 10)
+
+  obs <- run_window_filter(
+    germany_covid19_hosp[age_group == "00+"][location == "DE"]
+  )
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(epinowcast(pobs))
   expect_identical(
@@ -93,9 +105,9 @@ test_that("epinowcast() runs using default arguments only", {
 test_that("epinowcast() runs with within-chain parallelisation", {
   skip_on_cran()
   skip_on_local()
-  obs <- germany_covid19_hosp[age_group == "00+"][location == "DE"] |>
-    enw_filter_report_dates(remove_days = 10) |>
-    enw_filter_reference_dates(include_days = 10)
+  obs <- run_window_filter(
+    germany_covid19_hosp[age_group == "00+"][location == "DE"]
+  )
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(
     epinowcast(pobs, fit = enw_fit_opts(threads_per_chain = 2))
@@ -147,9 +159,13 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is
   skip_on_local()
 
   pobs_long_delay <- suppressWarnings(
-    pobs$obs[[1]][, .group := NULL] |>
-      enw_filter_reference_dates(include_days = 20) |>
-      enw_preprocess_data(max_delay = 30)
+    enw_preprocess_data(
+      enw_filter_reference_dates(
+        pobs$obs[[1]][, .group := NULL],
+        include_days = 20
+      ),
+      max_delay = 30
+    )
   )
 
   nowcast <- suppressMessages(epinowcast(pobs_long_delay,
