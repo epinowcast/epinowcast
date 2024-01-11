@@ -19,6 +19,7 @@ functions {
 
 data {
   // Indexes and lookups
+  
   int n; // total number of observations (obs)
   int t; // total number of time points 
   int s; // total number of snapshots
