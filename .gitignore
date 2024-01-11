@@ -21,3 +21,4 @@ pkgdown
 /figures/
 /vignettes/*_cache/
 .here
+*.pdf
