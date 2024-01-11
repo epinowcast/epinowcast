@@ -43,6 +43,7 @@ This release is in development and not yet ready for production use.
 - Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
 - Exposed `enw_stan_to_r()` to the user. This function is used for testing and in development to expose `{epinowcast}` stan code in R. Users may find this function useful as it allows them to explore the stan code used in `{epinowcast}` models more easily. Note that this functionality is known to be unstable when `{rstan}` is loaded in the same R session. See #431 by @seabbs and reviewed by @sbfnk.
 - Refactored `extract_sparse_matrix()` to allow us to drop our `{rstan}` dependency.  See #431 by @seabbs and reviewed by @sbfnk.
+- Allow for caching Stan models to reduce compilation time through the use of the environment variable, `enw_cache_location`, which can be set using the `set_enw_cache` function. See #407 by @medewitt and reviewed by @seabbs and @pearsonca.
 
 ## Model
 
