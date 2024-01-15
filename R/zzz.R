@@ -23,8 +23,12 @@ enw_startup_message <- function() {
         )
     # nolint end 
     } else {
-        msg <- sprintf("Using `%s` for the epinowcast model cache location.",
-          cache_location)
+        msg <- c(
+            "i" = sprintf(
+                "Using `%s` for the epinowcast model cache location.", # nolint line_length
+                cache_location
+            )
+        )
     }
 
     return(msg)
