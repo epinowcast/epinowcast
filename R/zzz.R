@@ -1,3 +1,4 @@
+# nocov start
 .onAttach <- function(libname, pkgname) {
     packageStartupMessage(
         cli::cli_inform(
@@ -5,6 +6,7 @@
         )
     )
 }
+# nocov end
 
 enw_startup_message <- function() {
     cache_location <- Sys.getenv("enw_cache_location")
