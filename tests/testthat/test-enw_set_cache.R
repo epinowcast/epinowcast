@@ -1,4 +1,3 @@
-
 persistent_tempdir <- file.path(tempdir(), "enw_set_cache")
 test_model_cache <- function() {
     withr::with_envvar(
