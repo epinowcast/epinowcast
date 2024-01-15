@@ -1,0 +1,25 @@
+test_that(
+  "enw_startup_message() returns correct message when 'enw_cache_location' is not set", # nolint: line_length
+{
+  withr::with_envvar(
+    new = c(enw_cache_location = NA), {
+    message <- enw_startup_message()
+    expect_identical(length(message), 3L) # Expecting three messages
+    expect_identical(names(message), c("!", "i", "i"))
+    expect_true(grepl("enw_cache_location", message["!"]))
+    expect_true(grepl("enw_set_cache", message["i"]))
+  })
+})
+
+# Test when 'enw_cache_location' is set
+test_that(
+  "enw_startup_message() returns correct message when 'enw_cache_location' is set", # nolint: line_length
+{
+  test_path_location <- file.path("test", "path", "to", "cache")
+  withr::with_envvar(
+    new = c(enw_cache_location = test_path_location), {
+    message <- enw_startup_message()
+    expect_identical(length(message), 1L)
+    expect_true(grepl(test_cache_location, message))
+  })
+})
