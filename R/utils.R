@@ -268,13 +268,17 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #'   enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
 #' }
 #' }
-#' @importFrom cli cli_abort cli_alert
+#' @importFrom cli cli_abort cli_alert cli_inform
 #' @export
 enw_set_cache <- function(path) {
 
   if (!is.character(path)) {
     cli::cli_abort("`path` must be a valid file path.")
   }
+
+  cli::cli_inform(c(
+    "i" = "Setting `enw_cache_location` to {path}"
+  ))
 
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
@@ -311,13 +315,28 @@ enw_set_cache <- function(path) {
 #' @return the prior cache location, if it existed
 #'
 #' @examples
+#' @importFrom cli cli_inform
 #' enw_unset_cache()
 #'
 #' @family utils
 #' @export
 enw_unset_cache <- function() {
   prior_location <- Sys.getenv("enw_cache_location")
-
+  if (prior_location != "") {
+    cli::cli_inform(c(
+      "i" = paste0(
+        "Removing `enw_cache_location = {prior_location}` from .Renviron and ",
+        "from the local environment."
+      )
+    ))
+  } else {
+    cli::cli_inform(c(
+      "!" = paste0(
+        "`enw_cache_location` not set. ",
+        "Nothing to remove from .Renviron or the local environment."
+      )
+    ))
+  }
   Sys.unsetenv("enw_cache_location")
 
   invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
@@ -341,11 +360,11 @@ enw_get_cache <- function() {
 
   if (check_environment_setting(cache_location)) {
     cache_location <- tempdir()
-    cli::cli_inform(
-      "`enw_cache_location` not specified. Using `tempdir` at {cache_location}"
-    )
+    cli::cli_inform(c(
+      "!" = "`enw_cache_location` not specified. Using `tempdir` at {cache_location}" # nolint line_length
+    ))
   } else {
-    cli::cli_inform("Using `{cache_location}` for the cache location.")
+    cli::cli_inform(c("i" = "Using `{cache_location}` for the cache location."))
   }
 
   return(cache_location)

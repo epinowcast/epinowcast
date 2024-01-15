@@ -4,7 +4,7 @@ test_model_cache <- function() {
     withr::with_envvar(
         new = c(enw_cache_location = persistent_tempdir), {
             time_start <- Sys.time()
-            enw_model(verbose = FALSE)
+            suppressMessages(enw_model(verbose = FALSE))
             time_out <- Sys.time()
             difftime(time_out, time_start, units = "secs")[[1]]
         }
