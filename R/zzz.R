@@ -2,7 +2,9 @@
 .onAttach <- function(libname, pkgname) {
     packageStartupMessage(
         cli::cli_inform(
-            enw_startup_message()
+            enw_startup_message(),
+            .frequency = "once",
+            .frequency_id = "enw_startup_message"
         )
     )
 }

@@ -4,10 +4,10 @@ test_that(
   withr::with_envvar(
     new = c(enw_cache_location = NA), {
     message <- enw_startup_message()
-    expect_identical(length(message), 3L) # Expecting three messages
-    expect_identical(names(message), c("!", "i", "i"))
-    expect_true(grepl("enw_cache_location", message["!"]))
-    expect_true(grepl("enw_set_cache", message["i"]))
+    expect_length(message, 3L) # Expecting three messages
+    expect_length(message, c("!", "i", "i"))
+    expect_true(grepl("enw_cache_location", message["!"]), fixed = TRUE)
+    expect_true(grepl("enw_set_cache", message["i"]), fixed = TRUE)
   })
 })
 
@@ -19,7 +19,7 @@ test_that(
   withr::with_envvar(
     new = c(enw_cache_location = test_path_location), {
     message <- enw_startup_message()
-    expect_identical(length(message), 1L)
-    expect_true(grepl(test_cache_location, message))
+    expect_length(message, 1L)
+    expect_true(grepl(test_cache_location, message, fixed = TRUE))
   })
 })

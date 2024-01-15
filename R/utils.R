@@ -341,11 +341,11 @@ enw_get_cache <- function() {
 
   if (check_environment_setting(cache_location)) {
     cache_location <- tempdir()
-    cli_inform(
+    cli::cli_inform(
       "`enw_cache_location` not specified. Using `tempdir` at {cache_location}"
     )
   } else {
-    cli_inform("Using `{cache_location}` for the cache location.")
+    cli::cli_inform("Using `{cache_location}` for the cache location.")
   }
 
   return(cache_location)
