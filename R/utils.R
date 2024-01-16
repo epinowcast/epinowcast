@@ -255,7 +255,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #'
 #' @param path A valid filepath representing the desired cache location
 #' @param persistent a logical representing if the cache location should be
-#'   written to the user's .Renviron file with default of \code{FALSE}.
+#' written to the user's `.Renviron` file with default of \code{FALSE}.
 #'
 #' @return The string of the filepath set
 #'
@@ -299,11 +299,14 @@ enw_set_cache <- function(path, persistent = FALSE) {
     enw_environment
   )
 
-  if (persistent) {
+  if (isTRUE(persistent)) {
     writeLines(
       new_env_contents,
       con = env_contents_active[["env_path"]], sep = "\n"
-  )
+    )
+    cli::cli_inform(c(
+      i = "Added `enw_cache_location` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
+    ))
     readRenviron(env_contents_active[["env_path"]])
   } else {
     Sys.setenv(enw_cache_location = candidate_path)
@@ -318,6 +321,9 @@ enw_set_cache <- function(path, persistent = FALSE) {
 #' the user .Renviron file and removes it from the local
 #' environment.
 #'
+#' @param persistent a logical representing if the cache location should be
+#' removed from the user's `.Renviron` file with default of \code{FALSE}.
+#'
 #' @return the prior cache location, if it existed
 #'
 #' @importFrom cli cli_inform
@@ -327,22 +333,21 @@ enw_set_cache <- function(path, persistent = FALSE) {
 #' enw_unset_cache()
 #'
 #' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))
-enw_unset_cache <- function() {
+enw_unset_cache <- function(persistent = FALSE) {
   prior_location <- Sys.getenv("enw_cache_location")
   if (prior_location != "") {
-    cli::cli_inform(c(
-      i = paste0(
-        "Removing `enw_cache_location = {prior_location}` from .Renviron and ",
-        "from the local environment."
-      )
-    ))
+    cli::cli_inform(c(i = "Removing `enw_cache_location = {prior_location}`"))
     Sys.unsetenv("enw_cache_location")
 
     clean_environ <- enw_get_environment_contents(
       remove_enw_cache_location = TRUE
     )
-
-    writeLines(clean_environ$env_contents, clean_environ$env_path)
+    if (isTRUE(persistent)) {
+      writeLines(clean_environ$env_contents, clean_environ$env_path)
+      cli::cli_inform(c(
+        i = "Removing `enw_cache_location = {prior_location}` from `.Renviron`"
+      ))
+    }
 
     invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
   } else {

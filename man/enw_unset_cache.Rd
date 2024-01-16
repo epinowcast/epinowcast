@@ -4,7 +4,11 @@
 \alias{enw_unset_cache}
 \title{Unset Stan cache location}
 \usage{
-enw_unset_cache()
+enw_unset_cache(persistent = FALSE)
+}
+\arguments{
+\item{persistent}{a logical representing if the cache location should be
+removed from the user's \code{.Renviron} file with default of \code{FALSE}.}
 }
 \value{
 the prior cache location, if it existed

@@ -10,7 +10,7 @@ enw_set_cache(path, persistent = FALSE)
 \item{path}{A valid filepath representing the desired cache location}
 
 \item{persistent}{a logical representing if the cache location should be
-written to the user's .Renviron file with default of \code{FALSE}.}
+written to the user's \code{.Renviron} file with default of \code{FALSE}.}
 }
 \value{
 The string of the filepath set
