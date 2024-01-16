@@ -303,8 +303,7 @@ enw_set_cache <- function(path, persistent = FALSE) {
     writeLines(
       new_env_contents,
       con = env_contents_active[["env_path"]], sep = "\n"
-    )
-
+  )
     readRenviron(env_contents_active[["env_path"]])
   } else {
     Sys.setenv(enw_cache_location = candidate_path)
@@ -341,8 +340,8 @@ enw_unset_cache <- function() {
 
     clean_environ <- enw_get_environment_contents(
       remove_enw_cache_location = TRUE
-      )
-      
+    )
+
     writeLines(clean_environ$env_contents, clean_environ$env_path)
 
     invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
