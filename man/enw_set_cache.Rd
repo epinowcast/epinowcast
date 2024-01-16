@@ -18,14 +18,27 @@ Stan models rather than a temp directory. This can reduce the
 need for model compilation on every new model run across sessions.
 }
 \examples{
-# Set to local directory
-my_enw_cache <- file.path(tempdir(), "test")
+# Set to local directoryfile.path(tempdir(), "test")
+my_enw_cache <- 
 enw_set_cache(my_enw_cache)
 enw_get_cache()
 \dontrun{
 # Use the package cache in R >= 4.0
-if(R.version.string >= 4.0) {
+if (R.version.string >= 4.0) {
   enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
 }
 }
 }
+\seealso{
+Utility functions
+\code{\link{aggregate_rolling_sum}()},
+\code{\link{coerce_date}()},
+\code{\link{coerce_dt}()},
+\code{\link{date_to_numeric_modulus}()},
+\code{\link{enw_get_cache}()},
+\code{\link{enw_unset_cache}()},
+\code{\link{get_internal_timestep}()},
+\code{\link{is.Date}()},
+\code{\link{stan_fns_as_string}()}
+}
+\concept{utils}

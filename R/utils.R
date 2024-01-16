@@ -256,20 +256,21 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @param path A valid filepath representing the desired cache location
 #'
 #' @return The string of the filepath set
-#'
+#' 
+#' @family utils
+#' @importFrom cli cli_abort cli_alert cli_inform
+#' @export
 #' @examples
-#' # Set to local directory
-#' my_enw_cache <- file.path(tempdir(), "test")
+#' # Set to local directoryfile.path(tempdir(), "test")
+#' my_enw_cache <- 
 #' enw_set_cache(my_enw_cache)
 #' enw_get_cache()
 #' \dontrun{
 #' # Use the package cache in R >= 4.0
-#' if(R.version.string >= 4.0) {
+#' if (R.version.string >= 4.0) {
 #'   enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
 #' }
 #' }
-#' @importFrom cli cli_abort cli_alert cli_inform
-#' @export
 enw_set_cache <- function(path) {
 
   if (!is.character(path)) {
@@ -314,12 +315,13 @@ enw_set_cache <- function(path) {
 #'
 #' @return the prior cache location, if it existed
 #'
-#' @examples
 #' @importFrom cli cli_inform
-#' enw_unset_cache()
-#'
 #' @family utils
 #' @export
+#' @examples
+#' enw_unset_cache()
+#' 
+#' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))
 enw_unset_cache <- function() {
   prior_location <- Sys.getenv("enw_cache_location")
   if (prior_location != "") {
@@ -370,12 +372,33 @@ enw_get_cache <- function() {
   return(cache_location)
 }
 
-# Internal function to get for environment variables
+#' Check environment setting
+#'
+#' This internal function checks whether a given environment variable is set or
+#' not. It returns `TRUE` if the variable is either null or an empty string,
+#' indicating that the environment variable is not set. Otherwise, it returns
+#' `FALSE`.
+#'
+#' @param x The environment variable to be checked.
+#'
+#' @return Logical value indicating whether the environment variable is not set
+#' (either null or an empty string).
+#' @keywords internal
 check_environment_setting <- function(x) {
   return(is.null(x) || x == "")
 }
 
-# Internal function to identify the cache location
+#' Identify cache location
+#'
+#' This function retrieves environment variable settings and manages the
+#' `.Renviron` file in the user's home directory.
+#' It can optionally remove the entry for `enw_cache_location`.
+#'
+#' @param remove_enw_cache_location Logical indicating whether to remove the
+#' `enw_cache_location` entry from the `.Renviron` file. Defaults to `TRUE`.
+#'
+#' @return A list containing the contents of the `.Renviron` file and its path.
+#' @keywords internal
 enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
   env_location <- Sys.getenv("HOME")
   env_path <- file.path(env_location, ".Renviron")
