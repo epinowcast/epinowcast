@@ -298,7 +298,7 @@ enw_set_cache <- function(path, persistent = FALSE) {
     env_contents_active[["env_contents"]],
     enw_environment
   )
-  
+
   if (persistent) {
     writeLines(
       new_env_contents,
