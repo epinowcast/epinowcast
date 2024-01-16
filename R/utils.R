@@ -407,7 +407,8 @@ check_environment_setting <- function(x) {
 #' Identify cache location
 #'
 #' This function retrieves environment variable settings and manages the
-#' `.Renviron` file in the user's home directory.
+#' `.Renviron` file in the user's project or home directory.
+#' The project directory will be examined first, if it exists.
 #' It can optionally remove the entry for `enw_cache_location`.
 #'
 #' @param remove_enw_cache_location Logical indicating whether to remove the
@@ -416,8 +417,15 @@ check_environment_setting <- function(x) {
 #' @return A list containing the contents of the `.Renviron` file and its path.
 #' @keywords internal
 enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
-  env_location <- Sys.getenv("HOME")
-  env_path <- file.path(env_location, ".Renviron")
+
+  env_location <- getwd()
+
+  if (file.exists(file.path(env_location, ".Renviron"))) {
+    env_path <- file.path(env_location, ".Renviron")
+  } else {
+    env_location <- Sys.getenv("HOME")
+    env_path <- file.path(env_location, ".Renviron")
+  }
 
   if (!file.exists(env_path)) {
     file.create(env_path)
