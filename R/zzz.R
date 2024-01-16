@@ -36,14 +36,14 @@ enw_startup_message <- function() {
         msg <- c(
             "!" = "`enw_cache_location` is not set. Set it using `enw_set_cache`
             to reduce future Stan compilation times.",
-            "i" = "For example: `enw_set_cache(tools::R_user_dir(package =
+            i = "For example: `enw_set_cache(tools::R_user_dir(package =
             \"epinowcast\", \"cache\"))`.",
-            "i" = "See `?enw_set_cache` for details."
+            i = "See `?enw_set_cache` for details."
         )
     # nolint end 
     } else {
         msg <- c(
-            "i" = sprintf(
+            i = sprintf(
                 "Using `%s` for the epinowcast model cache location.", # nolint line_length
                 cache_location
             )

@@ -256,14 +256,13 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @param path A valid filepath representing the desired cache location
 #'
 #' @return The string of the filepath set
-#' 
+#'
 #' @family utils
 #' @importFrom cli cli_abort cli_alert cli_inform
 #' @export
 #' @examples
 #' # Set to local directoryfile.path(tempdir(), "test")
-#' my_enw_cache <- 
-#' enw_set_cache(my_enw_cache)
+#' my_enw_cache <- enw_set_cache(my_enw_cache)
 #' enw_get_cache()
 #' \dontrun{
 #' # Use the package cache in R >= 4.0
@@ -278,7 +277,7 @@ enw_set_cache <- function(path) {
   }
 
   cli::cli_inform(c(
-    "i" = "Setting `enw_cache_location` to {path}"
+    "i" = "Setting `enw_cache_location` to {path}" # nolint keyword_quote_linter
   ))
 
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
@@ -320,13 +319,13 @@ enw_set_cache <- function(path) {
 #' @export
 #' @examples
 #' enw_unset_cache()
-#' 
+#'
 #' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))
 enw_unset_cache <- function() {
   prior_location <- Sys.getenv("enw_cache_location")
   if (prior_location != "") {
     cli::cli_inform(c(
-      "i" = paste0(
+      i = paste0(
         "Removing `enw_cache_location = {prior_location}` from .Renviron and ",
         "from the local environment."
       )
@@ -366,7 +365,7 @@ enw_get_cache <- function() {
       "!" = "`enw_cache_location` not specified. Using `tempdir` at {cache_location}" # nolint line_length
     ))
   } else {
-    cli::cli_inform(c("i" = "Using `{cache_location}` for the cache location."))
+    cli::cli_inform(c(i = "Using `{cache_location}` for the cache location."))
   }
 
   return(cache_location)
