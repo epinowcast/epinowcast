@@ -339,6 +339,12 @@ enw_unset_cache <- function() {
     ))
     Sys.unsetenv("enw_cache_location")
 
+    clean_environ <- enw_get_environment_contents(
+      remove_enw_cache_location = TRUE
+      )
+      
+    writeLines(clean_environ$env_contents, clean_environ$env_path)
+
     invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
   } else {
     cli::cli_inform(c(
