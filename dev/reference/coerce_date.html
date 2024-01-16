@@ -72,14 +72,14 @@ with error handling</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coerce_date</span><span class="op">(</span><span class="va">dates</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">coerce_date</span><span class="op">(</span>dates <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>dates</dt>
 <dd><p>A vector-like input, which the function attempts
-to coerce via <code><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>.</p></dd>
+to coerce via <code><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>. Defaults to NULL.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -101,9 +101,7 @@ as IDate.</p>
     <div class="dont-index"><p>Utility functions
 <code><a href="aggregate_rolling_sum.html">aggregate_rolling_sum</a>()</code>,
 <code><a href="coerce_dt.html">coerce_dt</a>()</code>,
-<code><a href="convert_cmdstan_to_rstan.html">convert_cmdstan_to_rstan</a>()</code>,
 <code><a href="date_to_numeric_modulus.html">date_to_numeric_modulus</a>()</code>,
-<code><a href="expose_stan_fns.html">expose_stan_fns</a>()</code>,
 <code><a href="get_internal_timestep.html">get_internal_timestep</a>()</code>,
 <code><a href="is.Date.html">is.Date</a>()</code>,
 <code><a href="stan_fns_as_string.html">stan_fns_as_string</a>()</code></p></div>

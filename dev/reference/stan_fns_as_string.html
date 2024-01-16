@@ -69,18 +69,23 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stan_fns_as_string</span><span class="op">(</span><span class="va">files</span>, <span class="va">target_dir</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stan_fns_as_string</span><span class="op">(</span><span class="va">files</span>, <span class="va">include</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>files</dt>
-<dd><p>A character vector of file names</p></dd>
+<dd><p>A character vector specifying the names of Stan files to be
+exposed. These must be in the <code>include</code> directory. Defaults to all Stan
+files in the <code>include</code> directory. Note that the following files are
+overloaded and cannot be exposed: "delay_lpmf.stan",
+"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".</p></dd>
 
 
-<dt>target_dir</dt>
-<dd><p>A character string giving the directory in which
-files can be found.</p></dd>
+<dt>include</dt>
+<dd><p>A character string specifying the directory containing Stan
+files. Defaults to the 'stan/functions' directory of the <code><a href="epinowcast.html">epinowcast()</a></code>
+package.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -95,9 +100,7 @@ files can be found.</p></dd>
 <code><a href="aggregate_rolling_sum.html">aggregate_rolling_sum</a>()</code>,
 <code><a href="coerce_date.html">coerce_date</a>()</code>,
 <code><a href="coerce_dt.html">coerce_dt</a>()</code>,
-<code><a href="convert_cmdstan_to_rstan.html">convert_cmdstan_to_rstan</a>()</code>,
 <code><a href="date_to_numeric_modulus.html">date_to_numeric_modulus</a>()</code>,
-<code><a href="expose_stan_fns.html">expose_stan_fns</a>()</code>,
 <code><a href="get_internal_timestep.html">get_internal_timestep</a>()</code>,
 <code><a href="is.Date.html">is.Date</a>()</code></p></div>
     </div>

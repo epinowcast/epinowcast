@@ -494,7 +494,7 @@ plot of chunk unnamed-chunk-18
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">score</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/scoringutils/man/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">kable</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details><table class="table">
 <colgroup>
@@ -583,7 +583,7 @@ plot of chunk unnamed-chunk-18
 <p>Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">age_date_score</span> <span class="op">&lt;-</span> <span class="va">score</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/scoringutils/man/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"reference_date"</span>, <span class="st">"age_group"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">fixed_score</span> <span class="op">&lt;-</span> <span class="va">age_date_score</span><span class="op">[</span></span>
 <span>  <span class="va">model</span> <span class="op">==</span> <span class="st">"Reference: Fixed, Report: Fixed"</span>,</span>
 <span>  <span class="fu">.</span><span class="op">(</span><span class="va">reference_date</span>, <span class="va">age_group</span>, fixed_is <span class="op">=</span> <span class="va">interval_score</span><span class="op">)</span></span>

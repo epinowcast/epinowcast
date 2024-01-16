@@ -94,9 +94,6 @@
     <loc>package.epinowcast.org/dev/reference/construct_rw.html</loc>
   </url>
   <url>
-    <loc>package.epinowcast.org/dev/reference/convert_cmdstan_to_rstan.html</loc>
-  </url>
-  <url>
     <loc>package.epinowcast.org/dev/reference/convolution_matrix.html</loc>
   </url>
   <url>
@@ -283,6 +280,9 @@
     <loc>package.epinowcast.org/dev/reference/enw_simulate_missing_reference.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/enw_stan_to_r.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/enw_summarise_samples.html</loc>
   </url>
   <url>
@@ -290,9 +290,6 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/epinowcast.html</loc>
-  </url>
-  <url>
-    <loc>package.epinowcast.org/dev/reference/expose_stan_fns.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/extract_obs_metadata.html</loc>

@@ -70,7 +70,7 @@ on forecast scoring."><meta property="og:image" content="package.epinowcast.org/
     </div>
 
     <div class="ref-description section level2">
-    <p>Acts as a wrapper to <code><a href="https://rdrr.io/pkg/scoringutils/man/score.html" class="external-link">scoringutils::score()</a></code>. In particular,
+    <p>Acts as a wrapper to <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">scoringutils::score()</a></code>. In particular,
 handling filtering nowcast summary output and linking this output to
 observed data. See the documentation for the <code>scoringutils</code> package for more
 on forecast scoring.</p>
@@ -111,7 +111,7 @@ performance for targets with large values.</p></dd>
 
 <dt>check</dt>
 <dd><p>Logical, defaults to FALSE. Should
-<code><a href="https://rdrr.io/pkg/scoringutils/man/check_forecasts.html" class="external-link">scoringutils::check_forecasts()</a></code> be used to check input nowcasts.</p></dd>
+<code><a href="https://epiforecasts.io/scoringutils/reference/check_forecasts.html" class="external-link">scoringutils::check_forecasts()</a></code> be used to check input nowcasts.</p></dd>
 
 
 <dt>round_to</dt>
@@ -120,9 +120,9 @@ output to.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Arguments passed on to <code><a href="https://rdrr.io/pkg/scoringutils/man/score.html" class="external-link">scoringutils::score</a></code></p><dl><dt><code>data</code></dt>
+<dd><p>Arguments passed on to <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">scoringutils::score</a></code></p><dl><dt><code>data</code></dt>
 <dd><p>A data.frame or data.table with the predictions and observations.
-For scoring using <code><a href="https://rdrr.io/pkg/scoringutils/man/score.html" class="external-link">score()</a></code>, the following columns need to be present:</p><ul><li><p><code>true_value</code> - the true observed values</p></li>
+For scoring using <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">score()</a></code>, the following columns need to be present:</p><ul><li><p><code>true_value</code> - the true observed values</p></li>
 <li><p><code>prediction</code> - predictions or predictive samples for one
 true value. (You only don't need to provide a prediction column if
 you want to score quantile forecasts in a wide range format.)</p></li>
@@ -135,14 +135,14 @@ a column called <code>quantile</code>:</p><ul><li><p><code>quantile</code>: quan
 </ul><p>In addition a <code>model</code> column is suggested and if not present this will be
 flagged and added to the input data with all forecasts assigned as an
 "unspecified model").</p>
-<p>You can check the format of your data using <code><a href="https://rdrr.io/pkg/scoringutils/man/check_forecasts.html" class="external-link">check_forecasts()</a></code> and there
-are examples for each format (<a href="https://rdrr.io/pkg/scoringutils/man/example_quantile.html" class="external-link">example_quantile</a>, <a href="https://rdrr.io/pkg/scoringutils/man/example_continuous.html" class="external-link">example_continuous</a>,
-<a href="https://rdrr.io/pkg/scoringutils/man/example_integer.html" class="external-link">example_integer</a>, and <a href="https://rdrr.io/pkg/scoringutils/man/example_binary.html" class="external-link">example_binary</a>).</p></dd>
+<p>You can check the format of your data using <code><a href="https://epiforecasts.io/scoringutils/reference/check_forecasts.html" class="external-link">check_forecasts()</a></code> and there
+are examples for each format (<a href="https://epiforecasts.io/scoringutils/reference/example_quantile.html" class="external-link">example_quantile</a>, <a href="https://epiforecasts.io/scoringutils/reference/example_continuous.html" class="external-link">example_continuous</a>,
+<a href="https://epiforecasts.io/scoringutils/reference/example_integer.html" class="external-link">example_integer</a>, and <a href="https://epiforecasts.io/scoringutils/reference/example_binary.html" class="external-link">example_binary</a>).</p></dd>
 
     <dt><code>metrics</code></dt>
 <dd><p>the metrics you want to have in the output. If <code>NULL</code> (the
 default), all available metrics will be computed. For a list of available
-metrics see <code><a href="https://rdrr.io/pkg/scoringutils/man/available_metrics.html" class="external-link">available_metrics()</a></code>, or  check the <a href="https://rdrr.io/pkg/scoringutils/man/metrics.html" class="external-link">metrics</a> data set.</p></dd>
+metrics see <code><a href="https://epiforecasts.io/scoringutils/reference/available_metrics.html" class="external-link">available_metrics()</a></code>, or  check the <a href="https://epiforecasts.io/scoringutils/reference/metrics.html" class="external-link">metrics</a> data set.</p></dd>
 
   
 </dl></dd>
@@ -152,7 +152,7 @@ metrics see <code><a href="https://rdrr.io/pkg/scoringutils/man/available_metric
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A <code>data.table</code> as returned by <code><a href="https://rdrr.io/pkg/scoringutils/man/score.html" class="external-link">scoringutils::score()</a></code>.</p>
+<p>A <code>data.table</code> as returned by <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">scoringutils::score()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -173,11 +173,11 @@ metrics see <code><a href="https://rdrr.io/pkg/scoringutils/man/available_metric
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># score on the absolute scale</span></span></span>
 <span class="r-in"><span><span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu">enw_score_nowcast</span><span class="op">(</span><span class="va">summarised_nowcast</span>, <span class="va">obs</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/scoringutils/man/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span><span class="va">scores</span>, by <span class="op">=</span> <span class="st">"location"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span><span class="va">scores</span>, by <span class="op">=</span> <span class="st">"location"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># score overall on a log scale</span></span></span>
 <span class="r-in"><span><span class="va">log_scores</span> <span class="op">&lt;-</span> <span class="fu">enw_score_nowcast</span><span class="op">(</span><span class="va">summarised_nowcast</span>, <span class="va">obs</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/pkg/scoringutils/man/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span><span class="va">log_scores</span>, by <span class="op">=</span> <span class="st">"location"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://epiforecasts.io/scoringutils/reference/summarise_scores.html" class="external-link">summarise_scores</a></span><span class="op">(</span><span class="va">log_scores</span>, by <span class="op">=</span> <span class="st">"location"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
