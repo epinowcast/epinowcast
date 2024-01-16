@@ -331,6 +331,9 @@ enw_unset_cache <- function() {
         "from the local environment."
       )
     ))
+    Sys.unsetenv("enw_cache_location")
+
+    invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
   } else {
     cli::cli_inform(c(
       "!" = paste0(
@@ -339,9 +342,6 @@ enw_unset_cache <- function() {
       )
     ))
   }
-  Sys.unsetenv("enw_cache_location")
-
-  invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
 
   return(invisible(prior_location))
 }

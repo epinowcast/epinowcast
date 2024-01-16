@@ -29,3 +29,8 @@ cli::test_that_cli("alert", {
     })
     enw_set_cache(current_cache)
 })
+
+test_that("enw_set_cache() fails as expected with incorrect input", {
+    expect_error(enw_set_cache())
+    expect_error(enw_set_cache(1))
+})
