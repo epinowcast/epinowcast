@@ -103,13 +103,13 @@ Imports:
     ggplot2,
     posterior,
     purrr,
-    rstan,
     scales,
     lifecycle
 Suggests:
     bookdown,
     loo (>= 2.4.1),
     knitr,
+    RcppEigen,
     rmarkdown,
     scoringutils,
     spelling,

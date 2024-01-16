@@ -41,6 +41,8 @@ This release is in development and not yet ready for production use.
 - Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
 - Increased the minimum supported R version to >= R 3.6.0 from R 3.5.0 and ensured that existing function code and tests compiled with this dependency. Vignettes will continue to allow use of R >= 4.1.0 syntax (i.e., native pipe and lambda function syntax). See #389 by @medewitt and @seabbs and reviewed by @pearsonca.
 - Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
+- Exposed `enw_stan_to_r()` to the user. This function is used for testing and in development to expose `{epinowcast}` stan code in R. Users may find this function useful as it allows them to explore the stan code used in `{epinowcast}` models more easily. Note that this functionality is known to be unstable when `{rstan}` is loaded in the same R session. See #431 by @seabbs and reviewed by @sbfnk.
+- Refactored `extract_sparse_matrix()` to allow us to drop our `{rstan}` dependency.  See #431 by @seabbs and reviewed by @sbfnk.
 
 ## Model
 

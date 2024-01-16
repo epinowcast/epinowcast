@@ -371,3 +371,92 @@ enw_model <- function(model = system.file(
   }
   return(model)
 }
+
+#' Expose `epinowcast` stan functions in R
+#'
+#' @description This function facilitates the exposure of Stan functions from
+#' the [epinowcast]() package in R. It utilizes the [expose_functions()] method
+#' of [cmdstanr::CmdStanModel] or this purpose. This function is useful for
+#' developers and contributors to the [epinowcast] package, as well as for
+#' users interested in exploring and prototyping with model functionalities.
+#'
+#' @param files A character vector specifying the names of Stan files to be
+#' exposed. These must be in the `include` directory. Defaults to all Stan
+#' files in the `include` directory. Note that the following files contain
+#' overloaded functions and cannot be exposed: "delay_lpmf.stan",
+#' "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".
+#'
+#' @param include A character string specifying the directory containing Stan
+#' files. Defaults to the 'stan/functions' directory of the [epinowcast()]
+#' package.
+#'
+#' @param global A logical value indicating whether to expose the functions
+#' globally. Defaults to `TRUE`. Passed to the [expose_functions()] method of
+#' [cmdstanr::CmdStanModel].
+#'
+#' @param ... Additional arguments passed to [enw_model]().
+#'
+#' @inheritParams enw_model
+#' @return An object of class `CmdStanModel` with functions from the model
+#' exposed for use in R.
+#'
+#' @family modeltools
+#' @importFrom cmdstanr write_stan_file
+#' @importFrom cli cli_abort cli_warn
+#' @export
+#' @examplesIf interactive()
+#' # Compile functions in stan/functions/hazard.stan
+#' stan_functions <- enw_stan_to_r("hazard.stan")
+#' # These functions can now be used in R
+#' stan_functions$functions$prob_to_hazard(c(0.5, 0.1, 0.1))
+#' # or exposed globally and used directly
+#' prob_to_hazard(c(0.5, 0.1, 0.1))
+enw_stan_to_r <- function(
+  files = list.files(include),
+  include = system.file("stan", "functions", package = "epinowcast"),
+  global = TRUE,
+  verbose = TRUE,
+  ...
+) {
+  overloaded_fns <- c(
+    "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
+    "effects_priors_lp.stan"
+  )
+  if (any(files %in% overloaded_fns)) {
+    cli::cli_warn(c(
+      "The following functions are overloaded and cannot be exposed: ",
+       toString(overloaded_fns)
+    ))
+    files <- files[!files %in% overloaded_fns]
+  }
+  if (length(files) == 0 || is.null(files)) {
+    cli::cli_abort(paste0(
+      "No non-overloaded files specified. Please specify files to expose ",
+      "using the `files` argument."
+    ))
+  }
+  include_files <- list.files(include)
+  if (!all(files %in% include_files)) {
+    cli::cli_abort(c(
+      paste0(
+        "The following files are not in the include directory: ",
+        toString(files[!files %in% include_files])
+      ),
+      "The following files are in the include directory: ",
+      toString(include_files)
+    ))
+  }
+  functions <- stan_fns_as_string(files, include)
+  function_file <- cmdstanr::write_stan_file(functions)
+  mod <- enw_model(
+    model = function_file,
+    include = include,
+    verbose = verbose,
+    compile_standalone = TRUE,
+    ...
+  )
+  if (isTRUE(global)) {
+    mod$expose_functions(global = TRUE)
+  }
+  return(mod)
+}
