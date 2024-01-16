@@ -260,15 +260,16 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @family utils
 #' @importFrom cli cli_abort cli_alert cli_inform
 #' @export
-#' @examples
-#' # Set to local directoryfile.path(tempdir(), "test")
-#' my_enw_cache <- enw_set_cache(my_enw_cache)
+#' @examplesIf interactive()
+#' # Set to local directory
+#' my_enw_cache <- enw_set_cache(file.path(tempdir(), "test"))
 #' enw_get_cache()
 #' \dontrun{
 #' # Use the package cache in R >= 4.0
 #' if (R.version.string >= 4.0) {
 #'   enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
 #' }
+#'
 #' }
 enw_set_cache <- function(path) {
 
@@ -317,7 +318,7 @@ enw_set_cache <- function(path) {
 #' @importFrom cli cli_inform
 #' @family utils
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' enw_unset_cache()
 #'
 #' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))

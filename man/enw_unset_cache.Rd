@@ -15,9 +15,11 @@ the user .Renviron file and removes it from the local
 environment.
 }
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 enw_unset_cache()
 
 enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Utility functions
