@@ -254,6 +254,8 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' need for model compilation on every new model run across sessions.
 #'
 #' @param path A valid filepath representing the desired cache location
+#' @param persistent a logical representing if the cache location should be
+#'   written to the user's .Renviron file with default of \code{FALSE}.
 #'
 #' @return The string of the filepath set
 #'
@@ -271,7 +273,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' }
 #'
 #' }
-enw_set_cache <- function(path) {
+enw_set_cache <- function(path, persistent = FALSE) {
 
   if (!is.character(path)) {
     cli::cli_abort("`path` must be a valid file path.")
@@ -296,13 +298,17 @@ enw_set_cache <- function(path) {
     env_contents_active[["env_contents"]],
     enw_environment
   )
+  
+  if (persistent) {
+    writeLines(
+      new_env_contents,
+      con = env_contents_active[["env_path"]], sep = "\n"
+    )
 
-  writeLines(
-    new_env_contents,
-    con = env_contents_active[["env_path"]], sep = "\n"
-  )
-
-  readRenviron(env_contents_active[["env_path"]])
+    readRenviron(env_contents_active[["env_path"]])
+  } else {
+    Sys.setenv(enw_cache_location = candidate_path)
+  }
 
   return(invisible(candidate_path))
 }

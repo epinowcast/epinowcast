@@ -37,7 +37,7 @@ enw_startup_message <- function() {
             "!" = "`enw_cache_location` is not set. Set it using `enw_set_cache`
             to reduce future Stan compilation times.",
             i = "For example: `enw_set_cache(tools::R_user_dir(package =
-            \"epinowcast\", \"cache\"))`.",
+            \"epinowcast\", \"cache\"), persistent = TRUE)`.",
             i = "See `?enw_set_cache` for details."
         )
     # nolint end 
