@@ -20,10 +20,12 @@ test_that("enw_model can access enw_cache_location", {
 cli::test_that_cli("alert", {
     skip_on_cran()
     local_edition(3)
+    current_cache <- enw_get_cache()
     testthat::expect_snapshot({
     withr::with_envvar(
         new = c(enw_cache_location = "initial_location"), {
             enw_set_cache("second_location")
         })
-  })
+    })
+    enw_set_cache(current_cache)
 })
