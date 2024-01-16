@@ -1,11 +1,10 @@
 # nocov start
 .onAttach <- function(libname, pkgname) {
-    packageStartupMessage(
-        cli::cli_inform(
-            enw_startup_message(),
-            .frequency = "once",
-            .frequency_id = "enw_startup_message"
-        )
+    cli::cli_inform(
+        enw_startup_message(),
+        .frequency = "once",
+        .frequency_id = "enw_startup_message",
+        class = "packageStartupMessage"
     )
 }
 # nocov end
