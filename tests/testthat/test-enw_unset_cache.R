@@ -53,7 +53,6 @@ test_that("enw_unset_cache can unset both the session and persistent cache direc
   }
 })
 
-# Test handling unset cache
 test_that("enw_unset_cache detects when the cache directory is not set", {
   suppressMessages(withr::with_envvar(c(enw_cache_location = ""), {
     enw_unset_cache(type = "session")
