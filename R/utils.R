@@ -249,18 +249,24 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 
 #' Set caching location for Stan models
 #'
-#' This function allows the user to set a cache location for
-#' Stan models rather than a temp directory. This can reduce the
-#' need for model compilation on every new model run across sessions.
+#' This function allows the user to set a cache location for Stan models
+#' rather than a temporary directory. This can reduce the need for model
+#' compilation on every new model run across sessions or within a session.
+#' For R version 4.0.0 and above, it's recommended to use the persistent cache
+#' as shown in the example.
 #'
-#' @param path A valid filepath representing the desired cache location
-#' @param persistent A logical representing if the cache location should be
-#' written to the user's `.Renviron` file with default of \code{FALSE}.
+#' @param path A valid filepath representing the desired cache location.
 #'
-#' @return The string of the filepath set
+#' @param type A character string specifying the cache type. It can be one of 
+#' "session", "persistent", or "all". Default is "session".
+#' "session" sets the cache for the current session, "persistent" writes the
+#' cache location to the user’s `.Renviron` file,  and "all" does both.
+#'
+#' @return The string of the filepath set.
 #'
 #' @family utils
 #' @importFrom cli cli_abort cli_alert_success cli_alert_warning
+#' @importFrom rlang arg_match
 #' @export
 #' @examplesIf interactive()
 #' # Set to local directory
@@ -268,36 +274,39 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' enw_get_cache()
 #' \dontrun{
 #' # Use the package cache in R >= 4.0
-#' if (R.version.string >= 4.0) {
-#'   enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
-#' }
+#' if (R.version.string >= "4.0.0") {
+#'  enw_set_cache(
+#'    tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
+#'  )
+#'}
 #'
-#' }
-enw_set_cache <- function(path, persistent = FALSE) {
+#'}
+enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
+
+  type <- rlang::arg_match(type)
 
   if (!is.character(path)) {
     cli::cli_abort("`path` must be a valid file path.")
   }
-
-  cli::cli_alert_success("Setting `enw_cache_location` to {path}")
 
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
   if (!check_environment_setting(prior_cache)) {
     cli::cli_alert_warning("{.path prior_cache} exists and will be overwritten")
   }
-  env_contents_active <- enw_get_environment_contents()
 
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
 
-  enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
+  if (type == "persistent" || type == "all") {
+    env_contents_active <- enw_get_environment_contents()
 
-  new_env_contents <- append(
-    env_contents_active[["env_contents"]],
-    enw_environment
-  )
+    enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
 
-  if (isTRUE(persistent)) {
+    new_env_contents <- append(
+      env_contents_active[["env_contents"]],
+      enw_environment
+    )
+
     writeLines(
       new_env_contents,
       con = env_contents_active[["env_path"]], sep = "\n"
@@ -306,7 +315,12 @@ enw_set_cache <- function(path, persistent = FALSE) {
       "Added `enw_cache_location` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
     )
     readRenviron(env_contents_active[["env_path"]])
-  } else {
+  }
+
+  if (type == "session" || type == "all") {
+    cli::cli_alert_success(
+      "Setting `enw_cache_location` to {candidate_path}"
+    )
     Sys.setenv(enw_cache_location = candidate_path)
   }
 
@@ -315,48 +329,69 @@ enw_set_cache <- function(path, persistent = FALSE) {
 
 #' Unset Stan cache location
 #'
-#' Removes `enw_cache_location` environment variable from
-#' the user .Renviron file and removes it from the local
-#' environment.
+#' Optionally removes the `enw_cache_location` environment variable from
+#' the user .Renviron file and/or removes it from the local
+#' environment. If you unset the local cache and want to switch
+#' back to using the persistent cache, you can reload the
+#' `.Renviron` file using `readRenviron("~/.Renviron")`.
 #'
-#' @param persistent A logical representing if the cache location should be
-#' removed from the user's `.Renviron` file with default of \code{FALSE}.
+#' @param type A character string specifying the type of cache to unset.
+#' It can be one of "session", "persistent", or "all". Default is "session".
+#' "session" unsets the cache for the current session, "persistent" removes the
+#' cache location from the user’s `.Renviron` file, and "all" does both.
 #'
-#' @return the prior cache location, if it existed
+#' @return The prior cache location, if it existed otherwise `NULL`.
 #'
-#' @importFrom cli cli_alert_success cli_alert_warning
+#' @importFrom cli cli_alert_success cli_alert_danger
+#' @importFrom rlang arg_match
 #' @family utils
 #' @export
 #' @examplesIf interactive()
 #' enw_unset_cache()
 #'
-#' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))
-enw_unset_cache <- function(persistent = FALSE) {
-  prior_location <- Sys.getenv("enw_cache_location")
-  if (prior_location != "") {
-    cli::cli_alert_success(
-      "Removing `enw_cache_location = {.path prior_location}`"
-    )
-    Sys.unsetenv("enw_cache_location")
+#' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test"), type = "session"))
+enw_unset_cache <- function(type = c("session", "persistent", "all")) {
+  type <- rlang::arg_match(type)
 
-    clean_environ <- enw_get_environment_contents(
-      remove_enw_cache_location = TRUE
-    )
-    if (isTRUE(persistent)) {
-      writeLines(clean_environ$env_contents, clean_environ$env_path)
+  prior_location <- NULL
+
+  if (type == "session" || type == "all") {
+    prior_location <- Sys.getenv("enw_cache_location")
+    if (prior_location != "") {
       cli::cli_alert_success(
-        "Removing `enw_cache_location = {.path prior_location}` from `.Renviron`" # nolint line_length
+        "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
+      )
+      Sys.unsetenv("enw_cache_location")
+        if (type == "session") {
+          cli::cli_alert_info(
+            "To revert to the persistent cache (if set), run `readRenviron('~/.Renviron')`" # nolint line_length
+          )
+        }
+    } else {
+      cli::cli_alert_danger(
+        "`enw_cache_location` not set in the local environment. Nothing to remove." # nolint line_length
       )
     }
+  }
 
-    invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
-  } else {
-    cli::cli_alert_warning(
-      paste0(
-        "`enw_cache_location` not set. ",
-        "Nothing to remove from .Renviron or the local environment."
-      )
+  if (type == "persistent" || type == "all") {
+    environ <- enw_get_environment_contents()
+    cache_loc_environ <- grepl(
+      "enw_cache_location", environ[["env_contents"]], fixed = TRUE
     )
+    if (!any(cache_loc_environ)) {
+      cli::cli_alert_danger(
+        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+      )
+    } else {
+      new_environ <- environ
+      new_environ[["env_contents"]] <-
+       environ[["env_contents"]][!cache_loc_environ]
+      writeLines(new_environ$env_contents, new_environ$env_path)
+      cli::cli_alert_success(
+        "Removed `enw_cache_location = {prior_location}` from `.Renviron`."
+      )
+    }
   }
 
   return(invisible(prior_location))
@@ -410,7 +445,7 @@ enw_cache_location_message <- function() {
     # nolint start
         msg <- c(
             "!" = "`enw_cache_location` is not set.",
-            i = "Using `tempdir()` at {.path tempdir()} for the epinowcast model cache location.",
+            i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
             i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
             i = "For example: `enw_set_cache(tools::R_user_dir(package =
             \"epinowcast\", \"cache\"), persistent = TRUE)`.",
@@ -450,14 +485,10 @@ check_environment_setting <- function(x) {
 #' This function retrieves environment variable settings and manages the
 #' `.Renviron` file in the user's project or home directory.
 #' The project directory will be examined first, if it exists.
-#' It can optionally remove the entry for `enw_cache_location`.
-#'
-#' @param remove_enw_cache_location Logical indicating whether to remove the
-#' `enw_cache_location` entry from the `.Renviron` file. Defaults to `TRUE`.
 #'
 #' @return A list containing the contents of the `.Renviron` file and its path.
 #' @keywords internal
-enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
+enw_get_environment_contents <- function() {
 
   env_location <- getwd()
 
@@ -473,11 +504,6 @@ enw_get_environment_contents <- function(remove_enw_cache_location = TRUE) {
   }
 
   env_contents <- readLines(env_path)
-
-  if (remove_enw_cache_location) {
-    old_location <- grepl("enw_cache_location", env_contents, fixed = TRUE)
-    env_contents <- env_contents[!old_location]
-  }
 
   output <- list(
     env_contents = env_contents,

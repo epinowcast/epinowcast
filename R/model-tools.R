@@ -344,7 +344,7 @@ enw_model <- function(model = system.file(
                       stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    cli::cli_alert_info("Using model {.path model}.")
+    cli::cli_alert_info("Using model {model}.")
     cli::cli_alert_info("Include is {toString(include)}.")
   }
 

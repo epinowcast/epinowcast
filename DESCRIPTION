@@ -103,6 +103,7 @@ Imports:
     ggplot2,
     posterior,
     purrr,
+    rlang,
     scales,
     lifecycle
 Suggests:

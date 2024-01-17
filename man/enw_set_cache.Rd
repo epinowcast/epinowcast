@@ -4,21 +4,25 @@
 \alias{enw_set_cache}
 \title{Set caching location for Stan models}
 \usage{
-enw_set_cache(path, persistent = FALSE)
+enw_set_cache(path, type = c("session", "persistent", "all"))
 }
 \arguments{
-\item{path}{A valid filepath representing the desired cache location}
+\item{path}{A valid filepath representing the desired cache location.}
 
-\item{persistent}{A logical representing if the cache location should be
-written to the user's \code{.Renviron} file with default of \code{FALSE}.}
+\item{type}{A character string specifying the cache type. It can be one of
+"session", "persistent", or "all". Default is "session".
+"session" sets the cache for the current session, "persistent" writes the
+cache location to the user’s \code{.Renviron} file,  and "all" does both.}
 }
 \value{
-The string of the filepath set
+The string of the filepath set.
 }
 \description{
-This function allows the user to set a cache location for
-Stan models rather than a temp directory. This can reduce the
-need for model compilation on every new model run across sessions.
+This function allows the user to set a cache location for Stan models
+rather than a temporary directory. This can reduce the need for model
+compilation on every new model run across sessions or within a session.
+For R version 4.0.0 and above, it's recommended to use the persistent cache
+as shown in the example.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
@@ -27,8 +31,10 @@ my_enw_cache <- enw_set_cache(file.path(tempdir(), "test"))
 enw_get_cache()
 \dontrun{
 # Use the package cache in R >= 4.0
-if (R.version.string >= 4.0) {
-  enw_set_cache(tools::R_user_dir(package = "epinowcast", "cache"))
+if (R.version.string >= "4.0.0") {
+ enw_set_cache(
+   tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
+ )
 }
 
 }

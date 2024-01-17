@@ -4,25 +4,29 @@
 \alias{enw_unset_cache}
 \title{Unset Stan cache location}
 \usage{
-enw_unset_cache(persistent = FALSE)
+enw_unset_cache(type = c("session", "persistent", "all"))
 }
 \arguments{
-\item{persistent}{A logical representing if the cache location should be
-removed from the user's \code{.Renviron} file with default of \code{FALSE}.}
+\item{type}{A character string specifying the type of cache to unset.
+It can be one of "session", "persistent", or "all". Default is "session".
+"session" unsets the cache for the current session, "persistent" removes the
+cache location from the user’s \code{.Renviron} file, and "all" does both.}
 }
 \value{
-the prior cache location, if it existed
+The prior cache location, if it existed otherwise \code{NULL}.
 }
 \description{
-Removes \code{enw_cache_location} environment variable from
-the user .Renviron file and removes it from the local
-environment.
+Optionally removes the \code{enw_cache_location} environment variable from
+the user .Renviron file and/or removes it from the local
+environment. If you unset the local cache and want to switch
+back to using the persistent cache, you can reload the
+\code{.Renviron} file using \code{readRenviron("~/.Renviron")}.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 enw_unset_cache()
 
-enw_unset_cache(enw_set_cache(file.path(tempdir(), "test")))
+enw_unset_cache(enw_set_cache(file.path(tempdir(), "test"), type = "session"))
 \dontshow{\}) # examplesIf}
 }
 \seealso{

@@ -4,11 +4,7 @@
 \alias{enw_get_environment_contents}
 \title{Identify cache location}
 \usage{
-enw_get_environment_contents(remove_enw_cache_location = TRUE)
-}
-\arguments{
-\item{remove_enw_cache_location}{Logical indicating whether to remove the
-\code{enw_cache_location} entry from the \code{.Renviron} file. Defaults to \code{TRUE}.}
+enw_get_environment_contents()
 }
 \value{
 A list containing the contents of the \code{.Renviron} file and its path.
@@ -17,6 +13,5 @@ A list containing the contents of the \code{.Renviron} file and its path.
 This function retrieves environment variable settings and manages the
 \code{.Renviron} file in the user's project or home directory.
 The project directory will be examined first, if it exists.
-It can optionally remove the entry for \code{enw_cache_location}.
 }
 \keyword{internal}
