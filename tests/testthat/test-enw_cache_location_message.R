@@ -4,10 +4,10 @@ test_that(
   withr::with_envvar(
     new = c(enw_cache_location = NA), {
     message <- enw_cache_location_message()
-    expect_length(message, 3L) # Expecting three messages
-    expect_named(message, c("!", "i", "i"))
+    expect_length(message, 5L)
+    expect_named(message, c('!', 'i', 'i', 'i', 'i'))
     expect_true(grepl("enw_cache_location", message["!"], fixed = TRUE))
-    expect_true(grepl("enw_set_cache", message["i"], fixed = TRUE))
+    expect_true(grepl("enw_set_cache", message[3], fixed = TRUE))
   })
 })
 
