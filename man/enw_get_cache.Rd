@@ -11,7 +11,7 @@ A string representing the file path for the cache location
 }
 \description{
 Retrieves the user set cache location for Stan models. This
-path can be set through the \code{\link[=enw_cache_location]{enw_cache_location()}} function call.
+path can be set through the \code{enw_cache_location} function call.
 If no environmental variable is available the output from
 \code{\link[=tempdir]{tempdir()}} will be returned.
 }

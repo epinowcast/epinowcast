@@ -328,7 +328,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @return A `cmdstanr` model.
 #'
 #' @family modeltools
-#' @importFrom cli cli_inform
+#' @importFrom cli cli_alert_info
 #' @export
 #' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model
@@ -344,8 +344,8 @@ enw_model <- function(model = system.file(
                       stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    cli::cli_inform("Using model {model}.")
-    cli::cli_inform("include is {toString(include)}.")
+    cli::cli_alert_info("Using model {.path model}.")
+    cli::cli_alert_info("Include is {toString(include)}.")
   }
 
   if (!profile) {

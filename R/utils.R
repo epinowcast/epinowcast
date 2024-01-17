@@ -365,7 +365,7 @@ enw_unset_cache <- function(persistent = FALSE) {
 #' Retrieve Stan cache location
 #'
 #' Retrieves the user set cache location for Stan models. This
-#' path can be set through the [enw_cache_location()] function call.
+#' path can be set through the `enw_cache_location` function call.
 #' If no environmental variable is available the output from
 #' [tempdir()] will be returned.
 #'
