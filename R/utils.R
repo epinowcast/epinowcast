@@ -257,7 +257,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #'
 #' @param path A valid filepath representing the desired cache location.
 #'
-#' @param type A character string specifying the cache type. It can be one of 
+#' @param type A character string specifying the cache type. It can be one of
 #' "session", "persistent", or "all". Default is "session".
 #' "session" sets the cache for the current session, "persistent" writes the
 #' cache location to the user’s `.Renviron` file,  and "all" does both.
@@ -292,7 +292,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
   if (!check_environment_setting(prior_cache)) {
-    cli::cli_alert_warning("{.path prior_cache} exists and will be overwritten")
+    cli::cli_alert_warning("{prior_cache} exists and will be overwritten")
   }
 
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
@@ -311,10 +311,10 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
       new_env_contents,
       con = env_contents_active[["env_path"]], sep = "\n"
     )
+
     cli::cli_alert_success(
-      "Added `enw_cache_location` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
+      "Added `{enw_environment}` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
     )
-    readRenviron(env_contents_active[["env_path"]])
   }
 
   if (type == "session" || type == "all") {
@@ -349,7 +349,9 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @examplesIf interactive()
 #' enw_unset_cache()
 #'
-#' enw_unset_cache(enw_set_cache(file.path(tempdir(), "test"), type = "session"))
+#' enw_unset_cache(
+#'  enw_set_cache(file.path(tempdir(), "test"), type = "session")
+#' )
 enw_unset_cache <- function(type = c("session", "persistent", "all")) {
   type <- rlang::arg_match(type)
 
@@ -448,7 +450,7 @@ enw_cache_location_message <- function() {
             i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
             i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
             i = "For example: `enw_set_cache(tools::R_user_dir(package =
-            \"epinowcast\", \"cache\"), persistent = TRUE)`.",
+            \"epinowcast\", \"cache\"), type = 'all')`.",
             i = "See `?enw_set_cache` for details."
         )
     # nolint end 
