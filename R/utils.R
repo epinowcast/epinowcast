@@ -260,7 +260,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' @return The string of the filepath set
 #'
 #' @family utils
-#' @importFrom cli cli_abort cli_alert cli_inform
+#' @importFrom cli cli_abort cli_alert_success cli_alert_warning
 #' @export
 #' @examplesIf interactive()
 #' # Set to local directory
@@ -279,14 +279,12 @@ enw_set_cache <- function(path, persistent = FALSE) {
     cli::cli_abort("`path` must be a valid file path.")
   }
 
-  cli::cli_inform(c(
-    "i" = "Setting `enw_cache_location` to {path}" # nolint keyword_quote_linter
-  ))
+  cli::cli_alert_success("Setting `enw_cache_location` to {path}")
 
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
   if (!check_environment_setting(prior_cache)) {
-    cli::cli_alert("{prior_cache} exists and will be overwritten")
+    cli::cli_alert_warning("{.path prior_cache} exists and will be overwritten")
   }
   env_contents_active <- enw_get_environment_contents()
 
@@ -304,9 +302,9 @@ enw_set_cache <- function(path, persistent = FALSE) {
       new_env_contents,
       con = env_contents_active[["env_path"]], sep = "\n"
     )
-    cli::cli_inform(c(
-      i = "Added `enw_cache_location` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
-    ))
+    cli::cli_alert_success(
+      "Added `enw_cache_location` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
+    )
     readRenviron(env_contents_active[["env_path"]])
   } else {
     Sys.setenv(enw_cache_location = candidate_path)
@@ -326,7 +324,7 @@ enw_set_cache <- function(path, persistent = FALSE) {
 #'
 #' @return the prior cache location, if it existed
 #'
-#' @importFrom cli cli_inform
+#' @importFrom cli cli_alert_success cli_alert_warning
 #' @family utils
 #' @export
 #' @examplesIf interactive()
@@ -336,7 +334,9 @@ enw_set_cache <- function(path, persistent = FALSE) {
 enw_unset_cache <- function(persistent = FALSE) {
   prior_location <- Sys.getenv("enw_cache_location")
   if (prior_location != "") {
-    cli::cli_inform(c(i = "Removing `enw_cache_location = {prior_location}`"))
+    cli::cli_alert_success(
+      "Removing `enw_cache_location = {.path prior_location}`"
+    )
     Sys.unsetenv("enw_cache_location")
 
     clean_environ <- enw_get_environment_contents(
@@ -344,19 +344,19 @@ enw_unset_cache <- function(persistent = FALSE) {
     )
     if (isTRUE(persistent)) {
       writeLines(clean_environ$env_contents, clean_environ$env_path)
-      cli::cli_inform(c(
-        i = "Removing `enw_cache_location = {prior_location}` from `.Renviron`"
-      ))
+      cli::cli_alert_success(
+        "Removing `enw_cache_location = {.path prior_location}` from `.Renviron`" # nolint line_length
+      )
     }
 
     invisible(enw_get_environment_contents(remove_enw_cache_location = TRUE))
   } else {
-    cli::cli_inform(c(
-      "!" = paste0(
+    cli::cli_alert_warning(
+      paste0(
         "`enw_cache_location` not set. ",
         "Nothing to remove from .Renviron or the local environment."
       )
-    ))
+    )
   }
 
   return(invisible(prior_location))
@@ -410,7 +410,7 @@ enw_cache_location_message <- function() {
     # nolint start
         msg <- c(
             "!" = "`enw_cache_location` is not set.",
-            i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
+            i = "Using `tempdir()` at {.path tempdir()} for the epinowcast model cache location.",
             i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
             i = "For example: `enw_set_cache(tools::R_user_dir(package =
             \"epinowcast\", \"cache\"), persistent = TRUE)`.",
