@@ -15,7 +15,8 @@ A list containing the contents of the \code{.Renviron} file and its path.
 }
 \description{
 This function retrieves environment variable settings and manages the
-\code{.Renviron} file in the user's home directory.
+\code{.Renviron} file in the user's project or home directory.
+The project directory will be examined first, if it exists.
 It can optionally remove the entry for \code{enw_cache_location}.
 }
 \keyword{internal}

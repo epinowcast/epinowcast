@@ -254,7 +254,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' need for model compilation on every new model run across sessions.
 #'
 #' @param path A valid filepath representing the desired cache location
-#' @param persistent a logical representing if the cache location should be
+#' @param persistent A logical representing if the cache location should be
 #' written to the user's `.Renviron` file with default of \code{FALSE}.
 #'
 #' @return The string of the filepath set
@@ -321,7 +321,7 @@ enw_set_cache <- function(path, persistent = FALSE) {
 #' the user .Renviron file and removes it from the local
 #' environment.
 #'
-#' @param persistent a logical representing if the cache location should be
+#' @param persistent A logical representing if the cache location should be
 #' removed from the user's `.Renviron` file with default of \code{FALSE}.
 #'
 #' @return the prior cache location, if it existed
@@ -365,27 +365,68 @@ enw_unset_cache <- function(persistent = FALSE) {
 #' Retrieve Stan cache location
 #'
 #' Retrieves the user set cache location for Stan models. This
-#' path can be set through the `enw_cache_location` function call.
+#' path can be set through the [enw_cache_location()] function call.
 #' If no environmental variable is available the output from
-#' `tempdir` will be returned.
+#' [tempdir()] will be returned.
 #'
-#' @return a string representing the file path for the cache location
+#' @return A string representing the file path for the cache location
 #' @importFrom cli cli_inform
 #' @family utils
 #' @export
 enw_get_cache <- function() {
   cache_location <- Sys.getenv("enw_cache_location")
 
+  cli::cli_inform(enw_cache_location_message())
+
   if (check_environment_setting(cache_location)) {
     cache_location <- tempdir()
-    cli::cli_inform(c(
-      "!" = "`enw_cache_location` not specified. Using `tempdir` at {cache_location}" # nolint line_length
-    ))
-  } else {
-    cli::cli_inform(c(i = "Using `{cache_location}` for the cache location."))
   }
 
   return(cache_location)
+}
+
+#' Cache location message for epinowcast package
+#'
+#' This function generates a message in the [epinowcast()] package
+#' regarding the cache location. It checks the environment setting for the
+#' cache location and provides guidance to the user on managing this setting.
+#'
+#' @details [enw_cache_location_message()] examines the `enw_cache_location`
+#' environment variable. If this variable is not set, it advises the user to
+#' set the cache location using [enw_set_cache()] to optimize stan compilation
+#' times. If `enw_cache_location` is set, it confirms the current cache
+#' location to the user. Management and setting of the cache location can be
+#' done using [enw_set_cache()].
+#'
+#' @return A character vector containing messages. If `enw_cache_location` is
+#' not set, it returns instructions for setting the cache location and where to
+#' find more details. If it is set, the function returns a confirmation message
+#' of the current cache location.
+#'
+#' @keywords internal
+enw_cache_location_message <- function() {
+    cache_location <- Sys.getenv("enw_cache_location")
+    if (check_environment_setting(cache_location)) {
+    # nolint start
+        msg <- c(
+            "!" = "`enw_cache_location` is not set.",
+            i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
+            i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
+            i = "For example: `enw_set_cache(tools::R_user_dir(package =
+            \"epinowcast\", \"cache\"), persistent = TRUE)`.",
+            i = "See `?enw_set_cache` for details."
+        )
+    # nolint end 
+    } else {
+        msg <- c(
+            i = sprintf(
+                "Using `%s` for the epinowcast model cache location.", # nolint line_length
+                cache_location
+            )
+        )
+    }
+
+    return(msg)
 }
 
 #' Check environment setting

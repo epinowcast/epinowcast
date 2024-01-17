@@ -7,7 +7,7 @@
 enw_unset_cache(persistent = FALSE)
 }
 \arguments{
-\item{persistent}{a logical representing if the cache location should be
+\item{persistent}{A logical representing if the cache location should be
 removed from the user's \code{.Renviron} file with default of \code{FALSE}.}
 }
 \value{
