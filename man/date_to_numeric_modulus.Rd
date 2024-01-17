@@ -29,9 +29,6 @@ Utility functions
 \code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
-\code{\link{enw_get_cache}()},
-\code{\link{enw_set_cache}()},
-\code{\link{enw_unset_cache}()},
 \code{\link{get_internal_timestep}()},
 \code{\link{is.Date}()},
 \code{\link{stan_fns_as_string}()}
