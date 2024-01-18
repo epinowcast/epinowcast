@@ -537,7 +537,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 
   if (type == "session" || type == "all") {
     cli::cli_alert_success(
-      "Set `enw_cache_location` to {candidate_path}"
+      "Set `enw_cache_location` to {path}"
     )
     Sys.setenv(enw_cache_location = candidate_path)
   }
