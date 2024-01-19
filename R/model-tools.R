@@ -597,7 +597,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
   if (type == "persistent" || type == "all") {
     environ <- enw_get_environment_contents()
     cache_loc_environ <- grepl(
-      "enw_cache_location", environ[["env_contents"]], fixed = TRUE
+      "^[[:space:]]*enw_cache_location", environ[["env_contents"]], fixed = TRUE
     )
     if (any(cache_loc_environ)) {
       new_environ <- environ
