@@ -589,7 +589,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
         }
     } else {
       cli::cli_alert_danger(
-        "`enw_cache_location` not set in the local environment. Nothing to remove." # nolint line_length
+        "`enw_cache_location` not set in the local environment. Nothing to unset." # nolint line_length
       )
     }
   }
@@ -636,6 +636,8 @@ enw_get_cache <- function() {
   if (check_environment_setting(cache_location)) {
     cache_location <- tempdir()
   }
+
+  dir.create(cache_location, recursive = TRUE, showWarnings = FALSE)
 
   return(cache_location)
 }
