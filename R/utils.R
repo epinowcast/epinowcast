@@ -352,21 +352,21 @@ enw_get_environment_contents <- function() {
 #' @keywords internal
 #' @importFrom cli cli_alert_info cli_alert_success cli_abort
 create_cache_dir <- function(path) {
-  if (dir.exists(candidate_path)) {
+  if (dir.exists(path)) {
     cli::cli_alert_info(
-      "Cached directory exists at {candidate_path}"
+      "Cached directory exists at {path}"
     )
     return(invisible(NULL))
   }
-  dir.create(candidate_path, recursive = TRUE, showWarnings = FALSE)
-  if (dir.exists(candidate_path)) {
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (dir.exists(path)) {
     cli::cli_alert_success(
-      "Created cache directory at {candidate_path}"
+      "Created cache directory at {path}"
     )
     return(invisible(NULL))
   }
   cli::cli_abort(
-    "Failed to create cache directory at {candidate_path}"
+    "Failed to create cache directory at {path}"
   )
   return(invisible(NULL))
 }
