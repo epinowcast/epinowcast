@@ -510,7 +510,9 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
   if (!check_environment_setting(prior_cache)) {
-    cli::cli_alert_warning("{prior_cache} exists and will be overwritten")
+    cli::cli_alert_warning(
+      "environment variable `enw_cache_location` exists and will be overwritten"
+    )
   }
 
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
