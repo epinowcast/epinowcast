@@ -473,7 +473,8 @@ enw_stan_to_r <- function(
 #' For R version 4.0.0 and above, it's recommended to use the persistent cache
 #' as shown in the example.
 #'
-#' @param path A valid filepath representing the desired cache location.
+#' @param path A valid filepath representing the desired cache location. If
+#' the directory does not exist it will be created.
 #'
 #' @param type A character string specifying the cache type. It can be one of
 #' "session", "persistent", or "all". Default is "session".
@@ -516,6 +517,8 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   }
 
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
+
+  create_cache_dir(candidate_path)
 
   if (type == "persistent" || type == "all") {
     env_contents_active <- enw_get_environment_contents()
@@ -639,7 +642,7 @@ enw_get_cache <- function() {
     cache_location <- tempdir()
   }
 
-  dir.create(cache_location, recursive = TRUE, showWarnings = FALSE)
+  create_cache_dir(cache_location)
 
   return(cache_location)
 }

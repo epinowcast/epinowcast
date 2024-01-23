@@ -340,6 +340,37 @@ enw_get_environment_contents <- function() {
   return(output)
 }
 
+#' Create Stan cache directory
+#'
+#' This function creates a cache directory for Stan models if it does not
+#' already exist. This is useful for users who want to set a persistent
+#' cache location but do not want to create the directory manually.
+#'
+#' @inheritParams enw_set_cache
+#'
+#' @return `NULL`
+#' @keywords internal
+#' @importFrom cli cli_alert_info cli_alert_success cli_abort
+create_cache_dir <- function(path) {
+  if (dir.exists(candidate_path)) {
+    cli::cli_alert_info(
+      "Cached directory exists at {candidate_path}"
+    )
+    return(invisible(NULL))
+  }
+  dir.create(candidate_path, recursive = TRUE, showWarnings = FALSE)
+  if (dir.exists(candidate_path)) {
+    cli::cli_alert_success(
+      "Created cache directory at {candidate_path}"
+    )
+    return(invisible(NULL))
+  }
+  cli::cli_abort(
+    "Failed to create cache directory at {candidate_path}"
+  )
+  return(invisible(NULL))
+}
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",

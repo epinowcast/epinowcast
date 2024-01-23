@@ -7,7 +7,8 @@
 enw_set_cache(path, type = c("session", "persistent", "all"))
 }
 \arguments{
-\item{path}{A valid filepath representing the desired cache location.}
+\item{path}{A valid filepath representing the desired cache location. If
+the directory does not exist it will be created.}
 
 \item{type}{A character string specifying the cache type. It can be one of
 "session", "persistent", or "all". Default is "session".
