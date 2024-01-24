@@ -1,11 +1,3 @@
-if (not_on_cran() && FALSE) {
-  message("Running tests setup")
-  options(mc.cores = 2)
-  utils::capture.output(
-    source(enw_example("script"))
-  )
-}
-
 # Set data.table print options for compatibility
 options(datatable.print.class = FALSE)
 options(datatable.print.keys = FALSE)
@@ -24,3 +16,9 @@ data.table::setkeyv(toy_incidence, c("reference_date", "report_date"))
 toy_cumulative <- data.table::copy(toy_incidence)
 toy_cumulative <- toy_cumulative[, confirm := cumsum(new_confirm)]
 toy_cumulative <- toy_cumulative[sample(.N, .N)][, new_confirm := NULL]
+
+if (on_ci() && Sys.info()["sysname"] == "Linux" && not_on_cran()) {
+  # we only expose stan functions on linux CI
+  # because we only test these functions on linux
+  enw_stan_to_r()
+}

@@ -1,7 +1,8 @@
 functions {
 #include functions/utils.stan
 #include functions/zero_truncated_normal.stan
-#include functions/regression.stan
+#include functions/combine_effects.stan
+#include functions/effects_priors_lp.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/discretised_logit_hazard.stan
@@ -11,6 +12,7 @@ functions {
 #include functions/expected_obs_from.stan
 #include functions/filt_obs_indexes.stan
 #include functions/obs_lpmf.stan
+#include functions/obs_rng.stan
 #include functions/allocate_observed_obs.stan
 #include functions/apply_missing_reference_effects.stan
 #include functions/log_expected_by_report.stan

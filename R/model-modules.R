@@ -332,7 +332,6 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
-#' @importFrom rstan extract_sparse_parts
 #' @importFrom purrr map2_dbl
 #' @importFrom cli cli_abort
 #' @export
@@ -458,7 +457,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           purrr::map2_dbl(
             as.vector(priors$expr_lelatent_int_p[1]),
             as.vector(priors$expr_lelatent_int_p[2]),
-            \(x, y) {
+            function(x, y) {
               rnorm(1, x, y * 0.1)
             }
           ),

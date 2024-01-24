@@ -19,7 +19,7 @@ vector prob_to_hazard(vector p) {
   vector[i] cum_p;
   cum_p[1] = 0;
   cum_p[2:i] = cumulative_sum(p[1:(i-1)]);
-  h[1:i] = p[1:i] ./ (1 - cum_p);
+  h[1:i] = p[1:i] .* inv(1 - cum_p);
   h[l] = 1;
   return(h);
 }

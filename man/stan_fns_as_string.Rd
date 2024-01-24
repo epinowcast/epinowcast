@@ -4,13 +4,18 @@
 \alias{stan_fns_as_string}
 \title{Read in a stan function file as a character string}
 \usage{
-stan_fns_as_string(files, target_dir)
+stan_fns_as_string(files, include)
 }
 \arguments{
-\item{files}{A character vector of file names}
+\item{files}{A character vector specifying the names of Stan files to be
+exposed. These must be in the \code{include} directory. Defaults to all Stan
+files in the \code{include} directory. Note that the following files are
+overloaded and cannot be exposed: "delay_lpmf.stan",
+"allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".}
 
-\item{target_dir}{A character string giving the directory in which
-files can be found.}
+\item{include}{A character string specifying the directory containing Stan
+files. Defaults to the 'stan/functions' directory of the \code{\link[=epinowcast]{epinowcast()}}
+package.}
 }
 \value{
 A character string in the of stan functions.
@@ -23,9 +28,7 @@ Utility functions
 \code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
-\code{\link{convert_cmdstan_to_rstan}()},
 \code{\link{date_to_numeric_modulus}()},
-\code{\link{expose_stan_fns}()},
 \code{\link{get_internal_timestep}()},
 \code{\link{is.Date}()}
 }
