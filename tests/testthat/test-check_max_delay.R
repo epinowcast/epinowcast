@@ -118,11 +118,13 @@ test_that(
   {
     nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
     nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
-    weekly_nat_germany_hosp <- nat_germany_hosp |>
-      enw_aggregate_cumulative(timestep = "week")
+    weekly_nat_germany_hosp <- enw_aggregate_cumulative(
+      nat_germany_hosp, timestep = "week"
+      )
 
-    weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
-      enw_filter_reference_dates(earliest_date = "2021-05-10")
+    weekly_nat_germany_hosp <- enw_filter_reference_dates(
+      weekly_nat_germany_hosp, earliest_date = "2021-05-10"
+      )
 
     # week
     weekly_pobs <- enw_preprocess_data(
@@ -140,11 +142,13 @@ test_that(
     )
 
     # month
-    weekly_nat_germany_hosp <- nat_germany_hosp |>
-      enw_aggregate_cumulative(timestep = 14)
+    weekly_nat_germany_hosp <- enw_aggregate_cumulative(
+      nat_germany_hosp, timestep = 14
+      )
 
-    weekly_nat_germany_hosp <- weekly_nat_germany_hosp |>
-      enw_filter_reference_dates(earliest_date = "2021-05-10")
+    weekly_nat_germany_hosp <- enw_filter_reference_dates(
+      weekly_nat_germany_hosp, earliest_date = "2021-05-10"
+      )
 
     weekly_pobs <- enw_preprocess_data(
       weekly_nat_germany_hosp,
