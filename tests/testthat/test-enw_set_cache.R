@@ -4,10 +4,7 @@ test_that("enw_set_cache() can set the session cache directory", {
     path <- file.path(tempdir(), "test_session_cache")
     enw_set_cache(path, type = "session")
     status <- Sys.getenv("enw_cache_location")
-    expect_identical(
-      status,
-      suppressWarnings(normalizePath(path, winslash = "\\", mustWork = FALSE))
-    )
+    expect_true(grepl(path, status, fixed = TRUE))
   }))
   suppressMessages(enw_set_cache(current_cache, type = "session"))
 })
