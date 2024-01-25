@@ -386,19 +386,18 @@ unset_cache_from_renviron <- function() {
 #' @keywords internal
 #' @importFrom cli cli_alert_info cli_alert_success cli_abort
 create_cache_dir <- function(path) {
-  if (dir.exists(path)) {
-    return(invisible(NULL))
-  }
-  dir.create(path, recursive = TRUE, showWarnings = FALSE)
-  if (dir.exists(path)) {
-    cli::cli_alert_success(
-      "Created cache directory at {path}"
+  if (!dir.exists(path)) {
+    dir.create(path, recursive = TRUE, showWarnings = FALSE)
+    if (dir.exists(path)) {
+      cli::cli_alert_success(
+        "Created cache directory at {path}"
+      )
+      return(invisible(NULL))
+    }
+    cli::cli_abort(
+      "Failed to create cache directory at {path}"
     )
-    return(invisible(NULL))
   }
-  cli::cli_abort(
-    "Failed to create cache directory at {path}"
-  )
   return(invisible(NULL))
 }
 
