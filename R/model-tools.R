@@ -572,10 +572,6 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @export
 #' @examplesIf interactive()
 #' enw_unset_cache()
-#'
-#' enw_unset_cache(
-#'  enw_set_cache(file.path(tempdir(), "test"), type = "session")
-#' )
 enw_unset_cache <- function(type = c("session", "persistent", "all")) {
   type <- rlang::arg_match(type)
 
