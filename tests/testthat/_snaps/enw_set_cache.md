@@ -5,7 +5,7 @@
         enw_set_cache("second_location", type = "session")
       })
     Message
-      ! initial_location exists and will be overwritten
+      ! Environment variable `enw_cache_location` exists and will be overwritten
       v Set `enw_cache_location` to second_location
 
 # alert [ansi]
@@ -15,7 +15,7 @@
         enw_set_cache("second_location", type = "session")
       })
     Message
-      [33m![39m initial_location exists and will be overwritten
+      [33m![39m Environment variable `enw_cache_location` exists and will be overwritten
       [32mv[39m Set `enw_cache_location` to second_location
 
 # alert [unicode]
@@ -25,7 +25,7 @@
         enw_set_cache("second_location", type = "session")
       })
     Message
-      ! initial_location exists and will be overwritten
+      ! Environment variable `enw_cache_location` exists and will be overwritten
       ✔ Set `enw_cache_location` to second_location
 
 # alert [fancy]
@@ -35,6 +35,6 @@
         enw_set_cache("second_location", type = "session")
       })
     Message
-      [33m![39m initial_location exists and will be overwritten
+      [33m![39m Environment variable `enw_cache_location` exists and will be overwritten
       [32m✔[39m Set `enw_cache_location` to second_location
 

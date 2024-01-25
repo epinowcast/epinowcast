@@ -353,9 +353,6 @@ enw_get_environment_contents <- function() {
 #' @importFrom cli cli_alert_info cli_alert_success cli_abort
 create_cache_dir <- function(path) {
   if (dir.exists(path)) {
-    cli::cli_alert_info(
-      "Cached directory exists at {path}"
-    )
     return(invisible(NULL))
   }
   dir.create(path, recursive = TRUE, showWarnings = FALSE)
