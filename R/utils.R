@@ -393,10 +393,11 @@ create_cache_dir <- function(path) {
         "Created cache directory at {path}"
       )
       return(invisible(NULL))
+    } else {
+      cli::cli_abort(
+        "Failed to create cache directory at {path}"
+      )
     }
-    cli::cli_abort(
-      "Failed to create cache directory at {path}"
-    )
   }
   return(invisible(NULL))
 }
