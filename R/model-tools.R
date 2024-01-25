@@ -576,14 +576,14 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
 
   prior_location <- NULL
 
-  if (type == "session" || type == "all") {
+  if (any(type %in% c("session", "all"))) {
     prior_location <- Sys.getenv("enw_cache_location")
     if (prior_location != "") {
       Sys.unsetenv("enw_cache_location")
       cli::cli_alert_success(
         "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
       )
-      if (type %in% "session") {
+      if (type == "session") {
         cli::cli_alert_info(
           "To revert to the persistent cache (if set), run `readRenviron('~/.Renviron')`" # nolint line_length 
         )
@@ -595,7 +595,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
     }
   }
 
-  if (type %in% "persistent" || type %in% "all") {
+  if (any(type %in% c("persistent", "all"))) {
     unset_cache_from_renviron()
   }
 
