@@ -18,22 +18,22 @@ test_that("enw_set_cache() can set the persistent cache directory", {
         enw_set_cache(path, type = "persistent")
         env_contents <- readLines(".Renviron")
         expect_true(
-            any(grepl(
-                paste0("enw_cache_location=\"",
-                suppressWarnings(normalizePath(path)), "\""),
-                env_contents, fixed = TRUE
-            ))
+          any(grepl(
+            paste0("enw_cache_location=\"",
+            suppressWarnings(normalizePath(path)), "\""),
+            env_contents, fixed = TRUE
+          ))
         )
         # Test that appending doesn't lead to duplicate entries
         enw_set_cache(path, type = "persistent")
         env_contents <- readLines(".Renviron")
         expect_equal(
-            sum(any(grepl(
-                paste0("enw_cache_location=\"",
-                suppressWarnings(normalizePath(path)), "\""),
-                env_contents, fixed = TRUE
-            ))),
-            1
+          sum(any(grepl(
+              paste0("enw_cache_location=\"",
+              suppressWarnings(normalizePath(path)), "\""),
+              env_contents, fixed = TRUE
+          ))),
+          1
         )
         status <- Sys.getenv("enw_cache_location")
         expect_identical(status, "testy")
@@ -70,14 +70,14 @@ test_that("enw_set_cache() fails as expected with incorrect input", {
 
 persistent_tempdir <- file.path(tempdir(), "enw_set_cache")
 test_model_cache <- function() {
-    withr::with_envvar(
-        new = c(enw_cache_location = persistent_tempdir), {
-            time_start <- Sys.time()
-            suppressMessages(enw_model(verbose = FALSE))
-            time_out <- Sys.time()
-            difftime(time_out, time_start, units = "secs")[[1]]
-        }
-    )
+  withr::with_envvar(
+    new = c(enw_cache_location = persistent_tempdir), {
+      time_start <- Sys.time()
+      suppressMessages(enw_model(verbose = FALSE))
+      time_out <- Sys.time()
+      difftime(time_out, time_start, units = "secs")[[1]]
+    }
+  )
 }
 
 test_that("enw_model() can access enw_cache_location", {
@@ -88,14 +88,16 @@ test_that("enw_model() can access enw_cache_location", {
 })
 
 cli::test_that_cli("alert", {
-    skip_on_cran()
-    local_edition(3)
-    current_cache <- suppressMessages(enw_get_cache())
-    testthat::expect_snapshot({
-    withr::with_envvar(
+  skip_on_cran()
+  local_edition(3)
+  current_cache <- suppressMessages(enw_get_cache())
+  testthat::expect_snapshot({
+    withr::with_tempdir(
+      withr::with_envvar(
         new = c(enw_cache_location = "initial_location"), {
-            enw_set_cache("second_location", type = "session")
-        })
-    })
-    suppressMessages(enw_set_cache(current_cache, type = "session"))
+          enw_set_cache("second_location", type = "session")
+      })
+    )
+  })
+  suppressMessages(enw_set_cache(current_cache, type = "session"))
 })
