@@ -502,7 +502,7 @@ enw_stan_to_r <- function(
 #'}
 enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 
-  type <- rlang::arg_match(type)
+  type <- rlang::arg_match(type, multiple = TRUE)
 
   if (!is.character(path)) {
     cli::cli_abort("`path` must be a valid file path.")
@@ -510,17 +510,11 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
-  if (!check_environment_unset(prior_cache)) {
-    cli::cli_alert_warning(
-      "Environment variable `enw_cache_location` exists and will be overwritten"
-    )
-  }
-
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
 
   create_cache_dir(candidate_path)
 
-  if (type == "persistent" || type == "all") {
+  if (any(type %in% c("persistent", "all"))) {
     env_contents_active <- get_environment_contents()
 
     enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
@@ -529,7 +523,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
       env_contents_active[["env_contents"]],
       enw_environment
     )
-    unset_cache_from_renviron()
+    unset_cache_from_renviron(alert_on_not_set = FALSE)
 
     writeLines(
       new_env_contents,
@@ -541,9 +535,14 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
     )
   }
 
-  if (type == "session" || type == "all") {
+  if (any(type %in% c("session", "all"))) {
+    if (!check_environment_unset(prior_cache)) {
+      cli::cli_alert_warning(
+        "Environment variable `enw_cache_location` exists and will be overwritten" # nolint line_length
+      )
+    }
     cli::cli_alert_success(
-      "Set `enw_cache_location` to {path}"
+      "Set `enw_cache_location` to {candidate_path}"
     )
     Sys.setenv(enw_cache_location = candidate_path)
   }
@@ -562,7 +561,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @param type A character string specifying the type of cache to unset.
 #' It can be one of "session", "persistent", or "all". Default is "session".
 #' "session" unsets the cache for the current session, "persistent" removes the
-#' cache location from the user’s `.Renviron` file, and "all" does both.
+#' cache location from the user’s `.Renviron` file,and "all" does all options.
 #'
 #' @return The prior cache location, if it existed otherwise `NULL`.
 #'
@@ -573,7 +572,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @examplesIf interactive()
 #' enw_unset_cache()
 enw_unset_cache <- function(type = c("session", "persistent", "all")) {
-  type <- rlang::arg_match(type)
+  type <- rlang::arg_match(type, multiple = TRUE)
 
   prior_location <- NULL
 
@@ -584,7 +583,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
       cli::cli_alert_success(
         "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
       )
-      if (type == "session") {
+      if (type %in% "session") {
         cli::cli_alert_info(
           "To revert to the persistent cache (if set), run `readRenviron('~/.Renviron')`" # nolint line_length 
         )
@@ -596,7 +595,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
     }
   }
 
-  if (type == "persistent" || type == "all") {
+  if (type %in% "persistent" || type %in% "all") {
     unset_cache_from_renviron()
   }
 

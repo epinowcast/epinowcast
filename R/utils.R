@@ -275,7 +275,7 @@ cache_location_message <- function() {
             i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
             i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
             i = "For example: `enw_set_cache(tools::R_user_dir(package =
-            \"epinowcast\", \"cache\"), type = 'all')`.",
+            \"epinowcast\", \"cache\"), type = c('session', 'persistent'))`.",
             i = "See `?enw_set_cache` for details."
         )
     # nolint end 
@@ -349,14 +349,18 @@ get_environment_contents <- function() {
 #' setting is found and successfully removed, a success message is displayed.
 #' If the setting is not found, a warning message is displayed.
 #'
+#' @param alter_on_not_set A logical value indicating whether to display a
+#' warning message if the `enw_cache_location` setting is not found in the
+#' `.Renviron` file. Defaults to `TRUE`.
+#'
 #' @return Invisible NULL. The function is used for its side effect of modifying
 #' the `.Renviron` file.
 #' @seealso [get_environment_contents()]
 #' @keywords internal
-unset_cache_from_renviron <- function() {
+unset_cache_from_renviron <- function(alert_on_not_set = TRUE) {
     environ <- get_environment_contents()
     cache_loc_environ <- grepl(
-      "^[[:space:]]*enw_cache_location", environ[["env_contents"]], fixed = TRUE
+      "enw_cache_location", environ[["env_contents"]], fixed = TRUE
     )
     if (any(cache_loc_environ)) {
       new_environ <- environ
@@ -364,12 +368,14 @@ unset_cache_from_renviron <- function() {
        environ[["env_contents"]][!cache_loc_environ]
       writeLines(new_environ$env_contents, new_environ$env_path)
       cli::cli_alert_success(
-        "Removed `enw_cache_location = {prior_location}` from `.Renviron`."
+        "Removed `enw_cache_location` setting from `.Renviron`."
       )
     } else {
-      cli::cli_alert_danger(
-        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
-      )
+      if (isTRUE(alert_on_not_set)) {
+        cli::cli_alert_danger(
+          "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+        )
+      }
     }
     return(invisible(NULL))
 }
