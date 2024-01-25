@@ -24,6 +24,17 @@ test_that("enw_set_cache() can set the persistent cache directory", {
                 env_contents, fixed = TRUE
             ))
         )
+        # Test that appending doesn't lead to duplicate entries
+        enw_set_cache(path, type = "persistent")
+        env_contents <- readLines(".Renviron")
+        expect_equal(
+            sum(any(grepl(
+                paste0("enw_cache_location=\"",
+                suppressWarnings(normalizePath(path)), "\""),
+                env_contents, fixed = TRUE
+            ))),
+            1
+        )
         status <- Sys.getenv("enw_cache_location")
         expect_identical(status, "testy")
       })
