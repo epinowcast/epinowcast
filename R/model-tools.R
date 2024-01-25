@@ -510,7 +510,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 
   prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
 
-  if (!check_environment_setting(prior_cache)) {
+  if (!check_environment_unset(prior_cache)) {
     cli::cli_alert_warning(
       "Environment variable `enw_cache_location` exists and will be overwritten"
     )
@@ -521,7 +521,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   create_cache_dir(candidate_path)
 
   if (type == "persistent" || type == "all") {
-    env_contents_active <- enw_get_environment_contents()
+    env_contents_active <- get_environment_contents()
 
     enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
 
@@ -587,11 +587,11 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
       cli::cli_alert_success(
         "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
       )
-        if (type == "session") {
-          cli::cli_alert_info(
-            "To revert to the persistent cache (if set), run `readRenviron('~/.Renviron')`" # nolint line_length
-          )
-        }
+      if (type == "session") {
+        cli::cli_alert_info(
+          "To revert to the persistent cache (if set), run `readRenviron('~/.Renviron')`" # nolint line_length 
+        )
+      }
     } else {
       cli::cli_alert_danger(
         "`enw_cache_location` not set in the local environment. Nothing to unset." # nolint line_length
@@ -600,7 +600,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
   }
 
   if (type == "persistent" || type == "all") {
-    environ <- enw_get_environment_contents()
+    environ <- get_environment_contents()
     cache_loc_environ <- grepl(
       "^[[:space:]]*enw_cache_location", environ[["env_contents"]], fixed = TRUE
     )
@@ -636,9 +636,9 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
 enw_get_cache <- function() {
   cache_location <- Sys.getenv("enw_cache_location")
 
-  cli::cli_inform(enw_cache_location_message())
+  cli::cli_inform(cache_location_message())
 
-  if (check_environment_setting(cache_location)) {
+  if (check_environment_unset(cache_location)) {
     cache_location <- tempdir()
   }
 

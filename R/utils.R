@@ -253,7 +253,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' regarding the cache location. It checks the environment setting for the
 #' cache location and provides guidance to the user on managing this setting.
 #'
-#' @details [enw_cache_location_message()] examines the `enw_cache_location`
+#' @details [cache_location_message()] examines the `enw_cache_location`
 #' environment variable. If this variable is not set, it advises the user to
 #' set the cache location using [enw_set_cache()] to optimize stan compilation
 #' times. If `enw_cache_location` is set, it confirms the current cache
@@ -266,9 +266,9 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #' of the current cache location.
 #'
 #' @keywords internal
-enw_cache_location_message <- function() {
+cache_location_message <- function() {
     cache_location <- Sys.getenv("enw_cache_location")
-    if (check_environment_setting(cache_location)) {
+    if (check_environment_unset(cache_location)) {
     # nolint start
         msg <- c(
             "!" = "`enw_cache_location` is not set.",
@@ -303,7 +303,7 @@ enw_cache_location_message <- function() {
 #' @return Logical value indicating whether the environment variable is not set
 #' (either null or an empty string).
 #' @keywords internal
-check_environment_setting <- function(x) {
+check_environment_unset <- function(x) {
   return(is.null(x) || x == "")
 }
 
@@ -315,7 +315,7 @@ check_environment_setting <- function(x) {
 #'
 #' @return A list containing the contents of the `.Renviron` file and its path.
 #' @keywords internal
-enw_get_environment_contents <- function() {
+get_environment_contents <- function() {
 
   env_location <- getwd()
 
@@ -338,6 +338,40 @@ enw_get_environment_contents <- function() {
   )
 
   return(output)
+}
+
+#' Remove Cache Location Setting from `.Renviron`
+#'
+#' This function searches for and removes the `enw_cache_location` setting from
+#' the `.Renviron` file located in the user's project or home directory.
+#' It utilizes the [get_environment_contents]() function to access and
+#' modify the contents of the `.Renviron` file. If the `enw_cache_location`
+#' setting is found and successfully removed, a success message is displayed.
+#' If the setting is not found, a warning message is displayed.
+#'
+#' @return Invisible NULL. The function is used for its side effect of modifying
+#' the `.Renviron` file.
+#' @seealso [get_environment_contents()]
+#' @keywords internal
+unset_cache_from_renviron <- function() {
+    environ <- get_environment_contents()
+    cache_loc_environ <- grepl(
+      "^[[:space:]]*enw_cache_location", environ[["env_contents"]], fixed = TRUE
+    )
+    if (any(cache_loc_environ)) {
+      new_environ <- environ
+      new_environ[["env_contents"]] <-
+       environ[["env_contents"]][!cache_loc_environ]
+      writeLines(new_environ$env_contents, new_environ$env_path)
+      cli::cli_alert_success(
+        "Removed `enw_cache_location = {prior_location}` from `.Renviron`."
+      )
+    } else {
+      cli::cli_alert_danger(
+        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+      )
+    }
+    return(invisible(NULL))
 }
 
 #' Create Stan cache directory
