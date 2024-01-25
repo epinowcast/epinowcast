@@ -508,13 +508,12 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
     cli::cli_abort("`path` must be a valid file path.")
   }
 
-  prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
-
   candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
 
   create_cache_dir(candidate_path)
 
   if (any(type %in% c("persistent", "all"))) {
+    unset_cache_from_environ(alert_on_not_set = FALSE)
     env_contents_active <- get_renviron_contents()
 
     enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
@@ -523,7 +522,6 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
       env_contents_active[["env_contents"]],
       enw_environment
     )
-    unset_cache_from_environ(alert_on_not_set = FALSE)
 
     writeLines(
       new_env_contents,
@@ -536,6 +534,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   }
 
   if (any(type %in% c("session", "all"))) {
+    prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
     if (!check_environment_unset(prior_cache)) {
       cli::cli_alert_warning(
         "Environment variable `enw_cache_location` exists and will be overwritten" # nolint line_length

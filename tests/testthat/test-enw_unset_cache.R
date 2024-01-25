@@ -56,9 +56,11 @@ test_that("enw_unset_cache can unset both the session and persistent cache direc
 })
 
 test_that("enw_unset_cache detects when the cache directory is not set", {
+  current_cache <- suppressMessages(enw_get_cache())
   suppressMessages(withr::with_envvar(c(enw_cache_location = ""), {
     enw_unset_cache(type = "session")
     status <- Sys.getenv("enw_cache_location")
     expect_identical(status, "")
   }))
+   suppressMessages(enw_set_cache(current_cache, type = "session"))
 })

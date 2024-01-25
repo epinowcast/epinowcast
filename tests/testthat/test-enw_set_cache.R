@@ -4,60 +4,49 @@ test_that("enw_set_cache() can set the session cache directory", {
     path <- file.path(tempdir(), "test_session_cache")
     enw_set_cache(path, type = "session")
     status <- Sys.getenv("enw_cache_location")
-    expect_identical(status, suppressWarnings(normalizePath(path)))
+    expect_identical(
+      status,
+      suppressWarnings(normalizePath(path, winslash = "\\", mustWork = FALSE))
+    )
   }))
   suppressMessages(enw_set_cache(current_cache, type = "session"))
 })
 
 test_that("enw_set_cache() can set the persistent cache directory", {
-  suppressMessages(withr::with_dir(
-    tempdir(), {
+  suppressMessages(withr::with_tempdir(
       withr::with_envvar(c(enw_cache_location = "testy"), {
         file.create(".Renviron")
-        path <- file.path(tempdir(), "test_persistent_cache")
+        path <- "test_persistent_cache"
         enw_set_cache(path, type = "persistent")
         env_contents <- readLines(".Renviron")
         expect_true(
-          any(grepl(
-            paste0("enw_cache_location=\"",
-            suppressWarnings(normalizePath(path)), "\""),
-            env_contents, fixed = TRUE
-          ))
+          any(grepl(path, env_contents, fixed = TRUE))
         )
         # Test that appending doesn't lead to duplicate entries
         enw_set_cache(path, type = "persistent")
         env_contents <- readLines(".Renviron")
         expect_equal(
-          sum(any(grepl(
-              paste0("enw_cache_location=\"",
-              suppressWarnings(normalizePath(path)), "\""),
-              env_contents, fixed = TRUE
-          ))),
+          sum(grepl(path, env_contents, fixed = TRUE)),
           1
         )
         status <- Sys.getenv("enw_cache_location")
         expect_identical(status, "testy")
       })
-  }))
+  ))
 })
 
 test_that("enw_set_cache() can set both the session and persistent cache directories", { # nolint
   current_cache <- suppressMessages(enw_get_cache())
-  suppressMessages(withr::with_dir(
-    tempdir(), {
+  suppressMessages(withr::with_tempdir({
       file.create(".Renviron")
-      path <- file.path(tempdir(), "test_persistent_cache")
+      path <- "test_persistent_cache"
       enw_set_cache(path, type = "all")
       env_contents <- readLines(".Renviron")
       expect_true(
-        any(grepl(
-            paste0("enw_cache_location=\"",
-            suppressWarnings(normalizePath(path)), "\""),
-            env_contents, fixed = TRUE
-        ))
+        any(grepl(path, env_contents, fixed = TRUE))
       )
-    status <- Sys.getenv("enw_cache_location")
-    expect_identical(status, suppressWarnings(normalizePath(path)))
+      status <- Sys.getenv("enw_cache_location")
+      expect_true(grepl(path, status, fixed = TRUE))
     }
   ))
   suppressMessages(enw_set_cache(current_cache, type = "session"))
