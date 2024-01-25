@@ -529,6 +529,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
       env_contents_active[["env_contents"]],
       enw_environment
     )
+    unset_cache_from_renviron()
 
     writeLines(
       new_env_contents,
@@ -600,23 +601,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
   }
 
   if (type == "persistent" || type == "all") {
-    environ <- get_environment_contents()
-    cache_loc_environ <- grepl(
-      "^[[:space:]]*enw_cache_location", environ[["env_contents"]], fixed = TRUE
-    )
-    if (any(cache_loc_environ)) {
-      new_environ <- environ
-      new_environ[["env_contents"]] <-
-       environ[["env_contents"]][!cache_loc_environ]
-      writeLines(new_environ$env_contents, new_environ$env_path)
-      cli::cli_alert_success(
-        "Removed `enw_cache_location = {prior_location}` from `.Renviron`."
-      )
-    } else {
-      cli::cli_alert_danger(
-        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
-      )
-    }
+    unset_cache_from_renviron()
   }
 
   return(invisible(prior_location))
