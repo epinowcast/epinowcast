@@ -512,7 +512,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 
   if (!check_environment_setting(prior_cache)) {
     cli::cli_alert_warning(
-      "environment variable `enw_cache_location` exists and will be overwritten"
+      "Environment variable `enw_cache_location` exists and will be overwritten"
     )
   }
 
