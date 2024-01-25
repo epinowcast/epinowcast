@@ -515,7 +515,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
   create_cache_dir(candidate_path)
 
   if (any(type %in% c("persistent", "all"))) {
-    env_contents_active <- get_environment_contents()
+    env_contents_active <- get_renviron_contents()
 
     enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
 
@@ -523,7 +523,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
       env_contents_active[["env_contents"]],
       enw_environment
     )
-    unset_cache_from_renviron(alert_on_not_set = FALSE)
+    unset_cache_from_environ(alert_on_not_set = FALSE)
 
     writeLines(
       new_env_contents,
@@ -584,9 +584,13 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
         "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
       )
       if (any(type == "session")) {
-        cli::cli_alert_info(
-          "To revert to the persistent cache (if set), run `readRenviron('~/.Renviron')`" # nolint line_length 
-        )
+        environ <- get_renviron_contents()
+        cache_in_environ <- check_renviron_for_cache(environ)
+        if (any(cache_in_environ)) {
+          cli::cli_alert_info(
+            "To revert to the persistent cache, run `readRenviron('~/.Renviron')`" # nolint line_length 
+          )
+        }
       }
     } else {
       cli::cli_alert_danger(
@@ -596,7 +600,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
   }
 
   if (any(type %in% c("persistent", "all"))) {
-    unset_cache_from_renviron()
+    unset_cache_from_environ()
   }
 
   return(invisible(prior_location))

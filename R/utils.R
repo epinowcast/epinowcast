@@ -307,7 +307,7 @@ check_environment_unset <- function(x) {
   return(is.null(x) || x == "")
 }
 
-#' Identify cache location
+#' Identify cache location in .Renviron
 #'
 #' This function retrieves environment variable settings and manages the
 #' `.Renviron` file in the user's project or home directory.
@@ -315,7 +315,7 @@ check_environment_unset <- function(x) {
 #'
 #' @return A list containing the contents of the `.Renviron` file and its path.
 #' @keywords internal
-get_environment_contents <- function() {
+get_renviron_contents <- function() {
 
   env_location <- getwd()
 
@@ -344,7 +344,7 @@ get_environment_contents <- function() {
 #'
 #' This function searches for and removes the `enw_cache_location` setting from
 #' the `.Renviron` file located in the user's project or home directory.
-#' It utilizes the [get_environment_contents]() function to access and
+#' It utilizes the [get_renviron_contents]() function to access and
 #' modify the contents of the `.Renviron` file. If the `enw_cache_location`
 #' setting is found and successfully removed, a success message is displayed.
 #' If the setting is not found, a warning message is displayed.
@@ -355,13 +355,11 @@ get_environment_contents <- function() {
 #'
 #' @return Invisible NULL. The function is used for its side effect of modifying
 #' the `.Renviron` file.
-#' @seealso [get_environment_contents()]
+#' @seealso [get_renviron_contents()]
 #' @keywords internal
-unset_cache_from_renviron <- function(alert_on_not_set = TRUE) {
-    environ <- get_environment_contents()
-    cache_loc_environ <- grepl(
-      "enw_cache_location", environ[["env_contents"]], fixed = TRUE
-    )
+unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
+    environ <- get_renviron_contents()
+    cache_loc_environ <- check_renviron_for_cache(environ)
     if (any(cache_loc_environ)) {
       new_environ <- environ
       new_environ[["env_contents"]] <-
@@ -378,6 +376,17 @@ unset_cache_from_renviron <- function(alert_on_not_set = TRUE) {
       }
     }
     return(invisible(NULL))
+}
+
+#' Check `.Renviron` for cache location setting
+#' @param environ A list containing the contents of the `.Renviron` file and
+#' its path. This is the output of the [get_renviron_contents()] function.
+#' @keywords internal
+check_renviron_for_cache <- function(environ) {
+  cache_loc_environ <- grepl(
+    "enw_cache_location", environ[["env_contents"]], fixed = TRUE
+  )
+  return(cache_loc_environ)
 }
 
 #' Create Stan cache directory
