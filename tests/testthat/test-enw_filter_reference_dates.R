@@ -42,8 +42,7 @@ test_that("enw_filter_reference_dates filters as expected", {
   expect_identical(min(filt_days$reference_date), as.IDate("2021-04-06"))
 })
 
-test_that("enw_filter_reference_dates filters as expected when data is present
-           with missing reference dates", {
+test_that("enw_filter_reference_dates filters as expected when data is present with missing reference dates", { # nolint line_length
   nat_germany_hosp <-
     germany_covid19_hosp[location == "DE"][age_group == "00+"]
   nat_germany_hosp <- enw_complete_dates(
@@ -76,8 +75,7 @@ test_that("enw_filter_reference_dates filters as expected when data is present
   )
 })
 
-test_that("enw_filter_reference_dates works with both include and remove days
-          under missing data", {
+test_that("enw_filter_reference_dates works with both include and remove days under missing data", { # nolint line_length
   nat_germany_hosp <-
     germany_covid19_hosp[location == "DE"][age_group == "00+"]
   nat_germany_hosp <- enw_complete_dates(

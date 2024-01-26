@@ -105,8 +105,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a random effects formula with an internal
-          interaction
+# enw_formula can return a random effects formula with an internal interaction
 
     Code
       enw_formula(~ 1 + (1 + month | day_of_week:age_group), data)
@@ -218,8 +217,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a random effects formula with an internal
-  interaction with only one contrast by falling back to no interaction
+# enw_formula can return a random effects formula with an internal interaction with only one contrast by falling back to no interaction
 
     Code
       suppressMessages(enw_formula(~ 1 + (1 + month | day_of_week:age_group), data[
@@ -284,8 +282,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a model with a random effect and a random
-          walk
+# enw_formula can return a model with a random effect and a random walk
 
     Code
       enw_formula(~ 1 + (1 | age_group) + rw(week), data)
@@ -343,8 +340,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a model with a random effect and a random walk
-          by group
+# enw_formula can return a model with a random effect and a random walk by group
 
     Code
       enw_formula(~ 1 + (1 | age_group) + rw(week, age_group), data)
@@ -408,8 +404,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can return a model with a fixed effect, random effect and
-          a random walk
+# enw_formula can return a model with a fixed effect, random effect and a random walk
 
     Code
       enw_formula(~ 1 + day_of_week + (1 | age_group) + rw(week), data)
@@ -527,8 +522,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula can handle formulas that do not have sparse fixed
-          effects
+# enw_formula can handle formulas that do not have sparse fixed effects
 
     Code
       enw_formula(~1, data[1:5, ], sparse = FALSE)
@@ -679,8 +673,7 @@
       attr(,"class")
       [1] "enw_formula" "list"       
 
-# enw_formula supports random effects and random walks for the same
-          variable
+# enw_formula supports random effects and random walks for the same variable
 
     Code
       enw_formula(~ 1 + (1 | week) + rw(week), data)
