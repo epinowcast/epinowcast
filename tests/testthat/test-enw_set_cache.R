@@ -1,11 +1,13 @@
 test_that("enw_set_cache() can set the session cache directory", {
   current_cache <- suppressMessages(enw_get_cache())
-  suppressMessages(withr::with_envvar(c(enw_cache_location = ""), {
-    path <- file.path(tempdir(), "test_session_cache")
-    enw_set_cache(path, type = "session")
-    status <- Sys.getenv("enw_cache_location")
-    expect_true(grepl(path, status, fixed = TRUE))
-  }))
+  suppressMessages(withr::with_tempdir(
+    withr::with_envvar(c(enw_cache_location = ""), {
+      path <- "test_session_cache"
+      enw_set_cache(path, type = "session")
+      status <- Sys.getenv("enw_cache_location")
+      expect_true(grepl(path, status, fixed = TRUE))
+    })
+  ))
   suppressMessages(enw_set_cache(current_cache, type = "session"))
 })
 
