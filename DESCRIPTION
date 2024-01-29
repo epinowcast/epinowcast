@@ -103,6 +103,7 @@ Imports:
     ggplot2,
     posterior,
     purrr,
+    rlang,
     scales,
     lifecycle
 Suggests:
@@ -115,7 +116,8 @@ Suggests:
     spelling,
     testthat (>= 3.1.9),
     usethis,
-    vdiffr
+    vdiffr,
+    withr
 VignetteBuilder:
     knitr
 Remotes:

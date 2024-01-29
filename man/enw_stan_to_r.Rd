@@ -15,8 +15,8 @@ enw_stan_to_r(
 \arguments{
 \item{files}{A character vector specifying the names of Stan files to be
 exposed. These must be in the \code{include} directory. Defaults to all Stan
-files in the \code{include} directory. Note that the following files are
-overloaded and cannot be exposed: "delay_lpmf.stan",
+files in the \code{include} directory. Note that the following files contain
+overloaded functions and cannot be exposed: "delay_lpmf.stan",
 "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".}
 
 \item{include}{A character string specifying the directory containing Stan
@@ -56,10 +56,13 @@ prob_to_hazard(c(0.5, 0.1, 0.1))
 \seealso{
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
+\code{\link{enw_get_cache}()},
 \code{\link{enw_model}()},
 \code{\link{enw_priors_as_data_list}()},
 \code{\link{enw_replace_priors}()},
 \code{\link{enw_sample}()},
+\code{\link{enw_set_cache}()},
+\code{\link{enw_unset_cache}()},
 \code{\link{remove_profiling}()},
 \code{\link{write_stan_files_no_profile}()}
 }

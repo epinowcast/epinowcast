@@ -1,6 +1,4 @@
-test_that(
-  "enw_nowcast_summary can extract the summarised nowcast as expected",
-  {
+test_that("enw_nowcast_summary() can extract the summarised nowcast as expected", { # nolint
     fit <- enw_example("nowcast")
     nowcast <- enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
     expect_snapshot(
@@ -9,10 +7,7 @@ test_that(
   }
 )
 
-test_that(
-  "enw_nowcast_summary can extract the summarised nowcast with custom
-  quantiles",
-  {
+test_that("enw_nowcast_summary() can extract the summarised nowcast with custom quantiles", { # nolint
     fit <- enw_example("nowcast")
     nowcast <- enw_nowcast_summary(
       fit$fit[[1]], fit$latest[[1]],
