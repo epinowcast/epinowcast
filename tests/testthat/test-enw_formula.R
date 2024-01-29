@@ -25,14 +25,14 @@ test_that("enw_formula can return a basic random effects formula", {
   )
 })
 
-test_that("enw_formula can return a random effects formula with an internal interaction", { # nolint line_length
+test_that("enw_formula can return a random effects formula with an internal interaction", { # nolint line_length_linter.
   expect_snapshot(
     enw_formula(~ 1 + (1 + month | day_of_week:age_group), data)
   )
 })
 
 test_that(
-  "enw_formula can return a random effects formula with an internal interaction with only one contrast by falling back to no interaction", # nolint line_length
+  "enw_formula can return a random effects formula with an internal interaction with only one contrast by falling back to no interaction", # nolint line_length_linter.
   {
     expect_snapshot(
       suppressMessages(enw_formula(
@@ -43,23 +43,23 @@ test_that(
   }
 )
 
-test_that("enw_formula cannot return a random effects formula with multiple internal interaction", { # nolint line_length
+test_that("enw_formula cannot return a random effects formula with multiple internal interaction", { # nolint line_length_linter.
   expect_error(
     enw_formula(~ 1 + (1 + month | day_of_week:age_group:location), data)
   )
 })
 
-test_that("enw_formula can return a model with a random effect and a random walk", { # nolint line_length
+test_that("enw_formula can return a model with a random effect and a random walk", { # nolint line_length_linter.
   expect_snapshot(enw_formula(~ 1 + (1 | age_group) + rw(week), data))
 })
 
-test_that("enw_formula can return a model with a random effect and a random walk by group", { # nolint line_length
+test_that("enw_formula can return a model with a random effect and a random walk by group", { # nolint line_length_linter.
   expect_snapshot(
     enw_formula(~ 1 + (1 | age_group) + rw(week, age_group), data)
   )
 })
 
-test_that("enw_formula can return a model with a fixed effect, random effect and a random walk", { # nolint line_length
+test_that("enw_formula can return a model with a fixed effect, random effect and a random walk", { # nolint line_length_linter.
   expect_snapshot(
     enw_formula(~ 1 + day_of_week + (1 | age_group) + rw(week), data)
   )
@@ -71,7 +71,7 @@ test_that("enw_formula can handle random effects that are not factors", {
   expect_snapshot(enw_formula(~ 1 + (1 | d_week), test_data))
 })
 
-test_that("enw_formula can handle formulas that do not have sparse fixed effects", { # nolint line_length
+test_that("enw_formula can handle formulas that do not have sparse fixed effects", { # nolint line_length_linter.
   expect_snapshot(enw_formula(~1, data[1:5, ], sparse = FALSE))
 })
 
@@ -95,7 +95,7 @@ test_that("enw_formula fails when non-numeric random walks are defined", {
   )
 })
 
-test_that("enw_formula supports random effects and random walks for the same variable", { # nolint line_length
+test_that("enw_formula supports random effects and random walks for the same variable", { # nolint line_length_linter.
   expect_snapshot(
     enw_formula(~ 1 + (1 | week) + rw(week), data)
   )
