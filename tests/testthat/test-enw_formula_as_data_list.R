@@ -29,7 +29,7 @@ test_that(
   }
 )
 
-test_that("enw_formula_as_data_list produces expected output using a more complex formula", { # nolint line_length
+test_that("enw_formula_as_data_list produces expected output using a more complex formula", { # nolint line_length_linter.
   expect_snapshot(
     enw_formula_as_data_list(
       enw_formula(~ 1 + disp + (1 + gear | cyl) + (0 + wt | am), test_cars),
