@@ -49,7 +49,13 @@
     <loc>package.epinowcast.org/dev/reference/as_string_formula.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/cache_location_message.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/check_calendar_timestep.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_environment_unset.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_group.html</loc>
@@ -71,6 +77,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_quantiles.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/check_renviron_for_cache.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/check_timestep.html</loc>
@@ -95,6 +104,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/convolution_matrix.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/create_cache_dir.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/date_to_numeric_modulus.html</loc>
@@ -176,6 +188,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_formula_as_data_list.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_get_cache.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_impute_na_observations.html</loc>
@@ -277,6 +292,9 @@
     <loc>package.epinowcast.org/dev/reference/enw_score_nowcast.html</loc>
   </url>
   <url>
+    <loc>package.epinowcast.org/dev/reference/enw_set_cache.html</loc>
+  </url>
+  <url>
     <loc>package.epinowcast.org/dev/reference/enw_simulate_missing_reference.html</loc>
   </url>
   <url>
@@ -284,6 +302,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/enw_summarise_samples.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/enw_unset_cache.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/epinowcast-package.html</loc>
@@ -302,6 +323,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/get_internal_timestep.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/get_renviron_contents.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/index.html</loc>
@@ -344,6 +368,9 @@
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/summary.epinowcast.html</loc>
+  </url>
+  <url>
+    <loc>package.epinowcast.org/dev/reference/unset_cache_from_environ.html</loc>
   </url>
   <url>
     <loc>package.epinowcast.org/dev/reference/write_stan_files_no_profile.html</loc>

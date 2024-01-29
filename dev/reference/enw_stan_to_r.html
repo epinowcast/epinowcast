@@ -95,8 +95,8 @@ users interested in exploring and prototyping with model functionalities.</p>
     <dl><dt>files</dt>
 <dd><p>A character vector specifying the names of Stan files to be
 exposed. These must be in the <code>include</code> directory. Defaults to all Stan
-files in the <code>include</code> directory. Note that the following files are
-overloaded and cannot be exposed: "delay_lpmf.stan",
+files in the <code>include</code> directory. Note that the following files contain
+overloaded functions and cannot be exposed: "delay_lpmf.stan",
 "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".</p></dd>
 
 
@@ -132,10 +132,13 @@ exposed for use in R.</p>
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Functions used to help convert models into the format required for stan
 <code><a href="enw_formula_as_data_list.html">enw_formula_as_data_list</a>()</code>,
+<code><a href="enw_get_cache.html">enw_get_cache</a>()</code>,
 <code><a href="enw_model.html">enw_model</a>()</code>,
 <code><a href="enw_priors_as_data_list.html">enw_priors_as_data_list</a>()</code>,
 <code><a href="enw_replace_priors.html">enw_replace_priors</a>()</code>,
 <code><a href="enw_sample.html">enw_sample</a>()</code>,
+<code><a href="enw_set_cache.html">enw_set_cache</a>()</code>,
+<code><a href="enw_unset_cache.html">enw_unset_cache</a>()</code>,
 <code><a href="remove_profiling.html">remove_profiling</a>()</code>,
 <code><a href="write_stan_files_no_profile.html">write_stan_files_no_profile</a>()</code></p></div>
     </div>
