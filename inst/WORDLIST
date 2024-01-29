@@ -34,6 +34,7 @@ PMF
 PMFs
 Poisson
 Precompiling
+Renviron
 Rstudio
 SEIR
 Vehtari
@@ -51,6 +52,7 @@ dt
 enw
 epidemia
 etc
+filepath
 formulatools
 frac
 geq
@@ -114,4 +116,5 @@ u
 underpredicting
 underprediction
 unmodelled
+unsets
 warmup

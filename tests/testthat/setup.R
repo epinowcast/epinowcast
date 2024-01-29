@@ -2,6 +2,9 @@
 options(datatable.print.class = FALSE)
 options(datatable.print.keys = FALSE)
 
+# Set cache for testing
+enw_set_cache(tempdir(), type = "session")
+
 # Toy example data
 toy_incidence <- data.table::data.table(
   reference_date = data.table::as.IDate("2021-10-01"),

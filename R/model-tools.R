@@ -185,7 +185,8 @@ remove_profiling <- function(s) {
 #'
 #' @family modeltools
 write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
-                                        target_dir = tempdir()) {
+                                        target_dir = epinowcast::enw_get_cache()
+                                        ) {
   # remove profiling from main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
   code_main_model_no_profile <- remove_profiling(code_main_model)
@@ -195,7 +196,8 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
   main_model <- cmdstanr::write_stan_file(
     code_main_model_no_profile,
     dir = target_dir,
-    basename = basename(stan_file)
+    basename = basename(stan_file),
+    force_overwrite = FALSE
   )
 
   # remove profiling from included .stan files
@@ -223,7 +225,8 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
       cmdstanr::write_stan_file(
         code_include_paths_no_profile,
         dir = include_paths_no_profile_fdir,
-        basename = basename(f)
+        basename = basename(f),
+        force_overwrite = FALSE
       )
     }
   }
@@ -325,7 +328,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @return A `cmdstanr` model.
 #'
 #' @family modeltools
-#' @importFrom cli cli_inform
+#' @importFrom cli cli_alert_info
 #' @export
 #' @inheritParams write_stan_files_no_profile
 #' @importFrom cmdstanr cmdstan_model
@@ -337,11 +340,12 @@ enw_model <- function(model = system.file(
                       ),
                       include = system.file("stan", package = "epinowcast"),
                       compile = TRUE, threads = TRUE, profile = FALSE,
-                      target_dir = tempdir(), stanc_options = list(),
+                      target_dir = epinowcast::enw_get_cache(),
+                      stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
   if (verbose) {
-    cli::cli_inform("Using model {model}.")
-    cli::cli_inform("include is {toString(include)}.")
+    cli::cli_alert_info("Using model {model}.")
+    cli::cli_alert_info("Include is {toString(include)}.")
   }
 
   if (!profile) {
@@ -459,4 +463,169 @@ enw_stan_to_r <- function(
     mod$expose_functions(global = TRUE)
   }
   return(mod)
+}
+
+#' Set caching location for Stan models
+#'
+#' This function allows the user to set a cache location for Stan models
+#' rather than a temporary directory. This can reduce the need for model
+#' compilation on every new model run across sessions or within a session.
+#' For R version 4.0.0 and above, it's recommended to use the persistent cache
+#' as shown in the example.
+#'
+#' @param path A valid filepath representing the desired cache location. If
+#' the directory does not exist it will be created.
+#'
+#' @param type A character string specifying the cache type. It can be one of
+#' "session", "persistent", or "all". Default is "session".
+#' "session" sets the cache for the current session, "persistent" writes the
+#' cache location to the user’s `.Renviron` file,  and "all" does both.
+#'
+#' @return The string of the filepath set.
+#'
+#' @family modeltools
+#' @importFrom cli cli_abort cli_alert_success cli_alert_warning
+#' @importFrom rlang arg_match
+#' @export
+#' @examplesIf interactive()
+#' # Set to local directory
+#' my_enw_cache <- enw_set_cache(file.path(tempdir(), "test"))
+#' enw_get_cache()
+#' \dontrun{
+#' # Use the package cache in R >= 4.0
+#' if (R.version.string >= "4.0.0") {
+#'  enw_set_cache(
+#'    tools::R_user_dir(package = "epinowcast", "cache"), type = "all"
+#'  )
+#'}
+#'
+#'}
+enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
+
+  type <- rlang::arg_match(type, multiple = TRUE)
+
+  if (!is.character(path)) {
+    cli::cli_abort("`path` must be a valid file path.")
+  }
+
+  candidate_path <- normalizePath(path, winslash = "\\", mustWork = FALSE)
+
+  create_cache_dir(candidate_path)
+
+  if (any(type %in% c("persistent", "all"))) {
+    unset_cache_from_environ(alert_on_not_set = FALSE)
+    env_contents_active <- get_renviron_contents()
+
+    enw_environment <- paste0("enw_cache_location=\"", candidate_path, "\"\n")
+
+    new_env_contents <- append(
+      env_contents_active[["env_contents"]],
+      enw_environment
+    )
+
+    writeLines(
+      new_env_contents,
+      con = env_contents_active[["env_path"]], sep = "\n"
+    )
+
+    cli::cli_alert_success(
+      "Added `{enw_environment}` to `.Renviron` at {env_contents_active[['env_path']]}" # nolint line_length
+    )
+  }
+
+  if (any(type %in% c("session", "all"))) {
+    prior_cache <- Sys.getenv("enw_cache_location", unset = "", names = NA)
+    if (!check_environment_unset(prior_cache)) {
+      cli::cli_alert_warning(
+        "Environment variable `enw_cache_location` exists and will be overwritten" # nolint line_length
+      )
+    }
+    cli::cli_alert_success(
+      "Set `enw_cache_location` to {candidate_path}"
+    )
+    Sys.setenv(enw_cache_location = candidate_path)
+  }
+
+  return(invisible(candidate_path))
+}
+
+#' Unset Stan cache location
+#'
+#' Optionally removes the `enw_cache_location` environment variable from
+#' the user .Renviron file and/or removes it from the local
+#' environment. If you unset the local cache and want to switch
+#' back to using the persistent cache, you can reload the
+#' `.Renviron` file using `readRenviron("~/.Renviron")`.
+#'
+#' @param type A character string specifying the type of cache to unset.
+#' It can be one of "session", "persistent", or "all". Default is "session".
+#' "session" unsets the cache for the current session, "persistent" removes the
+#' cache location from the user’s `.Renviron` file,and "all" does all options.
+#'
+#' @return The prior cache location, if it existed otherwise `NULL`.
+#'
+#' @importFrom cli cli_alert_success cli_alert_danger
+#' @importFrom rlang arg_match
+#' @family modeltools
+#' @export
+#' @examplesIf interactive()
+#' enw_unset_cache()
+enw_unset_cache <- function(type = c("session", "persistent", "all")) {
+  type <- rlang::arg_match(type, multiple = TRUE)
+
+  prior_location <- NULL
+
+  if (any(type %in% c("session", "all"))) {
+    prior_location <- Sys.getenv("enw_cache_location")
+    if (prior_location != "") {
+      Sys.unsetenv("enw_cache_location")
+      cli::cli_alert_success(
+        "Removed `enw_cache_location = {prior_location}` from the local environment." # nolint line_length
+      )
+      if (any(type == "session")) {
+        environ <- get_renviron_contents()
+        cache_in_environ <- check_renviron_for_cache(environ)
+        if (any(cache_in_environ)) {
+          cli::cli_alert_info(
+            "To revert to the persistent cache, run `readRenviron('~/.Renviron')`" # nolint line_length 
+          )
+        }
+      }
+    } else {
+      cli::cli_alert_danger(
+        "`enw_cache_location` not set in the local environment. Nothing to unset." # nolint line_length
+      )
+    }
+  }
+
+  if (any(type %in% c("persistent", "all"))) {
+    unset_cache_from_environ()
+  }
+
+  return(invisible(prior_location))
+}
+
+#' Retrieve Stan cache location
+#'
+#' Retrieves the user set cache location for Stan models. This
+#' path can be set through the `enw_cache_location` function call.
+#' If no environmental variable is available the output from
+#' [tempdir()] will be returned.
+#'
+#' @return A string representing the file path for the cache location
+#' @importFrom cli cli_inform
+#' @family modeltools
+#' @export
+enw_get_cache <- function() {
+  cache_location <- Sys.getenv("enw_cache_location")
+
+  cli::cli_inform(cache_location_message())
+
+  if (check_environment_unset(cache_location)) {
+    cache_location <- tempdir()
+  }
+
+  create_cache_dir(cache_location)
+
+  return(cache_location)
 }
