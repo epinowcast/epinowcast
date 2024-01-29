@@ -75,7 +75,7 @@ test_that("enw_filter_reference_dates filters as expected when data is present w
   )
 })
 
-test_that("enw_filter_reference_dates works with both include and remove days under missing data", { # nolint line_length_linter.
+test_that("enw_filter_reference_dates works with both include and remove days under missing data", { # nolint: line_length_linter.
   nat_germany_hosp <-
     germany_covid19_hosp[location == "DE"][age_group == "00+"]
   nat_germany_hosp <- enw_complete_dates(
