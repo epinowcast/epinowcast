@@ -6,9 +6,9 @@ if (requireNamespace("scoringutils")) {
     obs <- enw_example("observations")
 
     expect_data_table(
-      suppressWarnings(suppressMessages(
+      suppressPackageStartupMessages(suppressWarnings(suppressMessages(
         enw_score_nowcast(summarised_nowcast, obs)
-      ))
+      )))
     )
     expect_data_table(
       suppressWarnings(suppressMessages(
