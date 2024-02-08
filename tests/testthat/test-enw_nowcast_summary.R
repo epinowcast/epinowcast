@@ -1,6 +1,4 @@
-test_that(
-  "enw_nowcast_summary can extract the summarised nowcast as expected",
-  {
+test_that("enw_nowcast_summary() can extract the summarised nowcast as expected", { # nolint
     fit <- enw_example("nowcast")
     nowcast <- enw_nowcast_summary(
       fit$fit[[1]], fit$latest[[1]], max_delay = fit$max_delay
@@ -11,8 +9,7 @@ test_that(
   }
 )
 
-test_that(
-  "enw_nowcast_summary can extract summarised nowcast with custom quantiles", {
+test_that("enw_nowcast_summary() can extract summarised nowcast with custom quantiles", { # nolint
   fit <- enw_example("nowcast")
   nowcast <- enw_nowcast_summary(
     fit$fit[[1]], fit$latest[[1]], max_delay = fit$max_delay,
@@ -23,10 +20,7 @@ test_that(
   )
 })
 
-test_that(paste(
-  "enw_nowcast_summary can extract the summarised nowcast as expected",
-  "when a delay smaller than specified was modelled"
-), {
+test_that("enw_nowcast_summary() can extract the summarised nowcast as expected when a delay smaller than specified was modelled", { # nolint
   fit <- enw_example("nowcast")
   nowcast <- enw_nowcast_summary(
     fit$fit[[1]], fit$latest[[1]], max_delay = 22
@@ -36,9 +30,7 @@ test_that(paste(
   )
 })
 
-test_that(
-  "enw_nowcast_summary throws error when max_delay shorter than modeled",
-  {
+test_that("enw_nowcast_summary() throws error when max_delay shorter than modeled", { # nolint
     fit <- enw_example("nowcast")
     expect_error(
       enw_nowcast_summary(

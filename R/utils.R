@@ -247,6 +247,176 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   return(dt[])
 }
 
+#' Cache location message for epinowcast package
+#'
+#' This function generates a message in the [epinowcast()] package
+#' regarding the cache location. It checks the environment setting for the
+#' cache location and provides guidance to the user on managing this setting.
+#'
+#' @details [cache_location_message()] examines the `enw_cache_location`
+#' environment variable. If this variable is not set, it advises the user to
+#' set the cache location using [enw_set_cache()] to optimize stan compilation
+#' times. If `enw_cache_location` is set, it confirms the current cache
+#' location to the user. Management and setting of the cache location can be
+#' done using [enw_set_cache()].
+#'
+#' @return A character vector containing messages. If `enw_cache_location` is
+#' not set, it returns instructions for setting the cache location and where to
+#' find more details. If it is set, the function returns a confirmation message
+#' of the current cache location.
+#'
+#' @keywords internal
+cache_location_message <- function() {
+    cache_location <- Sys.getenv("enw_cache_location")
+    if (check_environment_unset(cache_location)) {
+    # nolint start
+        msg <- c(
+            "!" = "`enw_cache_location` is not set.",
+            i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
+            i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
+            i = "For example: `enw_set_cache(tools::R_user_dir(package =
+            \"epinowcast\", \"cache\"), type = c('session', 'persistent'))`.",
+            i = "See `?enw_set_cache` for details."
+        )
+    # nolint end 
+    } else {
+        msg <- c(
+            i = sprintf(
+                "Using `%s` for the epinowcast model cache location.", # nolint line_length
+                cache_location
+            )
+        )
+    }
+
+    return(msg)
+}
+
+#' Check environment setting
+#'
+#' This internal function checks whether a given environment variable is set or
+#' not. It returns `TRUE` if the variable is either null or an empty string,
+#' indicating that the environment variable is not set. Otherwise, it returns
+#' `FALSE`.
+#'
+#' @param x The environment variable to be checked.
+#'
+#' @return Logical value indicating whether the environment variable is not set
+#' (either null or an empty string).
+#' @keywords internal
+check_environment_unset <- function(x) {
+  return(is.null(x) || x == "")
+}
+
+#' Identify cache location in .Renviron
+#'
+#' This function retrieves environment variable settings and manages the
+#' `.Renviron` file in the user's project or home directory.
+#' The project directory will be examined first, if it exists.
+#'
+#' @return A list containing the contents of the `.Renviron` file and its path.
+#' @keywords internal
+get_renviron_contents <- function() {
+
+  env_location <- getwd()
+
+  if (file.exists(file.path(env_location, ".Renviron"))) {
+    env_path <- file.path(env_location, ".Renviron")
+  } else {
+    env_location <- Sys.getenv("HOME")
+    env_path <- file.path(env_location, ".Renviron")
+  }
+
+  if (!file.exists(env_path)) {
+    file.create(env_path)
+  }
+
+  env_contents <- readLines(env_path)
+
+  output <- list(
+    env_contents = env_contents,
+    env_path = env_path
+  )
+
+  return(output)
+}
+
+#' Remove Cache Location Setting from `.Renviron`
+#'
+#' This function searches for and removes the `enw_cache_location` setting from
+#' the `.Renviron` file located in the user's project or home directory.
+#' It utilizes the [get_renviron_contents]() function to access and
+#' modify the contents of the `.Renviron` file. If the `enw_cache_location`
+#' setting is found and successfully removed, a success message is displayed.
+#' If the setting is not found, a warning message is displayed.
+#'
+#' @param alter_on_not_set A logical value indicating whether to display a
+#' warning message if the `enw_cache_location` setting is not found in the
+#' `.Renviron` file. Defaults to `TRUE`.
+#'
+#' @return Invisible NULL. The function is used for its side effect of modifying
+#' the `.Renviron` file.
+#' @seealso [get_renviron_contents()]
+#' @keywords internal
+unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
+    environ <- get_renviron_contents()
+    cache_loc_environ <- check_renviron_for_cache(environ)
+    if (any(cache_loc_environ)) {
+      new_environ <- environ
+      new_environ[["env_contents"]] <-
+       environ[["env_contents"]][!cache_loc_environ]
+      writeLines(new_environ$env_contents, new_environ$env_path)
+      cli::cli_alert_success(
+        "Removed `enw_cache_location` setting from `.Renviron`."
+      )
+    } else {
+      if (isTRUE(alert_on_not_set)) {
+        cli::cli_alert_danger(
+          "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+        )
+      }
+    }
+    return(invisible(NULL))
+}
+
+#' Check `.Renviron` for cache location setting
+#' @param environ A list containing the contents of the `.Renviron` file and
+#' its path. This is the output of the [get_renviron_contents()] function.
+#' @keywords internal
+check_renviron_for_cache <- function(environ) {
+  cache_loc_environ <- grepl(
+    "enw_cache_location", environ[["env_contents"]], fixed = TRUE
+  )
+  return(cache_loc_environ)
+}
+
+#' Create Stan cache directory
+#'
+#' This function creates a cache directory for Stan models if it does not
+#' already exist. This is useful for users who want to set a persistent
+#' cache location but do not want to create the directory manually.
+#'
+#' @inheritParams enw_set_cache
+#'
+#' @return `NULL`
+#' @keywords internal
+#' @importFrom cli cli_alert_info cli_alert_success cli_abort
+create_cache_dir <- function(path) {
+  if (!dir.exists(path)) {
+    dir.create(path, recursive = TRUE, showWarnings = FALSE)
+    if (dir.exists(path)) {
+      cli::cli_alert_success(
+        "Created cache directory at {path}"
+      )
+      return(invisible(NULL))
+    } else {
+      cli::cli_abort(
+        "Failed to create cache directory at {path}"
+      )
+    }
+  }
+  return(invisible(NULL))
+}
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",

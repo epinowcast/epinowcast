@@ -113,8 +113,7 @@
       [1] 1
       
 
-# enw_formula_as_data_list produces expected output using a more
-          complex formula
+# enw_formula_as_data_list produces expected output using a more complex formula
 
     Code
       enw_formula_as_data_list(enw_formula(~ 1 + disp + (1 + gear | cyl) + (0 + wt |

@@ -1,5 +1,4 @@
-# enw_add_latest_obs_to_nowcast can link nowcasts with more recent
-          observations
+# enw_add_latest_obs_to_nowcast can link nowcasts with more recent observations
 
     Code
       round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
