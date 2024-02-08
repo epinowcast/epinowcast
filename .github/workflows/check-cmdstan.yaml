@@ -55,7 +55,7 @@ jobs:
         uses: epinowcast/actions/install-cmdstan@v1
         with:
           cmdstan-version: 'latest'
-        num-cores: 2
+          num-cores: 2
 
       - name: Compile model and check syntax
         run: |
