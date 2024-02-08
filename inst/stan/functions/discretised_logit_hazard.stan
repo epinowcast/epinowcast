@@ -126,7 +126,7 @@ vector normalise_lcdf_as_uniform_double_censored(vector lcdf, int u,
  * 
  * @param lcdf Vector of LCDF values.
  *
- * @param u Upper bound of the discretized LCDF / LPMF.
+ * @param u Upper bound of the discretised LCDF / LPMF.
  * 
  * @return Vector of log-scale PMF values.
  * 
