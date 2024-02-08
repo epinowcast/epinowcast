@@ -76,11 +76,10 @@ jobs:
           needs: check
 
       - name: Install cmdstan
-        run: |
-          print(list.files("C:/rtools43"))
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
-        shell: Rscript {0}
+        uses: epinowcast/actions/install-cmdstan@v1
+        with:
+          cmdstan-version: 'latest'
+          num-cores: 2
 
       - uses: r-lib/actions/check-r-package@v2
         if:  matrix.config.r != '3.6'
