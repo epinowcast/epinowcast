@@ -28,7 +28,7 @@ real loglogistic_lcdf (real y, real alpha, real beta) {
  *
  * @param sigma Scale parameter for the distribution.
  *
- * @param u Upper bound of the discretized LCDF.
+ * @param u Upper bound of the discretised LCDF.
  *
  * @param dist Integer flag for distribution type (1: exponential, 2: lognormal,
  * 3: gamma, 4: log-logistic).
