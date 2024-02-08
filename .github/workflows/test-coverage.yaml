@@ -31,11 +31,10 @@ jobs:
           needs: coverage
 
       - name: Install cmdstan
-        run: |
-          print(list.files("C:/rtools42"))
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
-        shell: Rscript {0}
+        uses: epinowcast/actions/install-cmdstan@v1
+        with:
+          cmdstan-version: 'latest'
+        num-cores: 2
 
       - name: Test coverage
         run: covr::codecov(quiet = FALSE)
