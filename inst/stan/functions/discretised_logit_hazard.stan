@@ -73,7 +73,7 @@ vector lcdf_discretised(real mu, real sigma, int u, int dist) {
  * 
  * @param lcdf Vector of LCDF values to be adjusted.
  *
- * @param u Upper bound of the discretized LCDF.
+ * @param u Upper bound of the discretised LCDF.
  *
  * @param max_strat Strategy for handling probability mass beyond upper bound.
  * 
