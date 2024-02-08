@@ -8,7 +8,7 @@ opinionated defaults."><meta property="og:image" content="package.epinowcast.org
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -120,6 +120,7 @@ plotting functions to work.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_posterior</span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, variables <span class="op">=</span> <span class="st">"expr_beta"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          variable        mean       median        sd       mad         q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            &lt;char&gt;       &lt;num&gt;        &lt;num&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:  expr_beta[1]  0.32247472  0.338387000 0.5599104 0.5401784 -0.5884213</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2:  expr_beta[2] -0.33517948 -0.329458500 0.5515760 0.5133994 -1.2521760</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3:  expr_beta[3] -0.82458037 -0.830468000 0.5664859 0.5410890 -1.7149765</span>
@@ -162,6 +163,7 @@ plotting functions to work.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40: expr_beta[40]  0.39259101  0.377317500 0.7767691 0.7296290 -0.8495955</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          variable        mean       median        sd       mad         q5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             q20         q80         q95      rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;num&gt;       &lt;num&gt;       &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1: -0.14270780  0.78065200  1.20346400 1.0021603  714.6681 609.9378</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  2: -0.77719040  0.10379780  0.54302050 1.0036855 1262.6375 504.0825</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3: -1.29391200 -0.36525580  0.07783156 0.9999359 1116.2168 697.3545</span>

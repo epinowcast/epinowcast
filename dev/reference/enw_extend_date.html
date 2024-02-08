@@ -12,7 +12,7 @@ when using a renewal process as the expectation model."><meta property="og:image
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -145,7 +145,9 @@ for all existing dates.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">metaobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-01-01"</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_extend_date</span><span class="op">(</span><span class="va">metaobs</span>, days <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;.group, date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          date .group observed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;Date&gt;  &lt;num&gt;   &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-01-01      1     TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 2021-01-02      1     TRUE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 2021-01-03      1     TRUE</span>
@@ -154,7 +156,9 @@ for all existing dates.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6: 2021-01-06      1    FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7: 2021-01-07      1    FALSE</span>
 <span class="r-in"><span><span class="fu">enw_extend_date</span><span class="op">(</span><span class="va">metaobs</span>, days <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"start"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;.group, date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          date .group observed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;Date&gt;  &lt;num&gt;   &lt;lgcl&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2020-12-30      1    FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 2020-12-31      1    FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 2021-01-01      1     TRUE</span>

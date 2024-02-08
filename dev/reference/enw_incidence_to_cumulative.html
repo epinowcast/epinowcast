@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -112,7 +112,9 @@ downstream modelling</p></dd>
 <span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_add_incidence.html">enw_add_incidence</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="va">dt</span><span class="op">[</span>, <span class="va">confirm</span> <span class="op">:=</span> <span class="cn">NULL</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="enw_add_cumulative.html">enw_add_cumulative</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;reference_date, report_date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date location age_group report_date new_confirm delay confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;      &lt;IDat&gt;       &lt;int&gt; &lt;int&gt;   &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-04-06       DE       00+  2021-04-06         149     0     149</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-04-06       DE       00+  2021-04-07         140     1     289</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-04-06       DE       00+  2021-04-08          61     2     350</span>
@@ -127,7 +129,9 @@ downstream modelling</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Make use of maximum reported to calculate empirical daily reporting</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="enw_add_cumulative.html">enw_add_cumulative</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;reference_date, report_date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date location age_group report_date new_confirm delay confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;      &lt;IDat&gt;       &lt;int&gt; &lt;int&gt;   &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-04-06       DE       00+  2021-04-06         149     0     149</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-04-06       DE       00+  2021-04-07         140     1     289</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-04-06       DE       00+  2021-04-08          61     2     350</span>

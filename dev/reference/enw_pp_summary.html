@@ -12,7 +12,7 @@ the supplied summary.epinowcast() method."><meta property="og:image" content="pa
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -121,6 +121,7 @@ plotting functions to work.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_pp_summary</span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">fit</span><span class="op">$</span><span class="va">new_confirm</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      reference_date report_date .group max_confirm location age_group confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;IDat&gt;      &lt;IDat&gt;  &lt;num&gt;       &lt;int&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1:     2021-07-13  2021-07-13      1          59       DE       00+      21</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:     2021-07-13  2021-07-14      1          59       DE       00+      33</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:     2021-07-13  2021-07-15      1          59       DE       00+      36</span>
@@ -133,6 +134,7 @@ plotting functions to work.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 629:     2021-08-21  2021-08-22      1         112       DE       00+     112</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 630:     2021-08-22  2021-08-22      1          45       DE       00+      45</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      cum_prop_reported delay new_confirm prop_reported   mean median        sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;num&gt; &lt;num&gt;       &lt;int&gt;         &lt;num&gt;  &lt;num&gt;  &lt;num&gt;     &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   1:         0.3559322     0          21    0.35593220 19.340     18  8.788381</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   2:         0.5593220     1          12    0.20338983 20.633     19  9.243579</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   3:         0.6101695     2           3    0.05084746  6.047      5  3.458432</span>
@@ -144,18 +146,19 @@ plotting functions to work.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 628:         0.6160714     0          69    0.61607143 74.934     69 32.428217</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 629:         1.0000000     1          43    0.38392857 46.497     43 19.085761</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 630:         1.0000000     0          45    1.00000000 40.198     37 19.651946</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          mad q50      rhat  ess_bulk  ess_tail</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  8.8956  18 0.9991744  999.8591 1027.3024</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:  8.8956  19 1.0023251  948.1680  978.4886</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  2.9652   5 0.9993604  734.7846  751.2877</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  2.9652   4 1.0030090 1100.5175 1009.5913</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  1.4826   2 0.9992011  965.0750  994.7849</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 626: 31.1346  75 1.0009581 1047.6045 1020.4985</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 627:  5.9304  12 1.0010833  881.1689  967.4896</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 628: 29.6520  69 1.0009965 1131.3266  881.7254</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 629: 17.7912  43 0.9991313 1028.5843  916.3896</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 630: 17.7912  37 1.0007027  975.8059  874.9003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          mad   q50      rhat  ess_bulk  ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt; &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  8.8956    18 0.9991744  999.8591 1027.3024</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:  8.8956    19 1.0023251  948.1680  978.4886</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  2.9652     5 0.9993604  734.7846  751.2877</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  2.9652     4 1.0030090 1100.5175 1009.5913</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  1.4826     2 0.9992011  965.0750  994.7849</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 626: 31.1346    75 1.0009581 1047.6045 1020.4985</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 627:  5.9304    12 1.0010833  881.1689  967.4896</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 628: 29.6520    69 1.0009965 1131.3266  881.7254</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 629: 17.7912    43 0.9991313 1028.5843  916.3896</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 630: 17.7912    37 1.0007027  975.8059  874.9003</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

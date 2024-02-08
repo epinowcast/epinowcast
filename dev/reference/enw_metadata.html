@@ -12,7 +12,7 @@ are dropped and the first observation for each group and date is retained."><met
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -134,8 +134,10 @@ The data.table is sorted by <code>.group</code> and <code>date</code>.</p>
 <span class="r-in"><span> report_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2022-01-01"</span><span class="op">)</span>, x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_metadata</span><span class="op">(</span><span class="va">obs</span>, target_date <span class="op">=</span> <span class="st">"reference_date"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          date .group x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-01-01      1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;.group, date&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          date .group     x</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;Date&gt;  &lt;num&gt; &lt;int&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-01-01      1     1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

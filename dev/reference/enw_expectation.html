@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -162,93 +162,97 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data_raw</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data_raw$r</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-15      1       DE       00+     0    Thursday   2    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-16      1       DE       00+     0      Friday   3    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-17      1       DE       00+     0    Saturday   4    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-18      1       DE       00+     0      Sunday   5    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-19      1       DE       00+     0      Monday   6    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-22      1       DE       00+     0    Thursday   9    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-23      1       DE       00+     0      Friday  10    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-24      1       DE       00+     0    Saturday  11    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-25      1       DE       00+     0      Sunday  12    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-26      1       DE       00+     0      Monday  13    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-29      1       DE       00+     0    Thursday  16    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-30      1       DE       00+     0      Friday  17    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-31      1       DE       00+     0    Saturday  18    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-08-01      1       DE       00+     0      Sunday  19    2     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-02      1       DE       00+     0      Monday  20    2     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-05      1       DE       00+     0    Thursday  23    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-06      1       DE       00+     0      Friday  24    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-07      1       DE       00+     0    Saturday  25    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-08      1       DE       00+     0      Sunday  26    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-09      1       DE       00+     0      Monday  27    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-12      1       DE       00+     0    Thursday  30    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-13      1       DE       00+     0      Friday  31    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-14      1       DE       00+     0    Saturday  32    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-15      1       DE       00+     0      Sunday  33    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-16      1       DE       00+     0      Monday  34    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-19      1       DE       00+     0    Thursday  37    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-20      1       DE       00+     0      Friday  38    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-21      1       DE       00+     0    Saturday  39    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-22      1       DE       00+     0      Sunday  40    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;.group, date&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;IDat&gt;  &lt;num&gt;   &lt;fctr&gt;    &lt;fctr&gt; &lt;num&gt;      &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-15      1       DE       00+     0    Thursday     2     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-16      1       DE       00+     0      Friday     3     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-17      1       DE       00+     0    Saturday     4     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-18      1       DE       00+     0      Sunday     5     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-19      1       DE       00+     0      Monday     6     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-22      1       DE       00+     0    Thursday     9     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-23      1       DE       00+     0      Friday    10     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-24      1       DE       00+     0    Saturday    11     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-25      1       DE       00+     0      Sunday    12     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-26      1       DE       00+     0      Monday    13     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-29      1       DE       00+     0    Thursday    16     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-30      1       DE       00+     0      Friday    17     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-31      1       DE       00+     0    Saturday    18     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-08-01      1       DE       00+     0      Sunday    19     2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-02      1       DE       00+     0      Monday    20     2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-05      1       DE       00+     0    Thursday    23     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-06      1       DE       00+     0      Friday    24     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-07      1       DE       00+     0    Saturday    25     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-08      1       DE       00+     0      Sunday    26     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-09      1       DE       00+     0      Monday    27     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-12      1       DE       00+     0    Thursday    30     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-13      1       DE       00+     0      Friday    31     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-14      1       DE       00+     0    Saturday    32     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-15      1       DE       00+     0      Sunday    33     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-16      1       DE       00+     0      Monday    34     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-19      1       DE       00+     0    Thursday    37     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-20      1       DE       00+     0      Friday    38     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-21      1       DE       00+     0    Saturday    39     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-22      1       DE       00+     0      Sunday    40     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data_raw$observation</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday   3    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday   6    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday  10    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday  13    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday  17    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday  20    2     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday  24    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday  27    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday  31    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday  34    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday  38    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;.group, date&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;IDat&gt;  &lt;num&gt;   &lt;fctr&gt;    &lt;fctr&gt; &lt;num&gt;      &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-13      1       DE       00+     0     Tuesday     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-15      1       DE       00+     0    Thursday     2     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday     3     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday     4     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday     5     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday     6     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-22      1       DE       00+     0    Thursday     9     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday    10     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday    11     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday    12     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday    13     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-29      1       DE       00+     0    Thursday    16     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday    17     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday    18     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday    19     2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday    20     2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-05      1       DE       00+     0    Thursday    23     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday    24     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday    25     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday    26     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday    27     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-12      1       DE       00+     0    Thursday    30     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday    31     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday    32     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday    33     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday    34     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-19      1       DE       00+     0    Thursday    37     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday    38     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday    39     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday    40     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
@@ -691,20 +695,23 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable dimension</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;     &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:        expr_r_int         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:      expr_beta_sd         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: expr_lelatent_int         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:      expl_beta_sd         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                                           description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:                                                   Intercept of the log growth rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:                        Standard deviation of scaled pooled log growth rate effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: Intercept for initial log observations (ordered by group and then\n          time)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:                        Standard deviation of scaled pooled log growth rate effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean  sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  0.0 0.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.0 1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal  4.1 1.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0 1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   0.0   0.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.0   1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal   4.1   1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0   1.0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -742,8 +749,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55bf2effd928&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55bf314b4a50&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55f10bb01ab0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55f10baf9218&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

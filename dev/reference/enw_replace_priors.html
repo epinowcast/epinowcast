@@ -14,7 +14,7 @@ run (using summary(nowcast, type = fit)) and using this a prior."><meta property
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -129,9 +129,10 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-in"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">custom_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>variable <span class="op">=</span> <span class="st">"x[1]"</span>, mean <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">priors</span>, <span class="va">custom_priors</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    variable mean sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        y    2  2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        x   10  2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    variable  mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        y     2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:        x    10     2</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Update priors from a previous model fit</span></span></span>
 <span class="r-in"><span><span class="va">default_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_reference.html">enw_reference</a></span><span class="op">(</span></span></span>
@@ -140,6 +141,7 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-in"><span><span class="op">)</span><span class="op">$</span><span class="va">priors</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">default_priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
@@ -147,19 +149,21 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  1.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.5  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"nowcast"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"fit"</span>,</span></span>
@@ -167,16 +171,19 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median         sd        mad        q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;char&gt;     &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.9275427 2.878250 0.60616360 0.56057847 1.9987305</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.7247655 3.725160 0.29776034 0.30256901 3.2486910</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3451583 0.345018 0.03084835 0.03215908 0.2946898</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          q20       q80      q95     rhat ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;     &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.4159980 3.4375000 3.979278 1.011166 545.8019 594.9085</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.4762260 3.9682440 4.242967 1.008980 658.6603 617.2976</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3179718 0.3702174 0.396054 1.000215 861.7747 612.4721</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">default_priors</span>, <span class="va">fit_priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:         refnp_int</span>
@@ -185,6 +192,7 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:       refp_sd_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7:          sqrt_phi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                    description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:   Standard deviation of scaled pooled parametric sd effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:           Intercept for non-parametric reference date delay</span>
@@ -193,6 +201,7 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean         sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt;     &lt;num&gt;      &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.00000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal 0.0000000 1.00000000</span>

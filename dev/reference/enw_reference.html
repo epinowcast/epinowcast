@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -1075,6 +1075,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
@@ -1082,19 +1083,21 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  1.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.5  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -1150,8 +1153,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55bf3a4de800&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55bf3a4f9890&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55f10b8d4c90&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55f10b8c0c58&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Non-parametric model with a random effect per delay</span></span></span>
@@ -3784,6 +3787,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
@@ -3791,19 +3795,21 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  1.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.5  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -3859,8 +3865,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55bf3a4de800&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55bf3c485ea0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55f10b8d4c90&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55f10ad698d8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined parametric and non-parametric model</span></span></span>
@@ -4819,6 +4825,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $priors</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:     refp_mean_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:       refp_sd_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3: refp_mean_beta_sd</span>
@@ -4826,19 +4833,21 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:         refnp_int</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     refnp_beta_sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                       description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                            &lt;char&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:         Log mean intercept for parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2: Log standard deviation for the parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:    Standard deviation of scaled pooled parametric mean effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4:      Standard deviation of scaled pooled parametric sd effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:              Intercept for non-parametric reference date delay</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:     Standard deviation of scaled pooled non-parametric effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution mean sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal  1.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal  0.5  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal  0.0  1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal  0.0  1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution  mean    sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                Normal   1.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal   0.5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                Normal   0.0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: Zero truncated normal   0.0     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $inits</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (data, priors) </span>
@@ -4894,8 +4903,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55bf3a4de800&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55bf3448f4c0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55f10b8d4c90&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55f108a552c0&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

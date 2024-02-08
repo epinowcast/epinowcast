@@ -10,7 +10,7 @@ data.frame."><meta property="og:image" content="package.epinowcast.org/reference
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -107,31 +107,35 @@ with contrasts; if FALSE, create them without contrasts. Defaults to FALSE.</p><
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">metaobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>week <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_one_hot_encode_feature</span><span class="op">(</span><span class="va">metaobs</span>, <span class="st">"week"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    week week1 week2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    1     1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    2     0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     week week1 week2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;int&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     2     0     1</span>
 <span class="r-in"><span><span class="fu">enw_one_hot_encode_feature</span><span class="op">(</span><span class="va">metaobs</span>, <span class="st">"week"</span>, contrasts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    week week2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     week week2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;int&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     2     1</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">metaobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>week <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">6</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_one_hot_encode_feature</span><span class="op">(</span><span class="va">metaobs</span>, <span class="st">"week"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    week week1 week2 week3 week4 week5 week6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    1     1     0     0     0     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    2     0     1     0     0     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    3     0     0     1     0     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:    4     0     0     0     1     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:    5     0     0     0     0     1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:    6     0     0     0     0     0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     week week1 week2 week3 week4 week5 week6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;int&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1     1     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     2     0     1     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     3     0     0     1     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     4     0     0     0     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     5     0     0     0     0     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     6     0     0     0     0     0     1</span>
 <span class="r-in"><span><span class="fu">enw_one_hot_encode_feature</span><span class="op">(</span><span class="va">metaobs</span>, <span class="st">"week"</span>, contrasts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    week week2 week3 week4 week5 week6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:    1     0     0     0     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:    2     1     0     0     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:    3     0     1     0     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4:    4     0     0     1     0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:    5     0     0     0     1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:    6     0     0     0     0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     week week2 week3 week4 week5 week6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    &lt;int&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:     1     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:     2     1     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:     3     0     1     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4:     4     0     0     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:     5     0     0     0     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:     6     0     0     0     0     1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

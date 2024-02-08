@@ -6,7 +6,7 @@
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -118,55 +118,58 @@ converted into one.</p>
 <span class="r-in"><span><span class="va">random_effect</span> <span class="op">&lt;-</span> <span class="fu"><a href="re.html">re</a></span><span class="op">(</span><span class="va">form</span><span class="op">$</span><span class="va">random</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">construct_re</span><span class="op">(</span><span class="va">random_effect</span>, <span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-13      1       DE       00+     0     Tuesday   0    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-14      1       DE       00+     0   Wednesday   1    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-15      1       DE       00+     0    Thursday   2    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday   3    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday   4    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday   5    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday   6    0     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-20      1       DE       00+     0     Tuesday   7    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-21      1       DE       00+     0   Wednesday   8    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-22      1       DE       00+     0    Thursday   9    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday  10    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday  11    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday  12    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday  13    1     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-27      1       DE       00+     0     Tuesday  14    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-28      1       DE       00+     0   Wednesday  15    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-29      1       DE       00+     0    Thursday  16    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday  17    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday  18    2     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday  19    2     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday  20    2     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-03      1       DE       00+     0     Tuesday  21    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-04      1       DE       00+     0   Wednesday  22    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-05      1       DE       00+     0    Thursday  23    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday  24    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday  25    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday  26    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday  27    3     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-10      1       DE       00+     0     Tuesday  28    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-11      1       DE       00+     0   Wednesday  29    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-12      1       DE       00+     0    Thursday  30    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday  31    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday  32    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday  33    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday  34    4     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-17      1       DE       00+     0     Tuesday  35    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-18      1       DE       00+     0   Wednesday  36    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-19      1       DE       00+     0    Thursday  37    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday  38    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday  39    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday  40    5     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week day week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;.group, date&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;IDat&gt;  &lt;num&gt;   &lt;fctr&gt;    &lt;fctr&gt; &lt;num&gt;      &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 2021-07-13      1       DE       00+     0     Tuesday     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 2021-07-14      1       DE       00+     0   Wednesday     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 2021-07-15      1       DE       00+     0    Thursday     2     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 2021-07-16      1       DE       00+     0      Friday     3     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 2021-07-17      1       DE       00+     0    Saturday     4     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 2021-07-18      1       DE       00+     0      Sunday     5     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 2021-07-19      1       DE       00+     0      Monday     6     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 2021-07-20      1       DE       00+     0     Tuesday     7     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 2021-07-21      1       DE       00+     0   Wednesday     8     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 2021-07-22      1       DE       00+     0    Thursday     9     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 2021-07-23      1       DE       00+     0      Friday    10     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 2021-07-24      1       DE       00+     0    Saturday    11     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 2021-07-25      1       DE       00+     0      Sunday    12     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 2021-07-26      1       DE       00+     0      Monday    13     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 2021-07-27      1       DE       00+     0     Tuesday    14     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 2021-07-28      1       DE       00+     0   Wednesday    15     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 2021-07-29      1       DE       00+     0    Thursday    16     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 2021-07-30      1       DE       00+     0      Friday    17     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 2021-07-31      1       DE       00+     0    Saturday    18     2     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 2021-08-01      1       DE       00+     0      Sunday    19     2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 2021-08-02      1       DE       00+     0      Monday    20     2     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 2021-08-03      1       DE       00+     0     Tuesday    21     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 2021-08-04      1       DE       00+     0   Wednesday    22     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 2021-08-05      1       DE       00+     0    Thursday    23     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 2021-08-06      1       DE       00+     0      Friday    24     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 2021-08-07      1       DE       00+     0    Saturday    25     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 2021-08-08      1       DE       00+     0      Sunday    26     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 2021-08-09      1       DE       00+     0      Monday    27     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 2021-08-10      1       DE       00+     0     Tuesday    28     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 2021-08-11      1       DE       00+     0   Wednesday    29     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 2021-08-12      1       DE       00+     0    Thursday    30     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 2021-08-13      1       DE       00+     0      Friday    31     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33: 2021-08-14      1       DE       00+     0    Saturday    32     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34: 2021-08-15      1       DE       00+     0      Sunday    33     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35: 2021-08-16      1       DE       00+     0      Monday    34     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36: 2021-08-17      1       DE       00+     0     Tuesday    35     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37: 2021-08-18      1       DE       00+     0   Wednesday    36     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38: 2021-08-19      1       DE       00+     0    Thursday    37     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-20      1       DE       00+     0      Friday    38     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-21      1       DE       00+     0    Saturday    39     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41: 2021-08-22      1       DE       00+     0      Sunday    40     5     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "day_of_week"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 effects fixed day_of_week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;char&gt; &lt;num&gt;       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:    day_of_weekFriday     0           1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:    day_of_weekMonday     0           1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3:  day_of_weekSaturday     0           1</span>
@@ -183,97 +186,101 @@ converted into one.</p>
 <span class="r-in"><span><span class="va">random_effect</span> <span class="op">&lt;-</span> <span class="fu"><a href="re.html">re</a></span><span class="op">(</span><span class="va">form</span><span class="op">$</span><span class="va">random</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">construct_re</span><span class="op">(</span><span class="va">random_effect</span>, <span class="va">mtcars</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       mpg    cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;num&gt; &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  21.0      6 160.0   110  3.90 2.620 16.46     0     1     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  21.0      6 160.0   110  3.90 2.875 17.02     0     1     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  22.8      4 108.0    93  3.85 2.320 18.61     1     1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  21.4      6 258.0   110  3.08 3.215 19.44     1     0     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  18.7      8 360.0   175  3.15 3.440 17.02     0     0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  18.1      6 225.0   105  2.76 3.460 20.22     1     0     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  14.3      8 360.0   245  3.21 3.570 15.84     0     0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  24.4      4 146.7    62  3.69 3.190 20.00     1     0     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  22.8      4 140.8    95  3.92 3.150 22.90     1     0     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  19.2      6 167.6   123  3.92 3.440 18.30     1     0     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  17.8      6 167.6   123  3.92 3.440 18.90     1     0     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:  16.4      8 275.8   180  3.07 4.070 17.40     0     0     3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:  17.3      8 275.8   180  3.07 3.730 17.60     0     0     3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:  15.2      8 275.8   180  3.07 3.780 18.00     0     0     3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:  10.4      8 472.0   205  2.93 5.250 17.98     0     0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:  10.4      8 460.0   215  3.00 5.424 17.82     0     0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:  14.7      8 440.0   230  3.23 5.345 17.42     0     0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:  32.4      4  78.7    66  4.08 2.200 19.47     1     1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:  30.4      4  75.7    52  4.93 1.615 18.52     1     1     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:  33.9      4  71.1    65  4.22 1.835 19.90     1     1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:  21.5      4 120.1    97  3.70 2.465 20.01     1     0     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:  15.5      8 318.0   150  2.76 3.520 16.87     0     0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:  15.2      8 304.0   150  3.15 3.435 17.30     0     0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:  13.3      8 350.0   245  3.73 3.840 15.41     0     0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:  19.2      8 400.0   175  3.08 3.845 17.05     0     0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:  27.3      4  79.0    66  4.08 1.935 18.90     1     1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:  26.0      4 120.3    91  4.43 2.140 16.70     0     1     5     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:  30.4      4  95.1   113  3.77 1.513 16.90     1     1     5     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:  15.8      8 351.0   264  4.22 3.170 14.50     0     1     5     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:  19.7      6 145.0   175  3.62 2.770 15.50     0     1     5     6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:  15.0      8 301.0   335  3.54 3.570 14.60     0     1     5     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:  21.4      4 121.0   109  4.11 2.780 18.60     1     1     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       mpg    cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cyl"      "gear:cyl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $effects</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      effects fixed cyl gear__cyl</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      cyl4     0   1         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      cyl6     0   1         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      cyl8     0   1         0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cyl4:gear     0   0         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5: cyl6:gear     0   0         1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6: cyl8:gear     0   0         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      effects fixed   cyl gear__cyl</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       &lt;char&gt; &lt;num&gt; &lt;num&gt;     &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      cyl4     0     1         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:      cyl6     0     1         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      cyl8     0     1         0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: cyl4:gear     0     0         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5: cyl6:gear     0     0         1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6: cyl8:gear     0     0         1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">random_effect2</span> <span class="op">&lt;-</span> <span class="fu"><a href="re.html">re</a></span><span class="op">(</span><span class="va">form</span><span class="op">$</span><span class="va">random</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">construct_re</span><span class="op">(</span><span class="va">random_effect2</span>, <span class="va">mtcars</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  1: 21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  2: 21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  3: 22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  4: 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  5: 18.7   8 360.0 175 3.15 3.440 17.02  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  6: 18.1   6 225.0 105 2.76 3.460 20.22  1  0    3    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  7: 14.3   8 360.0 245 3.21 3.570 15.84  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  8: 24.4   4 146.7  62 3.69 3.190 20.00  1  0    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9: 22.8   4 140.8  95 3.92 3.150 22.90  1  0    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10: 19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11: 17.8   6 167.6 123 3.92 3.440 18.90  1  0    4    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12: 16.4   8 275.8 180 3.07 4.070 17.40  0  0    3    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13: 17.3   8 275.8 180 3.07 3.730 17.60  0  0    3    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14: 15.2   8 275.8 180 3.07 3.780 18.00  0  0    3    3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15: 10.4   8 472.0 205 2.93 5.250 17.98  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16: 10.4   8 460.0 215 3.00 5.424 17.82  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17: 14.7   8 440.0 230 3.23 5.345 17.42  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18: 32.4   4  78.7  66 4.08 2.200 19.47  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19: 30.4   4  75.7  52 4.93 1.615 18.52  1  1    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20: 33.9   4  71.1  65 4.22 1.835 19.90  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21: 21.5   4 120.1  97 3.70 2.465 20.01  1  0    3    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22: 15.5   8 318.0 150 2.76 3.520 16.87  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23: 15.2   8 304.0 150 3.15 3.435 17.30  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24: 13.3   8 350.0 245 3.73 3.840 15.41  0  0    3    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25: 19.2   8 400.0 175 3.08 3.845 17.05  0  0    3    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26: 27.3   4  79.0  66 4.08 1.935 18.90  1  1    4    1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27: 26.0   4 120.3  91 4.43 2.140 16.70  0  1    5    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28: 30.4   4  95.1 113 3.77 1.513 16.90  1  1    5    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29: 15.8   8 351.0 264 4.22 3.170 14.50  0  1    5    4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30: 19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31: 15.0   8 301.0 335 3.54 3.570 14.60  0  1    5    8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32: 21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      mpg cyl  disp  hp drat    wt  qsec vs am gear carb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       mpg   cyl  disp    hp  drat    wt  qsec    vs     am  gear  carb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;fctr&gt; &lt;num&gt; &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  1:  21.0     6 160.0   110  3.90 2.620 16.46     0      1     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  2:  21.0     6 160.0   110  3.90 2.875 17.02     0      1     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  3:  22.8     4 108.0    93  3.85 2.320 18.61     1      1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  4:  21.4     6 258.0   110  3.08 3.215 19.44     1      0     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  5:  18.7     8 360.0   175  3.15 3.440 17.02     0      0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  6:  18.1     6 225.0   105  2.76 3.460 20.22     1      0     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  7:  14.3     8 360.0   245  3.21 3.570 15.84     0      0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  8:  24.4     4 146.7    62  3.69 3.190 20.00     1      0     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9:  22.8     4 140.8    95  3.92 3.150 22.90     1      0     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10:  19.2     6 167.6   123  3.92 3.440 18.30     1      0     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11:  17.8     6 167.6   123  3.92 3.440 18.90     1      0     4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12:  16.4     8 275.8   180  3.07 4.070 17.40     0      0     3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13:  17.3     8 275.8   180  3.07 3.730 17.60     0      0     3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14:  15.2     8 275.8   180  3.07 3.780 18.00     0      0     3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15:  10.4     8 472.0   205  2.93 5.250 17.98     0      0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16:  10.4     8 460.0   215  3.00 5.424 17.82     0      0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17:  14.7     8 440.0   230  3.23 5.345 17.42     0      0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18:  32.4     4  78.7    66  4.08 2.200 19.47     1      1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19:  30.4     4  75.7    52  4.93 1.615 18.52     1      1     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20:  33.9     4  71.1    65  4.22 1.835 19.90     1      1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21:  21.5     4 120.1    97  3.70 2.465 20.01     1      0     3     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22:  15.5     8 318.0   150  2.76 3.520 16.87     0      0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23:  15.2     8 304.0   150  3.15 3.435 17.30     0      0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24:  13.3     8 350.0   245  3.73 3.840 15.41     0      0     3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25:  19.2     8 400.0   175  3.08 3.845 17.05     0      0     3     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26:  27.3     4  79.0    66  4.08 1.935 18.90     1      1     4     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27:  26.0     4 120.3    91  4.43 2.140 16.70     0      1     5     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28:  30.4     4  95.1   113  3.77 1.513 16.90     1      1     5     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29:  15.8     8 351.0   264  4.22 3.170 14.50     0      1     5     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30:  19.7     6 145.0   175  3.62 2.770 15.50     0      1     5     6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31:  15.0     8 301.0   335  3.54 3.570 14.60     0      1     5     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32:  21.4     4 121.0   109  4.11 2.780 18.60     1      1     4     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       mpg   cyl  disp    hp  drat    wt  qsec    vs     am  gear  carb</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "wt:am"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $effects</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    effects fixed wt__am</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;char&gt; &lt;num&gt;  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1:  wt:am0     0      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2:  wt:am1     0      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

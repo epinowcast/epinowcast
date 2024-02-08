@@ -34,7 +34,7 @@ completed with enw_complete_dates()."><meta property="og:image" content="package
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
+    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary" data-bs-theme="dark"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
@@ -239,13 +239,17 @@ nowcasting.</p></li>
 <span class="r-in"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu">enw_preprocess_data</span><span class="op">(</span><span class="va">nat_germany_hosp</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pobs</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                     obs           new_confirm               latest</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;list&gt;                &lt;list&gt;               &lt;list&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[3770x9]&gt; &lt;data.table[3770x11]&gt; &lt;data.table[198x10]&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    missing_reference   reporting_triangle       metareference</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[0x6]&gt; &lt;data.table[198x22]&gt; &lt;data.table[198x9]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              metareport          metadelay time snapshots by groups max_delay</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[217x12]&gt; &lt;data.table[20x5]&gt;  198       198         1        20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      max_date timestep</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2021-10-20      day</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              metareport          metadelay  time snapshots     by groups</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;list&gt;             &lt;list&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;  &lt;int&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[217x12]&gt; &lt;data.table[20x5]&gt;   198       198             1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    max_delay   max_date timestep</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;     &lt;IDat&gt;   &lt;char&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1:        20 2021-10-20      day</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
