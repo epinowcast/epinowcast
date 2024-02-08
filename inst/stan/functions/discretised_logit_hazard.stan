@@ -162,7 +162,7 @@ vector lcdf_to_uniform_double_censored_log_prob(vector lcdf, int u) {
  * be computed from lprob, but by re-using the precomputed LCDF from elsewhere 
  * we reduce overall computation.
  *
- * @param u Upper bound of discretized LCDF.
+ * @param u Upper bound of discretised LCDF.
  * 
  * @return Vector of logit hazards.
  *
