@@ -34,7 +34,7 @@ jobs:
         uses: epinowcast/actions/install-cmdstan@v1
         with:
           cmdstan-version: 'latest'
-        num-cores: 2
+          num-cores: 2
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
