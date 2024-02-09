@@ -20,7 +20,8 @@ testthat::set_state_inspector(function() {
       },
     libpaths    = .libPaths(),
     locale      = Sys.getlocale(),
-    options     = options(),
+    # Extra options related to matrixStats are set on macOS. See issue #439.
+    #    options     = options(),
     par         = par(),
     packages    = .packages(all.available = TRUE),
     sink        = sink.number(),
