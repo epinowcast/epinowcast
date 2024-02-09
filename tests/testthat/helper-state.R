@@ -5,14 +5,16 @@
 # function, or more conveniently with the `withr` package.
 # Note that `globalCallingHandlers` is only available on version of R >= 4.0
 
+# Other potential global state functions are `Sys.getenv()` and `options()` but
+# they cause issues:
+# - Extra options related to matrixStats are set on macOS. See issue #439.
+# - cmdstanr sets `STAN_NUM_THREADS` based on the value of `threads_per_chain`;
+#   See https://github.com/stan-dev/cmdstanr/blob/bc60419/R/run.R#L375.
 testthat::set_state_inspector(function() {
   list(
     attached    = search(),
     connections = getAllConnections(),
     cwd         = getwd(),
-    # cmdstanr sets `STAN_NUM_THREADS` based on the value of `threads_per_chain`
-    # https://github.com/stan-dev/cmdstanr/blob/bc60419a4d357eb531a2f755ceb7bc0e3651fb76/R/run.R#L375
-    #    envvars     = Sys.getenv(),
     handlers    = if (getRversion() >= "4.0.0") {
         globalCallingHandlers()
       } else {
@@ -20,8 +22,6 @@ testthat::set_state_inspector(function() {
       },
     libpaths    = .libPaths(),
     locale      = Sys.getlocale(),
-    # Extra options related to matrixStats are set on macOS. See issue #439.
-    #    options     = options(),
     par         = par(),
     packages    = .packages(all.available = TRUE),
     sink        = sink.number(),
