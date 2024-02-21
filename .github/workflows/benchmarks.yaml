@@ -52,9 +52,10 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: epinowcast/epinowcast/.github/actions/touchstone-recieve@main
+      - uses: lorenzwalthert/touchstone/actions/receive@main
         with:
           cache-version: 1
+          touchstone_ref: '@6cbc622'
           benchmarking_repo: ${{ matrix.config.benchmarking_repo }}
           benchmarking_ref: ${{ matrix.config.benchmarking_ref }}
           benchmarking_path: ${{ matrix.config.benchmarking_path }}
