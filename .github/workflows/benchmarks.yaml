@@ -1,3 +1,4 @@
+      - uses: lorenzwalthert/touchstone/actions/comment@main
 name: Benchmarks
 
 concurrency:
@@ -13,7 +14,7 @@ on:
       - "src/**"
       - "touchstone/**"
       # Benchmarking config file
-      - ".github/workflows/touchstone-*.yaml"
+      - ".github/workflows/benchmarks*.yaml"
       # Benchmarking action
       - ".github/actions/touchstone-recieve/**"
       # Package metadata
