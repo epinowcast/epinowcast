@@ -1,4 +1,3 @@
-      - uses: lorenzwalthert/touchstone/actions/comment@main
 name: Benchmarks
 
 concurrency:
