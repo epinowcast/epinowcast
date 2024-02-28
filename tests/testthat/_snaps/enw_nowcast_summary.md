@@ -67,7 +67,7 @@
       19: 322 343 399
       20: 397 447 565
 
-# enw_nowcast_summary() can extract the summarised nowcast with custom quantiles
+# enw_nowcast_summary() can extract summarised nowcast with custom quantiles
 
     Code
       round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
@@ -115,7 +115,7 @@
       19:                 1     1             0  309    302  51  47 239 302 399
       20:                 1     0             1  376    363 103  91 234 363 565
 
-# enw_nowcast_summary can extract the summarised nowcast as expected when a delay smaller than specified was modelled
+# enw_nowcast_summary() can extract the summarised nowcast as expected when a delay smaller than specified was modelled
 
     Code
       round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
