@@ -390,8 +390,8 @@
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-10-1.png" alt=""><p class="caption">Hospitalisations in Germany by date of positive test and date of report</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-10-1.png" alt="Hospitalisations in Germany by date of positive test and date of report"><div class="figcaption">Hospitalisations in Germany by date of positive test and date of report</div>
 </div>
 </div>
 </div>
@@ -406,7 +406,7 @@
 <div class="section level4">
 <h4 id="expected-infections">Expected infections<a class="anchor" aria-label="anchor" href="#expected-infections"></a>
 </h4>
-<p>We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation<span class="citation"><sup>[<a href="#ref-Fraser2007" role="doc-biblioref">1</a>,<a href="#ref-Cori2013" role="doc-biblioref">2</a>]</sup></span>. This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified<span class="citation"><sup>[<a href="#ref-champredon" role="doc-biblioref">3</a>]</sup></span>.</p>
+<p>We model expected infections as a function of the effective (instantaneous) reproduction number and previous infections weighted by the generation time using the renewal equation<span class="citation"><sup>[<a href="#ref-Fraser2007">1</a>,<a href="#ref-Cori2013">2</a>]</sup></span>. This corresponds to the commonly used Susceptible-Exposed-Infected-Recovered (SEIR) model when the appropriate generation time is specified<span class="citation"><sup>[<a href="#ref-champredon">3</a>]</sup></span>.</p>
 <div class="section level5">
 <h5 id="instantaneous-reproduction-number">Instantaneous reproduction number<a class="anchor" aria-label="anchor" href="#instantaneous-reproduction-number"></a>
 </h5>
@@ -422,7 +422,7 @@
 <div class="section level5">
 <h5 id="latent-infections">Latent infections<a class="anchor" aria-label="anchor" href="#latent-infections"></a>
 </h5>
-<p>We model the expected number of infections/latent notifications (<span class="math inline">\(\lambda^l\)</span>) using a renewal process<span class="citation"><sup>[<a href="#ref-Fraser2007" role="doc-biblioref">1</a>,<a href="#ref-Cori2013" role="doc-biblioref">2</a>]</sup></span>. This model is a generalisation of the default <code>epinowcast</code> model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel. This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number. The model is defined as follows,</p>
+<p>We model the expected number of infections/latent notifications (<span class="math inline">\(\lambda^l\)</span>) using a renewal process<span class="citation"><sup>[<a href="#ref-Fraser2007">1</a>,<a href="#ref-Cori2013">2</a>]</sup></span>. This model is a generalisation of the default <code>epinowcast</code> model and implies that current infections/notifications are dependent on past infections/notifications based on a kernel. This kernel is defined by the generation time distribution, the probability distribution of the time between infection and subsequent infectiousness, and the previously defined model for the effective reproduction number. The model is defined as follows,</p>
 <p><span class="math display">\[\begin{align}
   \lambda^l_{t} &amp;\sim \text{LogNormal}\left(\mu^{l}, \sigma^{l} \right),\ t \leq P \\
   \lambda^l_{t} &amp;= R_{t} \sum_{p = 1}^{P} g\left(t - p \right)  \lambda^l_{t-p},\ t \gt P  
@@ -433,7 +433,7 @@
 <div class="section level4">
 <h4 id="latent-reporting-delay-and-ascertainment">Latent reporting delay and ascertainment<a class="anchor" aria-label="anchor" href="#latent-reporting-delay-and-ascertainment"></a>
 </h4>
-<p>In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore “nowcastable”, a common example is the delay from exposure to symptom onset. For these settings we support modelling “latent” reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in <code>EpiNow2</code> and <code>epidemia</code> as well as other similar models<span class="citation"><sup>[<a href="#ref-EpiNow2" role="doc-biblioref">4</a>–<a href="#ref-Lison2022" role="doc-biblioref">7</a>]</sup></span>. In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).</p>
+<p>In many settings, such as in this case study, there may be additional reporting delays on top of those that are directly observed in the data, and therefore “nowcastable”, a common example is the delay from exposure to symptom onset. For these settings we support modelling “latent” reporting delays as a convolution of the underlying expected counts with the potential for these delays to vary over time and by group. This implementation is similar to that implemented in <code>EpiNow2</code> and <code>epidemia</code> as well as other similar models<span class="citation"><sup>[<a href="#ref-EpiNow2">4</a>–<a href="#ref-Lison2022">7</a>]</sup></span>. In addition to this, we support modelling ascertainment through the use of improper probability mass functions (i.e. by not enforcing a sum to 1 constraint) and inferring ascertainment where possible (for example day of the week reporting patterns).</p>
 <p>Here we assume an infection to hospitalisation ratio of 2% modified by a random effect for the day of the week to account for within week reporting periodicity. We also assume a lognormal reporting delay with a mean of 5 days and a standard deviation of 2 days, representing the delay from infection to positive test. We assume that the reporting delay is the same for all days of the week. This model is defined as follows,</p>
 <p><span class="math display">\[\begin{align}
   \lambda_{t} &amp;= \nu_{t \% 7} \sum_{\tau = 0}^{L - 1} f_{g}\left(t - \tau \right)  \lambda^l_{t - \tau} \\
@@ -464,8 +464,8 @@
 <span>  <span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gt_pmf</span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt=""><p class="caption">Probability mass function of the assumed generation interval distribution</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt="Probability mass function of the assumed generation interval distribution"><div class="figcaption">Probability mass function of the assumed generation interval distribution</div>
 </div>
 <div class="alert alert-warning">
 <p>Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.</p>
@@ -487,8 +487,8 @@
 <span>  <span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">0.02</span><span class="op">)</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">reporting_pmf</span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt=""><p class="caption">Probability mass function of the assumed latent (unobserved) reporting distribution</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt="Probability mass function of the assumed latent (unobserved) reporting distribution"><div class="figcaption">Probability mass function of the assumed latent (unobserved) reporting distribution</div>
 </div>
 <p>The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -654,8 +654,8 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">germany_nowcast</span>, <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt=""><p class="caption">Nowcast of hospitalisations in Germany based on real-time data</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on real-time data"><div class="figcaption">Nowcast of hospitalisations in Germany based on real-time data</div>
 </div>
 <p>Internally, this plotting function (see <code>?plot.epinowcast()</code>) sums observed data and posterior estimates for unobserved data to produce a nowcast of the number of hospitalisations that will ultimately be reported.</p>
 <p>In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported.</p>
@@ -672,8 +672,8 @@
 <span>  <span class="va">retro_germany_nowcast</span>,</span>
 <span>  <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-1.png" alt=""><p class="caption">Nowcast of hospitalisations in Germany based on retrospective data</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on retrospective data"><div class="figcaption">Nowcast of hospitalisations in Germany based on retrospective data</div>
 </div>
 </div>
 </div>
@@ -693,8 +693,8 @@
 <span>  <span class="va">retro_germany_nowcast</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2021-05-01"</span>, <span class="st">"2021-05-14"</span>, <span class="st">"2021-06-01"</span>, <span class="st">"2021-07-01"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt=""><p class="caption">Posterior predictions of hospitalisations in Germany based on retrospective data</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt="Posterior predictions of hospitalisations in Germany based on retrospective data"><div class="figcaption">Posterior predictions of hospitalisations in Germany based on retrospective data</div>
 </div>
 <div class="alert alert-warning">
 <p>It is clear from this plot that for these example dates the model is in the main able to predict the observed data well. However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay. This is likely due to the model not being able to account for the day of the week reporting periodicity. This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the <a href="https://package.epinowcast.org">package README</a>.</p>
@@ -735,8 +735,8 @@
 <span>    y <span class="op">=</span> <span class="st">"Effective reproduction number"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-rt-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the effective reproduction number in Germany</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-plot-germany-rt-1.png" alt="Real-time and retrospective estimates of the effective reproduction number in Germany"><div class="figcaption">Real-time and retrospective estimates of the effective reproduction number in Germany</div>
 </div>
 <p>Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models. Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict. This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.</p>
 </div>
@@ -797,8 +797,8 @@
 <span>    x <span class="op">=</span> <span class="st">"Delay between positive test and hospitalisation"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Cumulative density function of the reporting distribution"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-delay-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-plot-germany-delay-1.png" alt="Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany"><div class="figcaption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</div>
 </div>
 <p>The estimates are a fairly good match indicating that the delay is being well estimated by the real-time model compared to the retrospective model and that the delay is unlikely to be changing rapidly over time in this example (as otherwise we would expect the estimated delays to diverge over time).</p>
 </div>
@@ -847,8 +847,8 @@
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"color"</span>, <span class="st">"fill"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
-</details><div class="figure">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt=""><p class="caption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</p>
+</details><div class="float">
+<img src="figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt="Real-time and retrospective estimates of the number of expected hospitalisations in Germany"><div class="figcaption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</div>
 </div>
 <p>As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).</p>
 </div>
@@ -901,7 +901,7 @@ are currently indexed to the date of infection.</li>
 <div class="section level2 unnumbered">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" line-spacing="2">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
 <div id="ref-Fraser2007" class="csl-entry">
 1. Fraser, C. (2007). Estimating individual and household reproduction numbers in an emerging epidemic. <em>PLoS One</em>, <em>2</em>(8), e758. <a href="https://doi.org/10.1371/journal.pone.0000758" class="external-link">https://doi.org/10.1371/journal.pone.0000758</a>
 </div>
