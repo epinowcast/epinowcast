@@ -13,11 +13,12 @@ on:
       - "src/**"
       - "touchstone/**"
       # Benchmarking config file
-      - ".github/workflows/touchstone-*.yaml"
+      - ".github/workflows/benchmarks*.yaml"
       # Benchmarking action
       - ".github/actions/touchstone-recieve/**"
       # Package metadata
       - DESCRIPTION
+  workflow_dispatch:
 
 jobs:
   prepare:
@@ -52,9 +53,26 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: epinowcast/epinowcast/.github/actions/touchstone-recieve@main
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: tru
+
+      - name: Install cmdstanr
+        run: |
+          install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+        shell: Rscript {0}
+
+      - name: Install cmdstan
+        uses: epinowcast/actions/install-cmdstan@v1
+        with:
+          cmdstan-version: 'latest'
+          num-cores: 2
+
+      - uses: lorenzwalthert/touchstone/actions/receive@main
         with:
           cache-version: 1
+          touchstone_ref: '@6cbc622'
           benchmarking_repo: ${{ matrix.config.benchmarking_repo }}
           benchmarking_ref: ${{ matrix.config.benchmarking_ref }}
           benchmarking_path: ${{ matrix.config.benchmarking_path }}
