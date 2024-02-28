@@ -104,7 +104,6 @@ runs:
       with:
         cmdstan-version: 'latest'
         num-cores: 2
-      shell: Rscript {0}
     - name: Remove global installation
       run: |
         pkg <- unlist(read.dcf('DESCRIPTION')[, 'Package'])
