@@ -18,8 +18,8 @@ jobs:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
-        dependencies: NA
         with:
+          dependencies: NA
           extra-packages: any::allcontributors
 
       - name: Update contributors
