@@ -20,7 +20,6 @@ test_that("enw_stan_to_r() exposes Stan functions from test_functions.stan", {
   expect_identical(exposed_functions$functions$test_function(2), 4)
 
   unlink(temp_stan_file_path)
-  rm("test_function")
 })
 
 test_that("enw_stan_to_r() handles an invalid file", {
@@ -88,5 +87,4 @@ test_that("enw_stan_to_r() global exposure flag functionality", {
   expect_false(exists("test_function"))
 
   unlink(temp_stan_file_path)
-  rm("test_function")
 })
