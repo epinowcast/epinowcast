@@ -107,6 +107,8 @@ list.files(
 
 </details>
 
+## Contributors
+
 ## Contributing
 
 We welcome contributions and new contributors! We particularly appreciate help on [identifying and identified issues](https://github.com/epinowcast/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epinowcast/epinowcast/pulls) and see our [contributing guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md) for more information.
@@ -125,4 +127,3 @@ Please note that the `epinowcast` project is released with a [Contributor Code o
 
 If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our [model outline](https://package.epinowcast.org/articles/model.html). If you use `epinowcast` in your work, please consider citing it with `citation("epinowcast")`.
 
-## Contributors
