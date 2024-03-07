@@ -35,6 +35,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git push https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}.git HEAD:${{ github.ref }} || echo "No changes to commit"
           git add README.Rmd
           git diff-index --quiet HEAD || git commit -m "Automatic update of contributors"
+          git pull --rebase origin ${{ github.ref.name }}
+          git push origin || echo "No changes to push"
