@@ -29,7 +29,7 @@ jobs:
       - name: Update contributors
         run: allcontributors::add_contributors(format = "text")
         shell: Rscript {0}
-    
+
       - name: Commit results
         run: |
           git config --local user.email "action@github.com"
