@@ -22,7 +22,7 @@ This release is in development and not yet ready for production use.
 
 ## Package
 
-- search functionality on pkgdown website no longer directs to non-existent pages. This issue resulted from an incorrect URL being specified in the pkgdown config file. See #449 by @Bisaloo, based on a report from @zsusswein.
+- search functionality on pkgdown website no longer directs to non-existent pages. This issue resulted from an incorrect URL being specified in the pkgdown configuration file. See #449 by @Bisaloo, based on a report from @zsusswein.
 - `pkgdown` theming elements have moved to an [organization-level `pkgdown` theme](https://github.com/epinowcast/enwtheme) to increase re-usability and [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself)-ness across the organization. See #419 by @Bisaloo and reviewed by @pearsonca and @seabbs.
 - `lintr` checks are now run also on the `tests/` directory. See #418 by @Bisaloo and reviewed by @seabbs.
 - Fixed some typos in `single-timeseries-rt-estimation.Rmd`. The `WORDLIST` used by spelling has also been updated to eliminate false positives. Future typos will now generate an error in the continuous integration check so that we can catch them as early as possible. See #341 by @Bisaloo and reviewed by @seabbs.
