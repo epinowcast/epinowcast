@@ -167,7 +167,7 @@ epinowcast <- function(data,
     cli::cli_warn(
       paste0(
         "The missing data model is highly experimental. There is a ",
-        "significant likelihood that bugs are present in its implementation."
+        "significant chance of bugs in its implementation."
       )
     )
   }

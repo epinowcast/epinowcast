@@ -13,7 +13,7 @@ observations), and \code{confirm} (cumulative observations by reference and repo
 date).}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero. Currently
+counts (for calculated incidence of observations) be set to zero? Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 
@@ -26,8 +26,8 @@ downstream modelling}
 }
 \value{
 The input \code{data.frame} with a new variable \code{new_confirm}. If
-\code{max_confirm} was present in the \code{data.frame} then the proportion
-reported on each day (\code{prop_reported}) is also added.
+\code{max_confirm} is present in the \code{data.frame}, then the proportion
+reported on each day (\code{prop_reported}) will also be added.
 }
 \description{
 Calculate incidence of new reports from cumulative reports

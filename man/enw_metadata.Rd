@@ -8,7 +8,7 @@ enw_metadata(obs, target_date = c("reference_date", "report_date"))
 }
 \arguments{
 \item{obs}{A \code{data.frame} or \code{data.table} with columns: \code{reference_date}
-and/or \code{report_date}; at least one must be provided, \code{.group}, a grouping
+and / or \code{report_date}; at least one must be provided, \code{.group}, a grouping
 column and a \code{date}, a \link{Date} column.}
 
 \item{target_date}{A character string, either "reference_date" or
@@ -33,8 +33,8 @@ are dropped and the first observation for each group and date is retained.
 }
 \examples{
 obs <- data.frame(
- reference_date = as.Date("2021-01-01"),
- report_date = as.Date("2022-01-01"), x = 1:10
+  reference_date = as.Date("2021-01-01"),
+  report_date = as.Date("2022-01-01"), x = 1:10
 )
 enw_metadata(obs, target_date = "reference_date")
 }
@@ -46,7 +46,6 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
@@ -54,6 +53,7 @@ Preprocessing functions
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle_to_long}()},

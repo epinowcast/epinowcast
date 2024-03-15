@@ -626,7 +626,9 @@ construct_re <- function(re, data) {
 #'   remove_days = 40
 #' )
 #' obs <- enw_filter_reference_dates(obs, include_days = 40)
-#' pobs <- enw_preprocess_data(obs, by = c("age_group", "location"))
+#' pobs <- enw_preprocess_data(
+#'   obs, by = c("age_group", "location"), max_delay = 20
+#'   )
 #' data <- pobs$metareference[[1]]
 #'
 #' # Model with fixed effects for age group

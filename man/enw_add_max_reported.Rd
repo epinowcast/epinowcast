@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_max_reported}
 \alias{enw_add_max_reported}
-\title{Add the maximum number of cases reported on a given day}
+\title{Add the maximum number of reported cases for each \code{reference_date}}
 \usage{
 enw_add_max_reported(obs, copy = TRUE)
 }
@@ -15,16 +15,17 @@ date).}
 \item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
-A data.table with a \code{max_confirm} and \code{cum_prop_reported}
-columns added. \code{max_confirm} is the maximum number of cases reported
-on a given day. \code{cum_prop_reported} is the proportion of cases
-reported on a given day relative to the maximum number of cases
-reported on a given day.
+A data.table with new columns \code{max_confirm} and \code{cum_prop_reported}.
+\code{max_confirm} is the maximum number of cases reported for a certain
+reference_date. \code{cum_prop_reported} is the proportion of cases for a certain
+reference_date that are reported until a given report_day, relative to all
+cases so far observed for this reference_date.
 }
 \description{
-Add the maximum number of cases reported on a given day
-to the data set. This is useful for calculating the proportion of
-cases reported on a given day which is also done in this function.
+This is a helper function which adds the maximum (in the sense
+of latest observed) number of reported cases for each reference_date and
+computes the proportion of already reported cases for each combination of
+reference_date and report_date.
 }
 \examples{
 obs <- data.frame(report_date = as.Date("2021-01-01") + 0:2)
@@ -39,7 +40,6 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
@@ -47,6 +47,7 @@ Preprocessing functions
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},

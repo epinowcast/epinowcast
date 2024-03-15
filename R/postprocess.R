@@ -64,11 +64,16 @@ enw_posterior <- function(fit, variables = NULL,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param obs An observation `data.frame` containing \code{reference_date}
+#' @param obs An observation `data.frame` containing `reference_date`
 #' columns of the same length as the number of rows in the posterior and the
 #' most up to date observation for each date. This is used to align the
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
+#'
+#' @param max_delay Maximum delay to which nowcasts should be summarised. Must
+#' be equal (default) or larger than the modelled maximum delay. If it is
+#' larger, then nowcasts for unmodelled dates are added by assuming that case
+#' counts beyond the modelled maximum delay are fully observed.
 #'
 #' @inheritParams get_internal_timestep
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
@@ -82,18 +87,32 @@ enw_posterior <- function(fit, variables = NULL,
 #' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
-#' enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
-enw_nowcast_summary <- function(fit, obs,
+#' enw_nowcast_summary(
+#'   fit$fit[[1]],
+#'   fit$latest[[1]],
+#'   fit$max_delay
+#'   )
+enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
-                                ), timestep = "day") {
+                                )) {
   nowcast <- enw_posterior(
     fit,
     variables = "pp_inf_obs",
     probs = probs
   )
 
-  max_delay <- nrow(nowcast) / max(obs$.group)
+  max_delay_model <- nrow(nowcast) / max(obs$.group)
+  if (is.null(max_delay)) {
+    max_delay <- max_delay_model
+  }
+  if (max_delay < max_delay_model) {
+    cli::cli_abort(paste0(
+      "The specified maximum delay must be equal to or larger than ",
+      "the modeled maximum delay."
+    ))
+  }
+
   internal_timestep <- get_internal_timestep(timestep)
 
   ord_obs <- coerce_dt(
@@ -106,10 +125,23 @@ enw_nowcast_summary <- function(fit, obs,
     reference_date > (max(reference_date) - max_delay * internal_timestep)
   ]
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
-  nowcast <- cbind(
-    ord_obs,
-    nowcast
-  )
+
+  # add observations for modelled dates
+  obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
+  nowcast <- cbind(obs_model, nowcast)
+
+  # add not-modelled earlier dates with artificial summary statistics
+  if (max_delay > max_delay_model) {
+    obs_spec <- ord_obs[
+      reference_date <= (max(reference_date) - max_delay_model)
+      ]
+    nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
+    nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
+    cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE) # nolint
+    nowcast[seq_len(nrow(obs_spec)), (cols_quantile) := confirm]
+    nowcast[seq_len(nrow(obs_spec)), c("sd", "mad") := 0]
+  }
+
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL]
   return(nowcast[])
@@ -123,6 +155,11 @@ enw_nowcast_summary <- function(fit, obs,
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
+#' @param max_delay Maximum delay to which nowcasts should be summarised. Must
+#' be equal (default) or larger than the modelled maximum delay. If it is
+#' larger, then nowcasts for unmodelled dates are added by assuming that case
+#' counts beyond the modelled maximum delay are fully observed.
+#'
 #' @return A `data.frame` of posterior samples for the nowcast prediction.
 #' This uses observed data where available and the posterior prediction
 #' where not.
@@ -133,21 +170,39 @@ enw_nowcast_summary <- function(fit, obs,
 #' @importFrom data.table setorderv
 #' @examples
 #' fit <- enw_example("nowcast")
-#' enw_nowcast_samples(fit$fit[[1]], fit$latest[[1]])
-enw_nowcast_samples <- function(fit, obs, timestep = "day") {
+#' enw_nowcast_samples(
+#'   fit$fit[[1]],
+#'   fit$latest[[1]],
+#'   fit$max_delay,
+#'   "day"
+#'   )
+enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
     format = "draws_df"
   )
   nowcast <- coerce_dt(
-    nowcast, required_cols = c(".chain", ".iteration", ".draw")
+    nowcast,
+    required_cols = c(".chain", ".iteration", ".draw")
   )
   nowcast <- melt(
     nowcast,
     value.name = "sample", variable.name = "variable",
     id.vars = c(".chain", ".iteration", ".draw")
   )
-  max_delay <- nrow(nowcast) / (max(obs$.group) * max(nowcast$.draw))
+
+  max_delay_model <- nrow(nowcast) / max(obs$.group) / max(nowcast$.draw,
+                                                           na.rm = TRUE)
+  if (is.null(max_delay)) {
+    max_delay <- max_delay_model
+  }
+  if (max_delay < max_delay_model) {
+    cli::cli_abort(paste0(
+      "The specified maximum delay must be equal to or larger than ",
+      "the modeled maximum delay."
+    ))
+  }
+
   internal_timestep <- get_internal_timestep(timestep)
 
   ord_obs <- coerce_dt(
@@ -165,10 +220,25 @@ enw_nowcast_samples <- function(fit, obs, timestep = "day") {
   )
   ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
   ord_obs <- ord_obs[order(.group, reference_date)]
-  nowcast <- cbind(
-    ord_obs,
-    nowcast
-  )
+
+  # add observations for modelled dates
+  obs_model <- ord_obs[reference_date > (max(reference_date, na.rm = TRUE) -
+                                           max_delay_model)]
+  nowcast <- cbind(obs_model, nowcast)
+
+  # add artificial samples for not-modelled earlier dates
+  if (max_delay > max_delay_model) {
+    obs_spec <- ord_obs[
+      reference_date <= (max(reference_date) - max_delay_model)
+      ]
+    obs_spec[, c(".chain", ".iteration") := NA]
+    obs_spec[, .draw := rep(1:max(nowcast$.draw, na.rm = TRUE),
+                            nrow(obs_spec) / max(nowcast$.draw, na.rm = TRUE))]
+    obs_spec[, variable := NA]
+    obs_spec[, sample := confirm]
+    nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
+  }
+
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL][, .draws := NULL]
   return(nowcast[])
@@ -207,7 +277,7 @@ enw_summarise_samples <- function(samples, probs = c(
                                   ),
                                   by = c("reference_date", ".group"),
                                   link_with_obs = TRUE) {
-  obs <- samples[.draw == min(.draw)]
+  obs <- samples[.draw == min(.draw, na.rm = TRUE)]
   suppressWarnings(obs[, c(".draw", ".iteration", "sample", ".chain") := NULL])
 
   summary <- samples[,

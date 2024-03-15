@@ -252,10 +252,12 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     matrix(
       data_list$rep_findex,
       ncol = data$groups[[1]],
-      nrow = data$time[[1]] + data$max_delay[[1]] - 1
+      nrow = data$time[[1]] +
+        data$max_delay - 1
     )
   )
-  data_list$rep_t <- data$time[[1]] + data$max_delay[[1]] - 1
+  data_list$rep_t <- data$time[[1]] +
+    data$max_delay - 1
   data_list$model_rep <- as.numeric(
     as_string_formula(non_parametric) != "~1"
   )
@@ -512,7 +514,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @importFrom cli cli_abort cli_warn
 #' @export
 #' @examples
-#' # Missing model with a fixed intercept only
+#' # Missingness model with a fixed intercept only
 #' enw_missing(data = enw_example("preprocessed"))
 #'
 #' # No missingness model specified
@@ -522,8 +524,8 @@ enw_missing <- function(formula = ~1, data) {
     as_string_formula(formula) != "~0") {
     cli::cli_abort(
       paste0(
-        "A missingness model has been specified but data on the proportion of ",
-        "observations without reference dates is not available."
+        "A missingness model has been specified, but no observations ",
+        "with missing reference date are in the preprocessed data."
       )
     )
   }
@@ -551,7 +553,7 @@ enw_missing <- function(formula = ~1, data) {
     # Get report dates that cover all reference dates up to the max delay
     rep_w_complete_ref <- enw_reps_with_complete_refs(
       data$new_confirm[[1]],
-      max_delay = data$max_delay[[1]],
+      max_delay = data$max_delay,
       by = ".group"
     )
 
@@ -575,7 +577,7 @@ enw_missing <- function(formula = ~1, data) {
       missing_reference,
       reps_with_complete_refs = rep_w_complete_ref,
       metareference = data$metareference[[1]],
-      max_delay = data$max_delay[[1]]
+      max_delay = data$max_delay
     )
     data_list$obs_by_report <- as.matrix(reference_by_report[, -1])
 
@@ -701,23 +703,12 @@ enw_obs <- function(family = c("negbin", "poisson"),
   proc_data <- c(
     proc_data,
     list(
-      dmax = data$max_delay[[1]],
-      sdmax = rep(data$max_delay[[1]], data$snapshots[[1]]),
-      csdmax = cumsum(rep(data$max_delay[[1]], data$snapshots[[1]])),
+      dmax = data$max_delay,
+      sdmax = rep(data$max_delay, data$snapshots[[1]]),
+      csdmax = cumsum(rep(data$max_delay, data$snapshots[[1]])),
       obs = as.matrix(data$reporting_triangle[[1]][, -(1:2)])
     )
   )
-
-  # Warn if maximum delay is longer than the observed time period
-  if (proc_data$t < proc_data$dmax) {
-    cli::cli_warn(
-      paste0(
-        "The specified maximum delay is longer than the observed time period. ",
-        "Please be aware that epinowcast will extrapolate the delay ",
-        "distribution beyond what is supported by the data."
-      )
-    )
-  }
 
   # Add in observations in flat format without missing observations
   proc_data$flat_obs <- filt_new_confirm$new_confirm

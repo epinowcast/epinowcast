@@ -13,9 +13,9 @@ enw_construct_data(
   metareport,
   metareference,
   metadelay,
-  by,
   max_delay,
-  timestep
+  timestep,
+  by
 )
 }
 \arguments{
@@ -38,38 +38,27 @@ date in the standard reporting triangle matrix format.}
 \item{metareference}{Metadata reference dates derived from observations.}
 
 \item{metadelay}{Metadata for reporting delays produced using
-\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.}
+\code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.}
 
-\item{by}{A character vector describing the stratification of
-observations. This defaults to no grouping. This should be used
-when modelling multiple time series in order to identify them for
-downstream modelling}
-
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
-\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
-distribution. Computation scales non-linearly with this setting so consider
-what maximum makes sense for your data carefully. Note that this is zero
-indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay). If a \code{max_delay} greater
-than the maximum delay in the data is supplied then \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
-will throw a warning but in some cases this may be appropriate (e.g. if
-at the beginning of a time series). In these cases the user should check the
-model specification carefully as the model will be extrapolating beyond the
-observed data.}
+\item{max_delay}{Maximum delay to be modelled by epinowcast.}
 
 \item{timestep}{The timestep to used in the process model (i.e. the
 reference date model). This can be a string ("day", "week", "month") or a
 numeric whole number representing the number of days. If your data does not
 have this timestep then you may wish to make use of
 \code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
+
+\item{by}{A character vector describing the stratification of
+observations. This defaults to no grouping. This should be used
+when modelling multiple time series in order to identify them for
+downstream modelling}
 }
 \value{
 A data.table containing processed observations as a series of nested
 data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
-and and restricted to the specified maximum delay).
+and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
@@ -79,13 +68,13 @@ the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{metadelay}: Metadata for reporting delays produced using
-\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
+\code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.
+\item \code{max_delay}: Maximum delay to be modelled by epinowcast.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
-\item \code{max_delay}: Numeric, the maximum delay in the processed data
 \item \code{max_date}: The maximum available report date.
 }
 }
@@ -106,10 +95,10 @@ enw_construct_data(
   reporting_triangle = pobs$reporting_triangle[[1]],
   metareport = pobs$metareport[[1]],
   metareference = pobs$metareference[[1]],
-  metadelay = enw_delay_metadata(max_delay = 20),
-  by = c(),
-  max_delay = pobs$max_delay[[1]],
-  timestep = pobs$timestep[[1]]
+  metadelay = pobs$metadelay[[1]],
+  max_delay = pobs$max_delay,
+  timestep = pobs$timestep[[1]],
+  by = c()
 )
 }
 \seealso{
@@ -119,7 +108,6 @@ Preprocessing functions
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
@@ -127,6 +115,7 @@ Preprocessing functions
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},
