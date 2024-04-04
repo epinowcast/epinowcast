@@ -194,6 +194,8 @@ list.files(
 
 </details>
 
+## Contributors
+
 ## Contributing
 
 We welcome contributions and new contributors! We particularly
