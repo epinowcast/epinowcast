@@ -9,7 +9,8 @@ check_max_delay(
   max_delay = NULL,
   cum_coverage = 0.8,
   maxdelay_quantile_outlier = 0.97,
-  warn = TRUE
+  warn = TRUE,
+  warn_internal = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,10 @@ against outliers. Defaults to 0.97 (97\%).}
 
 \item{warn}{Should a warning be issued if the cumulative case count is
 below \code{cum_coverage} for the majority of reference dates?}
+
+\item{warn_internal}{Should only be \code{TRUE} if this function is called
+internally by another \code{epinowcast} function. Then, warnings are adjusted to
+avoid confusing the user.}
 }
 \value{
 A \code{data.table} with the share of reference dates where the

@@ -32,7 +32,9 @@ test_that("check_max_delay produces the expected warnings", {
     regexp = "you can decrease `maxdelay_quantile_outlier` to"
   )
   expect_warning(
-    check_max_delay(obs_left_trunc, max_delay = 10, warn = "internal"),
+    check_max_delay(
+      obs_left_trunc, max_delay = 10, warn = TRUE, warn_internal = TRUE
+      ),
     regexp = "You can test different maximum delays and obtain coverage"
   )
 })

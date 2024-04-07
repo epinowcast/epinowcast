@@ -281,6 +281,9 @@ coerce_dt <- function(
 #'
 #' @param warn Should a warning be issued if the cumulative case count is
 #' below `cum_coverage` for the majority of reference dates?
+#' @param warn_internal Should only be `TRUE` if this function is called 
+#' internally by another `epinowcast` function. Then, warnings are adjusted to 
+#' avoid confusing the user.
 #'
 #' @return A `data.table` with the share of reference dates where the
 #' cumulative case count is below `cum_coverage`, stratified by group.
@@ -294,21 +297,12 @@ check_max_delay <- function(data,
                             max_delay = NULL,
                             cum_coverage = 0.8,
                             maxdelay_quantile_outlier = 0.97,
-                            warn = TRUE) {
+                            warn = TRUE, warn_internal = FALSE) {
 
   if (is.null(max_delay)) {
     max_delay <- data$max_delay
   }
   timestep <- data$timestep
-
-  if (warn == "internal") {
-    # adjust warnings to not confuse the user since
-    # they didn't call check_max_delay() explicitly
-    internal <- TRUE
-    warn <- TRUE
-  } else {
-    internal <- FALSE
-  }
 
   if (!is.numeric(max_delay)) {
     cli::cli_abort("`max_delay` must be an integer and not NA")
@@ -397,7 +391,7 @@ check_max_delay <- function(data,
         "maximum delay. "
       )
     )
-    if (internal) {
+    if (warn_internal) {
       warning_message <- c(
         warning_message,
         "*" = paste0(
