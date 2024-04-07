@@ -294,14 +294,11 @@ coerce_dt <- function(
 #' pobs <- enw_example(type = "preprocessed_observations")
 #' check_max_delay(pobs, max_delay = 20, cum_coverage = 0.8)
 check_max_delay <- function(data,
-                            max_delay = NULL,
+                            max_delay = data$max_delay,
                             cum_coverage = 0.8,
                             maxdelay_quantile_outlier = 0.97,
                             warn = TRUE, warn_internal = FALSE) {
 
-  if (is.null(max_delay)) {
-    max_delay <- data$max_delay
-  }
   timestep <- data$timestep
 
   if (!is.numeric(max_delay)) {
@@ -317,7 +314,7 @@ check_max_delay <- function(data,
   if (!(maxdelay_quantile_outlier > 0 && maxdelay_quantile_outlier <= 1)) {
     cli::cli_abort(
       "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%."
-      )
+    )
   }
 
   internal_timestep <- get_internal_timestep(timestep)

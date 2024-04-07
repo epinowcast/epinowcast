@@ -6,7 +6,7 @@
 \usage{
 check_max_delay(
   data,
-  max_delay = NULL,
+  max_delay = data$max_delay,
   cum_coverage = 0.8,
   maxdelay_quantile_outlier = 0.97,
   warn = TRUE,
