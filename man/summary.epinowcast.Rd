@@ -7,7 +7,7 @@
 \method{summary}{epinowcast}(
   object,
   type = c("nowcast", "nowcast_samples", "fit", "posterior_prediction"),
-  max_delay = NULL,
+  max_delay = object$max_delay,
   ...
 )
 }
