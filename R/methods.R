@@ -42,16 +42,17 @@
 summary.epinowcast <- function(object, type = c(
                                  "nowcast", "nowcast_samples",
                                  "fit", "posterior_prediction"
-                               ), max_delay = object$max_delay, ...) {
+                               ), max_delay = object$max_delay[[1]], ...) {
   type <- match.arg(type)
+  arg_max_delay <- max_delay
 
   s <- with(object, switch(type,
     nowcast = enw_nowcast_summary(
-      fit = fit[[1]], obs = latest[[1]], max_delay = max_delay,
+      fit = fit[[1]], obs = latest[[1]], max_delay = arg_max_delay,
       timestep = timestep[[1]], ...
     ),
     nowcast_samples = enw_nowcast_samples(
-      fit = fit[[1]], obs = latest[[1]], max_delay = max_delay,
+      fit = fit[[1]], obs = latest[[1]], max_delay = arg_max_delay,
       timestep = timestep[[1]], ...
       ),
     fit = enw_posterior(fit[[1]], ...),
