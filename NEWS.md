@@ -12,7 +12,7 @@ This release is in development and not yet ready for production use.
 
 ## Breaking changes
 
-- The default of `max_delay` in `enw_process_data` has been changed to be the maximum observed delay in the input data rather than being 20 days. When this default is used a warning is now thrown and in general users should be setting this based on their data and application. See the documentation of `enw_preprocess_data` for more. See #224 by @adrianlison and reviewed by @seabbs.
+- The default of `max_delay` in `enw_process_data()` has been changed to be the maximum observed delay in the input data rather than being 20 days. When this default is used a warning is now thrown and in general users should be setting this based on their data and application. See the documentation of `enw_preprocess_data()` for more details. See #224 by @adrianlison and reviewed by @seabbs.
 
 ## Bugs
 
