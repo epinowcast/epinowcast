@@ -1059,7 +1059,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' downstream modelling
 #'
 #' @param max_delay The maximum number of days to model in the delay
-#' distribution. If `max_delay = "observed"` (default), the maximum observed
+#' distribution. If not specified the maximum observed
 #' delay is assumed to be the true maximum delay in the model. Otherwise, an
 #' integer greater than or equal to 1 can be specified. Observations with delays
 #' larger then the maximum delay will be dropped. If the specified maximum delay
@@ -1073,7 +1073,8 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' Note that delays are zero indexed and so include the reference date and
 #' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
 #' no delay). You can use [check_max_delay()] to check the coverage of a delay
-#' distribution for different maximum delays.
+#' distribution for different maximum delays on the output of
+#' `enw_preprocess_obs`.
 #'
 #' @param timestep The timestep to used in the process model (i.e. the
 #' reference date model). This can be a string ("day", "week", "month") or a
@@ -1130,7 +1131,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' # Preprocess with default settings
 #' pobs <- enw_preprocess_data(nat_germany_hosp)
 #' pobs
-enw_preprocess_data <- function(obs, by = NULL, max_delay = "observed",
+enw_preprocess_data <- function(obs, by = NULL, max_delay,
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
   if (timestep == "month") {
@@ -1158,7 +1159,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay = "observed",
   obs <- enw_add_delay(obs, timestep = timestep, copy = FALSE)
 
   # max delay
-  if (max_delay == "observed") {
+  if (missing(max_delay)) {
     max_delay <- obs[, max(delay, na.rm = TRUE)] + 1
     cli::cli_inform(
       c(
