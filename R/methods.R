@@ -44,7 +44,7 @@ summary.epinowcast <- function(object, type = c(
                                  "fit", "posterior_prediction"
                                ), max_delay = object$max_delay[[1]], ...) {
   type <- match.arg(type)
-  arg_max_delay <- max_delay
+  arg_max_delay <- max_delay # nolint
 
   s <- with(object, switch(type,
     nowcast = enw_nowcast_summary(
