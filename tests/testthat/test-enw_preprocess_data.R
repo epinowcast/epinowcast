@@ -70,7 +70,6 @@ test_that("enw_preprocess_data() handles groups as expected", {
   expect_identical(pobs$groups[[1]], 119L)
   expect_identical(pobs$max_delay, 20)
   expect_identical(pobs$timestep[[1]], "day")
-
 })
 
 test_that(
