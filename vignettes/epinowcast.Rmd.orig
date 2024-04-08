@@ -83,7 +83,7 @@ Before modelling, the input data needs to be converted into the "reporting trian
 We process reported data into the format required for `epinowcast` and return it in a `data.table`. At this stage, we need to specify a grouping (i.e age, location) if any. 
 
 ```{r}
-pobs <- enw_preprocess_data(retro_nat_germany)
+pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 ```
 
