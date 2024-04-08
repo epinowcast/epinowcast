@@ -10,6 +10,10 @@ This release is in development and not yet ready for production use.
 
 @jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
+## Breaking changes
+
+- The default of `max_delay` in `enw_process_data` has been changed to be the maximum observed delay in the input data rather than being 20 days. When this default is used a warning is now thrown and in general users should be setting this based on their data and application. See the documentation of `enw_preprocess_data` for more. See #224 by @adrianlison and reviewed by @seabbs.
+
 ## Bugs
 
 - Fixed a bug identified by @jbracher where the `enw_expectation()` module was not appropriately defining initial conditions when multiple groups were present. This issue was related to recent changes in `cmdstan 2.32.1` and is required in order to use versions of `cmdstan` beyond `2.32.0` with models that contain multiple time series. See #282 by @seabbs and self-reviewed.
@@ -42,7 +46,7 @@ This release is in development and not yet ready for production use.
 - Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
 - Increased the minimum supported R version to >= R 3.6.0 from R 3.5.0 and ensured that existing function code and tests compiled with this dependency. Vignettes will continue to allow use of R >= 4.1.0 syntax (i.e., native pipe and lambda function syntax). See #389 by @medewitt and @seabbs and reviewed by @pearsonca.
 - Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
-- Changed `enw_preprocess_data()` to use the maximum delay observed in the data by default (before, the default was 20 days). Added a function `check_max_delay()` which allows to obtain coverage statistics for the assumed maximum delay based on the observed data. Enhanced postprocessing functions to accept a different max_delay than used in the model, by adding artificial samples/summaries for not-modeled dates. Further improved documentation and warnings around `max_delay`. See #224 by @adrian-lison and @seabbs and reviewed by @seabbs.
+- Added a function `check_max_delay()` which allows to obtain coverage statistics for the assumed maximum delay based on the observed data. Enhanced postprocessing functions to accept a different max_delay than used in the model, by adding artificial samples/summaries for not-modeled dates. Further improved documentation and warnings around `max_delay`. See #224 by @adrian-lison and @seabbs and reviewed by @seabbs.
 - Exposed `enw_stan_to_r()` to the user. This function is used for testing and in development to expose `{epinowcast}` stan code in R. Users may find this function useful as it allows them to explore the stan code used in `{epinowcast}` models more easily. Note that this functionality is known to be unstable when `{rstan}` is loaded in the same R session. See #431 by @seabbs and reviewed by @sbfnk.
 - Refactored `extract_sparse_matrix()` to allow us to drop our `{rstan}` dependency.  See #431 by @seabbs and reviewed by @sbfnk.
 - Allow for caching Stan models across R sessions to reduce compilation time through the use of the environment variable, `enw_cache_location`, which can be set using the `set_enw_cache()` function. See #407 by @medewitt and @seabbs and reviewed by @sbfnk and @pearsonca.
