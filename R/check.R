@@ -433,7 +433,7 @@ check_max_delay <- function(data,
 
   low_coverage <- rbind(low_coverage, list("all", mean_coverage))
   low_coverage[, coverage := cum_coverage]
-  setcolorder(low_coverage, c(".group", "coverage"))
+  data.table::setcolorder(low_coverage, c(".group", "coverage"))
   return(low_coverage[])
 }
 
