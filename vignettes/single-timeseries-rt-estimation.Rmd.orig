@@ -1,7 +1,7 @@
 ---
 title: "Estimating the effective reproduction number in real-time for a single timeseries with reporting delays"
 description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
-author: Sam Abbott
+author: Epinowcast Team
 opengraph:
   image: 
     src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
@@ -69,7 +69,7 @@ Unfortunately, we can't directly observe infections and the data we do observe s
 :::
 
 ::: {.alert .alert-warning}
-`epinowcast` is still in development and so the following case study has pain points and limitations that we are working on improving. If you have any suggestions or feedback please get in touch via the [issues page](https://github.com/epinowcast/epinowcast/issues). We also welcome contributions via pull requests (see our [contributing guidelines](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md).
+`epinowcast` is still in development and so the following case study has pain points and limitations that we are working on improving. If you have any suggestions or feedback please get in touch via the [issues page](https://github.com/epinowcast/epinowcast/issues). We also welcome contributions via pull requests (see our [contributing guidelines](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md).
 :::
 ## Getting setup
 
@@ -106,7 +106,7 @@ In this case study we only consider national level data without stratification b
 
 
 ```{r}
-germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 germany_hosp <- germany_hosp[, .(reference_date, report_date, confirm)]
 germany_hosp
 ```
@@ -455,7 +455,7 @@ If you have more than 4 CPU cores available you can increase the number of threa
 We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the [README](https://package.epinowcast.org). This will take around a minute to run when called for the first time.
 
 ```{r compile-model}
-epinowcast_model <- enw_model(threads = TRUE, profile = FALSE)
+epinowcast_model <- enw_model(profile = FALSE)
 ```
 
 #### Fitting the model

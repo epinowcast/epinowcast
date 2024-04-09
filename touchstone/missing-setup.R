@@ -6,7 +6,7 @@ library(data.table)
 options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-09-01"
@@ -49,4 +49,4 @@ latest_obs <- enw_filter_reference_dates(
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
 # Compile the model for use outside of the benchmark
-model <- enw_model(threads = FALSE, target_dir = "touchstone")
+model <- enw_model(target_dir = "touchstone")

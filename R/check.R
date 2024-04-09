@@ -7,13 +7,13 @@
 #' c(0.5, 0.95, 0.2, 0.8).
 #'
 #' @return NULL
-#'
+#' @importFrom cli cli_abort
+#' @importFrom data.table between
 #' @family check
 check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
-  stopifnot(
-    "Please provide probabilities as numbers between 0 and 1." =
-    all(data.table::between(req_probs, 0, 1, incbounds = FALSE))
-  )
+  if (!all(data.table::between(req_probs, 0, 1, incbounds = FALSE))) {
+    cli::cli_abort("Please provide probabilities as numbers between 0 and 1.")
+  }
   return(coerce_dt(
     posterior, required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
     msg_required = "The following quantiles must be present (set with `probs`):"
@@ -48,16 +48,20 @@ check_group <- function(obs) {
 #'
 #' @return NULL
 #'
+#' @importFrom cli cli_abort
 #' @family check
 check_group_date_unique <- function(obs) {
   group_cols <- c("reference_date", "report_date", ".group")
   obs <- coerce_dt(obs, required_cols = group_cols, copy = FALSE)
   cells <- obs[, .(count = .N), by = group_cols]
   if (any(cells[, count > 1])) {
-    stop("The input data seems to be stratified by more variables ",
-         "than specified via the `by` argument. Please provide additional ",
-         "grouping variables to `by`, ",
-         "or aggregate the observations beforehand.")
+    cli::cli_abort(
+      paste0(
+        "The input data seems to be stratified by more variables than ",
+        "specified via the `by` argument. Please provide additional grouping ",
+        "variables to `by`, or aggregate the observations beforehand."
+      )
+    )
   }
   return(invisible(NULL))
 }
@@ -68,18 +72,19 @@ check_group_date_unique <- function(obs) {
 #'
 #' @return NULL
 #'
+#' @importFrom cli cli_abort
 #' @family check
 check_module <- function(module) {
   if (!"data" %in% names(module)) {
-    stop(
-      "Must contain a list component specifying the data requirements for
-       further modelling as a list"
+    cli::cli_abort(
+      paste0(
+        "Must contain a list component specifying the data requirements for ",
+        "further modelling as a list"
+      )
     )
   }
   if (!is.list(module[["data"]])) {
-    stop(
-      "data must be a list of required data"
-    )
+    cli::cli_abort("`data` must be a list of required data")
   }
   return(invisible(NULL))
 }
@@ -90,20 +95,27 @@ check_module <- function(module) {
 #'
 #' @return NULL
 #'
+#' @importFrom cli cli_warn
 #' @family check
 check_modules_compatible <- function(modules) {
   if (
     modules[[4]]$data$model_miss &&
       !modules[[6]]$data$likelihood_aggregation
   ) {
-    warning(
-      "Incompatible model specification: A missingness model has ",
-      "been specified but likelihood aggregation is specified as ",
-      "by snapshot. Switching to likelihood aggregation by group.",
-      " This has no effect on the nowcast but limits the ",
-      "number of threads per chain to the number of groups. To ",
-      "silence this warning, set the `likelihood_aggregation` ",
-      "argument in `enw_fit_opts` to 'groups'.",
+    cli::cli_warn(
+      c(
+        paste0(
+          "Incompatible model specification: A missingness model has been ",
+          "specified but likelihood aggregation is specified as by snapshot. ",
+          "Switching to likelihood aggregation by group. ",
+          "This has no effect on the nowcast but limits the number of threads ",
+          "per chain to the number of groups."
+        ),
+        paste0(
+          "To silence this warning, set the `likelihood_aggregation` argument ",
+          "in `enw_fit_opts` to 'groups'. "
+        )
+      ),
       immediate. = TRUE
     )
   }
@@ -152,6 +164,7 @@ check_modules_compatible <- function(modules) {
 #' always-error condition).
 #'
 #' @importFrom data.table as.data.table setDT
+#' @importFrom cli cli_abort
 #' @family utils
 coerce_dt <- function(
   data, select = NULL, required_cols = select,
@@ -160,10 +173,10 @@ coerce_dt <- function(
   msg_required = "The following columns are required: ",
   msg_forbidden = "The following columns are forbidden: "
 ) {
-  if (!copy) { # if we want to keep the original data.table ...
-    dt <- data.table::setDT(data)
-  } else {     # ... otherwise, make a copy
+  if (copy) {
     dt <- data.table::as.data.table(data)
+  } else {
+    dt <- data.table::setDT(data)
   }
 
   if (dates) {
@@ -175,36 +188,36 @@ coerce_dt <- function(
 
   if ((length(required_cols) > 0)) {     # if we have required columns ...
     if (!is.character(required_cols)) {  # ... check they are check-able
-      stop("`required_cols` must be a character vector")
+      cli::cli_abort("`required_cols` must be a character vector")
     }
     # check that all required columns are present
     if (!all(required_cols %in% colnames(dt))) {
-      stop(
-        msg_required,
-        toString(required_cols[!(required_cols %in% colnames(dt))]),
-        " but are not present among ",
-        toString(colnames(dt)),
-        "\n(all `required_cols`: ",
-        toString(required_cols),
-        ")"
+      cli::cli_abort(
+        paste0(
+          "{msg_required}",
+          "{toString(required_cols[!(required_cols %in% colnames(dt))])} ",
+          "but are not present among ",
+          "{toString(colnames(dt))} ",
+          "(all {.arg required_cols}: {toString(required_cols)})"
+        )
       )
     }
   }
 
   if ((length(forbidden_cols) > 0)) {    # if we have forbidden columns ...
     if (!is.character(forbidden_cols)) { # ... check they are check-able
-      stop("`forbidden_cols` must be a character vector")
+      cli::cli_abort("`forbidden_cols` must be a character vector")
     }
     # check that no forbidden columns are present
     if (any(forbidden_cols %in% colnames(dt))) {
-      stop(
-        msg_forbidden,
-        toString(forbidden_cols[forbidden_cols %in% colnames(dt)]),
-        " but are present among ",
-        toString(colnames(dt)),
-        "\n(all `forbidden_cols`: ",
-        toString(forbidden_cols),
-        ")"
+      cli::cli_abort(
+        paste0(
+          "{msg_forbidden}",
+          "{toString(forbidden_cols[forbidden_cols %in% colnames(dt)])}",
+          "but are present among",
+          "{toString(colnames(dt))}",
+          "(all `forbidden_cols`: {toString(forbidden_cols)})"
+        )
       )
     }
   }
@@ -247,6 +260,7 @@ coerce_dt <- function(
 #' @importFrom lubridate %m-%
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
+#' @importFrom cli cli_abort
 #' @family check
 check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   diff_dates <- dates[-1] %m-% months(1L)
@@ -254,8 +268,8 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
   all_sequential_dates <- all(sequential_dates)
 
   if (any(diff_dates < dates[-length(dates)])) {
-    stop(
-      date_var, " has a shorter timestep than the specified timestep of a month"
+    cli::cli_abort(
+      "{date_var} has a shorter timestep than the specified timestep of a month"
     )
   }
 
@@ -263,11 +277,9 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
     return(invisible(NULL))
   } else {
     if (exact) {
-      stop(
-        date_var, " does not have the specified timestep of month"
-      )
+      cli::cli_abort("{date_var} does not have the specified timestep of month")
     } else {
-      stop(
+      cli::cli_abort(
         "Non-sequential dates are not currently supported for monthly data"
       )
     }
@@ -284,6 +296,7 @@ check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
 #' @inheritParams check_calendar_timestep
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
+#' @importFrom cli cli_abort
 #' @family check
 check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
   diffs <- as.numeric(
@@ -291,15 +304,17 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
   )
 
   if (any(diffs == 0)) {
-    stop(
-      date_var, " has a duplicate date. Please remove duplicate dates."
+    cli::cli_abort(
+      "{date_var} has a duplicate date. Please remove duplicate dates."
     )
   }
 
   if (any(diffs < timestep)) {
-    stop(
-      date_var, " has a shorter timestep than the specified timestep of ",
-      timestep, " day(s)"
+    cli::cli_abort(
+      paste0(
+        "{date_var} has a shorter timestep than the specified timestep of ",
+        "{timestep} day(s)"
+      )
     )
   }
 
@@ -309,13 +324,12 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     check <- sum(diffs %% timestep) == 0
   }
 
-  if (!check) {
-    stop(
-      date_var, " does not have the specified timestep of ", timestep,
-      " day(s)"
-    )
-  }else {
+  if (check) {
     return(invisible(NULL))
+  } else {
+    cli::cli_abort(
+      "{date_var} does not have the specified timestep of {timestep} day(s)"
+    )
   }
 }
 
@@ -340,12 +354,13 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #'
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
+#' @importFrom cli cli_abort
 #' @family check
 check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
                            check_nrow = TRUE) {
   obs <- coerce_dt(obs, required_cols = date_var, copy = FALSE)
   if (!is.Date(obs[[date_var]])) {
-    stop(date_var, " must be of class Date")
+    cli::cli_abort("{date_var} must be of class Date")
   }
 
   dates <- obs[[date_var]]
@@ -354,7 +369,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
 
   if (length(dates) <= 1) {
     if (check_nrow) {
-      stop("There must be at least two observations")
+      cli::cli_abort("There must be at least two observations")
     } else {
       return(invisible(NULL))
     }
@@ -411,15 +426,18 @@ check_timestep_by_group <- function(obs, date_var, timestep = "day",
 #' @return This function is used for its side effect of checking the timestep
 #' by date in `obs`. If the check passes for all dates, the function
 #' returns invisibly. Otherwise, it stops and returns an error message.
+#' @importFrom cli cli_abort
 #' @family check
 check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   obs <- coerce_dt(obs, copy = TRUE, dates = TRUE, group = TRUE)
   cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
-    stop(
-      "There must be at least two observations by group and date",
-      " combination to establish a timestep"
+    cli::cli_abort(
+      paste0(
+        "There must be at least two observations by group and date",
+        " combination to establish a timestep"
+      )
     )
   }
   obs[,
@@ -451,15 +469,14 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
 #' @return This function is used for its side effect of checking the observation
 #' indicator in `new_confirm`. If the check passes, the function returns
 #' invisibly. Otherwise, it stops and returns an error message.
+#' @importFrom cli cli_abort
 #' @family check
 check_observation_indicator <- function(
   new_confirm, observation_indicator = NULL
 ) {
-  if (!is.null(observation_indicator)) {
-    stopifnot(
-      "observation_indicator must be a logical" = is.logical(new_confirm[[observation_indicator]] # nolint
-      )
-    )
+  if (!is.null(observation_indicator) &&
+      !is.logical(new_confirm[[observation_indicator]])) {
+    cli::cli_abort("observation_indicator must be a logical")
   }
   return(invisible(NULL))
 }

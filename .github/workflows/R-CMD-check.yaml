@@ -30,9 +30,9 @@ jobs:
       matrix:
         config:
           - {os: macOS-latest,   r: 'release', rtools: ''}
-          - {os: windows-latest, r: 'release', rtools: '43'}
           - {os: ubuntu-latest,   r: 'release', rtools: ''}
           - {os: ubuntu-latest,   r: 'oldrel-1', rtools: ''}
+          - {os: ubuntu-latest,   r: '3.6', rtools: ''}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
           echo "CMDSTAN_PATH=${HOME}/.cmdstan" >> $GITHUB_ENV
         shell: bash
 
-      - uses: n1hility/cancel-previous-runs@v2
+      - uses: n1hility/cancel-previous-runs@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/main'"
@@ -75,12 +75,18 @@ jobs:
           needs: check
 
       - name: Install cmdstan
-        run: |
-          print(list.files("C:/rtools43"))
-          cmdstanr::check_cmdstan_toolchain(fix = TRUE)
-          cmdstanr::install_cmdstan(cores = 2, quiet = TRUE)
-        shell: Rscript {0}
+        uses: epinowcast/actions/install-cmdstan@v1
+        with:
+          cmdstan-version: 'latest'
+          num-cores: 2
 
       - uses: r-lib/actions/check-r-package@v2
+        if:  matrix.config.r != '3.6'
         with:
+          upload-snapshots: true
+
+      - uses: r-lib/actions/check-r-package@v2
+        if:  matrix.config.r == '3.6'
+        with:
+          args: 'c("--no-manual", "--as-cran", "--no-build-vignettes", "--ignore-vignettes")'
           upload-snapshots: true

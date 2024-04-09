@@ -1,21 +1,28 @@
 /**
- * Calculate expected observations
+ * Calculate expected observations on the log scale
  * 
- * Calculate expected observations (on the log scale) over time from a
- * combination of final expected observations, the probability of reporting
- * on a given day (or alternatively the logit hazard of this). 
+ * Computes expected observations over time based on final expected
+ * observations and reporting probabilities. It handles both probabilities and
+ * logit hazards for reporting on each day.
  * 
- * @param tar_obs The log of final expected observations that will be reported
- * for a given date on the log scale.
+ * @param tar_obs The logarithm of the final expected observations for a given
+ * date. It should be a real number representing logged observations.
  * 
- * @param lh A vector of conditional log probabilities a report occurs on a
- * given day. Optionally when ref_as_p = 0 this should be transformed first
- * into the logit hazard.
+ * @param lh A vector of conditional log probabilities of a report occurring on
+ * a given day. When `ref_as_p` is 0, this should be the logit hazard instead
+ * of probability.
  * 
- * @param ref_as_p Logical (0/1), should the reference date input be treatsd as 
- * a probability. Useful when no report date effects are present.
- * @return A vector of expected observations for a given date by date of report
+ * @param ref_as_p An integer flag (0 or 1) indicating whether the reference date input should be treated as a logit hazard or probability. Set to 1 when
+ * no report date effects are present, otherwise 0.
  * 
+ * @return A vector representing the expected observations for each date by
+ * date of report. The length of the vector matches the length of `lh`.
+ * 
+ * @note
+ * Dependencies:
+ * - `inv_logit`: Used to convert logit hazards to probabilities.
+ * - `hazard_to_log_prob`: Used for converting hazards to log probabilities.
+ *
  * @examples
  * # compile function for use in R
  * source(here::here("R", "utils.R"))
@@ -63,7 +70,7 @@
  * # 0.273 0.023 0.112 0.082 0.065 0.221 0.025 0.021 0.019 0.016 0.014 0.058
  * # 0.007 0.007 0.006 0.024 0.003 0.003 0.003 0.000 0.003 0.002 0.002 0.002
  * # 0.002 0.002 0.002 0.002 0.002 0.002
- **/
+ */
 vector expected_obs(real tar_obs, vector lh, int ref_as_p) {
   int t = num_elements(lh);
   vector[t] exp_obs;

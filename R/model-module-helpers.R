@@ -108,6 +108,7 @@ latest_obs_as_matrix <- function(latest) {
 #' @family modelmodulehelpers
 #' @importFrom purrr map_dbl
 #' @importFrom utils head
+#' @importFrom cli cli_abort
 #' @examples
 #' # Simple convolution matrix with a static distribution
 #' convolution_matrix(c(1, 2, 3), 10)
@@ -120,11 +121,13 @@ latest_obs_as_matrix <- function(latest) {
 convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (is.list(dist)) {
     if (length(dist) != t) {
-      stop("dist must equal t or be the same for all t (i.e. length 1)")
+      cli::cli_abort(
+        "`length(dist)` must equal `t` or be the same for all t (i.e. length 1)"
+      )
     }
     ldist <- lengths(dist)
     if (!all(ldist == ldist[1])) {
-      stop("dist must be the same length for all t")
+      cli::cli_abort("dist must be the same length for all t")
     }
   } else {
     ldist <- rep(length(dist), t)
@@ -197,38 +200,68 @@ add_pmfs <- function(pmfs) {
 #' Extract sparse matrix elements
 #'
 #' This helper function allows the extraction of a sparse matrix from a matrix
-#' using `rstan::extract_sparse_parsts()` and returns these elements in a named
-#' list for use in stan.
+#' using a similar approach to that implemented in
+#' [rstan::extract_sparse_parts()] and returns these elements in a named
+#' list for use in stan. This function is used in the construction of the
+#' expectation model (see [enw_expectation()]).
 #'
 #' @param mat A matrix to extract the sparse matrix from.
 #' @param prefix A character string to prefix the names of the returned list.
 #'
-#' @return Return a list that describes the sparse matrix this includes:
-#'  - `nw` the number of non-zero elements in the matrix.
-#'  - `w` the non-zero elements of the matrix.
-#'  - `nv` the number of non-zero row identifiers in the matrix.
-#'  - `v` the non-zero row identifiers of the matrix.
-#' - `nu` the number of non-zero column identifiers in the matrix.
-#' - `u` the non-zero column identifiers of the matrix.
+#' @return A list representing the sparse matrix, containing:
+#'  - `nw`: Count of non-zero elements in `mat`.
+#'  - `w`: Vector of non-zero elements in `mat`. Equivalent to the numeric
+#'     values from `mat` excluding zeros.
+#'  - `nv`: Length of v.
+#'  - `v`: Vector of row indices corresponding to each non-zero element in `w`.
+#'     Indicates the row location in `mat` for each non-zero value.
+#'  - `nu`: Length of u.
+#'  - `u`: Vector indicating the starting indices in `w` for non-zero elements
+#'     of each row in `mat`. Helps identify the partition of `w` into different
+#'     rows of `mat`.
 #' @export
 #' @family modelmodulehelpers
-#' @importFrom rstan extract_sparse_parts
+#' @seealso [enw_expectation()]
 #' @examples
-#' mat <- matrix(1:9, nrow = 3)
+#' mat <- matrix(1:12, nrow = 4)
+#' mat[2, 2] <- 0
+#' mat[3, 1] <- 0
 #' extract_sparse_matrix(mat)
 extract_sparse_matrix <- function(mat, prefix = "") {
-  sparse_mat <- rstan::extract_sparse_parts(mat)
+  # Identifying non-zero elements
+  mat <- t(mat)
+  non_zero_indices <- which(mat != 0, arr.ind = TRUE)
+  w <- mat[non_zero_indices]  # Non-zero elements of the matrix
+
+  # Extracting column non-zero elements
+  v <- non_zero_indices[, 1]
+    u_original <- non_zero_indices[, 2]  # Column indices (used to compute u)
+
+  # Compute the 'u' vector in CSR format
+  u <- rep(0, nrow(mat) + 1)
+  u[1] <- 1  # index starts from 1, so we adjust accordingly
+  for (i in seq_along(u_original)) {
+      u[u_original[i] + 1] <- i + 1
+  }
+
+  # Ensure that all elements in u are at least as large as the previous one
+  for (i in 2:length(u)) {
+      u[i] <- max(u[i], u[i - 1])
+  }
+
   sparse_mat <- list(
-    nw = length(sparse_mat$w),
-    w = sparse_mat$w,
-    nv = length(sparse_mat$v),
-    v = sparse_mat$v,
-    nu = length(sparse_mat$u),
-    u = sparse_mat$u
+    nw = length(w),
+    w = w,
+    nv = length(v),
+    v = v,
+    nu = length(u),
+    u = as.integer(u)
   )
+
   if (prefix != "") {
     names(sparse_mat) <- paste0(prefix, "_", names(sparse_mat))
   }
+
   return(sparse_mat)
 }
 

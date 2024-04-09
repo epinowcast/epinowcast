@@ -16,104 +16,23 @@ is.Date <- function(x) {
 
 #' Read in a stan function file as a character string
 #'
-#' @inheritParams expose_stan_fns
+#' @inheritParams enw_stan_to_r
 #' @return A character string in the of stan functions.
 #' @family utils
 #' @importFrom purrr map_chr
-stan_fns_as_string <- function(files, target_dir) {
+stan_fns_as_string <- function(files, include) {
   functions <- paste0(
     "\n functions{ \n",
     paste(
       purrr::map_chr(
         files,
-        ~ paste(readLines(file.path(target_dir, .)), collapse = "\n")
+        ~ paste(readLines(file.path(include, .)), collapse = "\n")
       ),
       collapse = "\n"
     ),
     "\n }"
   )
   return(functions)
-}
-
-#' Convert Cmdstan to Rstan
-#'
-#' @param functions A character string of stan functions as produced using
-#' [stan_fns_as_string()].
-#'
-#' @return A character string of stan functions converted for use in `rstan`.
-#' @family utils
-convert_cmdstan_to_rstan <- function(functions) {
-  # nolint start: nonportable_path_linter
-  # replace bars in CDF with commas
-  functions <- gsub("_cdf\\(([^ ]+) *\\|([^)]+)\\)", "_cdf(\\1,\\2)", functions)
-  # nolint end
-  # replace lupmf with lpmf
-  functions <- gsub("_lupmf", "_lpmf", functions, fixed = TRUE)
-  # replace array syntax
-  #   case 1a: array[] real x -> real[] x
-  functions <- gsub(
-    "array\\[(,?)\\] ([^ ]*) ([a-z_]+)", "\\2[\\1] \\3", functions
-  )
-  #   case 1b: array[n] real x -> real x[n], including the nested case
-  functions <- gsub(
-    "array\\[([a-z0-9_]+(\\[[^]]*\\])?)\\] ([^ ]*) ([a-z_]+)",
-    "\\3 \\4[\\1]", functions
-  )
-  #   case 2: array[n] real x -> real x[n]
-  functions <- gsub(
-    "array\\[([^]]*)\\]\\s+([a-z_]+)\\s+([a-z_]+)", "\\2 \\3[\\1]", functions
-  )
-  #   case 3: array[nl, np] matrix[n, l] x -> matrix[n, l] x[nl, np]
-  functions <- gsub(
-    "array\\[([^]]*)\\]\\s+([a-z_]+)\\[([^]]*)\\]\\s+([a-z_]+)",
-    "\\2[\\3] \\4[\\1]", functions
-  )
-
-  # Custom replacement of log_diff_exp usage
-  functions <- gsub(
-    "lpmf[3:n] = log_diff_exp(lcdf[3:n], lcdf[1:(n-2)])",
-    "for (i in 3:n) lpmf[i] = log_diff_exp(lcdf[i], lcdf[i-2]);",
-    functions,
-    fixed = TRUE
-  )
-  functions <- gsub(
-    "lhaz[3:(n-1)] = lprob[3:(n-1)] - log_diff_exp(lccdf[2:(n-2)], lcdf[1:(n-3)]);", # nolint
-    "for (i in 3:(n-1)) lhaz[i] =  lprob[i] - log_diff_exp(lccdf[i-1], lcdf[i-2]);", # nolint
-    functions,
-    fixed = TRUE
-  )
-  # remove profiling code
-  functions <- remove_profiling(functions)
-  return(functions)
-}
-
-#' Expose stan functions in R
-#'
-#' @description This function builds on top of
-#' [rstan::expose_stan_functions()] in order to facilitate exposing package
-#' functions in R for internal use, testing, and exploration. Crucially
-#' it performs a conversion between the package `cmdstan` stan code
-#' and `rstan` compatible stan code. It is not generally recommended that users
-#' make use of this function apart from when exploring package functionality.
-#'
-#' @param files A character vector of file names
-#'
-#' @param target_dir A character string giving the directory in which
-#' files can be found.
-#'
-#' @param ... Arguments to pass to [rstan::expose_stan_functions()]
-#'
-#' @return NULL (indivisibly)
-#' @family utils
-#' @importFrom rstan expose_stan_functions stanc
-expose_stan_fns <- function(files, target_dir, ...) {
-  # Make functions into a string
-  functions <- stan_fns_as_string(files, target_dir)
-  # Convert from cmdstan -> rstan to allow for in R uses
-  functions <- convert_cmdstan_to_rstan(functions)
-  # expose stan codef
-  rstan::expose_stan_functions(rstan::stanc(model_code = functions), ...)
-  return(invisible(NULL))
 }
 
 #' Load a package example
@@ -171,7 +90,7 @@ enw_example <- function(type = c(
 #' with error handling
 #'
 #' @param dates A vector-like input, which the function attempts
-#' to coerce via [data.table::as.IDate()].
+#' to coerce via [data.table::as.IDate()]. Defaults to NULL.
 #'
 #' @return An [IDate] vector.
 #'
@@ -184,6 +103,7 @@ enw_example <- function(type = c(
 #'
 #' @export
 #' @importFrom data.table as.IDate
+#' @importFrom cli cli_abort cli_warn
 #' @family utils
 #' @examples
 #' # works
@@ -195,7 +115,10 @@ enw_example <- function(type = c(
 #'     print(e)
 #'   }
 #' )
-coerce_date <- function(dates) {
+coerce_date <- function(dates = NULL) {
+  if (is.null(dates)) {
+    return(data.table::as.IDate(numeric()))
+  }
   if (length(dates) == 0) {
     return(data.table::as.IDate(dates))
   }
@@ -210,11 +133,9 @@ coerce_date <- function(dates) {
   }, FUN.VALUE = data.table::as.IDate(0)))
 
   if (anyNA(res)) {
-    bads <- is.na(res)
-    stop(sprintf(
-      "Failed to parse with `as.IDate`: {%s} (indices {%s}).",
-      toString(dates[bads]),
-      toString(which(bads))
+    cli::cli_abort(paste0(
+      "Failed to parse with `as.IDate`: {toString(dates[is.na(res)])} ",
+      "(indices {toString(which(is.na(res)))})."
     ))
   } else {
     return(res)
@@ -235,27 +156,29 @@ coerce_date <- function(dates) {
 #' @return A numeric value representing the number of days for "day" and
 #' "week", "month" for "month",  or the input value if it is a numeric whole
 #' number.
+#' @importFrom cli cli_abort
 #' @family utils
 get_internal_timestep <- function(timestep) {
   # check if the input is a character
   if (is.character(timestep)) {
     switch(
       timestep,
-      "day" = 1,
-      "week" = 7,
-      "month" = "month",  # months are not a fixed number of days
-      stop(
-        "Invalid timestep. Acceptable string inputs are 'day', 'week',",
-        " 'month'."
+      day = 1,
+      week = 7,
+      month = "month",  # months are not a fixed number of days
+      cli::cli_abort(
+        "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
       )
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
     # check if the input is a whole number
     return(timestep)
   } else {
-    stop(
-      "Invalid timestep. If timestep is a numeric, it should be a whole",
-      " number representing the number of days."
+    cli::cli_abort(
+      paste0(
+        "Invalid timestep. If timestep is a numeric, it should be a whole ",
+        "number representing the number of days."
+      )
     )
   }
 }
@@ -322,6 +245,176 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
       ) %% timestep
   ]
   return(dt[])
+}
+
+#' Cache location message for epinowcast package
+#'
+#' This function generates a message in the [epinowcast()] package
+#' regarding the cache location. It checks the environment setting for the
+#' cache location and provides guidance to the user on managing this setting.
+#'
+#' @details [cache_location_message()] examines the `enw_cache_location`
+#' environment variable. If this variable is not set, it advises the user to
+#' set the cache location using [enw_set_cache()] to optimize stan compilation
+#' times. If `enw_cache_location` is set, it confirms the current cache
+#' location to the user. Management and setting of the cache location can be
+#' done using [enw_set_cache()].
+#'
+#' @return A character vector containing messages. If `enw_cache_location` is
+#' not set, it returns instructions for setting the cache location and where to
+#' find more details. If it is set, the function returns a confirmation message
+#' of the current cache location.
+#'
+#' @keywords internal
+cache_location_message <- function() {
+    cache_location <- Sys.getenv("enw_cache_location")
+    if (check_environment_unset(cache_location)) {
+    # nolint start
+        msg <- c(
+            "!" = "`enw_cache_location` is not set.",
+            i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
+            i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
+            i = "For example: `enw_set_cache(tools::R_user_dir(package =
+            \"epinowcast\", \"cache\"), type = c('session', 'persistent'))`.",
+            i = "See `?enw_set_cache` for details."
+        )
+    # nolint end 
+    } else {
+        msg <- c(
+            i = sprintf(
+                "Using `%s` for the epinowcast model cache location.", # nolint line_length
+                cache_location
+            )
+        )
+    }
+
+    return(msg)
+}
+
+#' Check environment setting
+#'
+#' This internal function checks whether a given environment variable is set or
+#' not. It returns `TRUE` if the variable is either null or an empty string,
+#' indicating that the environment variable is not set. Otherwise, it returns
+#' `FALSE`.
+#'
+#' @param x The environment variable to be checked.
+#'
+#' @return Logical value indicating whether the environment variable is not set
+#' (either null or an empty string).
+#' @keywords internal
+check_environment_unset <- function(x) {
+  return(is.null(x) || x == "")
+}
+
+#' Identify cache location in .Renviron
+#'
+#' This function retrieves environment variable settings and manages the
+#' `.Renviron` file in the user's project or home directory.
+#' The project directory will be examined first, if it exists.
+#'
+#' @return A list containing the contents of the `.Renviron` file and its path.
+#' @keywords internal
+get_renviron_contents <- function() {
+
+  env_location <- getwd()
+
+  if (file.exists(file.path(env_location, ".Renviron"))) {
+    env_path <- file.path(env_location, ".Renviron")
+  } else {
+    env_location <- Sys.getenv("HOME")
+    env_path <- file.path(env_location, ".Renviron")
+  }
+
+  if (!file.exists(env_path)) {
+    file.create(env_path)
+  }
+
+  env_contents <- readLines(env_path)
+
+  output <- list(
+    env_contents = env_contents,
+    env_path = env_path
+  )
+
+  return(output)
+}
+
+#' Remove Cache Location Setting from `.Renviron`
+#'
+#' This function searches for and removes the `enw_cache_location` setting from
+#' the `.Renviron` file located in the user's project or home directory.
+#' It utilizes the [get_renviron_contents]() function to access and
+#' modify the contents of the `.Renviron` file. If the `enw_cache_location`
+#' setting is found and successfully removed, a success message is displayed.
+#' If the setting is not found, a warning message is displayed.
+#'
+#' @param alter_on_not_set A logical value indicating whether to display a
+#' warning message if the `enw_cache_location` setting is not found in the
+#' `.Renviron` file. Defaults to `TRUE`.
+#'
+#' @return Invisible NULL. The function is used for its side effect of modifying
+#' the `.Renviron` file.
+#' @seealso [get_renviron_contents()]
+#' @keywords internal
+unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
+    environ <- get_renviron_contents()
+    cache_loc_environ <- check_renviron_for_cache(environ)
+    if (any(cache_loc_environ)) {
+      new_environ <- environ
+      new_environ[["env_contents"]] <-
+       environ[["env_contents"]][!cache_loc_environ]
+      writeLines(new_environ$env_contents, new_environ$env_path)
+      cli::cli_alert_success(
+        "Removed `enw_cache_location` setting from `.Renviron`."
+      )
+    } else {
+      if (isTRUE(alert_on_not_set)) {
+        cli::cli_alert_danger(
+          "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+        )
+      }
+    }
+    return(invisible(NULL))
+}
+
+#' Check `.Renviron` for cache location setting
+#' @param environ A list containing the contents of the `.Renviron` file and
+#' its path. This is the output of the [get_renviron_contents()] function.
+#' @keywords internal
+check_renviron_for_cache <- function(environ) {
+  cache_loc_environ <- grepl(
+    "enw_cache_location", environ[["env_contents"]], fixed = TRUE
+  )
+  return(cache_loc_environ)
+}
+
+#' Create Stan cache directory
+#'
+#' This function creates a cache directory for Stan models if it does not
+#' already exist. This is useful for users who want to set a persistent
+#' cache location but do not want to create the directory manually.
+#'
+#' @inheritParams enw_set_cache
+#'
+#' @return `NULL`
+#' @keywords internal
+#' @importFrom cli cli_alert_info cli_alert_success cli_abort
+create_cache_dir <- function(path) {
+  if (!dir.exists(path)) {
+    dir.create(path, recursive = TRUE, showWarnings = FALSE)
+    if (dir.exists(path)) {
+      cli::cli_alert_success(
+        "Created cache directory at {path}"
+      )
+      return(invisible(NULL))
+    } else {
+      cli::cli_abort(
+        "Failed to create cache directory at {path}"
+      )
+    }
+  }
+  return(invisible(NULL))
 }
 
 utils::globalVariables(

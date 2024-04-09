@@ -12,26 +12,36 @@ extract_sparse_matrix(mat, prefix = "")
 \item{prefix}{A character string to prefix the names of the returned list.}
 }
 \value{
-Return a list that describes the sparse matrix this includes:
+A list representing the sparse matrix, containing:
 \itemize{
-\item \code{nw} the number of non-zero elements in the matrix.
-\item \code{w} the non-zero elements of the matrix.
-\item \code{nv} the number of non-zero row identifiers in the matrix.
-\item \code{v} the non-zero row identifiers of the matrix.
-\item \code{nu} the number of non-zero column identifiers in the matrix.
-\item \code{u} the non-zero column identifiers of the matrix.
+\item \code{nw}: Count of non-zero elements in \code{mat}.
+\item \code{w}: Vector of non-zero elements in \code{mat}. Equivalent to the numeric
+values from \code{mat} excluding zeros.
+\item \code{nv}: Length of v.
+\item \code{v}: Vector of row indices corresponding to each non-zero element in \code{w}.
+Indicates the row location in \code{mat} for each non-zero value.
+\item \code{nu}: Length of u.
+\item \code{u}: Vector indicating the starting indices in \code{w} for non-zero elements
+of each row in \code{mat}. Helps identify the partition of \code{w} into different
+rows of \code{mat}.
 }
 }
 \description{
 This helper function allows the extraction of a sparse matrix from a matrix
-using \code{rstan::extract_sparse_parsts()} and returns these elements in a named
-list for use in stan.
+using a similar approach to that implemented in
+\code{\link[rstan:extract_sparse_parts]{rstan::extract_sparse_parts()}} and returns these elements in a named
+list for use in stan. This function is used in the construction of the
+expectation model (see \code{\link[=enw_expectation]{enw_expectation()}}).
 }
 \examples{
-mat <- matrix(1:9, nrow = 3)
+mat <- matrix(1:12, nrow = 4)
+mat[2, 2] <- 0
+mat[3, 1] <- 0
 extract_sparse_matrix(mat)
 }
 \seealso{
+\code{\link[=enw_expectation]{enw_expectation()}}
+
 Helper functions for model modules
 \code{\link{add_max_observed_delay}()},
 \code{\link{add_pmfs}()},

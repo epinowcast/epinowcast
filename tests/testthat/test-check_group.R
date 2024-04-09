@@ -1,6 +1,6 @@
 test_that("check_group works for example data", {
   expect_error(
-    epinowcast:::check_group(germany_covid19_hosp), NA
+    check_group(germany_covid19_hosp), NA
   )
 })
 

@@ -7,7 +7,7 @@ test_that("coerce_dt gives new data.table object", {
 test_that("coerce_dt gives new data.table object, unless asked not to", {
   dummy <- data.table::data.table(dummy = 1:10)
   newdt <- coerce_dt(dummy, copy = FALSE)
-  expect_true(data.table::address(newdt) == data.table::address(dummy))
+  expect_identical(data.table::address(newdt), data.table::address(dummy))
 })
 
 test_that("coerce_dt requires required_cols", {
@@ -21,7 +21,10 @@ test_that("coerce_dt forbids forbidden_cols", {
   present <- data.table::data.table(present = 1:10)
   absent <- data.table::data.table(absent = 1:10)
   expect_no_error(coerce_dt(absent, forbidden_cols = "present"))
-  expect_error(coerce_dt(present, forbidden_cols = "present"), regexp = "present")
+  expect_error(
+    coerce_dt(present, forbidden_cols = "present"),
+    regexp = "present"
+  )
 })
 
 test_that("coerce_dt selects select", {
@@ -51,20 +54,26 @@ test_that("coerce_dt(date = TRUE) works for example data", {
   )
   obs <- coerce_dt(germany_covid19_hosp, dates = TRUE)
   expect_data_table(obs)
-  expect_equal(colnames(obs), colnames(germany_covid19_hosp))
-  expect_equal(class(obs$reference_date), c("IDate", "Date"))
-  expect_equal(class(obs$report_date), c("IDate", "Date"))
+  expect_identical(colnames(obs), colnames(germany_covid19_hosp))
+  expect_s3_class(obs$reference_date, c("IDate", "Date"))
+  expect_s3_class(obs$report_date, c("IDate", "Date"))
 })
 
 test_that("coerce_dt(date = TRUE) requires reference and report dates", {
-  ref_dates <- data.frame(reference_date = "2021-10-01")
+  ref_dates <- data.frame(
+    reference_date = "2021-10-01",
+    stringsAsFactors = FALSE
+  )
   expect_error(coerce_dt(ref_dates, dates = TRUE))
-  report_dates <- data.frame(report_dates = "2021-10-01")
+  report_dates <- data.frame(
+    report_dates = "2021-10-01",
+    stringsAsFactors = FALSE
+  )
   expect_error(coerce_dt(report_dates, dates = TRUE))
   expect_error(coerce_dt(mtcars, dates = TRUE))
 })
 
-test_that("coerce_dt provides the requested errors",{
+test_that("coerce_dt provides the requested errors", {
   present <- data.table::data.table(present = 1:10)
   expect_error(
     coerce_dt(present, required_cols = "absent", msg_required = "ABSENT"),

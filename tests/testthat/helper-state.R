@@ -3,13 +3,19 @@
 # If global settings need to be modified, they should be restored to their
 # original values on exit. This can be achieved with the `on.exit()` base
 # function, or more conveniently with the `withr` package.
+# Note that `globalCallingHandlers` is only available on version of R >= 4.0
+
 testthat::set_state_inspector(function() {
   list(
     attached    = search(),
     connections = getAllConnections(),
     cwd         = getwd(),
     envvars     = Sys.getenv(),
-    handlers    = globalCallingHandlers(),
+    handlers    = if (getRversion() >= "4.0.0") {
+        globalCallingHandlers()
+      } else {
+        Sys.getenv("error")
+      },
     libpaths    = .libPaths(),
     locale      = Sys.getlocale(),
     options     = options(),

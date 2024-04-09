@@ -1,8 +1,6 @@
-url: package.epinowcast.org/
+url: https://package.epinowcast.org/
 template:
-  bootstrap: 5
-  bootswatch: flatly
-  theme: monokai
+  package: enwtheme
   twitter:
     creator: "@seabbs"
     card: summary_large_image
@@ -10,21 +8,12 @@ template:
     image:
       src: man/figures/README-nowcast-1.png
       alt: An R package for flexible hierarchical nowcasting
-    twitter: 
+    twitter:
       creator: "@seabbs"
       card: summary_large_image
 
 development:
   mode: auto
-
-authors:
-  Sam Abbott:
-    href: "https://www.samabbott.co.uk/"
-    
-navbar:
-  structure:
-    left: [reference, articles, news]
-    right: [github]
 
 articles:
 - title: Model details
@@ -37,7 +26,11 @@ articles:
   contents:
   - germany-age-stratified-nowcasting
   - single-timeseries-rt-estimation
-  
+- title: Working with epinowcast
+  navbar: Working with epinowcast
+  contents:
+  - stan-help
+
 reference:
   - title: Nowcast
     desc: Functions for nowcasting.

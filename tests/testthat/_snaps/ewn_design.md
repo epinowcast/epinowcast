@@ -37,7 +37,7 @@
 ---
 
     Code
-      enw_design(a ~ b + c, data, no_contrasts = c("b"))
+      enw_design(a ~ b + c, data, no_contrasts = "b")
     Output
       $formula
       [1] "a ~ b + c"

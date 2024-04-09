@@ -1,7 +1,7 @@
 ---
 title: "Estimating the effective reproduction number in real-time for a single timeseries with reporting delays"
 description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
-author: Sam Abbott
+author: Epinowcast Team
 opengraph:
   image: 
     src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
@@ -91,22 +91,14 @@ In this case study, we use data sourced from the [Robert Koch Institute via the 
 
 ```r
 summary(germany_covid19_hosp)
-#>  reference_date          location     
-#>  Min.   :2021-04-06   DE     : 90405  
-#>  1st Qu.:2021-05-15   DE-BB  : 90405  
-#>  Median :2021-06-23   DE-BE  : 90405  
-#>  Mean   :2021-06-25   DE-BW  : 90405  
-#>  3rd Qu.:2021-08-02   DE-BY  : 90405  
-#>  Max.   :2021-10-20   DE-HB  : 90405  
-#>                       (Other):994455  
-#>  age_group         confirm       
-#>  00-04:219555   Min.   :   0.00  
-#>  00+  :219555   1st Qu.:   0.00  
-#>  05-14:219555   Median :   1.00  
-#>  15-34:219555   Mean   :  11.44  
-#>  35-59:219555   3rd Qu.:   6.00  
-#>  60-79:219555   Max.   :1552.00  
-#>  80+  :219555                    
+#>  reference_date          location      age_group         confirm       
+#>  Min.   :2021-04-06   DE     : 90405   00-04:219555   Min.   :   0.00  
+#>  1st Qu.:2021-05-15   DE-BB  : 90405   00+  :219555   1st Qu.:   0.00  
+#>  Median :2021-06-23   DE-BE  : 90405   05-14:219555   Median :   1.00  
+#>  Mean   :2021-06-25   DE-BW  : 90405   15-34:219555   Mean   :  11.44  
+#>  3rd Qu.:2021-08-02   DE-BY  : 90405   35-59:219555   3rd Qu.:   6.00  
+#>  Max.   :2021-10-20   DE-HB  : 90405   60-79:219555   Max.   :1552.00  
+#>                       (Other):994455   80+  :219555                    
 #>   report_date        
 #>  Min.   :2021-04-06  
 #>  1st Qu.:2021-06-24  
@@ -122,7 +114,7 @@ In this case study we only consider national level data without stratification b
 
 
 ```r
-germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 germany_hosp <- germany_hosp[, .(reference_date, report_date, confirm)]
 germany_hosp
 #>        reference_date report_date confirm
@@ -156,30 +148,18 @@ germany_covid19_hosp_linelist <- germany_covid19_hosp |>
   enw_incidence_to_linelist()
 
 germany_covid19_hosp_linelist
-#>                 id reference_date location
-#>        1:        1     2021-04-06       DE
-#>        2:        2     2021-04-06       DE
-#>        3:        3     2021-04-06       DE
-#>        4:        4     2021-04-06       DE
-#>        5:        5     2021-04-06       DE
-#>       ---                                 
-#> 11486202: 11486202     2021-10-20    DE-TH
-#> 11486203: 11486203     2021-10-20    DE-TH
-#> 11486204: 11486204     2021-10-20    DE-TH
-#> 11486205: 11486205     2021-10-20    DE-TH
-#> 11486206: 11486206     2021-10-20    DE-TH
-#>           age_group report_date delay
-#>        1:       00+  2021-04-06     0
-#>        2:       00+  2021-04-06     0
-#>        3:       00+  2021-04-06     0
-#>        4:       00+  2021-04-06     0
-#>        5:       00+  2021-04-06     0
-#>       ---                            
-#> 11486202:     15-34  2021-10-20   115
-#> 11486203:     60-79  2021-10-20   117
-#> 11486204:     60-79  2021-10-20   117
-#> 11486205:     60-79  2021-10-20   117
-#> 11486206:     60-79  2021-10-20   117
+#>                 id reference_date location age_group report_date delay
+#>        1:        1     2021-04-06       DE       00+  2021-04-06     0
+#>        2:        2     2021-04-06       DE       00+  2021-04-06     0
+#>        3:        3     2021-04-06       DE       00+  2021-04-06     0
+#>        4:        4     2021-04-06       DE       00+  2021-04-06     0
+#>        5:        5     2021-04-06       DE       00+  2021-04-06     0
+#>       ---                                                             
+#> 11486202: 11486202     2021-10-20    DE-TH     15-34  2021-10-20   115
+#> 11486203: 11486203     2021-10-20    DE-TH     60-79  2021-10-20   117
+#> 11486204: 11486204     2021-10-20    DE-TH     60-79  2021-10-20   117
+#> 11486205: 11486205     2021-10-20    DE-TH     60-79  2021-10-20   117
+#> 11486206: 11486206     2021-10-20    DE-TH     60-79  2021-10-20   117
 ```
 
 This linelist could then be itself converted into the format `epinowcast` requires using the `enw_linelist_to_incidence()` function,
@@ -195,30 +175,18 @@ incidence_from_linelist <- enw_linelist_to_incidence(
 )
 
 incidence_from_linelist
-#>          age_group location report_date
-#>       1:     00-04    DE-BY  2021-04-06
-#>       2:     00-04    DE-BY  2021-04-07
-#>       3:     00-04    DE-BY  2021-04-08
-#>       4:     00-04    DE-BY  2021-04-09
-#>       5:     00-04    DE-BY  2021-04-10
-#>      ---                               
-#> 2049593:       80+    DE-TH  2021-10-19
-#> 2049594:       80+    DE-TH  2021-10-20
-#> 2049595:       80+    DE-TH  2021-10-19
-#> 2049596:       80+    DE-TH  2021-10-20
-#> 2049597:       80+    DE-TH  2021-10-20
-#>          reference_date new_confirm confirm
-#>       1:           <NA>           0       0
-#>       2:           <NA>           0       0
-#>       3:           <NA>           0       0
-#>       4:           <NA>           0       0
-#>       5:           <NA>           0       0
-#>      ---                                   
-#> 2049593:     2021-10-18           0       0
-#> 2049594:     2021-10-18           0       0
-#> 2049595:     2021-10-19           1       1
-#> 2049596:     2021-10-19           0       1
-#> 2049597:     2021-10-20           0       0
+#>          age_group location report_date reference_date new_confirm confirm
+#>       1:     00-04    DE-BY  2021-04-06           <NA>           0       0
+#>       2:     00-04    DE-BY  2021-04-07           <NA>           0       0
+#>       3:     00-04    DE-BY  2021-04-08           <NA>           0       0
+#>       4:     00-04    DE-BY  2021-04-09           <NA>           0       0
+#>       5:     00-04    DE-BY  2021-04-10           <NA>           0       0
+#>      ---                                                                  
+#> 2049593:       80+    DE-TH  2021-10-19     2021-10-18           0       0
+#> 2049594:       80+    DE-TH  2021-10-20     2021-10-18           0       0
+#> 2049595:       80+    DE-TH  2021-10-19     2021-10-19           1       1
+#> 2049596:       80+    DE-TH  2021-10-20     2021-10-19           0       1
+#> 2049597:       80+    DE-TH  2021-10-20     2021-10-20           0       0
 #>          delay
 #>       1:     0
 #>       2:     1
@@ -261,30 +229,18 @@ Next we split the data into two parts, the data that was available at the time a
 rt_germany <- complete_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-07-01")
 rt_germany
-#>       report_date reference_date confirm
-#>    1:  2021-05-01     2021-05-01     234
-#>    2:  2021-05-02     2021-05-01     352
-#>    3:  2021-05-03     2021-05-01     391
-#>    4:  2021-05-04     2021-05-01     464
-#>    5:  2021-05-05     2021-05-01     507
-#>   ---                                   
-#> 1949:  2021-06-30     2021-06-29      31
-#> 1950:  2021-07-01     2021-06-29      35
-#> 1951:  2021-06-30     2021-06-30      20
-#> 1952:  2021-07-01     2021-06-30      37
-#> 1953:  2021-07-01     2021-07-01      20
-#>       new_confirm delay
-#>    1:         234     0
-#>    2:         118     1
-#>    3:          39     2
-#>    4:          73     3
-#>    5:          43     4
-#>   ---                  
-#> 1949:          11     1
-#> 1950:           4     2
-#> 1951:          20     0
-#> 1952:          17     1
-#> 1953:          20     0
+#>       report_date reference_date confirm new_confirm delay
+#>    1:  2021-05-01     2021-05-01     234         234     0
+#>    2:  2021-05-02     2021-05-01     352         118     1
+#>    3:  2021-05-03     2021-05-01     391          39     2
+#>    4:  2021-05-04     2021-05-01     464          73     3
+#>    5:  2021-05-05     2021-05-01     507          43     4
+#>   ---                                                     
+#> 1949:  2021-06-30     2021-06-29      31          11     1
+#> 1950:  2021-07-01     2021-06-29      35           4     2
+#> 1951:  2021-06-30     2021-06-30      20          20     0
+#> 1952:  2021-07-01     2021-06-30      37          17     1
+#> 1953:  2021-07-01     2021-07-01      20          20     0
 ```
 
 - Create the retrospective dataset (`retro_germany`) by filtering the data to only include observations with reference dates (i.e. they may have been reported anytime up to the 1st of August 2021) from the 1st of May 2021 until the 1st of July 2021;
@@ -294,30 +250,18 @@ rt_germany
 retro_germany <- complete_germany_hosp |>
   enw_filter_reference_dates(latest_date = "2021-07-01")
 retro_germany
-#>       report_date reference_date confirm
-#>    1:  2021-05-01     2021-05-01     234
-#>    2:  2021-05-02     2021-05-01     352
-#>    3:  2021-05-03     2021-05-01     391
-#>    4:  2021-05-04     2021-05-01     464
-#>    5:  2021-05-05     2021-05-01     507
-#>   ---                                   
-#> 3871:  2021-07-28     2021-07-01      57
-#> 3872:  2021-07-29     2021-07-01      57
-#> 3873:  2021-07-30     2021-07-01      57
-#> 3874:  2021-07-31     2021-07-01      57
-#> 3875:  2021-08-01     2021-07-01      57
-#>       new_confirm delay
-#>    1:         234     0
-#>    2:         118     1
-#>    3:          39     2
-#>    4:          73     3
-#>    5:          43     4
-#>   ---                  
-#> 3871:           0    27
-#> 3872:           0    28
-#> 3873:           0    29
-#> 3874:           0    30
-#> 3875:           0    31
+#>       report_date reference_date confirm new_confirm delay
+#>    1:  2021-05-01     2021-05-01     234         234     0
+#>    2:  2021-05-02     2021-05-01     352         118     1
+#>    3:  2021-05-03     2021-05-01     391          39     2
+#>    4:  2021-05-04     2021-05-01     464          73     3
+#>    5:  2021-05-05     2021-05-01     507          43     4
+#>   ---                                                     
+#> 3871:  2021-07-28     2021-07-01      57           0    27
+#> 3872:  2021-07-29     2021-07-01      57           0    28
+#> 3873:  2021-07-30     2021-07-01      57           0    29
+#> 3874:  2021-07-31     2021-07-01      57           0    30
+#> 3875:  2021-08-01     2021-07-01      57           0    31
 ```
 
 Finally we can create a dataset that contains the latest data available for each reference date. We do this using the `enw_latest_data()` function,
@@ -327,28 +271,17 @@ Finally we can create a dataset that contains the latest data available for each
 latest_germany_hosp <- retro_germany |>
   enw_latest_data()
 head(latest_germany_hosp, n = 10)
-#>     reference_date report_date confirm
-#>  1:     2021-05-01  2021-08-01    1007
-#>  2:     2021-05-02  2021-08-01     781
-#>  3:     2021-05-03  2021-08-01     467
-#>  4:     2021-05-04  2021-08-01     823
-#>  5:     2021-05-05  2021-08-01    1028
-#>  6:     2021-05-06  2021-08-01    1016
-#>  7:     2021-05-07  2021-08-01     892
-#>  8:     2021-05-08  2021-08-01     822
-#>  9:     2021-05-09  2021-08-01     561
-#> 10:     2021-05-10  2021-08-01     364
-#>     new_confirm delay
-#>  1:           0    92
-#>  2:           0    91
-#>  3:           0    90
-#>  4:           0    89
-#>  5:           0    88
-#>  6:           0    87
-#>  7:           0    86
-#>  8:           0    85
-#>  9:           0    84
-#> 10:           0    83
+#>     reference_date report_date confirm new_confirm delay
+#>  1:     2021-05-01  2021-08-01    1007           0    92
+#>  2:     2021-05-02  2021-08-01     781           0    91
+#>  3:     2021-05-03  2021-08-01     467           0    90
+#>  4:     2021-05-04  2021-08-01     823           0    89
+#>  5:     2021-05-05  2021-08-01    1028           0    88
+#>  6:     2021-05-06  2021-08-01    1016           0    87
+#>  7:     2021-05-07  2021-08-01     892           0    86
+#>  8:     2021-05-08  2021-08-01     822           0    85
+#>  9:     2021-05-09  2021-08-01     561           0    84
+#> 10:     2021-05-10  2021-08-01     364           0    83
 ```
 
 ### Visualising the data
@@ -590,18 +523,12 @@ Before fitting the model we have just defined we need to preprocess the data in 
 ```r
 rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
 rt_germany_pobs
-#>                     obs          new_confirm
-#> 1: <data.table[1425x8]> <data.table[1425x9]>
-#>                latest missing_reference
-#> 1: <data.table[62x8]> <data.table[0x4]>
-#>     reporting_triangle      metareference
-#> 1: <data.table[62x32]> <data.table[62x8]>
-#>             metareport          metadelay time
-#> 1: <data.table[91x10]> <data.table[30x4]>   62
-#>    snapshots by groups max_delay   max_date
-#> 1:        62         1        30 2021-07-01
-#>    timestep
-#> 1:      day
+#>                     obs          new_confirm             latest
+#> 1: <data.table[1425x8]> <data.table[1425x9]> <data.table[62x8]>
+#>    missing_reference  reporting_triangle      metareference          metareport
+#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]> <data.table[91x10]>
+#>             metadelay time snapshots by groups max_delay   max_date timestep
+#> 1: <data.table[30x5]>   62        62         1        30 2021-07-01      day
 ```
 
 and do the same for the retrospective data
@@ -610,18 +537,14 @@ and do the same for the retrospective data
 ```r
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
 retro_germany_pobs
-#>                     obs          new_confirm
-#> 1: <data.table[1860x8]> <data.table[1860x9]>
-#>                latest missing_reference
-#> 1: <data.table[62x8]> <data.table[0x4]>
-#>     reporting_triangle      metareference
-#> 1: <data.table[62x32]> <data.table[62x8]>
-#>              metareport          metadelay time
-#> 1: <data.table[120x10]> <data.table[30x4]>   62
-#>    snapshots by groups max_delay   max_date
-#> 1:        62         1        30 2021-07-30
-#>    timestep
-#> 1:      day
+#>                     obs          new_confirm             latest
+#> 1: <data.table[1860x8]> <data.table[1860x9]> <data.table[62x8]>
+#>    missing_reference  reporting_triangle      metareference
+#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]>
+#>              metareport          metadelay time snapshots by groups max_delay
+#> 1: <data.table[120x10]> <data.table[30x5]>   62        62         1        30
+#>      max_date timestep
+#> 1: 2021-07-30      day
 ```
 
 ### Fitting the `epinowcast` model
@@ -658,7 +581,7 @@ We also need to compile the model using `cmdstanr` before fitting it (we only ha
 
 
 ```r
-epinowcast_model <- enw_model(threads = TRUE, profile = FALSE)
+epinowcast_model <- enw_model(profile = FALSE)
 ```
 
 #### Fitting the model
@@ -873,7 +796,7 @@ We can also plot the posterior predictions for the number of expected hospitalis
 
 Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.
 
-In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partial unobserved).
+In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partially unobserved).
 
 
 ```{.r .fold-hide}

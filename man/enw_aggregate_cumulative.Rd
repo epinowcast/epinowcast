@@ -55,7 +55,7 @@ first timestep will be "2022-10-23" if the minimum reference date is
 "2022-10-16").
 }
 \examples{
-nat_hosp <- germany_covid19_hosp[location == "DE"][age_group \%in\% "00+"]
+nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 enw_aggregate_cumulative(nat_hosp, timestep = "week")
 }
 \seealso{

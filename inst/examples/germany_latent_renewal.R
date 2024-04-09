@@ -4,7 +4,7 @@ library(data.table)
 library(ggplot2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-10-01"
@@ -35,8 +35,8 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 
-# Compile nowcasting model using multi-threading
-model <- enw_model(threads = TRUE, stanc_options = list("O1"))
+# Compile nowcasting model
+model <- enw_model(stanc_options = list("O1"))
 
 # Reference date model: Fixed log-normal distribution
 reference_module <- enw_reference(~1, data = pobs)

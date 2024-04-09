@@ -28,6 +28,7 @@
 #'
 #' @inheritParams enw_obs
 #' @family modelmodules
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' # Parametric model with a lognormal distribution
@@ -52,18 +53,20 @@ enw_reference <- function(
   distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
   non_parametric = ~0, data
 ) {
-  if (as_string_formula(parametric) %in% "~0") {
+  if (as_string_formula(parametric) == "~0") {
     distribution <- "none"
     parametric <- ~1
   }
   distribution <- match.arg(distribution)
-  if ((as_string_formula(non_parametric) %in% "~0") && distribution == "none") {
-    stop(
-      "A non-parametric model must be specified if no parametric model",
-      " is specified"
+  if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
+    cli::cli_abort(
+      paste0(
+        "A non-parametric model must be specified if no parametric model ",
+        "is specified"
+      )
     )
   }
-  if (as_string_formula(non_parametric) %in% "~0") {
+  if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
     model_refnp <- 0
   }else {
@@ -71,11 +74,11 @@ enw_reference <- function(
   }
 
   distribution <- data.table::fcase(
-    distribution %in% "none", 0,
-    distribution %in% "exponential", 1,
-    distribution %in% "lognormal", 2,
-    distribution %in% "gamma", 3,
-    distribution %in% "loglogistic", 4
+    distribution == "none", 0,
+    distribution == "exponential", 1,
+    distribution == "lognormal", 2,
+    distribution == "gamma", 3,
+    distribution == "loglogistic", 4
   )
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
@@ -222,16 +225,19 @@ enw_reference <- function(
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
 #' @inheritParams enw_formula
+#' @importFrom cli cli_abort
 #' @family modelmodules
 #' @export
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(non_parametric = ~0, structural = ~0, data) {
-  if (!as_string_formula(structural) %in% "~0") {
-    stop("The structural reporting model has not yet been implemented")
+  if (as_string_formula(structural) != "~0") {
+    cli::cli_abort(
+      "The structural reporting model has not yet been implemented"
+    )
   }
 
-  if (as_string_formula(non_parametric) %in% "~0") {
+  if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
   }
 
@@ -251,7 +257,7 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   )
   data_list$rep_t <- data$time[[1]] + data$max_delay[[1]] - 1
   data_list$model_rep <- as.numeric(
-    !as_string_formula(non_parametric) %in% "~1"
+    as_string_formula(non_parametric) != "~1"
   )
 
   out <- list()
@@ -324,22 +330,22 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' @inherit enw_report return
 #' @inheritParams enw_obs
 #' @family modelmodules
-#' @importFrom rstan extract_sparse_parts
 #' @importFrom purrr map2_dbl
+#' @importFrom cli cli_abort
 #' @export
 #' @examples
 #' enw_expectation(data = enw_example("preprocessed"))
 enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
-  if (as_string_formula(r) %in% "~0") {
-    stop("An expectation model formula for r must be specified")
+  if (as_string_formula(r) == "~0") {
+    cli::cli_abort("An expectation model formula for r must be specified")
   }
-  if (as_string_formula(observation) %in% "~0") {
+  if (as_string_formula(observation) == "~0") {
     observation <- ~1
   }
   if (sum(generation_time) != 1) {
-    stop("The generation time must sum to 1")
+    cli::cli_abort("The generation time must sum to 1")
   }
 
   # Set up growth rate features
@@ -399,7 +405,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   obs_list$obs <- as.numeric(
     sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
-      !as_string_formula(observation) %in% "~1"
+      as_string_formula(observation) != "~1"
   )
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
@@ -449,7 +455,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           purrr::map2_dbl(
             as.vector(priors$expr_lelatent_int_p[1]),
             as.vector(priors$expr_lelatent_int_p[2]),
-            \(x, y) {
+            function(x, y) {
               rnorm(1, x, y * 0.1)
             }
           ),
@@ -503,6 +509,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @family modelmodules
 #' @importFrom data.table setorderv dcast
 #' @importFrom purrr map
+#' @importFrom cli cli_abort cli_warn
 #' @export
 #' @examples
 #' # Missing model with a fixed intercept only
@@ -512,12 +519,16 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' enw_missing(~0, data = enw_example("preprocessed"))
 enw_missing <- function(formula = ~1, data) {
   if (nrow(data$missing_reference[[1]]) == 0 &&
-    !(as_string_formula(formula) %in% "~0")) {
-    stop("A missingness model has been specified but data on the proportion of
-          observations without reference dates is not available.")
+    as_string_formula(formula) != "~0") {
+    cli::cli_abort(
+      paste0(
+        "A missingness model has been specified but data on the proportion of ",
+        "observations without reference dates is not available."
+      )
+    )
   }
 
-  if (as_string_formula(formula) %in% "~0") {
+  if (as_string_formula(formula) == "~0") {
     # empty data list required by stan
     data_list <- enw_formula_as_data_list(
       prefix = "miss", drop_intercept = FALSE
@@ -699,10 +710,12 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Warn if maximum delay is longer than the observed time period
   if (proc_data$t < proc_data$dmax) {
-    warning(
-      "The specified maximum delay is longer than the observed time period. ",
-      "Please be aware that epinowcast will extrapolate the delay distribution",
-      " beyond what is supported by the data."
+    cli::cli_warn(
+      paste0(
+        "The specified maximum delay is longer than the observed time period. ",
+        "Please be aware that epinowcast will extrapolate the delay ",
+        "distribution beyond what is supported by the data."
+      )
     )
   }
 
@@ -718,8 +731,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
 
   # Add a switch for the observation model
   proc_data$model_obs <- data.table::fcase(
-    family %in% "poisson", 0,
-    family %in% "negbin", 1
+    family == "poisson", 0,
+    family == "negbin", 1
   )
 
   out <- list()
@@ -771,8 +784,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' included in the model
 #'
 #' @param likelihood_aggregation Character string, aggregation over which
-#' stratify the likelihood when `threads = TRUE`; enforced by
-#' [base::match.arg()]. Currently supported options:
+#' stratify the likelihood when `threads_per_chain` is greater than 1; enforced
+#' by [base::match.arg()]. Currently supported options:
 #'  * "snapshots" which aggregates over report dates and groups (i.e the lowest
 #' level that observations are reported at),
 #'  * "groups" which aggregates across user defined groups.
@@ -782,12 +795,16 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' "groups" option. Generally, Users should typically want the default
 #' "snapshots" aggregation.
 #'
-#' @param output_loglik Logical, defaults to `FALSE`. Should the
-#' log-likelihood be output. Disabling this will speed up fitting
-#' if evaluating the model fit is not required.
+#' @param threads_per_chain Integer, defaults to `1`. The number of threads to
+#' use within each MCMC chain. If this is greater than `1` then components of
+#' the likelihood will be calculated in parallel within each chain.
 #'
 #' @param debug Logical, defaults to `FALSE`. Should within model debug
 #' information be returned.
+#'
+#' @param output_loglik Logical, defaults to `FALSE`. Should the
+#' log-likelihood be output. Disabling this will speed up fitting
+#' if evaluating the model fit is not required.
 #'
 #' @param ... Additional arguments to pass to the fitting function being used
 #' by [epinowcast()]. By default this will be [enw_sample()] and so `cmdstanr`
@@ -806,14 +823,15 @@ enw_obs <- function(family = c("negbin", "poisson"),
 enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE, likelihood = TRUE,
                          likelihood_aggregation = c("snapshots", "groups"),
+                         threads_per_chain = 1L,
                          debug = FALSE, output_loglik = FALSE, ...) {
   if (pp) {
     nowcast <- TRUE
   }
   likelihood_aggregation <- match.arg(likelihood_aggregation)
   likelihood_aggregation <- fcase(
-    likelihood_aggregation %in% "snapshots", 0,
-    likelihood_aggregation %in% "groups", 1
+    likelihood_aggregation == "snapshots", 0,
+    likelihood_aggregation == "groups", 1
   )
 
   out <- list(sampler = sampler)
@@ -821,10 +839,11 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     debug = as.numeric(debug),
     likelihood = as.numeric(likelihood),
     likelihood_aggregation = likelihood_aggregation,
+    parallelise_likelihood = as.integer(threads_per_chain > 1),
     pp = as.numeric(pp),
     cast = as.numeric(nowcast),
     ologlik = as.numeric(output_loglik)
   )
-  out$args <- list(...)
+  out$args <- list(threads_per_chain = threads_per_chain, ...)
   return(out)
 }

@@ -1,7 +1,7 @@
 ---
 title: Model definition and implementation
 description: "Model formulation and implementation details"
-author: Sam Abbott, Adrian Lison, Felix Günther, Sebastian Funk
+author: Epinowcast Team
 output: 
   bookdown::html_vignette2:
     fig_caption: yes

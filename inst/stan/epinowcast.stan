@@ -1,7 +1,8 @@
 functions {
 #include functions/utils.stan
 #include functions/zero_truncated_normal.stan
-#include functions/regression.stan
+#include functions/combine_effects.stan
+#include functions/effects_priors_lp.stan
 #include functions/log_expected_latent_from_r.stan
 #include functions/log_expected_obs_from_latent.stan
 #include functions/discretised_logit_hazard.stan
@@ -11,6 +12,7 @@ functions {
 #include functions/expected_obs_from.stan
 #include functions/filt_obs_indexes.stan
 #include functions/obs_lpmf.stan
+#include functions/obs_rng.stan
 #include functions/allocate_observed_obs.stan
 #include functions/apply_missing_reference_effects.stan
 #include functions/log_expected_by_report.stan
@@ -151,6 +153,8 @@ data {
   int likelihood; // should the likelihood be included?
   // type of aggregation scheme (0 = snaps, 1 = groups)
   int likelihood_aggregation;
+  // should the likelihood calculation be parallelised (0 = no; 1 = yes)?
+  int parallelise_likelihood;
   int pp; // should posterior predictions be produced?
   int cast; // should a nowcast be produced?
   int ologlik; // should the pointwise log likelihood be calculated?
@@ -391,25 +395,36 @@ model {
   // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
     profile("model_likelihood") {
-    if (ll_aggregation) {
-      target += reduce_sum(
-        delay_group_lupmf, groups, 1, flat_obs, lsl, clsl, nsl, cnsl,
-        flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
-        refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+    if (parallelise_likelihood) {
+      if (ll_aggregation) {
+        target += reduce_sum(
+          delay_group_lupmf, groups, 1, flat_obs, lsl, clsl, nsl, cnsl,
+          flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
+          refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
+          obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
+          refnp_lh, model_refnp
+        );
+      } else {
+        target += reduce_sum(
+          delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
+          flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
+          refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
+          model_refnp, sdmax, csdmax
+        );
+      }
+    } else {
+      groups ~ delay_group(
+        1, g, flat_obs, lsl, clsl, nsl, cnsl, flat_obs_lookup, exp_lobs, t, sg,
+        ts, st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
+        ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
         refnp_lh, model_refnp
       );
-    } else {
-      target += reduce_sum(
-        delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
-        flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
-        refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
-        model_refnp, sdmax, csdmax
-      );
-    }
     }
   }
+  }
 }
+
 
 generated quantities {
   array[pp ? sum(sl) : 0] int pp_obs;

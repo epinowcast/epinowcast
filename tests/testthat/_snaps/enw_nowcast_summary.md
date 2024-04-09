@@ -1,4 +1,4 @@
-# enw_nowcast_summary can extract the summarised nowcast as expected
+# enw_nowcast_summary() can extract the summarised nowcast as expected
 
     Code
       round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])
@@ -67,7 +67,7 @@
       19: 323 349 404
       20: 404 456 575
 
-# enw_nowcast_summary can extract the summarised nowcast with custom quantiles
+# enw_nowcast_summary() can extract the summarised nowcast with custom quantiles
 
     Code
       round_numerics(nowcast[, c("rhat", "ess_bulk", "ess_tail") := NULL])

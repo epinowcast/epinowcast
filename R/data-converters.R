@@ -133,6 +133,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' @family dataconverters
 #' @export
 #' @importFrom data.table as.data.table setkeyv
+#' @importFrom cli cli_inform
 #' @examples
 #' linelist <- data.frame(
 #'   onset_date = as.Date(c("2021-01-02", "2021-01-03", "2021-01-02")),
@@ -170,17 +171,21 @@ enw_linelist_to_incidence <- function(linelist,
   obs_delay <- max(counts$report_date) - min(counts$reference_date) + 1
   if (missing(max_delay)) {
     max_delay <- obs_delay
-    message(
-      "Using the maximum observed delay of ", max_delay, " days ",
-      "to complete the incidence data."
+    cli::cli_inform(
+      paste0(
+        "Using the maximum observed delay of {max_delay} days ",
+        "to complete the incidence data."
+      )
     )
   }
   if (max_delay < obs_delay) {
-    message(
-      "Using the maximum observed delay of ", obs_delay,
-      " days as greater than the maximum specified to complete the incidence ",
-      "data.")
-       max_delay <- obs_delay
+    cli::cli_inform(
+      paste0(
+        "Using the maximum observed delay of {obs_delay} days as greater than ",
+        "the maximum specified to complete the incidence data."
+      )
+    )
+    max_delay <- obs_delay
   }
   cum_counts <- enw_add_cumulative(counts, by = by, copy = FALSE)
 
@@ -221,7 +226,7 @@ enw_linelist_to_incidence <- function(linelist,
 #' @examples
 #' incidence <- enw_add_incidence(germany_covid19_hosp)
 #' incidence <- enw_filter_reference_dates(
-#'   incidence[location %in% "DE"], include_days = 10
+#'   incidence[location == "DE"], include_days = 10
 #' )
 #' enw_incidence_to_linelist(incidence, reference_date = "onset_date")
 enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
@@ -345,16 +350,19 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' @return A data.table with aggregated observations.
 #'
 #' @importFrom data.table setorder
+#' @importFrom cli cli_abort
 #' @export
 #' @family dataconverters
 #' @examples
-#' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group %in% "00+"]
+#' nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 #' enw_aggregate_cumulative(nat_hosp, timestep = "week")
 enw_aggregate_cumulative <- function(
   obs, timestep = "day", by = NULL,
   min_reference_date = min(obs$reference_date, na.rm = TRUE), copy = TRUE
 ) {
-  stopifnot("The data already has a timestep of a day" = !timestep %in% "day")
+  if (timestep == "day") {
+    cli::cli_abort("The data already has a timestep of a day")
+  }
   obs <- coerce_dt(
     obs,
     required_cols = c("confirm", by), forbidden_cols = ".group",
@@ -370,9 +378,14 @@ enw_aggregate_cumulative <- function(
   init_ref_date <- min_reference_date + internal_timestep - 1
   agg_obs <- obs[report_date >= init_ref_date]
 
-  stopifnot(
-    "There are no complete report dates (i.e. report_date >= min_date + timestep - 1)" = nrow(agg_obs) > 0 # nolint
-  )
+  if (nrow(agg_obs) == 0) {
+    cli::cli_abort(
+      paste0(
+        "There are no complete report dates ",
+        "(i.e. report_date >= min_date + timestep - 1)"
+      )
+    )
+  }
 
   # Set the day of the timestep based on timestep
   agg_obs <- date_to_numeric_modulus(

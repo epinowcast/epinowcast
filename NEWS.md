@@ -4,11 +4,11 @@ This release is in development and not yet ready for production use.
 
 ## Contributors
 
-@medewitt, @adrian-lison, @Bisaloo and @seabbs contributed code to this release.
+@jamesmbaazam, @medewitt, @sbfnk, @adrian-lison, @kathsherratt, @natemcintosh, @Bisaloo and @seabbs contributed code to this release.
 
-@adrian-lison, @bisaloo, @natemcintosh, and @seabbs reviewed pull requests for this release.
+@jamesmbaazam, @adrian-lison, @sbfnk, @bisaloo, @pearsonca, @natemcintosh, and @seabbs reviewed pull requests for this release.
 
-@jbracher, @medewitt, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jbracher, @medewitt, @kathsherratt, @jamesmbaazam, @zsusswein, @TimTaylor, @sbfnk, @natemcintosh, @pearsonca, @bisaloo, @parksw3, @adrian-lison, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Bugs
 
@@ -18,9 +18,13 @@ This release is in development and not yet ready for production use.
 - Fixed a bug where a non-`data.table` passed to `enw_quantile_to_long()` could throw an error. See #324 by @natemcintosh and reviewed by @pearsonca.
 - Fixed a bug where `enw_aggregate_cumulative()` initialised its time step from the first reference date + 1 day rather than the first reference date. See #336 by @seabbs and self-reviewed.
 - Fixed a bug in `enw_filter_reference_dates` when using `remove_days` on data with missing reference dates. See #351 by @adrian-lison and reviewed by @seabbs.
+- Resolved code quality issues related to the use of `%in%` with a scale on the right hand side and other similar issues. See #382 by @seabbs and reviewed by @pearsonca and @Bisaloo.
 
 ## Package
 
+- Search functionality on pkgdown website no longer directs to non-existent pages. This issue resulted from an incorrect URL being specified in the pkgdown configuration file. See #449 by @Bisaloo, based on a report from @zsusswein.
+- `pkgdown` theming elements have moved to an [organization-level `pkgdown` theme](https://github.com/epinowcast/enwtheme) to increase re-usability and [DRY](https://en.wikipedia.org/wiki/Don't_repeat_yourself)-ness across the organization. See #419 by @Bisaloo and reviewed by @pearsonca and @seabbs.
+- `lintr` checks are now run also on the `tests/` directory. See #418 by @Bisaloo and reviewed by @seabbs.
 - Fixed some typos in `single-timeseries-rt-estimation.Rmd`. The `WORDLIST` used by spelling has also been updated to eliminate false positives. Future typos will now generate an error in the continuous integration check so that we can catch them as early as possible. See #341 by @Bisaloo and reviewed by @seabbs.
 - Added extra checks in continuous integration tests: we now test that partial matching is not used and that global state is left unchanged (or restored correctly). See #338 by @Bisaloo and reviewed by @seabbs.
 - Added additional tests to ensure that the `enw_expectation()` module is appropriately defining initial conditions when multiple groups are present. See #282 by @seabbs and self-reviewed.
@@ -33,6 +37,14 @@ This release is in development and not yet ready for production use.
 - Added a `min_reference_date` argument to `enw_aggregate_cumulative()` to allow users to specify the minimum reference date to include in the output. This is useful when users want to aggregate to a timestep with a specified initialisation date that is not the default. For example if users data is already reported with a weekly cadence they would use `min(data$report_date) + 1` to preserve that timestep. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added support to `enw_complete_dates()` for `min_date` and `max_date` arguments. These arguments allow users to specify the minimum and maximum dates to include in the output. This may be useful to users who want to ensure that their data is complete for a specified time period. See #340 by @seabbs and reviewed by @natemcintosh.
 - Added a new helper function `enw_one_hot_encode_feature()` for one hot encoding variables and binding them into the original data. This is useful when users want to include parts of variables in their models as binary indicators - for example giving a specific delay its own effect. See #348 by @seabbs and self-reviewed.
+- Enabled compiling with multithreading by default as this was found to cause no deterioration in performance even with 1 thread per chain. The likelihood calculation is now no longer parallelised when `threads_per_chain = 1` which should offer a small performance improvement. See #366 by @sbfnk and reviewed by @seabbs.
+- Added a new action to check that the `cmdstan` model can be compiled and has the correct syntax. This runs on pull requests whenever stan code is changed, when code is merged onto `main` with altered stan code, and on a weekly schedule against the latest `main` branch. See #386 by @seabbs.
+- Switched to the `{cli}` package for all package messaging in order to have modern and pretty notifications. See #188 by @nikosbosse and @seabbs reviewed by @pearsonca.
+- Increased the minimum supported R version to >= R 3.6.0 from R 3.5.0 and ensured that existing function code and tests compiled with this dependency. Vignettes will continue to allow use of R >= 4.1.0 syntax (i.e., native pipe and lambda function syntax). See #389 by @medewitt and @seabbs and reviewed by @pearsonca.
+- Add documentation for all custom stan functions. See #422 by @seabbs and reviewed by @sbfnk.
+- Exposed `enw_stan_to_r()` to the user. This function is used for testing and in development to expose `{epinowcast}` stan code in R. Users may find this function useful as it allows them to explore the stan code used in `{epinowcast}` models more easily. Note that this functionality is known to be unstable when `{rstan}` is loaded in the same R session. See #431 by @seabbs and reviewed by @sbfnk.
+- Refactored `extract_sparse_matrix()` to allow us to drop our `{rstan}` dependency.  See #431 by @seabbs and reviewed by @sbfnk.
+- Allow for caching Stan models across R sessions to reduce compilation time through the use of the environment variable, `enw_cache_location`, which can be set using the `set_enw_cache()` function. See #407 by @medewitt and @seabbs and reviewed by @sbfnk and @pearsonca.
 
 ## Model
 
@@ -41,6 +53,7 @@ This release is in development and not yet ready for production use.
 - Added support for non-parametric reference date models as well as mixed models with both parametric and non-parametric reference date models. This enables the use of popular models such as the discrete time cox proportional hazards model. See #313 by @seabbs and self-reviewed.
 - Added support for missing data (excluding in the missing reference date model) using the `observation_indicator` argument to `enw_obs()`. Support was also added to `enw_complete_dates()` to flag missing data and as part of this new helper functions (`enw_flag_observed_observations()` and `enw_impute_na_observations()`) were also added. This support is likely most useful when used in conjunction to a known reporting structure. See #327 by @seabbs and self-reviewed.
 - Added support for using a maximum delay that is longer than the largest observed delay in the data. This may be useful at the start of an outbreak, when the data is sparse and the user expects delays longer than what has been observed so far. Note that because this requires extrapolating the delay distribution beyond the support of the data, users should be cautious when using this feature. A new example, `inst/examples/germany_max_delay_greater_than_data.R`, has been added to demonstrate this feature. See # by @seabbs and self-reviewed.
+- Added the priors used for model fitting to the `<epinowcast>` object. The object returned by `epinowcast()` now has a variable called `priors` and can be accessed for inspection and downstream analyses. See #399 by @jamesmbaazam and reviewed by @pearsonca  and @seabbs.
 
 ## Documentation
 
@@ -50,6 +63,17 @@ This release is in development and not yet ready for production use.
 - Switched to using `bookdown` for `pkgdown` vignettes and moved to the `flatly` theme for `pkgdown` rather than the `preferably` theme. See #312 by @seabbs and self-reviewed.
 - Updated the README to include the non-parametric reference date model as an option and also added a new example showing how to use this model. See #313 by @seabbs and self-reviewed.
 - Added a new example showcasing how to fit a model to data reported weekly with a 3 day delay until any reports are non-zero with a weekly process model and a mixture of a parametric and non-parametric reference date model. See #348 by @seabbs and self-reviewed.
+- Split README to focus on package-level issues and moved quick start into a getting started vignette. See #375 by @pearsonca and reviewed by @jamesmbaazam and @seabbs.
+- Added code in the `CITATION` file to automatically pull relevant citation fields from the `DESCRIPTION` file. Also added a GitHub Actions workflow to auto-generate a `citation.cff` file whenever `CITATION` or `DESCRIPTION` change. This way, all three files will always be up to date. See #369 by @jamesmbazam and reviewed by @seabbs.
+- Removed the reference in the pull request template to updating the development version as this has been found to cause issues when multiple pull requests are open at once. See #391 by @seabbs and reviewed by @Bisaloo.
+- Added a note to the Getting Started vignette to clarify usability with alternatives to data.table. See #406 by @kathsherratt and reviewed by @seabbs.
+- Added a new vignette to provide users with a configuration and troubleshooting guide for Stan while working with `epinowcast`. See #405 by @medewitt and reviewed by @seabbs, @zsusswein, and @pearsonca.
+- Removed named individuals from vignettes and moved to team authorship. See # by @seabbs and self-reviewed.
+- Improved documentation of the maximum delay in the stan code. See #425 by @adrianlison and reviewed by @seabbs.
+
+## Depreciations
+
+- `enw_delay_filter()`: Deprecated with a warning in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
 # epinowcast 0.2.2
 

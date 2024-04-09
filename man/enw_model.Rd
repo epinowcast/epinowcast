@@ -8,9 +8,9 @@ enw_model(
   model = system.file("stan", "epinowcast.stan", package = "epinowcast"),
   include = system.file("stan", package = "epinowcast"),
   compile = TRUE,
-  threads = FALSE,
+  threads = TRUE,
   profile = FALSE,
-  target_dir = tempdir(),
+  target_dir = epinowcast::enw_get_cache(),
   stanc_options = list(),
   cpp_options = list(),
   verbose = TRUE,
@@ -27,10 +27,11 @@ files to include in the model. If missing the package default is used.}
 \item{compile}{Logical, defaults to \code{TRUE}. Should the model
 be loaded and compiled using \code{\link[cmdstanr:cmdstan_model]{cmdstanr::cmdstan_model()}}.}
 
-\item{threads}{Logical, defaults to \code{FALSE}. Should the model compile with
-support for multi-thread support in chain. Note that this requires the use of
-the \code{threads_per_chain} argument when model fitting using \code{\link[=enw_sample]{enw_sample()}},
-and \code{\link[=epinowcast]{epinowcast()}}.}
+\item{threads}{Logical, defaults to \code{TRUE}. Should the model compile with
+support for multi-thread support in chain. Note that setting this will
+produce a warning that \code{threads_to_chain} is set and ignored. Changing this
+to \code{FALSE} is not expected to yield any performance benefits even when
+not using multithreading and thus not recommended.}
 
 \item{profile}{Logical, defaults to \code{FALSE}. Should the model be profiled?
 For more on profiling see the \href{https://mc-stan.org/cmdstanr/articles/profiling.html}{\code{cmdstanr} documentation}. # nolint}
@@ -70,9 +71,13 @@ mod <- enw_model()
 \seealso{
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
+\code{\link{enw_get_cache}()},
 \code{\link{enw_priors_as_data_list}()},
 \code{\link{enw_replace_priors}()},
 \code{\link{enw_sample}()},
+\code{\link{enw_set_cache}()},
+\code{\link{enw_stan_to_r}()},
+\code{\link{enw_unset_cache}()},
 \code{\link{remove_profiling}()},
 \code{\link{write_stan_files_no_profile}()}
 }

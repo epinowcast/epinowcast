@@ -103,7 +103,7 @@ library(data.table)
 
 # Filter example hospitalisation data to be national and over all ages
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
-nat_germany_hosp <- nat_germany_hosp[age_group \%in\% "00+"]
+nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 
 # Preprocess with default settings
 pobs <- enw_preprocess_data(nat_germany_hosp)
@@ -117,9 +117,9 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_filter}()},
 \code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
+\code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_flag_observed_observations}()},

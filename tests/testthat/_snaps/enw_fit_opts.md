@@ -16,6 +16,9 @@
       $data$likelihood_aggregation
       [1] 0
       
+      $data$parallelise_likelihood
+      [1] 0
+      
       $data$pp
       [1] 0
       
@@ -27,6 +30,9 @@
       
       
       $args
+      $args$threads_per_chain
+      [1] 1
+      
       $args$adapt_delta
       [1] 0.9
       

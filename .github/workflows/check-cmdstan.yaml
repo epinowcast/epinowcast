@@ -1,0 +1,82 @@
+name: check-cmdstan
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    paths:
+      - '**.stan'
+    branches:
+      - main
+      - develop
+  schedule:
+    - cron: '5 4 * * 1'
+  pull_request:
+    paths:
+      - '**.stan'
+    branches:
+      - main
+      - develop
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  check-cmdstan:
+    if: "! contains(github.event.head_commit.message, '[ci skip]')"
+    runs-on: ubuntu-latest
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      
+    steps:
+      - name: cmdstan env vars
+        run: |
+          echo "CMDSTAN_PATH=${HOME}/.cmdstan" >> $GITHUB_ENV
+        shell: bash
+
+      - uses: actions/checkout@v4
+        
+      - name: Install cmdstan Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcurl4-openssl-dev || true
+          sudo apt-get install -y openmpi-bin openmpi-common libopenmpi-dev || true
+          sudo apt-get install -y libpng-dev || true
+
+      - uses: r-lib/actions/setup-r@v2
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with: 
+          extra-packages: local::.
+
+      - name: Install cmdstan
+        uses: epinowcast/actions/install-cmdstan@v1
+        with:
+          cmdstan-version: 'latest'
+          num-cores: 2
+
+      - name: Compile model and check syntax
+        run: |
+          model <- epinowcast::enw_model()
+          # If the model is not syntactically correct above will fail
+          # however it may be correct enougth to compile but still contain
+          # soft depreciated syntax and so we check the syntax again below 
+          # and test the output.
+          message <- capture.output(
+            model$check_syntax(pedantic = FALSE),
+            type = "message"
+          )
+          # We can't use TRUE here as pendatic check return lots of false
+          # positives related to our use of functions.
+          stopifnot(
+            length(message) != 0 &&
+            all(message == "Stan program is syntactically correct")
+          )
+        shell: Rscript {0}
+
+      - name: Compile and expose stan functions
+        run: |
+          model <- epinowcast::enw_stan_to_r()
+        shell: Rscript {0}
