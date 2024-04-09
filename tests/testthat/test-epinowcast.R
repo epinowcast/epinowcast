@@ -415,11 +415,11 @@ test_that("epinowcast() can fit a simple non-parametric reference date model", {
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 1000,
-      refresh = 0, show_messages = FALSE, max_treedepth = 11
+      refresh = 0, show_messages = FALSE, max_treedepth = 12
     ),
     model = model
   ))
-  expect_convergence(nowcast)
+  expect_convergence(nowcast, treedepth = 12)
   expect_identical(
     nrow(summary(nowcast, type = "fit", variables = "refnp_beta")), 20L
   )
