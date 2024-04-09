@@ -28,7 +28,7 @@ downstream modelling}
 \item{max_delay}{The maximum number of days to model in the delay
 distribution. If not specified the maximum observed delay is assumed to be
 the true maximum delay in the model. Otherwise, an integer greater than or
-equal to 1 can be specified. Observations with delays arger then the maximum
+equal to 1 can be specified. Observations with delays larger then the maximum
 delay will be dropped. If the specified maximum delay is too short, nowcasts
 can be biased as important parts of the true delay distribution are cut off.
 At the same time, computational cost scales non-linearly with this setting,
