@@ -30,8 +30,13 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::rmarkdown, local::.
+          extra-packages: any::rmarkdown, local::., any::allcontributors
 
+      - name: Update contributors
+        if: github.ref == 'refs/heads/main'
+        run: allcontributors::add_contributors(format = "text")
+        shell: Rscript {0}
+        
       - name: Compile the readme
         run: |
           rmarkdown::render("README.Rmd")
