@@ -15,7 +15,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
     cli::cli_abort("Please provide probabilities as numbers between 0 and 1.")
   }
   return(coerce_dt(
-    posterior, required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
+    posterior,
+    required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
     msg_required = "The following quantiles must be present (set with `probs`):"
   ))
 }
@@ -30,7 +31,8 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #' @family check
 check_group <- function(obs) {
   return(coerce_dt(
-    obs, forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
+    obs,
+    forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
     msg_forbidden = "The following are reserved grouping columns:"
   ))
 }
@@ -186,8 +188,8 @@ coerce_dt <- function(
     }
   }
 
-  if ((length(required_cols) > 0)) {     # if we have required columns ...
-    if (!is.character(required_cols)) {  # ... check they are check-able
+  if ((length(required_cols) > 0)) { # if we have required columns ...
+    if (!is.character(required_cols)) { # ... check they are check-able
       cli::cli_abort("`required_cols` must be a character vector")
     }
     # check that all required columns are present
@@ -204,7 +206,7 @@ coerce_dt <- function(
     }
   }
 
-  if ((length(forbidden_cols) > 0)) {    # if we have forbidden columns ...
+  if ((length(forbidden_cols) > 0)) { # if we have forbidden columns ...
     if (!is.character(forbidden_cols)) { # ... check they are check-able
       cli::cli_abort("`forbidden_cols` must be a character vector")
     }
@@ -222,28 +224,217 @@ coerce_dt <- function(
     }
   }
 
-  if (group) {                      # if we want to ensure a .group column ...
-    if (is.null(dt[[".group"]])) {  # ... check it's presence
-      dt <- dt[, .group := 1]       # ... and add it if it's not there
+  if (group) { # if we want to ensure a .group column ...
+    if (is.null(dt[[".group"]])) { # ... check it's presence
+      dt <- dt[, .group := 1] # ... and add it if it's not there
     }
-    if (length(select) > 0) {         # if we have a select list ...
+    if (length(select) > 0) { # if we have a select list ...
       select <- c(select, ".group") # ... add ".group" to it
     }
   }
 
   if (dates) {
-    dt[,               # cast-in-place to IDateTime (as.IDate)
+    dt[
+      , # cast-in-place to IDateTime (as.IDate)
       c("report_date", "reference_date") := .(
         as.IDate(report_date), as.IDate(reference_date)
       )
     ]
   }
 
-  if (length(select) > 0) {         # if selecting particular list ...
+  if (length(select) > 0) { # if selecting particular list ...
     return(dt[, .SD, .SDcols = c(select)][])
   } else {
     return(dt[])
   }
+}
+
+#' @title Check appropriateness of maximum delay
+#'
+#' @description Check if maximum delay specified by the user is long enough and
+#' raise potential warnings. This is achieved by computing the share of
+#' reference dates where the cumulative case count is below some aspired
+#' coverage.
+#'
+#' @details The coverage is with respect to the maximum observed case count for
+#' the corresponding reference date. As the maximum observed case count is
+#' likely smaller than the true overall case count for not yet fully observed
+#' reference dates (due to right truncation), only reference dates that are
+#' more than the maximum observed delay ago are included. Still, because we
+#' can only use the maximum observed delay, not the unknown true maximum
+#' delay, the computed coverage values should be interpreted with care, as they
+#' are only proxies for the true coverage.
+#'
+#' @inheritParams enw_filter_delay
+#' @inheritParams enw_preprocess_data
+#'
+#' @param data Output from [enw_preprocess_data()].
+#'
+#' @param cum_coverage The aspired percentage of cases that the maximum delay
+#' should cover. Defaults to 0.8 (80%).
+#'
+#' @param maxdelay_quantile_outlier Only reference dates sufficiently far in
+#' the past, determined based on the maximum observed delay, are included (see
+#' details). Instead of the overall maximum observed delay, a quantile of the
+#' maximum observed delay over all reference dates is used. This is more robust
+#' against outliers. Defaults to 0.97 (97%).
+#'
+#' @param warn Should a warning be issued if the cumulative case count is
+#' below `cum_coverage` for the majority of reference dates?
+#'
+#' @param warn_internal Should only be `TRUE` if this function is called
+#' internally by another `epinowcast` function. Then, warnings are adjusted to
+#' avoid confusing the user.
+#'
+#' @return A `data.table` with the share of reference dates where the
+#' cumulative case count is below `cum_coverage`, stratified by group.
+#'
+#' @family check
+#' @export
+#' @examples
+#' pobs <- enw_example(type = "preprocessed_observations")
+#' check_max_delay(pobs, max_delay = 20, cum_coverage = 0.8)
+check_max_delay <- function(data,
+                            max_delay = data$max_delay,
+                            cum_coverage = 0.8,
+                            maxdelay_quantile_outlier = 0.97,
+                            warn = TRUE, warn_internal = FALSE) {
+
+  if (!is.numeric(max_delay)) {
+    cli::cli_abort("`max_delay` must be an integer and not NA")
+  }
+  max_delay <- as.integer(max_delay)
+  if (max_delay < 1) {
+    cli::cli_abort("`max_delay` must be greater than or equal to one")
+  }
+  if (!(cum_coverage > 0 && cum_coverage <= 1)) {
+    cli::cli_abort("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%.")
+  }
+  if (!(maxdelay_quantile_outlier > 0 && maxdelay_quantile_outlier <= 1)) {
+    cli::cli_abort(
+      "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%."
+    )
+  }
+
+  timestep <- data$timestep
+  internal_timestep <- get_internal_timestep(timestep)
+  daily_max_delay <- internal_timestep * max_delay
+
+  obs <- data.table::copy(data$obs[[1]])
+  obs[, delay := internal_timestep * delay]
+
+  max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
+  if (max_delay_obs < daily_max_delay) {
+    warning_message <- c(
+      paste0(
+        "You specified a maximum delay of ", daily_max_delay, " days, ",
+        "but the maximum observed delay is only ", max_delay_obs, " days. "
+      ),
+      paste0(
+        "This is justified if you don't have much data yet (e.g. early ",
+        "phase of an outbreak) and expect a longer maximum delay than ",
+        "currently observed. epinowcast will then extrapolate the delay ",
+        "distribution beyond the observed maximum delay."
+      ),
+      paste0(
+        "Otherwise, we recommend using a shorter maximum delay to speed up ",
+        "the nowcasting."
+      )
+    )
+    names(warning_message) <- c("", "*", "*")
+    cli::cli_warn(warning_message)
+  }
+
+  max_delay_ref <-  obs[
+    !is.na(reference_date) & cum_prop_reported == 1,
+    .(.group, reference_date, delay)
+    ]
+  data.table::setorderv(max_delay_ref, c(".group", "reference_date", "delay"))
+  max_delay_ref <- max_delay_ref[,
+    .SD[, .(delay = first(delay)), by = reference_date]
+  ] # we here assume the same maximum delay for all groups
+
+  max_delay_obs_q <- ceiling(
+    max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
+  ) + 1
+
+  # Filter by the user-specified maximum delay with daily resolution
+  obs <- enw_filter_delay(obs, max_delay = daily_max_delay, timestep = "day")
+
+  # filter by earliest observed report date
+  obs <- obs[,
+    .SD[reference_date >= min(report_date) | is.na(reference_date)],
+    by = .group
+  ]
+
+  latest_obs <- enw_latest_data(obs)
+  fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs_q + 1
+  # filter by the maximum observed delay to reduce right truncation bias
+  latest_obs <- enw_filter_reference_dates(
+    latest_obs,
+    latest_date = fully_observed_date
+  )
+
+  if (warn && !(max_delay_obs < daily_max_delay) && (latest_obs[, .N] < 5)) {
+    warning_message <- c(
+      paste0(
+        "The coverage of the specified maximum delay could not be ",
+        "reliably checked."
+      ),
+      "*" = paste0(
+        "There are only very few (", latest_obs[, .N], ") reference dates",
+        " that are sufficiently far in the past (more than ",
+        max_delay_obs_q, " days) to compute coverage statistics for the ",
+        "maximum delay. "
+      )
+    )
+    if (warn_internal) {
+      warning_message <- c(
+        warning_message,
+        "*" = paste0(
+          "You can test different maximum delays and obtain coverage ",
+          "statistics using the function ",
+          "{.help [check_max_delay()](epinowcast::check_max_delay)}."
+        )
+      )
+    } else {
+      warning_message <- c(
+        warning_message,
+        "*" = paste0(
+          "If you think the truncation threshold of ", max_delay_obs_q, " ",
+          "days is based on an outlier, and the true maximum delay is likely ",
+          "shorter, you can decrease `maxdelay_quantile_outlier` to ",
+          "silence this warning."
+        )
+      )
+    }
+    cli::cli_warn(warning_message)
+  }
+
+  low_coverage <- latest_obs[, .(
+    below_coverage =
+      sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
+        sum(!is.na(cum_prop_reported))
+  ), by = .group]
+  mean_coverage <- low_coverage[, mean(below_coverage)]
+
+  if (warn && mean_coverage > 0.5) {
+    cli::cli_warn(paste0(
+      "The specified maximum reporting delay ",
+      "(", daily_max_delay, " days) ",
+      "covers less than ", 100 * cum_coverage,
+      "% of cases for the majority (>50%) of reference dates. ",
+      "Consider using a larger maximum delay to avoid potential model ",
+      "misspecification."
+    ),
+      immediate. = TRUE
+    )
+  }
+
+  low_coverage <- rbind(low_coverage, list("all", mean_coverage))
+  low_coverage[, coverage := cum_coverage]
+  data.table::setcolorder(low_coverage, c(".group", "coverage"))
+  return(low_coverage[])
 }
 
 #' Check calendar timestep

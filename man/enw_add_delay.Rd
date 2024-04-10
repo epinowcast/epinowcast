@@ -2,7 +2,7 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_add_delay}
 \alias{enw_add_delay}
-\title{Add a delay variable}
+\title{Add a delay variable to the observations}
 \usage{
 enw_add_delay(obs, timestep = "day", copy = TRUE)
 }
@@ -18,11 +18,12 @@ date).}
 \item{copy}{Should \code{obs} be copied (default) or modified in place?}
 }
 \value{
-A data.table with a \code{delay} column added.
+A \code{data.table} of observations with a new column \code{delay}.
 }
 \description{
-Add a delay variable based on the numeric difference
-between the \code{report_date} and \code{reference_date} columns.
+This helper function takes a \code{data.frame} or \code{data.table} of
+observations and adds the delay (numeric, in days) between \code{reference_date}
+and \code{report_date} for each observation.
 }
 \examples{
 obs <- data.frame(report_date = as.Date("2021-01-01") + -2:0)
@@ -36,7 +37,6 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
@@ -44,6 +44,7 @@ Preprocessing functions
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},

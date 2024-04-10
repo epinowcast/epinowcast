@@ -3,13 +3,13 @@ nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
 nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
 cols <- c(
   "obs", "new_confirm", "latest", "missing_reference", "reporting_triangle",
-  "metareference", "metareport", "metadelay", "time", "snapshots", "by",
-  "groups", "max_delay", "max_date", "timestep"
+  "metareference", "metareport", "metadelay", "max_delay", "time", "snapshots",
+  "by", "groups", "max_date", "timestep"
 )
 test_that(
   "enw_preprocess_data() produces expected output with default settings",
   {
-    pobs <- enw_preprocess_data(nat_germany_hosp)
+    pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 20)
     expect_data_table(pobs)
     expect_identical(colnames(pobs), cols)
     expect_data_table(pobs$obs[[1]])
@@ -23,28 +23,44 @@ test_that(
     expect_identical(pobs$time[[1]], 198L)
     expect_identical(pobs$snapshots[[1]], 198L)
     expect_identical(pobs$groups[[1]], 1L)
-    expect_identical(pobs$max_delay[[1]], 20)
+    expect_identical(pobs$max_delay, 20)
     expect_identical(pobs$timestep[[1]], "day")
   }
 )
 
 test_that("enw_preprocess_data() produces expected output when excluding and
           using a maximum delay of 10", {
-  pobs <- enw_preprocess_data(
-    nat_germany_hosp,
-    max_delay = 10
+  expect_warning(
+    # nolint next: implicit_assignment_linter.
+    pobs <- enw_preprocess_data(
+      nat_germany_hosp,
+      max_delay = 10
+    ),
+    regexp = "Consider using a larger maximum delay"
   )
   expect_data_table(pobs)
   expect_identical(pobs$time[[1]], 198L)
   expect_identical(pobs$snapshots[[1]], 198L)
   expect_identical(pobs$groups[[1]], 1L)
-  expect_identical(pobs$max_delay[[1]], 10)
+  expect_identical(pobs$max_delay, 10)
   expect_identical(pobs$timestep[[1]], "day")
+})
+
+test_that("enw_preprocess_data() produces expected output when not setting
+           max_delay", {
+  expect_message(
+    # nolint next: implicit_assignment_linter.
+    pobs <- enw_preprocess_data(nat_germany_hosp),
+    regexp = "the maximum observed delay"
+  )
+  expect_data_table(pobs)
+  expect_identical(pobs$max_delay, 82)
 })
 
 test_that("enw_preprocess_data() handles groups as expected", {
   pobs <- enw_preprocess_data(
     germany_covid19_hosp,
+    max_delay = 20,
     by = c("location", "age_group")
   )
   expect_data_table(pobs)
@@ -52,7 +68,7 @@ test_that("enw_preprocess_data() handles groups as expected", {
   expect_identical(pobs$time[[1]], 198L)
   expect_identical(pobs$snapshots[[1]], 23562L)
   expect_identical(pobs$groups[[1]], 119L)
-  expect_identical(pobs$max_delay[[1]], 20)
+  expect_identical(pobs$max_delay, 20)
   expect_identical(pobs$timestep[[1]], "day")
 })
 
@@ -98,6 +114,18 @@ test_that(
   }
 )
 
+test_that("enw_preprocess_data() throws error when using months", {
+  expect_error(
+    enw_preprocess_data(
+      nat_germany_hosp,
+      max_delay = 20,
+      timestep = "month"
+    ),
+    regexp = "Calendar months are not currently supported"
+  )
+}
+)
+
 test_that(
   "enw_preprocess_data() hasn't changed compared to saved example data",
   {
@@ -133,7 +161,9 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
     "2021-05-01", "2021-05-13",
     "2021-05-24"
   )
-  pobs <- enw_preprocess_data(nat_germany_hosp, holidays = holidays)
+  pobs <- enw_preprocess_data(
+    nat_germany_hosp, max_delay = 20, holidays = holidays
+    )
   expect_identical(
     as.character(
       pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
@@ -149,13 +179,14 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
   expect_identical(
     as.character(enw_preprocess_data(
       nat_germany_hosp,
+      max_delay = 20,
       holidays = holidays,
       holidays_to = "Holiday"
     )$metareport[[1]][date %in% as.Date(holidays), unique(day_of_week)]),
     "Holiday"
   )
   expect_error(
-    enw_preprocess_data(nat_germany_hosp, holidays = junk)
+    enw_preprocess_data(nat_germany_hosp, max_delay = 20, holidays = junk)
   )
 })
 

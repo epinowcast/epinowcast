@@ -12,6 +12,11 @@
 #'  * "posterior_prediction" which returns summarised posterior predictions for
 #'  the observations after fitting using [enw_pp_summary()].
 #'
+#' @param max_delay Maximum delay to which nowcasts should be summarised. Must
+#' be equal (default) or larger than the modelled maximum delay. If it is
+#' larger, then nowcasts for unmodelled dates are added by assuming that case
+#' counts beyond the modelled maximum delay are fully observed.
+#'
 #' @param ... Additional arguments passed to summary specified by `type`.
 #'
 #' @family epinowcast
@@ -37,16 +42,19 @@
 summary.epinowcast <- function(object, type = c(
                                  "nowcast", "nowcast_samples",
                                  "fit", "posterior_prediction"
-                               ), ...) {
+                               ), max_delay = object$max_delay, ...) {
   type <- match.arg(type)
+  arg_max_delay <- max_delay # nolint
 
   s <- with(object, switch(type,
     nowcast = enw_nowcast_summary(
-      fit[[1]], latest[[1]], timestep = timestep[[1]], ...
+      fit = fit[[1]], obs = latest[[1]], max_delay = arg_max_delay,
+      timestep = timestep[[1]], ...
     ),
     nowcast_samples = enw_nowcast_samples(
-      fit[[1]], latest[[1]], timestep = timestep[[1]], ...
-    ),
+      fit = fit[[1]], obs = latest[[1]], max_delay = arg_max_delay,
+      timestep = timestep[[1]], ...
+      ),
     fit = enw_posterior(fit[[1]], ...),
     posterior_prediction = enw_pp_summary(fit[[1]], new_confirm[[1]], ...),
     cli::cli_abort("unimplemented type: {type}")

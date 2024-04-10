@@ -7,8 +7,9 @@
 enw_nowcast_summary(
   fit,
   obs,
-  probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95),
-  timestep = "day"
+  max_delay = NULL,
+  timestep = "day",
+  probs = c(0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95)
 )
 }
 \arguments{
@@ -20,13 +21,18 @@ most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
 output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 
+\item{max_delay}{Maximum delay to which nowcasts should be summarised. Must
+be equal (default) or larger than the modelled maximum delay. If it is
+larger, then nowcasts for unmodelled dates are added by assuming that case
+counts beyond the modelled maximum delay are fully observed.}
+
+\item{timestep}{The timestep to used. This can be a string ("day",
+"week", "month") or a numeric whole number representing the number of days.}
+
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,
 and 95\% quantiles which are also the minimum set required for
 plotting functions to work.}
-
-\item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
 }
 \value{
 A \code{data.frame} summarising the model posterior nowcast prediction.
@@ -42,7 +48,11 @@ the supplied \code{\link[=summary.epinowcast]{summary.epinowcast()}} method.
 }
 \examples{
 fit <- enw_example("nowcast")
-enw_nowcast_summary(fit$fit[[1]], fit$latest[[1]])
+enw_nowcast_summary(
+  fit$fit[[1]],
+  fit$latest[[1]],
+  fit$max_delay
+  )
 }
 \seealso{
 \code{\link[=summary.epinowcast]{summary.epinowcast()}}
