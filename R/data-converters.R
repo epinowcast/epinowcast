@@ -5,6 +5,7 @@
 #' observations), and `new_confirm` (incident observations by reference and
 #' report date).
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_add_incidence
 #' @inheritParams enw_preprocess_data
 #'
@@ -42,17 +43,18 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' date).
 #'
 #' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
-#' counts (for calculated incidence of observations) be set to zero. Currently
+#' counts (for calculated incidence of observations) be set to zero? Currently
 #' downstream modelling does not support negative counts and so setting must be
 #' TRUE if intending to use [epinowcast()].
 #'
 #' @param copy Should `obs` be copied (default) or modified in place?
 #'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #'
 #' @return The input `data.frame` with a new variable `new_confirm`. If
-#' `max_confirm` was present in the `data.frame` then the proportion
-#' reported on each day (`prop_reported`) is also added.
+#' `max_confirm` is present in the `data.frame`, then the proportion
+#' reported on each day (`prop_reported`) will also be added.
 #'
 #' @family dataconverters
 #' @export
@@ -181,8 +183,9 @@ enw_linelist_to_incidence <- function(linelist,
   if (max_delay < obs_delay) {
     cli::cli_inform(
       paste0(
-        "Using the maximum observed delay of {obs_delay} days as greater than ",
-        "the maximum specified to complete the incidence data."
+        "Using the maximum observed delay of {obs_delay} days ",
+        "to complete the incidence data, as this is greater than ",
+        "the user-specified maximum delay."
       )
     )
     max_delay <- obs_delay
@@ -266,8 +269,11 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
 #' @return The input `data.frame` with a new variable `new_confirm`. If
 #' `max_confirm` was present in the `data.frame` then the proportion
 #' reported on each day (`prop_reported`) is also added.
+#'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
+#' @keywords internal
 #' @export
 #' @importFrom lifecycle deprecate_warn
 #' @examples
@@ -296,8 +302,11 @@ enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
 #' report date).
 #'
 #' @return The input `data.frame` with a new variable `confirm`.
+#'
+#' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #' @family dataconverters
+#' @keywords internal
 #' @export
 #' @importFrom lifecycle deprecate_warn
 #' @examples

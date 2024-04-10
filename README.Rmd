@@ -107,8 +107,6 @@ list.files(
 
 </details>
 
-## Contributors
-
 ## Contributing
 
 We welcome contributions and new contributors! We particularly appreciate help on [identifying and identified issues](https://github.com/epinowcast/epinowcast/issues). Please check and add to the issues, and/or add a [pull request](https://github.com/epinowcast/epinowcast/pulls) and see our [contributing guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md) for more information.

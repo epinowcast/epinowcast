@@ -7,7 +7,7 @@
 enw_preprocess_data(
   obs,
   by = NULL,
-  max_delay = 20,
+  max_delay,
   timestep = "day",
   set_negatives_to_zero = TRUE,
   ...,
@@ -25,18 +25,30 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
-\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
-distribution. Computation scales non-linearly with this setting so consider
-what maximum makes sense for your data carefully. Note that this is zero
-indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay). If a \code{max_delay} greater
-than the maximum delay in the data is supplied then \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
-will throw a warning but in some cases this may be appropriate (e.g. if
-at the beginning of a time series). In these cases the user should check the
-model specification carefully as the model will be extrapolating beyond the
-observed data.}
+\item{max_delay}{The maximum number of days to model in the delay
+distribution. If not specified the maximum observed delay is assumed to be
+the true maximum delay in the model. Otherwise, an integer greater than or
+equal to 1 can be specified. Observations with delays larger then the maximum
+delay will be dropped. If the specified maximum delay is too short, nowcasts
+can be biased as important parts of the true delay distribution are cut off.
+At the same time, computational cost scales non-linearly with this setting,
+so you want the maximum delay to be as long as necessary, but not much
+longer.
+
+Steps to take to determine the maximum delay:
+\itemize{
+\item Consider what is realistic and relevant for your application.
+\item Check the proportion of observations reported (\code{prop_reported})
+by delay in the \code{new_confirm} output of \code{enw_preprocess_obs}.
+\item Use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a candidate \code{max_delay}.
+\item If in doubt, check if increasing the maximum delay noticeably changes the
+delay distribution or nowcasts as estimated by \code{epinowcast}. If it does,
+your maximum delay may still be too short.
+}
+
+Note that delays are zero indexed and so include the reference date and
+\code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
+no delay).}
 
 \item{timestep}{The timestep to used in the process model (i.e. the
 reference date model). This can be a string ("day", "week", "month") or a
@@ -45,7 +57,7 @@ have this timestep then you may wish to make use of
 \code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 
 \item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero. Currently
+counts (for calculated incidence of observations) be set to zero? Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
 
@@ -61,7 +73,7 @@ A data.table containing processed observations as a series of nested
 data.frames as well as variables containing metadata. These are:
 \itemize{
 \item \code{obs}: (observations with the addition of empirical reporting proportions
-and and restricted to the specified maximum delay).
+and restricted to the specified maximum delay).
 \item \code{new_confirm}: Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.
 \item \code{latest}: The latest available observations.
@@ -71,13 +83,13 @@ the standard reporting triangle matrix format.
 \item \code{metareference}: Metadata reference dates derived from observations.
 \item \code{metrareport}: Metadata for report dates.
 \item \code{metadelay}: Metadata for reporting delays produced using
-\code{\link[=enw_delay_metadata]{enw_delay_metadata()}}.
+\code{\link[=enw_metadata_delay]{enw_metadata_delay()}}.
+\item \code{max_delay}: Maximum delay to be modelled by epinowcast.
 \item \code{time}: Numeric, number of timepoints in the data.
 \item \code{snapshots}: Numeric, number of available data snapshots to use for
 nowcasting.
 \item \code{groups}: Numeric, Number of groups/strata in the supplied observations
 (set using \code{by}).
-\item \code{max_delay}: Numeric, the maximum delay in the processed data
 \item \code{max_date}: The maximum available report date.
 }
 }
@@ -98,6 +110,10 @@ longer \code{max_delay} may be appropriate). Also note that if missing reference
 or report dates are suspected to occur in your data then these need to be
 completed with \code{\link[=enw_complete_dates]{enw_complete_dates()}}.
 }
+\details{
+If \code{max_delay} is numeric, it will be internally coerced to integer
+using \code{\link[=as.integer]{as.integer()}}).
+}
 \examples{
 library(data.table)
 
@@ -117,7 +133,6 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_metadata}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
@@ -125,6 +140,7 @@ Preprocessing functions
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
+\code{\link{enw_metadata_delay}()},
 \code{\link{enw_metadata}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_reporting_triangle_to_long}()},

@@ -11,18 +11,20 @@ enw_reps_with_complete_refs(new_confirm, max_delay, by = NULL, copy = TRUE)
 \item{new_confirm}{\code{new_confirm} \code{data.frame} output from
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 
-\item{max_delay}{Numeric defaults to 20 and needs to be greater than or equal
-to 1 and an integer (internally it will be coerced to one using
-\code{\link[=as.integer]{as.integer()}}). The maximum number of days to include in the delay
-distribution. Computation scales non-linearly with this setting so consider
-what maximum makes sense for your data carefully. Note that this is zero
-indexed and so includes the reference date and \code{max_delay - 1} other days
-(i.e. a \code{max_delay} of 1 corresponds with no delay). If a \code{max_delay} greater
-than the maximum delay in the data is supplied then \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}
-will throw a warning but in some cases this may be appropriate (e.g. if
-at the beginning of a time series). In these cases the user should check the
-model specification carefully as the model will be extrapolating beyond the
-observed data.}
+\item{max_delay}{The maximum number of days to model in the delay
+distribution. Must be an integer greater than or equal to 1. Observations
+with delays larger then the maximum delay will be dropped. If the specified
+maximum delay is too short, nowcasts can be biased as important parts of the
+true delay distribution are cut off. At the same time, computational cost
+scales non-linearly with this setting, so you want the maximum delay to be as
+long as necessary, but not much longer. Consider what delays are realistic
+for your application, and when in doubt, check if increasing the maximum
+delay noticeably changes the delay distribution or nowcasts as estimated by
+epinowcast. If it does, your maximum delay may still be too short.
+Note that delays are zero indexed and so include the reference date and
+\code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
+no delay). You can use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a delay
+distribution for different maximum delays.}
 
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
