@@ -1,6 +1,14 @@
 # epinowcast 0.3.0
 
-This release brings a range of enhancements, bug fixes, and new features, reflecting the collaborative effort of a diverse group of contributors. This version introduces breaking changes, notably the adjustment of the default `max_delay` parameter in `enw_process_data()`, which now aligns with the maximum observed delay in the input data, encouraging users to tailor this setting to their specific datasets. A series of bug fixes have been implemented, addressing issues ranging from initial condition definitions in the `enw_expectation()` module to data handling functions and code quality improvements. The package infrastructure has seen significant updates, including improved search functionality on the `pkgdown` website, the adoption of an organization-level `pkgdown` theme, and expanded continuous integration tests. Model enhancements include updated internal handling of PMF discretization and support for non-parametric reference date models, alongside documentation improvements that provide clearer guidance and examples for users.
+This release brings a range of enhancements, new features, and bug fixes, reflecting the effort of a large number of contributors. It has a single breaking change, which adjusts the default `max_delay` parameter in `enw_process_data()` to be the maximum observed delay in the input data. This change aims to encourage users to tailor this setting to their specific datasets and to give them a more reasonable default if they do not.
+
+The package infrastructure has also had significant updates, including improved search functionality on the `pkgdown` website, the adoption of an organization-level `pkgdown` theme, the ability to cache Stan models across R sessions, and additional continuous integration tests.
+
+Model enhancements include updated internal handling of PMF discretization and support for non-parametric reference date models, alongside documentation improvements that provide clearer guidance and examples for users.
+
+A range of bug fixes have been implemented, including a fix for a bug in the `enw_expectation()` module that was causing issues with models containing multiple time series.
+
+Full details on the changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.3.0). To see the development timeline of this release see the [`0.3.0` project](https://github.com/orgs/epinowcast/projects/1).
 
 ## Contributors
 
