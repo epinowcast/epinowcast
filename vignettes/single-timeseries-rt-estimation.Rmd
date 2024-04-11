@@ -58,7 +58,7 @@ Unfortunately, we can't directly observe infections and the data we do observe s
 :::
 
 ::: {.alert .alert-warning}
-`epinowcast` is still in development and so the following case study has pain points and limitations that we are working on improving. If you have any suggestions or feedback please get in touch via the [issues page](https://github.com/epinowcast/epinowcast/issues). We also welcome contributions via pull requests (see our [contributing guidelines](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md).
+`epinowcast` is still in development and so the following case study has pain points and limitations that we are working on improving. If you have any suggestions or feedback please get in touch via the [issues page](https://github.com/epinowcast/epinowcast/issues). We also welcome contributions via pull requests (see our [contributing guidelines](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md).
 :::
 ## Getting setup
 
@@ -118,6 +118,7 @@ germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 germany_hosp <- germany_hosp[, .(reference_date, report_date, confirm)]
 germany_hosp
 #>        reference_date report_date confirm
+#>                <IDat>      <Date>   <int>
 #>     1:     2021-04-06  2021-04-06     149
 #>     2:     2021-04-07  2021-04-07     312
 #>     3:     2021-04-08  2021-04-08     424
@@ -149,6 +150,7 @@ germany_covid19_hosp_linelist <- germany_covid19_hosp |>
 
 germany_covid19_hosp_linelist
 #>                 id reference_date location age_group report_date delay
+#>              <int>         <IDat>   <fctr>    <fctr>      <IDat> <int>
 #>        1:        1     2021-04-06       DE       00+  2021-04-06     0
 #>        2:        2     2021-04-06       DE       00+  2021-04-06     0
 #>        3:        3     2021-04-06       DE       00+  2021-04-06     0
@@ -175,7 +177,9 @@ incidence_from_linelist <- enw_linelist_to_incidence(
 )
 
 incidence_from_linelist
+#> Key: <age_group, location>
 #>          age_group location report_date reference_date new_confirm confirm
+#>             <fctr>   <fctr>      <IDat>         <IDat>       <int>   <int>
 #>       1:     00-04    DE-BY  2021-04-06           <NA>           0       0
 #>       2:     00-04    DE-BY  2021-04-07           <NA>           0       0
 #>       3:     00-04    DE-BY  2021-04-08           <NA>           0       0
@@ -188,6 +192,7 @@ incidence_from_linelist
 #> 2049596:       80+    DE-TH  2021-10-20     2021-10-19           0       1
 #> 2049597:       80+    DE-TH  2021-10-20     2021-10-20           0       0
 #>          delay
+#>          <int>
 #>       1:     0
 #>       2:     1
 #>       3:     2
@@ -230,6 +235,7 @@ rt_germany <- complete_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-07-01")
 rt_germany
 #>       report_date reference_date confirm new_confirm delay
+#>            <IDat>         <IDat>   <int>       <int> <int>
 #>    1:  2021-05-01     2021-05-01     234         234     0
 #>    2:  2021-05-02     2021-05-01     352         118     1
 #>    3:  2021-05-03     2021-05-01     391          39     2
@@ -251,6 +257,7 @@ retro_germany <- complete_germany_hosp |>
   enw_filter_reference_dates(latest_date = "2021-07-01")
 retro_germany
 #>       report_date reference_date confirm new_confirm delay
+#>            <IDat>         <IDat>   <int>       <int> <int>
 #>    1:  2021-05-01     2021-05-01     234         234     0
 #>    2:  2021-05-02     2021-05-01     352         118     1
 #>    3:  2021-05-03     2021-05-01     391          39     2
@@ -272,6 +279,7 @@ latest_germany_hosp <- retro_germany |>
   enw_latest_data()
 head(latest_germany_hosp, n = 10)
 #>     reference_date report_date confirm new_confirm delay
+#>             <IDat>      <IDat>   <int>       <int> <int>
 #>  1:     2021-05-01  2021-08-01    1007           0    92
 #>  2:     2021-05-02  2021-08-01     781           0    91
 #>  3:     2021-05-03  2021-08-01     467           0    90
@@ -524,11 +532,17 @@ Before fitting the model we have just defined we need to preprocess the data in 
 rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
 rt_germany_pobs
 #>                     obs          new_confirm             latest
+#>                  <list>               <list>             <list>
 #> 1: <data.table[1425x8]> <data.table[1425x9]> <data.table[62x8]>
-#>    missing_reference  reporting_triangle      metareference          metareport
-#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]> <data.table[91x10]>
-#>             metadelay time snapshots by groups max_delay   max_date timestep
-#> 1: <data.table[30x5]>   62        62         1        30 2021-07-01      day
+#>    missing_reference  reporting_triangle      metareference
+#>               <list>              <list>             <list>
+#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]>
+#>             metareport          metadelay max_delay  time snapshots     by
+#>                 <list>             <list>     <num> <int>     <int> <list>
+#> 1: <data.table[91x10]> <data.table[30x5]>        30    62        62       
+#>    groups   max_date timestep
+#>     <int>     <IDat>   <char>
+#> 1:      1 2021-07-01      day
 ```
 
 and do the same for the retrospective data
@@ -538,13 +552,17 @@ and do the same for the retrospective data
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
 retro_germany_pobs
 #>                     obs          new_confirm             latest
+#>                  <list>               <list>             <list>
 #> 1: <data.table[1860x8]> <data.table[1860x9]> <data.table[62x8]>
 #>    missing_reference  reporting_triangle      metareference
+#>               <list>              <list>             <list>
 #> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]>
-#>              metareport          metadelay time snapshots by groups max_delay
-#> 1: <data.table[120x10]> <data.table[30x5]>   62        62         1        30
-#>      max_date timestep
-#> 1: 2021-07-30      day
+#>              metareport          metadelay max_delay  time snapshots
+#>                  <list>             <list>     <num> <int>     <int>
+#> 1: <data.table[120x10]> <data.table[30x5]>        30    62        62
+#>        by groups   max_date timestep
+#>    <list>  <int>     <IDat>   <char>
+#> 1:             1 2021-07-30      day
 ```
 
 ### Fitting the `epinowcast` model
@@ -598,6 +616,7 @@ germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+#> Error in expectation_module(data = rt_germany_pobs): object 'rt_formula' not found
 ```
 
 ::: {.alert .alert-warning}
@@ -616,6 +635,7 @@ retro_germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+#> Error in expectation_module(data = retro_germany_pobs): object 'rt_formula' not found
 ```
 
 ::: {.alert .alert-warning}
