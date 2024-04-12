@@ -4,55 +4,22 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content="Tools to enable flexible and efficient hierarchical nowcasting of
-    right-truncated epidemiological time-series using a semi-mechanistic
-    Bayesian model with support for a range of reporting and generative
-    processes. Nowcasting, in this context, is gaining situational awareness
-    using currently available observations and the reporting patterns of
-    historical observations. This can be useful when tracking the spread of
-    infectious disease in real-time: without nowcasting, changes in trends can
-    be obfuscated by partial reporting or their detection may be delayed due to
-    the use of simpler methods like truncation. While the package has been
-    designed with epidemiological applications in mind, it could be applied
-    to any set of right-truncated time-series count data.">
-<!-- Inform modern browsers that this page supports both dark and light color schemes,
-  and the page author prefers light. --><meta name="color-scheme" content="dark light">
-<script>
-  // If `prefers-color-scheme` is not supported, fall back to light mode.
-  // i.e. In this case, inject the `light` CSS before the others, with
-  // no media filter so that it will be downloaded with highest priority.
-  if (window.matchMedia("(prefers-color-scheme: dark)").media === "not all") {
-    document.documentElement.style.display = "none";
-    document.head.insertAdjacentHTML(
-      "beforeend",
-      "<link id=\"css\" rel=\"stylesheet\" href=\"https://bootswatch.com/5/flatly/bootstrap.css\" onload=\"document.documentElement.style.display = ''\">"
-    );
-  }
-</script><title>Flexible Hierarchical Nowcasting • epinowcast</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexible Hierarchical Nowcasting • epinowcast</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="apple-touch-icon.png">
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="apple-touch-icon-60x60.png">
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Flexible Hierarchical Nowcasting">
-<meta property="og:description" content="Tools to enable flexible and efficient hierarchical nowcasting of
-    right-truncated epidemiological time-series using a semi-mechanistic
-    Bayesian model with support for a range of reporting and generative
-    processes. Nowcasting, in this context, is gaining situational awareness
-    using currently available observations and the reporting patterns of
-    historical observations. This can be useful when tracking the spread of
-    infectious disease in real-time: without nowcasting, changes in trends can
-    be obfuscated by partial reporting or their detection may be delayed due to
-    the use of simpler methods like truncation. While the package has been
-    designed with epidemiological applications in mind, it could be applied
-    to any set of right-truncated time-series count data.">
-<meta property="og:image" content="package.epinowcast.org/reference/figures/README-nowcast-1.png">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<script src="pkgdown.js"></script><meta property="og:title" content="Flexible Hierarchical Nowcasting">
+<meta property="og:description" content="Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.">
+<meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png">
 <meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:creator" content="@seabbs">
@@ -60,447 +27,214 @@
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-<![endif]--><!-- Flatly Theme - Light  --><link id="css-light" rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-<!-- Darkly Theme - Dark --><link id="css-dark" rel="stylesheet" href="https://bootswatch.com/5/darkly/bootstrap.css" media="(prefers-color-scheme: dark)">
-<!-- preferably CSS --><link rel="stylesheet" href="preferably.css">
-<link id="css-code-light" rel="stylesheet" href="code-color-scheme-light.css" media="(prefers-color-scheme: light), (prefers-color-scheme: no-preference)">
-<link id="css-code-dark" rel="stylesheet" href="code-color-scheme-dark.css" media="(prefers-color-scheme: dark)">
-<script src="darkswitch.js"></script>
+<![endif]-->
 </head>
-<body>
-    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+<body data-spy="scroll" data-target="#toc">
     
 
-    <nav class="navbar fixed-top navbar-dark navbar-expand-lg bg-primary"><div class="container">
-    
-    <a class="navbar-brand me-2" href="index.html">epinowcast</a>
+    <div class="container template-home">
+      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="index.html">epinowcast</a>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.0</span>
+      </span>
+    </div>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.2.2</small>
-
-    
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div id="navbar" class="collapse navbar-collapse ms-2">
-      <ul class="navbar-nav me-auto">
-<li class="nav-item">
-  <a class="nav-link" href="reference/index.html">Reference</a>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="articles/epinowcast.html">Get started</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-model-definitions">Model definitions</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-model-definitions">
-    <a class="dropdown-item" href="articles/model.html">Model definition and implementation</a>
-    <a class="dropdown-item" href="articles/distributions.html">Discretised distributions</a>
-  </div>
+<li>
+  <a href="reference/index.html">Reference</a>
 </li>
-<li class="nav-item dropdown">
-  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-case-studies">Case studies</a>
-  <div class="dropdown-menu" aria-labelledby="dropdown-case-studies">
-    <a class="dropdown-item" href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
-  </div>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li class="divider">
+    </li>
+<li class="dropdown-header">Model details</li>
+    <li>
+      <a href="articles/model.html">Model definition and implementation</a>
+    </li>
+    <li>
+      <a href="articles/distributions.html">Discretised distributions</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Case studies</li>
+    <li>
+      <a href="articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a>
+    </li>
+    <li>
+      <a href="articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a>
+    </li>
+    <li class="divider">
+    </li>
+<li class="dropdown-header">Working with epinowcast</li>
+    <li>
+      <a href="articles/stan-help.html">Resources to help with model fitting using Stan</a>
+    </li>
+  </ul>
 </li>
-<li class="nav-item">
-  <a class="nav-link" href="news/index.html">Changelog</a>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
-<form class="form-inline my-2 my-lg-0" role="search">
-        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
-</form>
-
-      <ul class="navbar-nav">
-<li class="nav-item">
-  <a class="external-link nav-link" href="https://github.com/epinowcast/epinowcast/" aria-label="github">
-    <span class="fab fa fab fa-github fa-lg"></span>
+<ul class="nav navbar-nav navbar-right">
+<li>
+  <a href="https://github.com/epinowcast/epinowcast/" class="external-link">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
-
-        
-        <li>
-          <a class="external-link nav-link" id="css-toggle-btn" aria-label="github">
-            <span class="fas fa fas fa-adjust fa-lg"></span>
-          </a>
-        </li>
-        
-        
-        
       </ul>
 </div>
-
-    
+<!--/.nav-collapse -->
   </div>
-</nav><div class="container template-home">
-<div class="row">
-  <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header">
-<img src="logo.png" class="logo" alt=""><h1 id="flexible-hierarchical-nowcasting-">Flexible hierarchical nowcasting 
-<a class="anchor" aria-label="anchor" href="#flexible-hierarchical-nowcasting-"></a>
-</h1>
+<!--/.container -->
 </div>
-<p><a href="https://www.tidyverse.org/lifecycle/#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a> <a href="https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/epinowcast/epinowcast/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://app.codecov.io/gh/epinowcast/epinowcast" class="external-link"><img src="https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></p>
-<p><a href="https://epinowcast.r-universe.dev/" class="external-link"><img src="https://epinowcast.r-universe.dev/badges/epinowcast" alt="Universe"></a> <a href="https://github.com/epinowcast/epinowcast/blob/master/LICENSE.md/" class="external-link"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="MIT license"></a> <a href="https://github.com/epinowcast/epinowcast/graphs/contributors" class="external-link"><img src="https://img.shields.io/github/contributors/epinowcast/epinowcast" alt="GitHub contributors"></a></p>
-<p><a href="https://zenodo.org/badge/latestdoi/422611952" class="external-link"><img src="https://zenodo.org/badge/422611952.svg" alt="DOI"></a></p>
-<p>Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.</p>
+<!--/.navbar -->
+
+      
+
+      </header><div class="row">
+  <div class="contents col-md-9">
+<div class="section level1">
+<div class="page-header"><h1 id="flexible-hierarchical-nowcasting-">Flexible Hierarchical Nowcasting <a href="https://package.epinowcast.org"><img src="reference/figures/logo.png" align="right" height="139"></a>
+<a class="anchor" aria-label="anchor" href="#flexible-hierarchical-nowcasting-"></a>
+</h1></div>
+<!-- badges: start -->
+
 <div class="section level2">
-<h2 id="getting-started-and-learning-more">Getting started and learning more<a class="anchor" aria-label="anchor" href="#getting-started-and-learning-more"></a>
+<h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h2>
-<p>This README is a good place to get started with <code>epinowcast</code>, in particular the following installation and quick start sections. As you make use of the package, or if your problem requires a richer feature set than presented here, we also provide a range of other documentation, case studies, and spaces for the community to interact with each other. Below is a short list of current resources.</p>
-<ul>
-<li><p><a href="https://package.epinowcast.org/">Package website</a>: This includes a function reference, model outline, and case studies making use of the package. This site refers to the release version of our package which can be installed from our Universe or from the latest GitHub release (see installation instructions). The development version of our documentation (corresponding to our <code>main</code> branch on GitHub) is available <a href="https://package.epinowcast.org/dev/">here</a>.</p></li>
-<li><p><a href="https://www.epinowcast.org/" class="external-link">Organisation website</a>: This includes links to our other resources as well as guest posts from community members and schedules for any related seminars being run by community members.</p></li>
-<li><p><a href="https://github.com/epinowcast/epinowcast/tree/main/inst/examples" class="external-link">Directory of example scripts</a>: Not as fleshed out as our complete case studies these scripts are used during package development and each showcase a subset of package functionality. Often newly introduced features will be explored here before surfacing in other areas of our documentation.</p></li>
-<li><p><a href="https://community.epinowcast.org/" class="external-link">Community forum</a>: Our community forum is where development of methods and tools is discussed, along with related research from our members and discussions between users. If you are interested in real-time analysis of infectious disease this is likely a good place to start regardless of if you end up making use of <code>epinowcast</code>.</p></li>
-</ul>
+<p>Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="section level3">
-<h3 id="installing-the-package">Installing the package<a class="anchor" aria-label="anchor" href="#installing-the-package"></a>
-</h3>
-<p>Install the latest released version of the package with:</p>
+<details><summary>
+Installing the package
+</summary><p>You can install the latest released version using the normal <code>R</code> function, though you need to point to <code>r-universe</code> instead of CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"epinowcast"</span>, repos <span class="op">=</span> <span class="st">"https://epinowcast.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
-<p>Alternatively, install the development version (whilst we strive to limit breaking changes or the introduction of bugs during development this version may contain both) from GitHub using the following,</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"epinowcast"</span>, repos <span class="op">=</span> <span class="st">"https://epinowcast.r-universe.dev"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, you can use the <a href="https://remotes.r-lib.org/" class="external-link"><code>remotes</code> package</a> to install the development version from Github (warning! this version may contain breaking changes and/or bugs):</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Historical package releases can be installed from GitHub using <code>remotes</code> by adding the release tag as in the following example (which installs <a href="https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0" class="external-link"><code>0.2.0</code></a>),</p>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  <span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Similarly, you can install historical versions by specifying the release tag (e.g. this installs <a href="https://github.com/epinowcast/epinowcast/releases/tag/v0.2.0" class="external-link"><code>0.2.0</code></a>):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, ref <span class="op">=</span> <span class="st">"v0.2.0"</span><span class="op">)</span></span></code></pre></div>
-<p><em>Note: A similar method can be used to install a particular commit of the package which may be useful for some users who are unable to use a fixed release but concerned about the stability of their dependencies.</em></p>
-</div>
-<div class="section level3">
-<h3 id="installing-cmdstan">Installing CmdStan<a class="anchor" aria-label="anchor" href="#installing-cmdstan"></a>
-</h3>
-<p>If you don’t already have CmdStan installed then, in addition to installing <code>epinowcast</code>, it is also necessary to install CmdStan using <code>cmdstanr</code>’s <code>install_cmdstan()</code> function to enable model fitting in <code>epinowcast</code>. A suitable C++ toolchain is also required. Instructions are provided in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with <code>cmdstanr</code></em></a> vignette. See the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code> documentation</a> for further details and support.</p>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span></span>
+<span>  <span class="st">"epinowcast/epinowcast"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span>, ref <span class="op">=</span> <span class="st">"v0.2.0"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><em>Note: You can also use that last approach to install a specific commit if needed, e.g. if you want to try out a specific unreleased feature, but not the absolute latest developmental version.</em></p>
+</details><details><summary>
+Installing CmdStan
+</summary><p>If you wish to do model fitting and nowcasting, you will need to install <a href="https://mc-stan.org/users/interfaces/cmdstan" class="external-link">CmdStan</a>, which also entails having a suitable C++ toolchain setup. We recommend using the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>cmdstanr</code> package</a>. The Stan team provides instructions in the <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link"><em>Getting started with <code>cmdstanr</code></em></a> vignette, with other details and support at the <a href="https://mc-stan.org/cmdstanr/" class="external-link">package site</a> along with some key instructions available in the <a href="https://package.epinowcast.org/articles/stan-help.html#toolchain">Stan resources package vignette</a>, but the brief version is:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><em>Note: This install process can be sped up using the <code>cores</code> argument and past versions can be installed using the <code>version</code> argument (which may be useful if install historical package releases).</em></p>
-</div>
-<div class="section level3">
-<h3 id="docker">Docker<a class="anchor" aria-label="anchor" href="#docker"></a>
-</h3>
-<p>As an alternative to local installation we provide a Docker image with <code>epinowcast</code> and all dependencies installed. This can be used to run <code>epinowcast</code> without installing dependencies locally. The image is available <a href="https://github.com/orgs/epinowcast/packages/container/package/epinowcast" class="external-link">here</a>.</p>
-</div>
+<code class="sourceCode R"><span><span class="co"># if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"cmdstanr"</span>, repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://mc-stan.org/r-packages/"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># once `cmdstanr` is installed:</span></span>
+<span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><em>Note: You can speed up CmdStan installation using the <code>cores</code> argument. If you are installing a particular version of <code>epinowcast</code>, you may also need to install a past version of CmdStan, which you can do with the <code>version</code> argument.</em></p>
+</details><details><summary>
+Alternative: Docker
+</summary><p>We also provide a <a href="https://www.docker.com/get-started/" class="external-link">Docker</a> image with <a href="https://github.com/orgs/epinowcast/packages/container/package/epinowcast" class="external-link"><code>epinowcast</code> and all dependencies installed</a>. You can use this image to run <code>epinowcast</code> without installing dependencies.</p>
+</details>
 </div>
 <div class="section level2">
-<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+<h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
 </h2>
-<p>In this quick start, we use the example of COVID-19 hospitalisations in Germany to demonstrate the specification and fitting of a simple nowcasting model using <code>epinowcast</code>. Examples using more complex models are available in the package vignettes and in the papers referenced in the literature vignette.</p>
-<div class="section level3">
-<h3 id="package">Package<a class="anchor" aria-label="anchor" href="#package"></a>
-</h3>
-<p>In addition to <code>epinowcast</code>, this quick start makes use of <code>data.table</code> and <code>ggplot2</code>, which are both installed when <code>epinowcast</code> is installed.</p>
+<p>As you use the package, the documentation available via <code>?enw_</code> should be your first stop for troubleshooting. We also provide a range of other documentation, case studies, and community spaces to ask (and answer!) questions:</p>
+<details><summary>
+Package Website
+</summary><p>The <a href="https://package.epinowcast.org/"><code>epinowcast</code> website</a> includes a function reference, model outline, and case studies using the package. The site mainly concerns the release version, but you can also find documentation for <a href="https://package.epinowcast.org/dev/">the latest development version</a>.</p>
+</details><details><summary>
+R Vignettes
+</summary><p>We have created <a href="https://package.epinowcast.org/articles">package vignettes</a> to help you <a href="https://package.epinowcast.org/articles/epinowcast.html">get started nowcasting</a> and to <a href="https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html">highlight other features with case studies</a>.</p>
+</details><details><summary>
+Organisation Website
+</summary><p>Our <a href="https://www.epinowcast.org/" class="external-link">organisation website</a> includes links to other resources, <a href="https://www.epinowcast.org/blog.html" class="external-link">guest posts</a>, and <a href="https://www.epinowcast.org/seminars.html" class="external-link">seminar schedule</a> for both upcoming and past recordings.</p>
+</details><details><summary>
+Community Forum
+</summary><p>Our <a href="https://community.epinowcast.org/" class="external-link">community forum</a> has areas for <a href="https://community.epinowcast.org/c/interface/15" class="external-link">question and answer</a> and <a href="https://community.epinowcast.org/c/projects/11" class="external-link">considering new methods and tools</a>, among others. If you are generally interested in real-time analysis of infectious disease, you may find this useful even if do not use <code>epinowcast</code>.</p>
+</details><details><summary>
+Package Analysis Scripts
+</summary><p>In addition to the vignettes, the package also comes with <a href="https://github.com/epinowcast/epinowcast/tree/main/inst/examples" class="external-link">example analyses</a>. These are not as polished as the vignettes, but we typically explore new features with these and they may help you if you are using a development version. After installing <code>epinowcast</code>, you can find them via:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org">epinowcast</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a>
-</h3>
-<p>Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data. For this, we need to count cases both by when they occurred (often called “reference date”) and by when they were reported (often called “report date”). Then, the difference between the reference date and the report date is the reporting delay. For this quick start, we use data sourced from the <a href="https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence" class="external-link">Robert Koch Institute via the Germany Nowcasting hub</a>. The data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.</p>
-<p>We first filter for a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data. Then, we create the nowcast target which is the latest available hospitalisations by date of positive test. This will allow us to visualise how our nowcast made at the time compares to what was ultimately reported.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nat_germany_hosp</span> <span class="op">&lt;-</span></span>
-<span>  <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"00+"</span><span class="op">]</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-01"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">retro_nat_germany</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>remove_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
-<span><span class="va">retro_nat_germany</span></span>
-<span><span class="co">#&gt;      reference_date location age_group confirm report_date</span></span>
-<span><span class="co">#&gt;   1:     2021-07-13       DE       00+      21  2021-07-13</span></span>
-<span><span class="co">#&gt;   2:     2021-07-14       DE       00+      22  2021-07-14</span></span>
-<span><span class="co">#&gt;   3:     2021-07-15       DE       00+      28  2021-07-15</span></span>
-<span><span class="co">#&gt;   4:     2021-07-16       DE       00+      19  2021-07-16</span></span>
-<span><span class="co">#&gt;   5:     2021-07-17       DE       00+      20  2021-07-17</span></span>
-<span><span class="co">#&gt;  ---                                                      </span></span>
-<span><span class="co">#&gt; 857:     2021-07-14       DE       00+      72  2021-08-21</span></span>
-<span><span class="co">#&gt; 858:     2021-07-15       DE       00+      69  2021-08-22</span></span>
-<span><span class="co">#&gt; 859:     2021-07-13       DE       00+      59  2021-08-21</span></span>
-<span><span class="co">#&gt; 860:     2021-07-14       DE       00+      72  2021-08-22</span></span>
-<span><span class="co">#&gt; 861:     2021-07-13       DE       00+      59  2021-08-22</span></span></code></pre></div>
-<p>This data is already in a format that can be used with <code>epinowcast</code>, as it contains</p>
-<ul>
-<li>a reference date (column <code>reference_date</code>): the date of the observation, in this example the date of a positive test</li>
-<li>a report date (column <code>report_date</code>): the date of report for a given set of observations by reference date</li>
-<li>a count (column <code>confirm</code>): the total (i.e. cumulative) number of hospitalisations by reference date and report date.</li>
-</ul>
-<p>The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see <a href="https://package.epinowcast.org/dev/reference/index.html#data-converters">Data converters</a>).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>remove_days <span class="op">=</span> <span class="fl">40</span>, include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     reference_date location age_group confirm report_date</span></span>
-<span><span class="co">#&gt;  1:     2021-07-13       DE       00+      60  2021-10-01</span></span>
-<span><span class="co">#&gt;  2:     2021-07-14       DE       00+      74  2021-10-01</span></span>
-<span><span class="co">#&gt;  3:     2021-07-15       DE       00+      69  2021-10-01</span></span>
-<span><span class="co">#&gt;  4:     2021-07-16       DE       00+      49  2021-10-01</span></span>
-<span><span class="co">#&gt;  5:     2021-07-17       DE       00+      67  2021-10-01</span></span>
-<span><span class="co">#&gt;  6:     2021-07-18       DE       00+      51  2021-10-01</span></span>
-<span><span class="co">#&gt;  7:     2021-07-19       DE       00+      36  2021-10-01</span></span>
-<span><span class="co">#&gt;  8:     2021-07-20       DE       00+      96  2021-10-01</span></span>
-<span><span class="co">#&gt;  9:     2021-07-21       DE       00+      94  2021-10-01</span></span>
-<span><span class="co">#&gt; 10:     2021-07-22       DE       00+      99  2021-10-01</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="data-preprocessing">Data preprocessing<a class="anchor" aria-label="anchor" href="#data-preprocessing"></a>
-</h3>
-<p>Before modelling, the input data needs to be converted into the “reporting triangle” format (see <a href="https://package.epinowcast.org/articles/model">our model description for details</a>). We also need to determine metadata to facilitate the model specification. This includes the number of days of data to use for the reference and report modules, the maximum delay to consider, and, optionally, a grouping (i.e. age group, location, or both) of observations. We process reported data into the format required for <code>epinowcast</code> and return it in a <code>data.table</code>. At this stage, we need to specify a grouping (i.e age, location) if any.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
-<span><span class="va">pobs</span></span>
-<span><span class="co">#&gt;                    obs          new_confirm              latest</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x10]&gt;</span></span>
-<span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference          metareport</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[41x42]&gt; &lt;data.table[41x9]&gt; &lt;data.table[80x12]&gt;</span></span>
-<span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22</span></span></code></pre></div>
-<p>The returned output is in the form of a <code>data.table</code> with metadata stored as variables. It can be useful to check this output before specifying the model, just to make sure everything is as expected.</p>
-</div>
-<div class="section level3">
-<h3 id="model-specification">Model specification<a class="anchor" aria-label="anchor" href="#model-specification"></a>
-</h3>
-<p>The <code>epinowcast</code> package is designed to provide users with a flexible and customizable modelling framework. The package comes equipped with several modules that users can utilize to construct models, and also allows users to create their own modules. These ensures that models can be tailored to the user’s specific data and context.</p>
-<div class="section level4">
-<h4 id="default-nowcasting-model">Default nowcasting model<a class="anchor" aria-label="anchor" href="#default-nowcasting-model"></a>
-</h4>
-<p>The default nowcasting model in <code>epinowcast</code> consists of three modules:</p>
-<ul>
-<li>A process (expectation) module that models the expected counts by date of reference (<code>reference_date</code>)</li>
-<li>A parametric reference reporting model which models the reporting delay distribution from the date of reference</li>
-<li>A non-parametric reporting model which models differences in the reporting delay distribution by date of report (<code>report_date</code>), for example, day-of-the-week effects on the reporting delay.</li>
-</ul>
-<p>In the following sections, we specify simple models for each of these modules. The appropriateness of these specifications will vary depending on your context. See our vignettes for further details on model specification and examples of more complex models.</p>
-</div>
-<div class="section level4">
-<h4 id="process-model">Process model<a class="anchor" aria-label="anchor" href="#process-model"></a>
-</h4>
-<p>A commonly used process model in nowcasting is to model the expected counts by date of reference via a geometric random walk as this acts as a minimally informed smoothing prior and thus gives a lot of weight to the observed data. This is the default process model in <code>epinowcast</code>. Users may also specify this model for themselves using the enw_expectation() function.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">expectation_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_expectation.html">enw_expectation</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span> <span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">list.files</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, package <span class="op">=</span> <span class="st">"epinowcast"</span><span class="op">)</span>, full.names <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Here, <code>day</code> refers to the number of days from the start of the data.</p>
-<p>As the underlying process model is an exponential growth rate model (<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;C_t%20%3D%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D%20%22C_t%20=%20C_%7Bt-1%7D%20%5Cexp%5E%7Br_t%7D%22" alt="C_t = C_{t-1} \exp^{r_t}">), specifying a random effect (i.e. <code>(1 | day)</code>) on the growth rate is equivalent to a geometric random walk on expected counts by reference date. We are defining a random effect as,</p>
-<p>[ \text{day} \sim \text{Normal}(0, \sigma)](<a href="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%20%5Ctext%7Bday%7D%20%5Csim%20%5Ctext%7BNormal%7D%280%2C%20%5Csigma%29%20" class="external-link uri">https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%20%5Ctext%7Bday%7D%20%5Csim%20%5Ctext%7BNormal%7D%280%2C%20%5Csigma%29%20</a> ” \text{day} \sim \text{Normal}(0, \sigma) “)</p>
-<div class="figure">
-<img src="https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&amp;space;%5Cbg_white&amp;space;%20%5Csigma%20%5Csim%20%5Ctext%7BHalf-Normal%7D%280%2C%201%29.%20%22%20%5Csigma%20%5Csim%20%5Ctext%7BHalf-Normal%7D(0,%201).%22" alt=""><p class="caption">\sigma \sim \text{Half-Normal}(0, 1).</p>
+</details>
 </div>
-</div>
-<div class="section level4">
-<h4 id="reporting-model-by-reference-date">Reporting model by reference date<a class="anchor" aria-label="anchor" href="#reporting-model-by-reference-date"></a>
-</h4>
-<p>Our baseline assumption for the reporting delay is that it is log-normally distributed, and static over time and strata. We can specify this model using the <code><a href="reference/enw_reference.html">enw_reference()</a></code> function,</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">reference_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_reference.html">enw_reference</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
-<p>Note that the default distribution is log-normal, hence the distribution argument could be omitted here.</p>
-</div>
-<div class="section level4">
-<h4 id="reporting-effects-by-report-date">Reporting effects by report date<a class="anchor" aria-label="anchor" href="#reporting-effects-by-report-date"></a>
-</h4>
-<p>Even where there is evidence that reporting processes can be approximated by a single distribution, there may be additional reporting effects that are not captured by the reference model. For example, reporting may be lower on weekends or holidays. We can specify a model for these effects using a hazard formulation (which captures the conditional relationship between different reporting delays, see <a href="https://package.epinowcast.org/articles/model">our model description for details</a>) using the <code><a href="reference/enw_report.html">enw_report()</a></code> function. Here we specify a model with a random effect for the day of the week to capture weekly seasonality in the reporting delay.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">report_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_report.html">enw_report</a></span><span class="op">(</span><span class="op">~</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></code></pre></div>
-</div>
+<div class="section level2">
+<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
+</h2>
+<p>We welcome contributions and new contributors! We particularly appreciate help on <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">identifying and identified issues</a>. Please check and add to the issues, and/or add a <a href="https://github.com/epinowcast/epinowcast/pulls" class="external-link">pull request</a> and see our <a href="https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md" class="external-link">contributing guide</a> for more information.</p>
+<p>If you need a different underlying model for your work: <code>epinowcast</code> lets you pass your own models! If you do try new model parameterisations that expand the overall flexibility or improve the defaults, please let us know either here or on the <a href="https://community.epinowcast.org/" class="external-link">community forum</a>. We always like to hear about new use-cases, whether or not they are directed at the core <code>epinowcast</code> applications.</p>
+<div class="section level3">
+<h3 id="how-to-make-a-bug-report-or-feature-request">How to make a bug report or feature request<a class="anchor" aria-label="anchor" href="#how-to-make-a-bug-report-or-feature-request"></a>
+</h3>
+<p>Please briefly describe your problem and what output you expect in an <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issue</a>. If you have a question, please don’t open an issue. Instead, ask on our <a href="https://github.com/epinowcast/epinowcast/discussions/categories/q-a" class="external-link">Q and A page</a>. See our <a href="https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md" class="external-link">contributing guide</a> for more information.</p>
 </div>
 <div class="section level3">
-<h3 id="precompiling-the-model">Precompiling the model<a class="anchor" aria-label="anchor" href="#precompiling-the-model"></a>
+<h3 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
 </h3>
-<p>As <code>epinowcast</code> uses <code>cmdstan</code> to fit its models, it is necessary to first compile the model. This can be done using the <code><a href="reference/enw_model.html">enw_model()</a></code> function. Note that this step can be left to <code>epinowcast</code>, but here we want to use multiple cores per chain to speed up model fitting and therefore compile the model with this feature turned on.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_model.html">enw_model</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="bringing-it-all-together-fitting-the-model">Bringing it all together: Fitting the model<a class="anchor" aria-label="anchor" href="#bringing-it-all-together-fitting-the-model"></a>
-</h3>
-<p>We can now fit the model using the <a href="https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html" class="external-link">“No-U-Turn Sampler Markov chain Monte Carlo” method</a>. This is a type of Hamiltonian Monte Carlo (HMC) algorithm and is the core fitting method used by <code>cmdstan</code>. The NUTS MCMC method is efficient, automatically tunes its own parameters and is robust to correlations between parameters, making it fast and effective at generating samples from the posterior distribution. We specify fitting options using <code><a href="reference/enw_fit_opts.html">enw_fit_opts()</a></code> (note that the settings shown here are tuned for speed and may not be appropriate for many real world use cases). We also pass our preprocessed data (<code>pobs</code>), our pre-compiled model (<code>model</code>), and our model modules (<code>expectation_module</code>, <code>reference_module</code>, and <code>report_module</code>) to <code>epinowcast</code>, where they are combined and used to fit the model.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>mc.cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/epinowcast.html">epinowcast</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">pobs</span>,</span>
-<span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
-<span>  reference <span class="op">=</span> <span class="va">reference_module</span>,</span>
-<span>  report <span class="op">=</span> <span class="va">report_module</span>,</span>
-<span>  fit <span class="op">=</span> <span class="fu"><a href="reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
-<span>    save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>    chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>    iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>    show_messages <span class="op">=</span> <span class="cn">FALSE</span></span>
-<span>  <span class="op">)</span>,</span>
-<span>  model <span class="op">=</span> <span class="va">model</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="the-epinowcast-object">The <code>epinowcast</code> object<a class="anchor" aria-label="anchor" href="#the-epinowcast-object"></a>
-</h3>
-<p>The <code><a href="reference/epinowcast.html">epinowcast()</a></code> function returns an <code>epinowcast</code> object which includes diagnostic information, the data used for fitting, and the underlying <a href="https://mc-stan.org/cmdstanr/reference/CmdStanModel.html" class="external-link"><code>CmdStanModel</code> object</a>.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast</span></span>
-<span><span class="co">#&gt;                    obs          new_confirm              latest</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[860x9]&gt; &lt;data.table[860x11]&gt; &lt;data.table[41x10]&gt;</span></span>
-<span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference          metareport</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[41x42]&gt; &lt;data.table[41x9]&gt; &lt;data.table[80x12]&gt;</span></span>
-<span><span class="co">#&gt;             metadelay time snapshots by groups max_delay   max_date</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[40x4]&gt;   41        41         1        40 2021-08-22</span></span>
-<span><span class="co">#&gt;                  fit       data  fit_args samples max_rhat</span></span>
-<span><span class="co">#&gt; 1: &lt;CmdStanMCMC[42]&gt; &lt;list[99]&gt; &lt;list[7]&gt;    1000     1.01</span></span>
-<span><span class="co">#&gt;    divergent_transitions per_divergent_transitions max_treedepth</span></span>
-<span><span class="co">#&gt; 1:                     0                         0             8</span></span>
-<span><span class="co">#&gt;    no_at_max_treedepth per_at_max_treedepth run_time</span></span>
-<span><span class="co">#&gt; 1:                  88                0.088     45.1</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="summarising-and-plotting-the-nowcast">Summarising and plotting the nowcast<a class="anchor" aria-label="anchor" href="#summarising-and-plotting-the-nowcast"></a>
-</h3>
-<p>The nowcast (the combination of currently observed and predicted unobserved data) can then be summarised using</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nowcast</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>probs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     reference_date report_date .group max_confirm location age_group confirm</span></span>
-<span><span class="co">#&gt;  1:     2021-07-14  2021-08-22      1          72       DE       00+      72</span></span>
-<span><span class="co">#&gt;  2:     2021-07-15  2021-08-22      1          69       DE       00+      69</span></span>
-<span><span class="co">#&gt;  3:     2021-07-16  2021-08-22      1          47       DE       00+      47</span></span>
-<span><span class="co">#&gt;  4:     2021-07-17  2021-08-22      1          65       DE       00+      65</span></span>
-<span><span class="co">#&gt;  5:     2021-07-18  2021-08-22      1          50       DE       00+      50</span></span>
-<span><span class="co">#&gt;  6:     2021-07-19  2021-08-22      1          36       DE       00+      36</span></span>
-<span><span class="co">#&gt;  7:     2021-07-20  2021-08-22      1          94       DE       00+      94</span></span>
-<span><span class="co">#&gt;  8:     2021-07-21  2021-08-22      1          91       DE       00+      91</span></span>
-<span><span class="co">#&gt;  9:     2021-07-22  2021-08-22      1          99       DE       00+      99</span></span>
-<span><span class="co">#&gt; 10:     2021-07-23  2021-08-22      1          86       DE       00+      86</span></span>
-<span><span class="co">#&gt;     cum_prop_reported delay prop_reported    mean median        sd    mad q5</span></span>
-<span><span class="co">#&gt;  1:                 1    39             0  72.000     72 0.0000000 0.0000 72</span></span>
-<span><span class="co">#&gt;  2:                 1    38             0  69.053     69 0.2285678 0.0000 69</span></span>
-<span><span class="co">#&gt;  3:                 1    37             0  47.077     47 0.2848722 0.0000 47</span></span>
-<span><span class="co">#&gt;  4:                 1    36             0  65.181     65 0.4223949 0.0000 65</span></span>
-<span><span class="co">#&gt;  5:                 1    35             0  50.262     50 0.5400441 0.0000 50</span></span>
-<span><span class="co">#&gt;  6:                 1    34             0  36.234     36 0.4873207 0.0000 36</span></span>
-<span><span class="co">#&gt;  7:                 1    33             0  94.450     94 0.6840818 0.0000 94</span></span>
-<span><span class="co">#&gt;  8:                 1    32             0  91.718     92 0.8667337 1.4826 91</span></span>
-<span><span class="co">#&gt;  9:                 1    31             0 100.000    100 1.0654272 1.4826 99</span></span>
-<span><span class="co">#&gt; 10:                 1    30             0  87.138     87 1.1208087 1.4826 86</span></span>
-<span><span class="co">#&gt;     q95      rhat  ess_bulk  ess_tail</span></span>
-<span><span class="co">#&gt;  1:  72        NA        NA        NA</span></span>
-<span><span class="co">#&gt;  2:  70 1.0044543  774.0424  757.6304</span></span>
-<span><span class="co">#&gt;  3:  48 0.9993121  946.9098  936.9878</span></span>
-<span><span class="co">#&gt;  4:  66 0.9988098  871.2902  825.0835</span></span>
-<span><span class="co">#&gt;  5:  51 0.9987209 1058.7750 1053.2701</span></span>
-<span><span class="co">#&gt;  6:  37 1.0001560  968.1390  848.9453</span></span>
-<span><span class="co">#&gt;  7:  96 0.9987062  949.0887  827.4477</span></span>
-<span><span class="co">#&gt;  8:  93 0.9991097  880.5745  870.1764</span></span>
-<span><span class="co">#&gt;  9: 102 0.9988143  882.8099  836.2403</span></span>
-<span><span class="co">#&gt; 10:  89 0.9986048  962.7974  864.3884</span></span></code></pre></div>
-<p>Similarly, the summarised nowcast can be plotted against the latest observed data using</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, latest_obs <span class="op">=</span> <span class="va">latest_germany_hosp</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-nowcast-1.png" width="100%"></p>
-</div>
-<div class="section level3">
-<h3 id="plotting-posterior-predictions">Plotting posterior predictions<a class="anchor" aria-label="anchor" href="#plotting-posterior-predictions"></a>
-</h3>
-<p>Plotting posterior predictions can be a useful way of assessing performance and checking that the model is capturing the underlying data generation process adequately. We can do this directly on the output of <code><a href="reference/epinowcast.html">epinowcast()</a></code> using</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"posterior"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">reference_date</span><span class="op">)</span>, scale <span class="op">=</span> <span class="st">"free"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-pp-1.png" width="100%"></p>
-</div>
-<div class="section level3">
-<h3 id="using-package-functions-rather-than-s3-methods">Using package functions rather than S3 methods<a class="anchor" aria-label="anchor" href="#using-package-functions-rather-than-s3-methods"></a>
-</h3>
-<p>Rather than using S3 methods supplied for <code><a href="reference/epinowcast.html">epinowcast()</a></code> directly, package functions can also be used to extract nowcast posterior samples, summarise them, and then plot them. This is demonstrated here by plotting the 7 day incidence for hospitalisations.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># extract samples</span></span>
-<span><span class="va">samples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span>, type <span class="op">=</span> <span class="st">"nowcast_samples"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Take a 7 day rolling sum of both samples and observations</span></span>
-<span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"confirm"</span>, <span class="st">"sample"</span><span class="op">)</span></span>
-<span><span class="va">samples</span><span class="op">[</span>, <span class="op">(</span><span class="va">cols</span><span class="op">)</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">.SD</span>, <span class="va">frollsum</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span>,</span>
-<span>  .SDcols <span class="op">=</span> <span class="va">cols</span>, by <span class="op">=</span> <span class="st">".draw"</span></span>
-<span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">sample</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="co">#&gt;        reference_date report_date .group max_confirm location age_group confirm</span></span>
-<span><span class="co">#&gt;     1:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
-<span><span class="co">#&gt;     2:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
-<span><span class="co">#&gt;     3:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
-<span><span class="co">#&gt;     4:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
-<span><span class="co">#&gt;     5:     2021-07-20  2021-08-22      1          94       DE       00+     433</span></span>
-<span><span class="co">#&gt;    ---                                                                         </span></span>
-<span><span class="co">#&gt; 33996:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 33997:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt; 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093</span></span>
-<span><span class="co">#&gt;        cum_prop_reported delay prop_reported .chain .iteration .draw sample</span></span>
-<span><span class="co">#&gt;     1:                 1    33             0      1          1     1    434</span></span>
-<span><span class="co">#&gt;     2:                 1    33             0      1          2     2    435</span></span>
-<span><span class="co">#&gt;     3:                 1    33             0      1          3     3    433</span></span>
-<span><span class="co">#&gt;     4:                 1    33             0      1          4     4    435</span></span>
-<span><span class="co">#&gt;     5:                 1    33             0      1          5     5    433</span></span>
-<span><span class="co">#&gt;    ---                                                                     </span></span>
-<span><span class="co">#&gt; 33996:                 1     0             1      2        496   996   1872</span></span>
-<span><span class="co">#&gt; 33997:                 1     0             1      2        497   997   2306</span></span>
-<span><span class="co">#&gt; 33998:                 1     0             1      2        498   998   2094</span></span>
-<span><span class="co">#&gt; 33999:                 1     0             1      2        499   999   2013</span></span>
-<span><span class="co">#&gt; 34000:                 1     0             1      2        500  1000   2128</span></span>
-<span><span class="va">latest_germany_hosp_7day</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span><span class="op">)</span><span class="op">[</span></span>
-<span>  ,</span>
-<span>  <span class="va">confirm</span> <span class="op">:=</span> <span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/froll.html" class="external-link">frollsum</a></span><span class="op">(</span><span class="va">confirm</span>, n <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
-<span><span class="op">]</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">confirm</span><span class="op">)</span><span class="op">]</span></span>
-<span></span>
-<span><span class="co"># Summarise samples</span></span>
-<span><span class="va">sum_across_last_7_days</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/enw_summarise_samples.html">enw_summarise_samples</a></span><span class="op">(</span><span class="va">samples</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Plot samples</span></span>
-<span><span class="fu"><a href="reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles</a></span><span class="op">(</span><span class="va">sum_across_last_7_days</span>, <span class="va">latest_germany_hosp_7day</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-week_nowcast-1.png" width="100%"></p>
-<p>Here we see that the model is underestimating the incidence of hospitalisations that were ultimately reported. There are a range of potential reasons for this, the first being that the process model does not fully capture the trend or day of the week periodicity present in the data. See our case study vignettes for ideas on how deal with such issues.</p>
+<p>Please note that the <code>epinowcast</code> project is released with a <a href="https://github.com/epinowcast/.github/blob/main/CODE_OF_CONDUCT.md" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
-<p>If you use <code>epinowcast</code> in your work, please consider citing it using the following,</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; To cite package 'epinowcast' in publications use:</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   Abbott S, Lison A, Funk S, Pearson C, Gruson H, Guenther F (2021).</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   "epinowcast: Flexible hierarchical nowcasting." _Zenodo_.</span></span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   doi:10.5281/zenodo.5637165 &lt;https://doi.org/10.5281/zenodo.5637165&gt;,</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;https://github.com/epinowcast/epinowcast&gt;.</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; A BibTeX entry for LaTeX users is</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   @Article{,</span></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     title = {epinowcast: Flexible hierarchical nowcasting},</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     author = {Sam Abbott and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther},</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     year = {2021},</span></span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     journal = {Zenodo},</span></span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     doi = {10.5281/zenodo.5637165},</span></span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;     url = {https://github.com/epinowcast/epinowcast},</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   }</span></span></code></pre></div>
-<p>If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our <a href="https://package.epinowcast.org/articles/model.html">model outline</a>.</p>
+<p>If making use of our methodology or the methodology on which ours is based, please cite the relevant papers from our <a href="https://package.epinowcast.org/articles/model.html">model outline</a>. If you use <code>epinowcast</code> in your work, please consider citing it with <code>citation("epinowcast")</code>.</p>
 </div>
 <div class="section level2">
-<h2 id="how-to-make-a-bug-report-or-feature-request">How to make a bug report or feature request<a class="anchor" aria-label="anchor" href="#how-to-make-a-bug-report-or-feature-request"></a>
+<h2 id="contributors">Contributors<a class="anchor" aria-label="anchor" href="#contributors"></a>
 </h2>
-<p>Please briefly describe your problem and what output you expect in an <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issue</a>. If you have a question, please don’t open an issue. Instead, ask on our <a href="https://github.com/epinowcast/epinowcast/discussions/categories/q-a" class="external-link">Q and A page</a>. See our <a href="https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md" class="external-link">contributing guide</a> for more information.</p>
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<p>All contributions to this project are gratefully acknowledged using the <a href="https://github.com/ropenscilabs/allcontributors" class="external-link"><code>allcontributors</code> package</a> following the <a href="https://allcontributors.org" class="external-link">all-contributors</a> specification. Contributions of any kind are welcome!</p>
+<div class="section level3">
+<h3 id="code">Code<a class="anchor" aria-label="anchor" href="#code"></a>
+</h3>
+<p><a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs" class="external-link">seabbs</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=adrian-lison" class="external-link">adrian-lison</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk" class="external-link">sbfnk</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo" class="external-link">Bisaloo</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca" class="external-link">pearsonca</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah" class="external-link">choi-hannah</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt" class="external-link">medewitt</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone" class="external-link">pitmonticone</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam" class="external-link">jamesmbaazam</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt" class="external-link">kathsherratt</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas" class="external-link">Lnrivas</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh" class="external-link">natemcintosh</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse" class="external-link">nikosbosse</a>, <a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs" class="external-link">pratikunterwegs</a></p>
 </div>
-<div class="section level2">
-<h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
-</h2>
-<p>We welcome contributions and new contributors! We particularly appreciate help on priority problems in the <a href="https://github.com/epinowcast/epinowcast/issues" class="external-link">issues</a>. Please check and add to the issues, and/or add a <a href="https://github.com/epinowcast/epinowcast/pulls" class="external-link">pull request</a>. See our <a href="https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md" class="external-link">contributing guide</a> for more information.</p>
-<p>If interested in expanding the functionality of the underlying model note that <code>epinowcast</code> allows users to pass in their own models meaning that alternative parameterisations, for example altering the forecast model used for inferring expected observations, may be easily tested within the package infrastructure. Once this testing has been done alterations that increase the flexibility of the package model and improves its defaults are very welcome via pull request or other communication with the package authors. Even if not wanting to add your updated model to the package please do reach out as we would love to hear about your use case.</p>
+<div class="section level3">
+<h3 id="issue-authors">Issue Authors<a class="anchor" aria-label="anchor" href="#issue-authors"></a>
+</h3>
+<p><a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ateojcryan" class="external-link">teojcryan</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3AFelixGuenther" class="external-link">FelixGuenther</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Abeansrowning" class="external-link">beansrowning</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajbracher" class="external-link">jbracher</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Azsusswein" class="external-link">zsusswein</a></p>
 </div>
-<div class="section level2">
-<h2 id="code-of-conduct">Code of Conduct<a class="anchor" aria-label="anchor" href="#code-of-conduct"></a>
-</h2>
-<p>Please note that the <code>epinowcast</code> project is released with a <a href="https://package.epinowcast.org/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<div class="section level3">
+<h3 id="issue-contributors">Issue Contributors<a class="anchor" aria-label="anchor" href="#issue-contributors"></a>
+</h3>
+<p><a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajhellewell14" class="external-link">jhellewell14</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AGulfa" class="external-link">Gulfa</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3" class="external-link">parksw3</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor" class="external-link">TimTaylor</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian" class="external-link">WardBrian</a>, <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein" class="external-link">jimrothstein</a></p>
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 </div>
 </div>
-  </main><aside class="col-md-3"><div class="links">
+</div>
+  </div>
+
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/epinowcast/epinowcast/" class="external-link">Browse source code</a></li>
@@ -519,8 +253,11 @@
 <div class="community">
 <h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
-<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
-<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+<li>
+<p><a href="https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md" class="external-link">Contributing guide</a></p>
+<p><a href="https://github.com/epinowcast/.github/blob/main/STYLE_GUIDE.md" class="external-link">Style guide</a></p>
+<p><a href="https://github.com/epinowcast/.github/blob/main/CODE_OF_CONDUCT.md" class="external-link">Code of conduct</a></p>
+</li>
 </ul>
 </div>
 
@@ -541,31 +278,32 @@
 <li>Carl Pearson <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-0701-7860" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Hugo Gruson <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0002-4094-1476" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li>Felix Guenther <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-6582-1174" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Michael DeWitt <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0001-8940-1967" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
 
 
-  </aside>
+  </div>
 </div>
 
 
-    <footer><div class="copyright">
+      <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther.</p>
+<p>Developed by <a href="https://www.samabbott.co.uk/" class="external-link">Sam Abbott</a>, Adrian Lison, Sebastian Funk, Carl Pearson, Hugo Gruson, Felix Guenther, Michael DeWitt.</p>
 </div>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
-  <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.9000.</p>
 </div>
 
-    </footer>
+      </footer>
 </div>
 
   
+
 
   
 
