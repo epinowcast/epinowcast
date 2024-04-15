@@ -40,16 +40,14 @@ jobs:
           rmarkdown::render("README.Rmd")
         shell: Rscript {0}
 
-      - name: Check for README.Rmd changes
-        id: readme_changes
-        uses: dorny/paths-filter@v3
+      - name: Upload README.md as an artifact
+        uses: actions/upload-artifact@v4
         with:
-          filters: |
-            readme:
-              - 'README.Rmd'
+          name: readme
+          path: README.md
 
       - name: Create Pull Request
-        if: github.ref == 'refs/heads/main' && steps.readme_changes.outputs.readme == 'true'
+        if: github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v6
         with:
           commit-message: "Automatic README update"
