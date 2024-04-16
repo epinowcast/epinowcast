@@ -64,6 +64,9 @@
     <loc>https://package.epinowcast.org/dev/reference/check_group_date_unique.html</loc>
   </url>
   <url>
+    <loc>https://package.epinowcast.org/dev/reference/check_max_delay.html</loc>
+  </url>
+  <url>
     <loc>https://package.epinowcast.org/dev/reference/check_module.html</loc>
   </url>
   <url>
@@ -212,6 +215,9 @@
   </url>
   <url>
     <loc>https://package.epinowcast.org/dev/reference/enw_metadata.html</loc>
+  </url>
+  <url>
+    <loc>https://package.epinowcast.org/dev/reference/enw_metadata_delay.html</loc>
   </url>
   <url>
     <loc>https://package.epinowcast.org/dev/reference/enw_missing.html</loc>

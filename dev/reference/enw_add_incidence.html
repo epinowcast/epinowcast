@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.2000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,7 +83,7 @@ date).</p></dd>
 
 <dt>set_negatives_to_zero</dt>
 <dd><p>Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero. Currently
+counts (for calculated incidence of observations) be set to zero? Currently
 downstream modelling does not support negative counts and so setting must be
 TRUE if intending to use <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
 
@@ -104,8 +104,8 @@ downstream modelling</p></dd>
     
 
 <p>The input <code>data.frame</code> with a new variable <code>new_confirm</code>. If
-<code>max_confirm</code> was present in the <code>data.frame</code> then the proportion
-reported on each day (<code>prop_reported</code>) is also added.</p>
+<code>max_confirm</code> is present in the <code>data.frame</code>, then the proportion
+reported on each day (<code>prop_reported</code>) will also be added.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -142,19 +142,19 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 <span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_add_max_reported.html">enw_add_max_reported</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_add_incidence</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;reference_date, report_date&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date .group max_confirm location age_group confirm report_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;IDat&gt;  &lt;num&gt;       &lt;int&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-04-06      1         708       DE       00+     149  2021-04-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-04-06      1         708       DE       00+     289  2021-04-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-04-06      1         708       DE       00+     350  2021-04-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2021-04-06      1         708       DE       00+     402  2021-04-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2021-04-06      1         708       DE       00+     438  2021-04-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date report_date .group max_confirm location age_group confirm</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;IDat&gt;      &lt;IDat&gt;  &lt;num&gt;       &lt;int&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-04-06  2021-04-06      1         708       DE       00+     149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-04-06  2021-04-07      1         708       DE       00+     289</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-04-06  2021-04-08      1         708       DE       00+     350</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2021-04-06  2021-04-09      1         708       DE       00+     402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2021-04-06  2021-04-10      1         708       DE       00+     438</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12911:     2021-10-18      1         142       DE       00+     113  2021-10-19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12912:     2021-10-18      1         142       DE       00+     142  2021-10-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12913:     2021-10-19      1         387       DE       00+     223  2021-10-19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12914:     2021-10-19      1         387       DE       00+     387  2021-10-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12915:     2021-10-20      1         235       DE       00+     235  2021-10-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12911:     2021-10-18  2021-10-19      1         142       DE       00+     113</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12912:     2021-10-18  2021-10-20      1         142       DE       00+     142</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12913:     2021-10-19  2021-10-19      1         387       DE       00+     223</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12914:     2021-10-19  2021-10-20      1         387       DE       00+     387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12915:     2021-10-20  2021-10-20      1         235       DE       00+     235</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        cum_prop_reported new_confirm delay prop_reported</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;num&gt;       &lt;int&gt; &lt;int&gt;         &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     1:         0.2104520         149     0    0.21045198</span>
@@ -179,7 +179,7 @@ reported on each day (<code>prop_reported</code>) is also added.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.9000.</p>
 </div>
 
     </footer></div>

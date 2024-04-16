@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.2000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,16 +115,6 @@
         <dd>Aggregate observations over a given timestep for both report and reference dates.</dd>
       </dl><dl><dt>
           
-          <code><a href="enw_cumulative_to_incidence.html">enw_cumulative_to_incidence()</a></code> 
-        </dt>
-        <dd>Calculate incidence of new reports from cumulative reports</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_incidence_to_cumulative.html">enw_incidence_to_cumulative()</a></code> 
-        </dt>
-        <dd>Calculate cumulative reported cases from incidence of new reports</dd>
-      </dl><dl><dt>
-          
           <code><a href="enw_incidence_to_linelist.html">enw_incidence_to_linelist()</a></code> 
         </dt>
         <dd>Convert Aggregate Counts (Incidence) to a Line List</dd>
@@ -148,12 +138,12 @@
           
           <code><a href="enw_add_delay.html">enw_add_delay()</a></code> 
         </dt>
-        <dd>Add a delay variable</dd>
+        <dd>Add a delay variable to the observations</dd>
       </dl><dl><dt>
           
           <code><a href="enw_add_max_reported.html">enw_add_max_reported()</a></code> 
         </dt>
-        <dd>Add the maximum number of cases reported on a given day</dd>
+        <dd>Add the maximum number of reported cases for each <code>reference_date</code></dd>
       </dl><dl><dt>
           
           <code><a href="enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code> 
@@ -176,19 +166,9 @@
         <dd>Construct preprocessed data</dd>
       </dl><dl><dt>
           
-          <code><a href="enw_delay_metadata.html">enw_delay_metadata()</a></code> 
-        </dt>
-        <dd>Calculate reporting delay metadata</dd>
-      </dl><dl><dt>
-          
           <code><a href="enw_extend_date.html">enw_extend_date()</a></code> 
         </dt>
         <dd>Extend a time series with additional dates</dd>
-      </dl><dl><dt>
-          
-          <code><a href="enw_filter_delay.html">enw_filter_delay()</a></code> 
-        </dt>
-        <dd>Filter observations to restrict the maximum reporting delay</dd>
       </dl><dl><dt>
           
           <code><a href="enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> 
@@ -219,6 +199,11 @@
           <code><a href="enw_metadata.html">enw_metadata()</a></code> 
         </dt>
         <dd>Extract metadata from raw data</dd>
+      </dl><dl><dt>
+          
+          <code><a href="enw_metadata_delay.html">enw_metadata_delay()</a></code> 
+        </dt>
+        <dd>Calculate reporting delay metadata for a given maximum delay</dd>
       </dl><dl><dt>
           
           <code><a href="enw_missing_reference.html">enw_missing_reference()</a></code> 
@@ -672,6 +657,11 @@
         <dd>Check observations for uniqueness of grouping variables with respect to <code>reference_date</code> and <code>report_date</code></dd>
       </dl><dl><dt>
           
+          <code><a href="check_max_delay.html">check_max_delay()</a></code> 
+        </dt>
+        <dd>Check appropriateness of maximum delay</dd>
+      </dl><dl><dt>
+          
           <code><a href="check_module.html">check_module()</a></code> 
         </dt>
         <dd>Check a model module contains the required components</dd>
@@ -766,7 +756,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.9000.</p>
 </div>
 
     </footer></div>

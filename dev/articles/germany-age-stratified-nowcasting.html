@@ -38,7 +38,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.2.3.2000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -136,6 +136,7 @@
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="va">retro_nat_germany</span></span>
 <span><span class="co">#&gt;       reference_date location age_group confirm report_date</span></span>
+<span><span class="co">#&gt;               &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span></span>
 <span><span class="co">#&gt;    1:     2021-07-23       DE       00+      30  2021-07-23</span></span>
 <span><span class="co">#&gt;    2:     2021-07-24       DE       00+      31  2021-07-24</span></span>
 <span><span class="co">#&gt;    3:     2021-07-25       DE       00+       8  2021-07-25</span></span>
@@ -164,13 +165,17 @@
 <code class="sourceCode R"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">40</span>, by <span class="op">=</span> <span class="st">"age_group"</span><span class="op">)</span></span>
 <span><span class="va">pobs</span></span>
 <span><span class="co">#&gt;                     obs           new_confirm               latest</span></span>
+<span><span class="co">#&gt;                  &lt;list&gt;                &lt;list&gt;               &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[6020x9]&gt; &lt;data.table[6020x11]&gt; &lt;data.table[287x10]&gt;</span></span>
 <span><span class="co">#&gt;    missing_reference   reporting_triangle       metareference</span></span>
+<span><span class="co">#&gt;               &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[0x6]&gt; &lt;data.table[287x42]&gt; &lt;data.table[287x9]&gt;</span></span>
-<span><span class="co">#&gt;              metareport          metadelay time snapshots        by groups</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x5]&gt;   41       287 age_group      7</span></span>
-<span><span class="co">#&gt;    max_delay   max_date timestep</span></span>
-<span><span class="co">#&gt; 1:        40 2021-09-01      day</span></span></code></pre></div>
+<span><span class="co">#&gt;              metareport          metadelay max_delay  time snapshots</span></span>
+<span><span class="co">#&gt;                  &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[560x12]&gt; &lt;data.table[40x5]&gt;        40    41       287</span></span>
+<span><span class="co">#&gt;           by groups   max_date timestep</span></span>
+<span><span class="co">#&gt;       &lt;list&gt;  &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1: age_group      7 2021-09-01      day</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level2">
@@ -215,14 +220,16 @@ plot of chunk nowcast
 <span><span class="op">)</span></span>
 <span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">priors</span></span>
-<span><span class="co">#&gt;            variable      mean   median        sd        mad        q5       q20</span></span>
-<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1122989 1.102345 0.2281895 0.11020907 0.9399031 1.0208280</span></span>
-<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.5904395 2.590905 0.2584402 0.13109890 2.3903890 2.4775620</span></span>
-<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6440077 0.644365 0.0355626 0.01762737 0.6147604 0.6287058</span></span>
-<span><span class="co">#&gt;          q80       q95      rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt; 1: 1.2113420 1.3143065 1.0006270 910.0689 681.4586</span></span>
-<span><span class="co">#&gt; 2: 2.6921940 2.8063915 0.9996599 843.9965 728.9121</span></span>
-<span><span class="co">#&gt; 3: 0.6580964 0.6741966 1.0060478 868.6925 656.7026</span></span></code></pre></div>
+<span><span class="co">#&gt;            variable      mean   median         sd        mad        q5</span></span>
+<span><span class="co">#&gt;              &lt;char&gt;     &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1167832 1.111870 0.24248462 0.11899348 0.9284217</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.5955542 2.588280 0.26455284 0.13387878 2.3955630</span></span>
+<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6448124 0.644006 0.03615668 0.01768964 0.6163595</span></span>
+<span><span class="co">#&gt;         q20       q80       q95      rhat  ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt;       &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1.017246 1.2131640 1.3149310 0.9995619  999.0599 644.8333</span></span>
+<span><span class="co">#&gt; 2: 2.481026 2.7066080 2.8196515 0.9988661  926.5156 509.1504</span></span>
+<span><span class="co">#&gt; 3: 0.629706 0.6606462 0.6747629 1.0016629 1162.1300 810.0894</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -480,10 +487,10 @@ plot of chunk unnamed-chunk-18
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                                     elpd_diff se_diff</span></span>
 <span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0       0.0 </span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -2.9       3.6 </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -4.7       6.4 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -86.7      12.2 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -645.3      48.3</span></span></code></pre></div>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -4.5       6.3 </span></span>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -5.0       3.7 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -87.1      12.2 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -646.8      48.3</span></span></code></pre></div>
 </details><p>We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.</p>
 <p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code>scoringutils::eval_forecasts()</code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
 <p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
@@ -520,63 +527,63 @@ plot of chunk unnamed-chunk-18
 <tbody>
 <tr class="odd">
 <td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="right">10.370377</td>
-<td align="right">3.702182</td>
-<td align="right">3.147818</td>
-<td align="right">3.5202512</td>
-<td align="right">-0.0789639</td>
-<td align="right">-0.0285714</td>
-<td align="right">17.62245</td>
+<td align="right">10.330213</td>
+<td align="right">3.741250</td>
+<td align="right">3.180785</td>
+<td align="right">3.4065934</td>
+<td align="right">-0.0695447</td>
+<td align="right">-0.0265306</td>
+<td align="right">17.56122</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="right">10.348104</td>
-<td align="right">2.627058</td>
-<td align="right">6.824835</td>
-<td align="right">0.8963893</td>
-<td align="right">-0.1370487</td>
-<td align="right">-0.2765306</td>
-<td align="right">15.38776</td>
+<td align="right">10.408345</td>
+<td align="right">2.628879</td>
+<td align="right">6.877488</td>
+<td align="right">0.9018838</td>
+<td align="right">-0.1386185</td>
+<td align="right">-0.2846939</td>
+<td align="right">15.54082</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age, Report: Day of week</td>
-<td align="right">8.651115</td>
-<td align="right">2.503852</td>
-<td align="right">5.641287</td>
-<td align="right">0.5058085</td>
-<td align="right">-0.1260597</td>
-<td align="right">-0.4214286</td>
-<td align="right">12.96939</td>
+<td align="right">8.795900</td>
+<td align="right">2.481488</td>
+<td align="right">5.815322</td>
+<td align="right">0.4992151</td>
+<td align="right">-0.1229199</td>
+<td align="right">-0.4204082</td>
+<td align="right">13.14286</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="right">7.138967</td>
-<td align="right">2.985796</td>
-<td align="right">1.510204</td>
-<td align="right">2.6428571</td>
-<td align="right">-0.0208791</td>
-<td align="right">-0.0071429</td>
-<td align="right">12.52041</td>
+<td align="right">7.017086</td>
+<td align="right">3.000794</td>
+<td align="right">1.473721</td>
+<td align="right">2.5420722</td>
+<td align="right">-0.0051805</td>
+<td align="right">0.0061224</td>
+<td align="right">12.39796</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age and week by age, Report: Day of week</td>
-<td align="right">7.109146</td>
-<td align="right">3.022980</td>
-<td align="right">2.542857</td>
-<td align="right">1.5431711</td>
-<td align="right">-0.0083203</td>
-<td align="right">-0.2193878</td>
-<td align="right">11.91837</td>
+<td align="right">7.104393</td>
+<td align="right">3.009969</td>
+<td align="right">2.592559</td>
+<td align="right">1.5017268</td>
+<td align="right">-0.0114600</td>
+<td align="right">-0.2204082</td>
+<td align="right">11.82653</td>
 </tr>
 <tr class="even">
 <td align="left">Independent by age, Reference: Week, Report: Day of week</td>
-<td align="right">7.803203</td>
-<td align="right">4.401036</td>
-<td align="right">1.183045</td>
-<td align="right">2.2169545</td>
-<td align="right">0.0654631</td>
-<td align="right">-0.0479592</td>
-<td align="right">13.05102</td>
+<td align="right">8.045306</td>
+<td align="right">4.319906</td>
+<td align="right">1.154945</td>
+<td align="right">2.5712716</td>
+<td align="right">0.0544741</td>
+<td align="right">-0.0510204</td>
+<td align="right">13.71429</td>
 </tr>
 </tbody>
 </table>
@@ -634,7 +641,7 @@ plot of chunk performance
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.9000.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.9000.</p>
 </div>
 
     </footer>
