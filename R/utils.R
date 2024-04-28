@@ -417,6 +417,18 @@ create_cache_dir <- function(path) {
   return(invisible(NULL))
 }
 
+# This is an alternative to dir.create(recursive = TRUE) that doesn't throw
+# warnings when some elements on the path already exist
+dir_create_with_parents <- function(path) {
+  dirs <- strsplit(path, "/+")[[1]]
+  for (i in seq_along(dirs)) {
+    path <- paste(dirs[seq_len(i)], collapse = "/")
+    if (!dir.exists(path) && nzchar(path)) {
+      dir.create(path)
+    }
+  }
+}
+
 utils::globalVariables(
   c(
     ".", ".draw", "max_treedepth", "no_at_max_treedepth",
