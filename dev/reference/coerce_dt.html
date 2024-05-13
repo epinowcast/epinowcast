@@ -86,43 +86,43 @@ with error handling, column checking, and optional selection.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>data</dt>
+    <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>Any of the types supported by <code><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code></p></dd>
 
 
-<dt>select</dt>
+<dt id="arg-select">select<a class="anchor" aria-label="anchor" href="#arg-select"></a></dt>
 <dd><p>An optional character vector of columns to return; <em>unchecked</em>
 n.b. it is an error to include ".group"; use <code>group</code> argument for that</p></dd>
 
 
-<dt>required_cols</dt>
+<dt id="arg-required-cols">required_cols<a class="anchor" aria-label="anchor" href="#arg-required-cols"></a></dt>
 <dd><p>An optional character vector of required columns</p></dd>
 
 
-<dt>forbidden_cols</dt>
+<dt id="arg-forbidden-cols">forbidden_cols<a class="anchor" aria-label="anchor" href="#arg-forbidden-cols"></a></dt>
 <dd><p>An optional character vector of forbidden columns</p></dd>
 
 
-<dt>group</dt>
+<dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>A logical; ensure the presence of a <code>.group</code> column?</p></dd>
 
 
-<dt>dates</dt>
+<dt id="arg-dates">dates<a class="anchor" aria-label="anchor" href="#arg-dates"></a></dt>
 <dd><p>A logical; ensure the presence of <code>report_date</code> and
 <code>reference_date</code>? If <code>TRUE</code> (default), those columns will be coerced with
 <code><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>.</p></dd>
 
 
-<dt>copy</dt>
+<dt id="arg-copy">copy<a class="anchor" aria-label="anchor" href="#arg-copy"></a></dt>
 <dd><p>A logical; if <code>TRUE</code> (default), a new <code>data.table</code> is returned</p></dd>
 
 
-<dt>msg_required</dt>
+<dt id="arg-msg-required">msg_required<a class="anchor" aria-label="anchor" href="#arg-msg-required"></a></dt>
 <dd><p>A character string; for <code>required_cols</code>-related error
 message</p></dd>
 
 
-<dt>msg_forbidden</dt>
+<dt id="arg-msg-forbidden">msg_forbidden<a class="anchor" aria-label="anchor" href="#arg-msg-forbidden"></a></dt>
 <dd><p>A character string; for <code>forbidden_cols</code>-related error
 message</p></dd>
 

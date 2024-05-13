@@ -87,24 +87,24 @@ posterior.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>samples</dt>
+    <dl><dt id="arg-samples">samples<a class="anchor" aria-label="anchor" href="#arg-samples"></a></dt>
 <dd><p>A <code>data.frame</code> of posterior samples with at least a numeric
 sample variable.</p></dd>
 
 
-<dt>probs</dt>
+<dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
 <dd><p>A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5%, 20%, 80%,
 and 95% quantiles which are also the minimum set required for
 plotting functions to work.</p></dd>
 
 
-<dt>by</dt>
+<dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>A character vector of variables to summarise by. Defaults to
 <code>c("reference_date", ".group")</code>.</p></dd>
 
 
-<dt>link_with_obs</dt>
+<dt id="arg-link-with-obs">link_with_obs<a class="anchor" aria-label="anchor" href="#arg-link-with-obs"></a></dt>
 <dd><p>Logical, should the observed data be linked to the
 posterior summary? This is useful for plotting the posterior against the
 observed data. Defaults to <code>TRUE</code>.</p></dd>

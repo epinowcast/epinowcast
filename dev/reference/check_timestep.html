@@ -94,25 +94,25 @@ error message.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>obs</dt>
+    <dl><dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
 <dd><p>Any of the types supported by <code><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>.</p></dd>
 
 
-<dt>date_var</dt>
+<dt id="arg-date-var">date_var<a class="anchor" aria-label="anchor" href="#arg-date-var"></a></dt>
 <dd><p>The variable in <code>obs</code> representing dates.</p></dd>
 
 
-<dt>timestep</dt>
+<dt id="arg-timestep">timestep<a class="anchor" aria-label="anchor" href="#arg-timestep"></a></dt>
 <dd><p>The timestep to used. This can be a string ("day",
 "week", "month") or a numeric whole number representing the number of days.</p></dd>
 
 
-<dt>exact</dt>
-<dd><p>Logical, if <code>TRUE``, checks if all differences exactly match the timestep. If </code>FALSE``, checks if the sum of the differences modulo the
+<dt id="arg-exact">exact<a class="anchor" aria-label="anchor" href="#arg-exact"></a></dt>
+<dd><p>Logical, if <code>TRUE``, checks if all differences exactly match the timestep. If </code>FALSE“, checks if the sum of the differences modulo the
 timestep equals zero. Default is <code>TRUE</code>.</p></dd>
 
 
-<dt>check_nrow</dt>
+<dt id="arg-check-nrow">check_nrow<a class="anchor" aria-label="anchor" href="#arg-check-nrow"></a></dt>
 <dd><p>Logical, if <code>TRUE</code>, checks if there are at least two
 observations. Default is <code>TRUE</code>. If <code>FALSE</code>, the function returns invisibly
 if there is only one observation.</p></dd>

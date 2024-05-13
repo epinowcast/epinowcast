@@ -82,13 +82,13 @@ are dropped and the first observation for each group and date is retained.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>obs</dt>
+    <dl><dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
 <dd><p>A <code>data.frame</code> or <code>data.table</code> with columns: <code>reference_date</code>
 and / or <code>report_date</code>; at least one must be provided, <code>.group</code>, a grouping
 column and a <code>date</code>, a <a href="https://rdrr.io/r/base/Dates.html" class="external-link">Date</a> column.</p></dd>
 
 
-<dt>target_date</dt>
+<dt id="arg-target-date">target_date<a class="anchor" aria-label="anchor" href="#arg-target-date"></a></dt>
 <dd><p>A character string, either "reference_date" or
 "report_date". The column corresponding to this string will be used
 as the target date for metadata extraction.</p></dd>

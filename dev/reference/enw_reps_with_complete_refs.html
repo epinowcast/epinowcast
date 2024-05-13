@@ -76,12 +76,12 @@ dates</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>new_confirm</dt>
+    <dl><dt id="arg-new-confirm">new_confirm<a class="anchor" aria-label="anchor" href="#arg-new-confirm"></a></dt>
 <dd><p><code>new_confirm</code> <code>data.frame</code> output from
 <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p></dd>
 
 
-<dt>max_delay</dt>
+<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
 <dd><p>The maximum number of days to model in the delay
 distribution. Must be an integer greater than or equal to 1. Observations
 with delays larger then the maximum delay will be dropped. If the specified
@@ -98,14 +98,14 @@ no delay). You can use <code><a href="check_max_delay.html">check_max_delay()</a
 distribution for different maximum delays.</p></dd>
 
 
-<dt>by</dt>
+<dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling</p></dd>
 
 
-<dt>copy</dt>
+<dt id="arg-copy">copy<a class="anchor" aria-label="anchor" href="#arg-copy"></a></dt>
 <dd><p>A logical; if <code>TRUE</code> (the default) creates a copy; otherwise,
 modifies <code>obs</code> in place.</p></dd>
 

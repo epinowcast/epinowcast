@@ -79,11 +79,11 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>object</dt>
+    <dl><dt id="arg-object">object<a class="anchor" aria-label="anchor" href="#arg-object"></a></dt>
 <dd><p>A <code>data.table</code> output from <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
 
 
-<dt>type</dt>
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>Character string indicating the summary to return; enforced by
 <code><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">base::match.arg()</a></code>. Supported options are:</p><ul><li><p>"nowcast" which summarises nowcast posterior with <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>,</p></li>
 <li><p>"nowcast_samples" which samples latest with <code><a href="enw_nowcast_samples.html">enw_nowcast_samples()</a></code>,</p></li>
@@ -93,14 +93,14 @@ the observations after fitting using <code><a href="enw_pp_summary.html">enw_pp_
 </ul></dd>
 
 
-<dt>max_delay</dt>
+<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
 <dd><p>Maximum delay to which nowcasts should be summarised. Must
 be equal (default) or larger than the modelled maximum delay. If it is
 larger, then nowcasts for unmodelled dates are added by assuming that case
 counts beyond the modelled maximum delay are fully observed.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to summary specified by <code>type</code>.</p></dd>
 
 </dl></div>

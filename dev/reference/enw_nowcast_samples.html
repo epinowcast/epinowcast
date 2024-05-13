@@ -85,11 +85,11 @@ the supplied <code><a href="summary.epinowcast.html">summary.epinowcast()</a></c
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>fit</dt>
+    <dl><dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
 <dd><p>A <code>cmdstanr</code> fit object.</p></dd>
 
 
-<dt>obs</dt>
+<dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
 <dd><p>An observation <code>data.frame</code> containing <code>reference_date</code>
 columns of the same length as the number of rows in the posterior and the
 most up to date observation for each date. This is used to align the
@@ -97,14 +97,14 @@ posterior with the observations. The easiest source of this data is the
 output of latest output of <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> or <code><a href="enw_latest_data.html">enw_latest_data()</a></code>.</p></dd>
 
 
-<dt>max_delay</dt>
+<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
 <dd><p>Maximum delay to which nowcasts should be summarised. Must
 be equal (default) or larger than the modelled maximum delay. If it is
 larger, then nowcasts for unmodelled dates are added by assuming that case
 counts beyond the modelled maximum delay are fully observed.</p></dd>
 
 
-<dt>timestep</dt>
+<dt id="arg-timestep">timestep<a class="anchor" aria-label="anchor" href="#arg-timestep"></a></dt>
 <dd><p>The timestep to used. This can be a string ("day",
 "week", "month") or a numeric whole number representing the number of days.</p></dd>
 

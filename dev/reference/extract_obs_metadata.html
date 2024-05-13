@@ -76,7 +76,7 @@ observation model.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>new_confirm</dt>
+    <dl><dt id="arg-new-confirm">new_confirm<a class="anchor" aria-label="anchor" href="#arg-new-confirm"></a></dt>
 <dd><p>A data.table containing the columns: "reference_date",
 "delay", ".group", "new_confirm", and "max_obs_delay".
 As produced by <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> in the <code>new_confirm</code> output with the
@@ -84,7 +84,7 @@ addition of the "max_obs_delay" column as produced by
 <code><a href="add_max_observed_delay.html">add_max_observed_delay()</a></code>.</p></dd>
 
 
-<dt>observation_indicator</dt>
+<dt id="arg-observation-indicator">observation_indicator<a class="anchor" aria-label="anchor" href="#arg-observation-indicator"></a></dt>
 <dd><p>A character string specifying the column name
 in <code>new_confirm</code> that indicates whether an observation is observed or not.
 This column should be a logical vector. If NULL (default), all observations

@@ -101,33 +101,33 @@ handle some parts of the model specification process.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>data</dt>
+    <dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A <code>data.frame</code> of observations. It must include all
 variables used in the supplied formula.</p></dd>
 
 
-<dt>fixed</dt>
+<dt id="arg-fixed">fixed<a class="anchor" aria-label="anchor" href="#arg-fixed"></a></dt>
 <dd><p>A character vector of fixed effects.</p></dd>
 
 
-<dt>random</dt>
+<dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
 <dd><p>A character vector of random effects. Random effects
 specified here will be added to the fixed effects.</p></dd>
 
 
-<dt>custom_random</dt>
+<dt id="arg-custom-random">custom_random<a class="anchor" aria-label="anchor" href="#arg-custom-random"></a></dt>
 <dd><p>A vector of random effects. Random effects added here
 will not be added to the vector of fixed effects. This can be used to random
 effects for fixed effects that only have a partial name match.</p></dd>
 
 
-<dt>no_contrasts</dt>
+<dt id="arg-no-contrasts">no_contrasts<a class="anchor" aria-label="anchor" href="#arg-no-contrasts"></a></dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. <code>TRUE</code> means that no
 variable uses contrast. Alternatively a character vector of variables can be
 supplied indicating which variables should  not have contrasts.</p></dd>
 
 
-<dt>add_intercept</dt>
+<dt id="arg-add-intercept">add_intercept<a class="anchor" aria-label="anchor" href="#arg-add-intercept"></a></dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should an intercept be
 added to the fixed effects.</p></dd>
 

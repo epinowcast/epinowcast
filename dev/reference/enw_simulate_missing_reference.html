@@ -82,20 +82,20 @@ implications of missing data for your use case.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>obs</dt>
+    <dl><dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
 <dd><p>A <code>data.frame</code> containing at least the following variables:
 <code>reference date</code> (index date of interest), <code>report_date</code> (report date for
 observations), and <code>confirm</code> (cumulative observations by reference and report
 date).</p></dd>
 
 
-<dt>proportion</dt>
+<dt id="arg-proportion">proportion<a class="anchor" aria-label="anchor" href="#arg-proportion"></a></dt>
 <dd><p>Numeric, the proportion of observations that are missing a
 reference date, indexed by reference date. Currently only a fixed proportion
 are supported and this defaults to 0.2.</p></dd>
 
 
-<dt>by</dt>
+<dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for

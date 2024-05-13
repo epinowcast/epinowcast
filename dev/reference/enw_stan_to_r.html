@@ -91,7 +91,7 @@ users interested in exploring and prototyping with model functionalities.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>files</dt>
+    <dl><dt id="arg-files">files<a class="anchor" aria-label="anchor" href="#arg-files"></a></dt>
 <dd><p>A character vector specifying the names of Stan files to be
 exposed. These must be in the <code>include</code> directory. Defaults to all Stan
 files in the <code>include</code> directory. Note that the following files contain
@@ -99,24 +99,24 @@ overloaded functions and cannot be exposed: "delay_lpmf.stan",
 "allocate_observed_obs.stan", "obs_lpmf.stan", and "effects_priors_lp.stan".</p></dd>
 
 
-<dt>include</dt>
+<dt id="arg-include">include<a class="anchor" aria-label="anchor" href="#arg-include"></a></dt>
 <dd><p>A character string specifying the directory containing Stan
 files. Defaults to the 'stan/functions' directory of the <code><a href="epinowcast.html">epinowcast()</a></code>
 package.</p></dd>
 
 
-<dt>global</dt>
+<dt id="arg-global">global<a class="anchor" aria-label="anchor" href="#arg-global"></a></dt>
 <dd><p>A logical value indicating whether to expose the functions
 globally. Defaults to <code>TRUE</code>. Passed to the <code>expose_functions()</code> method of
 <a href="https://mc-stan.org/cmdstanr/reference/CmdStanModel.html" class="external-link">cmdstanr::CmdStanModel</a>.</p></dd>
 
 
-<dt>verbose</dt>
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should verbose
 messages be shown.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to <a href="enw_model">enw_model</a>.</p></dd>
 
 </dl></div>

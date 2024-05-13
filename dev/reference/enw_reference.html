@@ -78,7 +78,7 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>parametric</dt>
+    <dl><dt id="arg-parametric">parametric<a class="anchor" aria-label="anchor" href="#arg-parametric"></a></dt>
 <dd><p>A formula (as implemented in <code><a href="enw_formula.html">enw_formula()</a></code>) describing
 the parametric reference date delay model. This can use features
 defined by report date as defined in <code>metareference</code> as produced by
@@ -88,13 +88,13 @@ parameter will have separate effects. Use <code>~ 0</code> to not use a parametr
 model.</p></dd>
 
 
-<dt>distribution</dt>
+<dt id="arg-distribution">distribution<a class="anchor" aria-label="anchor" href="#arg-distribution"></a></dt>
 <dd><p>A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
 "exponential", and "loglogistic", with the default being "lognormal".</p></dd>
 
 
-<dt>non_parametric</dt>
+<dt id="arg-non-parametric">non_parametric<a class="anchor" aria-label="anchor" href="#arg-non-parametric"></a></dt>
 <dd><p>A formula (as implemented in <code><a href="enw_formula.html">enw_formula()</a></code>)
 describing the non-parametric logit hazard model. This can use features
 defined by reference date and by delay. It draws on a linked <code>data.frame</code>
@@ -105,7 +105,7 @@ with a parametric model it likely makes sense to disable the intercept in
 order to make the joint model identifiable (i.e. <code>~ 0 + (1 | delay)</code>).</p></dd>
 
 
-<dt>data</dt>
+<dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>Output from <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p></dd>
 
 </dl></div>
@@ -1152,8 +1152,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55dccfd06480&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dcd075fbc8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55cda1a52e28&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55cda16a6c48&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Non-parametric model with a random effect per delay</span></span></span>
@@ -3864,8 +3864,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55dccfd06480&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dcce87c9c0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55cda1a52e28&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55cda9292030&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined parametric and non-parametric model</span></span></span>
@@ -4902,8 +4902,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55dccfd06480&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dcd2036bd0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55cda1a52e28&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55cdabb85db0&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

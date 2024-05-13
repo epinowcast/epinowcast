@@ -97,48 +97,48 @@ of <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> for
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>obs</dt>
+    <dl><dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
 <dd><p>Observations with the addition of empirical reporting proportions
 and and restricted to the specified maximum delay.</p></dd>
 
 
-<dt>new_confirm</dt>
+<dt id="arg-new-confirm">new_confirm<a class="anchor" aria-label="anchor" href="#arg-new-confirm"></a></dt>
 <dd><p>Incidence of notifications by reference and report date.
 Empirical reporting distributions are also added.</p></dd>
 
 
-<dt>latest</dt>
+<dt id="arg-latest">latest<a class="anchor" aria-label="anchor" href="#arg-latest"></a></dt>
 <dd><p>The latest available observations.</p></dd>
 
 
-<dt>missing_reference</dt>
+<dt id="arg-missing-reference">missing_reference<a class="anchor" aria-label="anchor" href="#arg-missing-reference"></a></dt>
 <dd><p>A <code>data.frame</code> of reported observations that are
 missing the reference date.</p></dd>
 
 
-<dt>reporting_triangle</dt>
+<dt id="arg-reporting-triangle">reporting_triangle<a class="anchor" aria-label="anchor" href="#arg-reporting-triangle"></a></dt>
 <dd><p>Incident observations by report and reference
 date in the standard reporting triangle matrix format.</p></dd>
 
 
-<dt>metareport</dt>
+<dt id="arg-metareport">metareport<a class="anchor" aria-label="anchor" href="#arg-metareport"></a></dt>
 <dd><p>Metadata for report dates.</p></dd>
 
 
-<dt>metareference</dt>
+<dt id="arg-metareference">metareference<a class="anchor" aria-label="anchor" href="#arg-metareference"></a></dt>
 <dd><p>Metadata reference dates derived from observations.</p></dd>
 
 
-<dt>metadelay</dt>
+<dt id="arg-metadelay">metadelay<a class="anchor" aria-label="anchor" href="#arg-metadelay"></a></dt>
 <dd><p>Metadata for reporting delays produced using
 <code><a href="enw_metadata_delay.html">enw_metadata_delay()</a></code>.</p></dd>
 
 
-<dt>max_delay</dt>
+<dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
 <dd><p>Maximum delay to be modelled by epinowcast.</p></dd>
 
 
-<dt>timestep</dt>
+<dt id="arg-timestep">timestep<a class="anchor" aria-label="anchor" href="#arg-timestep"></a></dt>
 <dd><p>The timestep to used in the process model (i.e. the
 reference date model). This can be a string ("day", "week", "month") or a
 numeric whole number representing the number of days. If your data does not
@@ -146,7 +146,7 @@ have this timestep then you may wish to make use of
 <code><a href="enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code> to aggregate your data to the desired timestep.</p></dd>
 
 
-<dt>by</dt>
+<dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for

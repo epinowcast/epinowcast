@@ -84,23 +84,23 @@ of time series.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>metaobs</dt>
+    <dl><dt id="arg-metaobs">metaobs<a class="anchor" aria-label="anchor" href="#arg-metaobs"></a></dt>
 <dd><p>Raw data, coercible via <code><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">data.table::as.data.table()</a></code>.
 Coerced object must have <a href="https://rdrr.io/r/base/Dates.html" class="external-link">Dates</a> column corresponding to <code>datecol</code> name.</p></dd>
 
 
-<dt>holidays</dt>
+<dt id="arg-holidays">holidays<a class="anchor" aria-label="anchor" href="#arg-holidays"></a></dt>
 <dd><p>a (potentially empty) vector of dates (or input
 coercible to such; see <code><a href="coerce_date.html">coerce_date()</a></code>). The <code>day_of_week</code> column will be
 set to <code>holidays_to</code> for these dates.</p></dd>
 
 
-<dt>holidays_to</dt>
+<dt id="arg-holidays-to">holidays_to<a class="anchor" aria-label="anchor" href="#arg-holidays-to"></a></dt>
 <dd><p>A character string to assign to holidays, when <code>holidays</code>
 argument non-empty. Replaces the <code>day_of_week</code> column value</p></dd>
 
 
-<dt>datecol</dt>
+<dt id="arg-datecol">datecol<a class="anchor" aria-label="anchor" href="#arg-datecol"></a></dt>
 <dd><p>The column in <code>metaobs</code> corresponding to pertinent dates.</p></dd>
 
 </dl></div>

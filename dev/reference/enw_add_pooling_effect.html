@@ -85,19 +85,19 @@ adding a new column <code>var_name</code> that is 1 for the effects that match t
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>effects</dt>
+    <dl><dt id="arg-effects">effects<a class="anchor" aria-label="anchor" href="#arg-effects"></a></dt>
 <dd><p>A <code>data.table</code> with the following columns:</p><ul><li><p>effects: the name of the effect</p></li>
 <li><p>fixed: a logical indicating whether the effect is fixed (1) or random (0).</p></li>
 </ul><p>This is the output of <code><a href="enw_effects_metadata.html">enw_effects_metadata()</a></code>.</p></dd>
 
 
-<dt>var_name</dt>
+<dt id="arg-var-name">var_name<a class="anchor" aria-label="anchor" href="#arg-var-name"></a></dt>
 <dd><p>The name of the new column that will be added to the
 <code>effects</code> data.table. This column will be 1 for the effects that match the
 string and 0 otherwise. Defaults to 'sd'.</p></dd>
 
 
-<dt>finder_fn</dt>
+<dt id="arg-finder-fn">finder_fn<a class="anchor" aria-label="anchor" href="#arg-finder-fn"></a></dt>
 <dd><p>A function that will be used to find the effects that
 match the string. Defaults to <code><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith()</a></code>. This can be any function that
 takes a <code>character</code> as it's first argument (the <code>effects$effects</code> column)
@@ -105,7 +105,7 @@ and then any other other arguments in <code>...</code> and returns a logical vec
 indicating whether the effects were matched.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to <code>finder_fn</code>. E.g. for the
 <code>finder_fn = startsWith</code> default, this should be <code>prefix = "somestring"</code>.</p></dd>
 

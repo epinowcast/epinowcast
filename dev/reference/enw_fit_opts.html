@@ -83,28 +83,28 @@
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>sampler</dt>
+    <dl><dt id="arg-sampler">sampler<a class="anchor" aria-label="anchor" href="#arg-sampler"></a></dt>
 <dd><p>A function that creates an object that be used to extract
 posterior samples from the specified model. By default this is <code><a href="enw_sample.html">enw_sample()</a></code>
 which makes use of <code><a href="https://mc-stan.org/cmdstanr/reference/model-method-sample.html" class="external-link">cmdstanr::sample()</a></code>.</p></dd>
 
 
-<dt>nowcast</dt>
+<dt id="arg-nowcast">nowcast<a class="anchor" aria-label="anchor" href="#arg-nowcast"></a></dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should a nowcast be made using
 posterior predictions of the unobserved future reported notifications.</p></dd>
 
 
-<dt>pp</dt>
+<dt id="arg-pp">pp<a class="anchor" aria-label="anchor" href="#arg-pp"></a></dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should posterior predictions be made
 for observed data. Useful for evaluating the performance of the model.</p></dd>
 
 
-<dt>likelihood</dt>
+<dt id="arg-likelihood">likelihood<a class="anchor" aria-label="anchor" href="#arg-likelihood"></a></dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should the likelihood be
 included in the model</p></dd>
 
 
-<dt>likelihood_aggregation</dt>
+<dt id="arg-likelihood-aggregation">likelihood_aggregation<a class="anchor" aria-label="anchor" href="#arg-likelihood-aggregation"></a></dt>
 <dd><p>Character string, aggregation over which
 stratify the likelihood when <code>threads_per_chain</code> is greater than 1; enforced
 by <code><a href="https://rdrr.io/r/base/match.arg.html" class="external-link">base::match.arg()</a></code>. Currently supported options:</p><ul><li><p>"snapshots" which aggregates over report dates and groups (i.e the lowest
@@ -116,24 +116,24 @@ requirements. For example, the <code><a href="enw_missing.html">enw_missing()</a
 "snapshots" aggregation.</p></dd>
 
 
-<dt>threads_per_chain</dt>
+<dt id="arg-threads-per-chain">threads_per_chain<a class="anchor" aria-label="anchor" href="#arg-threads-per-chain"></a></dt>
 <dd><p>Integer, defaults to <code>1</code>. The number of threads to
 use within each MCMC chain. If this is greater than <code>1</code> then components of
 the likelihood will be calculated in parallel within each chain.</p></dd>
 
 
-<dt>debug</dt>
+<dt id="arg-debug">debug<a class="anchor" aria-label="anchor" href="#arg-debug"></a></dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should within model debug
 information be returned.</p></dd>
 
 
-<dt>output_loglik</dt>
+<dt id="arg-output-loglik">output_loglik<a class="anchor" aria-label="anchor" href="#arg-output-loglik"></a></dt>
 <dd><p>Logical, defaults to <code>FALSE</code>. Should the
 log-likelihood be output. Disabling this will speed up fitting
 if evaluating the model fit is not required.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments to pass to the fitting function being used
 by <code><a href="epinowcast.html">epinowcast()</a></code>. By default this will be <code><a href="enw_sample.html">enw_sample()</a></code> and so <code>cmdstanr</code>
 options should be used.</p></dd>
@@ -183,7 +183,7 @@ to the sampler function when it is called.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(out[])</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55dcb980a250&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55cd91128ca0&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: namespace:epinowcast&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>

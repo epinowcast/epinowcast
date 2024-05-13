@@ -91,27 +91,27 @@ for the specification of contrasts for categorical variables.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>formula</dt>
+    <dl><dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
 <dd><p>An R formula.</p></dd>
 
 
-<dt>data</dt>
+<dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p>A <code>data.frame</code> containing the variables in the formula.</p></dd>
 
 
-<dt>no_contrasts</dt>
+<dt id="arg-no-contrasts">no_contrasts<a class="anchor" aria-label="anchor" href="#arg-no-contrasts"></a></dt>
 <dd><p>A vector of variable names that should not be
 converted to contrasts. If <code>no_contrasts = FALSE</code> then all categorical
 variables will use contrasts. If <code>no_contrasts = TRUE</code> then
 no categorical variables will use contrasts.</p></dd>
 
 
-<dt>sparse</dt>
+<dt id="arg-sparse">sparse<a class="anchor" aria-label="anchor" href="#arg-sparse"></a></dt>
 <dd><p>Logical, if TRUE return a sparse design matrix. Defaults to
 TRUE.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Arguments passed on to <code><a href="https://rdrr.io/r/stats/model.matrix.html" class="external-link">stats::model.matrix</a></code></p><dl><dt><code>object</code></dt>
 <dd><p>an object of an appropriate class.  For the default
     method, a model <a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a> or a <code><a href="https://rdrr.io/r/stats/terms.html" class="external-link">terms</a></code> object.</p></dd>

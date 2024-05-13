@@ -89,17 +89,17 @@ on forecast scoring.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>nowcast</dt>
+    <dl><dt id="arg-nowcast">nowcast<a class="anchor" aria-label="anchor" href="#arg-nowcast"></a></dt>
 <dd><p>A posterior nowcast or posterior prediction as returned by
 <code><a href="summary.epinowcast.html">summary.epinowcast()</a></code>, when used on the output of <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
 
 
-<dt>latest_obs</dt>
+<dt id="arg-latest-obs">latest_obs<a class="anchor" aria-label="anchor" href="#arg-latest-obs"></a></dt>
 <dd><p>A <code>data.frame</code> of the latest available observations as
 produced by <code><a href="enw_latest_data.html">enw_latest_data()</a></code> or otherwise.</p></dd>
 
 
-<dt>log</dt>
+<dt id="arg-log">log<a class="anchor" aria-label="anchor" href="#arg-log"></a></dt>
 <dd><p>Logical, defaults to FALSE. Should scores be calculated on the
 log scale (with a 0.01 shift) for both observations and nowcasts. Scoring in
 this way can be thought of as a relative score vs the more usual absolute
@@ -108,17 +108,17 @@ the forecaster is more interested in good all round performance versus good
 performance for targets with large values.</p></dd>
 
 
-<dt>check</dt>
+<dt id="arg-check">check<a class="anchor" aria-label="anchor" href="#arg-check"></a></dt>
 <dd><p>Logical, defaults to FALSE. Should
 <code><a href="https://epiforecasts.io/scoringutils/reference/check_forecasts.html" class="external-link">scoringutils::check_forecasts()</a></code> be used to check input nowcasts.</p></dd>
 
 
-<dt>round_to</dt>
+<dt id="arg-round-to">round_to<a class="anchor" aria-label="anchor" href="#arg-round-to"></a></dt>
 <dd><p>Integer defaults to 3. Number of digits to round scoring
 output to.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Arguments passed on to <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">scoringutils::score</a></code></p><dl><dt><code>data</code></dt>
 <dd><p>A data.frame or data.table with the predictions and observations.
 For scoring using <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">score()</a></code>, the following columns need to be present:</p><ul><li><p><code>true_value</code> - the true observed values</p></li>
