@@ -1,3 +1,27 @@
+# epinowcast 0.3.9000
+
+## Contributors
+
+@athowes and @seabbs contributed code to this release.
+
+@seabbs reviewed pull requests for this release.
+
+@pearsonca, @athowes, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Breaking changes
+
+## Bugs
+
+## Package
+
+## Model 
+
+## Documentation
+
+- Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
+
+## Depreciations
+
 # epinowcast 0.3.0
 
 This release brings a range of enhancements, new features, and bug fixes, reflecting the effort of a large number of contributors. It has a single breaking change, which adjusts the default `max_delay` parameter in `enw_process_data()` to be the maximum observed delay in the input data. This change aims to encourage users to tailor this setting to their specific datasets and to give them a more reasonable default if they do not.
