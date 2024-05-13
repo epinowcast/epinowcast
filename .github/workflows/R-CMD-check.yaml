@@ -32,7 +32,7 @@ jobs:
           - {os: macOS-latest,   r: 'release', rtools: ''}
           - {os: ubuntu-latest,   r: 'release', rtools: ''}
           - {os: ubuntu-latest,   r: 'oldrel-1', rtools: ''}
-          - {os: ubuntu-latest,   r: '3.6', rtools: ''}
+          - {os: ubuntu-latest,   r: '4.0', rtools: ''}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
