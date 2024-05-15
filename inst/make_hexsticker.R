@@ -39,7 +39,6 @@ sticker(
   h_fill = "#ffffff",
   h_color = "#646770",
   filename = file.path("man", "figures", "logo.png"),
-  url = "epinowcast.org",
   u_color = "#646770",
   u_size = 3.5
 )
