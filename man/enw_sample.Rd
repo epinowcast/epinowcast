@@ -12,7 +12,7 @@ enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 \code{model} being used.}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}} or as
-supplied by th}
+supplied by the user.}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
 be returned as a \code{data.frame}.}
@@ -27,6 +27,7 @@ fitting arguments, and optionally summary diagnostics.
 Fit a CmdStan model using NUTS
 }
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 pobs <- enw_example("preprocessed")
 
 nowcast <- epinowcast(pobs,
@@ -36,6 +37,7 @@ nowcast <- epinowcast(pobs,
 )
 
 summary(nowcast)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Functions used to help convert models into the format required for stan

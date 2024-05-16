@@ -12,7 +12,7 @@ enw_pathfinder(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 \code{model} being used.}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}} or as
-supplied by th}
+supplied by the user.}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
 be returned as a \code{data.frame}.}
@@ -37,6 +37,7 @@ used in \code{\link[=enw_sample]{enw_sample()}} and as such is recommended for u
 analysis and model development.
 }
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 pobs <- enw_example("preprocessed")
 
 nowcast <- epinowcast(pobs,
@@ -46,6 +47,7 @@ nowcast <- epinowcast(pobs,
 )
 
 summary(nowcast)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Functions used to help convert models into the format required for stan
