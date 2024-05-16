@@ -254,6 +254,15 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @export
 #' @importFrom cmdstanr cmdstan_model
 #' @importFrom posterior rhat
+#' pobs <- enw_example("preprocessed")
+#'
+#' nowcast <- epinowcast(pobs,
+#'  expectation = enw_expectation(~1, data = pobs),
+#'  fit = enw_fit_opts(enw_sample, pp = TRUE),
+#'  obs = enw_obs(family = "poisson", data = pobs),
+#' )
+#'
+#' summary(nowcast)
 enw_sample <- function(data, model = epinowcast::enw_model(),
                        diagnostics = TRUE, ...) {
   fit <- model$sample(data = data, ...)
@@ -285,12 +294,42 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 
     timing <- round(fit$time()$total, 1)
     out[, run_time := timing]
-    out[, pathfinder := list(pathfinder_fit)]
   }
   return(out[])
 }
 
+#' Fit a CmdStan model using the pathfinder algorithm
+#'
+#' For more information on the pathfinder algorithm see the
+#' [CmdStan documentation](https://mc-stan.org/cmdstanr/reference/model-method-pathfinder.html). # nolint
+#' 
+#' Note that the `threads_per_chain` argument is renamed to `num_threads` to
+#' match the `CmdStanModel$pathfinder()` method.
+#' 
+#' This fitting method is faster but more approximate than the NUTS sampler
+#' used in [enw_sample()] and as such is recommended for use in exploratory
+#' analysis and model development.
+#'
+#' @inheritParams enw_sample
+#' @param ... Additional parameters to be passed to `CmdStanModel$pathfinder()`.
+#'
+#' @return A data.table containing the fit, data, and fit_args.
+#' If diagnostics is TRUE, it also includes the run_time column with the timing
+#' information.
+#'
 #' @export
+#' @family modeltools
+#' @importFrom cmdstanr cmdstan_model
+#' @examples
+#' pobs <- enw_example("preprocessed")
+#'
+#' nowcast <- epinowcast(pobs,
+#'  expectation = enw_expectation(~1, data = pobs),
+#'  fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
+#'  obs = enw_obs(family = "poisson", data = pobs),
+#' )
+#'
+#' summary(nowcast)
 enw_pathfinder <- function(data, model = epinowcast::enw_model(),
                            diagnostics = TRUE, ...) {
   dot_args <- list(...)
@@ -304,6 +343,10 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
     fit_args = list(list(...))
   )
 
+  if (diagnostics) {
+    timing <- round(fit$time()$total, 1)
+    out[, run_time := timing]
+  }
   return(out[])
 }
 
