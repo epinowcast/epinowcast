@@ -240,7 +240,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' `model` being used.
 #'
 #' @param model A `cmdstanr` model object as loaded by [enw_model()] or as
-#' supplied by th
+#' supplied by the user.
 #'
 #' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
 #' be returned as a `data.frame`.
@@ -254,7 +254,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @export
 #' @importFrom cmdstanr cmdstan_model
 #' @importFrom posterior rhat
-#' @examples
+#' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
@@ -321,7 +321,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @export
 #' @family modeltools
 #' @importFrom cmdstanr cmdstan_model
-#' @examples
+#' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
