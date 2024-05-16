@@ -28,6 +28,14 @@ information.
 For more information on the pathfinder algorithm see the
 \href{https://mc-stan.org/cmdstanr/reference/model-method-pathfinder.html}{CmdStan documentation}. # nolint
 }
+\details{
+Note that the \code{threads_per_chain} argument is renamed to \code{num_threads} to
+match the \code{CmdStanModel$pathfinder()} method.
+
+This fitting method is faster but more approximate than the NUTS sampler
+used in \code{\link[=enw_sample]{enw_sample()}} and as such is recommended for use in exploratory
+analysis and model development.
+}
 \examples{
 pobs <- enw_example("preprocessed")
 

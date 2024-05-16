@@ -302,10 +302,10 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' For more information on the pathfinder algorithm see the
 #' [CmdStan documentation](https://mc-stan.org/cmdstanr/reference/model-method-pathfinder.html). # nolint
-#' 
+#'
 #' Note that the `threads_per_chain` argument is renamed to `num_threads` to
 #' match the `CmdStanModel$pathfinder()` method.
-#' 
+#'
 #' This fitting method is faster but more approximate than the NUTS sampler
 #' used in [enw_sample()] and as such is recommended for use in exploratory
 #' analysis and model development.
