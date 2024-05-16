@@ -835,6 +835,6 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     cast = as.numeric(nowcast),
     ologlik = as.numeric(output_loglik)
   )
-  out$data <- list(threads_per_chain = threads_per_chain, ...)
+  out$args <- list(threads_per_chain = threads_per_chain, ...)
   return(out)
 }
