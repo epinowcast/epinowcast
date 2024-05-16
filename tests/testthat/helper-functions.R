@@ -72,11 +72,11 @@ run_window_filter <- function(
 }
 
 silent_enw_sample <- function(...) {
-    utils::capture.output(
-      fit <- suppressMessages(enw_sample(...)) # nolint: implicit_assignment_linter
-    )
-    return(fit)
-  }
+  utils::capture.output(
+    fit <- suppressMessages(enw_sample(...)) # nolint: implicit_assignment_linter
+  )
+  return(fit)
+}
 
 silent_enw_pathfinder <- function(...) {
   utils::capture.output(

@@ -26,6 +26,17 @@ fitting arguments, and optionally summary diagnostics.
 \description{
 Fit a CmdStan model using NUTS
 }
+\examples{
+pobs <- enw_example("preprocessed")
+
+nowcast <- epinowcast(pobs,
+ expectation = enw_expectation(~1, data = pobs),
+ fit = enw_fit_opts(enw_sample, pp = TRUE),
+ obs = enw_obs(family = "poisson", data = pobs),
+)
+
+summary(nowcast)
+}
 \seealso{
 Functions used to help convert models into the format required for stan
 \code{\link{enw_formula_as_data_list}()},
