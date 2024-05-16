@@ -254,6 +254,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @export
 #' @importFrom cmdstanr cmdstan_model
 #' @importFrom posterior rhat
+#' @examples
 #' pobs <- enw_example("preprocessed")
 #'
 #' nowcast <- epinowcast(pobs,
