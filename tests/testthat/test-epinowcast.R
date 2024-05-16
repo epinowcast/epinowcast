@@ -242,7 +242,9 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   regression_nowcast <- enw_example("nowcast")
   nowcast <- suppressMessages(epinowcast(pobs,
     report = enw_report(~ 1 + (1 | day_of_week), data = pobs),
-    fit = enw_fit_opts(sampler = enw_silent_pathfinder, num_paths = 10, pp = TRUE),
+    fit = enw_fit_opts(
+      sampler = silent_enw_pathfinder, num_paths = 10, pp = TRUE
+    ),
     model = model
   ))
   expect_type(nowcast$fit_args[[1]], "list")
