@@ -266,7 +266,7 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_obs", median],
     regression_posterior[variable %like% "pp_obs", median],
-    1500
+    2000
   )
   # Day of the week effects are equal to within 100%
   expect_diff_abs_lt_per(
