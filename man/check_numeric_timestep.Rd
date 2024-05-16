@@ -27,15 +27,15 @@ observations corresponds to the provided timestep.
 \seealso{
 Functions used for checking inputs
 \code{\link{check_calendar_timestep}()},
-\code{\link{check_group_date_unique}()},
 \code{\link{check_group}()},
+\code{\link{check_group_date_unique}()},
 \code{\link{check_max_delay}()},
-\code{\link{check_modules_compatible}()},
 \code{\link{check_module}()},
+\code{\link{check_modules_compatible}()},
 \code{\link{check_observation_indicator}()},
 \code{\link{check_quantiles}()},
+\code{\link{check_timestep}()},
 \code{\link{check_timestep_by_date}()},
-\code{\link{check_timestep_by_group}()},
-\code{\link{check_timestep}()}
+\code{\link{check_timestep_by_group}()}
 }
 \concept{check}

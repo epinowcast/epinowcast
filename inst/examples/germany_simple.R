@@ -43,9 +43,6 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
 # log-normal reporting distribution.
 nowcast <- epinowcast(pobs,
   expectation = enw_expectation(~1, data = pobs),
-  fit = enw_fit_opts(
-    save_warmup = FALSE, pp = TRUE,
-    chains = 2, iter_warmup = 500, iter_sampling = 500,
-  ),
+  fit = enw_fit_opts(enw_pathfinder, pp = TRUE),
   obs = enw_obs(family = "poisson", data = pobs),
 )

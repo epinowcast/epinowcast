@@ -28,9 +28,9 @@ Functions used to help convert formulas into model designs
 \code{\link{enw_formula}()},
 \code{\link{enw_manual_formula}()},
 \code{\link{parse_formula}()},
-\code{\link{remove_rw_terms}()},
 \code{\link{re}()},
-\code{\link{rw_terms}()},
-\code{\link{rw}()}
+\code{\link{remove_rw_terms}()},
+\code{\link{rw}()},
+\code{\link{rw_terms}()}
 }
 \concept{formulatools}

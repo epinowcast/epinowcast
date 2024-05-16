@@ -12,7 +12,7 @@ enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 \code{model} being used.}
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}} or as
-supplied by the user.}
+supplied by th}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
 be returned as a \code{data.frame}.}

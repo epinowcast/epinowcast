@@ -240,7 +240,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' `model` being used.
 #'
 #' @param model A `cmdstanr` model object as loaded by [enw_model()] or as
-#' supplied by the user.
+#' supplied by th
 #'
 #' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
 #' be returned as a `data.frame`.
@@ -256,8 +256,6 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @importFrom posterior rhat
 enw_sample <- function(data, model = epinowcast::enw_model(),
                        diagnostics = TRUE, ...) {
-  dot_args <- list(...)
-  pathfinder_fit <- model$pathfinder(data, num_threads = 16, init = dot_args$inits)
   fit <- model$sample(data = data, ...)
 
   out <- data.table(
@@ -289,6 +287,23 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
     out[, run_time := timing]
     out[, pathfinder := list(pathfinder_fit)]
   }
+  return(out[])
+}
+
+#' @export
+enw_pathfinder <- function(data, model = epinowcast::enw_model(),
+                           diagnostics = TRUE, ...) {
+  dot_args <- list(...)
+  dot_args$num_threads <- dot_args$threads_per_chain
+  dot_args$threads_per_chain <- NULL
+  fit <- do.call(model$pathfinder, c(list(data), dot_args))
+
+  out <- data.table(
+    fit = list(fit),
+    data = list(data),
+    fit_args = list(list(...))
+  )
+
   return(out[])
 }
 

@@ -42,6 +42,7 @@ Other contributors:
   \item James Mba Azam \email{james.azam@lshtm.ac.uk} (\href{https://orcid.org/0000-0001-5782-7330}{ORCID}) [contributor]
   \item Kath Sherratt \email{katharine.sherratt@lshtm.ac.uk} (\href{https://orcid.org/0000-0003-2049-3423}{ORCID}) [contributor]
   \item Nikos Bosse \email{nikos.bosse@lshtm.ac.uk} (\href{https://orcid.org/0000-0002-7750-5280}{ORCID}) [contributor]
+  \item Adam Howes \email{adamthowes@gmail.com} (\href{https://orcid.org/0000-0003-2386-4031}{ORCID}) [contributor]
 }
 
 }

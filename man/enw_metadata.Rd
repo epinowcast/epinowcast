@@ -56,7 +56,7 @@ Preprocessing functions
 \code{\link{enw_metadata_delay}()},
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle_to_long}()},
-\code{\link{enw_reporting_triangle}()}
+\code{\link{enw_reporting_triangle}()},
+\code{\link{enw_reporting_triangle_to_long}()}
 }
 \concept{preprocess}
