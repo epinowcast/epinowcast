@@ -73,6 +73,16 @@ nowcast <- epinowcast(pobs,
   model = model
 )
 
+path_nowcast <- epinowcast(pobs,
+  expectation = expectation_module,
+  reference = reference_module,
+  report = report_module,
+  fit = enw_fit_opts(
+    enw_pathfinder, pp = TRUE, num_paths = 32, num_threads = 16
+  ),
+  model = model
+)
+
 # Plot nowcast of observed values
 plot(nowcast, latest_obs)
 
