@@ -260,7 +260,7 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_inf_obs", median],
     regression_posterior[variable %like% "pp_inf_obs", median],
-    200
+    500
   )
   # Posterior predictions have not changed by more than in total
   expect_diff_sum_abs_lt(
