@@ -14,7 +14,7 @@
 
 ## Package
 
-- Experimental support for `CmdStanModel$pathfinder` has been added to the package via `enw_pathfinder()`. This fitting method approximates the posterior distribution using a variational inference method. It may be useful for rapid prototyping, informing initialisation of HMC runs, and settings where compute time is limited. Likely downsides are poorly calibrated estimates and instability for more complex model formulations. See # by @seabbs and reviewed by.
+- Experimental support for `CmdStanModel$pathfinder` has been added to the package via `enw_pathfinder()`. This fitting method approximates the posterior distribution using a variational inference method. It may be useful for rapid prototyping, informing initialisation of HMC runs, and settings where compute time is limited. Likely downsides are poorly calibrated estimates and instability for more complex model formulations. See # by @seabbs and reviewed by @medewitt.
 
 ## Documentation
 
