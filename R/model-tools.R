@@ -321,6 +321,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @export
 #' @family modeltools
 #' @importFrom cmdstanr cmdstan_model
+#' @importFrom cli cli_abort
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
 #'
@@ -333,6 +334,9 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' summary(nowcast)
 enw_pathfinder <- function(data, model = epinowcast::enw_model(),
                            diagnostics = TRUE, ...) {
+  if (is.null(model[["pathfinder"]])) {
+    cli::cli_abort("`pathfinder` algorithm unavailable. Requires CmdStan >=2.34.")
+  }
   dot_args <- list(...)
   dot_args$num_threads <- dot_args$threads_per_chain
   dot_args$threads_per_chain <- NULL
