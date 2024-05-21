@@ -3,23 +3,6 @@ pobs <- enw_example("preprocessed")
 if (not_on_cran() && on_ci()) {
   model <- enw_model()
   options(mc.cores = 2)
-  silent_enw_sample <- function(...) {
-    utils::capture.output(
-      fit <- suppressMessages(enw_sample(...)) # nolint: implicit_assignment_linter
-    )
-    return(fit)
-  }
-}
-
-# A function to filter data used in test suite
-run_window_filter <- function(
-  x, filter_report_remove = 10, filter_reference_include = 10
-) {
-  obs <- enw_filter_report_dates(x, remove_days = filter_report_remove)
-  obs <- enw_filter_reference_dates(
-    obs, include_days = filter_reference_include
-  )
-  return(obs)
 }
 
 test_that("epinowcast() preprocesses data and model modules as expected", {
@@ -236,6 +219,60 @@ test_that("epinowcast() can fit a reporting model with a day of the week random
     posterior[variable %like% "rep_beta", median],
     regression_posterior[variable %like% "rep_beta", median],
     0.25
+  )
+  # Reporting distribution mean is equal to within 25%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "refp_mean", median],
+    regression_posterior[variable %like% "refp_mean", median],
+    0.25
+  )
+  # Reporting distribution sd is equal to within 25%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "refp_sd", median],
+    regression_posterior[variable %like% "refp_sd", median],
+    0.25
+  )
+})
+
+test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
+           simple case", {
+  skip_on_cran()
+  skip_on_local()
+
+  regression_nowcast <- enw_example("nowcast")
+  nowcast <- suppressMessages(epinowcast(pobs,
+    report = enw_report(~ 1 + (1 | day_of_week), data = pobs),
+    fit = enw_fit_opts(
+      sampler = silent_enw_pathfinder, num_paths = 10, pp = TRUE
+    ),
+    model = model
+  ))
+  expect_type(nowcast$fit_args[[1]], "list")
+  expect_type(nowcast$data[[1]], "list")
+
+  posterior <- as.data.table(nowcast$fit[[1]]$summary())
+  regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
+  expect_identical(
+    posterior$variable,
+    c("lp_approx__", regression_posterior$variable)
+  )
+  # Nowcast median has not changed by more than 400 in total
+  expect_diff_sum_abs_lt(
+    posterior[variable %like% "pp_inf_obs", median],
+    regression_posterior[variable %like% "pp_inf_obs", median],
+    500
+  )
+  # Posterior predictions have not changed by more than in total
+  expect_diff_sum_abs_lt(
+    posterior[variable %like% "pp_obs", median],
+    regression_posterior[variable %like% "pp_obs", median],
+    2000
+  )
+  # Day of the week effects are equal to within 100%
+  expect_diff_abs_lt_per(
+    posterior[variable %like% "rep_beta", median],
+    regression_posterior[variable %like% "rep_beta", median],
+    1
   )
   # Reporting distribution mean is equal to within 25%
   expect_diff_abs_lt_per(

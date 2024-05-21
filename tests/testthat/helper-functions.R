@@ -59,3 +59,28 @@ check_r_version <- function(min_major = 4, min_minor = 0) {
     return(FALSE)
   }
 }
+
+# A function to filter data used in test suite
+run_window_filter <- function(
+  x, filter_report_remove = 10, filter_reference_include = 10
+) {
+  obs <- enw_filter_report_dates(x, remove_days = filter_report_remove)
+  obs <- enw_filter_reference_dates(
+    obs, include_days = filter_reference_include
+  )
+  return(obs)
+}
+
+silent_enw_sample <- function(...) {
+  utils::capture.output(
+    fit <- suppressMessages(enw_sample(...)) # nolint: implicit_assignment_linter
+  )
+  return(fit)
+}
+
+silent_enw_pathfinder <- function(...) {
+  utils::capture.output(
+    fit <- suppressMessages(enw_pathfinder(...)) # nolint: implicit_assignment_linter
+  )
+  return(fit)
+}

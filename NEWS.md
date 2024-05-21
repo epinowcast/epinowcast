@@ -4,9 +4,9 @@
 
 @athowes and @seabbs contributed code to this release.
 
-@seabbs reviewed pull requests for this release.
+@medewitt, and @seabbs reviewed pull requests for this release.
 
-@pearsonca, @athowes, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@pearsonca, @athowes, @medewitt, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Breaking changes
 
@@ -14,7 +14,7 @@
 
 ## Package
 
-## Model 
+- Experimental support for `CmdStanModel$pathfinder` has been added to the package via `enw_pathfinder()`. This fitting method approximates the posterior distribution using a variational inference method. It may be useful for rapid prototyping, informing initialisation of HMC runs, and settings where compute time is limited. Likely downsides are poorly calibrated estimates and instability for more complex model formulations. See #464 by @seabbs and reviewed by @medewitt.
 
 ## Documentation
 
