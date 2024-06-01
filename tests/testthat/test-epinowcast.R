@@ -151,7 +151,7 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is
     )
   )
 
-  nowcast <- suppressMessages(epinowcast(pobs_long_delay,
+  nowcast <- suppressWarnings(suppressMessages(epinowcast(pobs_long_delay,
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = FALSE,
@@ -160,7 +160,7 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is
     ),
     obs = enw_obs(family = "poisson", data = pobs_long_delay),
     model = model
-  ))
+  )))
 
   expect_convergence(nowcast)
   expect_type(nowcast$fit_args[[1]], "list")
