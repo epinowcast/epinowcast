@@ -51,7 +51,8 @@ further details.}
 \code{\link[=enw_model]{enw_model()}}.}
 
 \item{priors}{A \code{data.frame} with the following variables:
-\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
+\code{variable} (See details for expected values), \code{mean}, \code{sd} describing normal
+priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions. Priors in this data.frame
 replace the default priors specified by each model component.}
@@ -71,6 +72,29 @@ defined models. By default a model that assumes a fixed parametric reporting
 distribution with a flexible expectation model is used. Explore the
 individual model components for additional documentation and see the package
 case studies for example model specifications for different tasks.
+}
+\details{
+\subsection{Priors}{
+
+The \code{priors} data.frame should have the following columns: \code{variable},
+\code{mean}, and \code{sd}. The \code{variable} column expects the following values:
+\itemize{
+\item refp_mean_int: Log mean intercept for parametric reference date delay
+\item refp_sd_int: Log standard deviation for the parametric reference date
+delay
+\item refp_mean_beta_sd: Standard deviation of scaled pooled parametric
+mean effects
+\item refp_sd_beta_sd: Standard deviation of scaled pooled parametric sd
+effects
+\item refnp_int: Intercept for non-parametric reference date delay
+\item refnp_beta_sd: Standard deviation of scaled pooled non-parametric
+effects
+}
+
+To specify a custom prior on the log mean intercept for the parametric
+reference date delay for example, you would specify a row in the \code{priors}
+data.frame as \code{priors = data.frame(variable = "refp_mean_int", mean = 1, sd = 0.1)}. This will replace the default prior for the log mean intercept.
+}
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
