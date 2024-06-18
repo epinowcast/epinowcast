@@ -90,8 +90,7 @@ enw_expectation_prior <- data.frame(
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
-      "Intercept for initial log observations (ordered by group and then
-          time)",
+      "Intercept for initial log observations (ordered by group and then time)",
       "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(
@@ -112,8 +111,7 @@ enw_missing_prior <- data.table::data.table(
   variable = c("miss_int", "miss_beta_sd"),
   description = c(
     "Intercept on the logit scale for the proportion missing reference dates",
-    "Standard deviation of scaled pooled logit missing reference date
-       effects"
+    "Standard deviation of scaled pooled logit missing reference date effects"
   ),
   distribution = c("Normal", "Zero truncated normal"),
   mean = c(0, 0),
