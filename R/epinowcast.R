@@ -35,11 +35,12 @@
 #' [enw_model()].
 #'
 #' @param priors A `data.frame` with the following variables:
-#' `variable` (See details for expected values), `mean`, `sd` describing normal
+#' `variable`, `mean`, `sd` describing normal
 #' priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
-#' replace the default priors specified by each model component.
+#' replace the default priors specified by each model component. See the
+#' package vignette for more details on how to specify `priors`.
 #'
 #' @param ... Additional model modules to pass to `model`. User modules may
 #' be used but currently require the supplied `model` to be adapted.
@@ -47,26 +48,6 @@
 #' @return A object of the class "epinowcast" which inherits from
 #' [enw_preprocess_data()] and `data.table`, and combines the input data,
 #' priors, and output from the sampler specified in `enw_fit_opts()`.
-#' @details
-#' ## Priors
-#'
-#' The `priors` data.frame should have the following columns: `variable`,
-#' `mean`, and `sd`. The `variable` column expects the following values:
-#'  - refp_mean_int: Log mean intercept for parametric reference date delay
-#'  - refp_sd_int: Log standard deviation for the parametric reference date
-#'  delay
-#'  - refp_mean_beta_sd: Standard deviation of scaled pooled parametric
-#'  mean effects
-#'  - refp_sd_beta_sd: Standard deviation of scaled pooled parametric sd
-#'  effects
-#'  - refnp_int: Intercept for non-parametric reference date delay
-#'  - refnp_beta_sd: Standard deviation of scaled pooled non-parametric
-#'  effects
-#'
-#'  To specify a custom prior on the log mean intercept for the parametric
-#'  reference date delay for example, you would specify a row in the `priors`
-#'  data.frame as `priors = data.frame(variable = "refp_mean_int", mean = 1,
-#'  sd = 0.1)`. This will replace the default prior for the log mean intercept.
 #' @inheritParams enw_obs
 #' @importFrom purrr map transpose flatten walk
 #' @importFrom cli cli_warn
