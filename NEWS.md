@@ -19,7 +19,7 @@
 ## Documentation
 
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
-- Expanded the documentation of the `priors` argument in `epinowcast()` to provide more details on how to specify it. See #470 by @jamesmbaazam and reviewed by @<REVIEWER>.
+- Added a vignette describing the default priors and how to customise them. See #470 by @jamesmbaazam and reviewed by @seabbs.
 
 ## Depreciations
 
