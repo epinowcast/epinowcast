@@ -53,7 +53,8 @@ enw_reference_prior <- data.frame(
     "Normal", "Zero truncated normal"
   ),
   mean = c(1, 0.5, 0, 0, 0, 0),
-  sd = 1
+  sd = 1,
+  stringsAsFactors = FALSE
 )
 knitr::kable(enw_reference_prior)
 ```
@@ -66,7 +67,8 @@ enw_report_prior <- data.frame(
   description = "Standard deviation of scaled pooled report date effects",
   distribution = "Zero truncated normal",
   mean = 0,
-  sd = 1
+  sd = 1,
+  stringsAsFactors = FALSE
 )
 knitr::kable(enw_report_prior)
 ```
@@ -91,7 +93,8 @@ enw_expectation_prior <- data.frame(
       "Normal", "Zero truncated normal", "Normal", "Zero truncated normal"
     ),
     mean = c(0, 0, "I dont understand", 0),
-    sd = c(0.2, 1, 1, 1)
+    sd = c(0.2, 1, 1, 1),
+  stringsAsFactors = FALSE
   )
 knitr::kable(enw_expectation_prior)
 ```
@@ -109,7 +112,8 @@ enw_missing_prior <- data.table::data.table(
   ),
   distribution = c("Normal", "Zero truncated normal"),
   mean = c(0, 0),
-  sd = c(1, 1)
+  sd = c(1, 1),
+  stringsAsFactors = FALSE
 )
 knitr::kable(enw_missing_prior)
 ```
@@ -124,7 +128,8 @@ enw_obs_prior <- data.frame(
   description = "One over the square root of the reporting overdispersion",
   distribution = "Zero truncated normal",
   mean = 0,
-  sd = 1
+  sd = 1,
+  stringsAsFactors = FALSE
 )
 knitr::kable(enw_obs_prior)
 ```
@@ -142,7 +147,8 @@ Here is an example of how to customise the priors for the `refp_mean_int` in the
 custom_priors <- data.frame(
   variable = c("refp_mean_int", "rep_beta_sd"),
   mean = c(1, 0.3),
-  sd = c(1, 1)
+  sd = c(1, 1),
+  stringsAsFactors = FALSE
 )
 custom_priors
 ```
