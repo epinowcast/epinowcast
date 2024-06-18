@@ -51,8 +51,7 @@ further details.}
 \code{\link[=enw_model]{enw_model()}}.}
 
 \item{priors}{A \code{data.frame} with the following variables:
-\code{variable}, \code{mean}, \code{sd} describing normal
-priors. Priors in the
+\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
 appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
 other similar model specification functions. Priors in this data.frame
 replace the default priors specified by each model component. See the

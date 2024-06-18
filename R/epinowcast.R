@@ -35,8 +35,7 @@
 #' [enw_model()].
 #'
 #' @param priors A `data.frame` with the following variables:
-#' `variable`, `mean`, `sd` describing normal
-#' priors. Priors in the
+#' `variable`, `mean`, `sd` describing normal priors. Priors in the
 #' appropriate format are returned by [enw_reference()] as well as by
 #' other similar model specification functions. Priors in this data.frame
 #' replace the default priors specified by each model component. See the
