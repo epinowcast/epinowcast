@@ -23,11 +23,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r packages, include = FALSE}
-library(epinowcast)
-library(knitr)
-```
-
 The various modules in `epinowcast()`, that is `enw_reference()`, `enw_expectation()`, `enw_report()`, `enw_missing()`, and `enw_obs()` have default priors that are set internally. However, these can be customised.
 
 This vignette explains how to define custom priors for the various modules in the `epinowcast()` function.
