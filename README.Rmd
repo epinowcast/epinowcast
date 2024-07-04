@@ -129,6 +129,7 @@ If making use of our methodology or the methodology on which ours is based, plea
 
 
 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -147,6 +148,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone">pitmonticone</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam">jamesmbaazam</a>, 
+<a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt">kathsherratt</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>, 
@@ -163,7 +165,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Abeansrowning">beansrowning</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajbracher">jbracher</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Azsusswein">zsusswein</a>, 
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Aathowes">athowes</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajessalynnsebastian">jessalynnsebastian</a>
 
 
 
@@ -181,4 +183,5 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
 
