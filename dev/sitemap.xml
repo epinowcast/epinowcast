@@ -1,387 +1,131 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://package.epinowcast.org/dev/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/distributions.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/epinowcast.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/model.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/articles/stan-help.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/index.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/add_max_observed_delay.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/add_pmfs.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/aggregate_rolling_sum.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/as_string_formula.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/cache_location_message.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_calendar_timestep.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_environment_unset.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_group.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_group_date_unique.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_max_delay.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_module.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_modules_compatible.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_numeric_timestep.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_observation_indicator.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_quantiles.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_renviron_for_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_timestep.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_timestep_by_date.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/check_timestep_by_group.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/coerce_date.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/coerce_dt.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/construct_re.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/construct_rw.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/convolution_matrix.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/create_cache_dir.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/date_to_numeric_modulus.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_cumulative.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_cumulative_membership.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_delay.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_incidence.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_latest_obs_to_nowcast.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_max_reported.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_metaobs_features.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_add_pooling_effect.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_aggregate_cumulative.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_assign_group.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_complete_dates.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_construct_data.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_cumulative_to_incidence.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_delay_metadata.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_design.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_effects_metadata.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_example.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_expectation.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_extend_date.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_filter_delay.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_filter_reference_dates.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_filter_report_dates.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_fit_opts.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_flag_observed_observations.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_formula.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_formula_as_data_list.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_get_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_impute_na_observations.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_incidence_to_cumulative.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_incidence_to_linelist.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_latest_data.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_linelist_to_incidence.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_manual_formula.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_metadata.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_metadata_delay.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_missing.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_missing_reference.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_model.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_nowcast_samples.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_nowcast_summary.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_obs.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_one_hot_encode_feature.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_pathfinder.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_plot_nowcast_quantiles.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_plot_obs.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_plot_pp_quantiles.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_plot_quantiles.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_plot_theme.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_posterior.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_pp_summary.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_preprocess_data.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_priors_as_data_list.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_quantiles_to_long.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_reference.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_reference_by_report.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_replace_priors.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_report.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_reps_with_complete_refs.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_sample.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_score_nowcast.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_set_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_simulate_missing_reference.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_stan_to_r.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_summarise_samples.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/enw_unset_cache.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/epinowcast-package.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/epinowcast.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/extract_obs_metadata.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/extract_sparse_matrix.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/germany_covid19_hosp.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/get_internal_timestep.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/get_renviron_contents.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/is.Date.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/latest_obs_as_matrix.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/parse_formula.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/plot.epinowcast.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/re.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/remove_profiling.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/remove_rw_terms.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/rw.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/rw_terms.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/simulate_double_censored_pmf.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/split_formula_to_terms.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/stan_fns_as_string.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/summary.epinowcast.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/unset_cache_from_environ.html</loc>
-  </url>
-  <url>
-    <loc>https://package.epinowcast.org/dev/reference/write_stan_files_no_profile.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://package.epinowcast.org/dev/LICENSE-text.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/LICENSE.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/distributions.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/epinowcast.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/index.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/model.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/stan-help.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/authors.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/index.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/news/index.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/add_max_observed_delay.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/add_pmfs.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/aggregate_rolling_sum.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/as_string_formula.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/cache_location_message.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_calendar_timestep.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_environment_unset.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_group.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_group_date_unique.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_max_delay.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_module.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_modules_compatible.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_numeric_timestep.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_observation_indicator.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_quantiles.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_renviron_for_cache.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_timestep.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_timestep_by_date.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/check_timestep_by_group.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/coerce_date.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/coerce_dt.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/construct_re.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/construct_rw.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/convolution_matrix.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/create_cache_dir.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/date_to_numeric_modulus.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_cumulative.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_cumulative_membership.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_delay.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_incidence.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_latest_obs_to_nowcast.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_max_reported.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_metaobs_features.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_add_pooling_effect.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_aggregate_cumulative.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_assign_group.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_complete_dates.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_construct_data.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_cumulative_to_incidence.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_delay_metadata.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_design.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_effects_metadata.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_example.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_expectation.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_extend_date.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_filter_delay.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_filter_reference_dates.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_filter_report_dates.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_fit_opts.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_flag_observed_observations.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_formula.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_formula_as_data_list.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_get_cache.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_impute_na_observations.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_incidence_to_cumulative.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_incidence_to_linelist.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_latest_data.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_linelist_to_incidence.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_manual_formula.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_metadata.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_metadata_delay.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_missing.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_missing_reference.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_model.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_nowcast_samples.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_nowcast_summary.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_obs.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_one_hot_encode_feature.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_pathfinder.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_nowcast_quantiles.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_obs.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_pp_quantiles.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_quantiles.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_theme.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_posterior.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_pp_summary.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_preprocess_data.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_priors_as_data_list.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_quantiles_to_long.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_reference.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_reference_by_report.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_replace_priors.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_report.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_reps_with_complete_refs.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_sample.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_score_nowcast.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_set_cache.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_simulate_missing_reference.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_stan_to_r.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_summarise_samples.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_unset_cache.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/epinowcast-package.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/epinowcast.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/extract_obs_metadata.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/extract_sparse_matrix.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/germany_covid19_hosp.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/get_internal_timestep.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/get_renviron_contents.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/index.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/is.Date.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/latest_obs_as_matrix.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/parse_formula.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/plot.epinowcast.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/re.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/remove_profiling.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/remove_rw_terms.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/rw.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/rw_terms.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/simulate_double_censored_pmf.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/split_formula_to_terms.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/stan_fns_as_string.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/summary.epinowcast.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/unset_cache_from_environ.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/write_stan_files_no_profile.html</loc></url>
 </urlset>
+

@@ -1,6 +1,6 @@
 pandoc: 3.1.11
 pkgdown: 2.0.9.9000
-pkgdown_sha: 32f2fa00aa4371449bbdcf27ef522e1aa0a6830b
+pkgdown_sha: 812e8c81d2a550f11f1b9a5201aa7d9ab0e42cdb
 articles:
   distributions: distributions.html
   epinowcast: epinowcast.html
@@ -8,8 +8,7 @@ articles:
   model: model.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
   stan-help: stan-help.html
-last_built: 2024-05-21T12:46Z
+last_built: 2024-07-04T12:37Z
 urls:
   reference: https://package.epinowcast.org/reference
   article: https://package.epinowcast.org/articles
-
