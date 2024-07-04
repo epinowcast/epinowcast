@@ -261,6 +261,7 @@ Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone">pitmonticone</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam">jamesmbaazam</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt">kathsherratt</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
@@ -274,7 +275,7 @@ Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Abeansrowning">beansrowning</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajbracher">jbracher</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Azsusswein">zsusswein</a>,
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Aathowes">athowes</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajessalynnsebastian">jessalynnsebastian</a>
 
 ### Issue Contributors
 
