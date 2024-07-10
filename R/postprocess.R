@@ -113,28 +113,18 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
     ))
   }
 
-  internal_timestep <- get_internal_timestep(timestep)
-
-  ord_obs <- coerce_dt(
-    obs, required_cols = c("reference_date", "confirm"), group = TRUE
-  )
-  check_timestep_by_group(
-    ord_obs, "reference_date", timestep, exact = TRUE
-  )
-  ord_obs <- ord_obs[
-    reference_date > (max(reference_date) - max_delay * internal_timestep)
-  ]
-  data.table::setorderv(ord_obs, c(".group", "reference_date"))
-
+  ord_obs <- build_ord_obs(obs, max_delay, timestep, "no_sample")
+  
   # add observations for modelled dates
-  obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
+  internal_timestep <- get_internal_timestep(timestep)
+  obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
+                          select = "after")
   nowcast <- cbind(obs_model, nowcast)
 
   # add not-modelled earlier dates with artificial summary statistics
   if (max_delay > max_delay_model) {
-    obs_spec <- ord_obs[
-      reference_date <= (max(reference_date) - max_delay_model)
-      ]
+    obs_spec <- subset_obs(ord_obs, max_delay_model,
+                           internal_timestep, select = "before")
     nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
     nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
     cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE) # nolint
@@ -203,34 +193,19 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
     ))
   }
 
-  internal_timestep <- get_internal_timestep(timestep)
-
-  ord_obs <- coerce_dt(
-    obs, required_cols = c("reference_date", "confirm"), group = TRUE
-  )
-  check_timestep_by_group(
-    ord_obs, "reference_date", timestep, exact = TRUE
-  )
-  ord_obs <- ord_obs[
-    reference_date > (max(reference_date) - max_delay * internal_timestep)
-  ]
-  data.table::setorderv(ord_obs, c(".group", "reference_date"))
-  ord_obs <- data.table::data.table(
-    .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
-  )
-  ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
-  ord_obs <- ord_obs[order(.group, reference_date)]
+  ord_obs <- build_ord_obs(obs, max_delay, timestep, "get_sample", nowcast)
 
   # add observations for modelled dates
-  obs_model <- ord_obs[reference_date > (max(reference_date, na.rm = TRUE) -
-                                           max_delay_model)]
+  internal_timestep <- get_internal_timestep(timestep)
+  obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
+                          select = "after")
+
   nowcast <- cbind(obs_model, nowcast)
 
   # add artificial samples for not-modelled earlier dates
   if (max_delay > max_delay_model) {
-    obs_spec <- ord_obs[
-      reference_date <= (max(reference_date) - max_delay_model)
-      ]
+    obs_spec <- subset_obs(ord_obs, max_delay_model,
+                           internal_timestep, select = "before")
     obs_spec[, c(".chain", ".iteration") := NA]
     obs_spec[, .draw := rep(1:max(nowcast$.draw, na.rm = TRUE),
                             nrow(obs_spec) / max(nowcast$.draw, na.rm = TRUE))]
@@ -402,4 +377,86 @@ enw_quantiles_to_long <- function(posterior) {
   long[, quantile := gsub("q", "", quantile, fixed = TRUE)]
   long[, quantile := as.numeric(quantile) / 100]
   return(long[])
+}
+
+#' Build the ord_obs `data.table`.
+#'
+#' @param obs Observations as pulled from nowcast$latest[[1]].
+#' @param max_delay Whole number representing the maximum delay
+#' in units of the timestep.
+#' @param timestep The timestep to be used. This can be a string
+#' ("day", "week", "month") or a numeric whole number representing
+#' the number of days.
+#' @param sample String, "get_sample" or "no_sample".
+#' @param nowcast If getting posterior samples, the fit to pull
+#' the draws from.
+#'
+#' @return ord_obs A `data.table`.
+#'
+
+build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
+    internal_timestep <- get_internal_timestep(timestep)
+    ord_obs <- coerce_dt(
+    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  )
+  check_timestep_by_group(
+    ord_obs, "reference_date", timestep, exact = TRUE
+  )
+
+  ord_obs <- subset_obs(ord_obs, max_delay, internal_timestep,
+                        select = "after")
+
+  data.table::setorderv(ord_obs, c(".group", "reference_date"))
+  if (sample == "get_sample") {
+    ord_obs <- data.table::data.table(
+      .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
+    )
+    ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
+    ord_obs <- ord_obs[order(.group, reference_date)]
+  }
+  return(ord_obs)
+}
+
+#' Subset observations data table for either modelled dates
+#' or not-modelled earlier dates.
+#'
+#' @param ord_obs The observations `data.table` to be subset,
+#' as pulled from the result of calling epinowcast() and
+#' coerced to a data table.
+#' @param max_delay Whole number representing the maximum delay
+#' in units of the timestep.
+#' @param internal_timestep A numeric value representing the number
+#' of days in the timestep, e.g. 7 when the timesteps are weeks.
+#' @param select String, select reference dates from "before" the
+#' max_delay or "after"?
+#'
+#' @return A `data.frame` subset for the desired observations
+#'
+#' @family postprocess
+#' @export
+#' @examples
+#' fit <- enw_example("nowcast")
+#' subset_obs(
+#'   fit$latest[[1]],
+#'   fit$max_delay,
+#'   1
+#'   )
+#' #' subset_obs(
+#'   fit$latest[[1]],
+#'   fit$max_delay,
+#'   1,
+#'   modelled = FALSE
+#'   )
+
+subset_obs <- function(ord_obs, max_delay, internal_timestep,
+                       select) {
+  if (select == "after") {
+    return(ord_obs[reference_date > (max(reference_date, na.rm = TRUE) -
+                 max_delay * internal_timestep)])
+  } else if (select == "before") {
+    return(ord_obs[reference_date <= (max(reference_date, na.rm = TRUE) -
+                 max_delay * internal_timestep)])
+  } else {
+    stop("Invalid `select` argument")
+  }
 }
