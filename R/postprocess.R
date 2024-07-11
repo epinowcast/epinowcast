@@ -394,7 +394,6 @@ enw_quantiles_to_long <- function(posterior) {
 #' @return ord_obs A `data.table`.
 #'
 #' @family postprocess
-#' @export
 
 build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
     internal_timestep <- get_internal_timestep(timestep)
@@ -435,7 +434,6 @@ build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
 #' @return A `data.frame` subset for the desired observations
 #'
 #' @family postprocess
-#' @export
 
 
 subset_obs <- function(ord_obs, max_delay, internal_timestep,
