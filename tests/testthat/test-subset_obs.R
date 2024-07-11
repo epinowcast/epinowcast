@@ -21,6 +21,7 @@ test_that("select 'after' returns correct subset of reference dates when timeste
   result <- subset_obs(obs_daily, max_delay, internal_timestep,
                        select = "after")
   expect_true(all(result$reference_date > expected_cutoff))
+  expect_true(unique(diff(result$reference_date)) == internal_timestep)
 })
 
 # Test 2: Select "before" (daily)
@@ -32,28 +33,31 @@ test_that("select 'before' returns correct subset of reference dates when timest
   result <- subset_obs(obs_daily, max_delay, internal_timestep,
                        select = "before")
   expect_true(all(result$reference_date <= expected_cutoff))
+  expect_true(unique(diff(result$reference_date)) == internal_timestep)
 })
 
 # Test 3: Select "after" (weekly)
 test_that("select 'after' returns correct subset of reference dates when timesteps are days", { # nolint
   max_delay <- 5
-  internal_timestep <- 1
+  internal_timestep <- 7
   expected_cutoff <- max(obs_weekly$reference_date) -
     max_delay * internal_timestep
   result <- subset_obs(obs_weekly, max_delay, internal_timestep,
                        select = "after")
   expect_true(all(result$reference_date > expected_cutoff))
+  expect_true(unique(diff(result$reference_date)) == internal_timestep)
 })
 
 # Test 4: Select "before" (weekly)
 test_that("select 'before' returns correct subset of reference dates when timesteps are days", { # nolint
   max_delay <- 5
-  internal_timestep <- 1
+  internal_timestep <- 7
   expected_cutoff <- max(obs_weekly$reference_date) -
     max_delay * internal_timestep
   result <- subset_obs(obs_weekly, max_delay, internal_timestep,
                        select = "before")
   expect_true(all(result$reference_date <= expected_cutoff))
+  expect_true(unique(diff(result$reference_date)) == internal_timestep)
 })
 
 # Test 5: Invalid select argument
