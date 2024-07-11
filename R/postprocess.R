@@ -114,7 +114,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
   }
 
   ord_obs <- build_ord_obs(obs, max_delay, timestep, "no_sample")
-  
+
   # add observations for modelled dates
   internal_timestep <- get_internal_timestep(timestep)
   obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
@@ -393,6 +393,8 @@ enw_quantiles_to_long <- function(posterior) {
 #'
 #' @return ord_obs A `data.table`.
 #'
+#' @family postprocess
+#' @export
 
 build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
     internal_timestep <- get_internal_timestep(timestep)
@@ -434,19 +436,7 @@ build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
 #'
 #' @family postprocess
 #' @export
-#' @examples
-#' fit <- enw_example("nowcast")
-#' subset_obs(
-#'   fit$latest[[1]],
-#'   fit$max_delay,
-#'   1
-#'   )
-#' #' subset_obs(
-#'   fit$latest[[1]],
-#'   fit$max_delay,
-#'   1,
-#'   modelled = FALSE
-#'   )
+
 
 subset_obs <- function(ord_obs, max_delay, internal_timestep,
                        select) {
