@@ -12,7 +12,7 @@ obs_weekly <- data.table(
     delay = c(rep(4, 3), 3:0)
 )
 
-# Mock nowcast draws 
+# Mock nowcast draws
 fit <- enw_example("nowcast")$fit[[1]]
 nc <- fit$draws(variables = "pp_inf_obs", format = "draws_df")
 nc <- coerce_dt(nc, required_cols = c(".chain", ".iteration", ".draw"))
@@ -38,7 +38,7 @@ test_that("build_ord_obs() output matches snapshot with week timesteps", {
 })
 
 # Test 3: With sampling
-test_that("build_ord_obs() output matches snapshot when sampling from posterior", {
+test_that("build_ord_obs() output matches snapshot when sampling from posterior", { # nolint
     max_delay <- 14
     timestep <- 1
     result <- build_ord_obs(obs_daily, max_delay, timestep,

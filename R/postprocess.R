@@ -410,7 +410,8 @@ build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   if (sample == "get_sample") {
     ord_obs <- data.table::data.table(
-      .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
+      .draws = 1:max(nowcast$.draw),
+      obs = rep(list(ord_obs), max(nowcast$.draw))
     )
     ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
     ord_obs <- ord_obs[order(.group, reference_date)]
