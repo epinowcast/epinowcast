@@ -58,11 +58,13 @@ enw_nowcast_summary(
 \code{\link[=summary.epinowcast]{summary.epinowcast()}}
 
 Functions used for postprocessing of model fits
+\code{\link{build_ord_obs}()},
 \code{\link{enw_add_latest_obs_to_nowcast}()},
 \code{\link{enw_nowcast_samples}()},
 \code{\link{enw_posterior}()},
 \code{\link{enw_pp_summary}()},
 \code{\link{enw_quantiles_to_long}()},
-\code{\link{enw_summarise_samples}()}
+\code{\link{enw_summarise_samples}()},
+\code{\link{subset_obs}()}
 }
 \concept{postprocess}
