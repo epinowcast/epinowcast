@@ -401,7 +401,7 @@ enw_quantiles_to_long <- function(posterior) {
 #' @family postprocess
 
 build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, sample, nowcast = NULL) { # nolint
-    ord_obs <- coerce_dt(
+  ord_obs <- coerce_dt(
     obs, required_cols = c("reference_date", "confirm"), group = TRUE
   )
   check_timestep_by_group(
@@ -410,6 +410,8 @@ build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, sample, n
 
   ord_obs <- subset_obs(ord_obs, max_delay, internal_timestep,
                         select = "after")
+
+sample <- rlang::arg_match(sample, c("get_sample", "no_sample"))
 
   data.table::setorderv(ord_obs, c(".group", "reference_date"))
   if (sample == "get_sample") {
@@ -443,6 +445,7 @@ build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, sample, n
 
 subset_obs <- function(ord_obs, max_delay, internal_timestep,
                        select) {
+  select <- rlang::arg_match(select, c("before", "after"))
   if (select == "after") {
     return(ord_obs[reference_date > (max(reference_date, na.rm = TRUE) -
                  max_delay * internal_timestep)])
