@@ -429,7 +429,7 @@ sample <- rlang::arg_match(sample, c("get_sample", "no_sample"))
 #' or not-modelled earlier dates.
 #'
 #' @param ord_obs The observations `data.table` to be subset,
-#' as pulled from the result of calling epinowcast() and
+#' as pulled from the result of calling [epinowcast()] and
 #' coerced to a data table.
 #' @param max_delay Whole number representing the maximum delay
 #' in units of the timestep.
