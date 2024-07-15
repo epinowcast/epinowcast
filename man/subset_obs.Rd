@@ -5,11 +5,11 @@
 \title{Subset observations data table for either modelled dates
 or not-modelled earlier dates.}
 \usage{
-subset_obs(ord_obs, max_delay, internal_timestep, select)
+subset_obs(ord_obs, max_delay, internal_timestep, reference_subset)
 }
 \arguments{
 \item{ord_obs}{The observations \code{data.table} to be subset,
-as pulled from the result of calling epinowcast() and
+as pulled from the result of calling \code{\link[=epinowcast]{epinowcast()}} and
 coerced to a data table.}
 
 \item{max_delay}{Whole number representing the maximum delay
@@ -18,8 +18,9 @@ in units of the timestep.}
 \item{internal_timestep}{A numeric value representing the number
 of days in the timestep, e.g. 7 when the timesteps are weeks.}
 
-\item{select}{String, select reference dates from "before" the
-max_delay or "after"?}
+\item{reference_subset}{String giving a relational operator
+to subset ord_obs by reference date; e.g. \code{>} to keep the
+modelled reference dates from after the max_delay.}
 }
 \value{
 A \code{data.frame} subset for the desired observations

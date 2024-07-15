@@ -4,14 +4,7 @@
 \alias{build_ord_obs}
 \title{Build the ord_obs \code{data.table}.}
 \usage{
-build_ord_obs(
-  obs,
-  max_delay,
-  internal_timestep,
-  timestep,
-  sample,
-  nowcast = NULL
-)
+build_ord_obs(obs, max_delay, internal_timestep, timestep, nowcast = NULL)
 }
 \arguments{
 \item{obs}{Observations as pulled from nowcast$latest[\link{1}].}
@@ -25,10 +18,9 @@ in units of the timestep.}
 ("day", "week", "month") or a numeric whole number representing
 the number of days.}
 
-\item{sample}{String, "get_sample" or "no_sample".}
-
-\item{nowcast}{If getting posterior samples, the fit to pull
-the draws from.}
+\item{nowcast}{If getting posterior samples, a data frame with
+a .draws column to get the draws from, as pulled from the fit
+attribute of a nowcast.}
 }
 \value{
 ord_obs A \code{data.table}.
