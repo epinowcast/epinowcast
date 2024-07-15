@@ -113,10 +113,12 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
     ))
   }
 
-  ord_obs <- build_ord_obs(obs, max_delay, timestep, "no_sample")
+  internal_timestep <- get_internal_timestep(timestep)
+
+  ord_obs <- build_ord_obs(obs, max_delay, internal_timestep,
+                           timestep, "no_sample")
 
   # add observations for modelled dates
-  internal_timestep <- get_internal_timestep(timestep)
   obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
                           select = "after")
   nowcast <- cbind(obs_model, nowcast)
@@ -193,10 +195,12 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
     ))
   }
 
-  ord_obs <- build_ord_obs(obs, max_delay, timestep, "get_sample", nowcast)
+  internal_timestep <- get_internal_timestep(timestep)
+
+  ord_obs <- build_ord_obs(obs, max_delay, internal_timestep, timestep,
+                           "get_sample", nowcast)
 
   # add observations for modelled dates
-  internal_timestep <- get_internal_timestep(timestep)
   obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
                           select = "after")
 
@@ -384,6 +388,7 @@ enw_quantiles_to_long <- function(posterior) {
 #' @param obs Observations as pulled from nowcast$latest[[1]].
 #' @param max_delay Whole number representing the maximum delay
 #' in units of the timestep.
+#' @param internal_timestep The internal timestep in days.
 #' @param timestep The timestep to be used. This can be a string
 #' ("day", "week", "month") or a numeric whole number representing
 #' the number of days.
@@ -395,8 +400,7 @@ enw_quantiles_to_long <- function(posterior) {
 #'
 #' @family postprocess
 
-build_ord_obs <- function(obs, max_delay, timestep, sample, nowcast = NULL) {
-    internal_timestep <- get_internal_timestep(timestep)
+build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, sample, nowcast = NULL) { # nolint
     ord_obs <- coerce_dt(
     obs, required_cols = c("reference_date", "confirm"), group = TRUE
   )

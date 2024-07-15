@@ -4,13 +4,22 @@
 \alias{build_ord_obs}
 \title{Build the ord_obs \code{data.table}.}
 \usage{
-build_ord_obs(obs, max_delay, timestep, sample, nowcast = NULL)
+build_ord_obs(
+  obs,
+  max_delay,
+  internal_timestep,
+  timestep,
+  sample,
+  nowcast = NULL
+)
 }
 \arguments{
 \item{obs}{Observations as pulled from nowcast$latest[\link{1}].}
 
 \item{max_delay}{Whole number representing the maximum delay
 in units of the timestep.}
+
+\item{internal_timestep}{The internal timestep in days.}
 
 \item{timestep}{The timestep to be used. This can be a string
 ("day", "week", "month") or a numeric whole number representing
