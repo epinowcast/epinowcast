@@ -7,7 +7,7 @@
 build_ord_obs(obs, max_delay, internal_timestep, timestep, nowcast = NULL)
 }
 \arguments{
-\item{obs}{Observations as pulled from nowcast$latest[\link{1}].}
+\item{obs}{Observations as pulled from \code{nowcast$latest[[1]]}.}
 
 \item{max_delay}{Whole number representing the maximum delay
 in units of the timestep.}
@@ -19,11 +19,11 @@ in units of the timestep.}
 the number of days.}
 
 \item{nowcast}{If getting posterior samples, a data frame with
-a .draws column to get the draws from, as pulled from the fit
+a `.draws`` column to get the draws from, as pulled from the fit
 attribute of a nowcast.}
 }
 \value{
-ord_obs A \code{data.table}.
+A \code{data.table}.
 }
 \description{
 Build the ord_obs \code{data.table}.

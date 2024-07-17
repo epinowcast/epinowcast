@@ -385,7 +385,7 @@ enw_quantiles_to_long <- function(posterior) {
 
 #' Build the ord_obs `data.table`.
 #'
-#' @param obs Observations as pulled from nowcast$latest[[1]].
+#' @param obs Observations as pulled from `nowcast$latest[[1]]`.
 #' @param max_delay Whole number representing the maximum delay
 #' in units of the timestep.
 #' @param internal_timestep The internal timestep in days.
@@ -393,10 +393,10 @@ enw_quantiles_to_long <- function(posterior) {
 #' ("day", "week", "month") or a numeric whole number representing
 #' the number of days.
 #' @param nowcast If getting posterior samples, a data frame with
-#' a .draws column to get the draws from, as pulled from the fit
+#' a `.draws`` column to get the draws from, as pulled from the fit
 #' attribute of a nowcast.
 #'
-#' @return ord_obs A `data.table`.
+#' @return A `data.table`.
 #'
 #' @family postprocess
 build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, nowcast = NULL) { # nolint
