@@ -15,7 +15,7 @@ test_that("enw_stan_to_r() exposes Stan functions from test_functions.stan", {
   exposed_functions <- suppressMessages(suppressWarnings(enw_stan_to_r(
     files = "test_functions.stan", include = temp_dir,
     force_recompile = TRUE, verbose = FALSE, global = FALSE
-  ))
+  )))
   test_result <- exposed_functions$functions$test_function(2)
   expect_identical(exposed_functions$functions$test_function(2), 4)
 
