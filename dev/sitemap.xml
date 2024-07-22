@@ -15,6 +15,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/add_pmfs.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/aggregate_rolling_sum.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/as_string_formula.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/build_ord_obs.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/cache_location_message.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/check_calendar_timestep.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/check_environment_unset.html</loc></url>
@@ -124,6 +125,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/simulate_double_censored_pmf.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/split_formula_to_terms.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/stan_fns_as_string.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/subset_obs.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/summary.epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/unset_cache_from_environ.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/write_stan_files_no_profile.html</loc></url>
