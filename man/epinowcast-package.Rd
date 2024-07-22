@@ -43,6 +43,7 @@ Other contributors:
   \item Kath Sherratt \email{katharine.sherratt@lshtm.ac.uk} (\href{https://orcid.org/0000-0003-2049-3423}{ORCID}) [contributor]
   \item Nikos Bosse \email{nikos.bosse@lshtm.ac.uk} (\href{https://orcid.org/0000-0002-7750-5280}{ORCID}) [contributor]
   \item Adam Howes \email{adamthowes@gmail.com} (\href{https://orcid.org/0000-0003-2386-4031}{ORCID}) [contributor]
+  \item Jessalyn Sebastian \email{jessalynsebastian@gmail.com} (\href{https://orcid.org/0000-0002-1768-3229}{ORCID}) [contributor]
 }
 
 }

@@ -115,26 +115,18 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
 
   internal_timestep <- get_internal_timestep(timestep)
 
-  ord_obs <- coerce_dt(
-    obs, required_cols = c("reference_date", "confirm"), group = TRUE
-  )
-  check_timestep_by_group(
-    ord_obs, "reference_date", timestep, exact = TRUE
-  )
-  ord_obs <- ord_obs[
-    reference_date > (max(reference_date) - max_delay * internal_timestep)
-  ]
-  data.table::setorderv(ord_obs, c(".group", "reference_date"))
+  ord_obs <- build_ord_obs(obs, max_delay, internal_timestep,
+                           timestep)
 
   # add observations for modelled dates
-  obs_model <- ord_obs[reference_date > (max(reference_date) - max_delay_model)]
+  obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
+                          reference_subset = ">")
   nowcast <- cbind(obs_model, nowcast)
 
   # add not-modelled earlier dates with artificial summary statistics
   if (max_delay > max_delay_model) {
-    obs_spec <- ord_obs[
-      reference_date <= (max(reference_date) - max_delay_model)
-      ]
+    obs_spec <- subset_obs(ord_obs, max_delay_model,
+                           internal_timestep, reference_subset = "<=")
     nowcast <- rbind(obs_spec, nowcast, fill = TRUE)
     nowcast[seq_len(nrow(obs_spec)), c("mean", "median") := confirm]
     cols_quantile <- grep("q\\d+", colnames(nowcast), value = TRUE) # nolint
@@ -205,32 +197,19 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
 
   internal_timestep <- get_internal_timestep(timestep)
 
-  ord_obs <- coerce_dt(
-    obs, required_cols = c("reference_date", "confirm"), group = TRUE
-  )
-  check_timestep_by_group(
-    ord_obs, "reference_date", timestep, exact = TRUE
-  )
-  ord_obs <- ord_obs[
-    reference_date > (max(reference_date) - max_delay * internal_timestep)
-  ]
-  data.table::setorderv(ord_obs, c(".group", "reference_date"))
-  ord_obs <- data.table::data.table(
-    .draws = 1:max(nowcast$.draw), obs = rep(list(ord_obs), max(nowcast$.draw))
-  )
-  ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
-  ord_obs <- ord_obs[order(.group, reference_date)]
+  ord_obs <- build_ord_obs(obs, max_delay, internal_timestep, timestep,
+                           nowcast)
 
   # add observations for modelled dates
-  obs_model <- ord_obs[reference_date > (max(reference_date, na.rm = TRUE) -
-                                           max_delay_model)]
+  obs_model <- subset_obs(ord_obs, max_delay_model, internal_timestep,
+                          reference_subset = ">")
+
   nowcast <- cbind(obs_model, nowcast)
 
   # add artificial samples for not-modelled earlier dates
   if (max_delay > max_delay_model) {
-    obs_spec <- ord_obs[
-      reference_date <= (max(reference_date) - max_delay_model)
-      ]
+    obs_spec <- subset_obs(ord_obs, max_delay_model,
+                           internal_timestep, reference_subset = "<=")
     obs_spec[, c(".chain", ".iteration") := NA]
     obs_spec[, .draw := rep(1:max(nowcast$.draw, na.rm = TRUE),
                             nrow(obs_spec) / max(nowcast$.draw, na.rm = TRUE))]
@@ -402,4 +381,72 @@ enw_quantiles_to_long <- function(posterior) {
   long[, quantile := gsub("q", "", quantile, fixed = TRUE)]
   long[, quantile := as.numeric(quantile) / 100]
   return(long[])
+}
+
+#' Build the ord_obs `data.table`.
+#'
+#' @param obs Observations as pulled from `nowcast$latest[[1]]`.
+#' @param max_delay Whole number representing the maximum delay
+#' in units of the timestep.
+#' @param internal_timestep The internal timestep in days.
+#' @param timestep The timestep to be used. This can be a string
+#' ("day", "week", "month") or a numeric whole number representing
+#' the number of days.
+#' @param nowcast If getting posterior samples, a data frame with
+#' a `.draws`` column to get the draws from, as pulled from the fit
+#' attribute of a nowcast.
+#'
+#' @return A `data.table`.
+#'
+#' @family postprocess
+build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, nowcast = NULL) { # nolint
+  ord_obs <- coerce_dt(
+    obs, required_cols = c("reference_date", "confirm"), group = TRUE
+  )
+  check_timestep_by_group(
+    ord_obs, "reference_date", timestep, exact = TRUE
+  )
+
+  ord_obs <- subset_obs(ord_obs, max_delay, internal_timestep,
+                        reference_subset = ">")
+
+  data.table::setorderv(ord_obs, c(".group", "reference_date"))
+  if (!is.null(nowcast)) {
+    ord_obs <- data.table::data.table(
+      .draws = 1:max(nowcast$.draw),
+      obs = rep(list(ord_obs), max(nowcast$.draw))
+    )
+    ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
+    ord_obs <- ord_obs[order(.group, reference_date)]
+  }
+  return(ord_obs)
+}
+
+#' Subset observations data table for either modelled dates
+#' or not-modelled earlier dates.
+#'
+#' @param ord_obs The observations `data.table` to be subset,
+#' as pulled from the result of calling [epinowcast()] and
+#' coerced to a data table.
+#' @param max_delay Whole number representing the maximum delay
+#' in units of the timestep.
+#' @param internal_timestep A numeric value representing the number
+#' of days in the timestep, e.g. 7 when the timesteps are weeks.
+#' @param reference_subset String giving a relational operator
+#' to subset ord_obs by reference date; e.g. `>` to keep the
+#' modelled reference dates from after the max_delay.
+#'
+#' @return A `data.frame` subset for the desired observations
+#'
+#' @family postprocess
+subset_obs <- function(ord_obs, max_delay, internal_timestep,
+                       reference_subset) {
+  to_keep <- match.fun(reference_subset)(ord_obs$reference_date,
+                                         (max(ord_obs$reference_date,
+                                              na.rm = TRUE) -
+                                          max_delay * internal_timestep))
+  if (!is.logical(to_keep)) {
+    stop("reference_subset must be a relational operator")
+  }
+  return(ord_obs[to_keep, ])
 }
