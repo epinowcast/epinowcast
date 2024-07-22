@@ -12,10 +12,10 @@ test_that("enw_stan_to_r() exposes Stan functions from test_functions.stan", {
   temp_stan_file_path <- file.path(temp_dir, "test_functions.stan")
   writeLines(stan_function_code, temp_stan_file_path)
 
-  exposed_functions <- enw_stan_to_r(
+  exposed_functions <- suppressMessages(suppressWarnings(enw_stan_to_r(
     files = "test_functions.stan", include = temp_dir,
     force_recompile = TRUE, verbose = FALSE, global = FALSE
-  )
+  ))
   test_result <- exposed_functions$functions$test_function(2)
   expect_identical(exposed_functions$functions$test_function(2), 4)
 
@@ -78,13 +78,13 @@ test_that("enw_stan_to_r() global exposure flag functionality", {
   temp_stan_file_path <- file.path(tempdir(), "test_global_exposure.stan")
   writeLines(stan_function_code, temp_stan_file_path)
 
-  exposed_functions <- enw_stan_to_r(
+  exposed_functions <- suppressMessages(suppressWarnings(enw_stan_to_r(
     files = "test_global_exposure.stan",
     include = tempdir(),
     global = FALSE,
     force_recompile = TRUE,
     verbose = FALSE
-  )
+  )))
   expect_false(exists("test_function"))
 
   unlink(temp_stan_file_path)

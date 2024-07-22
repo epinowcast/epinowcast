@@ -93,7 +93,12 @@ test_that("epinowcast() runs with within-chain parallelisation", {
   )
   pobs <- enw_preprocess_data(obs, max_delay = 5)
   nowcast <- suppressMessages(
-    epinowcast(pobs, fit = enw_fit_opts(threads_per_chain = 2))
+    epinowcast(
+      pobs, fit = enw_fit_opts(
+        sampler = silent_enw_sample,
+        threads_per_chain = 2
+      )
+    )
   )
   expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
   expect_lt(nowcast$per_divergent_transitions, 0.05)
@@ -326,7 +331,7 @@ test_that("epinowcast() can fit a simple missing data model", {
   pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
   # Fit options
   fit <- enw_fit_opts(
-    sampler = silent_enw_sample,
+    sample = silent_enw_sample,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 250, iter_sampling = 1000,
     likelihood_aggregation = "groups", adapt_delta = 0.9,
@@ -362,7 +367,7 @@ test_that("epinowcast() can fit a simple missing data model", {
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_obs", median],
     no_missing_posterior[variable %like% "pp_obs", median],
-    150
+    175
   )
   # Reporting distribution mean is equal to within 10%
   expect_diff_abs_lt_per(

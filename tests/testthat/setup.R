@@ -23,5 +23,5 @@ toy_cumulative <- toy_cumulative[sample(.N, .N)][, new_confirm := NULL]
 if (on_ci() && Sys.info()["sysname"] == "Linux" && not_on_cran()) {
   # we only expose stan functions on linux CI
   # because we only test these functions on linux
-  enw_stan_to_r()
+  suppressMessages(suppressWarnings(enw_stan_to_r()))
 }
