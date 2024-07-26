@@ -89,7 +89,7 @@ vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, int ag
     p = hazard_to_log_prob(p);
     }
   }
-  if (agg_probs == 1){
+  if (agg_probs == 1) {
     p = p * agg_indicator;
   }
   profile("model_likelihood_expected_obs_prod_p") {
