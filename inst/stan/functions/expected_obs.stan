@@ -17,7 +17,7 @@
  *
  * @param agg_probs An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
  *
- * @param agg_indicator An array of integer flags (0 or 1) representing the aggregation of reporting probabilities.
+ * @param agg_indicator A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities.
  * 
  * @return A vector representing the expected observations for each date by
  * date of report. The length of the vector matches the length of `lh`.
@@ -75,7 +75,7 @@
  * # 0.007 0.007 0.006 0.024 0.003 0.003 0.003 0.000 0.003 0.002 0.002 0.002
  * # 0.002 0.002 0.002 0.002 0.002 0.002
  */
-vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, int agg_indicator[,]) {
+vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix agg_indicator) {
   int t = num_elements(lh);
   vector[t] exp_obs;
   vector[t] p;
@@ -90,7 +90,7 @@ vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, int ag
     }
   }
   if (agg_probs == 1) {
-    p = p * agg_indicator;
+    p = agg_indicator * p;
   }
   profile("model_likelihood_expected_obs_prod_p") {
     exp_obs = tar_obs + p;
