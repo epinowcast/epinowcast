@@ -64,7 +64,8 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   // combine expected final obs and time effects to get expected obs
   profile("model_likelihood_expected_obs") {    
   int agg_probs = 0;
-  int agg_indicator = [0];
+  matrix[1, 1] agg_indicator;
+  agg_indicator[1, 1] = 0;
   log_exp_obs = expected_obs(tar_obs, lh, ref_as_p, agg_probs, agg_indicator);
   }
   return(log_exp_obs);
