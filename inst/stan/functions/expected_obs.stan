@@ -12,12 +12,15 @@
  * a given day. When `ref_as_p` is 0, this should be the logit hazard instead
  * of probability.
  * 
- * @param ref_as_p An integer flag (0 or 1) indicating whether the reference date input should be treated as a logit hazard or probability. Set to 1 when
+ * @param ref_as_p An integer flag (0 or 1) indicating whether the reference dateinput should be treated as a logit hazard or probability. Set to 1 when
  * no report date effects are present, otherwise 0.
  *
  * @param agg_probs An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
  *
- * @param agg_indicator A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities.
+ * @param agg_indicator A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities,
+ * designed to be left-multiplied to a column vector of reporting probabilities. 
+ * Presence of a 1 in a column indicates that that index in the probability column vector will be aggregated,
+ * and presence of a 1 in a row indicates that aggregated probability will be placed on that index in the new probability vector.
  * 
  * @return A vector representing the expected observations for each date by
  * date of report. The length of the vector matches the length of `lh`.
