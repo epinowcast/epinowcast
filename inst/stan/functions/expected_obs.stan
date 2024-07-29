@@ -93,7 +93,9 @@ vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix
     }
   }
   if (agg_probs == 1) {
+    p = exp(p);
     p = agg_indicator * p;
+    p = log(p);
   }
   profile("model_likelihood_expected_obs_prod_p") {
     exp_obs = tar_obs + p;
