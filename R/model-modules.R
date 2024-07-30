@@ -146,12 +146,12 @@ enw_reference <- function(
       )
       if (data$model_refp > 0) {
         init$refp_mean_int <- array(rnorm(
-          1, priors$refp_mean_int[1], priors$refp_mean_int[2] / 10
+          1, priors$refp_mean_int_p[1], priors$refp_mean_int_p[2] / 10
         ))
       }
       if (data$model_refp > 1) {
         init$refp_sd_int <- array(abs(
-          rnorm(1, priors$refp_sd_int[1], priors$refp_sd_int[2] / 10)
+          rnorm(1, priors$refp_sd_int_p[1], priors$refp_sd_int_p[2] / 10)
         ))
       }
       init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
@@ -478,7 +478,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
       }
       if (data$expr_fintercept > 0) {
         init$expr_r_int <- array(rnorm(
-          1, priors$expr_r_int[1], priors$expr_r_int[2] * 0.1
+          1, priors$expr_r_int_p[1], priors$expr_r_int_p[2] * 0.1
         ))
       }
       if (data$expl_fncol > 0) {

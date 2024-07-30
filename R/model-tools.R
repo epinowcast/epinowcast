@@ -220,7 +220,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
       )
       code_include_paths_no_profile <- remove_profiling(code_include)
       if (!dir.exists(include_paths_no_profile_fdir)) {
-        dir.create(include_paths_no_profile_fdir, recursive = TRUE)
+        dir_create_with_parents(include_paths_no_profile_fdir)
       }
       cmdstanr::write_stan_file(
         code_include_paths_no_profile,
