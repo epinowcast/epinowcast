@@ -4,7 +4,7 @@
 
 @athowes, @jessalynnsebastian, @Bisaloo, and @seabbs contributed code to this release.
 
-@medewitt, and @seabbs reviewed pull requests for this release.
+@medewitt, @jessalynnsebastian, and @seabbs reviewed pull requests for this release.
 
 @pearsonca, @jessalynnsebastian, @athowes, @medewitt, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
@@ -13,6 +13,7 @@
 ## Bugs
 
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
+- Fixed a bug where `enw_expose_stan_fns()` which has been depreciated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.
 
 ## Package
 
@@ -268,7 +269,7 @@ a series of dates. Changed interface of `enw_preprocess_data()` to pass `...` to
 
 - The probability-only model (i.e only a parametric distribution is used and hence the hazard scale is not needed) was not used due to a mistake specifying `ref_as_p` in the stan code. There was an additional issue in that the `enw_report()` module currently self-declares as on regardless of it is or not. This bug had no impact on results but would have increased runtimes for simple models. Both of these issues were fixed in #142 by @seabbs.
 - The addition of meta features week and month did not properly sequentially number weeks and months when time series crossed year boundaries. This would impact models that included effects expecting those to in fact be sequentially numbered (e.g. random walks). Fixed in #151 by @pearsonca.
- - #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`. By @pearsonca.
+- #151 also corrects a minor issue with `enw_example()` pointing at an old file name when `type="script"`. By @pearsonca.
 
 # epinowcast 0.1.0
 
