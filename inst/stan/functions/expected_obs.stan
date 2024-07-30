@@ -33,7 +33,7 @@
  * @examples
  * # compile function for use in R
  * source(here::here("R", "utils.R"))
- * expose_stan_fns(c("hazard.stan", "expected-observations.stan"),
+ * enw_stan_to_r(c("hazard.stan", "expected_obs.stan"),
  *                 "inst/stan/functions")
  *
  * tar_obs <- log(1)
