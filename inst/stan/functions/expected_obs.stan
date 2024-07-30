@@ -12,7 +12,7 @@
  * a given day. When `ref_as_p` is 0, this should be the logit hazard instead
  * of probability.
  * 
- * @param ref_as_p An integer flag (0 or 1) indicating whether the reference dateinput should be treated as a logit hazard or probability. Set to 1 when
+ * @param ref_as_p An integer flag (0 or 1) indicating whether the reference date input should be treated as a logit hazard or probability. Set to 1 when
  * no report date effects are present, otherwise 0.
  *
  * @param agg_probs An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
@@ -88,6 +88,8 @@
  * # -Inf -Inf -Inf -Inf -0.4630154 -Inf -Inf -Inf -Inf -1.8219081
  * # -Inf -Inf -Inf -Inf -2.4549990 -Inf -Inf -Inf -Inf -2.8994851
  * # -Inf -Inf -Inf -Inf -3.2477183 -Inf -Inf -Inf -Inf -3.5362414
+ * # Can visualize what this does to the probabilities with
+ * eobs |> exp() |> plot()
  */
 vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix agg_indicator) {
   int t = num_elements(lh);
@@ -104,9 +106,7 @@ vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix
     }
   }
   if (agg_probs == 1) {
-    p = exp(p);
-    p = agg_indicator * p;
-    p = log(p);
+    p = log(agg_indicator * exp(p));
   }
   profile("model_likelihood_expected_obs_prod_p") {
     exp_obs = tar_obs + p;
