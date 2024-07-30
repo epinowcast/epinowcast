@@ -718,8 +718,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                 priors$expr_beta_sd_p[1], priors$expr_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$expr_fintercept &gt; 0) {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             init$expr_r_int &lt;- array(rnorm(1, priors$expr_r_int[1], </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 priors$expr_r_int[2] * 0.1))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             init$expr_r_int &lt;- array(rnorm(1, priors$expr_r_int_p[1], </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                 priors$expr_r_int_p[2] * 0.1))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         if (data$expl_fncol &gt; 0) {</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             init$expl_beta &lt;- array(rnorm(data$expl_fncol, 0, </span>
@@ -733,8 +733,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5560fcc68ba8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5560fcc549e0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x560773405be8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5607733f3b30&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
