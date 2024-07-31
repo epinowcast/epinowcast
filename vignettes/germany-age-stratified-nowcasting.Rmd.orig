@@ -49,7 +49,7 @@ library(knitr)
 This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 6 as we are using 2 MCMC chains and have 12 real cores available). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
 
 ```{r, eval  = TRUE}
-threads <- 6
+threads <- floor(min(max(1, parallel::detectCores() /  4), 6))
 options(mc.cores = 2)
 ```
 
