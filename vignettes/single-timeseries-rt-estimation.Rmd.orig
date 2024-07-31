@@ -434,7 +434,7 @@ Before we are ready to fit the model we need to first specify some fitting optio
 fit_module <- partial(enw_fit_opts,
   chains = 2,
   parallel_chains = 2,
-  threads_per_chain = 2,
+  threads_per_chain = floor(min(max(1, parallel::detectCores() /  4), 2)),
   iter_warmup = 500,
   iter_sampling = 1000,
   adapt_delta = 0.95,
