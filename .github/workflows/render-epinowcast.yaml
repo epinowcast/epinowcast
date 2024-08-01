@@ -41,9 +41,10 @@ jobs:
 
       - name: Render vignette
         run: |
+            setwd("vignettes")
             knitr::knit(
-              "vignettes/epinowcast.Rmd.orig",
-              "vignettes/epinowcast.Rmd"
+              "epinowcast.Rmd.orig",
+              "epinowcast.Rmd"
             )
         shell: Rscript {0}
 
