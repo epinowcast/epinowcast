@@ -16,7 +16,7 @@ concurrency:
 name: render-epinowcast
 
 jobs:
-  pkgdown:
+  render-epinowcast:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
