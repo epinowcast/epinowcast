@@ -549,15 +549,15 @@
 <span><span class="co">#&gt;                     obs          new_confirm             latest</span></span>
 <span><span class="co">#&gt;                  &lt;list&gt;               &lt;list&gt;             &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[1425x8]&gt; &lt;data.table[1425x9]&gt; &lt;data.table[62x8]&gt;</span></span>
-<span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference</span></span>
-<span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[0x4]&gt; &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt;</span></span>
-<span><span class="co">#&gt;             metareport          metadelay max_delay  time snapshots     by</span></span>
-<span><span class="co">#&gt;                 &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[91x10]&gt; &lt;data.table[30x5]&gt;        30    62        62       </span></span>
-<span><span class="co">#&gt;    groups   max_date timestep</span></span>
-<span><span class="co">#&gt;     &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:      1 2021-07-01      day</span></span></code></pre></div>
+<span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference          metareport</span></span>
+<span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;              &lt;list&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[0x4]&gt; &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt; &lt;data.table[91x10]&gt;</span></span>
+<span><span class="co">#&gt;             metadelay max_delay  time snapshots     by groups   max_date</span></span>
+<span><span class="co">#&gt;                &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;  &lt;int&gt;     &lt;IDat&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[30x5]&gt;        30    62        62             1 2021-07-01</span></span>
+<span><span class="co">#&gt;    timestep</span></span>
+<span><span class="co">#&gt;      &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:      day</span></span></code></pre></div>
 </details><p>and do the same for the retrospective data</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_germany_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
@@ -568,12 +568,12 @@
 <span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference</span></span>
 <span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;</span></span>
 <span><span class="co">#&gt; 1: &lt;data.table[0x4]&gt; &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt;</span></span>
-<span><span class="co">#&gt;              metareport          metadelay max_delay  time snapshots</span></span>
-<span><span class="co">#&gt;                  &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[120x10]&gt; &lt;data.table[30x5]&gt;        30    62        62</span></span>
-<span><span class="co">#&gt;        by groups   max_date timestep</span></span>
-<span><span class="co">#&gt;    &lt;list&gt;  &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:             1 2021-07-30      day</span></span></code></pre></div>
+<span><span class="co">#&gt;              metareport          metadelay max_delay  time snapshots     by</span></span>
+<span><span class="co">#&gt;                  &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;</span></span>
+<span><span class="co">#&gt; 1: &lt;data.table[120x10]&gt; &lt;data.table[30x5]&gt;        30    62        62       </span></span>
+<span><span class="co">#&gt;    groups   max_date timestep</span></span>
+<span><span class="co">#&gt;     &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:      1 2021-07-30      day</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -587,11 +587,11 @@
 <code class="sourceCode R"><span><span class="va">fit_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/partial.html" class="external-link">partial</a></span><span class="op">(</span><span class="va">enw_fit_opts</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  parallel_chains <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  threads_per_chain <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  threads_per_chain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span>  <span class="fl">4</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  adapt_delta <span class="op">=</span> <span class="fl">0.98</span>,</span>
-<span>  max_treedepth <span class="op">=</span> <span class="fl">15</span>,</span>
+<span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  max_treedepth <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># set this to TRUE to show fitting messages</span></span>
@@ -621,8 +621,7 @@
 <span>  obs <span class="op">=</span> <span class="fu">obs_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">rt_germany_pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="fu">fit_module</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">epinowcast_model</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in expectation_module(data = rt_germany_pobs): object 'rt_formula' not found</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the <a href="#fitting-the-epinowcast-model">fitting options</a> section above).</p>
 </div>
@@ -635,8 +634,7 @@
 <span>  obs <span class="op">=</span> <span class="fu">obs_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">retro_germany_pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="fu">fit_module</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">epinowcast_model</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Error in expectation_module(data = retro_germany_pobs): object 'rt_formula' not found</span></span></code></pre></div>
+<span><span class="op">)</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>You may see a number of warning messages from <code>cmdstanr</code> when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in <code>epinowcast</code>. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of <code>epinowcast</code>.</p>
 </div>
