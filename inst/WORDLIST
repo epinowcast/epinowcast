@@ -6,6 +6,7 @@ Bisaloo
 CMD
 COVID
 CmdStan
+CmdStanModel
 CmdStanR
 Codecov
 Discretisation
@@ -20,6 +21,7 @@ Gulfa
 HMC
 HalfNormal
 Höhle
+IDate
 INLA
 ImperialCollegeLondon
 LFO
@@ -51,6 +53,7 @@ args
 athowes
 beansrowning
 choi
+cmdstanr
 com
 cyclomatic
 dataconverters
@@ -105,8 +108,8 @@ nowcastable
 nowcasting
 nowcasts
 nsl
-obs
 ord
+obs
 overpredict
 overprediction
 parameterisations
