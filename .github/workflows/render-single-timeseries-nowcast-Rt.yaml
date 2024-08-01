@@ -41,9 +41,10 @@ jobs:
 
       - name: Render vignette
         run: |
+            setwd("vignettes")
             knitr::knit(
-              "vignettes/single-timeseries-rt-estimation.Rmd.orig",
-              "vignettes/single-timeseries-rt-estimation.Rmd"
+              "single-timeseries-rt-estimation.Rmd.orig",
+              "single-timeseries-rt-estimation.Rmd"
             )
         shell: Rscript {0}
 
