@@ -13,10 +13,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
-name: render-germany-age-stratified-nowcasting
+name: germany-age-stratified-nowcasting
 
 jobs:
-  pkgdown:
+  germany-age-stratified-nowcasting:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
