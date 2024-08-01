@@ -41,9 +41,10 @@ jobs:
 
       - name: Render vignette
         run: |
+            setwd("vignettes")
             knitr::knit(
-              "vignettes/germany-age-stratified-nowcasting.Rmd.orig",
-              "vignettes/germany-age-stratified-nowcasting.Rmd"
+              "germany-age-stratified-nowcasting.Rmd.orig",
+              "germany-age-stratified-nowcasting.Rmd"
             )
         shell: Rscript {0}
 
