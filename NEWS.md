@@ -25,6 +25,7 @@
 ## Documentation
 
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
+- Added a vignette describing the default priors and how to customise them. See #470 by @jamesmbaazam and reviewed by @seabbs.
 
 ## Depreciations
 
