@@ -43,7 +43,7 @@
  * These steps account for different reporting delays and the distribution
  * of observations over time.
  * 
- * @seealso `extract_sparse_matrix` and `convolution_matrix` epinowcast R
+ * @see `extract_sparse_matrix` and `convolution_matrix` epinowcast R
  * functions for details on sparse matrix construction and convolution matrix
  * generation.
  */
