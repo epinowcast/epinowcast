@@ -5,7 +5,9 @@ Betancourt's
 Bisaloo
 CMD
 COVID
+cmdstanr
 CmdStan
+CmdStanModel
 CmdStanR
 Codecov
 Discretisation
@@ -21,6 +23,7 @@ HMC
 HalfNormal
 Höhle
 INLA
+IDate
 ImperialCollegeLondon
 LFO
 Lifecycle
