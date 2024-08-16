@@ -1,4 +1,5 @@
 /**
+ * \page common_parameters_page Common Parameters
  * @section Common Parameters for `delay_snap_lpmf` and `delay_group_lpmf`
  *
  * @param obs Array of observed data, stored as a flat vector.
