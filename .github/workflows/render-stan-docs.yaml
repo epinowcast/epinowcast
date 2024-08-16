@@ -1,0 +1,33 @@
+# Based on https://github.com/mattnotmitt/doxygen-action
+name: Doxygen Action
+
+on:
+  pull_request:
+    paths:
+      - 'inst/stan/**'
+
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Doxygen Action
+      uses: mattnotmitt/doxygen-action@v1.9.2
+      with:
+        # Path to Doxyfile
+        doxyfile-path: "./inst/stan/Doxyfile"
+        # Working directory
+        working-directory: "."
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        # Default Doxyfile build documentation to html directory.
+        # Change the directory if changes in Doxyfile
+        publish_dir: ./inst/stan/html
