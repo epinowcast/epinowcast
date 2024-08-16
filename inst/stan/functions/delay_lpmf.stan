@@ -11,8 +11,8 @@
  *
  * @param end End index for the range of interest.
  *
- * @commonparams See Common Parameters for `delay_snap_lpmf` and
- * `delay_group_lpmf`
+ * @include common_params.stan
+ *
  * 
  * @return Log probability mass of the observations for the specified range.
  * 
@@ -81,7 +81,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * @param groups Array of group identifiers.
  * @param start Start index for the range of interest.
  * @param end End index for the range of interest.
- * @commonparams See Common Parameters for `delay_snap_lpmf` and `delay_group_lpmf`
+ * @include common_params.stan
  * 
  * @return Log probability mass of the observations for the specified range.
  * 
