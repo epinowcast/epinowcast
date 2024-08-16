@@ -30,7 +30,7 @@
  * - `inv_logit`: Used to convert logit hazards to probabilities.
  * - `hazard_to_log_prob`: Used for converting hazards to log probabilities.
  *
- * @examples
+ * @code
  * # compile function for use in R
  * source(here::here("R", "utils.R"))
  * enw_stan_to_r(c("hazard.stan", "expected_obs.stan"),
@@ -90,6 +90,7 @@
  * # -Inf -Inf -Inf -Inf -3.2477183 -Inf -Inf -Inf -Inf -3.5362414
  * # Can visualize what this does to the probabilities with
  * eobs |> exp() |> plot()
+ * @endcode
  */
 vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix agg_indicator) {
   int t = num_elements(lh);
