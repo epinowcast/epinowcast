@@ -22,7 +22,7 @@
  *     The term `g * normal_lccdf(0 | mu, sigma)` adjusts for the probability 
  *     mass excluded by truncation, where `g` is the number of elements in `y`.
  * 
- * @seealso This function is used in `effect_priors_lp` for applying a
+ * @see This function is used in `effect_priors_lp` for applying a
  * zero-truncated normal prior to the standard deviations of random effects in
  * a regression context.
  */
