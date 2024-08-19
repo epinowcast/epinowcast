@@ -77,6 +77,10 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * @param start Start index for the range of interest.
  * @copydoc common_parameters_page
  *
+ * @param t
+ *
+ * @param groups Array of group identifiers.
+ *
  * @param ts Array of snapshot index by time and group
  *
  * @param model_miss A binary flag to indicate if to model missing observations
