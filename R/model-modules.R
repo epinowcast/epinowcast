@@ -734,7 +734,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
     description = "One over the square root of the reporting overdispersion",
     distribution = "Zero truncated normal",
     mean = 0,
-    sd = 1
+    sd = 0.5
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
@@ -745,10 +745,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
       )
       if (data$model_obs == 1) {
         init$sqrt_phi <- array(
-          max(
-            abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10)),
-            1e-4
-          )
+          abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10)
         )
         init$phi <- 1 / (init$sqrt_phi^2)
       }

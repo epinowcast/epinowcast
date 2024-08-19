@@ -171,8 +171,8 @@ transformed data{
 parameters {
   // Expectation model
   // ---- Growth rate submodule ----
-  matrix[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
-  array[expr_fintercept ? 1 : 0] real expr_r_int; // growth rate intercept
+  matrix<offset = to_matrix(expr_lelatent_int_p[1], expr_r_seed, g), multiplier = to_matrix(expr_lelatent_int_p[2], expr_r_seed, g)>[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
+  array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int; // growth rate intercept
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
   // ---- Latent case submodule ----
