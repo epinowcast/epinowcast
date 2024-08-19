@@ -5,7 +5,7 @@
  * snapshot data. It applies filters to identify relevant observations and
  * calculates the expected log observations based on various inputs.
  *
- * @copydoc common_parameters_page
+ * @copydoc common_parameters_delay_lpmf_funcs
  *
  * @param dummy Dummy array parameter, not used in the calculation.
  *
@@ -72,7 +72,9 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * Computes the log probability mass for a range of time indexes in delayed
  * group data. It manages data filtering, allocation for expected log 
  * observations, and handles missing data if applicable.
- * 
+ *
+ * @copydoc common_parameters_delay_lpmf_funcs
+ *
  * @param groups Array of group identifiers.
  * @param start Start index for the range of interest.
  * @copydoc common_parameters_page

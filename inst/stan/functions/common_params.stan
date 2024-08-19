@@ -1,5 +1,5 @@
 /**
- * \page common_parameters_page Common Parameters
+ * \page common_parameters_delay_lpmf_funcs Common Parameters for Delay log-PMFs
  *
  * @param start Start index for the range of interest.
  *
