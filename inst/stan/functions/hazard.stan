@@ -33,14 +33,15 @@ vector prob_to_hazard(vector p) {
  * 
  * @param h Vector of hazards.
  * 
+ * @param l Length of the vector.
+ * 
  * @return Vector of cumulative converse log hazards.
  * 
  * @note The cumulative converse log hazard is defined as:
  *  @f[ ch_i = \sum_{j=1}^{i} \log(1 - h_{j-1}) @f]
  *  where @f[ h_{0} @f] is considered to be 0.
  */
-vector cumulative_converse_log_hazard(vector h) {
-  int l = num_elements(h);
+vector cumulative_converse_log_hazard(vector h, int l) {
   vector[l] h_shifted;
   vector[l] ch;
   h_shifted[1] = 0;
@@ -62,6 +63,8 @@ vector cumulative_converse_log_hazard(vector h) {
  * 
  * @param h Vector of hazards.
  * 
+ * @param l Length of the vector.
+ * 
  * @return Vector of log probabilities corresponding to the input hazards.
  * 
  * @note The log probability at time i is defined as:
@@ -72,9 +75,6 @@ vector cumulative_converse_log_hazard(vector h) {
  * Dependencies:
  *  - cumulative_converse_log_hazard
  */
-vector hazard_to_log_prob(vector h) {
-  int l = num_elements(h);
-  vector[l] p;
-  p[1:l] = log(h[1:l]) + cumulative_converse_log_hazard(h[1:l]);
-  return(p);
+vector hazard_to_log_prob(vector h, int l) {
+  return(log(h) + cumulative_converse_log_hazard(h, l));
 }
