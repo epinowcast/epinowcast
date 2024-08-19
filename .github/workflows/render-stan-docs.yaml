@@ -1,5 +1,5 @@
 # Based on https://github.com/mattnotmitt/doxygen-action
-name: Doxygen Action
+name: Render Stan documentation
 
 on:
   workflow_dispatch:
