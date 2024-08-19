@@ -4,14 +4,14 @@
  * Computes the log probability mass for a range of time indexes in delayed
  * snapshot data. It applies filters to identify relevant observations and
  * calculates the expected log observations based on various inputs.
- * 
+ *
+ * @copydoc common_parameters_page
+ *
  * @param dummy Dummy array parameter, not used in the calculation.
  *
  * @param start Start index for the range of interest.
  *
  * @param end End index for the range of interest.
- *
- * @see \ref common_parameters_page.
  *
  * 
  * @return Log probability mass of the observations for the specified range.
@@ -80,8 +80,8 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * 
  * @param groups Array of group identifiers.
  * @param start Start index for the range of interest.
- * @param end End index for the range of interest.
- * @see \ref common_parameters_page.
+ * @copydoc common_parameters_page
+ *
  * 
  * @return Log probability mass of the observations for the specified range.
  * 
