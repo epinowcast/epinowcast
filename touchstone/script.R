@@ -17,7 +17,7 @@ touchstone::benchmark_run(
     expectation = enw_expectation(~1, data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 250,
       threads_per_chain = 2, parallel_chains = 1
     ),
     obs = enw_obs(family = "poisson", data = pobs),
@@ -33,7 +33,7 @@ touchstone::benchmark_run(
     expectation = enw_expectation(~1, data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = TRUE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
@@ -50,7 +50,7 @@ touchstone::benchmark_run(
     report = enw_report(~(1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
@@ -91,7 +91,7 @@ touchstone::benchmark_run(
     report = enw_report(~(1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
@@ -105,7 +105,7 @@ touchstone::benchmark_run(
   multi_group_latent_renewal_model = { epinowcast(
     data = pobs,
     expectation = enw_expectation(
-      r = ~ 1 + (1 | .group),
+      r = ~ 1 + rw(week, by = .group),
       generation_time = c(0.1, 0.4, 0.4, 0.1),
       observation = ~ (1 | day_of_week),
       latent_reporting_delay = 0.4 * c(0.05, 0.3, 0.6, 0.05),
@@ -115,7 +115,7 @@ touchstone::benchmark_run(
     report = enw_report(~(1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
-      chains = 2, iter_warmup = 250, iter_sampling = 250,
+      chains = 2, iter_warmup = 500, iter_sampling = 500,
       parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),

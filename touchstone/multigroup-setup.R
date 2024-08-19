@@ -11,9 +11,8 @@ options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
 nat_germany_hosp <-
-  germany_covid19_hosp[location == "DE"][
-    age_group %in% c("00+", "00-04", "80+")
-  ]
+  germany_covid19_hosp[location == "DE"]
+
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-10-01"
@@ -30,11 +29,11 @@ retro_nat_germany <- enw_filter_report_dates(
 )
 retro_nat_germany <- enw_filter_reference_dates(
   retro_nat_germany,
-  include_days = 10
+  include_days = 15
 )
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(
-  retro_nat_germany, by = "age_group", max_delay = 10
+  retro_nat_germany, by = "age_group", max_delay = 15
 )
 
 # Compile the model for use outside of the benchmark
