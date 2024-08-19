@@ -1,6 +1,9 @@
 /**
  * \page common_parameters_page Common Parameters
  *
+ * @param start Start index for the range of interest.
+ *
+ * @param end End index for the range of interest.
  *
  * @param obs Array of observed data, stored as a flat vector.
  *
