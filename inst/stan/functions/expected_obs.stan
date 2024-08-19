@@ -40,45 +40,50 @@
  *
  * tar_obs <- log(1)
  * date_p <- log(
- *  plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
+ *   (plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
  * )
  * rep_lh <- rep(0, 30)
  *
  * Example with no reporting day effect
- * eobs <- exp(expected_obs(tar_obs, date_p + rep(0, 30), 30, 1, 0, [0]))
- * all.equal(eobs, date_p)
+ * eobs <- exp(expected_obs(
+ *   tar_obs, date_p + rep(0, 30), 30, 1, 0, matrix(0, nrow = 0, ncol = 0)
+ * ))
  *
  * Example with hazard effect only on last date of report
- * ref_lh <- logit(hazard_to_log_prob(date_p))
- * eobs <- exp(expected_obs(tar_obs, ref_lh, c(rep(0, 29), 0.1), 30, 0, 0, [0]))
- * all.equal(eobs, date_p)
+ * ref_lh <- qlogis(prob_to_hazard(exp(date_p)))
+ * eobs <- exp(
+ *   expected_obs(
+ *     tar_obs, ref_lh, 30, 0, 0,
+ *     matrix(numeric(0), nrow = 0, ncol = 0)
+ *   )
+ * )
  *
- * Example with a single day of additional reporting hazard and
- * no differential probability due to the reference date.
- * rep_lh <- rep(0, 30); rep_lh[7] = 2
- * equal_lh <- logit(hazard_to_log_prob(rep(1/30, 30), 30))
- * round(exp(expected_obs(tar_obs, equal_lh + rep_lh, 30, 0, 0, [0])), 3)
- * # 0.033 0.033 0.033 0.033 0.033 0.033 0.195 0.026 0.026 0.026 0.026 0.026
- * # 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026
- * # 0.026 0.026 0.026 0.026 0.026 0.026
+ * Example with a single day of additional reporting hazard
+ * rep_lh <- rep(0, 30)
+ * rep_lh[7] <- 2
+ * equal_lh <- plogis(hazard_to_log_prob(rep(1/30, 30), 30))
+ * eobs <- round(exp(
+ *   expected_obs(
+ *     tar_obs, equal_lh + rep_lh, 30, 0, 0,
+ *     matrix(numeric(0), nrow = 0, ncol = 0)
+ *   )
+ * ), 3)
+ * expected <- c(0.508, 0.250, 0.123, 0.060, 0.030, 0.015, 0.013, 0.001)
  *
  * Example combining multiple hazards and no differential prob due to reference
  * date
  * rep_lh <- rep(0, 30)
- * rep_lh[c(6, 12, 16)] = 2
- * rep_lh[c(2, 20)] = -2
- * round(exp(expected_obs(tar_obs, equal_lh + rep_lh, 30, 0, 0, [0])), 3)
- * # 0.033 0.005 0.034 0.034 0.034 0.202 0.027 0.027 0.027 0.027 0.027 0.151
- * # 0.021 0.021 0.021 0.106 0.014 0.014 0.014 0.002 0.016 0.016 0.016 0.016
- * # 0.016 0.016 0.016 0.016 0.016 0.016
- *
- * Example combining both date of reference and date of report effects
- * eobs <- exp(expected_obs(tar_obs, ref_lh + rep_lh, 30, 0, 0, [0]))
- * round(sum(eobs - 1e-4), 5) == 1
- * round(eobs, 3)
- * # 0.273 0.023 0.112 0.082 0.065 0.221 0.025 0.021 0.019 0.016 0.014 0.058
- * # 0.007 0.007 0.006 0.024 0.003 0.003 0.003 0.000 0.003 0.002 0.002 0.002
- * # 0.002 0.002 0.002 0.002 0.002 0.002
+ * rep_lh[c(6, 12, 16)] <- 2
+ * rep_lh[c(2, 20)] <- -2
+ * equal_lh <- plogis(hazard_to_log_prob(rep(1 / 30, 30), 30))
+ * eobs <- round(exp(
+ *   expected_obs(
+ *     tar_obs, equal_lh + rep_lh, 30, 0, 0,
+ *     matrix(numeric(0), nrow = 0, ncol = 0)
+ *   )
+ * ), 3)
+ * expected <- c(0.508, 0.060, 0.219, 0.108, 0.053, 0.046, 0.003, 0.002, 0.001,
+ *               rep(0.000, 21))
  *
  * Example with aggregation of probabilities where aggregation occurs on every fifth day
  * agg_probs <- matrix(c(rep(0, times = 30 * 4),
