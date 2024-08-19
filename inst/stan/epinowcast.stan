@@ -182,7 +182,7 @@ parameters {
     
   // Reference model
   // Parametric reference model
-  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
+  array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
