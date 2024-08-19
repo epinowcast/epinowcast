@@ -9,11 +9,6 @@
  *
  * @param dummy Dummy array parameter, not used in the calculation.
  *
- * @param start Start index for the range of interest.
- *
- * @param end End index for the range of interest.
- *
- * 
  * @return Log probability mass of the observations for the specified range.
  * 
  * @note This function performs the following operations:
