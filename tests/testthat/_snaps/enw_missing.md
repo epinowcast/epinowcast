@@ -157,7 +157,7 @@
       2: Standard deviation of scaled pooled logit missing reference date\n       effects
                   distribution mean sd
       1:                Normal    0  1
-      2: Zero truncated normal    0  0.5
+      2: Zero truncated normal    0  1
       
 
 # enw_missing returns an empty model when required
@@ -223,6 +223,6 @@
       2: Standard deviation of scaled pooled logit missing reference date\n       effects
                   distribution mean sd
       1:                Normal    0  1
-      2: Zero truncated normal    0  0.5
+      2: Zero truncated normal    0  1
       
 
