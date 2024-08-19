@@ -283,7 +283,7 @@ transformed parameters{
       );
     }
     }
-  }  
+  }
   }
   if (model_refnp) {
     // calculate non-parametric reference date logit hazards
@@ -421,7 +421,7 @@ model {
       );
     }
   }
-  } 
+  }
 }
 
 
