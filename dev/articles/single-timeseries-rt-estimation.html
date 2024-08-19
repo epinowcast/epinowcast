@@ -378,7 +378,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html" class="external-link">guide_legend</a></span><span class="op">(</span>reverse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-10-1.png" alt="Hospitalisations in Germany by date of positive test and date of report"><div class="figcaption">Hospitalisations in Germany by date of positive test and date of report</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-unnamed-chunk-10-1.png" alt="Hospitalisations in Germany by date of positive test and date of report"><div class="figcaption">Hospitalisations in Germany by date of positive test and date of report</div>
 </div>
 </div>
 </div>
@@ -452,7 +452,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">gt_pmf</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt="Probability mass function of the assumed generation interval distribution"><div class="figcaption">Probability mass function of the assumed generation interval distribution</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-unnamed-chunk-12-1.png" alt="Probability mass function of the assumed generation interval distribution"><div class="figcaption">Probability mass function of the assumed generation interval distribution</div>
 </div>
 <div class="alert alert-warning">
 <p>Here and for other PMFs we set the maximum delay to be 15 days as this gives good coverage of the majority of the distribution and limits the computational burden of fitting the model.</p>
@@ -475,7 +475,7 @@
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">reporting_pmf</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt="Probability mass function of the assumed latent (unobserved) reporting distribution"><div class="figcaption">Probability mass function of the assumed latent (unobserved) reporting distribution</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-unnamed-chunk-13-1.png" alt="Probability mass function of the assumed latent (unobserved) reporting distribution"><div class="figcaption">Probability mass function of the assumed latent (unobserved) reporting distribution</div>
 </div>
 <p>The last part of the model to define is the remaining part of the ascertainment model for expected hospitalisations. As we have already defined the base ascertainment ratio (i.e. the 2% infection to hospitalisation ratio) we only need to define the day of the week random effect. We can do this using the formula interface as follows,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -652,7 +652,7 @@
 <span>  <span class="va">germany_nowcast</span>, <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on real-time data"><div class="figcaption">Nowcast of hospitalisations in Germany based on real-time data</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-plot-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on real-time data"><div class="figcaption">Nowcast of hospitalisations in Germany based on real-time data</div>
 </div>
 <p>Internally, this plotting function (see <code>?plot.epinowcast()</code>) sums observed data and posterior estimates for unobserved data to produce a nowcast of the number of hospitalisations that will ultimately be reported.</p>
 <p>In this instance, the model has done a good job of estimating the number of hospitalisations that will ultimately be reported based on the data that is currently available. This is not always the case, and the model can sometimes over or under estimate the number of hospitalisations that will ultimately be reported.</p>
@@ -670,7 +670,7 @@
 <span>  <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on retrospective data"><div class="figcaption">Nowcast of hospitalisations in Germany based on retrospective data</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-plot-retro-germany-nowcast-1.png" alt="Nowcast of hospitalisations in Germany based on retrospective data"><div class="figcaption">Nowcast of hospitalisations in Germany based on retrospective data</div>
 </div>
 </div>
 </div>
@@ -691,7 +691,7 @@
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2021-05-01"</span>, <span class="st">"2021-05-14"</span>, <span class="st">"2021-06-01"</span>, <span class="st">"2021-07-01"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt="Posterior predictions of hospitalisations in Germany based on retrospective data"><div class="figcaption">Posterior predictions of hospitalisations in Germany based on retrospective data</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-plot-retro-germany-nowcast-obs-1.png" alt="Posterior predictions of hospitalisations in Germany based on retrospective data"><div class="figcaption">Posterior predictions of hospitalisations in Germany based on retrospective data</div>
 </div>
 <div class="alert alert-warning">
 <p>It is clear from this plot that for these example dates the model is in the main able to predict the observed data well. However, there are also some aspects of the data that the model is less well able to predict, in particular the apparent periodicity in the reporting delay. This is likely due to the model not being able to account for the day of the week reporting periodicity. This could be fixed by adding a day of the week random effect to the reporting delay model which we demonstrate in the <a href="https://package.epinowcast.org">package README</a>.</p>
@@ -733,7 +733,7 @@
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-rt-1.png" alt="Real-time and retrospective estimates of the effective reproduction number in Germany"><div class="figcaption">Real-time and retrospective estimates of the effective reproduction number in Germany</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-plot-germany-rt-1.png" alt="Real-time and retrospective estimates of the effective reproduction number in Germany"><div class="figcaption">Real-time and retrospective estimates of the effective reproduction number in Germany</div>
 </div>
 <p>Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models. Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict. This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.</p>
 </div>
@@ -795,7 +795,7 @@
 <span>    y <span class="op">=</span> <span class="st">"Cumulative density function of the reporting distribution"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-delay-1.png" alt="Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany"><div class="figcaption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-plot-germany-delay-1.png" alt="Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany"><div class="figcaption">Real-time and retrospective estimates of the delay from testing positive to hospitalisation in Germany</div>
 </div>
 <p>The estimates are a fairly good match indicating that the delay is being well estimated by the real-time model compared to the retrospective model and that the delay is unlikely to be changing rapidly over time in this example (as otherwise we would expect the estimated delays to diverge over time).</p>
 </div>
@@ -845,7 +845,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Dark2"</span>, aesthetics <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"color"</span>, <span class="st">"fill"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 </details><div class="float">
-<img src="figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt="Real-time and retrospective estimates of the number of expected hospitalisations in Germany"><div class="figcaption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</div>
+<img src="figures%2Fsingle-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt="Real-time and retrospective estimates of the number of expected hospitalisations in Germany"><div class="figcaption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</div>
 </div>
 <p>As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).</p>
 </div>
