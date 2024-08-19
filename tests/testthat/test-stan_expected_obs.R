@@ -31,7 +31,8 @@ test_that(
   expect_equal(eobs, exp(date_p), tolerance = 1e-7)
 })
 
-test_that("expected_obs() works correctly with a single day of additional reporting hazard", {
+test_that(
+  "expected_obs() works correctly with a single day of additional reporting hazard", { # nolint
   rep_lh <- rep(0, 30)
   rep_lh[7] <- 2
   equal_lh <- plogis(hazard_to_log_prob(rep(1 / 30, 30), 30))
@@ -42,7 +43,7 @@ test_that("expected_obs() works correctly with a single day of additional report
     )
   ), 3)
   expected <- c(0.508, 0.250, 0.123, 0.060, 0.030, 0.015, 0.013, 0.001)
-  expect_equal(eobs[1:length(expected)], expected, tolerance = 1e-3)
+  expect_equal(eobs[seq_along(expected)], expected, tolerance = 1e-3)
 })
 
 test_that("expected_obs() works correctly with multiple hazards", {
@@ -59,7 +60,7 @@ test_that("expected_obs() works correctly with multiple hazards", {
   expected <- c(0.508, 0.060, 0.219, 0.108, 0.053, 0.046, 0.003, 0.002, 0.001,
                 rep(0.000, 21))
   expect_equal(eobs, expected, tolerance = 1e-3)
-}) 
+})
 
 test_that("expected_obs() aggregates probabilities correctly", {
   tar_obs <- log(1)
