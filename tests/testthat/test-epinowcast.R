@@ -73,7 +73,7 @@ test_that("epinowcast() runs using default arguments only", {
   )
   expect_identical(
     nowcast$priors[[1]][, sd],
-    c(0.2, rep(1, 13))
+    c(0.2, rep(1, 12), 0.5)
   )
   expect_identical(
     nowcast$priors[[1]][variable %like% "exp", dimension],

@@ -33,6 +33,7 @@ test_that(
 
 test_that(
   "expected_obs() works correctly with a single day of additional reporting hazard", { # nolint
+  tar_obs <- log(1)
   rep_lh <- rep(0, 30)
   rep_lh[7] <- 2
   equal_lh <- plogis(hazard_to_log_prob(rep(1 / 30, 30), 30))
@@ -47,6 +48,7 @@ test_that(
 })
 
 test_that("expected_obs() works correctly with multiple hazards", {
+  tar_obs <- log(1)
   rep_lh <- rep(0, 30)
   rep_lh[c(6, 12, 16)] <- 2
   rep_lh[c(2, 20)] <- -2
