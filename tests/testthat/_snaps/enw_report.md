@@ -78,6 +78,6 @@
             variable                                             description
       1: rep_beta_sd Standard deviation of scaled pooled report date effects
                   distribution mean sd
-      1: Zero truncated normal    0  1
+      1: Zero truncated normal    0  0.5
       
 
