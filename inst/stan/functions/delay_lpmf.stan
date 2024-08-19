@@ -82,9 +82,26 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * @param start Start index for the range of interest.
  * @copydoc common_parameters_page
  *
- * 
+ * @param ts Array of snapshot index by time and group
+ *
+ * @param model_miss A binary flag to indicate if to model missing observations
+ *
+ * @param miss_obs A binary flag for the missing observation model
+ *
+ * @param missing_reference Integer for the reference date model
+ *
+ * @param obs_by_report Array indicating which observations
+ * correspond to each report date.
+ *
+ * @param miss_ref_lprop Vector of missing reference log probabilities,
+ * applied to each period.
+ *
+ * @param miss_st Array of start index of observations by group
+ *
+ * @param miss_cst Array of start index of cumulative observations
+ *
  * @return Log probability mass of the observations for the specified range.
- * 
+ *
  * @note This function performs the following operations:
  *  1. Determines the relevant range for observed and missing data.
  *  2. Filters and allocates expected log observations, handling missing data.
