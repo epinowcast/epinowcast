@@ -745,7 +745,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
       )
       if (data$model_obs == 1) {
         init$sqrt_phi <- array(
-          abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10)
+          abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10))
         )
         init$phi <- 1 / (init$sqrt_phi^2)
       }
