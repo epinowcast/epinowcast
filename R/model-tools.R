@@ -291,6 +291,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
     random = sample_random_init(data, model, init, ...),
     pathfinder = sample_pathfinder_init(data, model, init, init_args, ...)
   )
+  fit <- out$fit[[1]]
 
   if (diagnostics) {
     diag <- fit$sampler_diagnostics(format = "df")
@@ -328,12 +329,17 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @return A data.table containing the fit, data, fit arguments, and pathfinder
 #' output
 sample_pathfinder_init <- function(data, model, init, init_args = list(), ...) {
-  pf <- do.call(enw_pathfinder, c(list(data = data, model = model), init_args))
+  dot_args <- list(...)
+  init_args$threads_per_chain <- dot_args$threads_per_chain
+  pf <- do.call(
+    enw_pathfinder,
+    c(list(data = data, model = model, init = init), init_args)
+  )
   fit <- model$sample(data = data, init = pf$fit[[1]], ...)
   out <- data.table(
     fit = list(fit),
     data = list(data),
-    fit_args = list(list(...)),
+    fit_args = list(dot_args),
     init_method_output = list(pf)
   )
   return(out[])
