@@ -18,6 +18,7 @@
 ## Package
 
 - Experimental support for `CmdStanModel$pathfinder` has been added to the package via `enw_pathfinder()`. This fitting method approximates the posterior distribution using a variational inference method. It may be useful for rapid prototyping, informing initialisation of HMC runs, and settings where compute time is limited. Likely downsides are poorly calibrated estimates and instability for more complex model formulations. See #464 by @seabbs and reviewed by @medewitt.
+- Added support for initialising methods in `enw_sample()`. Currently this allows either the default "random" which draws from the priors (previously the only option) or "pathfinder" which approximates the posterior distribution using the pathfinder variational inference method. Currently this does not support initialising the mass matric for HMC but will do once support is available in `cmdstan`. See # by @seabbs and reviewed by.
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
