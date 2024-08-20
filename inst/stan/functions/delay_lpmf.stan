@@ -76,8 +76,6 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * @copydoc common_parameters_delay_lpmf_funcs
  *
  * @param groups Array of group identifiers.
- * @param start Start index for the range of interest.
- * @copydoc common_parameters_page
  *
  * @param t Integer representing the current time index.
  *
