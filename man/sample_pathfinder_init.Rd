@@ -4,7 +4,7 @@
 \alias{sample_pathfinder_init}
 \title{Initialize and sample using pathfinder}
 \usage{
-sample_pathfinder_init(data, model, init, init_args = list(), ...)
+sample_pathfinder_init(data, model, init, init_method_args = list(), ...)
 }
 \arguments{
 \item{data}{A list of data as produced by model modules (for example
@@ -17,8 +17,8 @@ supplied by the user.}
 \item{init}{A list of initial values or a function to generate initial
 values. If not provided, the model will attempt to generate initial values}
 
-\item{init_args}{A list of additional arguments to pass to the initialization
-method.}
+\item{init_method_args}{A list of additional arguments to pass to the
+initialization method.}
 
 \item{...}{Additional arguments passed to the \code{sample} method of \code{cmdstanr}.}
 }

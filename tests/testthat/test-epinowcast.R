@@ -524,3 +524,94 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
     "refp_mean_beta, refnp_int"
   )
 })
+
+test_that("epinowcast() works with different init_methods", {
+  skip_on_cran()
+  skip_on_local()
+
+  # Test with random initialization
+  nowcast_random <- suppressMessages(epinowcast(pobs,
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      save_warmup = FALSE, pp = TRUE,
+      init_method = "random",
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
+      refresh = 0, show_messages = FALSE
+    ),
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = model
+  ))
+  expect_s3_class(nowcast_random, "epinowcast")
+  expect_true("init_method" %in% names(nowcast_random$fit_args[[1]]))
+  expect_equal(nowcast_random$fit_args[[1]]$init_method, "random")
+  expect_convergence(nowcast_random)
+
+  # Test with pathfinder initialization
+  nowcast_pathfinder <- suppressMessages(epinowcast(pobs,
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      save_warmup = FALSE, pp = TRUE,
+      init_method = "pathfinder",
+      chains = 2, iter_warmup = 250, iter_sampling = 500,
+      refresh = 0, show_messages = FALSE
+    ),
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = model
+  ))
+  expect_s3_class(nowcast_pathfinder, "epinowcast")
+  expect_true("init_method" %in% names(nowcast_pathfinder$fit_args[[1]]))
+  expect_equal(nowcast_pathfinder$fit_args[[1]]$init_method, "pathfinder")
+  expect_true("init_method_output" %in% names(nowcast_pathfinder))
+  expect_equal(nowcast_pathfinder$init_method_output$fit_args, NULL)
+  expect_convergence(nowcast_pathfinder)
+
+  # Compare results between random and pathfinder initialization
+  pathfinder_posterior <- as.data.table(nowcast_pathfinder$fit[[1]]$summary())
+  random_posterior <- as.data.table(nowcast_random$fit[[1]]$summary())
+
+  # Nowcast median should be similar between methods
+  expect_diff_sum_abs_lt(
+    random_posterior[variable %like% "pp_inf_obs", median],
+    pathfinder_posterior[variable %like% "pp_inf_obs", median],
+    50
+  )
+
+  # Reporting distribution parameters should be similar between methods
+  expect_diff_abs_lt_per(
+    random_posterior[variable %like% "refp_mean", median],
+    pathfinder_posterior[variable %like% "refp_mean", median],
+    0.25
+  )
+  expect_diff_abs_lt_per(
+    random_posterior[variable %like% "refp_sd", median],
+    pathfinder_posterior[variable %like% "refp_sd", median],
+    0.25
+  )
+
+  # Test that invalid init_method throws an error
+  expect_error(
+    epinowcast(pobs,
+      fit = enw_fit_opts(
+        sampler = silent_enw_sample,
+        init_method = "invalid"
+      ),
+      obs = enw_obs(family = "poisson", data = pobs),
+      model = model
+    ),
+    "argument 'init_method' should be one of"
+  )
+
+  # Correct passes init_method_args
+  nowcast_pathfinder_args <- suppressMessages(epinowcast(pobs,
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      init_method = "pathfinder",
+      init_method_args = list(num_paths = 2)
+    ),
+    obs = enw_obs(family = "poisson", data = pobs),
+    model = model
+  ))
+  expect_identical(
+    nowcast_pathfinder_args$init_method_output[[1]]$fit_args[[1]]$num_paths , 2
+  )  
+})

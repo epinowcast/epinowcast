@@ -249,8 +249,8 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' "random" which samples initial values from the prior. "pathfinder" uses the
 #' pathfinder algorithm ([enw_pathfinder()]) to initialize the model.
 #'
-#' @param init_args A list of additional arguments to pass to the initialization
-#' method.
+#' @param init_method_args A list of additional arguments to pass to the
+#' initialization method.
 #'
 #' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
 #' be returned as a `data.frame`.
@@ -285,11 +285,12 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' summary(nowcast_pathfinder)
 enw_sample <- function(data, model = epinowcast::enw_model(),
                        init = NULL, init_method = c("random", "pathfinder"),
-                       init_args = list(), diagnostics = TRUE, ...) {
+                       init_method_args = list(), diagnostics = TRUE, ...) {
   init_method <- rlang::arg_match(init_method)
   out <- switch(init_method,
     random = sample_random_init(data, model, init, ...),
-    pathfinder = sample_pathfinder_init(data, model, init, init_args, ...)
+    pathfinder = sample_pathfinder_init(data, model, init,
+    init_method_args, ...)
   )
   fit <- out$fit[[1]]
 
@@ -328,14 +329,15 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' @return A data.table containing the fit, data, fit arguments, and pathfinder
 #' output
-sample_pathfinder_init <- function(data, model, init, init_args = list(), ...) {
+sample_pathfinder_init <- function(data, model, init, init_method_args = list(), ...) {
   dot_args <- list(...)
-  init_args$threads_per_chain <- dot_args$threads_per_chain
+  init_method_args$threads_per_chain <- dot_args$threads_per_chain
   pf <- do.call(
     enw_pathfinder,
-    c(list(data = data, model = model, init = init), init_args)
+    c(list(data = data, model = model, init = init), init_method_args)
   )
   fit <- model$sample(data = data, init = pf$fit[[1]], ...)
+  dot_args$init_method <- "pathfinder"
   out <- data.table(
     fit = list(fit),
     data = list(data),
@@ -355,10 +357,12 @@ sample_pathfinder_init <- function(data, model, init, init_args = list(), ...) {
 #' @return A data.table containing the fit, data, and fit arguments
 sample_random_init <- function(data, model, init, ...) {
   fit <- model$sample(data = data, init = init, ...)
+  dot_args <- list(...)
+  dot_args$init_method <- "random"
   out <- data.table(
     fit = list(fit),
     data = list(data),
-    fit_args = list(list(...))
+    fit_args = list(dot_args)
   )
   return(out[])
 }
