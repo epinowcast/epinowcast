@@ -18,8 +18,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 250,
-      threads_per_chain = 2, parallel_chains = 1,
-      init_method = "pathfinder"
+      threads_per_chain = 2, parallel_chains = 1
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -35,8 +34,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      parallel_chains = 2,
-      init_method = "pathfinder"
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model
@@ -53,8 +51,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      parallel_chains = 2,
-      init_method = "pathfinder"
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -71,8 +68,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      parallel_chains = 2,
-      init_method = "pathfinder"
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "poisson", data = pobs),
     model = model
@@ -96,8 +92,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      parallel_chains = 2,
-      init_method = "pathfinder"
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model
@@ -121,8 +116,7 @@ touchstone::benchmark_run(
     fit = enw_fit_opts(
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 500, iter_sampling = 500,
-      parallel_chains = 2,
-      init_method = "pathfinder"
+      parallel_chains = 2
     ),
     obs = enw_obs(family = "negbin", data = pobs),
     model = model
