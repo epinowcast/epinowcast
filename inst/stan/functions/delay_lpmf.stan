@@ -4,16 +4,11 @@
  * Computes the log probability mass for a range of time indexes in delayed
  * snapshot data. It applies filters to identify relevant observations and
  * calculates the expected log observations based on various inputs.
- * 
+ *
+ * @copydoc common_parameters_delay_lpmf_funcs
+ *
  * @param dummy Dummy array parameter, not used in the calculation.
  *
- * @param start Start index for the range of interest.
- *
- * @param end End index for the range of interest.
- *
- * @commonparams See Common Parameters for `delay_snap_lpmf` and
- * `delay_group_lpmf`
- * 
  * @return Log probability mass of the observations for the specified range.
  * 
  * @note This function performs the following operations:
@@ -77,14 +72,33 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * Computes the log probability mass for a range of time indexes in delayed
  * group data. It manages data filtering, allocation for expected log 
  * observations, and handles missing data if applicable.
- * 
+ *
+ * @copydoc common_parameters_delay_lpmf_funcs
+ *
  * @param groups Array of group identifiers.
- * @param start Start index for the range of interest.
- * @param end End index for the range of interest.
- * @commonparams See Common Parameters for `delay_snap_lpmf` and `delay_group_lpmf`
- * 
+ *
+ * @param t Integer representing the current time index.
+ *
+ * @param groups Array of group identifiers.
+ *
+ * @param ts Array of snapshot indices by time and group.
+ *
+ * @param model_miss Binary flag indicating if missing observations should be modeled (0 = no, 1 = yes).
+ *
+ * @param miss_obs Number of observations with missing reference dates.
+ *
+ * @param missing_reference Array of observations reported without a reference date (by reporting time).
+ *
+ * @param obs_by_report Array of observation indices by reference date for entries in missing_reference.
+ *
+ * @param miss_ref_lprop Vector of log probabilities for missing reference dates.
+ *
+ * @param miss_st Array of start indices for observations by group in missing_reference.
+ *
+ * @param miss_cst Array of cumulative start indices for observations by group in missing_reference.
+ *
  * @return Log probability mass of the observations for the specified range.
- * 
+ *
  * @note This function performs the following operations:
  *  1. Determines the relevant range for observed and missing data.
  *  2. Filters and allocates expected log observations, handling missing data.
@@ -189,56 +203,3 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
   }
   return(tar);
 }
-
-/**
- * @section Common Parameters for `delay_snap_lpmf` and `delay_group_lpmf`
- *
- * @param obs Array of observed data, stored as a flat vector.
- *
- * @param sl Array of start index for each observation period.
- *
- * @param csl Array of cumulative start indexes.
- *
- * @param nsl Array of next start indexes, indicating the start of the next
- * period.
- *
- * @param cnsl Array of cumulative next start indexes.
- *
- * @param obs_lookup Array of indexes linking observed data to modeled
- * expectations.
- *
- * @param imp_obs Array of imputed observed data, organized by group and time.
- *
- * @param sg Array indicating group index for each observation.
- *
- * @param st Array indicating time index for each observation.
- *
- * @param rdlurd Array indicating reporting dates lookup reference data.
- *
- * @param srdlh Vector of standardized reporting date log hazards.
- *
- * @param refp_lh Matrix of reference date logit hazards.
- *
- * @param dpmfs Array of indices for accessing reference date effects in
- * `refp_lh`.
- *
- * @param ref_p Binary flag for reference date effects presence.
- *
- * @param rep_h Binary flag for reporting hazard effects presence.
- *
- * @param ref_as_p Binary flag indicating if reference date input should be
- * treated as probability.
- *
- * @param phi Array of dispersion parameters for negative binomial distribution.
- *
- * @param model_obs Binary flag indicating if a negative binomial model is used.
- *
- * @param refnp_lh Vector of non-parametric reference log hazards.
- *
- * @param ref_np Binary flag for non-parametric reference effects presence.
- *
- * @param sdmax Array of maximum start dates for each period.
- *
- * @param csdmax Array of cumulative start dates.
- *
- */

@@ -30,7 +30,7 @@
  * predictions. The function handles cases with no effects by returning 
  * a vector of the intercept repeated for each observation.
  * 
- * @examples
+ * @code
  * # Example usage in R:
  * intercept <- 1
  * beta <- c(0.1, 0.2, 0.4)
@@ -41,6 +41,7 @@
  * # Check effects are combined as expected:
  * combine_effects(intercept, beta, design, beta_sd, sd_design, TRUE)
  * # Output: 1.04 1.12 1.00 1.04
+ * @endcode
  */
 vector combine_effects(array[] real intercept, vector beta, matrix design,
                        vector beta_sd, matrix sd_design, int add_intercept) {
