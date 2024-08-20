@@ -4,7 +4,15 @@
 \alias{enw_sample}
 \title{Fit a CmdStan model using NUTS}
 \usage{
-enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
+enw_sample(
+  data,
+  model = epinowcast::enw_model(),
+  init = NULL,
+  init_method = c("random", "pathfinder"),
+  init_args = list(),
+  diagnostics = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{A list of data as produced by model modules (for example
@@ -13,6 +21,16 @@ enw_sample(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 
 \item{model}{A \code{cmdstanr} model object as loaded by \code{\link[=enw_model]{enw_model()}} or as
 supplied by the user.}
+
+\item{init}{A list of initial values or a function to generate initial
+values. If not provided, the model will attempt to generate initial values}
+
+\item{init_method}{The method to use for initializing the model. Defaults to
+"random" which samples initial values from the prior. "pathfinder" uses the
+pathfinder algorithm (\code{\link[=enw_pathfinder]{enw_pathfinder()}}) to initialize the model.}
+
+\item{init_args}{A list of additional arguments to pass to the initialization
+method.}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
 be returned as a \code{data.frame}.}
@@ -37,6 +55,15 @@ nowcast <- epinowcast(pobs,
 )
 
 summary(nowcast)
+
+# Use pathfinder initialization
+nowcast_pathfinder <- epinowcast(pobs,
+ expectation = enw_expectation(~1, data = pobs),
+ fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
+ obs = enw_obs(family = "poisson", data = pobs),
+)
+
+summary(nowcast_pathfinder)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
