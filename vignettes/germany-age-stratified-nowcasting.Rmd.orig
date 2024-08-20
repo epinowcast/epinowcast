@@ -106,7 +106,8 @@ fit <- enw_fit_opts(
   chains = 2, threads_per_chain = threads, 
   iter_sampling = 500, iter_warmup = 500,
   show_messages = FALSE, refresh = 0,
-  adapt_delta = 0.98, max_treedepth = 15
+  adapt_delta = 0.98, max_treedepth = 15,
+  init_method = "pathfinder"
 )
 nowcast <- epinowcast(pobs,
   fit = fit
