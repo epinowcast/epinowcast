@@ -329,7 +329,8 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' @return A data.table containing the fit, data, fit arguments, and pathfinder
 #' output
-sample_pathfinder_init <- function(data, model, init, init_method_args = list(), ...) {
+sample_pathfinder_init <- function(data, model, init,
+                                   init_method_args = list(), ...) {
   dot_args <- list(...)
   init_method_args$threads_per_chain <- dot_args$threads_per_chain
   pf <- do.call(
@@ -616,7 +617,7 @@ enw_stan_to_r <- function(
 #' @param type A character string specifying the cache type. It can be one of
 #' "session", "persistent", or "all". Default is "session".
 #' "session" sets the cache for the current session, "persistent" writes the
-#' cache location to the user’s `.Renviron` file,  and "all" does both.
+#' cache location to the user's `.Renviron` file,  and "all" does both.
 #'
 #' @return The string of the filepath set.
 #'
@@ -697,7 +698,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @param type A character string specifying the type of cache to unset.
 #' It can be one of "session", "persistent", or "all". Default is "session".
 #' "session" unsets the cache for the current session, "persistent" removes the
-#' cache location from the user’s `.Renviron` file,and "all" does all options.
+#' cache location from the user's `.Renviron` file,and "all" does all options.
 #'
 #' @return The prior cache location, if it existed otherwise `NULL`.
 #'

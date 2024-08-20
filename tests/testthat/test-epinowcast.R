@@ -562,7 +562,7 @@ test_that("epinowcast() works with different init_methods", {
   expect_true("init_method" %in% names(nowcast_pathfinder$fit_args[[1]]))
   expect_equal(nowcast_pathfinder$fit_args[[1]]$init_method, "pathfinder")
   expect_true("init_method_output" %in% names(nowcast_pathfinder))
-  expect_equal(nowcast_pathfinder$init_method_output$fit_args, NULL)
+  expect_null(nowcast_pathfinder$init_method_output$fit_args)
   expect_convergence(nowcast_pathfinder)
 
   # Compare results between random and pathfinder initialization
