@@ -13,7 +13,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
-name: germany-age-stratified-nowcasting
+name: render-germany-age-stratified-nowcasting
 
 jobs:
   germany-age-stratified-nowcasting:
