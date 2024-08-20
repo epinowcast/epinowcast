@@ -543,7 +543,7 @@ test_that("epinowcast() works with different init_methods", {
   ))
   expect_s3_class(nowcast_random, "epinowcast")
   expect_true("init_method" %in% names(nowcast_random$fit_args[[1]]))
-  expect_equal(nowcast_random$fit_args[[1]]$init_method, "random")
+  expect_identical(nowcast_random$fit_args[[1]]$init_method, "random")
   expect_convergence(nowcast_random)
 
   # Test with pathfinder initialization
@@ -560,7 +560,7 @@ test_that("epinowcast() works with different init_methods", {
   ))
   expect_s3_class(nowcast_pathfinder, "epinowcast")
   expect_true("init_method" %in% names(nowcast_pathfinder$fit_args[[1]]))
-  expect_equal(nowcast_pathfinder$fit_args[[1]]$init_method, "pathfinder")
+  expect_identical(nowcast_pathfinder$fit_args[[1]]$init_method, "pathfinder")
   expect_true("init_method_output" %in% names(nowcast_pathfinder))
   expect_null(nowcast_pathfinder$init_method_output$fit_args)
   expect_convergence(nowcast_pathfinder)
@@ -598,7 +598,7 @@ test_that("epinowcast() works with different init_methods", {
       obs = enw_obs(family = "poisson", data = pobs),
       model = model
     ),
-    "argument 'init_method' should be one of"
+    "`init_method` must be one of"
   )
 
   # Correct passes init_method_args
@@ -612,6 +612,6 @@ test_that("epinowcast() works with different init_methods", {
     model = model
   ))
   expect_identical(
-    nowcast_pathfinder_args$init_method_output[[1]]$fit_args[[1]]$num_paths , 2
-  )  
+    nowcast_pathfinder_args$init_method_output[[1]]$fit_args[[1]]$num_paths, 2
+  )
 })
