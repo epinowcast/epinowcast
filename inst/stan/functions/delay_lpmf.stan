@@ -79,27 +79,25 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * @param start Start index for the range of interest.
  * @copydoc common_parameters_page
  *
- * @param t
+ * @param t Integer representing the current time index.
  *
  * @param groups Array of group identifiers.
  *
- * @param ts Array of snapshot index by time and group
+ * @param ts Array of snapshot indices by time and group.
  *
- * @param model_miss A binary flag to indicate if to model missing observations
+ * @param model_miss Binary flag indicating if missing observations should be modeled (0 = no, 1 = yes).
  *
- * @param miss_obs A binary flag for the missing observation model
+ * @param miss_obs Number of observations with missing reference dates.
  *
- * @param missing_reference Integer for the reference date model
+ * @param missing_reference Array of observations reported without a reference date (by reporting time).
  *
- * @param obs_by_report Array indicating which observations
- * correspond to each report date.
+ * @param obs_by_report Array of observation indices by reference date for entries in missing_reference.
  *
- * @param miss_ref_lprop Vector of missing reference log probabilities,
- * applied to each period.
+ * @param miss_ref_lprop Vector of log probabilities for missing reference dates.
  *
- * @param miss_st Array of start index of observations by group
+ * @param miss_st Array of start indices for observations by group in missing_reference.
  *
- * @param miss_cst Array of start index of cumulative observations
+ * @param miss_cst Array of cumulative start indices for observations by group in missing_reference.
  *
  * @return Log probability mass of the observations for the specified range.
  *
