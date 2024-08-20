@@ -26,9 +26,9 @@ jobs:
       uses: mattnotmitt/doxygen-action@v1.9.2
       with:
         # Path to Doxyfile
-        doxyfile-path: "./inst/stan/Doxyfile"
+        doxyfile-path: "Doxyfile"
         # Working directory
-        working-directory: "."
+        working-directory: "./inst/stan/"
 
     - name: Archive documentation
       if: github.ref != 'refs/heads/main'
