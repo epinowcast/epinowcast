@@ -13,7 +13,6 @@ cache
 .Rproj.user
 *.Rproj
 !inst/extdata/*.rds
-pkgdown
 /doc/
 /Meta/
 *.Rhistory
