@@ -27,7 +27,7 @@
 - Performance tuned `expected_obs()` and related functions to improve speed and reduce memory usage. See #501 by @seabbs and reviewed by .
 - Used the `offset` and `multiplier` stan translation functions to improve the speed of the model. See #501 by @seabbs and reviewed by .
 - Removed normalisation of truncated priors as this is not required during inference and increases run time. See #501 by @seabbs and reviewed by .
-- Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by .
+- Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 
 ## Documentation
 
