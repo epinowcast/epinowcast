@@ -1,6 +1,5 @@
 functions {
 #include functions/utils.stan
-#include functions/zero_truncated_normal.stan
 #include functions/combine_effects.stan
 #include functions/effects_priors_lp.stan
 #include functions/log_expected_latent_from_r.stan
@@ -172,8 +171,8 @@ transformed data{
 parameters {
   // Expectation model
   // ---- Growth rate submodule ----
-  matrix[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
-  array[expr_fintercept ? 1 : 0] real expr_r_int; // growth rate intercept
+  matrix<offset = to_matrix(expr_lelatent_int_p[1], expr_r_seed, g), multiplier = to_matrix(expr_lelatent_int_p[2], expr_r_seed, g)>[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
+  array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int; // growth rate intercept
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
   // ---- Latent case submodule ----
@@ -182,7 +181,7 @@ parameters {
     
   // Reference model
   // Parametric reference model
-  array[model_refp ? 1 : 0] real<lower=-10, upper=logdmax> refp_mean_int;
+  array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int;
   array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
   vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
@@ -284,7 +283,7 @@ transformed parameters{
       );
     }
     }
-  }  
+  }
   }
   if (model_refnp) {
     // calculate non-parametric reference date logit hazards

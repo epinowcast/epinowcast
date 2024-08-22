@@ -73,7 +73,7 @@ test_that("epinowcast() runs using default arguments only", {
   )
   expect_identical(
     nowcast$priors[[1]][, sd],
-    c(0.2, rep(1, 13))
+    c(0.2, rep(1, 12), 0.5)
   )
   expect_identical(
     nowcast$priors[[1]][variable %like% "exp", dimension],
@@ -279,11 +279,11 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
     regression_posterior[variable %like% "rep_beta", median],
     1
   )
-  # Reporting distribution mean is equal to within 25%
+  # Reporting distribution mean is equal to within 50%
   expect_diff_abs_lt_per(
     posterior[variable %like% "refp_mean", median],
     regression_posterior[variable %like% "refp_mean", median],
-    0.25
+    0.5
   )
   # Reporting distribution sd is equal to within 25%
   expect_diff_abs_lt_per(

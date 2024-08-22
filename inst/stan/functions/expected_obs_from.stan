@@ -48,25 +48,21 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
                                matrix refp_lh, array[] int dpmfs, int ref_p,
                                int rep_h, int ref_as_p, int g, int t, int l,
                                vector refnp_lh, int ref_np, int p) {
-  real tar_obs;
   vector[l] lh;
   vector[l] log_exp_obs;
-  profile("model_likelihood_expectation_allocations") {
-  // Find final observed/imputed expected observation
-  tar_obs = imp_obs[g][t];
-  }
   profile("model_likelihood_hazard_allocations") {
     lh = combine_logit_hazards(
       i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh, ref_np,
       p
     );
   }
+  // Find final observed/imputed expected observation
   // combine expected final obs and time effects to get expected obs
   profile("model_likelihood_expected_obs") {    
   int agg_probs = 0;
   matrix[1, 1] agg_indicator;
   agg_indicator[1, 1] = 0;
-  log_exp_obs = expected_obs(tar_obs, lh, ref_as_p, agg_probs, agg_indicator);
+  log_exp_obs = expected_obs(imp_obs[g][t], lh, l, ref_as_p, agg_probs, agg_indicator);
   }
   return(log_exp_obs);
 }

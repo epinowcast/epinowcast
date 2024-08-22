@@ -22,10 +22,19 @@
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
 
+## Model
+
+- Performance tuned `expected_obs()` and related functions to improve speed and reduce memory usage. See #501 by @seabbs and reviewed by .
+- Used the `offset` and `multiplier` stan translation functions to improve the speed of the model. See #501 by @seabbs and reviewed by .
+- Removed normalisation of truncated priors as this is not required during inference and increases run time. See #501 by @seabbs and reviewed by .
+- Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
+
 ## Documentation
 
 - Added support to render and deploy stan documentation using `doxygen` and a GitHub Actions workflow. See #500 and #502 by @jamesmbaazam and @seabbs respectively, and cross-reviewed.
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
+- Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by .
+- Made vignette progress messaging dependent on the user being interactive. See #501 by @seabbs and reviewed by .
 
 ## Depreciations
 

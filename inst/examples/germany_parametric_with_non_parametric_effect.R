@@ -93,7 +93,7 @@ expectation_module <- enw_expectation(
 # may not be the case
 reference_module <- enw_reference(
   parametric = ~ 1,
-  non_parametric = ~ 1 + delay0mod,
+  non_parametric = ~ 0 + delay0mod,
   distribution = "lognormal",
   data = pobs
 )

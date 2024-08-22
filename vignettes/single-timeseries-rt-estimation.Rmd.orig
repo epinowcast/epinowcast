@@ -437,12 +437,11 @@ fit_module <- partial(enw_fit_opts,
   threads_per_chain = floor(min(max(1, parallel::detectCores() /  4), 2)),
   iter_warmup = 500,
   iter_sampling = 1000,
-  adapt_delta = 0.95,
   max_treedepth = 12,
   save_warmup = FALSE,
   pp = TRUE,
-  show_messages = FALSE, # set this to TRUE to show fitting messages
-  refresh = 0 # remove this to show fitting progress
+  show_messages = interactive(), # set this to TRUE to show fitting messages
+  refresh = ifelse(interactive(), 100, 0) # remove this to show fitting progress
 )
 ```
 
@@ -455,7 +454,7 @@ If you have more than 4 CPU cores available you can increase the number of threa
 We also need to compile the model using `cmdstanr` before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the [README](https://package.epinowcast.org). This will take around a minute to run when called for the first time.
 
 ```{r compile-model}
-epinowcast_model <- enw_model(profile = FALSE)
+epinowcast_model <- enw_model()
 ```
 
 #### Fitting the model
