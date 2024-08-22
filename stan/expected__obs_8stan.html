@@ -99,12 +99,12 @@ $(document).ready(function(){initNavTree('expected__obs_8stan.html',''); initRes
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a54511e1bf02f197527a71483a64340f3"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a> (real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix agg_indicator)</td></tr>
-<tr class="separator:a54511e1bf02f197527a71483a64340f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3286f3ebd9691b3251d298644a2e64ec"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a> (real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, matrix agg_indicator)</td></tr>
+<tr class="separator:a3286f3ebd9691b3251d298644a2e64ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="a54511e1bf02f197527a71483a64340f3" name="a54511e1bf02f197527a71483a64340f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54511e1bf02f197527a71483a64340f3">&#9670;&nbsp;</a></span>expected_obs()</h2>
+<a id="a3286f3ebd9691b3251d298644a2e64ec" name="a3286f3ebd9691b3251d298644a2e64ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3286f3ebd9691b3251d298644a2e64ec">&#9670;&nbsp;</a></span>expected_obs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -120,6 +120,12 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">vector&#160;</td>
           <td class="paramname"><em>lh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>l</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -152,6 +158,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">tar_obs</td><td>The logarithm of the final expected observations for a given date. It should be a real number representing logged observations.</td></tr>
     <tr><td class="paramname">lh</td><td>A vector of conditional log probabilities of a report occurring on a given day. When <code>ref_as_p</code> is 0, this should be the logit hazard instead of probability.</td></tr>
+    <tr><td class="paramname">l</td><td>Length of the vector lh.</td></tr>
     <tr><td class="paramname">ref_as_p</td><td>An integer flag (0 or 1) indicating whether the reference date input should be treated as a logit hazard or probability. Set to 1 when no report date effects are present, otherwise 0.</td></tr>
     <tr><td class="paramname">agg_probs</td><td>An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.</td></tr>
     <tr><td class="paramname">agg_indicator</td><td>A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities, designed to be left-multiplied to a column vector of reporting probabilities. Presence of a 1 in a column indicates that that index in the probability column vector will be aggregated, and presence of a 1 in a row indicates that aggregated probability will be placed on that index in the new probability vector.</td></tr>
@@ -166,50 +173,55 @@ Functions</h2></td></tr>
 </dd></dl>
 <div class="fragment"><div class="line"><span class="preprocessor"># compile function for use in R</span></div>
 <div class="line">source(here::here(<span class="stringliteral">&quot;R&quot;</span>, <span class="stringliteral">&quot;utils.R&quot;</span>))</div>
-<div class="line">enw_stan_to_r(c(&quot;hazard.stan&quot;, &quot;<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>.stan&quot;),</div>
+<div class="line">enw_stan_to_r(c(&quot;hazard.stan&quot;, &quot;<a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>.stan&quot;),</div>
 <div class="line">                &quot;inst/stan/functions&quot;)</div>
 <div class="line"> </div>
 <div class="line">tar_obs &lt;- log(1)</div>
 <div class="line">date_p &lt;- log(</div>
-<div class="line"> plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)</div>
+<div class="line">  (plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)</div>
 <div class="line">)</div>
 <div class="line">rep_lh &lt;- rep(0, 30)</div>
 <div class="line"> </div>
 <div class="line">Example with no reporting day effect</div>
-<div class="line">eobs &lt;- exp(<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(tar_obs, date_p + rep(0, 30), 1, 0, [0]))</div>
-<div class="line">all.equal(eobs, date_p)</div>
+<div class="line">eobs &lt;- exp(<a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(</div>
+<div class="line">  tar_obs, date_p + rep(0, 30), 30, 1, 0, matrix(0, nrow = 0, ncol = 0)</div>
+<div class="line">))</div>
 <div class="line"> </div>
 <div class="line">Example with hazard effect only on last date of report</div>
-<div class="line">ref_lh &lt;- logit(<a class="code hl_function" href="hazard_8stan.html#a45a5a439eba38b5d50ff2a5d741d85e0">hazard_to_log_prob</a>(date_p))</div>
-<div class="line">eobs &lt;- exp(<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(tar_obs, ref_lh, c(rep(0, 29), 0.1), 0, 0, [0]))</div>
-<div class="line">all.equal(eobs, date_p)</div>
+<div class="line">ref_lh &lt;- qlogis(<a class="code hl_function" href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">prob_to_hazard</a>(exp(date_p)))</div>
+<div class="line">eobs &lt;- exp(</div>
+<div class="line">  <a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(</div>
+<div class="line">    tar_obs, ref_lh, 30, 0, 0,</div>
+<div class="line">    matrix(numeric(0), nrow = 0, ncol = 0)</div>
+<div class="line">  )</div>
+<div class="line">)</div>
 <div class="line"> </div>
-<div class="line">Example with a single day of additional reporting hazard and</div>
-<div class="line">no differential probability due to the reference date.</div>
-<div class="line">rep_lh &lt;- rep(0, 30); rep_lh[7] = 2</div>
-<div class="line">equal_lh &lt;- logit(<a class="code hl_function" href="hazard_8stan.html#a45a5a439eba38b5d50ff2a5d741d85e0">hazard_to_log_prob</a>(rep(1/30, 30)))</div>
-<div class="line">round(exp(<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(tar_obs, equal_lh + rep_lh, 0, 0, [0])), 3)</div>
-<div class="line"><span class="preprocessor"># 0.033 0.033 0.033 0.033 0.033 0.033 0.195 0.026 0.026 0.026 0.026 0.026</span></div>
-<div class="line"><span class="preprocessor"># 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026 0.026</span></div>
-<div class="line"><span class="preprocessor"># 0.026 0.026 0.026 0.026 0.026 0.026</span></div>
+<div class="line">Example with a single day of additional reporting hazard</div>
+<div class="line">rep_lh &lt;- rep(0, 30)</div>
+<div class="line">rep_lh[7] &lt;- 2</div>
+<div class="line">equal_lh &lt;- plogis(<a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(rep(1/30, 30), 30))</div>
+<div class="line">eobs &lt;- round(exp(</div>
+<div class="line">  <a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(</div>
+<div class="line">    tar_obs, equal_lh + rep_lh, 30, 0, 0,</div>
+<div class="line">    matrix(numeric(0), nrow = 0, ncol = 0)</div>
+<div class="line">  )</div>
+<div class="line">), 3)</div>
+<div class="line">expected &lt;- c(0.508, 0.250, 0.123, 0.060, 0.030, 0.015, 0.013, 0.001)</div>
 <div class="line"> </div>
 <div class="line">Example combining multiple hazards and no differential prob due to reference</div>
 <div class="line">date</div>
 <div class="line">rep_lh &lt;- rep(0, 30)</div>
-<div class="line">rep_lh[c(6, 12, 16)] = 2</div>
-<div class="line">rep_lh[c(2, 20)] = -2</div>
-<div class="line">round(exp(<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(tar_obs, equal_lh + rep_lh, 0, 0, [0])), 3)</div>
-<div class="line"><span class="preprocessor"># 0.033 0.005 0.034 0.034 0.034 0.202 0.027 0.027 0.027 0.027 0.027 0.151</span></div>
-<div class="line"><span class="preprocessor"># 0.021 0.021 0.021 0.106 0.014 0.014 0.014 0.002 0.016 0.016 0.016 0.016</span></div>
-<div class="line"><span class="preprocessor"># 0.016 0.016 0.016 0.016 0.016 0.016</span></div>
-<div class="line"> </div>
-<div class="line">Example combining both date of reference and date of report effects</div>
-<div class="line">eobs &lt;- exp(<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(tar_obs, ref_lh + rep_lh, 0, 0, [0]))</div>
-<div class="line">round(sum(eobs - 1e-4), 5) == 1</div>
-<div class="line">round(eobs, 3)</div>
-<div class="line"><span class="preprocessor"># 0.273 0.023 0.112 0.082 0.065 0.221 0.025 0.021 0.019 0.016 0.014 0.058</span></div>
-<div class="line"><span class="preprocessor"># 0.007 0.007 0.006 0.024 0.003 0.003 0.003 0.000 0.003 0.002 0.002 0.002</span></div>
-<div class="line"><span class="preprocessor"># 0.002 0.002 0.002 0.002 0.002 0.002</span></div>
+<div class="line">rep_lh[c(6, 12, 16)] &lt;- 2</div>
+<div class="line">rep_lh[c(2, 20)] &lt;- -2</div>
+<div class="line">equal_lh &lt;- plogis(<a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(rep(1 / 30, 30), 30))</div>
+<div class="line">eobs &lt;- round(exp(</div>
+<div class="line">  <a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(</div>
+<div class="line">    tar_obs, equal_lh + rep_lh, 30, 0, 0,</div>
+<div class="line">    matrix(numeric(0), nrow = 0, ncol = 0)</div>
+<div class="line">  )</div>
+<div class="line">), 3)</div>
+<div class="line">expected &lt;- c(0.508, 0.060, 0.219, 0.108, 0.053, 0.046, 0.003, 0.002, 0.001,</div>
+<div class="line">              rep(0.000, 21))</div>
 <div class="line"> </div>
 <div class="line">Example with aggregation of probabilities where aggregation occurs on every fifth day</div>
 <div class="line">agg_probs &lt;- matrix(c(rep(0, times = 30 * 4),</div>
@@ -217,16 +229,17 @@ Functions</h2></td></tr>
 <div class="line">                            rep(0, times = 6 * 5 + 30 * 4)),</div>
 <div class="line">                          times = 5),</div>
 <div class="line">                      rep(1, times = 5)), ncol = 30, byrow = TRUE)</div>
-<div class="line">eobs &lt;- exp(<a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(tar_obs, date_p + rep(0, 30), 1, 1, agg_probs))</div>
+<div class="line">eobs &lt;- exp(<a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(tar_obs, date_p + rep(0, 30), 30, 1, 1, agg_probs))</div>
 <div class="line"><span class="preprocessor"># -Inf -Inf -Inf -Inf -0.4630154 -Inf -Inf -Inf -Inf -1.8219081</span></div>
 <div class="line"><span class="preprocessor"># -Inf -Inf -Inf -Inf -2.4549990 -Inf -Inf -Inf -Inf -2.8994851</span></div>
 <div class="line"><span class="preprocessor"># -Inf -Inf -Inf -Inf -3.2477183 -Inf -Inf -Inf -Inf -3.5362414</span></div>
 <div class="line"><span class="preprocessor"># Can visualize what this does to the probabilities with</span></div>
 <div class="line"><span class="preprocessor">eobs |&gt; exp() |&gt; plot()</span></div>
-<div class="ttc" id="aexpected__obs_8stan_html_a54511e1bf02f197527a71483a64340f3"><div class="ttname"><a href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix agg_indicator)</div><div class="ttdef"><b>Definition:</b> <a href="expected__obs_8stan_source.html#l00095">expected_obs.stan:95</a></div></div>
-<div class="ttc" id="ahazard_8stan_html_a45a5a439eba38b5d50ff2a5d741d85e0"><div class="ttname"><a href="hazard_8stan.html#a45a5a439eba38b5d50ff2a5d741d85e0">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h)</div><div class="ttdef"><b>Definition:</b> <a href="hazard_8stan_source.html#l00075">hazard.stan:75</a></div></div>
+<div class="ttc" id="aexpected__obs_8stan_html_a3286f3ebd9691b3251d298644a2e64ec"><div class="ttname"><a href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, matrix agg_indicator)</div><div class="ttdef"><b>Definition:</b> <a href="expected__obs_8stan_source.html#l00102">expected_obs.stan:102</a></div></div>
+<div class="ttc" id="ahazard_8stan_html_a5ed5adf2b346feec0505225a6fc73cd6"><div class="ttname"><a href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">prob_to_hazard</a></div><div class="ttdeci">vector prob_to_hazard(vector p)</div><div class="ttdef"><b>Definition:</b> <a href="hazard_8stan_source.html#l00015">hazard.stan:15</a></div></div>
+<div class="ttc" id="ahazard_8stan_html_ae596473f33916489e56f6e555d08f211"><div class="ttname"><a href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h, int l)</div><div class="ttdef"><b>Definition:</b> <a href="hazard_8stan_source.html#l00078">hazard.stan:78</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="expected__obs_8stan_source.html#l00095">95</a> of file <a class="el" href="expected__obs_8stan_source.html">expected_obs.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expected__obs_8stan_source.html#l00102">102</a> of file <a class="el" href="expected__obs_8stan_source.html">expected_obs.stan</a>.</p>
 
 </div>
 </div>

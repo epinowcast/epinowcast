@@ -93,30 +93,25 @@ $(document).ready(function(){initNavTree('expected__obs_8stan_source.html',''); 
 </div><!--header-->
 <div class="contents">
 <a href="expected__obs_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">   95</a></span>vector <a class="code hl_function" href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a>(real tar_obs, vector lh, <span class="keywordtype">int</span> ref_as_p, <span class="keywordtype">int</span> agg_probs, matrix agg_indicator) {</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>  <span class="keywordtype">int</span> t = num_elements(lh);</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>  vector[t] exp_obs;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>  vector[t] p;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  <span class="keywordflow">if</span> (ref_as_p == 1) {</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    p = lh;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  }<span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_inv_logit&quot;</span>) {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    p = inv_logit(lh);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_hazard_to_prob&quot;</span>) {</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    p = <a class="code hl_function" href="hazard_8stan.html#a45a5a439eba38b5d50ff2a5d741d85e0">hazard_to_log_prob</a>(p);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keywordflow">if</span> (agg_probs == 1) {</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    p = log(agg_indicator * exp(p));</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  }</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>  profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_prod_p&quot;</span>) {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    exp_obs = tar_obs + p;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  <span class="keywordflow">return</span>(exp_obs);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
-<div class="ttc" id="aexpected__obs_8stan_html_a54511e1bf02f197527a71483a64340f3"><div class="ttname"><a href="expected__obs_8stan.html#a54511e1bf02f197527a71483a64340f3">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int ref_as_p, int agg_probs, matrix agg_indicator)</div><div class="ttdef"><b>Definition:</b> <a href="expected__obs_8stan_source.html#l00095">expected_obs.stan:95</a></div></div>
-<div class="ttc" id="ahazard_8stan_html_a45a5a439eba38b5d50ff2a5d741d85e0"><div class="ttname"><a href="hazard_8stan.html#a45a5a439eba38b5d50ff2a5d741d85e0">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h)</div><div class="ttdef"><b>Definition:</b> <a href="hazard_8stan_source.html#l00075">hazard.stan:75</a></div></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">  102</a></span>vector <a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(real tar_obs, vector lh, <span class="keywordtype">int</span> l, <span class="keywordtype">int</span> ref_as_p, <span class="keywordtype">int</span> agg_probs, matrix agg_indicator) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  vector[l] p;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordflow">if</span> (ref_as_p == 1) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    p = lh;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  }<span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_inv_logit&quot;</span>) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    p = inv_logit(lh);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_hazard_to_prob&quot;</span>) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    p = <a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(p, l);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  <span class="keywordflow">if</span> (agg_probs == 1) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    p = log(agg_indicator * exp(p));</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  <span class="keywordflow">return</span>(tar_obs + p);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+<div class="ttc" id="aexpected__obs_8stan_html_a3286f3ebd9691b3251d298644a2e64ec"><div class="ttname"><a href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, matrix agg_indicator)</div><div class="ttdef"><b>Definition:</b> <a href="expected__obs_8stan_source.html#l00102">expected_obs.stan:102</a></div></div>
+<div class="ttc" id="ahazard_8stan_html_ae596473f33916489e56f6e555d08f211"><div class="ttname"><a href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h, int l)</div><div class="ttdef"><b>Definition:</b> <a href="hazard_8stan_source.html#l00078">hazard.stan:78</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

@@ -147,12 +147,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p >Specify priors for regression effects</p>
-<p >This function sets priors for the regression effects and their standard deviations. It allows for the specification of both fixed and random effects, with the option to apply a zero-truncated normal distribution to the standard deviations of the random effects.</p>
+<p >This function sets priors for the regression effects and their standard deviations. It allows for the specification of both fixed and random effects, with the option to apply a normal distribution to the standard deviations of the random effects.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">beta</td><td>Vector of regression effects.</td></tr>
     <tr><td class="paramname">beta_sd</td><td>Vector of standard deviations for the regression effects.</td></tr>
-    <tr><td class="paramname">beta_sd_p</td><td>Parameters for the zero-truncated normal prior on beta_sd. The first row indicates the mean, and the second row the standard deviation.</td></tr>
+    <tr><td class="paramname">beta_sd_p</td><td>Parameters for the normal prior on beta_sd. The first row indicates the mean, and the second row the standard deviation.</td></tr>
     <tr><td class="paramname">fixed</td><td>Binary flag indicating if fixed effect priors are to be set (1) or not (0).</td></tr>
     <tr><td class="paramname">random</td><td>Binary flag indicating if random effect priors are to be set (1) or not (0).</td></tr>
   </table>
@@ -160,7 +160,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>The function applies the following priors based on the flags:<ol type="1">
 <li>If <code>fixed</code> is true, a standard normal prior is applied to <code>beta</code>.</li>
-<li>If both <code>fixed</code> and <code>random</code> are true, a zero-truncated normal prior is applied to <code>beta_sd</code>, with parameters specified in <code>beta_sd_p</code>. This allows for flexible prior specification depending on the nature of the regression effects being modeled. </li>
+<li>If both <code>fixed</code> and <code>random</code> are true, a normal prior is applied to <code>beta_sd</code>, with parameters specified in <code>beta_sd_p</code>. This allows for flexible prior specification depending on the nature of the regression effects being modeled. </li>
 </ol>
 </dd></dl>
 

@@ -101,14 +101,14 @@ $(document).ready(function(){initNavTree('hazard_8stan.html',''); initResizable(
 Functions</h2></td></tr>
 <tr class="memitem:a5ed5adf2b346feec0505225a6fc73cd6"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">prob_to_hazard</a> (vector p)</td></tr>
 <tr class="separator:a5ed5adf2b346feec0505225a6fc73cd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab763037f40310b93983b2d9687e90dbe"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hazard_8stan.html#ab763037f40310b93983b2d9687e90dbe">cumulative_converse_log_hazard</a> (vector h)</td></tr>
-<tr class="separator:ab763037f40310b93983b2d9687e90dbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a45a5a439eba38b5d50ff2a5d741d85e0"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hazard_8stan.html#a45a5a439eba38b5d50ff2a5d741d85e0">hazard_to_log_prob</a> (vector h)</td></tr>
-<tr class="separator:a45a5a439eba38b5d50ff2a5d741d85e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a601aef6dbbacb82146a2e23689712c"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a> (vector h, int l)</td></tr>
+<tr class="separator:a9a601aef6dbbacb82146a2e23689712c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae596473f33916489e56f6e555d08f211"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a> (vector h, int l)</td></tr>
+<tr class="separator:ae596473f33916489e56f6e555d08f211"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ab763037f40310b93983b2d9687e90dbe" name="ab763037f40310b93983b2d9687e90dbe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab763037f40310b93983b2d9687e90dbe">&#9670;&nbsp;</a></span>cumulative_converse_log_hazard()</h2>
+<a id="a9a601aef6dbbacb82146a2e23689712c" name="a9a601aef6dbbacb82146a2e23689712c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a601aef6dbbacb82146a2e23689712c">&#9670;&nbsp;</a></span>cumulative_converse_log_hazard()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -117,8 +117,18 @@ Functions</h2></td></tr>
           <td class="memname">vector cumulative_converse_log_hazard </td>
           <td>(</td>
           <td class="paramtype">vector&#160;</td>
-          <td class="paramname"><em>h</em></td><td>)</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>l</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -127,6 +137,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">h</td><td>Vector of hazards.</td></tr>
+    <tr><td class="paramname">l</td><td>Length of the vector.</td></tr>
   </table>
   </dd>
 </dl>
@@ -139,12 +150,12 @@ Functions</h2></td></tr>
 </p>
  is considered to be 0. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="hazard_8stan_source.html#l00042">42</a> of file <a class="el" href="hazard_8stan_source.html">hazard.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hazard_8stan_source.html#l00044">44</a> of file <a class="el" href="hazard_8stan_source.html">hazard.stan</a>.</p>
 
 </div>
 </div>
-<a id="a45a5a439eba38b5d50ff2a5d741d85e0" name="a45a5a439eba38b5d50ff2a5d741d85e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45a5a439eba38b5d50ff2a5d741d85e0">&#9670;&nbsp;</a></span>hazard_to_log_prob()</h2>
+<a id="ae596473f33916489e56f6e555d08f211" name="ae596473f33916489e56f6e555d08f211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae596473f33916489e56f6e555d08f211">&#9670;&nbsp;</a></span>hazard_to_log_prob()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -153,8 +164,18 @@ Functions</h2></td></tr>
           <td class="memname">vector hazard_to_log_prob </td>
           <td>(</td>
           <td class="paramtype">vector&#160;</td>
-          <td class="paramname"><em>h</em></td><td>)</td>
+          <td class="paramname"><em>h</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>l</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -163,6 +184,7 @@ Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">h</td><td>Vector of hazards.</td></tr>
+    <tr><td class="paramname">l</td><td>Length of the vector.</td></tr>
   </table>
   </dd>
 </dl>
@@ -175,7 +197,7 @@ Functions</h2></td></tr>
 <li>cumulative_converse_log_hazard </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="hazard_8stan_source.html#l00075">75</a> of file <a class="el" href="hazard_8stan_source.html">hazard.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="hazard_8stan_source.html#l00078">78</a> of file <a class="el" href="hazard_8stan_source.html">hazard.stan</a>.</p>
 
 </div>
 </div>
