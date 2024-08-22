@@ -3,12 +3,6 @@ skip_on_os("windows")
 skip_on_os("mac")
 skip_on_local()
 
-enw_stan_to_r(
-  c("discretised_logit_hazard.stan", "hazard.stan"),
-  system.file("stan", "functions", package = "epinowcast")
-)
-# note these tests require enw_stan_to_r() to be run first
-
 test_that(
   "discretised_logit_hazard() returns log probabilities that sum to 1", {
   expect_equal_to_1 <- function(lp) {
