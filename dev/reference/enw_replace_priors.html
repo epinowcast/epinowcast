@@ -155,16 +155,16 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-in"><span> variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit_priors</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median        sd        mad        q5      q20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;char&gt;     &lt;num&gt;    &lt;num&gt;     &lt;num&gt;      &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.8717659 2.828525 0.6134551 0.60945238 1.9613285 2.330854</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.7026616 3.688925 0.2972151 0.30275433 3.2274870 3.448894</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3476026 0.346561 0.0314766 0.03275434 0.2964757 0.320987</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          q80       q95     rhat  ess_bulk ess_tail</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;     &lt;num&gt;    &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 3.3737040 3.9624635 1.007791  549.4149 721.2235</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.9502920 4.1949650 1.007210  670.3456 822.6031</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3735928 0.4007032 1.000115 1126.7382 768.7450</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            variable      mean   median         sd        mad        q5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;char&gt;     &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: refp_mean_int[1] 2.9135677 2.890495 0.59728841 0.59579022 1.9686900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2:   refp_sd_int[1] 3.7243671 3.721000 0.28697362 0.28133076 3.2446110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:      sqrt_phi[1] 0.3450259 0.345123 0.03106133 0.03190778 0.2940806</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          q20       q80       q95      rhat  ess_bulk ess_tail</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: 2.4016700 3.3947540 3.9711380 1.0024774  825.0613 823.1192</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: 3.4795160 3.9661820 4.1900830 1.0024251  983.0728 910.4499</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3: 0.3178986 0.3726036 0.3954263 0.9994929 1052.3726 770.7977</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">enw_replace_priors</span><span class="op">(</span><span class="va">default_priors</span>, <span class="va">fit_priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             variable</span>
@@ -185,15 +185,15 @@ replace the default priors. Note that currently vectorised prior names
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6:                                                        &lt;NA&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7:                                                        &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean        sd</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt;     &lt;num&gt;     &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal 0.0000000 1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal 0.0000000 1.0000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 2.8717659 0.6134551</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                  &lt;NA&gt; 3.7026616 0.2972151</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                  &lt;NA&gt; 0.3476026 0.0314766</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             distribution      mean         sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                   &lt;char&gt;     &lt;num&gt;      &lt;num&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3:                Normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4: Zero truncated normal 0.0000000 1.00000000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5:                  &lt;NA&gt; 2.9135677 0.59728841</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6:                  &lt;NA&gt; 3.7243671 0.28697362</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7:                  &lt;NA&gt; 0.3450259 0.03106133</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
