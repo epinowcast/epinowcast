@@ -47,18 +47,13 @@ vector combine_effects(array[] real intercept, vector beta, matrix design,
                        vector beta_sd, matrix sd_design, int add_intercept) {
   int nobs = rows(design);
   int neffs = num_elements(beta);
-  int sds = num_elements(beta_sd);
-  vector[neffs + add_intercept] scaled_beta;
-  vector[sds + 1] ext_beta_sd;
-  ext_beta_sd[1] =  1.0;
   if (neffs) {
-    ext_beta_sd[2:(sds+1)] = beta_sd;
+    vector[num_elements(beta_sd) + 1] ext_beta_sd = append_row(1.0, beta_sd);
+    vector[nobs] result = design[:, add_intercept+1:] * (beta .* (sd_design * ext_beta_sd));
       if (add_intercept) {
-        scaled_beta[1] = intercept[1];
+        result = result + intercept[1];
       }
-    scaled_beta[(1+add_intercept):(neffs+add_intercept)] =
-      beta .* (sd_design * ext_beta_sd);
-    return(design * scaled_beta);
+    return(result);
   }else{
     return(rep_vector(intercept[1], nobs));
   }
