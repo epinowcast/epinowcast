@@ -136,7 +136,7 @@
 </details><p>Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target “true” data.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_nat_germany</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span><span class="st">"2021-10-20"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-10-20"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-09-01"</span>, include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span></code></pre></div>
 </details>
@@ -175,10 +175,10 @@
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, output_loglik <span class="op">=</span> <span class="cn">TRUE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>, </span>
+<span>  chains <span class="op">=</span> <span class="fl">2</span>, threads_per_chain <span class="op">=</span> <span class="va">threads</span>,</span>
 <span>  iter_sampling <span class="op">=</span> <span class="fl">500</span>, iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
-<span>  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, refresh <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  adapt_delta <span class="op">=</span> <span class="fl">0.98</span>, max_treedepth <span class="op">=</span> <span class="fl">15</span></span>
+<span>  show_messages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>, refresh <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">100</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  adapt_delta <span class="op">=</span> <span class="fl">0.9</span>, max_treedepth <span class="op">=</span> <span class="fl">12</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span></span>
@@ -201,20 +201,20 @@ plot of chunk nowcast
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcast</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"fit"</span>,</span>
-<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span> <span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span>
+<span>  variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean_int"</span>, <span class="st">"refp_sd_int"</span>, <span class="st">"sqrt_phi"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">2</span><span class="op">]</span></span>
+<span><span class="va">priors</span><span class="op">[</span>, <span class="va">sd</span> <span class="op">:=</span> <span class="va">sd</span> <span class="op">*</span> <span class="fl">1.5</span><span class="op">]</span></span>
 <span><span class="va">priors</span></span>
-<span><span class="co">#&gt;            variable      mean   median         sd        mad        q5</span></span>
-<span><span class="co">#&gt;              &lt;char&gt;     &lt;num&gt;    &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1137356 1.104625 0.21881992 0.11486444 0.9480031</span></span>
-<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.5933307 2.588790 0.24948965 0.12472373 2.3985425</span></span>
-<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6453041 0.645943 0.03630827 0.01852805 0.6151312</span></span>
-<span><span class="co">#&gt;          q20       q80      q95     rhat ess_bulk ess_tail</span></span>
-<span><span class="co">#&gt;        &lt;num&gt;     &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 1.0171420 1.2107620 1.295494 1.002370 1104.080 850.8571</span></span>
-<span><span class="co">#&gt; 2: 2.4869340 2.6933520 2.811244 1.002356 1128.863 774.8388</span></span>
-<span><span class="co">#&gt; 3: 0.6292662 0.6612108 0.674933 1.003133 1433.229 644.2423</span></span></code></pre></div>
+<span><span class="co">#&gt;            variable      mean    median         sd        mad        q5</span></span>
+<span><span class="co">#&gt;              &lt;char&gt;     &lt;num&gt;     &lt;num&gt;      &lt;num&gt;      &lt;num&gt;     &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: refp_mean_int[1] 1.1241043 1.1158650 0.17518175 0.10896369 0.9510968</span></span>
+<span><span class="co">#&gt; 2:   refp_sd_int[1] 2.6064102 2.6005000 0.19630607 0.12650285 2.4003890</span></span>
+<span><span class="co">#&gt; 3:      sqrt_phi[1] 0.6434821 0.6427005 0.02690481 0.01849247 0.6153489</span></span>
+<span><span class="co">#&gt;         q20       q80       q95     rhat  ess_bulk ess_tail</span></span>
+<span><span class="co">#&gt;       &lt;num&gt;     &lt;num&gt;     &lt;num&gt;    &lt;num&gt;     &lt;num&gt;    &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 1.028998 1.2136340 1.3302645 1.003439  725.3080 591.6027</span></span>
+<span><span class="co">#&gt; 2: 2.490760 2.7124420 2.8304450 1.004707  765.6376 694.3133</span></span>
+<span><span class="co">#&gt; 3: 0.627998 0.6591382 0.6754898 1.004471 1170.0935 783.6616</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -472,10 +472,10 @@ plot of chunk unnamed-chunk-18
 <span><span class="fu"><a href="https://mc-stan.org/loo/reference/loo_compare.html" class="external-link">loo_compare</a></span><span class="op">(</span><span class="va">loos</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                                     elpd_diff se_diff</span></span>
 <span><span class="co">#&gt; Reference: Age and week, Report: Day of week           0.0       0.0 </span></span>
-<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -2.4       3.8 </span></span>
-<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -4.6       6.5 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -89.0      12.3 </span></span>
-<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -646.4      48.2</span></span></code></pre></div>
+<span><span class="co">#&gt; Reference: Age and week by age, Report: Day of week   -0.6       3.6 </span></span>
+<span><span class="co">#&gt; Reference: Age, Report: Day of week                   -1.7       6.0 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Day of week                -88.0      11.8 </span></span>
+<span><span class="co">#&gt; Reference: Fixed, Report: Fixed                     -630.4      46.5</span></span></code></pre></div>
 </details><p>We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.</p>
 <p>More rigorously, we can evaluate the nowcasts using proper scoring rules from the <code>scoringutils</code> package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for <code>scoringutils</code>, link with the latest available data, and the finally call <code>scoringutils::eval_forecasts()</code>. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.</p>
 <p>As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example).</p>
@@ -512,63 +512,63 @@ plot of chunk unnamed-chunk-18
 <tbody>
 <tr class="odd">
 <td align="left">Reference: Fixed, Report: Fixed</td>
-<td align="right">10.409337</td>
-<td align="right">3.791994</td>
-<td align="right">3.046782</td>
-<td align="right">3.5719780</td>
-<td align="right">-0.0664050</td>
-<td align="right">-0.0316327</td>
-<td align="right">17.89796</td>
+<td align="right">10.170440</td>
+<td align="right">3.684841</td>
+<td align="right">3.002763</td>
+<td align="right">3.4819466</td>
+<td align="right">-0.0742543</td>
+<td align="right">-0.0275510</td>
+<td align="right">17.51020</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Fixed, Report: Day of week</td>
-<td align="right">10.358911</td>
-<td align="right">2.655328</td>
-<td align="right">6.748509</td>
-<td align="right">0.9547881</td>
-<td align="right">-0.1307692</td>
-<td align="right">-0.2734694</td>
-<td align="right">15.40816</td>
+<td align="right">10.123331</td>
+<td align="right">2.771149</td>
+<td align="right">6.435809</td>
+<td align="right">0.9167975</td>
+<td align="right">-0.1260597</td>
+<td align="right">-0.2714286</td>
+<td align="right">15.30612</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age, Report: Day of week</td>
-<td align="right">8.566766</td>
-<td align="right">2.522998</td>
-<td align="right">5.541601</td>
-<td align="right">0.5015699</td>
+<td align="right">8.501909</td>
+<td align="right">2.643243</td>
+<td align="right">5.331742</td>
+<td align="right">0.5274725</td>
 <td align="right">-0.1166405</td>
-<td align="right">-0.4142857</td>
-<td align="right">13.10204</td>
+<td align="right">-0.4112245</td>
+<td align="right">13.00000</td>
 </tr>
 <tr class="even">
 <td align="left">Reference: Age and week, Report: Day of week</td>
-<td align="right">7.059736</td>
-<td align="right">2.985159</td>
-<td align="right">1.420031</td>
-<td align="right">2.6545683</td>
-<td align="right">-0.0067504</td>
-<td align="right">0.0091837</td>
-<td align="right">12.32653</td>
+<td align="right">7.513290</td>
+<td align="right">3.136345</td>
+<td align="right">1.284082</td>
+<td align="right">3.0928414</td>
+<td align="right">-0.0020408</td>
+<td align="right">0.0428571</td>
+<td align="right">13.22449</td>
 </tr>
 <tr class="odd">
 <td align="left">Reference: Age and week by age, Report: Day of week</td>
-<td align="right">7.157560</td>
-<td align="right">2.919447</td>
-<td align="right">2.568917</td>
-<td align="right">1.6686813</td>
-<td align="right">-0.0193093</td>
-<td align="right">-0.2142857</td>
-<td align="right">11.98980</td>
+<td align="right">7.181140</td>
+<td align="right">3.139586</td>
+<td align="right">2.465463</td>
+<td align="right">1.5758242</td>
+<td align="right">-0.0036107</td>
+<td align="right">-0.2051020</td>
+<td align="right">12.44898</td>
 </tr>
 <tr class="even">
 <td align="left">Independent by age, Reference: Week, Report: Day of week</td>
-<td align="right">7.970706</td>
-<td align="right">4.357520</td>
-<td align="right">1.206593</td>
-<td align="right">2.4073783</td>
-<td align="right">0.0513344</td>
-<td align="right">-0.0520408</td>
-<td align="right">13.56122</td>
+<td align="right">8.438521</td>
+<td align="right">4.567014</td>
+<td align="right">1.108477</td>
+<td align="right">2.7604396</td>
+<td align="right">0.0607535</td>
+<td align="right">-0.0479592</td>
+<td align="right">14.35714</td>
 </tr>
 </tbody>
 </table>
