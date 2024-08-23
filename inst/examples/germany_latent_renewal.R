@@ -64,11 +64,11 @@ nowcast <- epinowcast(pobs,
   reference = reference_module,
   report = report_module,
   fit = enw_fit_opts(
-    save_warmup = FALSE, pp = TRUE,
+    pp = TRUE,
     chains = 4, threads_per_chain = 1,
     parallel_chains = 4,
     iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.95
+    adapt_delta = 0.85, save_warmup = FALSE
   ),
   model = model
 )

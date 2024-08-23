@@ -3,12 +3,6 @@ skip_on_os("windows")
 skip_on_os("mac")
 skip_on_local()
 
-enw_stan_to_r(
-  c("discretised_logit_hazard.stan", "hazard.stan"),
-  system.file("stan", "functions", package = "epinowcast")
-)
-# note these tests require enw_stan_to_r() to be run first
-
 test_that(
   "discretised_logit_hazard() returns log probabilities that sum to 1", {
   expect_equal_to_1 <- function(lp) {
@@ -29,7 +23,7 @@ test_that(
    sum to 1", {
   expect_equal_to_1 <- function(lh) {
     lh <- plogis(lh)
-    lh <- hazard_to_log_prob(lh)
+    lh <- hazard_to_log_prob(lh, length(lh))
     p <- exp(lh)
     expect_equal(sum(p), 1.0)
   }
@@ -50,7 +44,7 @@ test_that("discretised_logit_hazard() returns the same thing in both log
     lp <- discretised_logit_hazard(alpha, beta, 10, dist, 2, 1)
     lh <- discretised_logit_hazard(alpha, beta, 10, dist, 2, 0)
     lh <- plogis(lh)
-    lh <- hazard_to_log_prob(lh)
+    lh <- hazard_to_log_prob(lh, length(lh))
     expect_equal( # nolint: expect_identical_linter.
       round(exp(lp), 4), round(exp(lh), 4)
     )

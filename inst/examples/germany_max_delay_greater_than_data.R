@@ -66,7 +66,7 @@ nowcast <- epinowcast(pobs,
   fit = enw_fit_opts(
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.99, max_treedepth = 12
+    adapt_delta = 0.98, max_treedepth = 12
   ),
   obs = obs_module,
 )

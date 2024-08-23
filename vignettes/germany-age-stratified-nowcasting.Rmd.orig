@@ -74,7 +74,7 @@ Similarly we then find the data that were available on the 20th of October for t
 
 ```{r}
 latest_nat_germany <- nat_germany_hosp |>
-  enw_filter_report_dates(latest_date ="2021-10-20") |>
+  enw_filter_report_dates(latest_date = "2021-10-20") |>
   enw_latest_data() |>
   enw_filter_reference_dates(latest_date = "2021-09-01", include_days = 40)
 ```
@@ -103,11 +103,11 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 ```{r simple-nowcast}
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads, 
+  chains = 2, threads_per_chain = threads,
   iter_sampling = 500, iter_warmup = 500,
-  show_messages = FALSE, refresh = 0,
-  adapt_delta = 0.98, max_treedepth = 15,
-  init_method = "pathfinder", psis_resample = FALSE
+  init_method = "pathfinder", psis_resample = FALSE,
+  show_messages = interactive(), refresh = ifelse(interactive(), 100, 0),
+  adapt_delta = 0.9, max_treedepth = 12
 )
 nowcast <- epinowcast(pobs,
   fit = fit
@@ -129,9 +129,9 @@ To speed up model fitting we make use of posterior information from the previous
 priors <- summary(
   nowcast,
   type = "fit",
-  variables = c( "refp_mean_int", "refp_sd_int", "sqrt_phi")
+  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 )
-priors[, sd := sd * 2]
+priors[, sd := sd * 1.5]
 priors
 ```
 
