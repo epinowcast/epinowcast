@@ -596,12 +596,11 @@
 <span>  threads_per_chain <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">floor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu">parallel</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html" class="external-link">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span>  <span class="fl">4</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  iter_warmup <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>  iter_sampling <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  adapt_delta <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  max_treedepth <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  show_messages <span class="op">=</span> <span class="cn">FALSE</span>, <span class="co"># set this to TRUE to show fitting messages</span></span>
-<span>  refresh <span class="op">=</span> <span class="fl">0</span> <span class="co"># remove this to show fitting progress</span></span>
+<span>  show_messages <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># set this to TRUE to show fitting messages</span></span>
+<span>  refresh <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">100</span>, <span class="fl">0</span><span class="op">)</span> <span class="co"># remove this to show fitting progress</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>If you have more than 4 CPU cores available you can increase the number of threads per chain to make use of these additional cores. For example if you have 8 CPU cores available you could set <code>threads_per_chain = 4</code> to use all 8 cores (as there are 2 chains).</p>
@@ -612,7 +611,7 @@
 </h4>
 <p>We also need to compile the model using <code>cmdstanr</code> before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the <a href="https://package.epinowcast.org">README</a>. This will take around a minute to run when called for the first time.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">epinowcast_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span>profile <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">epinowcast_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level4">
