@@ -34,8 +34,9 @@ test_that("epinowcast() runs using default arguments only", {
   expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
-      "priors", "fit", "data", "fit_args", "samples", "max_rhat",
-      "divergent_transitions", "per_divergent_transitions", "max_treedepth",
+      "priors", "fit", "data", "fit_args", "init_method_output",
+      "samples", "max_rhat", "divergent_transitions",
+      "per_divergent_transitions", "max_treedepth",
       "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
@@ -124,8 +125,9 @@ test_that("epinowcast() can fit a simple reporting model", {
   expect_identical(
     setdiff(colnames(nowcast), colnames(pobs)),
     c(
-      "priors", "fit", "data", "fit_args", "samples", "max_rhat",
-      "divergent_transitions", "per_divergent_transitions", "max_treedepth",
+      "priors", "fit", "data", "fit_args", "init_method_output",
+      "samples", "max_rhat", "divergent_transitions",
+      "per_divergent_transitions", "max_treedepth",
       "no_at_max_treedepth", "per_at_max_treedepth", "run_time"
     )
   )
