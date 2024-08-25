@@ -246,7 +246,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' values. If not provided, the model will attempt to generate initial values
 #'
 #' @param init_method The method to use for initializing the model. Defaults to
-#' "random" which samples initial values from the prior. "pathfinder" uses the
+#' "prior" which samples initial values from the prior. "pathfinder" uses the
 #' pathfinder algorithm ([enw_pathfinder()]) to initialize the model.
 #'
 #' @param init_method_args A list of additional arguments to pass to the
@@ -284,13 +284,22 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #'
 #' summary(nowcast_pathfinder)
 enw_sample <- function(data, model = epinowcast::enw_model(),
-                       init = NULL, init_method = c("random", "pathfinder"),
+                       init = NULL, init_method = c("prior", "pathfinder"),
                        init_method_args = list(), diagnostics = TRUE, ...) {
   init_method <- rlang::arg_match(init_method)
-  out <- switch(init_method,
-    random = sample_random_init(data, model, init, ...),
-    pathfinder = sample_pathfinder_init(data, model, init,
-    init_method_args, ...)
+
+  updated_inits <- update_inits(
+    data, model, init, init_method, init_method_args, ...
+  )
+
+  cli::cli_alert_info("Fitting the model using NUTS")
+  fit <- model$sample(data = data, init = updated_inits$init, ...)
+
+  out <- data.table(
+    fit = list(fit),
+    data = list(data),
+    fit_args = list(...),
+    init_method_output = list(updated_inits$method_output)
   )
 
   if (diagnostics) {
@@ -319,54 +328,37 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
   return(out[])
 }
 
-#' Initialize and sample using pathfinder
+#' Update initial values for model fitting
 #'
-#' This function initializes the model using the pathfinder algorithm and then
-#' samples from it.
+#' This function updates the initial values for model fitting based on the
+#' specified initialization method.
 #'
 #' @inheritParams enw_sample
-#' @param ... Additional arguments passed to the `sample` method of `cmdstanr`.
+#' @param ... Additional arguments passed to initialization methods.
 #'
-#' @return A data.table containing the fit, data, fit arguments, and pathfinder
-#' output
-sample_pathfinder_init <- function(data, model, init,
-                                   init_method_args = list(), ...) {
+#' @return A list containing updated initial values and method-specific output.
+update_inits <- function(data, model, init,
+                         init_method = c("prior", "pathfinder"),
+                         init_method_args = list(), ...) {
+  rlang::arg_match(init_method)
   dot_args <- list(...)
-  init_method_args$threads_per_chain <- dot_args$threads_per_chain
-  pf <- do.call(
-    enw_pathfinder,
-    c(list(data = data, model = model, init = init), init_method_args)
-  )
-  fit <- model$sample(data = data, init = pf$fit[[1]], dot_args)
-  dot_args$init_method <- "pathfinder"
-  out <- data.table(
-    fit = list(fit),
-    data = list(data),
-    fit_args = list(dot_args),
-    init_method_output = list(pf)
-  )
-  return(out[])
-}
 
-#' Initialize and sample using random initialization
-#'
-#' This function samples from the model using random initialization.
-#'
-#' @inheritParams enw_sample
-#' @param ... Additional arguments passed to the `sample` method of `cmdstanr`.
-#'
-#' @return A data.table containing the fit, data, and fit arguments
-sample_random_init <- function(data, model, init, ...) {
-  dot_args <- list(...)
-  fit <- model$sample(data = data, init = init, dot_args)
-  dot_args$init_method <- "random"
-  out <- data.table(
-    fit = list(fit),
-    data = list(data),
-    fit_args = list(dot_args),
-    init_method_output = list(NULL)
-  )
-  return(out[])
+  if (init_method == "pathfinder") {
+    init_method_args$threads_per_chain <- dot_args$threads_per_chain
+    cli::cli_alert_info("Using pathfinder initialization.")
+    pf <- do.call(
+      enw_pathfinder,
+      c(list(data = data, model = model, init = init), init_method_args)
+    )
+    updated_init <- pf$fit[[1]]
+    method_output <- pf
+  } else if (init_method == "prior") {
+    cli::cli_alert_info("Using prior initialization.")
+    updated_init <- init
+    method_output <- NULL
+  }
+
+  return(list(init = updated_init, method_output = method_output))
 }
 
 #' Fit a CmdStan model using the pathfinder algorithm

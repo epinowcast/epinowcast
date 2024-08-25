@@ -13,7 +13,7 @@ the directory does not exist it will be created.}
 \item{type}{A character string specifying the cache type. It can be one of
 "session", "persistent", or "all". Default is "session".
 "session" sets the cache for the current session, "persistent" writes the
-cache location to the user’s \code{.Renviron} file,  and "all" does both.}
+cache location to the user's \code{.Renviron} file,  and "all" does both.}
 }
 \value{
 The string of the filepath set.

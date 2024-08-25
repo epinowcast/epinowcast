@@ -8,7 +8,7 @@ enw_sample(
   data,
   model = epinowcast::enw_model(),
   init = NULL,
-  init_method = c("random", "pathfinder"),
+  init_method = c("prior", "pathfinder"),
   init_method_args = list(),
   diagnostics = TRUE,
   ...
@@ -26,7 +26,7 @@ supplied by the user.}
 values. If not provided, the model will attempt to generate initial values}
 
 \item{init_method}{The method to use for initializing the model. Defaults to
-"random" which samples initial values from the prior. "pathfinder" uses the
+"prior" which samples initial values from the prior. "pathfinder" uses the
 pathfinder algorithm (\code{\link[=enw_pathfinder]{enw_pathfinder()}}) to initialize the model.}
 
 \item{init_method_args}{A list of additional arguments to pass to the

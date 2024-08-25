@@ -103,9 +103,9 @@ Note that here we use two chains each using `r  threads` threads as a demonstrat
 ```{r simple-nowcast}
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
+  chains = 2
+  , threads_per_chain = threads,
   iter_sampling = 500, iter_warmup = 500,
-  init_method = "pathfinder", psis_resample = FALSE,
   show_messages = interactive(), refresh = ifelse(interactive(), 100, 0),
   adapt_delta = 0.9, max_treedepth = 12
 )
