@@ -28,6 +28,7 @@
 - Used the `offset` and `multiplier` stan translation functions to improve the speed of the model. See #501 by @seabbs and reviewed by .
 - Removed normalisation of truncated priors as this is not required during inference and increases run time. See #501 by @seabbs and reviewed by .
 - Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
+- Added support for sparse design matrices to the model (see `sparse_design` in `enw_fit_opts()`). For very sparse design matrices this can reduce memory requirements and computation time. See  by @seabbs and reviewed by @<REVIEWER>.
 
 ## Documentation
 
