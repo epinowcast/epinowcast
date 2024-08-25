@@ -94,7 +94,7 @@ data {
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
   array[2, 1] real refp_mean_int_p;
-  array[2, 1] real refp_sd_int_p;
+  array[2, 1] real refp_sd_int_log_p;
   array[2, 1] real refp_mean_beta_sd_p;
   array[2, 1] real refp_sd_beta_sd_p;
   // Non-parametric reference model
@@ -182,9 +182,9 @@ parameters {
   // Reference model
   // Parametric reference model
   array[model_refp ? 1 : 0] real<offset = refp_mean_int_p[1,1], multiplier = refp_mean_int_p[2,1]> refp_mean_int;
-  array[model_refp > 1 ? 1 : 0]real<lower=1e-3, upper=2*dmax> refp_sd_int; 
+  array[model_refp > 1 ? 1 : 0] real<offset = refp_sd_int_log_p[1,1], multiplier = refp_sd_int_log_p[2,1]> refp_sd_int_log; 
   vector[model_refp ? refp_fncol : 0] refp_mean_beta; 
-  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta; 
+  vector[model_refp > 1 ? refp_fncol : 0] refp_sd_beta;
   vector<lower=0>[refp_rncol] refp_mean_beta_sd;
   vector<lower=0>[model_refp ? refp_rncol : 0] refp_sd_beta_sd; 
   // Non-parametric reference model
@@ -267,11 +267,10 @@ transformed parameters{
       refp_rdesign, 1
     );
     if (model_refp > 1) {
-      refp_sd = combine_effects(
-        log(refp_sd_int), refp_sd_beta, refp_fdesign, refp_sd_beta_sd,
+      refp_sd = exp(combine_effects(
+        refp_sd_int_log, refp_sd_beta, refp_fdesign, refp_sd_beta_sd,
         refp_rdesign, 1
-      ); 
-      refp_sd = exp(refp_sd);
+      )); 
     } 
     }
     // calculate parametric reference date logit hazards
@@ -350,7 +349,7 @@ model {
   if (model_refp) {
     refp_mean_int ~ normal(refp_mean_int_p[1], refp_mean_int_p[2]);
     if (model_refp > 1) {
-      refp_sd_int ~ normal(refp_sd_int_p[1], refp_sd_int_p[2]);
+      refp_sd_int_log ~ normal(refp_sd_int_log_p[1], refp_sd_int_log_p[2]);
     }
     effect_priors_lp(
       refp_mean_beta, refp_mean_beta_sd, refp_mean_beta_sd_p, refp_fncol,

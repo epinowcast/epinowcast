@@ -17,7 +17,7 @@
         print("Logmean and Logsd intercept");
         print(refp_mean_int);
         if (model_refp > 1) {
-          print(refp_sd_int);
+          print(exp(refp_sd_int_log));
         }
         print("Logmean and Logsd for pmf");
         print(refp_mean[i]);

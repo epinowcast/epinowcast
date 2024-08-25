@@ -10,6 +10,8 @@
 
 ## Breaking changes
 
+- The `refp_sd_int` parameter has been replaced with `refp_sd_int_log` to avoid transforming within the model. The `refp_sd_int` parameter can be recovered by taking the exponential of `refp_sd_int_log`. See # by @seabbs and @<REVIEWER>.
+
 ## Bugs
 
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.

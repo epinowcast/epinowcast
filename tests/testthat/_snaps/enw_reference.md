@@ -1082,25 +1082,25 @@
       $priors
                   variable
       1:     refp_mean_int
-      2:       refp_sd_int
+      2:   refp_sd_int_log
       3: refp_mean_beta_sd
       4:   refp_sd_beta_sd
       5:         refnp_int
       6:     refnp_beta_sd
-                                                            description
-      1:         Log mean intercept for parametric reference date delay
-      2: Log standard deviation for the parametric reference date delay
-      3:    Standard deviation of scaled pooled parametric mean effects
-      4:      Standard deviation of scaled pooled parametric sd effects
-      5:              Intercept for non-parametric reference date delay
-      6:     Standard deviation of scaled pooled non-parametric effects
-                  distribution mean sd
-      1:                Normal  1.0  1
-      2: Zero truncated normal  0.5  1
-      3: Zero truncated normal  0.0  1
-      4: Zero truncated normal  0.0  1
-      5:                Normal  0.0  1
-      6: Zero truncated normal  0.0  1
+                                                                                  description
+      1:                               Log mean intercept for parametric reference date delay
+      2: The log of the log standard deviation for the parametric reference date\n      delay
+      3:                          Standard deviation of scaled pooled parametric mean effects
+      4:                            Standard deviation of scaled pooled parametric sd effects
+      5:                                    Intercept for non-parametric reference date delay
+      6:                           Standard deviation of scaled pooled non-parametric effects
+                  distribution mean  sd
+      1:                Normal  1.0 1.0
+      2:                Normal -0.7 0.5
+      3: Zero truncated normal  0.0 1.0
+      4: Zero truncated normal  0.0 1.0
+      5:                Normal  0.0 1.0
+      6: Zero truncated normal  0.0 1.0
       
 
 # enw_reference supports non-parametric models
@@ -1210,25 +1210,25 @@
       $priors
                   variable
       1:     refp_mean_int
-      2:       refp_sd_int
+      2:   refp_sd_int_log
       3: refp_mean_beta_sd
       4:   refp_sd_beta_sd
       5:         refnp_int
       6:     refnp_beta_sd
-                                                            description
-      1:         Log mean intercept for parametric reference date delay
-      2: Log standard deviation for the parametric reference date delay
-      3:    Standard deviation of scaled pooled parametric mean effects
-      4:      Standard deviation of scaled pooled parametric sd effects
-      5:              Intercept for non-parametric reference date delay
-      6:     Standard deviation of scaled pooled non-parametric effects
-                  distribution mean sd
-      1:                Normal  1.0  1
-      2: Zero truncated normal  0.5  1
-      3: Zero truncated normal  0.0  1
-      4: Zero truncated normal  0.0  1
-      5:                Normal  0.0  1
-      6: Zero truncated normal  0.0  1
+                                                                                  description
+      1:                               Log mean intercept for parametric reference date delay
+      2: The log of the log standard deviation for the parametric reference date\n      delay
+      3:                          Standard deviation of scaled pooled parametric mean effects
+      4:                            Standard deviation of scaled pooled parametric sd effects
+      5:                                    Intercept for non-parametric reference date delay
+      6:                           Standard deviation of scaled pooled non-parametric effects
+                  distribution mean  sd
+      1:                Normal  1.0 1.0
+      2:                Normal -0.7 0.5
+      3: Zero truncated normal  0.0 1.0
+      4: Zero truncated normal  0.0 1.0
+      5:                Normal  0.0 1.0
+      6: Zero truncated normal  0.0 1.0
       
 
 # Parametric and non-parametric models can be jointly specified
@@ -1337,24 +1337,24 @@
       $priors
                   variable
       1:     refp_mean_int
-      2:       refp_sd_int
+      2:   refp_sd_int_log
       3: refp_mean_beta_sd
       4:   refp_sd_beta_sd
       5:         refnp_int
       6:     refnp_beta_sd
-                                                            description
-      1:         Log mean intercept for parametric reference date delay
-      2: Log standard deviation for the parametric reference date delay
-      3:    Standard deviation of scaled pooled parametric mean effects
-      4:      Standard deviation of scaled pooled parametric sd effects
-      5:              Intercept for non-parametric reference date delay
-      6:     Standard deviation of scaled pooled non-parametric effects
-                  distribution mean sd
-      1:                Normal  1.0  1
-      2: Zero truncated normal  0.5  1
-      3: Zero truncated normal  0.0  1
-      4: Zero truncated normal  0.0  1
-      5:                Normal  0.0  1
-      6: Zero truncated normal  0.0  1
+                                                                                  description
+      1:                               Log mean intercept for parametric reference date delay
+      2: The log of the log standard deviation for the parametric reference date\n      delay
+      3:                          Standard deviation of scaled pooled parametric mean effects
+      4:                            Standard deviation of scaled pooled parametric sd effects
+      5:                                    Intercept for non-parametric reference date delay
+      6:                           Standard deviation of scaled pooled non-parametric effects
+                  distribution mean  sd
+      1:                Normal  1.0 1.0
+      2:                Normal -0.7 0.5
+      3: Zero truncated normal  0.0 1.0
+      4: Zero truncated normal  0.0 1.0
+      5:                Normal  0.0 1.0
+      6: Zero truncated normal  0.0 1.0
       
 

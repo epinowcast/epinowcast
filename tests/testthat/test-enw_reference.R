@@ -54,16 +54,11 @@ test_that("enw_reference supports parametric models", {
   expect_named(
     inits,
     c(
-      "refp_mean_int", "refp_sd_int", "refp_mean_beta",
+      "refp_mean_int", "refp_sd_int_log", "refp_mean_beta",
       "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
       "refnp_int", "refnp_beta", "refnp_beta_sd",
       "refp_mean", "refp_sd"
     )
-  )
-  c(
-    "refp_mean_int", "ref_p_sd_int", "refp_mean_beta",
-    "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
-    "refp_mean", "refp_sd"
   )
   zero_length <- c("refnp_int", "refnp_beta", "refnp_beta_sd")
   expect_zero_length_or_not(zero_length, inits)
@@ -110,7 +105,7 @@ test_that("enw_reference supports non-parametric models", {
   )
   inits <- ref$inits(ref$data, ref$priors)()
   zero_length <- c(
-    "refp_mean_int", "refp_sd_int", "refp_mean_beta",
+    "refp_mean_int", "refp_sd_int_log", "refp_mean_beta",
     "refp_sd_beta", "refp_mean_beta_sd", "refp_sd_beta_sd",
     "refp_mean", "refp_sd"
   )

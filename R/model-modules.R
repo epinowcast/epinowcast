@@ -112,30 +112,31 @@ enw_reference <- function(
   out$data <- c(pdata, npdata)
   out$priors <- data.table::data.table(
     variable = c(
-      "refp_mean_int", "refp_sd_int", "refp_mean_beta_sd", "refp_sd_beta_sd",
-      "refnp_int", "refnp_beta_sd"
+      "refp_mean_int", "refp_sd_int_log", "refp_mean_beta_sd",
+      "refp_sd_beta_sd", "refnp_int", "refnp_beta_sd"
     ),
     description = c(
       "Log mean intercept for parametric reference date delay",
-      "Log standard deviation for the parametric reference date delay",
+      "The log of the log standard deviation for the parametric reference date
+      delay",
       "Standard deviation of scaled pooled parametric mean effects",
       "Standard deviation of scaled pooled parametric sd effects",
       "Intercept for non-parametric reference date delay",
       "Standard deviation of scaled pooled non-parametric effects"
     ),
     distribution = c(
-      "Normal", rep("Zero truncated normal", 3),
+      rep("Normal", 2), rep("Zero truncated normal", 2),
       "Normal", "Zero truncated normal"
     ),
-    mean = c(1, 0.5, 0, 0, 0, 0),
-    sd = 1
+    mean = c(1, -0.7, 0, 0, 0, 0),
+    sd = c(1, 0.5, rep(1, 4))
   )
   out$inits <- function(data, priors) {
     priors <- enw_priors_as_data_list(priors)
     fn <- function() {
       init <- list(
         refp_mean_int = numeric(0),
-        refp_sd_int = numeric(0),
+        refp_sd_int_log = numeric(0),
         refp_mean_beta = numeric(0),
         refp_sd_beta = numeric(0),
         refp_mean_beta_sd = numeric(0),
@@ -150,12 +151,14 @@ enw_reference <- function(
         ))
       }
       if (data$model_refp > 1) {
-        init$refp_sd_int <- array(abs(
-          rnorm(1, priors$refp_sd_int_p[1], priors$refp_sd_int_p[2] / 10)
+        init$refp_sd_int_log <- array(abs(
+          rnorm(
+            1, priors$refp_sd_int_log_p[1], priors$refp_sd_int_log_p[2] / 10
+          )
         ))
       }
       init$refp_mean <- rep(init$refp_mean_int, data$refp_fnrow)
-      init$refp_sd <- rep(init$refp_sd_int, data$refp_fnrow)
+      init$refp_sd <- rep(exp(init$refp_sd_int_log), data$refp_fnrow)
       if (data$refp_fncol > 0) {
         init$refp_mean_beta <- array(
           rnorm(data$refp_fncol, 0, 0.01)
