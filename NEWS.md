@@ -10,7 +10,7 @@
 
 ## Breaking changes
 
-- The `refp_sd_int` parameter has been replaced with `refp_sd_int_log` to avoid transforming within the model. The `refp_sd_int` parameter can be recovered by taking the exponential of `refp_sd_int_log`. See # by @seabbs and @<REVIEWER>.
+- The `refp_sd_int` parameter has been replaced with `refp_sd_int_log` to avoid transforming within the model. The `refp_sd_int` parameter can be recovered by taking the exponential of `refp_sd_int_log`. See #515 by @seabbs and @<REVIEWER>.
 
 ## Bugs
 
