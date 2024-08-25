@@ -245,7 +245,8 @@ transformed parameters{
       {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign, expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design
     );
     exp_lobs = log_expected_obs_from_latent(
-      exp_llatent, expl_lrd_n, expl_sparse.1, expl_sparse.2, expl_sparse.3, t, g, expl_prop
+      exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
+      expl_lrd_sparse.3, t, g, expl_prop
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical

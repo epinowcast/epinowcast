@@ -1,8 +1,10 @@
   // Declare tuples for sparse matrix components
   int expr_nonzero = num_nonzero(expr_fdesign);
   tuple(vector[expr_nonzero], array[expr_nonzero] int, array[expr_fnindex + 1] int) expr_sparse;
-  int expl_nonzero = num_nonzero(expl_lrd);
-  tuple(vector[expl_nonzero], array[expl_nonzero] int, array[expr_ft + 1] int) expl_sparse;
+  int expl_nonzero = num_nonzero(expl_fdesign);
+  tuple(vector[expl_nonzero], array[expl_nonzero] int, array[expl_fnindex + 1] int) expl_sparse;
+  int expl_lrd_nonzero = num_nonzero(expl_lrd);
+  tuple(vector[expl_lrd_nonzero], array[expl_lrd_nonzero] int, array[expr_ft + 1] int) expl_lrd_sparse;
   int refp_nonzero = num_nonzero(refp_fdesign);
   tuple(vector[refp_nonzero], array[refp_nonzero] int, array[refp_fnrow + 1] int) refp_sparse;
   int rep_nonzero = num_nonzero(rep_fdesign);
@@ -14,8 +16,8 @@
 
   // ---- Latent case submodule ----
   // We already know that the latent case submodule is sparse
-  if (expl_nonzero > 0) {
-    expl_sparse = csr_extract(expl_lrd);
+  if (expl_lrd_nonzero > 0) {
+    expl_lrd_sparse = csr_extract(expl_lrd);
   }
 
   if (sparse_design) {
@@ -23,6 +25,9 @@
     // ---- Expectation model ----
     if (expr_nonzero > 0) {
       expr_sparse = csr_extract(expr_fdesign);
+    }
+    if (expl_nonzero > 0) {
+      expl_sparse = csr_extract(expl_fdesign);
     }
     // ---- Reference model ----
     if (refp_nonzero > 0) {

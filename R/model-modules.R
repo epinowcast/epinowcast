@@ -790,6 +790,11 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' log-likelihood be output. Disabling this will speed up fitting
 #' if evaluating the model fit is not required.
 #'
+#' @param sparse_design Logical, defaults to `TRUE`. Should a sparse design
+#' matrices be used for all design matrices. This reduces memory requirements
+#' and may reduce computation time when fitting models with very sparse
+#' design matrices (90% or more zeros).
+#'
 #' @param ... Additional arguments to pass to the fitting function being used
 #' by [epinowcast()]. By default this will be [enw_sample()] and so `cmdstanr`
 #' options should be used.
