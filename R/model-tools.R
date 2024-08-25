@@ -298,7 +298,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
   out <- data.table(
     fit = list(fit),
     data = list(data),
-    fit_args = list(...),
+    fit_args = list(list(...)),
     init_method_output = list(updated_inits$method_output)
   )
 
