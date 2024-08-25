@@ -28,6 +28,9 @@
       $data$ologlik
       [1] 0
       
+      $data$sparse_design
+      [1] 1
+      
       
       $args
       $args$threads_per_chain

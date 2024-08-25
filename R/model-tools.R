@@ -17,7 +17,7 @@
 #'  - `prefix_findex`: The index linking design matrix rows to  observations
 #'  - `prefix_fnindex`: The length of the index
 #'  - `prefix_fncol`: The number of columns (i.e effects) in the fixed effect
-#'  design matrix (minus 1 if `drop_intercept = TRUE`).
+#'  design matrix (minus 1 if an intercept is present).
 #'  - `prefix_rdesign`: The random effects design matrix
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
@@ -39,13 +39,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     fncol = 0,
     rncol = 0,
     fdesign = numeric(0),
-    rdesign = numeric(0),
-    f_nw = 0,
-    f_w = numeric(0),
-    f_nv = 0,
-    f_v = numeric(0),
-    f_nu = 0,
-    f_u = numeric(0)
+    rdesign = numeric(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -73,9 +67,6 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     }
     data$rdesign <- formula$random$design
 
-    # Extract sparse matrix components for fixed effects design matrix
-    fixed_sparse <- extract_sparse_matrix(data$fdesign, prefix = "f")
-    data[names(fixed_sparse)] <- fixed_sparse
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))
   return(data)

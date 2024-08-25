@@ -11,24 +11,6 @@
       
       
       $data
-      $data$rep_fdesign
-        (Intercept) day_of_weekMonday day_of_weekSaturday day_of_weekSunday
-      1           1                 0                   0                 0
-      2           1                 0                   0                 0
-      3           1                 0                   0                 0
-      4           1                 0                   0                 0
-      5           1                 0                   1                 0
-      6           1                 0                   0                 1
-      7           1                 1                   0                 0
-        day_of_weekThursday day_of_weekTuesday day_of_weekWednesday
-      1                   0                  1                    0
-      2                   0                  0                    1
-      3                   1                  0                    0
-      4                   0                  0                    0
-      5                   0                  0                    0
-      6                   0                  0                    0
-      7                   0                  0                    0
-      
       $data$rep_fintercept
       [1] 1
       
@@ -53,6 +35,27 @@
       $data$rep_fncol
       [1] 6
       
+      $data$rep_rncol
+      [1] 0
+      
+      $data$rep_fdesign
+        day_of_weekMonday day_of_weekSaturday day_of_weekSunday day_of_weekThursday
+      1                 0                   0                 0                   0
+      2                 0                   0                 0                   0
+      3                 0                   0                 0                   1
+      4                 0                   0                 0                   0
+      5                 0                   1                 0                   0
+      6                 0                   0                 1                   0
+      7                 1                   0                 0                   0
+        day_of_weekTuesday day_of_weekWednesday
+      1                  1                    0
+      2                  0                    1
+      3                  0                    0
+      4                  0                    0
+      5                  0                    0
+      6                  0                    0
+      7                  0                    0
+      
       $data$rep_rdesign
         (Intercept)
       1           1
@@ -62,9 +65,6 @@
       5           1
       6           1
       attr(,"assign")
-      [1] 0
-      
-      $data$rep_rncol
       [1] 0
       
       $data$rep_t
