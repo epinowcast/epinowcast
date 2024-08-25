@@ -32,14 +32,20 @@
 #' enw_formula_as_data_list(prefix = "missing")
 enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   data <- list(
-    fdesign = numeric(0),
     fintercept = 0,
     fnrow = 0,
     findex = numeric(0),
     fnindex = 0,
     fncol = 0,
+    rncol = 0,
+    fdesign = numeric(0),
     rdesign = numeric(0),
-    rncol = 0
+    f_nw = 0,
+    f_w = numeric(0),
+    f_nv = 0,
+    f_v = numeric(0),
+    f_nu = 0,
+    f_u = numeric(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -53,15 +59,23 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     fintercept <-  as.numeric(any(grepl(
       "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
     )))
-    data$fdesign <- formula$fixed$design
     data$fintercept <- fintercept
     data$fnrow <- nrow(formula$fixed$design)
     data$findex <- formula$fixed$index
     data$fnindex <- length(formula$fixed$index)
-    data$fncol <- ncol(formula$fixed$design) -
-      min(as.numeric(drop_intercept), fintercept)
-    data$rdesign <- formula$random$design
+    data$fncol <- ncol(formula$fixed$design) - fintercept
     data$rncol <- ncol(formula$random$design) - 1
+
+    # Store dense matrices
+    data$fdesign <- formula$fixed$design
+    if (fintercept) {
+      data$fdesign <- data$fdesign[, -1]
+    }
+    data$rdesign <- formula$random$design
+
+    # Extract sparse matrix components for fixed effects design matrix
+    fixed_sparse <- extract_sparse_matrix(data$fdesign, prefix = "f")
+    data[names(fixed_sparse)] <- fixed_sparse
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))
   return(data)
@@ -547,7 +561,7 @@ enw_stan_to_r <- function(
 #' @param type A character string specifying the cache type. It can be one of
 #' "session", "persistent", or "all". Default is "session".
 #' "session" sets the cache for the current session, "persistent" writes the
-#' cache location to the user’s `.Renviron` file,  and "all" does both.
+#' cache location to the user's `.Renviron` file,  and "all" does both.
 #'
 #' @return The string of the filepath set.
 #'
@@ -628,7 +642,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @param type A character string specifying the type of cache to unset.
 #' It can be one of "session", "persistent", or "all". Default is "session".
 #' "session" unsets the cache for the current session, "persistent" removes the
-#' cache location from the user’s `.Renviron` file,and "all" does all options.
+#' cache location from the user's `.Renviron` file,and "all" does all options.
 #'
 #' @return The prior cache location, if it existed otherwise `NULL`.
 #'

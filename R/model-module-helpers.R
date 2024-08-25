@@ -232,35 +232,47 @@ add_pmfs <- function(pmfs) {
 #' mat[3, 1] <- 0
 #' extract_sparse_matrix(mat)
 extract_sparse_matrix <- function(mat, prefix = "") {
-  # Identifying non-zero elements
-  mat <- t(mat)
-  non_zero_indices <- which(mat != 0, arr.ind = TRUE)
-  w <- mat[non_zero_indices]  # Non-zero elements of the matrix
+  lifecycle::deprecate_soft("0.5.0", "extract_sparse_matrix()")
+  if (length(mat) == 0) {
+    sparse_mat <- list(
+      nw = 0,
+      w = numeric(0),
+      nv = 0,
+      v = numeric(0),
+      nu = 0,
+      u = numeric(0)
+    )
+  } else {
+    # Identifying non-zero elements
+    mat <- t(mat)
+    non_zero_indices <- which(mat != 0, arr.ind = TRUE)
+    w <- mat[non_zero_indices]  # Non-zero elements of the matrix
 
-  # Extracting column non-zero elements
-  v <- non_zero_indices[, 1]
+    # Extracting column non-zero elements
+    v <- non_zero_indices[, 1]
     u_original <- non_zero_indices[, 2]  # Column indices (used to compute u)
 
-  # Compute the 'u' vector in CSR format
-  u <- rep(0, nrow(mat) + 1)
-  u[1] <- 1  # index starts from 1, so we adjust accordingly
-  for (i in seq_along(u_original)) {
+    # Compute the 'u' vector in CSR format
+    u <- rep(0, nrow(mat) + 1)
+    u[1] <- 1  # index starts from 1, so we adjust accordingly
+    for (i in seq_along(u_original)) {
       u[u_original[i] + 1] <- i + 1
-  }
+    }
 
-  # Ensure that all elements in u are at least as large as the previous one
-  for (i in 2:length(u)) {
+    # Ensure that all elements in u are at least as large as the previous one
+    for (i in 2:length(u)) {
       u[i] <- max(u[i], u[i - 1])
-  }
+    }
 
-  sparse_mat <- list(
-    nw = length(w),
-    w = w,
-    nv = length(v),
-    v = v,
-    nu = length(u),
-    u = as.integer(u)
-  )
+    sparse_mat <- list(
+      nw = length(w),
+      w = w,
+      nv = length(v),
+      v = v,
+      nu = length(u),
+      u = as.integer(u)
+    )
+  }
 
   if (prefix != "") {
     names(sparse_mat) <- paste0(prefix, "_", names(sparse_mat))

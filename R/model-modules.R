@@ -401,10 +401,6 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     )
   )
 
-  # Add the sparse matrix representation
-  obs_list <- c(obs_list, extract_sparse_matrix(obs_list$lrd, prefix = "lrd"))
-  obs_list$lrd <- NULL
-
   obs_list$obs <- as.numeric(
     sum(latent_reporting_delay) != 1 || obs_list$lrd_n != 1 ||
       as_string_formula(observation) != "~1"
@@ -812,7 +808,8 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          nowcast = TRUE, pp = FALSE, likelihood = TRUE,
                          likelihood_aggregation = c("snapshots", "groups"),
                          threads_per_chain = 1L,
-                         debug = FALSE, output_loglik = FALSE, ...) {
+                         debug = FALSE, output_loglik = FALSE,
+                         sparse_design = TRUE, ...) {
   if (pp) {
     nowcast <- TRUE
   }
@@ -830,7 +827,8 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     parallelise_likelihood = as.integer(threads_per_chain > 1),
     pp = as.numeric(pp),
     cast = as.numeric(nowcast),
-    ologlik = as.numeric(output_loglik)
+    ologlik = as.numeric(output_loglik),
+    sparse_design = as.integer(sparse_design)
   )
   out$args <- list(threads_per_chain = threads_per_chain, ...)
   return(out)

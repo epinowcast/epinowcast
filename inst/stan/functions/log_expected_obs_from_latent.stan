@@ -4,7 +4,7 @@
  * This function calculates the expected observations in log scale based on
  * latent expected values, weighting factors, and observational proportions.
  * The weighting factors are derived from a sparse matrix, which is
- * constructed using the `extract_sparse_matrix` and `convolution_matrix`
+ * constructed using the `csr_extract` and `convolution_matrix`
  * R functions in `epinowcast`.
  * 
  * @param exp_llatent Array of vectors of log latent expected values.
@@ -14,7 +14,7 @@
  * @param w Vector of weighting factors derived from a sparse matrix.
  *
  * @param v, u Arrays for sparse matrix representation, as obtained from 
- * `extract_sparse_matrix`.
+ * `csr_extract`.
  *
  * @param t Number of time periods.
  *
@@ -34,7 +34,7 @@
  *          a. Uses a convolution matrix constructed using `convolution_matrix`
                or otherwise, representing reporting delays.
  *          b. Prior to being used as an input this is converted to a sparse
- *             matrix format using `extract_sparse_matrix`.
+ *             matrix format using `csr_extract`.
  *          c. Applies the sparse matrix multiplication to the latent values in
                a sparse matrix multiplication.
  *          d. Converts the resulting values back to the log scale and adds the
@@ -43,8 +43,8 @@
  * These steps account for different reporting delays and the distribution
  * of observations over time.
  * 
- * @see `extract_sparse_matrix` and `convolution_matrix` epinowcast R
- * functions for details on sparse matrix construction and convolution matrix
+ * @see `csr_matrix` and `convolution_matrix` stan function and epinowcast R
+ * function for details on sparse matrix construction and convolution matrix
  * generation.
  */
 array[] vector log_expected_obs_from_latent(

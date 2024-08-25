@@ -13,6 +13,7 @@ enw_fit_opts(
   threads_per_chain = 1L,
   debug = FALSE,
   output_loglik = FALSE,
+  sparse_design = TRUE,
   ...
 )
 }

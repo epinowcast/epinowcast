@@ -57,7 +57,7 @@ data {
   int expr_fintercept; // Should an intercept be included
   int expr_fncol;
   int expr_rncol;
-  matrix[expr_fnindex, expr_fncol + expr_fintercept] expr_fdesign;
+  matrix[expr_fnindex, expr_fncol] expr_fdesign;
   matrix[expr_fncol, expr_rncol + 1] expr_rdesign;
   array[g] int expr_g; // starting time points for growth of each group
   // Priors for growth rate and initial log latent cases
@@ -66,13 +66,8 @@ data {
   array[2, 1] real expr_beta_sd_p;
   // ---- Latent case submodule ----
   int expl_lrd_n; // maximum latent delay (from latent case to obs at ref time)
-  // Partial PMF of the latent delay distribution as a sparse convolution matrix
-  int expl_lrd_nw;
-  vector[expl_lrd_nw] expl_lrd_w;
-  int expl_lrd_nv;
-  array[expl_lrd_nv] int expl_lrd_v;
-  int expl_lrd_nu;
-  array[expl_lrd_nu] int expl_lrd_u;
+  // Partial PMF of the latent delay distribution as a convolution matrix
+  matrix[expr_ft,  expr_ft] expl_lrd;
   // Model for latent-to-obs proportion. Currently, 0 = none
   // --> proportion of latent cases that will become observations
   // --> e.g.: infection fatality rate for death data
@@ -80,7 +75,7 @@ data {
   int expl_fnindex;
   int expl_fncol;
   int expl_rncol;
-  matrix[expl_fnindex, expl_fncol + 1] expl_fdesign;
+  matrix[expl_fnindex, expl_fncol] expl_fdesign;
   matrix[expl_fncol, expl_rncol + 1] expl_rdesign;
   array[2, 1] real expl_beta_sd_p;
 
@@ -90,7 +85,7 @@ data {
   int refp_fnrow;
   array[s] int refp_findex;
   int refp_fncol;
-  matrix[refp_fnrow, refp_fncol + 1] refp_fdesign;
+  matrix[refp_fnrow, refp_fncol] refp_fdesign;
   int refp_rncol;
   matrix[refp_fncol, refp_rncol + 1] refp_rdesign; 
   array[2, 1] real refp_mean_int_p;
@@ -103,7 +98,7 @@ data {
   int refnp_fintercept; // Should an intercept be included
   int refnp_fncol;
   int refnp_rncol;
-  matrix[refnp_fnindex, refnp_fncol + refnp_fintercept] refnp_fdesign;
+  matrix[refnp_fnindex, refnp_fncol] refnp_fdesign;
   matrix[refnp_fncol, refnp_rncol + 1] refnp_rdesign;
   array[2, 1] real refnp_int_p;
   array[2, 1] real refnp_beta_sd_p;
@@ -114,7 +109,7 @@ data {
   int rep_fnrow; 
   array[g, rep_t] int rep_findex; 
   int rep_fncol;
-  matrix[rep_fnrow, rep_fncol + 1] rep_fdesign;
+  matrix[rep_fnrow, rep_fncol] rep_fdesign;
   int rep_rncol; 
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
   array[2, 1] real rep_beta_sd_p;
@@ -125,7 +120,7 @@ data {
   int miss_fnindex;
   int miss_fncol;
   int miss_rncol;
-  matrix[miss_fnindex, miss_fncol + 1] miss_fdesign;
+  matrix[miss_fnindex, miss_fncol] miss_fdesign;
   matrix[miss_fncol, model_miss ? miss_rncol + 1 : 0] miss_rdesign;
   // Observations reported without a reference date (by reporting time)
   // --> Since the first dmax-1 obs are not used here, the reporting time
@@ -157,6 +152,9 @@ data {
   int pp; // should posterior predictions be produced?
   int cast; // should a nowcast be produced?
   int ologlik; // should the pointwise log likelihood be calculated?
+
+  // Switch to use sparse or dense matrices
+  int sparse_design;
 }
 
 transformed data{
@@ -166,6 +164,8 @@ transformed data{
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
   // Type of likelihood aggregation to use
   int ll_aggregation = likelihood_aggregation + model_miss;
+  // Construct sparse matrix components
+  #include /chunks/sparse_design.stan
 }
 
 parameters {
@@ -233,27 +233,23 @@ transformed parameters{
   profile("transformed_expected_final_observations") {
   // Get log growth rates and map to expected latent cases
   r = combine_effects(
-    expr_r_int, expr_beta, expr_fdesign, expr_beta_sd, expr_rdesign, 
-    expr_fintercept
+    expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign, expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design
   );
   exp_llatent = log_expected_latent_from_r(
     expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
     expr_ft, g
   );
-  // Get latent-to-obs proportions and map expected latent cases to expected
-  // observations
+  // Get latent-to-obs proportions and map expected latent cases to expected observations
   if (expl_obs) {
     expl_prop = combine_effects(
-      {0}, expl_beta, expl_fdesign, expl_beta_sd, expl_rdesign, 1
+      {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign, expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design
     );
     exp_lobs = log_expected_obs_from_latent(
-      exp_llatent, expl_lrd_n, expl_lrd_w, expl_lrd_v, expl_lrd_u,
-      t, g, expl_prop
+      exp_llatent, expl_lrd_n, expl_sparse.1, expl_sparse.2, expl_sparse.3, t, g, expl_prop
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
   }
-
   }
 
   // Reference model
@@ -263,19 +259,18 @@ transformed parameters{
     // calculate sparse reference date effects
     profile("transformed_delay_reference_time_effects") {
     refp_mean = combine_effects(
-      refp_mean_int, refp_mean_beta, refp_fdesign, refp_mean_beta_sd,
-      refp_rdesign, 1
+      refp_mean_int, refp_mean_beta, refp_fnrow, refp_fncol, refp_fdesign,
+      refp_sparse, refp_mean_beta_sd, refp_rdesign, 1, sparse_design
     );
     if (model_refp > 1) {
       refp_sd = combine_effects(
-        log(refp_sd_int), refp_sd_beta, refp_fdesign, refp_sd_beta_sd,
-        refp_rdesign, 1
-      ); 
+        {log(refp_sd_int[1])}, refp_sd_beta, refp_fnrow, refp_fncol, refp_fdesign, refp_sparse, refp_sd_beta_sd, refp_rdesign, 1, sparse_design
+      );
       refp_sd = exp(refp_sd);
     } 
     }
-    // calculate parametric reference date logit hazards
-    // (unless no reporting effects)
+    // calculate parametric reference date logit hazards (unless no reporting
+    // effects)
     profile("transformed_delay_reference_time_hazards") {
     for (i in 1:refp_fnrow) {
       refp_lh[, i] = discretised_logit_hazard(
@@ -289,27 +284,25 @@ transformed parameters{
     // calculate non-parametric reference date logit hazards
     profile("transformed_delay_non_parametric_reference_time_hazards") {
     refnp_lh = combine_effects(
-      refnp_int, refnp_beta, refnp_fdesign, refnp_beta_sd, refnp_rdesign,
-      refnp_fintercept
-    );
+        refnp_int, refnp_beta, refnp_fnindex, refnp_fncol, refnp_fdesign,
+        refnp_sparse, refnp_beta_sd, refnp_rdesign, refnp_fintercept, sparse_design
+      );
     }
   }
 
   // Report model
   profile("transformed_delay_reporting_time_effects") {
-  srdlh =
-    combine_effects({0}, rep_beta, rep_fdesign, rep_beta_sd, rep_rdesign, 1);
+  srdlh = combine_effects(
+      {0}, rep_beta, rep_fnrow, rep_fncol, rep_fdesign, rep_sparse, rep_beta_sd, rep_rdesign, 1, sparse_design
+    );
   }
 
   // Missing reference model
   if (model_miss) {
-    miss_ref_lprop = log_inv_logit(
-      combine_effects(
-        miss_int, miss_beta, miss_fdesign, miss_beta_sd, miss_rdesign, 1
-      )
-    );
+    miss_ref_lprop = log_inv_logit(combine_effects(
+      miss_int, miss_beta, miss_fnindex, miss_fncol, miss_fdesign, miss_sparse, miss_beta_sd, miss_rdesign, 1, sparse_design
+    ));
   }
-  
   // Observation model
   if (model_obs) {
     profile("transformed_delay_missing_effects") {
