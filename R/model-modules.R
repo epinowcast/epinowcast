@@ -82,6 +82,10 @@ enw_reference <- function(
   )
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
+  check_design_matrix_sparsity(
+    pform$fixed$design, name = "parametric reference date effects"
+  )
+
   pdata <- enw_formula_as_data_list(
     pform,
     prefix = "refp", drop_intercept = TRUE
@@ -99,6 +103,10 @@ enw_reference <- function(
   npform <- enw_formula(
     non_parametric, metanp, sparse = FALSE
   )
+  check_design_matrix_sparsity(
+    npform$fixed$design, name = "non-parametric reference date effects"
+  )
+
   npdata <- enw_formula_as_data_list(
     npform,
     prefix = "refnp", drop_intercept = TRUE
@@ -242,6 +250,10 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
   }
 
   form <- enw_formula(non_parametric, data$metareport[[1]], sparse = TRUE)
+  check_design_matrix_sparsity(
+    form$fixed$design, name = "report date effects"
+  )
+
   data_list <- enw_formula_as_data_list(
     form,
     prefix = "rep", drop_intercept = TRUE
@@ -385,6 +397,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   # Growth rate model formula
   r_form <- enw_formula(r, r_features, sparse = FALSE)
+  check_design_matrix_sparsity(r_form$fixed$design, name = "r")
+
   r_data <- enw_formula_as_data_list(
     r_form,
     prefix = "expr", drop_intercept = TRUE
@@ -407,6 +421,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   )
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
+  check_design_matrix_sparsity(
+    obs_form$fixed$design, name = "observation"
+  )
+
   obs_data <- enw_formula_as_data_list(
     obs_form,
     prefix = "expl", drop_intercept = TRUE
@@ -540,6 +558,9 @@ enw_missing <- function(formula = ~1, data) {
   } else {
     # Make formula for effects
     form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
+    check_design_matrix_sparsity(
+      form$fixed$design, name = "missing"
+    )
     data_list <- enw_formula_as_data_list(
       form,
       prefix = "miss",
@@ -790,7 +811,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
 #' log-likelihood be output. Disabling this will speed up fitting
 #' if evaluating the model fit is not required.
 #'
-#' @param sparse_design Logical, defaults to `TRUE`. Should a sparse design
+#' @param sparse_design Logical, defaults to `FALSE`. Should a sparse design
 #' matrices be used for all design matrices. This reduces memory requirements
 #' and may reduce computation time when fitting models with very sparse
 #' design matrices (90% or more zeros).
@@ -814,7 +835,7 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
                          likelihood_aggregation = c("snapshots", "groups"),
                          threads_per_chain = 1L,
                          debug = FALSE, output_loglik = FALSE,
-                         sparse_design = TRUE, ...) {
+                         sparse_design = FALSE, ...) {
   if (pp) {
     nowcast <- TRUE
   }
