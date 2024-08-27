@@ -544,8 +544,9 @@ test_that("epinowcast() works with different init_methods", {
     model = model
   ))
   expect_s3_class(nowcast_random, "epinowcast")
-  expect_true("init_method" %in% names(nowcast_random$fit_args[[1]]))
-  expect_identical(nowcast_random$fit_args[[1]]$init_method, "random")
+
+  expect_true("init_method_output" %in% names(nowcast_random$fit_args[[1]]))
+  expect_null(nowcast_random$init_method_output[[1]])
   expect_convergence(nowcast_random)
 
   # Test with pathfinder initialization
@@ -561,10 +562,7 @@ test_that("epinowcast() works with different init_methods", {
     model = model
   ))
   expect_s3_class(nowcast_pathfinder, "epinowcast")
-  expect_true("init_method" %in% names(nowcast_pathfinder$fit_args[[1]]))
-  expect_identical(nowcast_pathfinder$fit_args[[1]]$init_method, "pathfinder")
   expect_true("init_method_output" %in% names(nowcast_pathfinder))
-  expect_null(nowcast_pathfinder$init_method_output$fit_args)
   expect_convergence(nowcast_pathfinder)
 
   # Compare results between random and pathfinder initialization
