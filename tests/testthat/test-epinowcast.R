@@ -536,7 +536,7 @@ test_that("epinowcast() works with different init_methods", {
     fit = enw_fit_opts(
       sampler = silent_enw_sample,
       save_warmup = FALSE, pp = TRUE,
-      init_method = "random",
+      init_method = "prior",
       chains = 2, iter_warmup = 250, iter_sampling = 500,
       refresh = 0, show_messages = FALSE
     ),
