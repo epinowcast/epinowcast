@@ -545,7 +545,7 @@ test_that("epinowcast() works with different init_methods", {
   ))
   expect_s3_class(nowcast_random, "epinowcast")
 
-  expect_true("init_method_output" %in% names(nowcast_random$fit_args[[1]]))
+  expect_true("init_method_output" %in% names(nowcast_random))
   expect_null(nowcast_random$init_method_output[[1]])
   expect_convergence(nowcast_random)
 
