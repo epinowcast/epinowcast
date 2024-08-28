@@ -242,6 +242,16 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' @param model A `cmdstanr` model object as loaded by [enw_model()] or as
 #' supplied by the user.
 #'
+#' @param init A list of initial values or a function to generate initial
+#' values. If not provided, the model will attempt to generate initial values
+#'
+#' @param init_method The method to use for initializing the model. Defaults to
+#' "prior" which samples initial values from the prior. "pathfinder", which uses
+#' the pathfinder algorithm ([enw_pathfinder()]) to initialize the model.
+#'
+#' @param init_method_args A list of additional arguments to pass to the
+#' initialization method.
+#'
 #' @param diagnostics Logical, defaults to `TRUE`. Should fitting diagnostics
 #' be returned as a `data.frame`.
 #'
@@ -264,17 +274,36 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #' )
 #'
 #' summary(nowcast)
+#'
+#' # Use pathfinder initialization
+#' nowcast_pathfinder <- epinowcast(pobs,
+#'  expectation = enw_expectation(~1, data = pobs),
+#'  fit = enw_fit_opts(enw_sample, pp = TRUE, init_method = "pathfinder"),
+#'  obs = enw_obs(family = "poisson", data = pobs),
+#' )
+#'
+#' summary(nowcast_pathfinder)
 enw_sample <- function(data, model = epinowcast::enw_model(),
-                       diagnostics = TRUE, ...) {
-  fit <- model$sample(data = data, ...)
+                       init = NULL, init_method = c("prior", "pathfinder"),
+                       init_method_args = list(), diagnostics = TRUE, ...) {
+  init_method <- rlang::arg_match(init_method)
+
+  updated_inits <- update_inits(
+    data, model, init, init_method, init_method_args, ...
+  )
+
+  cli::cli_alert_info("Fitting the model using NUTS")
+  fit <- model$sample(data = data, init = updated_inits$init, ...)
 
   out <- data.table(
     fit = list(fit),
     data = list(data),
-    fit_args = list(list(...))
+    fit_args = list(list(...)),
+    init_method_output = list(updated_inits$method_output)
   )
 
   if (diagnostics) {
+    fit <- out$fit[[1]]
     diag <- fit$sampler_diagnostics(format = "df")
     diagnostics <- data.table(
       samples = nrow(diag),
@@ -297,6 +326,39 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
     out[, run_time := timing]
   }
   return(out[])
+}
+
+#' Update initial values for model fitting
+#'
+#' This function updates the initial values for model fitting based on the
+#' specified initialization method.
+#'
+#' @inheritParams enw_sample
+#' @param ... Additional arguments passed to initialization methods.
+#'
+#' @return A list containing updated initial values and method-specific output.
+update_inits <- function(data, model, init,
+                         init_method = c("prior", "pathfinder"),
+                         init_method_args = list(), ...) {
+  rlang::arg_match(init_method)
+  dot_args <- list(...)
+
+  if (init_method == "pathfinder") {
+    init_method_args$threads_per_chain <- dot_args$threads_per_chain
+    cli::cli_alert_info("Using pathfinder initialization.")
+    pf <- do.call(
+      enw_pathfinder,
+      c(list(data = data, model = model, init = init), init_method_args)
+    )
+    updated_init <- pf$fit[[1]]
+    method_output <- pf
+  } else if (init_method == "prior") {
+    cli::cli_alert_info("Using prior initialization.")
+    updated_init <- init
+    method_output <- NULL
+  }
+
+  return(list(init = updated_init, method_output = method_output))
 }
 
 #' Fit a CmdStan model using the pathfinder algorithm
@@ -333,7 +395,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #'
 #' summary(nowcast)
 enw_pathfinder <- function(data, model = epinowcast::enw_model(),
-                           diagnostics = TRUE, ...) {
+                           diagnostics = TRUE, init = NULL, ...) {
   if (is.null(model[["pathfinder"]])) {
     cli::cli_abort(
       "`pathfinder` algorithm unavailable. Requires CmdStan >=2.34."
@@ -342,6 +404,7 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
   dot_args <- list(...)
   dot_args$num_threads <- dot_args$threads_per_chain
   dot_args$threads_per_chain <- NULL
+  dot_args$init <- init
   fit <- do.call(model$pathfinder, c(list(data), dot_args))
 
   out <- data.table(
@@ -547,7 +610,7 @@ enw_stan_to_r <- function(
 #' @param type A character string specifying the cache type. It can be one of
 #' "session", "persistent", or "all". Default is "session".
 #' "session" sets the cache for the current session, "persistent" writes the
-#' cache location to the user’s `.Renviron` file,  and "all" does both.
+#' cache location to the user's `.Renviron` file,  and "all" does both.
 #'
 #' @return The string of the filepath set.
 #'
@@ -628,7 +691,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
 #' @param type A character string specifying the type of cache to unset.
 #' It can be one of "session", "persistent", or "all". Default is "session".
 #' "session" unsets the cache for the current session, "persistent" removes the
-#' cache location from the user’s `.Renviron` file,and "all" does all options.
+#' cache location from the user's `.Renviron` file,and "all" does all options.
 #'
 #' @return The prior cache location, if it existed otherwise `NULL`.
 #'

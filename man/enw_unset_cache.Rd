@@ -10,7 +10,7 @@ enw_unset_cache(type = c("session", "persistent", "all"))
 \item{type}{A character string specifying the type of cache to unset.
 It can be one of "session", "persistent", or "all". Default is "session".
 "session" unsets the cache for the current session, "persistent" removes the
-cache location from the user’s \code{.Renviron} file,and "all" does all options.}
+cache location from the user's \code{.Renviron} file,and "all" does all options.}
 }
 \value{
 The prior cache location, if it existed otherwise \code{NULL}.
