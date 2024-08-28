@@ -40,3 +40,4 @@ A list containing updated initial values and method-specific output.
 This function updates the initial values for model fitting based on the
 specified initialization method.
 }
+\keyword{internal}
