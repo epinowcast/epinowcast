@@ -26,7 +26,7 @@ supplied by the user.}
 values. If not provided, the model will attempt to generate initial values}
 
 \item{init_method}{The method to use for initializing the model. Defaults to
-"prior" which samples initial values from the prior. "pathfinder" uses the
+"prior" which samples initial values from the prior. "pathfinder", which uses the
 pathfinder algorithm (\code{\link[=enw_pathfinder]{enw_pathfinder()}}) to initialize the model.}
 
 \item{init_method_args}{A list of additional arguments to pass to the
