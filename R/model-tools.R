@@ -337,6 +337,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
 #' @param ... Additional arguments passed to initialization methods.
 #'
 #' @return A list containing updated initial values and method-specific output.
+#' @keywords internal
 update_inits <- function(data, model, init,
                          init_method = c("prior", "pathfinder"),
                          init_method_args = list(), ...) {
