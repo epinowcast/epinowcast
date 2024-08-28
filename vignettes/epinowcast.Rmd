@@ -113,7 +113,7 @@ pobs
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
 #>             metadelay max_delay  time snapshots     by groups   max_date
 #>                <list>     <num> <int>     <int> <list>  <int>     <IDat>
-#> 1: <data.table[40x5]>        40    41        41             1 2021-08-22
+#> 1: <data.table[40x5]>        40    41        41 [NULL]      1 2021-08-22
 #>    timestep
 #>      <char>
 #> 1:      day
@@ -203,10 +203,285 @@ nowcast <- epinowcast(data = pobs,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, threads_per_chain = 2,
     iter_sampling = 500, iter_warmup = 500,
-    show_messages = interactive()
+    show_messages = interactive(), init_method = "pathfinder"
   ),
   model = model
 )
+#> Path [1] :Initial log joint density = -12478.816861 
+#> Path [3] :Initial log joint density = -12478.816861 
+#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>              99      -4.932e+03      6.927e-03   9.073e+00    1.882e-01  1.882e-01      2476 -5.090e+03 -5.090e+03                   
+#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>              99      -4.932e+03      6.927e-03   9.073e+00    1.882e-01  1.882e-01      2476 -5.098e+03 -5.098e+03                   
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[4] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[4] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             199      -1.528e+03      7.201e-01   8.101e+01    1.000e+00  1.000e+00      4976 -1.699e+03 -1.699e+03                   
+#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             199      -1.528e+03      7.201e-01   8.101e+01    1.000e+00  1.000e+00      4976 -1.696e+03 -1.696e+03                   
+#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             299      -1.437e+03      2.272e-02   2.129e+01    1.000e+00  1.000e+00      7476 -1.767e+03 -1.767e+03                   
+#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             299      -1.437e+03      2.272e-02   2.129e+01    1.000e+00  1.000e+00      7476 -1.770e+03 -1.770e+03                   
+#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             399      -1.434e+03      3.680e-03   3.794e+00    1.000e+00  1.000e+00      9976 -3.792e+03 -3.792e+03                   
+#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             399      -1.434e+03      3.680e-03   3.794e+00    1.000e+00  1.000e+00      9976 -6.034e+03 -6.034e+03                   
+#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             499      -1.434e+03      1.384e-04   5.430e-01    6.649e-01  6.649e-02     12476 -1.691e+03 -1.691e+03                   
+#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             499      -1.434e+03      1.384e-04   5.430e-01    6.649e-01  6.649e-02     12476 -1.705e+03 -1.705e+03                   
+#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             521      -1.434e+03      1.483e-04   1.953e-01    1.000e+00  1.000e+00     13026 -1.711e+03 -1.711e+03                   
+#> Path [1] :Best Iter: [247] ELBO (-1595.509888) evaluations: (13026) 
+#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             521      -1.434e+03      1.483e-04   1.953e-01    1.000e+00  1.000e+00     13026 -1.712e+03 -1.712e+03                   
+#> Path [3] :Best Iter: [247] ELBO (-1603.103997) evaluations: (13026) 
+#> Path [2] :Initial log joint density = -12478.816861 
+#> Path [4] :Initial log joint density = -12478.816861 
+#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>              99      -4.932e+03      6.927e-03   9.073e+00    1.882e-01  1.882e-01      2476 -5.091e+03 -5.091e+03                   
+#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>              99      -4.932e+03      6.927e-03   9.073e+00    1.882e-01  1.882e-01      2476 -5.088e+03 -5.088e+03                   
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[4] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[4] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[3] is nan, but must be finite! (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/obs_lpmf.stan', line 31, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 13, column 0) (in '/tmp/RtmpiIaSrZ/include_1/stan/functions/delay_lpmf.stan', line 61, column 4, included from 
+#> '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 18, column 0) (in '/tmp/RtmpiIaSrZ/model-19a9173ca5a.stan', line 407, column 8 to line 412, column 10) 
+#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             199      -1.528e+03      7.201e-01   8.101e+01    1.000e+00  1.000e+00      4976 -1.678e+03 -1.678e+03                   
+#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             199      -1.528e+03      7.201e-01   8.101e+01    1.000e+00  1.000e+00      4976 -1.686e+03 -1.686e+03                   
+#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             299      -1.437e+03      2.272e-02   2.129e+01    1.000e+00  1.000e+00      7476 -1.793e+03 -1.793e+03                   
+#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             299      -1.437e+03      2.272e-02   2.129e+01    1.000e+00  1.000e+00      7476 -1.743e+03 -1.743e+03                   
+#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             399      -1.434e+03      3.680e-03   3.794e+00    1.000e+00  1.000e+00      9976 -4.231e+03 -4.231e+03                   
+#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             399      -1.434e+03      3.680e-03   3.794e+00    1.000e+00  1.000e+00      9976 -3.355e+03 -3.355e+03                   
+#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             499      -1.434e+03      1.384e-04   5.430e-01    6.649e-01  6.649e-02     12476 -1.721e+03 -1.721e+03                   
+#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             499      -1.434e+03      1.384e-04   5.430e-01    6.649e-01  6.649e-02     12476 -1.684e+03 -1.684e+03                   
+#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             521      -1.434e+03      1.483e-04   1.953e-01    1.000e+00  1.000e+00     13026 -1.704e+03 -1.704e+03                   
+#> Path [2] :Best Iter: [245] ELBO (-1599.141301) evaluations: (13026) 
+#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
+#>             521      -1.434e+03      1.483e-04   1.953e-01    1.000e+00  1.000e+00     13026 -1.699e+03 -1.699e+03                   
+#> Path [4] :Best Iter: [254] ELBO (-1603.669489) evaluations: (13026) 
+#> Total log probability function evaluations:56004 
+#> Pareto k value (2.6) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
+#> Finished in  6.5 seconds.
 ```
 
 # The `epinowcast` object
@@ -224,22 +499,22 @@ nowcast
 #> 1: <data.table[0x6]> <data.table[41x42]> <data.table[41x9]> <data.table[80x12]>
 #>             metadelay max_delay  time snapshots     by groups   max_date
 #>                <list>     <num> <int>     <int> <list>  <int>     <IDat>
-#> 1: <data.table[40x5]>        40    41        41             1 2021-08-22
+#> 1: <data.table[40x5]>        40    41        41 [NULL]      1 2021-08-22
 #>    timestep             priors
 #>      <char>             <list>
 #> 1:      day <data.table[14x6]>
 #>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             fit
 #>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <list>
-#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    config_files: function (include_failed = FALSE) \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    hessian: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    init: function () \n    init_model_methods: function (seed = 1, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    metric_files: function (include_failed = FALSE) \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_config_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_metric_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL, format = getOption("cmdstanr_draws_format", \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1475.81 -1480.59 -1480.21 -1478.88 -1477.9 -1474.8 -147 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 0\n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
-#>           data  fit_args samples max_rhat divergent_transitions
-#>         <list>    <list>   <int>    <num>                 <num>
-#> 1: <list[116]> <list[7]>    1000     1.01                     0
-#>    per_divergent_transitions max_treedepth no_at_max_treedepth
-#>                        <num>         <num>               <int>
-#> 1:                         0             7                 983
-#>    per_at_max_treedepth run_time
-#>                   <num>    <num>
-#> 1:                0.983     42.3
+#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    config_files: function (include_failed = FALSE) \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    hessian: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    init: function () \n    init_model_methods: function (seed = 1, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    metric_files: function (include_failed = FALSE) \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_config_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_metric_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL, format = getOption("cmdstanr_draws_format", \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1475.27 -1479.86 -1474.92 -1488.54 -1481.35 -1480.27 -1 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 0\n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
+#>           data  fit_args init_method_output samples max_rhat
+#>         <list>    <list>             <list>   <int>    <num>
+#> 1: <list[116]> <list[6]>  <data.table[1x4]>    1000     1.01
+#>    divergent_transitions per_divergent_transitions max_treedepth
+#>                    <num>                     <num>         <num>
+#> 1:                     0                         0             8
+#>    no_at_max_treedepth per_at_max_treedepth run_time
+#>                  <int>                <num>    <num>
+#> 1:                  31                0.031     45.7
 ```
 
 # Summarising and plotting the nowcast
@@ -266,27 +541,27 @@ nowcast |>
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad    q5
 #>                 <num> <num>         <num>   <num>  <num>     <num>  <num> <num>
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000    72
-#>  2:                 1    38             0  69.051     69 0.2201078 0.0000    69
-#>  3:                 1    37             0  47.074     47 0.2767681 0.0000    47
-#>  4:                 1    36             0  65.219     65 0.4639550 0.0000    65
-#>  5:                 1    35             0  50.248     50 0.5047284 0.0000    50
-#>  6:                 1    34             0  36.278     36 0.5319765 0.0000    36
-#>  7:                 1    33             0  94.508     94 0.7365314 0.0000    94
-#>  8:                 1    32             0  91.800     92 0.8926347 1.4826    91
-#>  9:                 1    31             0 100.116    100 1.1321775 1.4826    99
-#> 10:                 1    30             0  87.346     87 1.1617373 1.4826    86
+#>  2:                 1    38             0  69.038     69 0.1964551 0.0000    69
+#>  3:                 1    37             0  47.094     47 0.3086410 0.0000    47
+#>  4:                 1    36             0  65.220     65 0.4709796 0.0000    65
+#>  5:                 1    35             0  50.281     50 0.5369612 0.0000    50
+#>  6:                 1    34             0  36.230     36 0.4871728 0.0000    36
+#>  7:                 1    33             0  94.511     94 0.7392059 0.0000    94
+#>  8:                 1    32             0  91.767     92 0.9292871 1.4826    91
+#>  9:                 1    31             0 100.189    100 1.1128870 1.4826    99
+#> 10:                 1    30             0  87.332     87 1.2203546 1.4826    86
 #>       q95      rhat  ess_bulk  ess_tail
 #>     <num>     <num>     <num>     <num>
 #>  1:    72        NA        NA        NA
-#>  2:    70 0.9983693  966.8400        NA
-#>  3:    48 0.9998724  981.0870 1003.8944
-#>  4:    66 0.9981692  892.5794  908.6191
-#>  5:    51 1.0006899  989.6921 1000.5820
-#>  6:    37 0.9992838  888.4234  918.0654
-#>  7:    96 0.9984111 1043.7432 1025.1412
-#>  8:    94 1.0015337 1031.3542 1016.3595
-#>  9:   102 1.0034055  943.9347  879.1166
-#> 10:    89 1.0003292 1148.3694 1059.1069
+#>  2:    69 1.0001597 1029.1252 1027.7732
+#>  3:    48 0.9988694  859.4810  827.6097
+#>  4:    66 0.9986195  972.7744  873.1858
+#>  5:    51 0.9980601 1059.0522 1005.0365
+#>  6:    37 1.0006540  984.2887  985.1647
+#>  7:    96 1.0038901 1102.5960  954.1587
+#>  8:    94 1.0027215  839.7960  950.4702
+#>  9:   102 1.0004217  978.2751  981.3916
+#> 10:    90 1.0046210  932.0495  941.0382
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest observed data using
@@ -345,17 +620,17 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    33             0      1          1     1    434
-#>     2:                 1    33             0      1          2     2    435
+#>     1:                 1    33             0      1          1     1    436
+#>     2:                 1    33             0      1          2     2    434
 #>     3:                 1    33             0      1          3     3    434
-#>     4:                 1    33             0      1          4     4    434
-#>     5:                 1    33             0      1          5     5    435
+#>     4:                 1    33             0      1          4     4    433
+#>     5:                 1    33             0      1          5     5    436
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2060
-#> 33997:                 1     0             1      2        497   997   2247
+#> 33996:                 1     0             1      2        496   996   2035
+#> 33997:                 1     0             1      2        497   997   1843
 #> 33998:                 1     0             1      2        498   998   2024
-#> 33999:                 1     0             1      2        499   999   2192
-#> 34000:                 1     0             1      2        500  1000   2042
+#> 33999:                 1     0             1      2        499   999   2195
+#> 34000:                 1     0             1      2        500  1000   1972
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
