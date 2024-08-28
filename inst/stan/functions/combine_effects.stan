@@ -12,6 +12,11 @@
  * @param beta Vector of regression effects, typically unit-scaled for possible 
  * rescaling with beta_sd.
  *
+ * @param nobs Integer the number of observations (i.e. design matrix columns).
+ *
+ * @param neffs Integer the number of effects (i.e. the number of rows in the design
+ * matrix).
+ *
  * @param fdesign Dense matrix mapping observations (rows) to fixed effects (columns).
  *
  * @param beta_sd Vector of standard deviations for scaling and pooling effects.
@@ -52,7 +57,7 @@
  * @endcode
  */
 vector combine_effects(array[] real intercept, vector beta, 
-                       int n_obs, int neffs,
+                       int nobs, int neffs,
                        // Dense matrix components
                        matrix fdesign,
                        // Sparse matrix components
@@ -63,13 +68,13 @@ vector combine_effects(array[] real intercept, vector beta,
                        int add_intercept, int sparse_design) {
   if (neffs) {
     vector[num_elements(beta_sd) + 1] ext_beta_sd = append_row(1.0, beta_sd);
-    vector[n_obs] result;
+    vector[nobs] result;
     vector[neffs] scaled_beta = beta .* (rdesign * ext_beta_sd);
     
     if (sparse_design) {
       // Extract sparse matrix components from fdesign
       result = csr_matrix_times_vector(
-        n_obs, neffs, sparse.1, sparse.2, sparse.3, scaled_beta
+        nobs, neffs, sparse.1, sparse.2, sparse.3, scaled_beta
       );
     } else {
       result = fdesign * scaled_beta;
@@ -80,6 +85,6 @@ vector combine_effects(array[] real intercept, vector beta,
     }
     return(result);
   } else {
-    return(rep_vector(intercept[1], n_obs));
+    return(rep_vector(intercept[1], nobs));
   }
 }
