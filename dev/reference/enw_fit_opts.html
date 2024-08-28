@@ -147,12 +147,20 @@ to the sampler function when it is called.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Default options along with settings to pass to enw_sample</span></span></span>
 <span class="r-in"><span><span class="fu">enw_fit_opts</span><span class="op">(</span>iter_sampling <span class="op">=</span> <span class="fl">1000</span>, iter_warmup <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $sampler</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> function (data, model = epinowcast::enw_model(), diagnostics = TRUE, </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     ...) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> function (data, model = epinowcast::enw_model(), init = NULL, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     init_method = c("prior", "pathfinder"), init_method_args = list(), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     diagnostics = TRUE, ...) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> {</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     fit &lt;- model$sample(data = data, ...)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     out &lt;- data.table(fit = list(fit), data = list(data), fit_args = list(list(...)))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     init_method &lt;- rlang::arg_match(init_method)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     updated_inits &lt;- update_inits(data, model, init, init_method, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init_method_args, ...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     cli::cli_alert_info("Fitting the model using NUTS")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fit &lt;- model$sample(data = data, init = updated_inits$init, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         ...)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     out &lt;- data.table(fit = list(fit), data = list(data), fit_args = list(list(...)), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init_method_output = list(updated_inits$method_output))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     if (diagnostics) {</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         fit &lt;- out$fit[[1]]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         diag &lt;- fit$sampler_diagnostics(format = "df")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         diagnostics &lt;- data.table(samples = nrow(diag), max_rhat = round(max(fit$summary(variables = NULL, </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             posterior::rhat, .args = list(na.rm = TRUE))$`posterior::rhat`, </span>
@@ -168,7 +176,7 @@ to the sampler function when it is called.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(out[])</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5652b3aea478&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5581cf17ce28&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: namespace:epinowcast&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data</span>

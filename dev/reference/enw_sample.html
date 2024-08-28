@@ -53,7 +53,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_sample</span><span class="op">(</span><span class="va">data</span>, model <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span>, diagnostics <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_sample</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  init <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  init_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prior"</span>, <span class="st">"pathfinder"</span><span class="op">)</span>,</span>
+<span>  init_method_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  diagnostics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -69,6 +77,22 @@
 <dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
 <dd><p>A <code>cmdstanr</code> model object as loaded by <code><a href="enw_model.html">enw_model()</a></code> or as
 supplied by the user.</p></dd>
+
+
+<dt id="arg-init">init<a class="anchor" aria-label="anchor" href="#arg-init"></a></dt>
+<dd><p>A list of initial values or a function to generate initial
+values. If not provided, the model will attempt to generate initial values</p></dd>
+
+
+<dt id="arg-init-method">init_method<a class="anchor" aria-label="anchor" href="#arg-init-method"></a></dt>
+<dd><p>The method to use for initializing the model. Defaults to
+"prior" which samples initial values from the prior. "pathfinder", which uses
+the pathfinder algorithm (<code><a href="enw_pathfinder.html">enw_pathfinder()</a></code>) to initialize the model.</p></dd>
+
+
+<dt id="arg-init-method-args">init_method_args<a class="anchor" aria-label="anchor" href="#arg-init-method-args"></a></dt>
+<dd><p>A list of additional arguments to pass to the
+initialization method.</p></dd>
 
 
 <dt id="arg-diagnostics">diagnostics<a class="anchor" aria-label="anchor" href="#arg-diagnostics"></a></dt>
@@ -113,6 +137,15 @@ fitting arguments, and optionally summary diagnostics.</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use pathfinder initialization</span></span></span>
+<span class="r-in"><span><span class="va">nowcast_pathfinder</span> <span class="op">&lt;-</span> <span class="fu"><a href="epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span></span>
+<span class="r-in"><span> expectation <span class="op">=</span> <span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> fit <span class="op">=</span> <span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span><span class="va">enw_sample</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>, init_method <span class="op">=</span> <span class="st">"pathfinder"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span> obs <span class="op">=</span> <span class="fu"><a href="enw_obs.html">enw_obs</a></span><span class="op">(</span>family <span class="op">=</span> <span class="st">"poisson"</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nowcast_pathfinder</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

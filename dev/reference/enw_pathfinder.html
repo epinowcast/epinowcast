@@ -56,7 +56,13 @@ CmdStan documentation. # nolint"><meta property="og:image" content="https://pack
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_pathfinder</span><span class="op">(</span><span class="va">data</span>, model <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span>, diagnostics <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_pathfinder</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  diagnostics <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  init <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -77,6 +83,11 @@ supplied by the user.</p></dd>
 <dt id="arg-diagnostics">diagnostics<a class="anchor" aria-label="anchor" href="#arg-diagnostics"></a></dt>
 <dd><p>Logical, defaults to <code>TRUE</code>. Should fitting diagnostics
 be returned as a <code>data.frame</code>.</p></dd>
+
+
+<dt id="arg-init">init<a class="anchor" aria-label="anchor" href="#arg-init"></a></dt>
+<dd><p>A list of initial values or a function to generate initial
+values. If not provided, the model will attempt to generate initial values</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
