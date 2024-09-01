@@ -30,6 +30,10 @@ articles:
   navbar: Working with epinowcast
   contents:
   - stan-help
+- title: Package use cases
+  navbar: Package use cases
+  contents:
+  - package-use-cases
 
 reference:
   - title: Nowcast
