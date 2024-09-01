@@ -539,7 +539,7 @@ rt_germany_pobs
 #> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]> <data.table[91x10]>
 #>             metadelay max_delay  time snapshots     by groups   max_date
 #>                <list>     <num> <int>     <int> <list>  <int>     <IDat>
-#> 1: <data.table[30x5]>        30    62        62             1 2021-07-01
+#> 1: <data.table[30x5]>        30    62        62 [NULL]      1 2021-07-01
 #>    timestep
 #>      <char>
 #> 1:      day
@@ -559,7 +559,7 @@ retro_germany_pobs
 #> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]>
 #>              metareport          metadelay max_delay  time snapshots     by
 #>                  <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[120x10]> <data.table[30x5]>        30    62        62       
+#> 1: <data.table[120x10]> <data.table[30x5]>        30    62        62 [NULL]
 #>    groups   max_date timestep
 #>     <int>     <IDat>   <char>
 #> 1:      1 2021-07-30      day
