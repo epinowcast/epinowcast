@@ -1,5 +1,5 @@
 ---
-title: Package use cases
+title: Case studies
 description: "A place to document how epinowcast has been used"
 author: 
 output:
@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 
 The goal of this vignette is to provide a place to document how `{epinowcast}` has been applied in real-world settings. 
 To start, we will document a few known use cases, many of which the authors are directly involved in. 
-We hope this can both inspire future users to apply the methods to similar use cases of their own, and those currently or previously using `{epinowcast}` to document it here. This should also motivate and help prioritize future development.
+We hope this can both inspire future users to apply the methods to similar use cases of their own, and those currently or previously using `{epinowcast}` to document it here. This should also motivate and help prioritize future development. If you are using `{epinowcast}` for a real-world application, please consider opening a PR to add a description of the case study to this table. 
 
 The table below contains columns to provide information on the following variables related to the use case:
 `Pathogen`: Pathogen of interest in the use case, e.g. COVID-19.
