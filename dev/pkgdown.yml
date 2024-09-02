@@ -6,9 +6,10 @@ articles:
   epinowcast: epinowcast.html
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
+  package-use-cases: package-use-cases.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
   stan-help: stan-help.html
-last_built: 2024-08-28T10:42Z
+last_built: 2024-09-02T23:56Z
 urls:
   reference: https://package.epinowcast.org/reference
   article: https://package.epinowcast.org/articles
