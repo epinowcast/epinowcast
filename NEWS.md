@@ -36,7 +36,7 @@
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
 - Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by .
 - Made vignette progress messaging dependent on the user being interactive. See #501 by @seabbs and reviewed by .
-- Added a vignette to document package use cases. See #524 by @kaitejohnson
+- Added a vignette to document package use cases. See #524 by @kaitejohnson and reviewed by @seabbs.
 
 ## Depreciations
 
