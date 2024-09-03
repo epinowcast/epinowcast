@@ -9,7 +9,7 @@ articles:
   package-use-cases: package-use-cases.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
   stan-help: stan-help.html
-last_built: 2024-09-02T23:56Z
+last_built: 2024-09-03T09:20Z
 urls:
   reference: https://package.epinowcast.org/reference
   article: https://package.epinowcast.org/articles
