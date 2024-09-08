@@ -239,12 +239,6 @@ enw_reference <- function(
 #' @examples
 #' enw_report(data = enw_example("preprocessed"))
 enw_report <- function(non_parametric = ~0, structural = ~0, data) {
-  if (as_string_formula(structural) != "~0") {
-    cli::cli_abort(
-      "The structural reporting model has not yet been implemented"
-    )
-  }
-
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
   }
@@ -258,6 +252,20 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     form,
     prefix = "rep", drop_intercept = TRUE
   )
+
+  # Check for structural model and define
+  if (as_string_formula(structural) != "~0") {
+    cli::cli_alert_warning(
+      "The structural reporting model is in experimental development"
+    )
+    data_list$agg_probs <- 1
+    # "structural" should be an array of shape:
+    # group x reference time x max_delay x max_delay
+    data_list$agg_indicators <- structural
+  } else {
+    data_list$agg_probs <- 0
+    data_list$agg_indicators <- array(0)
+  }
 
   # map report date effects to groups and times
   data_list$rep_findex <- t(

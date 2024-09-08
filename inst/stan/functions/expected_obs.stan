@@ -99,7 +99,7 @@
  * eobs |> exp() |> plot()
  * @endcode
  */
-vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, matrix agg_indicator) {
+vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, array[,] agg_indicator) {
   vector[l] p;
   if (ref_as_p == 1) {
     p = lh;
@@ -112,7 +112,7 @@ vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs,
     }
   }
   if (agg_probs == 1) {
-    p = log(agg_indicator * exp(p));
+    p = log(to_matrix(agg_indicator) * exp(p));
   }
   return(tar_obs + p);
 }
