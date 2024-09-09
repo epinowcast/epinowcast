@@ -115,7 +115,7 @@ data {
   array[2, 1] real rep_beta_sd_p;
   // Probability aggregation indicators
   int agg_probs;
-  array[g, s, , ] agg_indicators;
+  array[g, s] matrix agg_indicators;
 
   // Missing reference date model
   int model_miss;

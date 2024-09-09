@@ -78,7 +78,6 @@ pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 35, timestep = "day")
 # Define the structural argument for probability aggregation
 ref_t <- unique(pobs$obs[[1]]$reference_date)
 ref_t <- ref_t[!is.na(ref_t)]
-agg_indicators <- array(dim = c(1, length(ref_t), 35, 35))
 # We are assigning one 35x35 matrix to each reference day, depending on the DOW
 # Report day is Wednesday, and as coded above everything up to & including Wednesday
 # is reported on Wednesday.
@@ -103,11 +102,13 @@ generate_agg_indicator <- function(reference_dow_idx, reporting_dow_idx, max_del
 ref_day_matrix_list <- lapply(1:7, FUN = function(day) { 
   generate_agg_indicator(day, 4, 35)
 })
-# Then get array of these matrices
+# Then get nested list of these matrices
 ref_t_wdays <- lubridate::wday(ref_t)
-for (i in seq_along(ref_t)) {
-  agg_indicators[1, i, , ] <- ref_day_matrix_list[[ref_t_wdays[i]]]
-}
+# List has outer length g (1) and inner length t (74 or something)
+agg_indicators <- vector("list", 1L)
+agg_indicators[[1]] <- lapply(seq_len(length(ref_t)), function(t) {
+  return(ref_day_matrix_list[[ref_t_wdays[t]]])
+})
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.

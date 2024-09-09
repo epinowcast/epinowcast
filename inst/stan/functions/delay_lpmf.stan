@@ -34,7 +34,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      int ref_p, int rep_h, int ref_as_p, array[] real phi,
                      int model_obs, vector refnp_lh, int ref_np,
                      array[] int sdmax, array[] int csdmax,
-                     int agg_probs, array[, , ,] agg_indicators) {
+                     int agg_probs, array[,] matrix agg_indicators) {
   real tar = 0;
   // Where am I in the observed data?
   array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
@@ -133,7 +133,7 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int sdmax, array[] int csdmax,
                       array[] int miss_st, array[] int miss_cst,
                       vector refnp_lh, int ref_np,
-                      int agg_probs, array[, , ,] agg_indicators) {
+                      int agg_probs, array[,] matrix agg_indicators) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
