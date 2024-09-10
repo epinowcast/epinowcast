@@ -259,12 +259,11 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
       "The structural reporting model is in experimental development"
     )
     data_list$agg_probs <- 1
-    # "structural" should be an array of shape:
-    # group x reference time x max_delay x max_delay
+    # "structural" should be a 2d (nested) list of matricess
     data_list$agg_indicators <- structural
   } else {
     data_list$agg_probs <- 0
-    data_list$agg_indicators <- array(0)
+    data_list$agg_indicators <- list()
   }
 
   # map report date effects to groups and times
