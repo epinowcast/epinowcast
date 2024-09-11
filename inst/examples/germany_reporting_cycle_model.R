@@ -43,8 +43,11 @@ repcycle_germany_hosp <- nat_germany_hosp |>
   dplyr::mutate(not_report_day = ifelse(day_of_week != "Wed",
                                  1,
                                  0)) |>
+  dplyr::mutate(.observed = ifelse(day_of_week == "Wed",
+                                 TRUE,
+                                 FALSE)) |>
   # Get confirm as cumulative again
-  dplyr::mutate(confirm = cumsum(confirm), .by = "reference_date")
+  enw_add_cumulative()
 
 # Make sure observations are complete (we don't need to do this here as we have
 # already done this above but for completeness we include it (as it would be
@@ -120,5 +123,7 @@ nowcast <- epinowcast(pobs,
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
   ),
-  obs = enw_obs(family = "negbin", data = pobs),
+  obs = enw_obs(family = "negbin",
+    observation_indicator = ".observed",
+    data = pobs),
 )

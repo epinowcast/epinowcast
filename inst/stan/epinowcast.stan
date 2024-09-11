@@ -114,8 +114,8 @@ data {
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
   array[2, 1] real rep_beta_sd_p;
   // Probability aggregation indicators
-  int agg_probs;
-  array[g, s] matrix agg_indicators;
+  int rep_agg_probs;
+  array[g, t] matrix [dmax, dmax] rep_agg_indicators;
 
   // Missing reference date model
   int model_miss;
@@ -398,14 +398,14 @@ model {
           flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-          refnp_lh, model_refnp, agg_probs, agg_indicators
+          refnp_lh, model_refnp, rep_agg_probs, rep_agg_indicators
         );
       } else {
         target += reduce_sum(
           delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
-          model_refnp, sdmax, csdmax, agg_probs, agg_indicators
+          model_refnp, sdmax, csdmax, rep_agg_probs, rep_agg_indicators
         );
       }
     } else {
@@ -414,7 +414,7 @@ model {
         ts, st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-        refnp_lh, model_refnp, agg_probs, agg_indicators
+        refnp_lh, model_refnp, rep_agg_probs, rep_agg_indicators
       );
     }
   }
@@ -443,7 +443,7 @@ generated quantities {
     log_exp_obs_all = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
-      model_refnp, sdmax, csdmax, agg_probs, agg_indicators
+      model_refnp, sdmax, csdmax, rep_agg_probs, rep_agg_indicators
     );
     
     if (model_miss) {

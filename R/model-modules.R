@@ -258,12 +258,21 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     cli::cli_alert_warning(
       "The structural reporting model is in experimental development"
     )
-    data_list$agg_probs <- 1
-    # "structural" should be a 2d (nested) list of matricess
-    data_list$agg_indicators <- structural
+    if (!(length(structural) == data$groups)
+      || !(length(structural[[1]]) == data$time)
+      || !(all(dim(structural[[1]][[1]]) == rep(data$max_delay, 2)))) {
+      cli::cli_abort(
+        paste0(
+          "The input to structural should be a 2D nested list of matrices",
+          "with dimension max_delay x max_delay."
+        )
+      )
+    }
+    data_list$rep_agg_probs <- 1
+    data_list$rep_agg_indicators <- structural
   } else {
-    data_list$agg_probs <- 0
-    data_list$agg_indicators <- list()
+    data_list$rep_agg_probs <- 0
+    data_list$rep_agg_indicators <- list()
   }
 
   # map report date effects to groups and times
