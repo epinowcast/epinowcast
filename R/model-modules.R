@@ -258,13 +258,10 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     cli::cli_alert_warning(
       "The structural reporting model is in experimental development"
     )
-    if (!(length(structural) == data$groups)
-      || !(length(structural[[1]]) == data$time)
-      || !(all(dim(structural[[1]][[1]]) == rep(data$max_delay, 2)))) {
+    if (dim(structural != c(data$groups, data$time, data$max_delay, data$max_delay))) {
       cli::cli_abort(
         paste0(
-          "The input to structural should be a 2D nested list of matrices",
-          "with dimension max_delay x max_delay."
+          "`structural` should be 4D array of Groups x Times x Max Delay x Max Delay."
         )
       )
     }

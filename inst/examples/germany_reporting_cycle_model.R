@@ -105,13 +105,12 @@ generate_agg_indicator <- function(reference_dow_idx, reporting_dow_idx, max_del
 ref_day_matrix_list <- lapply(1:7, FUN = function(day) { 
   generate_agg_indicator(day, 4, 35)
 })
-# Then get nested list of these matrices
+# Then get array of these matrices
 ref_t_wdays <- lubridate::wday(ref_t)
-# List has outer length g (1) and inner length t (74 or something)
-agg_indicators <- vector("list", 1L)
-agg_indicators[[1]] <- lapply(seq_len(length(ref_t)), function(t) {
-  return(ref_day_matrix_list[[ref_t_wdays[t]]])
-})
+agg_indicators <- array(dim = c(1, length(ref_t), 35, 35))
+for (t in seq_along(ref_t)) {
+  agg_indicators[1, t, , ] <- ref_day_matrix_list[[ref_t_wdays[t]]]
+}
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.
