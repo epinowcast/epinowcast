@@ -258,10 +258,12 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     cli::cli_alert_warning(
       "The structural reporting model is in experimental development"
     )
-    if (dim(structural != c(data$groups, data$time, data$max_delay, data$max_delay))) {
+    if (all(dim(structural) != c(data$groups, data$time,
+                                data$max_delay, data$max_delay))) {
       cli::cli_abort(
         paste0(
-          "`structural` should be 4D array of Groups x Times x Max Delay x Max Delay."
+          "`structural` should be 4D array of Groups x Times x ",
+          "Max Delay x Max Delay."
         )
       )
     }

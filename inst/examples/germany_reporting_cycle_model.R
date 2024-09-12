@@ -119,6 +119,7 @@ nowcast <- epinowcast(pobs,
   expectation = enw_expectation(~1, data = pobs),
   report = enw_report(structural = agg_indicators, data = pobs),
   fit = enw_fit_opts(
+    init_method = "pathfinder",
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
   ),
