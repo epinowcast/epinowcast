@@ -1,6 +1,7 @@
 url: https://package.epinowcast.org/
 template:
   package: enwtheme
+  math-rendering: mathjax
   twitter:
     creator: "@seabbs"
     card: summary_large_image
