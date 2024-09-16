@@ -32,6 +32,7 @@
 
 ## Documentation
 
+- Linked the Stan function documentation to the package website. By @jamesmbaazam in # and reviewed by @seabbs.
 - Added support to render and deploy stan documentation using `doxygen` and a GitHub Actions workflow. See #500 and #502 by @jamesmbaazam and @seabbs respectively, and cross-reviewed.
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
 - Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by @jessalynnsebastian.
