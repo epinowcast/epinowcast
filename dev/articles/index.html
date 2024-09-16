@@ -16,23 +16,21 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/epinowcast.html">Get started</a></li>
-<li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-reference" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Reference</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-reference"><li><a class="dropdown-item" href="../reference/index.html">R Reference</a></li>
+    <li><a class="dropdown-item" href="https://package.epinowcast.org/stan/globals.html">Stan Reference</a></li>
+  </ul></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Model details</h6></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Model details</h6></li>
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
-    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
-    <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Package use cases</h6></li>
-    <li><a class="dropdown-item" href="../articles/package-use-cases.html">Case studies</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -49,39 +47,25 @@
     </div>
 
     <div class="section ">
-      <h3>Model details</h3>
+      <h3>All vignettes</h3>
       <div class="section-desc"></div>
 
-      <dl><dt><a href="model.html">Model definition and implementation</a></dt>
-        <dd><p>Model formulation and implementation details</p>
-        </dd><dt><a href="distributions.html">Discretised distributions</a></dt>
+      <dl><dt><a href="distributions.html">Discretised distributions</a></dt>
         <dd><p>Distributions and their discretisation in epinowcast</p>
-      </dd></dl></div>
-    <div class="section ">
-      <h3>Case studies</h3>
-      <div class="section-desc"></div>
-
-      <dl><dt><a href="germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></dt>
+        </dd><dt><a href="epinowcast.html">Getting Started with Epinowcast: Nowcasting</a></dt>
+        <dd><p>A quick start example demonstrating use of epinowcast to nowcast hospital admissions.</p>
+        </dd><dt><a href="germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></dt>
         <dd><p>A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany.</p>
+        </dd><dt><a href="model.html">Model definition and implementation</a></dt>
+        <dd><p>Model formulation and implementation details</p>
+        </dd><dt><a href="package-use-cases.html">Case studies</a></dt>
+        <dd><p>A place to document how epinowcast has been used</p>
         </dd><dt><a href="single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></dt>
         <dd><p>A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported.</p>
-      </dd></dl></div>
-    <div class="section ">
-      <h3>Working with epinowcast</h3>
-      <div class="section-desc"></div>
-
-      <dl><dt><a href="stan-help.html">Resources to help with model fitting using Stan</a></dt>
+        </dd><dt><a href="stan-help.html">Resources to help with model fitting using Stan</a></dt>
         <dd><p>How to address issues you may encounter with Stan</p>
       </dd></dl></div>
-    <div class="section ">
-      <h3>Case studies</h3>
-      <div class="section-desc"></div>
-
-      <dl><dt><a href="package-use-cases.html">Case studies</a></dt>
-        <dd><p>A place to document how epinowcast has been used</p>
-      </dd></dl></div>
-  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
-    </nav></aside></div>
+  </main></div>
 
 
     <footer><div class="pkgdown-footer-left">
