@@ -135,9 +135,8 @@ Suggests:
     withr
 VignetteBuilder:
     knitr
-Remotes:
-    stan-dev/cmdstanr,
-    stan-dev/loo
+Additional_repositories:
+    https://stan-dev.r-universe.dev
 Config/Needs/website:
     r-lib/pkgdown,
     epinowcast/enwtheme
