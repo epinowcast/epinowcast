@@ -75,6 +75,9 @@ latest_obs <- enw_filter_reference_dates(
   remove_days = 20, include_days = 90
 )
 
+# I think we need to skip data that is not on a reported day in the likelihood
+# otherwise we are not identifying the reporting delay properly.
+
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 35, timestep = "day")
 
