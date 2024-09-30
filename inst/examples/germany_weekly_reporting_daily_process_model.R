@@ -11,7 +11,8 @@ options(mc.cores = 2)
 # Load and filter germany hospitalisations
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"] |>
   _[age_group == "00+"] |>
-  _[, age_group := NULL]
+  _[, age_group := NULL] |>
+  _[, location := NULL]
 
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
@@ -24,9 +25,7 @@ nat_germany_hosp <- enw_filter_reference_dates(
 )
 
 nat_germany_hosp <- enw_complete_dates(
-  nat_germany_hosp,
-  by = "location",
-  timestep = "day"
+  nat_germany_hosp, timestep = "day"
 )
 
 enw_flag_report_day <- function(data) {
@@ -52,9 +51,7 @@ repcycle_germany_hosp <- nat_germany_hosp |>
 # already done this above but for completeness we include it (as it would be
 # needed for real data)) 
 repcycle_germany_hosp <- enw_complete_dates(
-  repcycle_germany_hosp,
-  by = "location",
-  timestep = "day"
+  repcycle_germany_hosp, timestep = "day"
 )
 
 # Make a retrospective real-time dataset
@@ -80,9 +77,26 @@ latest_obs <- enw_filter_reference_dates(
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 35, timestep = "day")
 
+# Create structual reporting data
+metadata <- pobs$metareference[[1]] |>
+  _[, key := 1] |>
+  _[, .(key, .group, date)] |>
+  _[pobs$metadelay[[1]][, key := 1], on = "key", allow.cartesian = TRUE] |>
+  _[, .(.group, date, report_date = date + delay)] |>
+  setorder(.group, date, report_date) |>
+  _[, day_of_week := weekdays(report_date)] |>
+  _[, report := ifelse(day_of_week == "Wednesday", 1, 0)] |>
+  _[, cum_report := cumsum(report) + 1, by = .(.group, date)] |>
+  _[day_of_week == "Wednesday", cum_report := cum_report - 1]
+
+# You can view the matrix like this:
+# print(agg_matrix)
+
+# If you want to see it in a more readable format:
+# library(knitr)
+# kable(agg_matrix)
+
 # Define the structural argument for probability aggregation
-ref_t <- unique(pobs$obs[[1]]$reference_date)
-ref_t <- ref_t[!is.na(ref_t)]
 # We are assigning one 35x35 matrix to each reference day, depending on the DOW
 # Report day is Wednesday, and as coded above everything up to & including Wednesday
 # is reported on Wednesday.
@@ -108,11 +122,12 @@ ref_day_matrix_list <- lapply(1:7, FUN = function(day) {
   generate_agg_indicator(day, 4, 35)
 })
 # Then get array of these matrices
-ref_t_wdays <- lubridate::wday(ref_t)
-agg_indicators <- array(dim = c(1, length(ref_t), 35, 35))
-for (t in seq_along(ref_t)) {
-  agg_indicators[1, t, , ] <- ref_day_matrix_list[[ref_t_wdays[t]]]
-}
+ref_t_wdays <- wday(pobs$metareference[[1]]$date)
+agg_indicators <- lapply(seq_along(ref_t), function(t) {
+  ref_day_matrix_list[[ref_t_wdays[t]]]
+})
+agg_indicators <- array(unlist(agg_indicators), dim = c(35, 35, length(ref_t)))
+agg_indicators <- aperm(agg_indicators, c(3, 1, 2))
 
 # Fit a simple nowcasting model with fixed growth rate and a
 # log-normal reporting distribution.
