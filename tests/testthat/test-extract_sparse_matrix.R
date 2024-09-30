@@ -1,6 +1,11 @@
 test_that("extract_sparse_matrix() can extract a sparse matrix", {
-  mat <- matrix(1:9, nrow = 3)
-  sparse_mat <- extract_sparse_matrix(mat)
+  lifecycle::expect_deprecated(
+    {
+      mat <- matrix(1:9, nrow = 3)
+      sparse_mat <- extract_sparse_matrix(mat)
+    },
+    "extract_sparse_matrix()"
+  )
   expect_identical(sparse_mat$nw, 9L)
   expect_identical(sparse_mat$w, c(1L, 4L, 7L, 2L, 5L, 8L, 3L, 6L, 9L))
   expect_identical(sparse_mat$nv, 9L)
@@ -10,8 +15,13 @@ test_that("extract_sparse_matrix() can extract a sparse matrix", {
 })
 
 test_that("extract_sparse_matrix() can extract a sparse matrix with a prefix", {
-  mat <- matrix(1:9, nrow = 3)
-  sparse_mat <- extract_sparse_matrix(mat, "prefix")
+  lifecycle::expect_deprecated(
+    {
+      mat <- matrix(1:9, nrow = 3)
+      sparse_mat <- extract_sparse_matrix(mat, "prefix")
+    },
+    "extract_sparse_matrix()"
+  )
   expect_identical(sparse_mat$prefix_nw, 9L)
   expect_identical(sparse_mat$prefix_w, c(1L, 4L, 7L, 2L, 5L, 8L, 3L, 6L, 9L))
   expect_identical(sparse_mat$prefix_nv, 9L)
@@ -21,10 +31,15 @@ test_that("extract_sparse_matrix() can extract a sparse matrix with a prefix", {
 })
 
 test_that("extract_sparse_matrix() handles matrices with zeros correctly", {
-  mat <- matrix(1:12, nrow = 4)
-  mat[2, 2] <- 0
-  mat[3, 1] <- 0
-  sparse_mat <- extract_sparse_matrix(mat)
+  lifecycle::expect_deprecated(
+    {
+      mat <- matrix(1:12, nrow = 4)
+      mat[2, 2] <- 0
+      mat[3, 1] <- 0
+      sparse_mat <- extract_sparse_matrix(mat)
+    },
+    "extract_sparse_matrix()"
+  )
   expect_identical(sparse_mat$nw, 10L)
   expect_identical(sparse_mat$w, c(1, 5, 9, 2, 10, 7, 11, 4, 8, 12))
   expect_identical(sparse_mat$nv, 10L)
@@ -34,10 +49,15 @@ test_that("extract_sparse_matrix() handles matrices with zeros correctly", {
 })
 
 test_that("extract_sparse_matrix() handles matrices with zeros correctly", {
-  mat <- matrix(1:12, nrow = 4)
-  mat[1, 1] <- 0
-  mat[2, 1] <- 0
-  sparse_mat <- extract_sparse_matrix(mat)
+  lifecycle::expect_deprecated(
+    {
+      mat <- matrix(1:12, nrow = 4)
+      mat[1, 1] <- 0
+      mat[2, 1] <- 0
+      sparse_mat <- extract_sparse_matrix(mat)
+    },
+    "extract_sparse_matrix()"
+  )
   expect_identical(sparse_mat$nw, 10L)
   expect_identical(sparse_mat$w, c(5, 9, 6, 10, 3, 7, 11, 4, 8, 12))
   expect_identical(sparse_mat$nv, 10L)
@@ -47,14 +67,19 @@ test_that("extract_sparse_matrix() handles matrices with zeros correctly", {
 })
 
 test_that("extract_sparse_matrix() handles the rstan example as expected", {
-  A <- rbind(
-    c(19L, 27L,  0L,  0L),
-    c(0L,  0L,  0L,  0L),
-    c(0L,  0L,  0L, 52L),
-    c(81L,  0L, 95L, 33L)
+  lifecycle::expect_deprecated(
+    {
+      A <- rbind(
+        c(19L, 27L,  0L,  0L),
+        c(0L,  0L,  0L,  0L),
+        c(0L,  0L,  0L, 52L),
+        c(81L,  0L, 95L, 33L)
+      )
+      A[1, 1:4] <- 0
+      sparse_A <- extract_sparse_matrix(A)
+    },
+    "extract_sparse_matrix()"
   )
-  A[1, 1:4] <- 0
-  sparse_A <- extract_sparse_matrix(A)
   expect_identical(sparse_A$nw, 4L)
   expect_identical(sparse_A$w, c(52, 81, 95, 33))
   expect_identical(sparse_A$nv, 4L)

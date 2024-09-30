@@ -68,7 +68,8 @@ nowcast <- epinowcast(pobs,
     chains = 4, threads_per_chain = 1,
     parallel_chains = 4,
     iter_warmup = 1000, iter_sampling = 1000,
-    adapt_delta = 0.85, save_warmup = FALSE
+    adapt_delta = 0.85, save_warmup = FALSE,
+    sparse_design = FALSE
   ),
   model = model
 )

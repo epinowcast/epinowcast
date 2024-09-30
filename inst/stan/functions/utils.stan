@@ -26,3 +26,31 @@
 real log_dot_product(vector x, vector y) {
   return(log_sum_exp(x + y));
 }
+
+/**
+ * Count the number of non-zero elements in a matrix
+ * 
+ * This function iterates through all elements of a given matrix and counts
+ * the number of elements that are not equal to zero.
+ * 
+ * @param x The input matrix to be analyzed.
+ * 
+ * @return An integer representing the count of non-zero elements in the matrix.
+ * 
+ * @note This function may be useful in contexts where the sparsity of a matrix
+ * needs to be quantified, such as in sparse matrix operations or in assessing
+ * the efficiency of certain matrix algorithms.
+ */
+int num_nonzero(matrix x) {
+  int i = rows(x);
+  int j = cols(x);
+  int n = 0;
+  for (k in 1:i) {
+    for (l in 1:j) {
+      if (x[k, l] != 0) {
+        n = n + 1;
+      }
+    }
+  }
+  return(n);
+}
