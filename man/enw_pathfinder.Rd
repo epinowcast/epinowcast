@@ -4,13 +4,7 @@
 \alias{enw_pathfinder}
 \title{Fit a CmdStan model using the pathfinder algorithm}
 \usage{
-enw_pathfinder(
-  data,
-  model = epinowcast::enw_model(),
-  diagnostics = TRUE,
-  init = NULL,
-  ...
-)
+enw_pathfinder(data, model = epinowcast::enw_model(), diagnostics = TRUE, ...)
 }
 \arguments{
 \item{data}{A list of data as produced by model modules (for example
@@ -22,9 +16,6 @@ supplied by the user.}
 
 \item{diagnostics}{Logical, defaults to \code{TRUE}. Should fitting diagnostics
 be returned as a \code{data.frame}.}
-
-\item{init}{A list of initial values or a function to generate initial
-values. If not provided, the model will attempt to generate initial values}
 
 \item{...}{Additional parameters to be passed to \code{CmdStanModel$pathfinder()}.}
 }
