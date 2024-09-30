@@ -67,7 +67,7 @@ vector combine_effects(array[] real intercept, vector beta,
                        matrix rdesign,
                        int add_intercept, int sparse_design) {
   if (neffs) {
-    vector[num_elements(beta_sd) + 1] ext_beta_sd = append_row(1.0, beta_sd);
+    vector[1 + num_elements(beta_sd)] ext_beta_sd = append_row(1.0, beta_sd);
     vector[nobs] result;
     vector[neffs] scaled_beta = beta .* (rdesign * ext_beta_sd);
     
