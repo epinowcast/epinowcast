@@ -311,6 +311,11 @@ simulate_double_censored_pmf <- function(
   fun_dist = stats::rlnorm,
   dist_args = list(...), n = 1e6, ...
 ) {
+  lifecycle::deprecate_soft("0.5.0", "simulate_double_censored_pmf()")
+  cli::cli_inform(c(
+    "!" = "Users should instead use the {.pkg primarycensored} package for simulating double censored processes.", # nolint
+    "i" = "See {.url https://github.com/epinowcast/primarycensored} for more information." # nolint
+  ))
   primary <- do.call(fun_primary, c(list(n), primary_args))
   secondary <- primary + do.call(fun_dist, c(list(n), dist_args))
   delay <- floor(secondary) - floor(primary)

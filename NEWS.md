@@ -22,6 +22,7 @@
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
+- Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
 
 ## Model
 
