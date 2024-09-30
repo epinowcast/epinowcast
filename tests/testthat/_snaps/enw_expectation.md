@@ -4,6 +4,7 @@
       expectation <- enw_expectation(data = pobs)
     Message
       A random effect using .group is not possible as this variable has fewer than 2 unique values.
+      i The r design matrix is sparse (>90% zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` to potentially reduce memory usage and computation time.
     Code
       expectation$inits <- NULL
       expectation
