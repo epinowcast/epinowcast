@@ -9,7 +9,10 @@ cmdstanr::set_cmdstan_path()
 options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"] |>
+  _[age_group == "00+"] |>
+  _[, age_group := NULL]
+
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
   latest_date = "2021-10-01"
@@ -22,39 +25,35 @@ nat_germany_hosp <- enw_filter_reference_dates(
 
 nat_germany_hosp <- enw_complete_dates(
   nat_germany_hosp,
-  by = c("location", "age_group"),
+  by = "location",
   timestep = "day"
 )
 
+enw_flag_report_day <- function(data) {
+  data[, .report_day := ifelse(is.na(confirm), 0, 1)]
+  return(data)
+}
+
 # Aggregate data to weekly reporting cycle
 repcycle_germany_hosp <- nat_germany_hosp |>
-  enw_add_incidence() |>
-  dplyr::mutate(day_of_week = lubridate::wday(report_date, label = TRUE)) |>
-  dplyr::mutate(confirm = new_confirm) |>
-  # Aggregate rolling sum sums over "confirm"
-  # but we want a sum over "new_confirm"
+  _[, day_of_week := weekdays(report_date)] |>
   epinowcast:::aggregate_rolling_sum(
     internal_timestep = 7,
-    by = "reference_date"
+    by = "reference_date",
+    value_col = "confirm"
   ) |>
-  dplyr::mutate(confirm = ifelse(day_of_week == "Wed",
-                          confirm,
-                          0)) |>
-  dplyr::mutate(not_report_day = ifelse(day_of_week != "Wed",
-                                 1,
-                                 0)) |>
-  dplyr::mutate(.observed = ifelse(day_of_week == "Wed",
-                                 TRUE,
-                                 FALSE)) |>
-  # Get confirm as cumulative again
-  enw_add_cumulative()
+  _[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)] |>
+  enw_flag_report_day() |>
+  enw_flag_observed_observations() |>
+  enw_impute_na_observations() |>
+  enw_add_incidence()
 
 # Make sure observations are complete (we don't need to do this here as we have
 # already done this above but for completeness we include it (as it would be
 # needed for real data)) 
 repcycle_germany_hosp <- enw_complete_dates(
   repcycle_germany_hosp,
-  by = c("location", "age_group"),
+  by = "location",
   timestep = "day"
 )
 
@@ -122,7 +121,7 @@ nowcast <- epinowcast(pobs,
   expectation = enw_expectation(~1, data = pobs),
   report = enw_report(structural = agg_indicators, data = pobs),
   fit = enw_fit_opts(
-    init_method = "pathfinder",
+    init_method = "sample",
     save_warmup = FALSE, pp = TRUE,
     chains = 2, iter_warmup = 500, iter_sampling = 500,
   ),
