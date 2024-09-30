@@ -671,3 +671,43 @@ check_observation_indicator <- function(
   }
   return(invisible(NULL))
 }
+
+#' Check design matrix sparsity
+#'
+#' This function checks the sparsity of a design matrix and provides a
+#' recommendation if the matrix is considered sparse.
+#'
+#' @param matrix A numeric matrix to be checked for sparsity.
+#' @param sparsity_threshold A numeric value between 0 and 1 indicating the
+#' threshold for considering a matrix sparse. Default is 0.9.
+#' @param min_matrix_size An integer indicating the minimum size of the matrix
+#' for which to perform the sparsity check. Default is 50.
+#' @param name A character string specifying the name of the design
+#' matrix. Default is "checked".
+#'
+#' @return This function is used for its side effect of providing an
+#' informational message if the matrix is sparse. It returns NULL invisibly.
+#'
+#' @importFrom cli cli_alert_info
+#' @family check
+check_design_matrix_sparsity <- function(matrix, sparsity_threshold = 0.9,
+                                         min_matrix_size = 50,
+                                         name = "checked") {
+  if (length(matrix) < min_matrix_size) {
+    return(invisible(NULL))
+  }
+
+  zero_proportion <- sum(matrix == 0) / length(matrix)
+
+  if (zero_proportion > sparsity_threshold) {
+    cli::cli_alert_info(
+      c(
+        "The {name} design matrix is sparse (>{sparsity_threshold*100}% ",
+        "zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` ",
+        "to potentially reduce memory usage and computation time."
+      )
+    )
+  }
+
+  return(invisible(NULL))
+}

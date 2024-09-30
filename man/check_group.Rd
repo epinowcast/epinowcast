@@ -19,6 +19,7 @@ Check observations for reserved grouping variables
 \seealso{
 Functions used for checking inputs
 \code{\link{check_calendar_timestep}()},
+\code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group_date_unique}()},
 \code{\link{check_max_delay}()},
 \code{\link{check_module}()},

@@ -13,6 +13,7 @@ enw_fit_opts(
   threads_per_chain = 1L,
   debug = FALSE,
   output_loglik = FALSE,
+  sparse_design = FALSE,
   ...
 )
 }
@@ -54,6 +55,11 @@ information be returned.}
 \item{output_loglik}{Logical, defaults to \code{FALSE}. Should the
 log-likelihood be output. Disabling this will speed up fitting
 if evaluating the model fit is not required.}
+
+\item{sparse_design}{Logical, defaults to \code{FALSE}. Should a sparse design
+matrices be used for all design matrices. This reduces memory requirements
+and may reduce computation time when fitting models with very sparse
+design matrices (90\% or more zeros).}
 
 \item{...}{Additional arguments to pass to the fitting function being used
 by \code{\link[=epinowcast]{epinowcast()}}. By default this will be \code{\link[=enw_sample]{enw_sample()}} and so \code{cmdstanr}

@@ -17,7 +17,7 @@
 #'  - `prefix_findex`: The index linking design matrix rows to  observations
 #'  - `prefix_fnindex`: The length of the index
 #'  - `prefix_fncol`: The number of columns (i.e effects) in the fixed effect
-#'  design matrix (minus 1 if `drop_intercept = TRUE`).
+#'  design matrix (minus 1 if an intercept is present).
 #'  - `prefix_rdesign`: The random effects design matrix
 #'  - `prefix_rncol`: The number of columns (i.e random effects) in the random
 #'  effect design matrix (minus 1 as the intercept is dropped).
@@ -32,14 +32,14 @@
 #' enw_formula_as_data_list(prefix = "missing")
 enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
   data <- list(
-    fdesign = numeric(0),
     fintercept = 0,
     fnrow = 0,
     findex = numeric(0),
     fnindex = 0,
     fncol = 0,
-    rdesign = numeric(0),
-    rncol = 0
+    rncol = 0,
+    fdesign = numeric(0),
+    rdesign = numeric(0)
   )
   if (!missing(formula)) {
     if (!inherits(formula, "enw_formula")) {
@@ -53,15 +53,20 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
     fintercept <-  as.numeric(any(grepl(
       "(Intercept)", colnames(formula$fixed$design), fixed = TRUE
     )))
-    data$fdesign <- formula$fixed$design
     data$fintercept <- fintercept
     data$fnrow <- nrow(formula$fixed$design)
     data$findex <- formula$fixed$index
     data$fnindex <- length(formula$fixed$index)
-    data$fncol <- ncol(formula$fixed$design) -
-      min(as.numeric(drop_intercept), fintercept)
-    data$rdesign <- formula$random$design
+    data$fncol <- ncol(formula$fixed$design) - fintercept
     data$rncol <- ncol(formula$random$design) - 1
+
+    # Store dense matrices
+    data$fdesign <- formula$fixed$design
+    if (fintercept) {
+      data$fdesign <- data$fdesign[, -1]
+    }
+    data$rdesign <- formula$random$design
+
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))
   return(data)

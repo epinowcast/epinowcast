@@ -26,7 +26,7 @@ matrix.
 \item \code{prefix_findex}: The index linking design matrix rows to  observations
 \item \code{prefix_fnindex}: The length of the index
 \item \code{prefix_fncol}: The number of columns (i.e effects) in the fixed effect
-design matrix (minus 1 if \code{drop_intercept = TRUE}).
+design matrix (minus 1 if an intercept is present).
 \item \code{prefix_rdesign}: The random effects design matrix
 \item \code{prefix_rncol}: The number of columns (i.e random effects) in the random
 effect design matrix (minus 1 as the intercept is dropped).
