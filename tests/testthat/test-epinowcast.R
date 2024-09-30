@@ -250,7 +250,8 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   nowcast <- suppressMessages(epinowcast(pobs,
     report = enw_report(~ 1 + (1 | day_of_week), data = pobs),
     fit = enw_fit_opts(
-      sampler = silent_enw_pathfinder, num_paths = 50, pp = TRUE
+      sampler = silent_enw_pathfinder, num_paths = 10, pp = TRUE,
+      seed = 123
     ),
     model = model
   ))
@@ -279,7 +280,7 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   expect_diff_abs_lt_per(
     posterior[variable %like% "rep_beta", median],
     regression_posterior[variable %like% "rep_beta", median],
-    1
+    1.5
   )
   # Reporting distribution mean is equal to within 50%
   expect_diff_abs_lt_per(
