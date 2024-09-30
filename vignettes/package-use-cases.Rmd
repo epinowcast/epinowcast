@@ -1,0 +1,46 @@
+---
+title: Case studies
+description: "A place to document how epinowcast has been used"
+author: 
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+vignette: >
+  %\VignetteIndexEntry{Package use cases}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+The goal of this vignette is to provide a place to document how `{epinowcast}` has been applied in real-world settings. 
+To start, we will document a few known use cases, many of which the authors are directly involved in. 
+We hope this can both inspire future users to apply the methods to similar use cases of their own, and those currently or previously using `{epinowcast}` to document it here. This should also motivate and help prioritize future development. If you are using `{epinowcast}` for a real-world application, please consider opening a PR to add a description of the case study to this table. 
+
+The table below contains columns to provide information on the following variables related to the use case:
+`Pathogen`: Pathogen of interest in the use case, e.g. COVID-19.
+`Data type(s)`: A brief description of the data source(s) used e.g. individual level line-list clinical case data
+`Purpose`: Brief description of the purpose of using `{epinowcast}` e.g. research or real-time response
+`Location`: Specific geographic location and associated granularity of the data to e.g. counties in the United States
+`Organization type`: Type of organization doing the analysis e.g. academic, federal government, local health department
+`Links`: Include here any links to manuscripts/pre-prints and github repositories describing and applying the analysis, e.g. [Manuscript](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1012021#sec014)
+
+
+|   Description   | Pathogen | Data type(s)  | Purpose | Location | Organization type | Links
+|-----|---|---|---|---|---|--|
+| Nowcasts of COVID-19 hospital admissions in Germany | COVID-19 | Counts of hospital admissions by date of positive test | Real-time response | National and state-level in Germany | Academic  | [Pre-print](https://epiforecasts.io/eval-germany-sp-nowcasting/paper.pdf), [Github repo]( https://github.com/epiforecasts/eval-germany-sp-nowcasting/), [Report](https://epiforecasts.io/eval-germany-sp-nowcasting/real-time-method-comparison/) |
+| Generative Bayesian modelling to nowcast R(t) from line-list data with missing symptom onset date | COVID-19 | Individual line-list hospitalizations | Research | National level data in Switzerland | Academic | [Manuscript]( https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1012021#sec014), [Github repo](https://github.com/adrian-lison/generative-nowcasting)|
+| Nowcasting cases of norovirus in England in winter 2023-2024 | Norovirus | Counts of norovirus positive laboratory reports | Evaluation for real-time response | National level data in England | Federal government | [Pre-print](https://www.medrxiv.org/content/10.1101/2024.07.19.24310696v1) | 
+
+

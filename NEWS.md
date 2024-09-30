@@ -2,9 +2,9 @@
 
 ## Contributors
 
-@athowes, @jessalynnsebastian, @Bisaloo, and @seabbs contributed code to this release.
+@athowes, @kaitejohnson, @jamesmbaazam, @jessalynnsebastian, @Bisaloo, and @seabbs contributed code to this release.
 
-@medewitt, @jessalynnsebastian, and @seabbs reviewed pull requests for this release.
+@medewitt, @jessalynnsebastian, @pearsonca, @jamesmbaazam, and @seabbs reviewed pull requests for this release.
 
 @pearsonca, @jessalynnsebastian, @athowes, @medewitt, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
@@ -25,18 +25,20 @@
 
 ## Model
 
-- Performance tuned `expected_obs()` and related functions to improve speed and reduce memory usage. See #501 by @seabbs and reviewed by .
-- Used the `offset` and `multiplier` stan translation functions to improve the speed of the model. See #501 by @seabbs and reviewed by .
-- Removed normalisation of truncated priors as this is not required during inference and increases run time. See #501 by @seabbs and reviewed by .
+- Performance tuned `expected_obs()` and related functions to improve speed and reduce memory usage. See #501 by @seabbs and reviewed by @jessalynnsebastian.
+- Used the `offset` and `multiplier` stan translation functions to improve the speed of the model. See #501 by @seabbs and reviewed by @jessalynnsebastian.
+- Removed normalisation of truncated priors as this is not required during inference and increases run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Added support for sparse design matrices to the model (see `sparse_design` in `enw_fit_opts()`). For very sparse design matrices this can reduce memory requirements and computation time. A heuristic has been added to inform users if sparse design matrices are useful for you.  See #514 by @seabbs and reviewed by @jamesmbaazam.
 
 ## Documentation
 
+- Linked the Stan function documentation to the package website. By @jamesmbaazam in #529 and reviewed by @seabbs.
 - Added support to render and deploy stan documentation using `doxygen` and a GitHub Actions workflow. See #500 and #502 by @jamesmbaazam and @seabbs respectively, and cross-reviewed.
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
-- Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by .
-- Made vignette progress messaging dependent on the user being interactive. See #501 by @seabbs and reviewed by .
+- Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by @jessalynnsebastian.
+- Made vignette progress messaging dependent on the user being interactive. See #501 by @seabbs and reviewed by @jessalynnsebastian.
+- Added a vignette to document package use cases. See #524 by @kaitejohnson and reviewed by @seabbs.
 
 ## Depreciations
 

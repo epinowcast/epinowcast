@@ -1,6 +1,7 @@
 url: https://package.epinowcast.org/
 template:
   package: enwtheme
+  math-rendering: mathjax
   twitter:
     creator: "@seabbs"
     card: summary_large_image
@@ -15,21 +16,34 @@ template:
 development:
   mode: auto
 
-articles:
-- title: Model details
-  navbar: Model details
-  contents:
-  - model
-  - distributions
-- title: Case studies
-  navbar: Case studies
-  contents:
-  - germany-age-stratified-nowcasting
-  - single-timeseries-rt-estimation
-- title: Working with epinowcast
-  navbar: Working with epinowcast
-  contents:
-  - stan-help
+navbar:
+  structure:
+    left:  [intro, metareference, articles, news]
+    right: [search, github]
+  components:
+    metareference:
+      text: Reference
+      menu:
+      - text: R Reference
+        href: reference/index.html
+      - text: Stan Reference
+        href: https://package.epinowcast.org/stan/globals.html
+    articles:
+      text: Articles
+      menu:
+      - text: Model details
+      - text: Model definition and implementation
+        href: articles/model.html
+      - text: Discretised distributions
+        href: articles/distributions.html
+      - text: Case studies
+      - text: Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany
+        href: articles/germany-age-stratified-nowcasting.html
+      - text: Estimating the effective reproduction number in real-time for a single timeseries with reporting delays
+        href: articles/single-timeseries-rt-estimation.html
+      - text: Working with epinowcast
+      - text: Resources to help with model fitting using Stan
+        href: articles/stan-help.html
 
 reference:
   - title: Nowcast
@@ -39,7 +53,7 @@ reference:
   - title: Data converters
     desc: Functions for converting between data formats
     contents:
-      has_concept("dataconverters")
+      - has_concept("dataconverters")
   - title: Preprocess
     desc: Functions for preprocessing observations
     contents:
