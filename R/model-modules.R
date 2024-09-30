@@ -267,10 +267,10 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
         )
       )
     }
-    data_list$rep_agg_probs <- 1
+    data_list$rep_agg_p <- 1
     data_list$rep_agg_indicators <- structural
   } else {
-    data_list$rep_agg_probs <- 0
+    data_list$rep_agg_p <- 0
     data_list$rep_agg_indicators <- list()
   }
 
