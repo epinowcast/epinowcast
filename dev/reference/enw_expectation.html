@@ -137,6 +137,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">enw_expectation</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> A random effect using .group is not possible as this variable has fewer than 2</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> unique values.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> The r design matrix is sparse (&gt;90% zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` to potentially reduce memory usage and computation time.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula$r</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~0 + (1 | day:.group)"</span>
@@ -261,6 +262,25 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_ft</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fintercept</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fnrow</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_findex</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fnindex</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fncol</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_rncol</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    day1 day2 day3 day4 day5 day6 day7 day8 day9 day10 day11 day12 day13 day14</span>
@@ -516,22 +536,6 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40  0  0  0  0  0  0  0  0  0  0  0  1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fintercept</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fnrow</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_findex</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fnindex</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_fncol</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 40</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    fixed day</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      0   1</span>
@@ -577,80 +581,180 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expr_rncol</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_n</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_nw</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_w</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39] 1 1 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_nv</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_v</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_nu</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 42</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd_u</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_lrd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10] [,11] [,12] [,13]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]    1    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]    0    1    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]    0    0    1    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]    0    0    0    1    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]    0    0    0    0    1    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]    0    0    0    0    0    1    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]    0    0    0    0    0    0    1    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]    0    0    0    0    0    0    0    1    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]    0    0    0    0    0    0    0    0    1     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]    0    0    0    0    0    0    0    0    0     1     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]    0    0    0    0    0    0    0    0    0     0     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]    0    0    0    0    0    0    0    0    0     0     0     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]    0    0    0    0    0    0    0    0    0     0     0     0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41,]    0    0    0    0    0    0    0    0    0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,14] [,15] [,16] [,17] [,18] [,19] [,20] [,21] [,22] [,23] [,24] [,25]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]     1     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]     0     1     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]     0     0     1     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]     0     0     0     1     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]     0     0     0     0     1     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]     0     0     0     0     0     1     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]     0     0     0     0     0     0     1     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]     0     0     0     0     0     0     0     1     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]     0     0     0     0     0     0     0     0     1     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]     0     0     0     0     0     0     0     0     0     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]     0     0     0     0     0     0     0     0     0     0     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]     0     0     0     0     0     0     0     0     0     0     0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,26] [,27] [,28] [,29] [,30] [,31] [,32] [,33] [,34] [,35] [,36] [,37]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]     1     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]     0     1     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]     0     0     1     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]     0     0     0     1     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]     0     0     0     0     1     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31,]     0     0     0     0     0     1     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]     0     0     0     0     0     0     1     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33,]     0     0     0     0     0     0     0     1     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]     0     0     0     0     0     0     0     0     1     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35,]     0     0     0     0     0     0     0     0     0     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]     0     0     0     0     0     0     0     0     0     0     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37,]     0     0     0     0     0     0     0     0     0     0     0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41,]     0     0     0     0     0     0     0     0     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       [,38] [,39] [,40] [,41]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37,]     0     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38,]     1     0     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39,]     0     1     0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40,]     0     0     1     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41,]     0     0     0     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_obs</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_fdesign</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    (Intercept)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9            1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41           1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_fintercept</span>
@@ -669,12 +773,56 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_fncol</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_rncol</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_fdesign</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_rdesign</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $data$expl_rncol</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -734,8 +882,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x556b4546b170&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x556b45459988&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55ed9f13f0d8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55ed9f1348c0&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
