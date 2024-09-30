@@ -45,9 +45,12 @@
  * # Example usage in R:
  * intercept <- 1
  * beta <- c(0.1, 0.2, 0.4)
- * design <- t(matrix(c(1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1), 4, 4))
+ * design <- matrix(c(1, 1, 1, 0,
+ *                    0, 1, 0, 0,
+ *                    0, 1, 1, 1), nrow = 3, byrow = TRUE)
  * beta_sd <- c(0.1)
- * sd_design <- t(matrix(c(1, 0, 0, 1, 0, 1), 2, 3))
+ * sd_design <- matrix(c(1, 1, 0,
+ *                       0, 0, 1), nrow = 2, byrow = TRUE)
  * 
  * # Check effects are combined as expected:
  * combine_effects(
