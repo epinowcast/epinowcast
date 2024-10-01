@@ -126,7 +126,8 @@ Note that here we use two chains each using 1 threads as a demonstration but in 
 ``` r
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
+  chains = 2
+  , threads_per_chain = threads,
   iter_sampling = 500, iter_warmup = 500,
   show_messages = interactive(), refresh = ifelse(interactive(), 100, 0),
   adapt_delta = 0.9, max_treedepth = 12
@@ -162,16 +163,16 @@ priors <- summary(
 )
 priors[, sd := sd * 1.5]
 priors
-#>            variable      mean    median         sd        mad        q5
-#>              <char>     <num>     <num>      <num>      <num>     <num>
-#> 1: refp_mean_int[1] 1.1241043 1.1158650 0.17518175 0.10896369 0.9510968
-#> 2:   refp_sd_int[1] 2.6064102 2.6005000 0.19630607 0.12650285 2.4003890
-#> 3:      sqrt_phi[1] 0.6434821 0.6427005 0.02690481 0.01849247 0.6153489
-#>         q20       q80       q95     rhat  ess_bulk ess_tail
-#>       <num>     <num>     <num>    <num>     <num>    <num>
-#> 1: 1.028998 1.2136340 1.3302645 1.003439  725.3080 591.6027
-#> 2: 2.490760 2.7124420 2.8304450 1.004707  765.6376 694.3133
-#> 3: 0.627998 0.6591382 0.6754898 1.004471 1170.0935 783.6616
+#>            variable      mean    median         sd       mad        q5
+#>              <char>     <num>     <num>      <num>     <num>     <num>
+#> 1: refp_mean_int[1] 1.1163925 1.1100950 0.17941274 0.1161395 0.9313553
+#> 2:   refp_sd_int[1] 2.5998712 2.5892550 0.19595143 0.1284525 2.4009035
+#> 3:      sqrt_phi[1] 0.6446717 0.6443715 0.02922227 0.0208246 0.6132395
+#>          q20       q80       q95      rhat ess_bulk ess_tail
+#>        <num>     <num>     <num>     <num>    <num>    <num>
+#> 1: 1.0165340 1.2080180 1.3201330 0.9996263 700.4914 728.5912
+#> 2: 2.4914860 2.7021780 2.8388125 0.9997819 784.3473 782.6382
+#> 3: 0.6278968 0.6614334 0.6763008 0.9993440 971.1105 840.2176
 ```
 
 ## Reference day of the week effect
@@ -505,10 +506,10 @@ loos <- map(nowcasts, ~ .$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age and week by age, Report: Day of week   -0.6       3.6 
-#> Reference: Age, Report: Day of week                   -1.7       6.0 
-#> Reference: Fixed, Report: Day of week                -88.0      11.8 
-#> Reference: Fixed, Report: Fixed                     -630.4      46.5
+#> Reference: Age and week by age, Report: Day of week   -0.5       3.7 
+#> Reference: Age, Report: Day of week                   -2.1       6.0 
+#> Reference: Fixed, Report: Day of week                -90.2      12.0 
+#> Reference: Fixed, Report: Fixed                     -636.3      47.2
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -533,12 +534,12 @@ score |>
 
 |model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
 |:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
-|Reference: Fixed, Report: Fixed                          |      10.170440|   3.684841|        3.002763|      3.4819466|         -0.0742543| -0.0275510|  17.51020|
-|Reference: Fixed, Report: Day of week                    |      10.123331|   2.771149|        6.435809|      0.9167975|         -0.1260597| -0.2714286|  15.30612|
-|Reference: Age, Report: Day of week                      |       8.501909|   2.643243|        5.331742|      0.5274725|         -0.1166405| -0.4112245|  13.00000|
-|Reference: Age and week, Report: Day of week             |       7.513290|   3.136345|        1.284082|      3.0928414|         -0.0020408|  0.0428571|  13.22449|
-|Reference: Age and week by age, Report: Day of week      |       7.181140|   3.139586|        2.465463|      1.5758242|         -0.0036107| -0.2051020|  12.44898|
-|Independent by age, Reference: Week, Report: Day of week |       8.438521|   4.567014|        1.108477|      2.7604396|          0.0607535| -0.0479592|  14.35714|
+|Reference: Fixed, Report: Fixed                          |      10.314374|   3.665334|        3.144898|      3.5045526|         -0.0648352| -0.0336735|  17.59184|
+|Reference: Fixed, Report: Day of week                    |      10.365595|   2.752389|        6.668571|      0.9450549|         -0.1370487| -0.2755102|  15.60204|
+|Reference: Age, Report: Day of week                      |       8.556182|   2.588480|        5.465934|      0.5014129|         -0.1229199| -0.4122449|  12.84694|
+|Reference: Age and week, Report: Day of week             |       7.179768|   3.144728|        1.383987|      2.6510204|         -0.0051805|  0.0010204|  12.56122|
+|Reference: Age and week by age, Report: Day of week      |       7.117987|   3.036559|        2.497174|      1.5839874|         -0.0145997| -0.2122449|  12.00000|
+|Independent by age, Reference: Week, Report: Day of week |       8.229837|   4.613535|        1.065071|      2.5499215|          0.0686028| -0.0153061|  13.90816|
 
 
 
