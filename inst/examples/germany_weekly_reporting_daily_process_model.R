@@ -74,10 +74,13 @@ latest_obs <- enw_filter_reference_dates(
 # I think we need to skip data that is not on a reported day in the likelihood
 # otherwise we are not identifying the reporting delay properly.
 
+max_delay <- 35
 # Preprocess observations (note this maximum delay is likely too short)
-pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 35, timestep = "day")
+pobs <- enw_preprocess_data(
+  rt_nat_germany, max_delay = max_delay, timestep = "day"
+)
 
-# Create structual reporting data
+# Create structual reporting data for wednesday reporting
 metadata <- pobs$metareference[[1]] |>
   _[, key := 1] |>
   _[, .(key, .group, date)] |>
@@ -85,9 +88,48 @@ metadata <- pobs$metareference[[1]] |>
   _[, .(.group, date, report_date = date + delay)] |>
   setorder(.group, date, report_date) |>
   _[, day_of_week := weekdays(report_date)] |>
-  _[, report := ifelse(day_of_week == "Wednesday", 1, 0)] |>
+  _[, report := ifelse(day_of_week == "Wednesday", 1, 0)]
+
+# Generic munging to make it easier too find reporting
+metadata <- metadata |>
   _[, cum_report := cumsum(report) + 1, by = .(.group, date)] |>
   _[day_of_week == "Wednesday", cum_report := cum_report - 1]
+
+# Add columns for 1:max_delay
+# Create a data.table with columns called delay_1 to delay_35 programmatically
+delays <- data.table()
+# Add columns delay_1 to delay_35
+for (i in 1:max_delay) {
+  delays[, paste0("delay_", i) := 0]
+}
+
+# Add delay columns to metadata
+metadata <- metadata |>
+  _[, key := 1] |>
+  merge(delays[, key := 1], by = "key") |>
+  _[, key := NULL]
+
+# Fill in the delay columns based on reporting
+# For each 
+metadata <- metadata[, {
+  # Loop over unique cum_report values
+  for (cr in unique(cum_report)) {
+    # Create a logical vector for rows matching current cum_report
+    is_current <- cum_report == cr
+    
+    # Find the last TRUE index for each row
+    last_true_index <- max(which(is_current))
+    
+    # Create a vector of 1s and 0s based on is_current
+    delay_values <- as.numeric(is_current)
+    
+    # Assign the delay values to the appropriate delay column
+    assign(paste0("delay_", last_true_index), delay_values)
+  }
+  
+  # Return a list of all columns
+  mget(names(.SD))
+}, by = "date"]
 
 # You can view the matrix like this:
 # print(agg_matrix)
