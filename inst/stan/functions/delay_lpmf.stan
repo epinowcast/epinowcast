@@ -192,6 +192,12 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     for (i in 1:nc[3]) {
       filt_obs_lookup_local[i] = filt_obs_lookup[i] - n[1] + 1;
     }
+    print("Observed");
+    print(filt_obs);
+    print("Expected");
+    print(log_exp_obs);
+    print("Expected observed");
+    print(log_exp_obs[filt_obs_lookup_local]);
 
     tar = obs_lpmf(
       filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs

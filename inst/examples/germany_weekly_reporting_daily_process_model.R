@@ -68,13 +68,13 @@ rt_nat_germany <- enw_filter_reference_dates(
 latest_obs <- enw_latest_data(repcycle_germany_hosp)
 latest_obs <- enw_filter_reference_dates(
   latest_obs,
-  remove_days = 20, include_days = 90
+  remove_days = 20, include_days = 7
 )
 
 # I think we need to skip data that is not on a reported day in the likelihood
 # otherwise we are not identifying the reporting delay properly.
 
-max_delay <- 35
+max_delay <- 7
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(
   rt_nat_germany, max_delay = max_delay, timestep = "day"
@@ -129,7 +129,18 @@ metadata <- metadata[, {
   
   # Return a list of all columns
   mget(names(.SD))
-}, by = "date"]
+}, by = c(".group", "date")]
+
+# Join pobs$new_confirm to metadata
+metadata <- pobs$new_confirm[[1]] |>
+  _[, .(date = reference_date, report_date, .observed)] |>
+  _[metadata, on = c("date", "report_date")]
+
+
+
+# Check if .observed is 0 for all rows that aren't reported
+metadata[isTRUE(.observed) && report == 0][]
+metadata[isFALSE(.observed) && report == 1][]
 
 # Split by date and group, and get delay_ vars as a matrix
 agg_indicators <- metadata |>
