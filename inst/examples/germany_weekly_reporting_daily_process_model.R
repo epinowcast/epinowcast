@@ -110,33 +110,15 @@ metadata <- metadata |>
   _[, key := NULL]
 
 # Fill in the delay columns based on reporting
-# For each 
-metadata <- metadata[, {
-  # Loop over unique cum_report values
-  for (cr in unique(cum_report)) {
-    # Create a logical vector for rows matching current cum_report
-    is_current <- cum_report == cr
-    
-    # Find the last TRUE index for each row
-    last_true_index <- max(which(is_current))
-    
-    # Create a vector of 1s and 0s based on is_current
-    delay_values <- as.numeric(is_current)
-    
-    # Assign the delay values to the appropriate delay column
-    assign(paste0("delay_", last_true_index), delay_values)
-  }
-  
-  # Return a list of all columns
-  mget(names(.SD))
-}, by = c(".group", "date")]
+metadata[report == 1, (paste0("delay_", 1:max_delay)) := as.list(
+  as.numeric(cum_report == cum_report[which(report == 1)])
+), by = c(".group", "date")
+]
 
 # Join pobs$new_confirm to metadata
 metadata <- pobs$new_confirm[[1]] |>
   _[, .(date = reference_date, report_date, .observed)] |>
   _[metadata, on = c("date", "report_date")]
-
-
 
 # Check if .observed is 0 for all rows that aren't reported
 metadata[isTRUE(.observed) && report == 0][]
@@ -152,7 +134,7 @@ agg_indicators <- metadata |>
   purrr::map(\(group_data) {
     group_data |>
       split(by = "date", drop = TRUE) |>
-      purrr::map(\(x) t(as.matrix(x[, -c(".group", "date")])))
+      purrr::map(\(x) as.matrix(x[, -c(".group", "date")]))
   })
 
 # Fit a simple nowcasting model with fixed growth rate and a
