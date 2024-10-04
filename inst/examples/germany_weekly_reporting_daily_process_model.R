@@ -112,7 +112,7 @@ metadata <- metadata |>
 # Fill in the delay columns based on reporting
 metadata[report == 1, (paste0("delay_", 1:max_delay)) := as.list(
   as.numeric(cum_report == cum_report[which(report == 1)])
-), by = c(".group", "date")
+), by = .(.group, date)
 ]
 
 # Join pobs$new_confirm to metadata
