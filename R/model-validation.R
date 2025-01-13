@@ -68,7 +68,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     )
   }
 
-  # Convert to forecast_sample format
+  # Convert to forecast_quantile format
   long_nowcast <- enw_quantiles_to_long(nowcast)
   if (!is.null(long_nowcast[["mad"]])) {
     long_nowcast[, "mad" := NULL]
@@ -86,11 +86,11 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     long_nowcast[, (cols) := purrr::map(.SD, ~ log(. + 0.01)), .SDcols = cols]
   }
 
-  forecast_data <- scoringutils::as_forecast_sample(
+  forecast_data <- scoringutils::as_forecast_quantile(
     data = long_nowcast,
     observed = "true_value",
     predicted = "prediction",
-    sample_id = ".draw"
+    quantile_level = "quantile"
   )
 
   if (check) {
