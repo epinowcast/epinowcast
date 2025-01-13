@@ -22,7 +22,7 @@
 #' performance for targets with large values.
 #'
 #' @param check Logical, defaults to FALSE. Should
-#' [scoringutils::check_forecasts()] be used to check input nowcasts.
+#' input nowcasts be checked for consistency with the scoringutils package.
 #'
 #' @param round_to Integer defaults to 3. Number of digits to round scoring
 #' output to.
@@ -58,7 +58,7 @@
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
                               check = FALSE, round_to = 3, ...) {
   lifecycle::deprecate_warn(
-    "0.4.0", 
+    "0.4.0",
     "enw_score_nowcast()",
     "as_forecast_sample.epinowcast()"
   )
@@ -124,6 +124,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
 #' [scoringutils::as_forecast_sample()]
 #' @export
 #' @family model validation
+#' @method as_forecast_sample epinowcast
 #' @examplesIf interactive()
 #' library(scoringutils)
 #'
@@ -147,22 +148,12 @@ as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
   cols <- intersect(colnames(samples), colnames(latest_obs))
   samples <- merge(samples, latest_obs, by = cols)
 
-  # Convert to scoringutils format
-  forecast_data <- data.table::data.table(
-    observed = samples$observed,
-    predicted = as.numeric(samples$sample),
-    sample_id = samples$.draw
-  )
-
-  # Add any grouping columns that exist
-  group_cols <- setdiff(
-    intersect(names(samples), names(latest_obs)),
-    c("observed", "predicted", ".draw", ".chain", ".iteration")
-  )
-  if (length(group_cols) > 0) {
-    forecast_data[, (group_cols) := samples[, ..group_cols]]
-  }
 
   # Convert to forecast_sample object using scoringutils column names
-  scoringutils::as_forecast_sample(forecast_data, ...)
+  scoringutils::as_forecast_sample(
+    data = samples,
+    observed = "observed",
+    predicted = "sample",
+    sample_id = ".draw",
+    ...)
 }
