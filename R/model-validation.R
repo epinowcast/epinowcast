@@ -1,8 +1,11 @@
 #' Evaluate nowcasts using proper scoring rules
 #'
-#' Acts as a wrapper to [scoringutils::score()]. In particular,
-#' handling filtering nowcast summary output and linking this output to
-#' observed data. See the documentation for the `scoringutils` package for more
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function is deprecated in favour of using
+#' [as_forecast_sample.epinowcast()] with [scoringutils::score()].
+#' See the documentation for the `scoringutils` package for more details on
 #' on forecast scoring.
 #'
 #' @param nowcast A posterior nowcast or posterior prediction as returned by
@@ -54,18 +57,27 @@
 #' summarise_scores(log_scores, by = "location")
 enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
                               check = FALSE, round_to = 3, ...) {
+  lifecycle::deprecate_warn(
+    "0.4.0", 
+    "enw_score_nowcast()",
+    "as_forecast_sample.epinowcast()"
+  )
   if (!requireNamespace("scoringutils")) {
     cli::cli_abort(
       "The package `scoringutils` is required for this function to work."
     )
   }
+
+  # Convert to forecast_sample format
   long_nowcast <- enw_quantiles_to_long(nowcast)
   if (!is.null(long_nowcast[["mad"]])) {
     long_nowcast[, "mad" := NULL]
   }
+
   latest_obs <- coerce_dt(latest_obs)
   data.table::setnames(latest_obs, "confirm", "true_value", skip_absent = TRUE)
   latest_obs[, report_date := NULL]
+
   cols <- intersect(colnames(nowcast), colnames(latest_obs))
   long_nowcast <- merge(long_nowcast, latest_obs, by = cols)
 
@@ -74,17 +86,83 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
     long_nowcast[, (cols) := purrr::map(.SD, ~ log(. + 0.01)), .SDcols = cols]
   }
 
-  long_nowcast[, prediction := as.numeric(prediction)]
-  long_nowcast[, true_value := as.numeric(true_value)]
+  forecast_data <- scoringutils::as_forecast_sample(
+    data = long_nowcast,
+    observed = "true_value",
+    predicted = "prediction",
+    sample_id = ".draw"
+  )
 
   if (check) {
-    scoringutils::check_forecasts(long_nowcast)
+    print(forecast_data)
   }
 
-  scores <- scoringutils::score(long_nowcast, ...)
+  scores <- scoringutils::score(forecast_data, ...)
   numeric_cols <- colnames(scores)[sapply(scores, is.numeric)]
   scores <- scores[, (numeric_cols) := lapply(.SD, signif, digits = round_to),
     .SDcols = numeric_cols
   ]
   return(scores[])
+}
+
+#' Convert an epinowcast object to a forecast_sample object
+#'
+#' This function is used to convert an `epinowcast` as returned by
+#' [epinowcast()] object to a `forecast_sample` object which can be used for
+#' scoring using the `scoringutils` package.
+#'
+#' @param nowcast An `epinowcast` nowcast object as returned by
+#' [epinowcast()].
+#'
+#' @param latest_obs Latest observations to use for the true values must
+#' contain `confirm` and `observed` variables.
+#'
+#' @param ... Additional arguments passed to
+#' [scoringutils::as_forecast_sample()]
+#'
+#' @return A `forecast_sample` object as returned by
+#' [scoringutils::as_forecast_sample()]
+#' @export
+#' @family model validation
+#' @examplesIf interactive()
+#' library(scoringutils)
+#'
+#' nowcast <- enw_example("nowcast")
+#' latest_obs <- enw_example("observations")
+#' as_forecast_sample(nowcast, latest_obs)
+as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
+  if (!requireNamespace("scoringutils")) {
+    cli::cli_abort(
+      "The package `scoringutils` is required for this function to work."
+    )
+  }
+  # Get samples from the nowcast
+  samples <- summary(nowcast, type = "nowcast_samples")
+
+  # Process latest observations
+  latest_obs <- coerce_dt(latest_obs)
+  data.table::setnames(latest_obs, "confirm", "observed", skip_absent = TRUE)
+
+  # Merge samples with observations
+  cols <- intersect(colnames(samples), colnames(latest_obs))
+  samples <- merge(samples, latest_obs, by = cols)
+
+  # Convert to scoringutils format
+  forecast_data <- data.table::data.table(
+    observed = samples$observed,
+    predicted = as.numeric(samples$sample),
+    sample_id = samples$.draw
+  )
+
+  # Add any grouping columns that exist
+  group_cols <- setdiff(
+    intersect(names(samples), names(latest_obs)),
+    c("observed", "predicted", ".draw", ".chain", ".iteration")
+  )
+  if (length(group_cols) > 0) {
+    forecast_data[, (group_cols) := samples[, ..group_cols]]
+  }
+
+  # Convert to forecast_sample object using scoringutils column names
+  scoringutils::as_forecast_sample(forecast_data, ...)
 }
