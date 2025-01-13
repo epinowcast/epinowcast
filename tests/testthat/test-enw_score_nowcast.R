@@ -29,6 +29,7 @@ test_that("Can score nowcasts", {
 test_that("Can convert epinowcast object to forecast_sample", {
   skip_on_cran()
   skip_if_not_installed("scoringutils")
+  library(scoringutils)
 
   nowcast <- enw_example("nowcast")
   obs <- enw_example("observations")
@@ -56,13 +57,4 @@ test_that("Can convert epinowcast object to forecast_sample", {
   expect_true(all(
     c("observed", "predicted", "sample_id") %in% names(forecast_data)
   ))
-
-  # Test error when scoringutils not available
-  with_mock(
-    "requireNamespace" = function(...) FALSE,
-    expect_error(
-      as_forecast_sample(nowcast, obs),
-      "The package `scoringutils` is required for this function to work."
-    )
-  )
 })

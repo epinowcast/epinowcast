@@ -133,6 +133,8 @@ Suggests:
     usethis,
     vdiffr,
     withr
+Remotes:
+    epiforecasts/scoringutils@seabbs/issue981
 VignetteBuilder:
     knitr
 Additional_repositories:

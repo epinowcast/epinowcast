@@ -123,8 +123,8 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
 #' @return A `forecast_sample` object as returned by
 #' [scoringutils::as_forecast_sample()]
 #' @export
-#' @family model validation
 #' @method as_forecast_sample epinowcast
+#' @family model validation
 #' @examplesIf interactive()
 #' library(scoringutils)
 #'
@@ -139,20 +139,24 @@ as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
   }
   # Get samples from the nowcast
   samples <- summary(nowcast, type = "nowcast_samples")
+  samples[, "confirm" := NULL]
 
   # Process latest observations
-  latest_obs <- coerce_dt(latest_obs)
-  data.table::setnames(latest_obs, "confirm", "observed", skip_absent = TRUE)
+  latest_obs <- coerce_dt(
+    latest_obs, required_cols = c("confirm"), dates = TRUE
+  )
+  latest_obs[, "report_date" := NULL]
 
   # Merge samples with observations
   cols <- intersect(colnames(samples), colnames(latest_obs))
+  cols <- setdiff(cols, c("confirm", "sample", ".draw"))
   samples <- merge(samples, latest_obs, by = cols)
 
 
   # Convert to forecast_sample object using scoringutils column names
   scoringutils::as_forecast_sample(
     data = samples,
-    observed = "observed",
+    observed = "confirm",
     predicted = "sample",
     sample_id = ".draw",
     ...)
