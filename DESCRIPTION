@@ -134,7 +134,7 @@ Suggests:
     vdiffr,
     withr
 Remotes:
-    epiforecasts/scoringutils@seabbs/issue981
+    epiforecasts/scoringutils
 VignetteBuilder:
     knitr
 Additional_repositories:
