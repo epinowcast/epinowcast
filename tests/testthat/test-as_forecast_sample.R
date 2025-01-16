@@ -35,7 +35,7 @@ test_that("Can convert epinowcast object to forecast_sample", {
   obs <- enw_example("observations")
 
   # Test basic conversion
-  expect_s3_class(
+  test <- expect_s3_class(
     suppressPackageStartupMessages(
       as_forecast_sample(nowcast, obs)
     ),
@@ -50,10 +50,6 @@ test_that("Can convert epinowcast object to forecast_sample", {
   expect_true("group" %in% names(forecast_data))
   expect_true(all(forecast_data$group == "test"))
 
-  # Test required columns are present
-  forecast_data <- suppressPackageStartupMessages(
-    as_forecast_sample(nowcast, obs)
-  )
   expect_true(all(
     c("observed", "predicted", "sample_id") %in% names(forecast_data)
   ))
