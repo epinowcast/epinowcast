@@ -79,4 +79,8 @@ log_scores <- enw_score_nowcast(summarised_nowcast, obs, log = TRUE)
 summarise_scores(log_scores, by = "location")
 \dontshow{\}) # examplesIf}
 }
+\seealso{
+Other modelvalidation: 
+\code{\link{as_forecast_sample.epinowcast}()}
+}
 \concept{modelvalidation}

@@ -34,4 +34,8 @@ latest_obs <- enw_example("observations")
 as_forecast_sample(nowcast, latest_obs)
 \dontshow{\}) # examplesIf}
 }
-\concept{model validation}
+\seealso{
+Other modelvalidation: 
+\code{\link{enw_score_nowcast}()}
+}
+\concept{modelvalidation}
