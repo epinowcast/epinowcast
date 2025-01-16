@@ -57,4 +57,6 @@ test_that("Can convert epinowcast object to forecast_sample", {
   expect_true(all(
     c("observed", "predicted", "sample_id") %in% names(forecast_data)
   ))
+
+  unloadNamespace("scoringutils")
 })
