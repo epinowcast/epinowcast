@@ -1,6 +1,6 @@
 # load example preprocessed data (already regression tested)
 pobs <- enw_example("preprocessed")
-if (not_on_cran()) {
+if (not_on_cran() && on_ci()) {
   model <- enw_model()
   options(mc.cores = 2)
 }
