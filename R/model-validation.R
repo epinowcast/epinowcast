@@ -123,7 +123,6 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
 #' @return A `forecast_sample` object as returned by
 #' [scoringutils::as_forecast_sample()]
 #' @export
-#' @method as_forecast_sample epinowcast
 #' @family model validation
 #' @examplesIf interactive()
 #' library(scoringutils)

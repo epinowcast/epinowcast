@@ -4,7 +4,7 @@
 \alias{as_forecast_sample.epinowcast}
 \title{Convert an epinowcast object to a forecast_sample object}
 \usage{
-\method{as_forecast_sample}{epinowcast}(nowcast, latest_obs, ...)
+as_forecast_sample.epinowcast(nowcast, latest_obs, ...)
 }
 \arguments{
 \item{nowcast}{An \code{epinowcast} nowcast object as returned by
