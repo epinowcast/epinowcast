@@ -142,7 +142,7 @@ as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
 
   # Process latest observations
   latest_obs <- coerce_dt(
-    latest_obs, required_cols = c("confirm"), dates = TRUE
+    latest_obs, required_cols = "confirm", dates = TRUE
   )
   latest_obs[, "report_date" := NULL]
 
