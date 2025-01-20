@@ -49,7 +49,7 @@ library(knitr)
 This vignette includes several models that take upwards of 30 minutes to fit to data on a moderately equipped laptop. To speed up model fitting if more CPUs are available set the number of threads used per chain to half the number of real cores available (here 6 as we are using 2 MCMC chains and have 12 real cores available). Note this may cause conflicts with other processes running on your computer and if this is an issue reduce the number of threads used.
 
 ```{r, eval  = TRUE}
-threads <- floor(min(max(1, parallel::detectCores() /  4), 6))
+threads <- floor(min(max(1, parallel::detectCores() /  2), 6))
 options(mc.cores = 2)
 ```
 
@@ -299,12 +299,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
     ),
      ...
   )
-
-  nowcast_summary <- summary(
-    nowcast,
-    probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
-  )
-  return(nowcast_summary)
+  return(nowcast)
 }
 ```
 
@@ -318,21 +313,26 @@ independent_nowcast <- map(
   independent_epinowcast,
   fit = enw_fit_opts(
     save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-    chains = 2, threads_per_chain = threads, 
+    chains = 2, threads_per_chain = threads,
     iter_sampling = 500, iter_warmup = 500,
     show_messages = FALSE, refresh = 0,
     adapt_delta = 0.95, max_treedepth = 12
   ),
   priors = priors
 )
-independent_nowcast <- rbindlist(independent_nowcast)
+
+independent_nowcast_summary <- map_dfr(
+  independent_nowcast,
+  summary,
+  probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
+)
 ```
 
 As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
 
 ```{r ind_nowcast, height = 9, width = 9}
 enw_plot_nowcast_quantiles(
-  independent_nowcast, latest_obs = latest_nat_germany
+  independent_nowcast_summary, latest_obs = latest_nat_germany
 ) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -369,7 +369,7 @@ summarised_nowcasts <- map(
   nowcasts, summary,
   probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
 )
-summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- independent_nowcast # nolint
+summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- independent_nowcast_summary # nolint
 
 summarised_nowcasts <- rbindlist(summarised_nowcasts, idcol = "model",
                                  use.names = TRUE)
@@ -412,19 +412,28 @@ As a first step we score overall performance. Here we see that the baseline mode
 
 ```{r}
 eval_obs <- latest_nat_germany[reference_date > (max(reference_date) - 7)]
-score <- map(
-  nowcasts, as_forecast_sample, eval_obs) |>
-  map_dfr(score, eval_obs)
+scores <- map(nowcasts, as_forecast_sample.epinowcast, eval_obs) |>
+  map_dfr(score, .id = "model") |>
+  rbind(
+    independent_nowcast |>
+      map(as_forecast_sample.epinowcast, eval_obs) |>
+      map_dfr(score, .id = "age_group") |>
+      within({
+        model <- "Independent by age, Reference: Week, Report: Day of week"
+      }),
+      fill = TRUE
+  )
 
-score |>
+scores |>
   summarise_scores(by = "model") |>
+  summarise_scores(fun = signif, digits = 2, by = "model") |>
   kable()
 ```
 
 Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
 ```{r performance, fig.width = 9, fig.height = 9}
-age_date_score <- score |>
+age_date_score <- scores |>
   summarise_scores(by = c("model", "reference_date", "age_group"))
 fixed_score <- age_date_score[
   model == "Reference: Fixed, Report: Fixed",
