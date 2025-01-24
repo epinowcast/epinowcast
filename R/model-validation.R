@@ -138,7 +138,11 @@ as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
   }
   # Get samples from the nowcast
   samples <- summary(nowcast, type = "nowcast_samples")
-  samples[, "confirm" := NULL]
+  samples[,
+   c("confirm", ".chain", ".iteration", "max_confirm",
+     "cum_prop_reported", "prop_reported"
+    ) := NULL
+  ]
 
   # Process latest observations
   latest_obs <- coerce_dt(

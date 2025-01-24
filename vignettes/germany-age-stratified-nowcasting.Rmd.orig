@@ -412,17 +412,21 @@ As a first step we score overall performance. Here we see that the baseline mode
 
 ```{r}
 eval_obs <- latest_nat_germany[reference_date > (max(reference_date) - 7)]
-scores <- map(nowcasts, as_forecast_sample.epinowcast, eval_obs) |>
-  map_dfr(score, .id = "model") |>
+scores <- map_dfr(
+  nowcasts, as_forecast_sample.epinowcast, eval_obs, .id = "model"
+) |>
   rbind(
     independent_nowcast |>
-      map(as_forecast_sample.epinowcast, eval_obs) |>
-      map_dfr(score, .id = "age_group") |>
+      map_dfr(as_forecast_sample.epinowcast, eval_obs) |>
       within({
         model <- "Independent by age, Reference: Week, Report: Day of week"
       }),
       fill = TRUE
-  )
+  ) |>
+  as.data.table() |>
+  as_forecast_sample() |>
+  score()
+
 
 scores |>
   summarise_scores(by = "model") |>
@@ -433,20 +437,17 @@ scores |>
 Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
 ```{r performance, fig.width = 9, fig.height = 9}
-age_date_score <- scores |>
+relative_scores <- scores |>
+  add_relative_skill(
+    by = c("reference_date", "age_group"),
+    baseline = "Reference: Fixed, Report: Fixed"
+  ) |>
   summarise_scores(by = c("model", "reference_date", "age_group"))
-fixed_score <- age_date_score[
-  model == "Reference: Fixed, Report: Fixed",
-  .(reference_date, age_group, fixed_is = interval_score)
-]
-age_date_score <- merge(
-  age_date_score, fixed_score, by = c("reference_date", "age_group")
-)
 
-age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
-age_date_score <- age_date_score[!model == "Reference: Fixed, Report: Fixed"]
-plot <- ggplot(age_date_score) +
-  aes(x = reference_date, y = interval_score, col = model) +
+
+relative_scores <- relative_scores[!model == "Reference: Fixed, Report: Fixed"]
+plot <- ggplot(relative_scores) +
+  aes(x = reference_date, y = crps_scaled_relative_skill, col = model) +
   geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +
   geom_line(linewidth = 1.1, alpha = 0.6) +
   geom_point(size = 1.2) +
