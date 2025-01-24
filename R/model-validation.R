@@ -138,7 +138,7 @@ scoringutils::as_forecast_sample
 #' as_forecast_sample(nowcast, latest_obs)
 as_forecast_sample.epinowcast <- function(data, latest_obs, ...) {
   # Get samples from the nowcast
-  samples <- summary(nowcast, type = "nowcast_samples")
+  samples <- summary(data, type = "nowcast_samples")
   samples[,
    c("confirm", ".chain", ".iteration", "max_confirm",
      "cum_prop_reported", "prop_reported"
