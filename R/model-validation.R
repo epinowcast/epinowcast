@@ -116,7 +116,7 @@ scoringutils::as_forecast_sample
 #' [epinowcast()] object to a `forecast_sample` object which can be used for
 #' scoring using the `scoringutils` package.
 #'
-#' @param nowcast An `epinowcast` nowcast object as returned by
+#' @param data An `epinowcast` nowcast object as returned by
 #' [epinowcast()].
 #'
 #' @param latest_obs Latest observations to use for the true values must
@@ -136,7 +136,7 @@ scoringutils::as_forecast_sample
 #' nowcast <- enw_example("nowcast")
 #' latest_obs <- enw_example("observations")
 #' as_forecast_sample(nowcast, latest_obs)
-as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
+as_forecast_sample.epinowcast <- function(data, latest_obs, ...) {
   # Get samples from the nowcast
   samples <- summary(nowcast, type = "nowcast_samples")
   samples[,
