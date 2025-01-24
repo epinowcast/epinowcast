@@ -105,6 +105,11 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
   return(scores[])
 }
 
+
+#' @importFrom scoringutils as_forecast_sample
+#' @export
+scoringutils::as_forecast_sample
+
 #' Convert an epinowcast object to a forecast_sample object
 #'
 #' This function is used to convert an `epinowcast` as returned by
@@ -123,6 +128,7 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
 #' @return A `forecast_sample` object as returned by
 #' [scoringutils::as_forecast_sample()]
 #' @export
+#' @method as_forecast_sample epinowcast
 #' @family modelvalidation
 #' @examplesIf interactive()
 #' library(scoringutils)
@@ -131,11 +137,6 @@ enw_score_nowcast <- function(nowcast, latest_obs, log = FALSE,
 #' latest_obs <- enw_example("observations")
 #' as_forecast_sample(nowcast, latest_obs)
 as_forecast_sample.epinowcast <- function(nowcast, latest_obs, ...) {
-  if (!requireNamespace("scoringutils")) {
-    cli::cli_abort(
-      "The package `scoringutils` is required for this function to work."
-    )
-  }
   # Get samples from the nowcast
   samples <- summary(nowcast, type = "nowcast_samples")
   samples[,

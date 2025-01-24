@@ -406,18 +406,22 @@ loo_compare(loos)
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
 
-More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::eval_forecasts()`. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
+More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the continuous ranked probability score.
+Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::score()`.
+Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
 
-As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
+As a first step we score overall performance.
+Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably.
+Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
 
 ```{r}
 eval_obs <- latest_nat_germany[reference_date > (max(reference_date) - 7)]
 scores <- map_dfr(
-  nowcasts, as_forecast_sample.epinowcast, eval_obs, .id = "model"
+  nowcasts, as_forecast_sample, eval_obs, .id = "model"
 ) |>
   rbind(
     independent_nowcast |>
-      map_dfr(as_forecast_sample.epinowcast, eval_obs) |>
+      map_dfr(as_forecast_sample, eval_obs) |>
       within({
         model <- "Independent by age, Reference: Week, Report: Day of week"
       }),
@@ -434,7 +438,9 @@ scores |>
   kable()
 ```
 
-Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
+Finally we look across all scores relative to the simple model with no variation.
+This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models.
+The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
 ```{r performance, fig.width = 9, fig.height = 9}
 relative_scores <- scores |>
