@@ -71,6 +71,7 @@
 <li>Support for probability aggregation has been added to <code>expected_obs()</code>. See <a href="https://github.com/epinowcast/epinowcast/issues/482" class="external-link">#482</a> by <a href="https://github.com/jessalynnsebastian" class="external-link">@jessalynnsebastian</a> and reviewed by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 <li>Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See <a href="https://github.com/epinowcast/epinowcast/issues/494" class="external-link">#494</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and reviewed by <a href="https://github.com/sbfnk" class="external-link">@sbfnk</a>.</li>
 <li>Deprecated <code><a href="../reference/simulate_double_censored_pmf.html">simulate_double_censored_pmf()</a></code> in favour of functionality from the <code>primarycensored</code> package.</li>
+<li>A new interface has been added to <code>scoringutils</code> to allow for scoring nowcasts. This is now available in <code>epinowcast</code> via <code><a href="https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html" class="external-link">as_forecast_sample()</a></code>. See <a href="https://github.com/epinowcast/epinowcast/issues/550" class="external-link">#550</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="model-0-3-9000">Model<a class="anchor" aria-label="anchor" href="#model-0-3-9000"></a></h3>
@@ -92,7 +93,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="depreciations-0-3-9000">Depreciations<a class="anchor" aria-label="anchor" href="#depreciations-0-3-9000"></a></h3>
-</div>
+<ul><li>
+<code><a href="../reference/enw_score_nowcast.html">enw_score_nowcast()</a></code> has been deprecated in favour of <code><a href="https://epiforecasts.io/scoringutils/reference/score.html" class="external-link">scoringutils::score()</a></code>. See <a href="https://github.com/epinowcast/epinowcast/issues/550" class="external-link">#550</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a> and self-reviewed.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="epinowcast-030">epinowcast 0.3.0<a class="anchor" aria-label="anchor" href="#epinowcast-030"></a></h2>
