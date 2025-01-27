@@ -29,7 +29,6 @@ test_that("Can score nowcasts", {
 test_that("Can convert epinowcast object to forecast_sample", {
   skip_on_cran()
   skip_if_not_installed("scoringutils")
-  library(scoringutils)
 
   nowcast <- enw_example("nowcast")
   obs <- enw_example("observations")
@@ -53,6 +52,4 @@ test_that("Can convert epinowcast object to forecast_sample", {
   expect_true(all(
     c("observed", "predicted", "sample_id") %in% names(forecast_data)
   ))
-
-  unloadNamespace("scoringutils")
 })
