@@ -125,6 +125,7 @@ Imports:
 Suggests:
     bookdown,
     loo (>= 2.4.1),
+    primarycensored,
     knitr,
     RcppEigen,
     rmarkdown,
