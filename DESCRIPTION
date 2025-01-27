@@ -120,19 +120,22 @@ Imports:
     purrr,
     rlang,
     scales,
+    scoringutils,
     lifecycle
 Suggests:
     bookdown,
     loo (>= 2.4.1),
+    primarycensored,
     knitr,
     RcppEigen,
     rmarkdown,
-    scoringutils,
     spelling,
     testthat (>= 3.1.9),
     usethis,
     vdiffr,
     withr
+Remotes:
+    epiforecasts/scoringutils
 VignetteBuilder:
     knitr
 Additional_repositories:

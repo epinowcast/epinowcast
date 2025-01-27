@@ -23,6 +23,7 @@
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
 - Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
+- A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
 
 ## Model
 
@@ -41,8 +42,11 @@
 - Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Made vignette progress messaging dependent on the user being interactive. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Added a vignette to document package use cases. See #524 by @kaitejohnson and reviewed by @seabbs.
+- Switched to using `{primarycensored}` for simulating the primary censored and right truncated processes needed to correctly model the discrete delays. See #549 by @seabbs and self-reviewed.
 
 ## Depreciations
+
+- `enw_score_nowcast()` has been deprecated in favour of `scoringutils::score()`. See #550 by @seabbs and self-reviewed.
 
 # epinowcast 0.3.0
 
