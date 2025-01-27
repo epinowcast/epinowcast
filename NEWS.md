@@ -45,7 +45,7 @@
 
 ## Depreciations
 
-- `enw_score_nowcast()` has been deprecated in favour of `scoringutils::score()`. See #550 by @seabbs and reviewed self-reviewed.
+- `enw_score_nowcast()` has been deprecated in favour of `scoringutils::score()`. See #550 by @seabbs and self-reviewed.
 
 # epinowcast 0.3.0
 
