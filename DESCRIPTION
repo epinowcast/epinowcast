@@ -124,6 +124,7 @@ Imports:
     lifecycle
 Suggests:
     bookdown,
+    dplyr,
     loo (>= 2.4.1),
     primarycensored,
     knitr,
