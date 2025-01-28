@@ -43,7 +43,7 @@ This vignette includes several models that take upwards of 30 minutes to fit to 
 
 
 ``` r
-threads <- floor(min(max(1, parallel::detectCores() /  4), 6))
+threads <- floor(min(max(1, parallel::detectCores() /  2), 6))
 options(mc.cores = 2)
 ```
 
@@ -120,13 +120,14 @@ Here we explore a range of increasingly complex models using subject area knowle
 
 We first explore a relatively simple model that assumes that reporting delays are fixed across age groups and time.
 
-Note that here we use two chains each using 1 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
+Note that here we use two chains each using 2 threads as a demonstration but in general using 4 chains is recommended. Also note that warm-up and sampling iterations have been set below default values to reduce compute requirements but this may not be sufficient for many real world use cases. Finally, note that here we have silenced fitting progress and potential warning messages but in general this should not be done.
 
 
 ``` r
 fit <- enw_fit_opts(
   save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-  chains = 2, threads_per_chain = threads,
+  chains = 2
+  , threads_per_chain = threads,
   iter_sampling = 500, iter_warmup = 500,
   show_messages = interactive(), refresh = ifelse(interactive(), 100, 0),
   adapt_delta = 0.9, max_treedepth = 12
@@ -162,16 +163,16 @@ priors <- summary(
 )
 priors[, sd := sd * 1.5]
 priors
-#>            variable      mean    median         sd        mad        q5
-#>              <char>     <num>     <num>      <num>      <num>     <num>
-#> 1: refp_mean_int[1] 1.1241043 1.1158650 0.17518175 0.10896369 0.9510968
-#> 2:   refp_sd_int[1] 2.6064102 2.6005000 0.19630607 0.12650285 2.4003890
-#> 3:      sqrt_phi[1] 0.6434821 0.6427005 0.02690481 0.01849247 0.6153489
-#>         q20       q80       q95     rhat  ess_bulk ess_tail
-#>       <num>     <num>     <num>    <num>     <num>    <num>
-#> 1: 1.028998 1.2136340 1.3302645 1.003439  725.3080 591.6027
-#> 2: 2.490760 2.7124420 2.8304450 1.004707  765.6376 694.3133
-#> 3: 0.627998 0.6591382 0.6754898 1.004471 1170.0935 783.6616
+#>            variable     mean    median         sd        mad        q5
+#>              <char>    <num>     <num>      <num>      <num>     <num>
+#> 1: refp_mean_int[1] 1.111821 1.1045250 0.16773404 0.10997927 0.9387834
+#> 2:   refp_sd_int[1] 2.594333 2.5886300 0.19144839 0.12807440 2.3987690
+#> 3:      sqrt_phi[1] 0.643861 0.6437165 0.02681439 0.01792686 0.6138794
+#>          q20      q80       q95     rhat ess_bulk ess_tail
+#>        <num>    <num>     <num>    <num>    <num>    <num>
+#> 1: 1.0168720 1.202094 1.3091770 1.005311 1811.718 694.5450
+#> 2: 2.4862700 2.698562 2.8095845 1.004335 1786.922 800.3941
+#> 3: 0.6290644 0.658735 0.6736499 1.000957 1320.894 670.5396
 ```
 
 ## Reference day of the week effect
@@ -384,12 +385,7 @@ independent_epinowcast <- function(obs, max_delay = 40, ...) {
     ),
      ...
   )
-
-  nowcast_summary <- summary(
-    nowcast,
-    probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
-  )
-  return(nowcast_summary)
+  return(nowcast)
 }
 ```
 
@@ -404,14 +400,19 @@ independent_nowcast <- map(
   independent_epinowcast,
   fit = enw_fit_opts(
     save_warmup = FALSE, output_loglik = TRUE, pp = TRUE,
-    chains = 2, threads_per_chain = threads, 
+    chains = 2, threads_per_chain = threads,
     iter_sampling = 500, iter_warmup = 500,
     show_messages = FALSE, refresh = 0,
     adapt_delta = 0.95, max_treedepth = 12
   ),
   priors = priors
 )
-independent_nowcast <- rbindlist(independent_nowcast)
+
+independent_nowcast_summary <- map_dfr(
+  independent_nowcast,
+  summary,
+  probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
+)
 ```
 
 As we now have the summarised nowcasts rather than an object of class `epinowcast` we need to make use of the underlying plot function ourselves. Doing so we see that performance is generally quite good across the board though the width of credible intervals has also increased. Importantly the 35-59 year old age group is being captured at least as well as in the hierarchical models with only minor reductions in performance in other age groups. This suggests that for this dataset and nowcast date there may be relatively little benefit to jointly modelling age groups.
@@ -419,7 +420,7 @@ As we now have the summarised nowcasts rather than an object of class `epinowcas
 
 ``` r
 enw_plot_nowcast_quantiles(
-  independent_nowcast, latest_obs = latest_nat_germany
+  independent_nowcast_summary, latest_obs = latest_nat_germany
 ) +
   facet_wrap(vars(age_group), scales = "free_y")
 ```
@@ -463,7 +464,7 @@ summarised_nowcasts <- map(
   nowcasts, summary,
   probs = c(0.025, 0.05, seq(0.1, 0.9, by = 0.1), 0.95, 0.975)
 )
-summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- independent_nowcast # nolint
+summarised_nowcasts$`Independent by age, Reference: Week, Report: Day of week` <- independent_nowcast_summary # nolint
 
 summarised_nowcasts <- rbindlist(summarised_nowcasts, idcol = "model",
                                  use.names = TRUE)
@@ -501,65 +502,80 @@ As a crude measure of general out of sample performance we can use the leave one
 
 
 ``` r
-loos <- map(nowcasts, ~ .$fit[[1]]$loo())
+loos <- map(nowcasts, \(x) x$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age and week by age, Report: Day of week   -0.6       3.6 
-#> Reference: Age, Report: Day of week                   -1.7       6.0 
-#> Reference: Fixed, Report: Day of week                -88.0      11.8 
-#> Reference: Fixed, Report: Fixed                     -630.4      46.5
+#> Reference: Age and week by age, Report: Day of week   -0.7       3.5 
+#> Reference: Age, Report: Day of week                   -3.7       6.0 
+#> Reference: Fixed, Report: Day of week                -90.1      11.9 
+#> Reference: Fixed, Report: Fixed                     -631.0      46.6
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
 
-More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the weighted interval score. Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::eval_forecasts()`. Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
+More rigorously, we can evaluate the nowcasts using proper scoring rules from the `scoringutils` package including the continuous ranked probability score.
+Here we limit the nowcasts scored to the last 7 days of data to make interpretation easier, transform nowcasts into format required for `scoringutils`, link with the latest available data, and the finally call `scoringutils::score()`.
+Note that as we are only scoring a single nowcasts it is difficult to generalise our findings as this one day of reporting may have been unusual. To have a more informed view of which model to pick we would ideally nowcast a range of dates and evaluate each of them.
 
-As a first step we score overall performance. Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably. Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
+As a first step we score overall performance.
+Here we see that the baseline model with no variation actually performs very well with only models that include at least day of the week, age groups and variation by week performing comparably.
+Other performance characteristics are relatively similar across models (with all models being biased towards underprediction for example). 
 
 
 ``` r
-score <- enw_score_nowcast(
- summarised_nowcasts,
- latest_nat_germany[reference_date > (max(reference_date) - 7)]
-)
+eval_obs <- latest_nat_germany[reference_date > (max(reference_date) - 7)]
+scores <- map_dfr(
+  nowcasts, as_forecast_sample, eval_obs, .id = "model"
+) |>
+  rbind(
+    independent_nowcast |>
+      map_dfr(as_forecast_sample, eval_obs) |>
+      within({
+        model <- "Independent by age, Reference: Week, Report: Day of week"
+      }),
+      fill = TRUE
+  ) |>
+  as.data.table() |>
+  as_forecast_sample() |>
+  score()
 
-score |>
+
+scores |>
   summarise_scores(by = "model") |>
+  summarise_scores(fun = signif, digits = 2, by = "model") |>
   kable()
 ```
 
 
 
-|model                                                    | interval_score| dispersion| underprediction| overprediction| coverage_deviation|       bias| ae_median|
-|:--------------------------------------------------------|--------------:|----------:|---------------:|--------------:|------------------:|----------:|---------:|
-|Reference: Fixed, Report: Fixed                          |      10.170440|   3.684841|        3.002763|      3.4819466|         -0.0742543| -0.0275510|  17.51020|
-|Reference: Fixed, Report: Day of week                    |      10.123331|   2.771149|        6.435809|      0.9167975|         -0.1260597| -0.2714286|  15.30612|
-|Reference: Age, Report: Day of week                      |       8.501909|   2.643243|        5.331742|      0.5274725|         -0.1166405| -0.4112245|  13.00000|
-|Reference: Age and week, Report: Day of week             |       7.513290|   3.136345|        1.284082|      3.0928414|         -0.0020408|  0.0428571|  13.22449|
-|Reference: Age and week by age, Report: Day of week      |       7.181140|   3.139586|        2.465463|      1.5758242|         -0.0036107| -0.2051020|  12.44898|
-|Independent by age, Reference: Week, Report: Day of week |       8.438521|   4.567014|        1.108477|      2.7604396|          0.0607535| -0.0479592|  14.35714|
+|model                                               |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
+|:---------------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
+|Reference: Fixed, Report: Fixed                     | -0.007| 6.1| 12.0|           4.40|             3.8|        4.1|       3.9|  17|        18|    1300|
+|Reference: Fixed, Report: Day of week               | -0.250| 7.1| 12.0|           1.20|             7.5|        3.1|       4.4|  13|        15|     580|
+|Reference: Age, Report: Day of week                 | -0.390| 6.8| 10.0|           0.72|             6.3|        3.0|       4.2|  13|        13|     410|
+|Reference: Age and week, Report: Day of week        |  0.026| 5.5|  8.7|           3.50|             1.7|        3.5|       3.6|  15|        13|     600|
+|Reference: Age and week by age, Report: Day of week | -0.190| 5.6|  8.6|           2.10|             3.0|        3.5|       3.7|  15|        12|     480|
 
 
 
-Finally we look across all scores relative to the simple model with no variation. This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models. The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
+Finally we look across all scores relative to the simple model with no variation.
+This nicely captures the role of the last data point on performance but also highlights more variation across reference dates and age groups between models.
+The difference in performance between the hierarchical by age models and the model that treats age groups independently is also very clear.
 
 
 ``` r
-age_date_score <- score |>
+relative_scores <- scores |>
+  add_relative_skill(
+    by = c("reference_date", "age_group"),
+    baseline = "Reference: Fixed, Report: Fixed"
+  ) |>
   summarise_scores(by = c("model", "reference_date", "age_group"))
-fixed_score <- age_date_score[
-  model == "Reference: Fixed, Report: Fixed",
-  .(reference_date, age_group, fixed_is = interval_score)
-]
-age_date_score <- merge(
-  age_date_score, fixed_score, by = c("reference_date", "age_group")
-)
 
-age_date_score <- age_date_score[, interval_score := interval_score / fixed_is]
-age_date_score <- age_date_score[!model == "Reference: Fixed, Report: Fixed"]
-plot <- ggplot(age_date_score) +
-  aes(x = reference_date, y = interval_score, col = model) +
+
+relative_scores <- relative_scores[!model == "Reference: Fixed, Report: Fixed"]
+plot <- ggplot(relative_scores) +
+  aes(x = reference_date, y = crps_scaled_relative_skill, col = model) +
   geom_hline(yintercept = 1, linetype = 2, linewidth = 1.2, alpha = 0.5) +
   geom_line(linewidth = 1.1, alpha = 0.6) +
   geom_point(size = 1.2) +
