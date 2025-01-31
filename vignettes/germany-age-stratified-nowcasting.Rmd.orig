@@ -428,6 +428,9 @@ scores <- map_dfr(
       fill = TRUE
   ) |>
   as.data.table() |>
+  within({
+    .group <- NULL
+  }) |>
   as_forecast_sample() |>
   score()
 
