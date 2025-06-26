@@ -1,12 +1,12 @@
 # enw_obs() produces the expected output
 
     Code
-      obs <- enw_obs(family = "negbin", data = pobs)
+      obs <- enw_obs(family = "negbin_quadratic", data = pobs)
       obs$inits <- NULL
       obs
     Output
       $family
-      [1] "negbin"
+      [1] "negbin_quadratic"
       
       $data
       $data$n
@@ -121,13 +121,13 @@
 ---
 
     Code
-      obs_missing <- enw_obs(family = "negbin", data = pobs_missing,
+      obs_missing <- enw_obs(family = "negbin_quadratic", data = pobs_missing,
         observation_indicator = ".observed")
       obs_missing$inits <- NULL
       obs_missing
     Output
       $family
-      [1] "negbin"
+      [1] "negbin_quadratic"
       
       $data
       $data$n

@@ -26,7 +26,7 @@ test_that("enw_obs() produces the expected output", {
   pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 5)
 
   expect_snapshot({
-    obs <- enw_obs(family = "negbin", data = pobs)
+    obs <- enw_obs(family = "negbin_quadratic", data = pobs)
     obs$inits <- NULL
     obs
   })
@@ -51,7 +51,7 @@ test_that("enw_obs() produces the expected output", {
   pobs_missing <- enw_preprocess_data(retro_nat_germany, max_delay = 5)
   expect_snapshot({
     obs_missing <- enw_obs(
-      family = "negbin", data = pobs_missing,
+      family = "negbin_quadratic", data = pobs_missing,
       observation_indicator = ".observed"
     )
     obs_missing$inits <- NULL
@@ -59,7 +59,7 @@ test_that("enw_obs() produces the expected output", {
   })
   expect_error(
     enw_obs(
-      family = "negbin", data = pobs_missing,
+      family = "negbin_quadratic", data = pobs_missing,
       observation_indicator = "delay"
     ),
     "observation_indicator must be a logical"

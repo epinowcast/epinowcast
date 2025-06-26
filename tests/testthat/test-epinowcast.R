@@ -437,7 +437,7 @@ test_that("epinowcast() can fit multiple time series at once", {
           parallel_chains = 2, adapt_delta = 0.95,
           refresh = 0, show_messages = FALSE
         ),
-        obs = enw_obs(family = "negbin", data = pobs),
+        obs = enw_obs(family = "negbin_quadratic", data = pobs),
         model = model
       )
     )

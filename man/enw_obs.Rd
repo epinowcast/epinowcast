@@ -4,13 +4,19 @@
 \alias{enw_obs}
 \title{Setup observation model and data}
 \usage{
-enw_obs(family = c("negbin", "poisson"), observation_indicator = NULL, data)
+enw_obs(
+  family = c("negbin_quadratic", "negbin_linear", "poisson"),
+  observation_indicator = NULL,
+  data
+)
 }
 \arguments{
 \item{family}{Character string, the observation model to use in the
 likelihood; enforced by \code{\link[base:match.arg]{base::match.arg()}}. By default this is a
-negative binomial ("negbin") with Poisson ("poisson") also being
-available. Support for additional observation models is planned,
+negative binomial with a quadratic mean-variance
+relationship ("negbin_quadratic"). Negative binomial with a linear
+mean-variance relationship ("negbin_quadratic") and Poisson ("poisson") are
+also available. Support for additional observation models is planned,
 please open an issue with suggestions.}
 
 \item{observation_indicator}{A character string, the name of the column in

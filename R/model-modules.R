@@ -652,8 +652,10 @@ enw_missing <- function(formula = ~1, data) {
 #'
 #' @param family Character string, the observation model to use in the
 #' likelihood; enforced by [base::match.arg()]. By default this is a
-#' negative binomial ("negbin") with Poisson ("poisson") also being
-#' available. Support for additional observation models is planned,
+#' negative binomial with a quadratic mean-variance
+#' relationship ("negbin_quadratic"). Negative binomial with a linear
+#' mean-variance relationship ("negbin_quadratic") and Poisson ("poisson") are
+#' also available. Support for additional observation models is planned,
 #' please open an issue with suggestions.
 #'
 #' @param observation_indicator A character string, the name of the column in
@@ -672,7 +674,7 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
-enw_obs <- function(family = c("negbin", "poisson"),
+enw_obs <- function(family = c("negbin_quadratic", "negbin_linear", "poisson"),
                    observation_indicator = NULL, data) {
   family <- match.arg(family)
 
@@ -740,7 +742,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
   # Add a switch for the observation model
   proc_data$model_obs <- data.table::fcase(
     family == "poisson", 0,
-    family == "negbin", 1
+    family == "negbin_quadratic", 1,
+    family == "negbin_linear", 2
   )
 
   out <- list()

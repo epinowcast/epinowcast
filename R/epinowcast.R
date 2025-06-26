@@ -126,7 +126,7 @@ epinowcast <- function(data,
                          data = data
                        ),
                        obs = epinowcast::enw_obs(
-                         family = "negbin", data = data
+                         family = "negbin_quadratic", data = data
                        ),
                        fit = epinowcast::enw_fit_opts(
                          sampler = epinowcast::enw_sample,
