@@ -5,7 +5,7 @@
 \title{Setup observation model and data}
 \usage{
 enw_obs(
-  family = c("negbin_quadratic", "negbin_linear", "poisson"),
+  family = c("negbin", "negbin1d", "poisson"),
   observation_indicator = NULL,
   data
 )
@@ -14,10 +14,9 @@ enw_obs(
 \item{family}{Character string, the observation model to use in the
 likelihood; enforced by \code{\link[base:match.arg]{base::match.arg()}}. By default this is a
 negative binomial with a quadratic mean-variance
-relationship ("negbin_quadratic"). Negative binomial with a linear
-mean-variance relationship ("negbin_quadratic") and Poisson ("poisson") are
-also available. Support for additional observation models is planned,
-please open an issue with suggestions.}
+relationship ("negbin"). Negative binomial with a linear
+mean-variance relationship ("negbin1d") and Poisson ("poisson") are
+also available.}
 
 \item{observation_indicator}{A character string, the name of the column in
 the data that indicates whether an observation is observed or not (using a

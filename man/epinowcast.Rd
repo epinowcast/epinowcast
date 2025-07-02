@@ -12,7 +12,7 @@ epinowcast(
   expectation = epinowcast::enw_expectation(r = ~0 + (1 | day:.group), generation_time =
     1, observation = ~1, latent_reporting_delay = 1, data = data),
   missing = epinowcast::enw_missing(formula = ~0, data = data),
-  obs = epinowcast::enw_obs(family = "negbin_quadratic", data = data),
+  obs = epinowcast::enw_obs(family = "negbin", data = data),
   fit = epinowcast::enw_fit_opts(sampler = epinowcast::enw_sample, nowcast = TRUE, pp =
     FALSE, likelihood = TRUE, debug = FALSE, output_loglik = FALSE),
   model = epinowcast::enw_model(),
