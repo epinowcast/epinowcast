@@ -763,7 +763,7 @@ enw_obs <- function(family = c("negbin_quadratic", "negbin_linear", "poisson"),
         sqrt_phi = numeric(0),
         phi = numeric(0)
       )
-      if (data$model_obs == 1) {
+      if (data$model_obs > 0) {
         init$sqrt_phi <- array(
           abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10))
         )
