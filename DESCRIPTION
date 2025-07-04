@@ -92,6 +92,11 @@ Authors@R:
            role = "ctb",
            email = "johnsonkaitlyne9@gmail.com",
            comment = c(ORCID = "0000-0001-8011-0012")))
+    person(given = "Barbora",
+           family = "Nemcova",
+           role = "ctb",
+           email = "barbora.nemcova@kit.edu",
+           comment = c(ORCID = "0009-0004-7565-4145")))
 Description: Tools to enable flexible and efficient hierarchical nowcasting of
     right-truncated epidemiological time-series using a semi-mechanistic
     Bayesian model with support for a range of reporting and generative
