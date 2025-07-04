@@ -91,7 +91,7 @@ Authors@R:
            family = "Johnson",
            role = "ctb",
            email = "johnsonkaitlyne9@gmail.com",
-           comment = c(ORCID = "0000-0001-8011-0012")))
+           comment = c(ORCID = "0000-0001-8011-0012")),
     person(given = "Barbora",
            family = "Nemcova",
            role = "ctb",
