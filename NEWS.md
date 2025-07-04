@@ -33,7 +33,7 @@
 - Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Optimised internal performance critical stan functions to improve speed and reduce memory usage. See #513 by @seabbs and reviewed by @pearsonca.
 - Added support for sparse design matrices to the model (see `sparse_design` in `enw_fit_opts()`). For very sparse design matrices this can reduce memory requirements and computation time. A heuristic has been added to inform users if sparse design matrices are useful for you. See #514 by @seabbs and reviewed by @pearsonca.
-- Added support for a negative binomial observation model with linear mean-variance relationship as on option of the `model_obs` argument of `epinowcast()`. See #590 by @barbora-sobolova and reviewed by @seabbs.
+- Added support for a negative binomial observation model with a linear mean-variance relationship as an option of the `model_obs` argument of `epinowcast()`. See #590 by @barbora-sobolova and reviewed by @seabbs.
 
 ## Documentation
 
