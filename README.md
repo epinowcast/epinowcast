@@ -263,6 +263,7 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian">jessalynnsebastian</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt">kathsherratt</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova">barbora-sobolova</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson">kaitejohnson</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
@@ -277,7 +278,10 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajbracher">jbracher</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Azsusswein">zsusswein</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Achristinesangphet">christinesangphet</a>,
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Arumackaaron">rumackaaron</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Arumackaaron">rumackaaron</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amicahwiesner67">micahwiesner67</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Akylieainslie">kylieainslie</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amaria-tang">maria-tang</a>
 
 ### Issue Contributors
 
