@@ -45,6 +45,7 @@ Other contributors:
   \item Nikos Bosse \email{nikos.bosse@lshtm.ac.uk} (\href{https://orcid.org/0000-0002-7750-5280}{ORCID}) [contributor]
   \item Adam Howes \email{adamthowes@gmail.com} (\href{https://orcid.org/0000-0003-2386-4031}{ORCID}) [contributor]
   \item Kaitlyn Johnson \email{johnsonkaitlyne9@gmail.com} (\href{https://orcid.org/0000-0001-8011-0012}{ORCID}) [contributor]
+  \item Barbora Nemcova \email{barbora.nemcova@kit.edu} (\href{https://orcid.org/0009-0004-7565-4145}{ORCID}) [contributor]
 }
 
 }
