@@ -66,4 +66,5 @@ jobs:
           add-paths: |
             README.Rmd
             README.md
+            inst/WORDLIST
           token: ${{ secrets.GITHUB_TOKEN }}
