@@ -48,6 +48,11 @@ jobs:
           name: readme
           path: README.md
 
+      - name: Update the wordlist
+        run: |
+          spelling::update_wordlist(confirm = FALSE)
+        shell: Rscript {0}
+
       - name: Create Pull Request
         if: github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
