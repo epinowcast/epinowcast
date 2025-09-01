@@ -165,14 +165,14 @@ priors[, sd := sd * 1.5]
 priors
 #>            variable      mean    median         sd        mad        q5
 #>              <char>     <num>     <num>      <num>      <num>     <num>
-#> 1: refp_mean_int[1] 1.1076321 1.0995100 0.17138501 0.10470121 0.9402545
-#> 2:   refp_sd_int[1] 2.5812547 2.5733600 0.18830440 0.12121738 2.3878600
-#> 3:      sqrt_phi[1] 0.6439369 0.6435505 0.02715621 0.01895875 0.6133418
-#>         q20       q80       q95      rhat  ess_bulk ess_tail
-#>       <num>     <num>     <num>     <num>     <num>    <num>
-#> 1: 1.012036 1.1917780 1.3073580 0.9991323  698.8579 524.3550
-#> 2: 2.473288 2.6831340 2.7961235 0.9995040  698.7063 418.7872
-#> 3: 0.628594 0.6596474 0.6736205 0.9997282 1428.7212 698.8907
+#> 1: refp_mean_int[1] 1.1182702 1.1122400 0.17922458 0.11473841 0.9280043
+#> 2:   refp_sd_int[1] 2.6016210 2.5903650 0.19666705 0.12743688 2.3995675
+#> 3:      sqrt_phi[1] 0.6439432 0.6432405 0.02729205 0.01761625 0.6150933
+#>          q20      q80       q95     rhat ess_bulk ess_tail
+#>        <num>    <num>     <num>    <num>    <num>    <num>
+#> 1: 1.0214580 1.209022 1.3224140 1.008248 691.3742 466.7174
+#> 2: 2.4934780 2.704886 2.8333790 1.006921 722.9240 502.1435
+#> 3: 0.6292968 0.658832 0.6736478 1.004942 876.1436 625.3027
 ```
 
 ## Reference day of the week effect
@@ -506,10 +506,10 @@ loos <- map(nowcasts, \(x) x$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age and week by age, Report: Day of week   -1.7       3.4 
-#> Reference: Age, Report: Day of week                   -3.4       5.9 
-#> Reference: Fixed, Report: Day of week                -91.1      12.0 
-#> Reference: Fixed, Report: Fixed                     -631.9      46.7
+#> Reference: Age and week by age, Report: Day of week   -2.2       3.5 
+#> Reference: Age, Report: Day of week                   -3.6       6.0 
+#> Reference: Fixed, Report: Day of week                -90.6      11.9 
+#> Reference: Fixed, Report: Fixed                     -632.1      46.7
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -554,12 +554,12 @@ scores |>
 
 |model                                                    |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
 |:--------------------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
-|Reference: Fixed, Report: Fixed                          | -0.018| 6.1| 12.0|           4.30|             3.9|        4.1|       3.9|  17|        18|    1400|
-|Reference: Fixed, Report: Day of week                    | -0.240| 7.1| 12.0|           1.20|             7.4|        3.1|       4.3|  13|        16|     590|
-|Reference: Age, Report: Day of week                      | -0.390| 6.8| 10.0|           0.67|             6.3|        2.9|       4.2|  13|        13|     400|
-|Reference: Age and week, Report: Day of week             |  0.023| 5.5|  8.7|           3.40|             1.7|        3.5|       3.6|  15|        13|     630|
-|Reference: Age and week by age, Report: Day of week      | -0.190| 5.6|  8.5|           2.00|             3.1|        3.4|       3.7|  14|        12|     420|
-|Independent by age, Reference: Week, Report: Day of week | -0.024| 5.7|  9.9|           3.50|             1.4|        5.0|       3.7|  21|        15|    1100|
+|Reference: Fixed, Report: Fixed                          | -0.014| 6.1| 12.0|           4.40|             3.9|        4.1|       3.9|  17|        18|    1300|
+|Reference: Fixed, Report: Day of week                    | -0.240| 7.1| 12.0|           1.20|             7.5|        3.1|       4.2|  13|        15|     570|
+|Reference: Age, Report: Day of week                      | -0.380| 6.8|  9.9|           0.77|             6.2|        2.9|       4.0|  12|        13|     400|
+|Reference: Age and week, Report: Day of week             |  0.031| 5.5|  8.7|           3.60|             1.6|        3.4|       3.6|  15|        13|     600|
+|Reference: Age and week by age, Report: Day of week      | -0.190| 5.6|  8.6|           2.10|             3.0|        3.4|       3.7|  15|        12|     470|
+|Independent by age, Reference: Week, Report: Day of week | -0.022| 5.7| 10.0|           3.40|             1.4|        5.2|       3.7|  22|        15|    1100|
 
 
 
