@@ -12,26 +12,34 @@ enw_reference(
 )
 }
 \arguments{
-\item{parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
-the parametric reference date delay model. This can use features
-defined by report date as defined in \code{metareference} as produced by
-\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that this formula will be applied to all
-summary statistics of the chosen parametric distribution but each summary
-parameter will have separate effects. Use \code{~ 0} to not use a parametric
-model.}
+\item{parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
+describing the parametric reference date delay model.
+This can use features defined by report date as defined in
+\code{metareference} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
+Note that this formula will be applied to all summary statistics of
+the chosen parametric distribution but each summary parameter will
+have separate effects.
+Use \code{~ 0} to not use a parametric model.}
 
 \item{distribution}{A character vector describing the parametric delay
-distribution to use. Current options are: "none", "lognormal", "gamma",
-"exponential", and "loglogistic", with the default being "lognormal".}
+distribution to use.
+Current options are: "none", "lognormal", "gamma", "exponential", and
+"loglogistic", with the default being "lognormal".
+The lognormal distribution assumes unimodal delays and may not be
+suitable for multimodal delay patterns.
+Consider using non-parametric alternatives (via \code{non_parametric}) or
+other distributions when the lognormal assumption is not appropriate.}
 
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
-describing the non-parametric logit hazard model. This can use features
-defined by reference date and by delay. It draws on a linked \code{data.frame}
-using \code{metareference} and \code{metadelay} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
-When an effect per delay is specified this approximates the cox proportional
-hazard model in discrete time with a single strata. When used in conjunction
-with a parametric model it likely makes sense to disable the intercept in
-order to make the joint model identifiable (i.e. \code{~ 0 + (1 | delay)}).}
+describing the non-parametric logit hazard model.
+This can use features defined by reference date and by delay.
+It draws on a linked \code{data.frame} using \code{metareference} and
+\code{metadelay} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
+When an effect per delay is specified this approximates the cox
+proportional hazard model in discrete time with a single strata.
+When used in conjunction with a parametric model it likely makes sense
+to disable the intercept in order to make the joint model identifiable
+(i.e. \code{~ 0 + (1 | delay)}).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
@@ -42,7 +50,15 @@ function that takes the output data and priors and returns a function that
 can be used to sample from a tightened version of the prior distribution.
 }
 \description{
-Reference date logit hazard reporting  model module
+Specifies the reference date reporting delay model using parametric
+and/or non-parametric hazard formulations.
+
+\strong{Important:} The default lognormal distribution may not be
+appropriate for all data, particularly when reporting delays exhibit
+multiple modes or complex patterns.
+Users should evaluate model fit using posterior predictive checks and
+consider non-parametric alternatives when parametric distributions do
+not adequately capture the delay structure.
 }
 \examples{
 # Parametric model with a lognormal distribution

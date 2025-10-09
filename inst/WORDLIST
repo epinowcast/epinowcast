@@ -10,7 +10,6 @@ CmdStanR
 Codecov
 Discretisation
 Discretised
-ESS
 EpiEstim
 EpiNow
 FelixGuenther
@@ -63,7 +62,6 @@ dt
 enw
 epidemia
 etc
-filepath
 formulatools
 frac
 geq
@@ -85,6 +83,7 @@ linters
 lison
 lme
 loglogistic
+lognormally
 lp
 lpmf
 lsl
@@ -128,6 +127,7 @@ pratikunterwegs
 precompiled
 predictives
 readibility
+rumackaaron
 runtimes
 rw
 samplerParams
@@ -144,7 +144,6 @@ stanc
 teojcryan
 th
 tidyverse
-timeseries
 timesteps
 toolset
 treedepth
@@ -153,9 +152,4 @@ underpredicting
 underprediction
 unmodelled
 unsets
-warmup
 zsusswein
-cmdstanr
-IDate
-CmdStanModel
-rumackaaron
