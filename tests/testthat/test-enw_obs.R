@@ -35,7 +35,14 @@ test_that("enw_obs() produces the expected output", {
     obs$inits(obs$data, obs$priors)(),
     c("sqrt_phi", "phi")
   )
+  obs <- enw_obs(family = "negbin1d", data = pobs)
+  expect_named(
+    obs$inits(obs$data, obs$priors)(),
+    c("sqrt_phi", "phi")
+  )
   expect_identical(enw_obs(family = "poisson", data = pobs)$data$model_obs, 0)
+  expect_identical(enw_obs(family = "negbin", data = pobs)$data$model_obs, 1)
+  expect_identical(enw_obs(family = "negbin1d", data = pobs)$data$model_obs, 2)
   expect_error(enw_obs(family = "wefgweefw", data = pobs))
 
   # Check that missing data is handled as expected
