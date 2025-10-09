@@ -143,6 +143,8 @@
   \text{log} (R_{g,t}) = r_0 + \beta_{f,r} X_{r} + \beta_{r,r} Z_{r}
 \end{equation}\]</span></p>
 <p>where <span class="math inline">\(r_0\)</span> is the optional intercept, <span class="math inline">\(X_{r}\)</span> is the design matrix for fixed effects (<span class="math inline">\(\beta_{f,r}\)</span>), and <span class="math inline">\(Z_{r}\)</span> is the design matrix for random effects (<span class="math inline">\(\beta_{r,r}\)</span>. Within this specification the default model can be specified as a random effect on the day with no intercept. Alternative specifications that may be of interest include a weekly random walk (specified as <code>~ 1 + rw(week)</code>), a piecewise linear model (specified as <code>~ 1 + day:week</code>), and a group specific random effect (specified as <code>~ 1 + (1 | .group)</code>).</p>
+<p>This model is specified via the <code>r</code> argument of <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> (see <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code>).
+For example, <code>enw_expectation(r = ~ 1 + rw(week))</code> implements a weekly random walk for the log reproduction number as described above.</p>
 </div>
 <div class="section level3">
 <h3 id="latent-infectionsnotifications">Latent infections/notifications<a class="anchor" aria-label="anchor" href="#latent-infectionsnotifications"></a>
@@ -163,6 +165,8 @@
   \nu_{g,t} &amp;= \nu_0 + \beta_{f,\nu} X_{\nu} + \beta_{r,\nu} Z_{\nu}
 \end{align}\]</span></p>
 <p>Where <span class="math inline">\(\nu_{g,t}\)</span> is the inferred ascertainment and is modelled flexibly using an optional intercept (<span class="math inline">\(\nu_0\)</span>), a design matrix (<span class="math inline">\(X_{\nu}\)</span>) for fixed effects (<span class="math inline">\(\beta_{f,\nu}\)</span>), and a design matrix (<span class="math inline">\(Z_{\nu}\)</span>) for random effects (<span class="math inline">\(\beta_{r,\nu}\)</span>.</p>
+<p>Ascertainment is specified via the <code>observation</code> argument and latent reporting delays via the <code>latent_reporting_delay</code> argument of <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code> (see <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code>).
+For example, <code>enw_expectation(observation = ~ 1 + day_of_week)</code> models day-of-week variation in ascertainment as described above.</p>
 </div>
 </div>
 <div class="section level2">
@@ -216,6 +220,8 @@ is the so-called reporting hazard. For a case in group <span class="math inline"
   \mu_{g,t} &amp;= \mu_0 + \beta_{f,\mu} X_{\gamma} + \beta_{r,\mu} Z_{\gamma} \\
   \text{log} (\upsilon_{g,t}) &amp;= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}\]</span></p>
+<p>These parameters are specified via the <code>parametric</code> argument of <code><a href="../reference/enw_reference.html">enw_reference()</a></code> (see <code><a href="../reference/enw_reference.html">?enw_reference</a></code>), which controls both <span class="math inline">\(\mu_{g,t}\)</span> and <span class="math inline">\(\upsilon_{g,t}\)</span> simultaneously.
+For example, <code>enw_reference(parametric = ~ 1 + (1 | age_group))</code> creates age group-specific random effects for both parameters above, allowing different age groups to have different delay distributions whilst sharing information through hierarchical pooling.</p>
 </div>
 <div class="section level5">
 <h5 id="non-parametric-reference-date-effect-delta_gtd-and-report-date-effect-epsilon_gtd">Non-parametric reference date effect <span class="math inline">\(\delta_{g,t,d}\)</span> and report date effect <span class="math inline">\(\epsilon_{g,t,d}\)</span><a class="anchor" aria-label="anchor" href="#non-parametric-reference-date-effect-delta_gtd-and-report-date-effect-epsilon_gtd"></a>
@@ -225,7 +231,9 @@ is the so-called reporting hazard. For a case in group <span class="math inline"
   \delta_{g,t,d} &amp;= \delta_0 + \beta_{f,\delta} X_{\delta} + \beta_{r,\delta} Z_{\delta} \\
   \epsilon_{g,t,d} &amp;= \beta_{f,\epsilon} X_{\epsilon} + \beta_{r,\epsilon} Z_{\epsilon}
 \end{align}\]</span></p>
-<p>All fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations. For further implementation details see <code><a href="../reference/enw_reference.html">enw_reference()</a></code> for delays linked to the date of reference, <code><a href="../reference/enw_report.html">enw_report()</a></code> for delays linked to the date of report.</p>
+<p>The reference date effect <span class="math inline">\(\delta_{g,t,d}\)</span> is specified via the <code>non_parametric</code> argument of <code><a href="../reference/enw_reference.html">enw_reference()</a></code> (see <code><a href="../reference/enw_reference.html">?enw_reference</a></code>), whilst the report date effect <span class="math inline">\(\epsilon_{g,t,d}\)</span> is specified via the <code>non_parametric</code> argument of <code><a href="../reference/enw_report.html">enw_report()</a></code> (see <code><a href="../reference/enw_report.html">?enw_report</a></code>).
+For example, <code>enw_reference(non_parametric = ~ 1 + day_of_week)</code> adds day-of-week effects to the reference date hazard, whilst <code>enw_report(non_parametric = ~ 1 + day_of_week)</code> adds day-of-week effects to the report date hazard.</p>
+<p>All fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.</p>
 </div>
 </div>
 </div>
@@ -258,6 +266,56 @@ is the so-called reporting hazard. For a case in group <span class="math inline"
 <h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
 </h2>
 <p>The model is implemented in the probabilistic programming language <code>stan</code> and we use <code>cmdstanr</code> to interact with the model<span class="citation"><sup>[<a href="#ref-stan">12</a>,<a href="#ref-cmdstanr">13</a>]</sup></span>. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. <code>epinowcast</code> incorporates additional functionality written in R<span class="citation"><sup>[<a href="#ref-R">16</a>]</sup></span> to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using <code>scoringutils</code><span class="citation"><sup>[<a href="#ref-scoringutils">17</a>]</sup></span>. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.</p>
+</div>
+<div class="section level2">
+<h2 id="summary-of-module-parameter-mappings">Summary of module-parameter mappings<a class="anchor" aria-label="anchor" href="#summary-of-module-parameter-mappings"></a>
+</h2>
+<p>The following table summarises how module function arguments map to parameters in the model definition:</p>
+<table class="table">
+<colgroup>
+<col width="35%">
+<col width="20%">
+<col width="43%">
+</colgroup>
+<thead><tr class="header">
+<th>Module Function</th>
+<th>Argument</th>
+<th>Parameters Modified</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../reference/enw_reference.html">enw_reference()</a></code></td>
+<td><code>parametric</code></td>
+<td>
+<span class="math inline">\(\mu_{g,t}\)</span>, <span class="math inline">\(\upsilon_{g,t}\)</span> (delay distribution parameters)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/enw_reference.html">enw_reference()</a></code></td>
+<td><code>non_parametric</code></td>
+<td>
+<span class="math inline">\(\delta_{g,t,d}\)</span> (reference date hazard component)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/enw_report.html">enw_report()</a></code></td>
+<td><code>non_parametric</code></td>
+<td>
+<span class="math inline">\(\epsilon_{g,t,d}\)</span> (report date hazard component)</td>
+</tr>
+<tr class="even">
+<td><code><a href="../reference/enw_expectation.html">enw_expectation()</a></code></td>
+<td><code>r</code></td>
+<td>
+<span class="math inline">\(R_{g,t}\)</span> (reproduction number/growth rate)</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../reference/enw_expectation.html">enw_expectation()</a></code></td>
+<td><code>observation</code></td>
+<td>
+<span class="math inline">\(\nu_{g,t}\)</span> (ascertainment)</td>
+</tr>
+</tbody>
+</table>
+<p>For additional implementation details and examples, see the documentation for each module function (<code><a href="../reference/enw_reference.html">?enw_reference</a></code>, <code><a href="../reference/enw_report.html">?enw_report</a></code>, <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code>) and the age-stratified nowcasting vignette (<code><a href="../articles/germany-age-stratified-nowcasting.html">vignette("germany-age-stratified-nowcasting")</a></code>).</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
