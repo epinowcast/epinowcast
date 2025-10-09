@@ -125,6 +125,17 @@ scoringutils::as_forecast_sample
 #' @param ... Additional arguments passed to
 #' [scoringutils::as_forecast_sample()]
 #'
+#' @details
+#' This function performs date alignment validation before merging nowcast
+#' samples with latest observations. It checks that the latest observation
+#' date exists in the nowcast dates, and provides informative error messages
+#' if misalignment is detected. The check automatically detects the timestep
+#' (daily, weekly, monthly) and includes relevant information in error
+#' messages (e.g., weekday information for weekly data). This validation
+#' helps prevent silent failures when nowcast and observation data use
+#' different date conventions, which can occur particularly with weekly or
+#' monthly aggregated data.
+#'
 #' @return A `forecast_sample` object as returned by
 #' [scoringutils::as_forecast_sample()]
 #' @export
@@ -150,6 +161,28 @@ as_forecast_sample.epinowcast <- function(data, latest_obs, ...) {
     latest_obs, required_cols = "confirm", dates = TRUE
   )
   latest_obs[, "report_date" := NULL]
+
+  # Check date alignment before merging
+  has_groups <- ".group" %in% colnames(samples) &&
+                ".group" %in% colnames(latest_obs)
+  if (has_groups) {
+    # Check alignment for each group
+    unique_groups <- unique(samples[[".group"]])
+    for (grp in unique_groups) {
+      nowcast_dates <- unique(
+        samples[.group == grp, reference_date]
+      )
+      obs_dates <- unique(
+        latest_obs[.group == grp, reference_date]
+      )
+      .check_date_alignment(nowcast_dates, obs_dates, group = grp)
+    }
+  } else {
+    # Check alignment for ungrouped data
+    nowcast_dates <- unique(samples$reference_date)
+    obs_dates <- unique(latest_obs$reference_date)
+    .check_date_alignment(nowcast_dates, obs_dates)
+  }
 
   # Merge samples with observations
   cols <- intersect(colnames(samples), colnames(latest_obs))

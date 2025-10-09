@@ -33,6 +33,8 @@ recommendation if the matrix is considered sparse.
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{.check_date_alignment}()},
+\code{\link{.detect_timestep}()},
 \code{\link{check_calendar_timestep}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},

@@ -41,6 +41,8 @@ error message.
 }
 \seealso{
 Functions used for checking inputs
+\code{\link{.check_date_alignment}()},
+\code{\link{.detect_timestep}()},
 \code{\link{check_calendar_timestep}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},

@@ -711,3 +711,132 @@ check_design_matrix_sparsity <- function(matrix, sparsity_threshold = 0.9,
 
   return(invisible(NULL))
 }
+
+#' Check date alignment between nowcast and observations
+#'
+#' This internal function validates that reference dates from nowcast samples
+#' align with reference dates from latest observations. It detects the
+#' timestep automatically and provides informative error messages for
+#' misalignment.
+#'
+#' @param nowcast_dates A vector of Date objects from nowcast samples.
+#'
+#' @param obs_dates A vector of Date objects from latest observations.
+#'
+#' @param group A character string specifying the group name for error
+#' messages. Default is NULL.
+#'
+#' @return This function is used for its side effect of checking date
+#' alignment. If the check passes, the function returns invisibly. Otherwise,
+#' it stops and returns an error message.
+#'
+#' @importFrom cli cli_abort
+#' @importFrom data.table wday
+#' @family check
+.check_date_alignment <- function(nowcast_dates, obs_dates, group = NULL) {
+  # Remove NA dates and get unique sorted dates
+  nowcast_dates <- sort(unique(nowcast_dates[!is.na(nowcast_dates)]))
+  obs_dates <- sort(unique(obs_dates[!is.na(obs_dates)]))
+
+  # Check if we have dates to compare
+  if (length(nowcast_dates) == 0 || length(obs_dates) == 0) {
+    return(invisible(NULL))
+  }
+
+  # Get latest observation date
+  latest_obs_date <- max(obs_dates)
+
+  # Check if latest observation date exists in nowcast dates
+  if (!latest_obs_date %in% nowcast_dates) {
+    # Detect timestep for context
+    timestep_name <- .detect_timestep(nowcast_dates)
+
+    # Build error message
+    group_msg <- if (!is.null(group)) {
+      paste0(" (group: ", group, ")")
+    } else {
+      ""
+    }
+
+    error_msgs <- c(
+      paste0("Date alignment check failed", group_msg, "."),
+      "x" = paste0(
+        "Latest observation date (",
+        format(latest_obs_date),
+        ") not found in nowcast dates."
+      ),
+      "i" = paste0("Detected timestep: ", timestep_name),
+      "i" = paste0(
+        "Nowcast date range: ",
+        format(min(nowcast_dates)),
+        " to ",
+        format(max(nowcast_dates))
+      ),
+      "i" = paste0(
+        "Observation date range: ",
+        format(min(obs_dates)),
+        " to ",
+        format(latest_obs_date)
+      )
+    )
+
+    # Add weekday information for weekly data
+    if (timestep_name == "weekly") {
+      error_msgs <- c(
+        error_msgs,
+        "i" = paste0(
+          "Latest obs weekday: ", weekdays(latest_obs_date), "\n",
+          "  Nowcast start weekday: ", weekdays(min(nowcast_dates)), "\n",
+          "  Nowcast end weekday: ", weekdays(max(nowcast_dates))
+        )
+      )
+    }
+
+    error_msgs <- c(
+      error_msgs,
+      ">" = paste0(
+        "Ensure both datasets use the same reference date convention"
+      )
+    )
+
+    cli::cli_abort(error_msgs)
+  }
+
+  return(invisible(NULL))
+}
+
+#' Detect timestep from date vector
+#'
+#' This internal function attempts to detect the timestep (daily, weekly,
+#' monthly) from a vector of dates by examining the differences between
+#' consecutive dates.
+#'
+#' @param dates A vector of Date objects.
+#'
+#' @return A character string describing the detected timestep: "daily",
+#' "weekly", or "monthly".
+#'
+#' @family check
+.detect_timestep <- function(dates) {
+  if (length(dates) < 2) {
+    return("daily")
+  }
+
+  # Calculate differences between consecutive dates
+  diffs <- as.numeric(diff(dates))
+
+  # Check most common difference
+  most_common_diff <- as.numeric(names(sort(table(diffs),
+                                            decreasing = TRUE)[1]))
+
+  if (most_common_diff == 1) {
+    return("daily")
+  } else if (most_common_diff == 7 || all(diffs %% 7 == 0)) {
+    return("weekly")
+  } else if (most_common_diff >= 28 && most_common_diff <= 31) {
+    return("monthly")
+  } else {
+    # Default to daily if unclear
+    return("daily")
+  }
+}

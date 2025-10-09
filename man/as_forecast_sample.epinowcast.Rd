@@ -25,6 +25,17 @@ This function is used to convert an \code{epinowcast} as returned by
 \code{\link[=epinowcast]{epinowcast()}} object to a \code{forecast_sample} object which can be used for
 scoring using the \code{scoringutils} package.
 }
+\details{
+This function performs date alignment validation before merging nowcast
+samples with latest observations. It checks that the latest observation
+date exists in the nowcast dates, and provides informative error messages
+if misalignment is detected. The check automatically detects the timestep
+(daily, weekly, monthly) and includes relevant information in error
+messages (e.g., weekday information for weekly data). This validation
+helps prevent silent failures when nowcast and observation data use
+different date conventions, which can occur particularly with weekly or
+monthly aggregated data.
+}
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 library(scoringutils)
