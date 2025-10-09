@@ -1,5 +1,9 @@
 #' Reference date logit hazard reporting  model module
 #'
+#' @description
+#' Specifies the reference date reporting delay model using parametric
+#' and/or non-parametric hazard formulations.
+#'
 #' @param parametric A formula (as implemented in [enw_formula()]) describing
 #' the parametric reference date delay model. This can use features
 #' defined by report date as defined in `metareference` as produced by
@@ -652,9 +656,10 @@ enw_missing <- function(formula = ~1, data) {
 #'
 #' @param family Character string, the observation model to use in the
 #' likelihood; enforced by [base::match.arg()]. By default this is a
-#' negative binomial ("negbin") with Poisson ("poisson") also being
-#' available. Support for additional observation models is planned,
-#' please open an issue with suggestions.
+#' negative binomial with a quadratic mean-variance
+#' relationship ("negbin"). Negative binomial with a linear
+#' mean-variance relationship ("negbin1d") and Poisson ("poisson") are
+#' also available.
 #'
 #' @param observation_indicator A character string, the name of the column in
 #' the data that indicates whether an observation is observed or not (using a
@@ -672,7 +677,7 @@ enw_missing <- function(formula = ~1, data) {
 #' @export
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
-enw_obs <- function(family = c("negbin", "poisson"),
+enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
                    observation_indicator = NULL, data) {
   family <- match.arg(family)
 
@@ -740,7 +745,8 @@ enw_obs <- function(family = c("negbin", "poisson"),
   # Add a switch for the observation model
   proc_data$model_obs <- data.table::fcase(
     family == "poisson", 0,
-    family == "negbin", 1
+    family == "negbin", 1,
+    family == "negbin1d", 2
   )
 
   out <- list()
@@ -760,7 +766,7 @@ enw_obs <- function(family = c("negbin", "poisson"),
         sqrt_phi = numeric(0),
         phi = numeric(0)
       )
-      if (data$model_obs == 1) {
+      if (data$model_obs > 0) {
         init$sqrt_phi <- array(
           abs(rnorm(1, priors$sqrt_phi_p[1], priors$sqrt_phi_p[2] / 10))
         )

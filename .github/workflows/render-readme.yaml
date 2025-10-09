@@ -17,7 +17,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout repos
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
@@ -48,6 +48,11 @@ jobs:
           name: readme
           path: README.md
 
+      - name: Update the wordlist
+        run: |
+          spelling::update_wordlist(confirm = FALSE)
+        shell: Rscript {0}
+
       - name: Create Pull Request
         if: github.ref == 'refs/heads/main'
         uses: peter-evans/create-pull-request@v7
@@ -61,4 +66,5 @@ jobs:
           add-paths: |
             README.Rmd
             README.md
+            inst/WORDLIST
           token: ${{ secrets.GITHUB_TOKEN }}
