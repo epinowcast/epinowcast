@@ -1,6 +1,6 @@
 ---
 title: Model Features Summary
-description: "Quick reference tables of model features"
+description: "Quick reference to package capabilities"
 author: Epinowcast Team
 output: rmarkdown::html_document
 bibliography: library.bib
@@ -11,511 +11,209 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
-
-This vignette provides a quick reference to the model features
-available in `epinowcast`.
-The package uses a modular architecture where different aspects of the
-nowcasting problem are specified separately and combined into a
-complete model.
-
-For detailed explanations of the model structure, see the
-[model definition vignette](model.html).
-For specific use cases and examples, see the case study vignettes.
-
-This document is organised by model component, with tables showing
-available options and their defaults.
-
-# Quick Reference
-
-This table provides a high level overview of the main model components
-in `epinowcast`:
-
-| Component | Purpose | Key Features |
-|-----------|---------|--------------|
-| [Reference date model](#reference-date-model) | Models reporting delays | Parametric distributions, non-parametric hazard, hierarchical effects |
-| [Report date model](#report-date-model) | Day of week and reporting process effects | Fixed effects, random effects, random walks |
-| [Expectation model](#expectation-model) | Expected latent process | Growth rates, renewal processes, generation time |
-| [Missing reference model](#missing-reference-model) | Handles missing reference dates | Logit scale proportion modelling |
-| [Observation model](#observation-model) | Likelihood specification | Poisson, negative binomial with overdispersion |
-| [Fitting options](#fitting-options) | Sampling and output control | NUTS, Pathfinder, threading, debug mode |
-
-# Reference Date Model {#reference-date-model}
-
-The reference date model (`enw_reference()`) specifies how reporting delays
-are modelled.
-It supports both parametric distributions and non-parametric hazard models,
-which can be used separately or combined.
-
-## Features
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| `parametric` | R formula | `~1` | Formula for parametric delay model using `metareference` |
-| `distribution` | `"lognormal"`, `"gamma"`, `"exponential"`, `"loglogistic"`, `"none"` | `"lognormal"` | Parametric distribution family |
-| `non_parametric` | R formula | `~0` | Formula for non-parametric logit hazard model using `metareference` and `metadelay` |
-
-## Notes
-
-- Setting `parametric = ~0` disables the parametric model
-- The parametric formula is applied to all summary statistics of
-  the distribution
-- The non-parametric model approximates the Cox proportional hazard
-  model in discrete time when an effect per delay is specified
-- When combining parametric and non-parametric models, consider
-  disabling the intercept in the non-parametric model for
-  identifiability (e.g., `non_parametric = ~0 + (1 | delay)`)
-
-## Example
-
-```r
-# Parametric model with a lognormal distribution
-enw_reference(
-  parametric = ~1,
-  distribution = "lognormal",
-  data = enw_example("preprocessed")
-)
-
-# Non-parametric model with random effect per delay
-enw_reference(
-  parametric = ~0,
-  non_parametric = ~1 + (1 | delay),
-  data = enw_example("preprocessed")
-)
-
-# Combined parametric and non-parametric model
-enw_reference(
-  parametric = ~1,
-  non_parametric = ~0 + (1 | delay_cat),
-  data = enw_example("preprocessed")
-)
-```
-
-For more information, see `?enw_reference` and the
-[model definition vignette](model.html).
-
-# Report Date Model {#report-date-model}
-
-The report date model (`enw_report()`) specifies report date related
-hazards, such as day of week effects.
-
-## Features
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| `non_parametric` | R formula | `~0` | Formula for non-parametric logit hazard model using `metareport` |
-| `structural` | R formula | `~0` | Formula for known reporting structure (not yet implemented) |
-
-## Notes
-
-- The intercept for this model is set to 0 as time invariant hazards
-  should be modelled using the `non_parametric` argument of
-  `enw_reference()`
-- Setting `non_parametric = ~0` results in no report date effects
-  (equivalent to `non_parametric = ~1`)
-- The structural model feature is not yet available to users
-
-## Example
-
-```r
-# Day of week effects
-enw_report(
-  non_parametric = ~1 + day_of_week,
-  data = enw_example("preprocessed")
-)
-
-# Random walk over weeks
-enw_report(
-  non_parametric = ~1 + rw(week),
-  data = enw_example("preprocessed")
-)
-```
-
-For more information, see `?enw_report` and the
-[model definition vignette](model.html).
-
-# Expectation Model {#expectation-model}
-
-The expectation model (`enw_expectation()`) specifies the expected
-latent process (e.g., infections, hospitalisations).
-
-## Features
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| ``r`` | R formula | `~0 + (1 | day:.group)` | Formula for generative process of expected incidence using `metareference` |
-| `generation_time` | Numeric vector or single value | `1` | Discrete generation time distribution (must sum to 1) |
-| `observation` | R formula | `~1` | Formula for modifiers to adjust expected observations |
-| `latent_reporting_delay` | Numeric vector, single value, or list | `1` | Weighting for convolution with past latent observations |
-
-## Notes
-
-- The default setting for ``r`` is `~0 + (1 | day:.group)`, which
-  specifies a daily random effect by group; this is flexible but may
-  not be appropriate for sparsely reported data
-- Setting `generation_time = 1` (default) corresponds to modelling
-  daily growth rate
-- When `generation_time` is a vector summing to 1, the model
-  implements a renewal equation
-- `latent_reporting_delay` can be used for convolution based on
-  assumed reporting delay and to rescale observations for
-  ascertainment
-- A list of PMFs can be provided for time varying latent reporting
-  delays
-- The observation modifier formula allows adjustment for factors
-  like day of week
-
-## Example
-
-```r
-# Default: daily random effect
-enw_expectation(
-  r = ~0 + (1 | day:.group),
-  data = enw_example("preprocessed")
-)
-
-# Weekly random walk
-enw_expectation(
-  r = ~1 + rw(week, by = .group),
-  data = enw_example("preprocessed")
-)
-
-# Renewal process with generation time
-enw_expectation(
-  r = ~0 + (1 | day:.group),
-  generation_time = c(0.2, 0.5, 0.3),
-  data = enw_example("preprocessed")
-)
-```
-
-For more information, see `?enw_expectation` and the
-[model definition vignette](model.html).
-
-# Missing Reference Model {#missing-reference-model}
-
-The missing reference model (`enw_missing()`) handles observations
-with missing reference dates.
-
-## Features
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| `formula` | R formula | `~1` | Formula for logit scale proportion of missing reference dates using `metareference` |
-
-## Notes
-
-- This feature is marked as highly experimental and may contain bugs
-- Setting `formula = ~0` disables the missing reference model
-- The model assumes consistent reporting delay for missing and non
-  missing observations
-- A missing reference model can only be specified if observations with
-  missing reference dates are present in the preprocessed data
-
-## Example
-
-```r
-# Fixed intercept only
-enw_missing(
-  formula = ~1,
-  data = enw_example("preprocessed")
-)
-
-# No missing reference model
-enw_missing(
-  formula = ~0,
-  data = enw_example("preprocessed")
-)
-```
-
-For more information, see `?enw_missing` and the
-[model definition vignette](model.html).
-
-# Observation Model {#observation-model}
-
-The observation model (`enw_obs()`) specifies the likelihood
-distribution for observed counts.
-
-## Features
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| `family` | `"negbin"`, `"poisson"` | `"negbin"` | Likelihood distribution family |
-| `observation_indicator` | Character string or `NULL` | `NULL` | Column name indicating which observations to use in likelihood (logical variable named `.observed`) |
-
-## Notes
-
-- Negative binomial (`"negbin"`) includes an overdispersion parameter
-  (`phi`)
-- Poisson assumes mean equals variance
-- The observation indicator allows filtering observations for use in
-  the likelihood
-- The indicator variable can be created using
-  `enw_flag_observed_observations()` or via `flag_observation` in
-  `enw_complete_dates()`
-
-## Example
-
-```r
-# Negative binomial (default)
-enw_obs(
-  family = "negbin",
-  data = enw_example("preprocessed")
-)
-
-# Poisson
-enw_obs(
-  family = "poisson",
-  data = enw_example("preprocessed")
-)
-```
-
-For more information, see `?enw_obs` and the
-[model definition vignette](model.html).
-
-# Fitting Options {#fitting-options}
-
-The fitting options (`enw_fit_opts()`) control sampling behaviour and
-model outputs.
-
-## Features
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| `sampler` | Function | `enw_sample` | Sampling function (e.g., `enw_sample`, `enw_pathfinder`) |
-| `nowcast` | Logical | `TRUE` | Generate nowcast via posterior predictions of unobserved future reports |
-| `pp` | Logical | `FALSE` | Generate posterior predictions for observed data |
-| `likelihood` | Logical | `TRUE` | Include likelihood in model (disable for prior predictive checks) |
-| `likelihood_aggregation` | `"snapshots"`, `"groups"` | `"snapshots"` | Stratification level for parallel likelihood calculation |
-| `threads_per_chain` | Integer | `1` | Number of threads per MCMC chain for within chain parallelisation |
-| `debug` | Logical | `FALSE` | Return compiled model only for diagnostics |
-| `output_loglik` | Logical | `FALSE` | Output log likelihood for model comparison |
-| `sparse_design` | Logical | `FALSE` | Use sparse design matrices to reduce memory |
-
-## Notes
-
-- Setting `pp = TRUE` automatically sets `nowcast = TRUE`
-- `threads_per_chain > 1` enables within chain parallelisation of
-  likelihood components
-- `likelihood_aggregation = "snapshots"` aggregates over report dates
-  and groups (recommended default)
-- `sparse_design = TRUE` is useful for very sparse design matrices
-  (90% or more zeros)
-- Additional arguments can be passed to the sampler function via `...`
-- Some model modules may override `likelihood_aggregation` based on
-  model requirements
-
-## Example
-
-```r
-# Default options with custom sampling settings
-enw_fit_opts(
-  iter_sampling = 1000,
-  iter_warmup = 1000,
-  chains = 4
-)
-
-# Parallel chains and within chain threading
-enw_fit_opts(
-  chains = 4,
-  parallel_chains = 4,
-  threads_per_chain = 2
-)
-
-# Prior predictive check
-enw_fit_opts(
-  likelihood = FALSE,
-  pp = FALSE
-)
-```
-
-For more information, see `?enw_fit_opts` and the
-[Stan help vignette](stan-help.html).
-
-# Formula Interface
-
-The formula interface (`enw_formula()`) provides a flexible way to
-specify fixed effects, random effects, and random walks.
-Critically, this interface is used consistently across all model
-modules (reference date, report date, expectation, missing reference),
-enabling you to build complex hierarchical models using familiar R
-formula syntax without writing custom Stan code.
-
-## Features
-
-| Feature | Syntax | Example | Description |
-|---------|--------|---------|-------------|
-| Fixed effects | Standard R formula | `~age + region` | Linear predictors |
-| Random effects | `(1 | var)` | `~(1 | location)` | Group level intercepts |
-| Random walks | `rw(var, by = NULL, type = "independent")` | `~rw(week)` | Temporal smoothing with Gaussian steps |
-| Sparse design | `sparse = TRUE` argument | - | Efficient sparse matrices for memory reduction |
-| Manual specification | `enw_manual_formula()` | - | Lower level control over formula specification |
-
-## Notes
-
-- Random effects use `lme4` style syntax
-- Random walks can be grouped using the `by` parameter (e.g.,
-  `rw(week, by = .group)`)
-- The `type` parameter for random walks controls whether standard
-  deviations are independent or dependent across groups
-- Sparse design matrices are useful when the design matrix has many
-  repeated rows
-- Factors are automatically handled
-- Intercepts are included by default unless suppressed with `0 +` or
-  `- 1`
-
-## Example
-
-```r
-# Fixed effects only
-enw_formula(~age + sex, data$metareference[[1]])
-
-# Random effects
-enw_formula(~1 + (1 | location), data$metareference[[1]])
-
-# Random walk
-enw_formula(~1 + rw(week), data$metareference[[1]])
-
-# Grouped random walk
-enw_formula(~1 + rw(week, by = .group), data$metareference[[1]])
-
-# Sparse design matrix
-enw_formula(~day_of_week, data$metareport[[1]], sparse = TRUE)
-```
-
-For more information, see `?enw_formula`, `?rw`, and `?enw_manual_formula`.
-
-# Model Fitting
-
-The main workflow function `epinowcast()` combines all model modules
-and fits the complete model.
-
-## Key Function
-
-- `epinowcast()`: Main fitting function that combines preprocessing,
-  model specification, compilation, and sampling
-
-## Features
-
-| Feature | Description |
-|---------|-------------|
-| Modular specification | Combines modules from `enw_reference()`, `enw_report()`, `enw_expectation()`, `enw_missing()`, `enw_obs()` |
-| Automatic compilation | Compiles Stan model with caching for efficiency |
-| Fitting control | Uses options from `enw_fit_opts()` for sampling behaviour |
-| Output format | Returns object containing posterior samples, data, and metadata |
-
-For more information, see `?epinowcast` and the getting started vignette.
-
-# Data Conversion
-
-Before fitting models, data often needs to be converted between formats.
-
-## Key Functions
-
-| Function | Purpose |
-|----------|---------|
-| `enw_linelist_to_incidence()` | Converts line list data to aggregate counts |
-| `enw_add_incidence()` | Calculates incidence from cumulative counts |
-| `enw_add_cumulative()` | Calculates cumulative from incidence counts |
-| `enw_aggregate_cumulative()` | Aggregates data to different timesteps |
-
-These functions prepare data for input to `enw_preprocess_data()`.
-
-For more information, see `?enw_linelist_to_incidence` and related functions.
-
-# Preprocessing
-
-The preprocessing functions prepare data for nowcasting by handling
-dates, grouping, and metadata.
-
-## Key Functions
-
-| Function | Purpose |
-|----------|---------|
-| `enw_preprocess_data()` | Main preprocessing wrapper combining multiple preprocessing steps |
-| `enw_complete_dates()` | Ensures complete date sequences for all groups |
-| `enw_filter_report_dates()` | Filters data by latest report date |
-| `enw_filter_reference_dates()` | Filters data by reference date range |
-| `enw_filter_delay()` | Filters data by maximum delay |
-| `enw_metadata()` | Extracts metadata for a target date variable |
-| `enw_add_metaobs_features()` | Adds day of week, day/week/month counters, holiday flags |
-| `enw_extend_date()` | Extends time series for nowcasting |
-
-## `enw_preprocess_data()` Options
-
-| Feature | Options | Default | Description |
-|---------|---------|---------|-------------|
-| `by` | Character vector | `NULL` | Grouping variables for stratified analysis |
-| `max_delay` | Integer | - | Maximum reporting delay window |
-| `timestep` | `"day"`, `"week"`, numeric | `"day"` | Time unit for aggregation |
-| `set_negatives_to_zero` | Logical | `FALSE` | Replace negative counts with zero |
-
-For more information on preprocessing, see `?enw_preprocess_data` and
-related help pages.
-
-# Postprocessing
-
-Postprocessing functions extract and summarise model outputs.
-
-## Key Functions
-
-| Function | Purpose |
-|----------|---------|
-| `enw_posterior()` | Extract posterior samples for any model quantity |
-| `enw_nowcast_summary()` | Summarise nowcast with quantiles |
-| `enw_nowcast_samples()` | Extract posterior samples for nowcast |
-| `enw_pp_summary()` | Summarise posterior predictions |
-| `plot()` | S3 methods for visualising results |
-
-For more information on postprocessing, see `?enw_posterior`,
-`?enw_nowcast_summary`, and the case study vignettes.
-
-# Visualisation
-
-Plotting functions provide visualisations of model outputs.
-
-## Key Functions
-
-| Function | Purpose |
-|----------|---------|
-| `plot.epinowcast()` | S3 method for plotting nowcast objects |
-| `enw_plot_nowcast_quantiles()` | Plot nowcast with uncertainty |
-| `enw_plot_pp_quantiles()` | Plot posterior predictive quantiles |
-| `enw_plot_obs()` | Plot observations |
-| `enw_plot_quantiles()` | Generic quantile plotting |
-
-These functions integrate with `ggplot2` for customisation.
-
-For examples, see the case study vignettes.
-
-# Parametric Distributions
-
-The parametric distributions available for modelling reporting delays
-are detailed in the [distributions vignette](distributions.html).
-
-## Available Distributions
-
-| Distribution | Parameters | Typical Use Case |
-|--------------|------------|------------------|
-| Lognormal | `mu` (log mean), `sigma` (log sd) | General purpose, right skewed delays |
-| Gamma | `alpha` (shape), `beta` (rate) | Flexible shape, right skewed delays |
-| Exponential | `beta` (rate) | Constant hazard, memoryless delays |
-| Loglogistic | `alpha` (scale), `beta` (shape) | Heavy tailed delays |
-
-All continuous distributions are discretised using a uniform censoring
-interval of 2 days and normalised by the maximum delay.
-
-For details on discretisation and implementation, see the
-[distributions vignette](distributions.html).
+# Overview
+
+This vignette provides a high-level summary of what `epinowcast` can do.
+Rather than duplicating detailed documentation, we signpost to examples and documentation for each capability.
+
+For detailed model specification, see the [model definition vignette](model.html).
+For function-specific details, see `?function_name`.
+
+# Core Capabilities
+
+| Capability | What it enables | Where to learn more |
+|------------|-----------------|---------------------|
+| **Flexible timesteps** | Daily, weekly, or custom aggregation | [Different timesteps](#timesteps) |
+| **Multi-stratification** | Age groups, regions, pathogens | [Stratification](#stratification) |
+| **Mixed delay models** | Parametric + non-parametric delays | [Delay modelling](#delay-modelling) |
+| **Latent process models** | Growth rates, renewal processes | [Latent models](#latent-models) |
+| **Hierarchical effects** | Random effects, random walks | [Hierarchical structure](#hierarchical) |
+| **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
+| **Model comparison** | LOO-CV, posterior predictive checks | [Model evaluation](#model-evaluation) |
+
+# Different Timesteps and Timespans {#timesteps}
+
+`epinowcast` supports flexible temporal aggregation to match your data structure and computational constraints.
+
+| Timestep | Use case | How to specify | Example |
+|----------|----------|----------------|---------|
+| Daily | High resolution surveillance | `timestep = "day"` (default) | [Getting started vignette](epinowcast.html) |
+| Weekly | Reduced computational cost | `timestep = "week"` | `enw_preprocess_data(..., timestep = "week")` |
+| Custom | Any integer multiple of days | `timestep = 7` | `enw_preprocess_data(..., timestep = 7)` |
+
+**Key functions:**
+- `enw_preprocess_data()`: Set timestep during preprocessing
+- `enw_aggregate_cumulative()`: Convert between timesteps
+
+**Where to see it:** The [getting started vignette](epinowcast.html) uses daily data.
+For weekly or custom timesteps, simply change the `timestep` argument in `enw_preprocess_data()`.
+
+# Stratified and Multi-Group Nowcasting {#stratification}
+
+Nowcast across multiple groups simultaneously with hierarchical sharing of information.
+
+| Stratification type | Use case | How to specify | Example |
+|---------------------|----------|----------------|---------|
+| Age groups | Age-stratified surveillance | `by = c("age_group")` | [Germany age-stratified vignette](germany-age-stratified-nowcasting.html) |
+| Geographic regions | Regional nowcasts | `by = c("region")` | Set `by` in `enw_preprocess_data()` |
+| Multiple factors | E.g., age × region | `by = c("age_group", "region")` | Combine factors in `by` argument |
+| Independent groups | No sharing between groups | Use `.group` in formulas | Default behaviour |
+| Hierarchical sharing | Partial pooling | Random effects in formulas | `~1 + (1 | .group)` |
+
+**Key functions:**
+- `enw_preprocess_data()`: Specify grouping with `by` argument
+- Formula interface: Control sharing via random effects
+
+**Where to see it:** The [Germany age-stratified case study](germany-age-stratified-nowcasting.html) demonstrates multi-group nowcasting with age stratification and hierarchical effects.
+
+# Delay Modelling Approaches {#delay-modelling}
+
+Model reporting delays using parametric distributions, non-parametric hazards, or combinations.
+
+| Approach | When to use | How to specify | Example |
+|----------|-------------|----------------|---------|
+| Parametric only | Well-characterised delays | `enw_reference(parametric = ~1, distribution = "lognormal")` | Default in vignettes |
+| Non-parametric only | Unknown delay distribution | `enw_reference(parametric = ~0, non_parametric = ~1 + (1 | delay))` | Flexible hazard model |
+| Mixed model | Parametric baseline + adjustments | `enw_reference(parametric = ~1, non_parametric = ~0 + (1 | delay_cat))` | Best of both |
+| Time-varying delays | Changing reporting over time | Include time effects in formulas | `parametric = ~1 + week` |
+| Group-specific delays | Different delays by strata | Random effects by group | `parametric = ~1 + (1 | .group)` |
+
+**Available distributions:**
+- Lognormal (default)
+- Gamma
+- Exponential
+- Loglogistic
+
+**Key functions:**
+- `enw_reference()`: Specify delay model
+- See `?enw_reference` for formula details
+
+**Where to see it:** All vignettes use delay models.
+For non-parametric approaches and mixed models, see `?enw_reference` examples.
+
+# Latent Process Models {#latent-models}
+
+Specify the generative model for the expected latent process (e.g., infections, hospitalisations).
+
+| Model type | What it assumes | How to specify | Example |
+|------------|-----------------|----------------|---------|
+| Daily random effects | Flexible day-to-day changes | `r = ~0 + (1 | day:.group)` (default) | Most flexible |
+| Weekly random walk | Smooth week-to-week trends | `r = ~1 + rw(week, by = .group)` | Smoother estimates |
+| Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
+| Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
+| Fixed effects | Covariates (e.g., interventions) | `r = ~1 + intervention + ...` | Include predictors |
+
+**Key functions:**
+- `enw_expectation()`: Specify latent process model
+- See `?enw_expectation` for details
+
+**Where to see it:** The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times.
+
+# Hierarchical Structure {#hierarchical}
+
+Build hierarchical models using the formula interface.
+
+| Feature | What it does | Syntax | Use case |
+|---------|--------------|--------|----------|
+| Random intercepts | Group-level variation | `~1 + (1 | group)` | Partial pooling between groups |
+| Random slopes | Group-specific effects | `~x + (x | group)` | Effect varies by group |
+| Random walks | Temporal smoothing | `~rw(time)` | Smooth trends over time |
+| Grouped random walks | Group-specific trends | `~rw(time, by = group)` | Different trends per group |
+| Sparse design | Memory efficient | `sparse = TRUE` in `enw_formula()` | Large sparse matrices |
+
+**Key functions:**
+- `enw_formula()`: Unified formula interface
+- `rw()`: Random walk helper
+- See `?enw_formula` for syntax details
+
+**Where to see it:** The [Germany case study](germany-age-stratified-nowcasting.html) uses random effects for age groups.
+All model modules support the same formula interface.
+
+# Missing Data Handling {#missing-data}
+
+Handle observations with missing reference dates.
+
+| Feature | What it does | How to use | Status |
+|---------|--------------|------------|--------|
+| Missing reference model | Models proportion of missing | `enw_missing(formula = ~1)` | Experimental |
+| Assumes consistent delays | Same delay for missing and observed | Automatic when missing data present | Limitation |
+
+**Key functions:**
+- `enw_missing()`: Specify missing data model
+
+**Where to see it:** See `?enw_missing` for details.
+This feature is experimental.
+
+# Model Evaluation {#model-evaluation}
+
+Assess model fit and compare models.
+
+| Method | What it provides | How to use | Where to learn |
+|--------|------------------|------------|----------------|
+| Posterior predictive checks | Visual fit assessment | `enw_fit_opts(pp = TRUE)` | [Model vignette](model.html) |
+| LOO-CV | Model comparison | `enw_fit_opts(output_loglik = TRUE)` + `loo` package | See `?loo::loo` |
+| Scoring rules | Probabilistic forecast evaluation | `scoringutils` package | [Rt vignette](single-timeseries-rt-estimation.html) |
+| Convergence diagnostics | MCMC quality checks | Check `$fit$summary()` | [Stan help vignette](stan-help.html) |
+
+**Key functions:**
+- `enw_fit_opts()`: Control outputs
+- `plot()`: Visualise results
+- External: `loo`, `scoringutils` packages
+
+**Where to see it:** The [Rt estimation vignette](single-timeseries-rt-estimation.html) shows model scoring and evaluation.
+
+# Computational Options
+
+Control computational efficiency and parallelisation.
+
+| Feature | What it does | How to specify | When to use |
+|---------|--------------|----------------|-------------|
+| Within-chain threading | Parallel likelihood calculation | `threads_per_chain = 4` | Large datasets |
+| Parallel chains | Multiple chains simultaneously | `parallel_chains = 4` | Multiple cores available |
+| Sparse design matrices | Memory reduction | `sparse_design = TRUE` | Very sparse designs |
+| Likelihood aggregation | Parallelisation level | `likelihood_aggregation = "snapshots"` | Default usually best |
+| Pathfinder | Fast approximate inference | `sampler = enw_pathfinder` | Exploration/debugging |
+
+**Key functions:**
+- `enw_fit_opts()`: Specify computational options
+- See `?enw_fit_opts` for details
+
+**Where to see it:** See [Stan help vignette](stan-help.html) for guidance on computational settings.
+
+# Data Handling
+
+Prepare and process data for nowcasting.
+
+| Task | Functions | Purpose |
+|------|-----------|---------|
+| Convert from line list | `enw_linelist_to_incidence()` | Individual → aggregate data |
+| Complete date sequences | `enw_complete_dates()` | Fill missing dates |
+| Filter by dates | `enw_filter_report_dates()`, `enw_filter_reference_dates()` | Subset data |
+| Add metadata | `enw_add_metaobs_features()` | Day of week, holidays, etc. |
+| Change timesteps | `enw_aggregate_cumulative()` | Daily → weekly, etc. |
+| Main preprocessing | `enw_preprocess_data()` | All-in-one wrapper |
+
+**Where to see it:** The [getting started vignette](epinowcast.html) demonstrates the full data preprocessing workflow.
+
+# Quick Start Workflow
+
+1. **Prepare data:** `enw_preprocess_data()`
+2. **Specify models:**
+   - Delays: `enw_reference()`
+   - Report effects: `enw_report()`
+   - Latent process: `enw_expectation()`
+   - Observation: `enw_obs()`
+3. **Fit:** `epinowcast()`
+4. **Evaluate:** `plot()`, `summary()`
+
+**Where to start:** The [getting started vignette](epinowcast.html) walks through this workflow step-by-step.
 
 # Further Reading
 
-- [Model definition vignette](model.html): Detailed explanation of
-  model structure and mathematical formulation
-- [Distributions vignette](distributions.html): Details on parametric
-  distributions and discretisation
-- [Germany case study](germany-age-stratified-nowcasting.html):
-  Complex example with age stratification
-- [Single time series Rt estimation](single-timeseries-rt-estimation.html):
-  Estimating reproduction number in real time
-- [Stan help vignette](stan-help.html): Resources for model fitting
+- [Getting started vignette](epinowcast.html): Basic workflow
+- [Model definition vignette](model.html): Mathematical details
+- [Germany case study](germany-age-stratified-nowcasting.html): Age-stratified nowcasting
+- [Rt estimation vignette](single-timeseries-rt-estimation.html): Renewal process models
+- [Distributions vignette](distributions.html): Parametric distributions
+- Function documentation: `?function_name` for detailed API
 - Package website: https://package.epinowcast.org

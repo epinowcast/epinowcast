@@ -160,9 +160,10 @@ We have created [package
 vignettes](https://package.epinowcast.org/articles) to help you [get
 started
 nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
-provide a [quick reference of model
-features](https://package.epinowcast.org/articles/features.html), and to
-[highlight other features with case
+see a [quick reference to package
+capabilities](https://package.epinowcast.org/articles/features.html)
+(different timesteps, multi-stratification, mixed models, etc.), and
+[explore case
 studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
