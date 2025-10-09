@@ -50,14 +50,17 @@ adrian
 ae
 args
 athowes
+barbora
 beansrowning
 choi
 christinesangphet
 com
+crps
 cyclomatic
 dataconverters
 discretisation
 discretised
+dss
 dt
 enw
 epidemia
@@ -77,6 +80,7 @@ jhellewell
 jimrothstein
 kaitejohnson
 kathsherratt
+kylieainslie
 leq
 linelist
 linters
@@ -90,6 +94,7 @@ lsl
 mathbb
 maxTree
 medewitt
+micahwiesner
 modelData
 modelParams
 modeldesign
@@ -134,10 +139,12 @@ samplerParams
 sbfnk
 scoringutils
 sd
+se
 seabbs
 settingPriors
 sim
 sl
+sobolova
 st
 stan
 stanc
