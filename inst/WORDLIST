@@ -59,6 +59,7 @@ cyclomatic
 dataconverters
 discretisation
 discretised
+dplyr
 dt
 enw
 epidemia
