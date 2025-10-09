@@ -127,13 +127,22 @@ The `epinowcast` package is designed to provide users with a flexible and custom
 
 ## Default nowcasting model
 
-The default nowcasting model in `epinowcast` consists of three modules: 
+The default nowcasting model in `epinowcast` consists of three modules:
 
 - A process (expectation) module that models the expected counts by date of reference (`reference_date`)
 - A parametric reference reporting model which models the reporting delay distribution from the date of reference
-- A non-parametric reporting model which models differences in the reporting delay distribution by date of report (`report_date`), for example, day-of-the-week effects on the reporting delay.
+- A non-parametric reporting model which models differences in the reporting delay distribution by date of report (`report_date`), for example, day of the week effects on the reporting delay.
 
-In the following sections, we specify simple models for each of these modules. The appropriateness of these specifications will vary depending on your context. See our vignettes for further details on model specification and examples of more complex models.
+::: {.alert .alert-warning}
+**Important:** The default lognormal reporting delay may not suit all data.
+It can fail with multimodal delays (see [#319](https://github.com/epinowcast/epinowcast/issues/319)).
+Use posterior predictive checks and consider alternatives when needed.
+See the [model definition vignette](https://package.epinowcast.org/articles/model.html) for guidance.
+:::
+
+In the following sections, we specify simple models for each of these modules.
+The appropriateness of these specifications will vary depending on your context.
+See our vignettes for further details on model specification and examples of more complex models.
 
 ## Process model
 
@@ -152,14 +161,21 @@ As the underlying process model is an exponential growth rate model ($C_t = C_{t
 
 ## Reporting model by reference date
 
-Our baseline assumption for the reporting delay is that it is log-normally distributed, and static over time and strata. We can specify this model using the `enw_reference()` function,
+Our baseline assumption for the reporting delay is that it is
+lognormally distributed, and static over time and strata.
+We can specify this model using the `enw_reference()` function,
 
 
 ``` r
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
-Note that the default distribution is log-normal, hence the distribution argument could be omitted here. Alternatively we could model the reporting delay non-parametrically using a hazard model (see [our model description for details](https://package.epinowcast.org/articles/model)). The following is equivalent to a cox proportional hazards model with a single baseline hazard function.
+Note that the default distribution is lognormal, hence the distribution argument could be omitted here.
+
+Alternatively we could model the reporting delay non-parametrically using
+a hazard model (see [our model description for details](https://package.epinowcast.org/articles/model)).
+The following is equivalent to a cox proportional hazards model with a
+single baseline hazard function.
 
 
 ``` r

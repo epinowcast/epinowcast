@@ -1,5 +1,9 @@
 #' Reference date logit hazard reporting  model module
 #'
+#' @description
+#' Specifies the reference date reporting delay model using parametric
+#' and/or non-parametric hazard formulations.
+#'
 #' @param parametric A formula (as implemented in [enw_formula()]) describing
 #' the parametric reference date delay model. This can use features
 #' defined by report date as defined in `metareference` as produced by
