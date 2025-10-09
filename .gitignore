@@ -21,3 +21,4 @@ cache
 /vignettes/*_cache/
 .here
 *.pdf
+CLAUDE.md

@@ -42,7 +42,8 @@ function that takes the output data and priors and returns a function that
 can be used to sample from a tightened version of the prior distribution.
 }
 \description{
-Reference date logit hazard reporting  model module
+Specifies the reference date reporting delay model using parametric
+and/or non-parametric hazard formulations.
 }
 \examples{
 # Parametric model with a lognormal distribution

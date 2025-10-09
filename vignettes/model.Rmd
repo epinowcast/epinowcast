@@ -92,6 +92,9 @@ We model the instantaneous reproduction number ($R_t$) on the log scale (though 
 
 where $r_0$ is the optional intercept, $X_{r}$ is the design matrix for fixed effects ($\beta_{f,r}$), and $Z_{r}$ is the design matrix for random effects ($\beta_{r,r}$. Within this specification the default model can be specified as a random effect on the day with no intercept. Alternative specifications that may be of interest include a weekly random walk (specified as `~ 1 + rw(week)`), a piecewise linear model (specified as `~ 1 + day:week`), and a group specific random effect (specified as `~ 1 + (1 | .group)`).
 
+This model is specified via the `r` argument of `enw_expectation()` (see `?enw_expectation`).
+For example, `enw_expectation(r = ~ 1 + rw(week))` implements a weekly random walk for the log reproduction number as described above.
+
 ## Latent infections/notifications
 
 We model the expected number of infections/latent notifications ($\lambda^l$) using a renewal process [@Fraser2007; @Cori2013]. This model is a generalisation of the default model and can be used to model the expected number of latent notifications in a setting where the generation time is not fixed to be a day. It implies that current infections/notifications are dependent on past infections/notifications based on a kernel (usually interpreted as the generation time or serial interval). An instantaneous daily growth rate model can be recovered by setting the generation time to be fixed at 1 day. The model is defined as follows,
@@ -113,6 +116,9 @@ In some settings there may be additional reporting delays on top of those that a
 \end{align}
 
 Where $\nu_{g,t}$ is the inferred ascertainment and is modelled flexibly using an optional intercept ($\nu_0$), a design matrix ($X_{\nu}$) for fixed effects ($\beta_{f,\nu}$), and a design matrix ($Z_{\nu}$) for random effects ($\beta_{r,\nu}$.
+
+Ascertainment is specified via the `observation` argument and latent reporting delays via the `latent_reporting_delay` argument of `enw_expectation()` (see `?enw_expectation`).
+For example, `enw_expectation(observation = ~ 1 + day_of_week)` models day-of-week variation in ascertainment as described above.
 
 # Delay distribution
 
@@ -169,6 +175,9 @@ In the default case of the log-normal distribution, the parameters $\mu_{g,t}$ a
   \text{log} (\upsilon_{g,t}) &= \upsilon_0 + \beta_{f,\upsilon} X_{\gamma} + \beta_{r,\upsilon} Z_{\gamma}
 \end{align}
 
+These parameters are specified via the `parametric` argument of `enw_reference()` (see `?enw_reference`), which controls both $\mu_{g,t}$ and $\upsilon_{g,t}$ simultaneously.
+For example, `enw_reference(parametric = ~ 1 + (1 | age_group))` creates age group-specific random effects for both parameters above, allowing different age groups to have different delay distributions whilst sharing information through hierarchical pooling.
+
 #### Non-parametric reference date effect $\delta_{g,t,d}$ and report date effect $\epsilon_{g,t,d}$
 
 In addition to parametric reporting effects there may also be non-parametric effects referenced by both reference and report dates. These are represented by the non-distributional logit hazard components for the date of reference and report, defined using an intercept ($\delta_0$) and arbitrary, shared covariates with fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients (note these can include auto-regressive terms).
@@ -178,7 +187,10 @@ In addition to parametric reporting effects there may also be non-parametric eff
   \epsilon_{g,t,d} &= \beta_{f,\epsilon} X_{\epsilon} + \beta_{r,\epsilon} Z_{\epsilon}
 \end{align}
 
-All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations. For further implementation details see `enw_reference()` for delays linked to the date of reference, `enw_report()` for delays linked to the date of report.
+The reference date effect $\delta_{g,t,d}$ is specified via the `non_parametric` argument of `enw_reference()` (see `?enw_reference`), whilst the report date effect $\epsilon_{g,t,d}$ is specified via the `non_parametric` argument of `enw_report()` (see `?enw_report`).
+For example, `enw_reference(non_parametric = ~ 1 + day_of_week)` adds day-of-week effects to the reference date hazard, whilst `enw_report(non_parametric = ~ 1 + day_of_week)` adds day-of-week effects to the report date hazard.
+
+All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.
 
 # Observation model and nowcast
 
@@ -213,5 +225,19 @@ As for cases with known reference dates other observation models are supported. 
 # Implementation
 
 The model is implemented in the probabilistic programming language `stan` and we use `cmdstanr` to interact with the model [@stan; @cmdstanr]. Optional within chain parallelisation is available across times of reference to reduce runtimes. Sparse design matrices have been used for all covariates to limit the number of probability mass functions that need to be calculated. `epinowcast` incorporates additional functionality written in R[@R] to enable plotting nowcasts and posterior predictions, summarising nowcasts, and scoring them using `scoringutils`[@scoringutils]. A flexible formula interface is provided to enable easier implementation of complex user specified models without interacting with the underlying code base. All functionality is modular allowing users to extend and alter the underlying model whilst continuing to use the package framework.
+
+# Summary of module-parameter mappings
+
+The following table summarises how module function arguments map to parameters in the model definition:
+
+| Module Function | Argument | Parameters Modified |
+|-----------------|----------|---------------------|
+| `enw_reference()` | `parametric` | $\mu_{g,t}$, $\upsilon_{g,t}$ (delay distribution parameters) |
+| `enw_reference()` | `non_parametric` | $\delta_{g,t,d}$ (reference date hazard component) |
+| `enw_report()` | `non_parametric` | $\epsilon_{g,t,d}$ (report date hazard component) |
+| `enw_expectation()` | `r` | $R_{g,t}$ (reproduction number/growth rate) |
+| `enw_expectation()` | `observation` | $\nu_{g,t}$ (ascertainment) |
+
+For additional implementation details and examples, see the documentation for each module function (`?enw_reference`, `?enw_report`, `?enw_expectation`) and the age-stratified nowcasting vignette (`vignette("germany-age-stratified-nowcasting")`).
 
 # References
