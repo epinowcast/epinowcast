@@ -134,19 +134,10 @@ The default nowcasting model in `epinowcast` consists of three modules:
 - A non-parametric reporting model which models differences in the reporting delay distribution by date of report (`report_date`), for example, day of the week effects on the reporting delay.
 
 ::: {.alert .alert-warning}
-**Important:** The model specifications in this vignette are simplified
-examples for demonstration.
-The default lognormal parametric reporting delay distribution may not be
-appropriate for your data.
-It can fail when reporting delays have multiple modes or complex patterns
-(see issue [#319](https://github.com/epinowcast/epinowcast/issues/319)
-for examples).
-Users should evaluate model fit using posterior predictive checks and
-consider alternative specifications such as non-parametric hazard models
-when the lognormal distribution does not adequately capture the reporting
-delay structure.
-See the [model definition vignette](https://package.epinowcast.org/articles/model.html)
-for detailed guidance on model specification.
+**Important:** The default lognormal reporting delay may not suit all data.
+It can fail with multimodal delays (see [#319](https://github.com/epinowcast/epinowcast/issues/319)).
+Use posterior predictive checks and consider alternatives when needed.
+See the [model definition vignette](https://package.epinowcast.org/articles/model.html) for guidance.
 :::
 
 In the following sections, we specify simple models for each of these modules.
@@ -179,14 +170,7 @@ We can specify this model using the `enw_reference()` function,
 reference_module <- enw_reference(~1, distribution = "lognormal", data = pobs)
 ```
 
-*Note: The default distribution is lognormal, hence the distribution
-argument could be omitted here.*
-However, this parametric assumption may not be appropriate if your
-reporting delay distribution has multiple modes or non-lognormal
-characteristics.
-Always check model fit using posterior predictive checks
-(see [Plotting posterior predictions](#plotting-posterior-predictions)
-below).
+Note that the default distribution is lognormal, hence the distribution argument could be omitted here.
 
 Alternatively we could model the reporting delay non-parametrically using
 a hazard model (see [our model description for details](https://package.epinowcast.org/articles/model)).

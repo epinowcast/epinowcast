@@ -4,41 +4,26 @@
 #' Specifies the reference date reporting delay model using parametric
 #' and/or non-parametric hazard formulations.
 #'
-#' **Important:** The default lognormal distribution may not be
-#' appropriate for all data, particularly when reporting delays exhibit
-#' multiple modes or complex patterns.
-#' Users should evaluate model fit using posterior predictive checks and
-#' consider non-parametric alternatives when parametric distributions do
-#' not adequately capture the delay structure.
-#'
-#' @param parametric A formula (as implemented in [enw_formula()])
-#' describing the parametric reference date delay model.
-#' This can use features defined by report date as defined in
-#' `metareference` as produced by [enw_preprocess_data()].
-#' Note that this formula will be applied to all summary statistics of
-#' the chosen parametric distribution but each summary parameter will
-#' have separate effects.
-#' Use `~ 0` to not use a parametric model.
+#' @param parametric A formula (as implemented in [enw_formula()]) describing
+#' the parametric reference date delay model. This can use features
+#' defined by report date as defined in `metareference` as produced by
+#' [enw_preprocess_data()]. Note that this formula will be applied to all
+#' summary statistics of the chosen parametric distribution but each summary
+#' parameter will have separate effects. Use `~ 0` to not use a parametric
+#' model.
 #'
 #' @param distribution A character vector describing the parametric delay
-#' distribution to use.
-#' Current options are: "none", "lognormal", "gamma", "exponential", and
-#' "loglogistic", with the default being "lognormal".
-#' The lognormal distribution assumes unimodal delays and may not be
-#' suitable for multimodal delay patterns.
-#' Consider using non-parametric alternatives (via `non_parametric`) or
-#' other distributions when the lognormal assumption is not appropriate.
+#' distribution to use. Current options are: "none", "lognormal", "gamma",
+#' "exponential", and "loglogistic", with the default being "lognormal".
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
-#' describing the non-parametric logit hazard model.
-#' This can use features defined by reference date and by delay.
-#' It draws on a linked `data.frame` using `metareference` and
-#' `metadelay` as produced by [enw_preprocess_data()].
-#' When an effect per delay is specified this approximates the cox
-#' proportional hazard model in discrete time with a single strata.
-#' When used in conjunction with a parametric model it likely makes sense
-#' to disable the intercept in order to make the joint model identifiable
-#' (i.e. `~ 0 + (1 | delay)`).
+#' describing the non-parametric logit hazard model. This can use features
+#' defined by reference date and by delay. It draws on a linked `data.frame`
+#' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
+#' When an effect per delay is specified this approximates the cox proportional
+#' hazard model in discrete time with a single strata. When used in conjunction
+#' with a parametric model it likely makes sense to disable the intercept in
+#' order to make the joint model identifiable (i.e. `~ 0 + (1 | delay)`).
 #'
 #' @return A list containing the supplied formulas, data passed into a list
 #' describing the models, a `data.frame` describing the priors used, and a

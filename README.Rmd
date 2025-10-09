@@ -36,16 +36,10 @@ cat(gsub("\n[ ]+", " ", packageDescription("epinowcast")$Description))
 
 ## Important Note on Model Specification
 
-*Note: The examples in this documentation use simplified model
-specifications for demonstration purposes.*
-**The default lognormal parametric reporting delay distribution may
-not be appropriate for your data**, particularly if reporting delays
-exhibit multiple modes or complex patterns.
-Users should carefully evaluate their data characteristics and
-consider alternative model specifications (such as non-parametric
-hazard models) as needed.
-See the [package vignettes](https://package.epinowcast.org/articles)
-for detailed guidance on model specification and selection.
+**The default lognormal reporting delay distribution may not suit all data.**
+It can fail with multimodal or complex delay patterns.
+Evaluate model fit and consider alternatives (e.g., non-parametric hazards) as needed.
+See the [package vignettes](https://package.epinowcast.org/articles) for guidance.
 
 ## Installation
   

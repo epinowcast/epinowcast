@@ -65,22 +65,12 @@ A object of the class "epinowcast" which inherits from
 priors, and output from the sampler specified in \code{enw_fit_opts()}.
 }
 \description{
-Provides a user friendly interface around package
-functionality to produce a nowcast from observed preprocessed data,
-and a series of user defined models.
-By default a model that assumes a fixed parametric lognormal reporting
-distribution with a flexible expectation model is used.
-
-\strong{Important:} The default model specification is simplified for
-demonstration and may not be appropriate for all data.
-The lognormal reporting delay distribution can fail when delays have
-multiple modes or complex patterns.
-Users should evaluate model appropriateness and consider alternative
-specifications as needed.
-
-Explore the individual model components for additional documentation
-and see the package case studies for example model specifications for
-different tasks.
+Provides a user friendly interface around package functionality
+to produce a nowcast from observed preprocessed data, and a series of user
+defined models. By default a model that assumes a fixed parametric reporting
+distribution with a flexible expectation model is used. Explore the
+individual model components for additional documentation and see the package
+case studies for example model specifications for different tasks.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

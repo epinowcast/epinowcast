@@ -1,21 +1,11 @@
 #' @title Nowcast using partially observed data
 #'
-#' @description Provides a user friendly interface around package
-#' functionality to produce a nowcast from observed preprocessed data,
-#' and a series of user defined models.
-#' By default a model that assumes a fixed parametric lognormal reporting
-#' distribution with a flexible expectation model is used.
-#'
-#' **Important:** The default model specification is simplified for
-#' demonstration and may not be appropriate for all data.
-#' The lognormal reporting delay distribution can fail when delays have
-#' multiple modes or complex patterns.
-#' Users should evaluate model appropriateness and consider alternative
-#' specifications as needed.
-#'
-#' Explore the individual model components for additional documentation
-#' and see the package case studies for example model specifications for
-#' different tasks.
+#' @description Provides a user friendly interface around package functionality
+#' to produce a nowcast from observed preprocessed data, and a series of user
+#' defined models. By default a model that assumes a fixed parametric reporting
+#' distribution with a flexible expectation model is used. Explore the
+#' individual model components for additional documentation and see the package
+#' case studies for example model specifications for different tasks.
 #'
 #' @param reference The reference date indexed reporting process model
 #' specification as defined using [enw_reference()].
