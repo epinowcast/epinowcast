@@ -79,7 +79,10 @@ The [`epinowcast` website](https://package.epinowcast.org/) includes a function 
 
 <details><summary>R Vignettes</summary>
 
-We have created [package vignettes](https://package.epinowcast.org/articles) to help you [get started nowcasting](https://package.epinowcast.org/articles/epinowcast.html) and to [highlight other features with case studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
+We have created [package vignettes](https://package.epinowcast.org/articles)
+to help you [get started nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
+provide a [quick reference of model features](https://package.epinowcast.org/articles/features.html),
+and to [highlight other features with case studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
 
