@@ -35,6 +35,7 @@ processed on their own."><meta property="og:image" content="https://package.epin
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Model details</h6></li>
     <li><a class="dropdown-item" href="../articles/model.html">Model definition and implementation</a></li>
+    <li><a class="dropdown-item" href="../articles/features.html">Model features summary</a></li>
     <li><a class="dropdown-item" href="../articles/distributions.html">Discretised distributions</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Case studies</h6></li>
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
@@ -110,11 +111,11 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_rw_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="va">location</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group + location</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5574ce353988&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55e2dd41a508&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_rw_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span> <span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group + location</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5574ce38ff48&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55e2dd34b9f8&gt;</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
