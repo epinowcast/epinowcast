@@ -1,31 +1,3 @@
-test_that("Can score nowcasts", {
-  skip_on_cran()
-  skip_if_not_installed("scoringutils")
-  nowcast <- enw_example("nowcast")
-  summarised_nowcast <- summary(nowcast)
-  obs <- enw_example("observations")
-
-  expect_data_table(
-    suppressPackageStartupMessages(suppressWarnings(suppressMessages(
-      enw_score_nowcast(summarised_nowcast, obs)
-    )))
-  )
-  expect_data_table(
-    suppressWarnings(suppressMessages(
-      enw_score_nowcast(
-        summarised_nowcast, obs,
-        log = TRUE
-      )
-    ))
-  )
-  expect_data_table(
-    suppressWarnings(suppressMessages(enw_score_nowcast(
-      summarised_nowcast, obs,
-      check = TRUE
-    )))
-  )
-})
-
 test_that("Can convert epinowcast object to forecast_sample", {
   skip_on_cran()
   skip_if_not_installed("scoringutils")

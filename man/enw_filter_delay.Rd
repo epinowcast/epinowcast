@@ -2,10 +2,8 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_filter_delay}
 \alias{enw_filter_delay}
-\title{Filter observations to restrict the maximum reporting delay}
+\title{Filter observations to have a consistent maximum delay period}
 \usage{
-enw_filter_delay(obs, max_delay, timestep = "day")
-
 enw_filter_delay(obs, max_delay, timestep = "day")
 }
 \arguments{
@@ -38,12 +36,9 @@ have this timestep then you may wish to make use of
 \value{
 A \code{data.frame} filtered so that dates by report are less than or
 equal the reference date plus the maximum delay.
-
-A \code{data.frame} filtered so that dates by report are less than or
-equal the reference date plus the maximum delay.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Filter observations to have a consistent maximum delay period
 }
 \examples{
 obs <- enw_example("preprocessed")$obs[[1]]
@@ -69,26 +64,5 @@ Preprocessing functions
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle}()},
 \code{\link{enw_reporting_triangle_to_long}()}
-
-Preprocessing functions
-\code{\link{enw_add_delay}()},
-\code{\link{enw_add_max_reported}()},
-\code{\link{enw_add_metaobs_features}()},
-\code{\link{enw_assign_group}()},
-\code{\link{enw_complete_dates}()},
-\code{\link{enw_construct_data}()},
-\code{\link{enw_extend_date}()},
-\code{\link{enw_filter_reference_dates}()},
-\code{\link{enw_filter_report_dates}()},
-\code{\link{enw_flag_observed_observations}()},
-\code{\link{enw_impute_na_observations}()},
-\code{\link{enw_latest_data}()},
-\code{\link{enw_metadata}()},
-\code{\link{enw_metadata_delay}()},
-\code{\link{enw_missing_reference}()},
-\code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_reporting_triangle_to_long}()}
 }
 \concept{preprocess}
-\keyword{internal}

@@ -299,7 +299,6 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' and `report_date` for each observation.
 #'
 #' @return A `data.table` of observations with a new column `delay`.
-#' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_add_incidence
 #' @inheritParams get_internal_timestep
 #' @family preprocess
@@ -512,30 +511,6 @@ enw_latest_data <- function(obs) {
   return(latest_data[])
 }
 
-#' Filter observations to restrict the maximum reporting delay
-#'
-#' @description `r lifecycle::badge("deprecated")`
-#'
-#' @return A `data.frame` filtered so that dates by report are less than or
-#' equal the reference date plus the maximum delay.
-#'
-#' @inheritParams enw_filter_delay
-#' @inheritParams enw_add_incidence
-#' @inheritParams enw_preprocess_data
-#' @importFrom lifecycle deprecate_stop
-#' @family preprocess
-#' @keywords internal
-#' @export
-enw_filter_delay <- function(obs, max_delay, timestep = "day") {
-  lifecycle::deprecate_warn(
-    when = "0.2.3",
-    what = "enw_delay_filter()",
-    with = "enw_filter_delay()",
-    details = "Please file an issue if deprecating this \
-      function has caused any issues."
-  )
-  return(enw_filter_delay(obs, max_delay, timestep))
-}
 
 #' Filter observations to have a consistent maximum delay period
 #'
@@ -946,39 +921,6 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4, timestep = "day") {
   return(delays[])
 }
 
-#' Calculate reporting delay metadata for a given maximum delay
-#'
-#' @description `r lifecycle::badge('deprecated')`
-#'
-#' @description Calculate delay metadata based on the supplied maximum delay and
-#'   independent of other metadata or date indexing. These data are meant to be
-#'   used in conjunction with metadata on the date of reference. Users can build
-#'   additional features this  `data.frame`  or regenerate it using this
-#'   function in the output of `enw_preprocess_data()`.
-#'
-#'   `enw_delay_metadata()` was renamed to [`enw_metadata_delay()`] for better
-#'   consistency.
-#'
-#' @return A  `data.frame`  of delay metadata. This includes:
-#'  - `delay`: The numeric delay from reference date to report.
-#'  - `delay_cat`: The categorised delay. This may be useful for model building.
-#'  - `delay_week`: The numeric week since the delay was reported. This again
-#'   may be useful for model building.
-#'  - `delay_tail`: A logical variable defining if the delay is in the upper
-#'   75% of the potential delays. This may be particularly useful when building
-#'   models that assume a parametric distribution in order to increase the
-#'   weight of the tail of the reporting distribution in a pragmatic way.
-#' @inheritParams enw_metadata_delay
-#' @keywords internal
-#' @export
-#' @examples
-#' enw_delay_metadata(max_delay = 20, breaks = 4)
-enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
-  lifecycle::deprecate_warn(
-    "0.2.3", "enw_delay_metadata()", "enw_metadata_delay()"
-  )
-  return(enw_metadata_delay(max_delay, breaks))
-}
 
 #' Construct preprocessed data
 #'
