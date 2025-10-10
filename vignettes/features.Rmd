@@ -72,17 +72,13 @@ Model reporting delays using parametric distributions, non-parametric hazards, o
 
 | Approach | When to use | How to specify | Example |
 |----------|-------------|----------------|---------|
-| Parametric only | Well-characterised delays | `enw_reference(parametric = ~1, distribution = "lognormal")` | Default in vignettes |
-| Non-parametric only | Unknown delay distribution | `enw_reference(parametric = ~0, non_parametric = ~1 + (1 | delay))` | Flexible hazard model |
-| Mixed model | Parametric baseline + adjustments | `enw_reference(parametric = ~1, non_parametric = ~0 + (1 | delay_cat))` | Best of both |
+| Parametric only | Sparse data (provides regularisation), faster fitting | `enw_reference(parametric = ~1, distribution = "lognormal")` | Default in vignettes |
+| Non-parametric only | Multimodal or highly complex delay patterns | `enw_reference(parametric = ~0, non_parametric = ~1 + (1 | delay))` | Flexible hazard model |
+| Mixed model | Parametric baseline + adjustments for complex patterns | `enw_reference(parametric = ~1, non_parametric = ~0 + (1 | delay_cat))` | Best of both |
 | Time-varying delays | Changing reporting over time | Include time effects in formulas | `parametric = ~1 + week` |
 | Group-specific delays | Different delays by strata | Random effects by group | `parametric = ~1 + (1 | .group)` |
 
-**Available distributions:**
-- Lognormal (default)
-- Gamma
-- Exponential
-- Loglogistic
+**Available distributions:** See the [distributions vignette](distributions.html) for details on lognormal, gamma, exponential, and loglogistic distributions.
 
 **Key functions:**
 - `enw_reference()`: Specify delay model
@@ -102,9 +98,10 @@ Specify the generative model for the expected latent process (e.g., infections, 
 | Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
 | Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
 | Fixed effects | Covariates (e.g., interventions) | `r = ~1 + intervention + ...` | Include predictors |
+| Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week` | Adjust for reporting patterns |
 
 **Key functions:**
-- `enw_expectation()`: Specify latent process model
+- `enw_expectation()`: Specify latent process model and observation modifiers
 - See `?enw_expectation` for details
 
 **Where to see it:** The [Rt estimation vignette](single-timeseries-rt-estimation.html) demonstrates renewal process models with generation times.
@@ -131,17 +128,19 @@ All model modules support the same formula interface.
 
 # Missing Data Handling {#missing-data}
 
-Handle observations with missing reference dates.
+Handle observations with missing reference dates and extend data for forecasting.
 
 | Feature | What it does | How to use | Status |
 |---------|--------------|------------|--------|
 | Missing reference model | Models proportion of missing | `enw_missing(formula = ~1)` | Experimental |
+| Forecasting | Extend data with missing observations | `enw_extend_date()` + `enw_missing()` | Combine with missing data model |
 | Assumes consistent delays | Same delay for missing and observed | Automatic when missing data present | Limitation |
 
 **Key functions:**
 - `enw_missing()`: Specify missing data model
+- `enw_extend_date()`: Extend time series for forecasting
 
-**Where to see it:** See `?enw_missing` for details.
+**Where to see it:** See `?enw_missing` and `?enw_extend_date` for details.
 This feature is experimental.
 
 # Model Evaluation {#model-evaluation}
