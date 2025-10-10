@@ -262,7 +262,7 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
   expect_identical(
     posterior$variable,
-    c("lp_approx__", regression_posterior$variable)
+    c("lp_approx__", "path__", regression_posterior$variable)
   )
   # Nowcast median has not changed by more than 400 in total
   expect_diff_sum_abs_lt(
