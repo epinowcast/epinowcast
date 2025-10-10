@@ -59,6 +59,13 @@ While it is intended to address garbage in from the \emph{user}, it does not
 generally attempt to address garbage in from the \emph{developer} - e.g. if asking
 for overlapping required and forbidden columns (though that will lead to an
 always-error condition).
+
+When \code{dates = TRUE}, this function ensures that \code{report_date} and
+\code{reference_date} columns are coerced to \code{IDate} class with integer storage
+mode. This is necessary because some operations (such as \code{dplyr::filter()})
+can convert \code{IDate} columns to double storage mode whilst preserving the
+class, which violates data.table's requirements and causes errors in
+subsequent date arithmetic operations.
 }
 \seealso{
 Utility functions

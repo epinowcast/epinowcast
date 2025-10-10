@@ -166,6 +166,13 @@ check_modules_compatible <- function(modules) {
 #' for overlapping required and forbidden columns (though that will lead to an
 #' always-error condition).
 #'
+#' When `dates = TRUE`, this function ensures that `report_date` and
+#' `reference_date` columns are coerced to `IDate` class with integer storage
+#' mode. This is necessary because some operations (such as `dplyr::filter()`)
+#' can convert `IDate` columns to double storage mode whilst preserving the
+#' class, which violates data.table's requirements and causes errors in
+#' subsequent date arithmetic operations.
+#'
 #' @importFrom data.table as.data.table setDT
 #' @importFrom cli cli_abort
 #' @family utils
@@ -241,6 +248,16 @@ coerce_dt <- function(
         as.IDate(report_date), as.IDate(reference_date)
       )
     ]
+    # Restore integer storage mode if corrupted by dplyr operations
+    # dplyr can convert IDate to double storage whilst preserving class
+    if (storage.mode(dt$report_date) != "integer") {
+      dt[, report_date := as.integer(report_date)]
+      class(dt$report_date) <- c("IDate", "Date")
+    }
+    if (storage.mode(dt$reference_date) != "integer") {
+      dt[, reference_date := as.integer(reference_date)]
+      class(dt$reference_date) <- c("IDate", "Date")
+    }
   }
 
   if (length(select) > 0) { # if selecting particular list ...

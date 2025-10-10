@@ -62,6 +62,7 @@ cyclomatic
 dataconverters
 discretisation
 discretised
+dplyr
 dss
 dt
 enw

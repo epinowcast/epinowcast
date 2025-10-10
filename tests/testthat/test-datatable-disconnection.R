@@ -84,3 +84,38 @@ test_that("coerce_dt provides the requested errors", {
     regexp = "PRESENT"
   )
 })
+
+test_that("coerce_dt ensures integer storage after dplyr operations", {
+  skip_if_not_installed("dplyr")
+
+  # Create test data and apply dplyr operation
+  test_data <- data.table::data.table(
+    report_date = data.table::as.IDate("2021-10-01") + 0:5,
+    reference_date = data.table::as.IDate("2021-10-01") + 0:5,
+    confirm = c(1, 1, 2, 3, 5, 8)
+  )
+  filtered_data <- dplyr::filter(test_data, confirm > 1)
+
+  # coerce_dt should ensure integer storage regardless of dplyr behaviour
+  fixed_data <- coerce_dt(filtered_data, dates = TRUE)
+  expect_identical(storage.mode(fixed_data$report_date), "integer")
+  expect_identical(storage.mode(fixed_data$reference_date), "integer")
+  expect_s3_class(fixed_data$report_date, c("IDate", "Date"))
+})
+
+test_that("enw_preprocess_data works after dplyr operations", {
+  skip_on_cran()
+  skip_if_not_installed("dplyr")
+
+  # Simulate user workflow: dplyr filter then preprocess
+  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+  filtered_data <- dplyr::filter(
+    nat_germany_hosp,
+    report_date >= as.Date("2021-10-01")
+  )
+
+  # Should work without error (previously failed with some dplyr versions)
+  pobs <- enw_preprocess_data(filtered_data, max_delay = 20)
+  expect_s3_class(pobs, "enw_preprocess_data")
+  expect_identical(storage.mode(pobs$obs[[1]]$report_date), "integer")
+})
