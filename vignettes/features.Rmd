@@ -154,7 +154,9 @@ Handle two types of missing data: missing reference dates and missing observatio
 - The missing reference model assumes consistent reporting delay for observations with and without known reference dates
 - Any observations marked with `.observed = FALSE` can be excluded from the likelihood whilst still generating posterior predictions
 
-**Where to see it:** See `?enw_missing`, `?enw_extend_date`, `?enw_flag_observed_observations`, and `?enw_obs` for details.
+**Where to see it:**
+- NA handling example: See `?enw_flag_observed_observations` and `?enw_obs` for examples
+- Other use cases: See function documentation for `enw_missing`, `enw_extend_date`
 
 # Model Evaluation {#model-evaluation}
 
