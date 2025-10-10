@@ -137,6 +137,12 @@ for the presence and/or absence of various columns.</p>
 generally attempt to address garbage in from the <em>developer</em> - e.g. if asking
 for overlapping required and forbidden columns (though that will lead to an
 always-error condition).</p>
+<p>When <code>dates = TRUE</code>, this function ensures that <code>report_date</code> and
+<code>reference_date</code> columns are coerced to <code>IDate</code> class with integer storage
+mode. This is necessary because some operations (such as <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">dplyr::filter()</a></code>)
+can convert <code>IDate</code> columns to double storage mode whilst preserving the
+class, which violates data.table's requirements and causes errors in
+subsequent date arithmetic operations.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
