@@ -78,7 +78,7 @@ Model reporting delays using parametric distributions, non-parametric hazards, o
 | Time-varying delays | Changing reporting over time | Include time effects in formulas | `parametric = ~1 + week` |
 | Group-specific delays | Different delays by strata | Random effects by group | `parametric = ~1 + (1 | .group)` |
 
-**Available distributions:** See the [distributions vignette](distributions.html) for details on lognormal, gamma, exponential, and loglogistic distributions.
+**Available distributions:** See the [distributions vignette](distributions.html) for details on the range of supported distributions.
 
 **Key functions:**
 - `enw_reference()`: Specify delay model
