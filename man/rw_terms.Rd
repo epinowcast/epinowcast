@@ -8,8 +8,8 @@ rw_terms(formula)
 }
 \arguments{
 \item{formula}{A model formula that may use standard fixed
-effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), and random walks
-defined using the \code{\link[=rw]{rw()}} helper function.}
+effects, random effects using \link[lme4]{lme4} syntax (see \code{\link[=re]{re()}}), and
+random walks defined using the \code{\link[=rw]{rw()}} helper function.}
 }
 \value{
 A character vector containing the random walk terms that have been

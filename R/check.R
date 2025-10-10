@@ -126,8 +126,9 @@ check_modules_compatible <- function(modules) {
 
 #' @title Coerce `data.table`s
 #'
-#' @description Provides consistent coercion of inputs to [data.table]
-#' with error handling, column checking, and optional selection.
+#' @description Provides consistent coercion of inputs to
+#' \link[data.table]{data.table} with error handling, column checking, and
+#' optional selection.
 #'
 #' @param data Any of the types supported by [data.table::as.data.table()]
 #'
@@ -144,7 +145,7 @@ check_modules_compatible <- function(modules) {
 #'
 #' @param dates A logical; ensure the presence of `report_date` and
 #' `reference_date`? If `TRUE` (default), those columns will be coerced with
-#' [data.table::as.IDate()].
+#' \link[data.table]{as.IDate}.
 #'
 #' @param msg_required A character string; for `required_cols`-related error
 #' message
