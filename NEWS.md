@@ -10,6 +10,8 @@
 
 ## Breaking changes
 
+- Removed `simulate_double_censored_pmf()`. Users should use `primarycensored::dprimarycensored()` instead for generating double censored PMFs.
+
 ## Bugs
 
 - Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
@@ -23,7 +25,6 @@
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
-- Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
 - A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
 
 ## Model
