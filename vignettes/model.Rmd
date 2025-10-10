@@ -35,9 +35,21 @@ Our nowcasting approach is an extension of that proposed by Günther et al.[@gun
 
 We also support flexible joint modelling of missing data by assuming that the reporting delay is consistent between reported and unreported observations following the methodology of Lison et al. [@Lison2022].
 
-Our modelling framework is implemented in the `stan` probabilistic programming language via `cmdstanr` [@stan; @cmdstanr] with a focus on computational efficiency and robustness.
+Our modelling framework is implemented in the `stan` probabilistic
+programming language via `cmdstanr` [@stan; @cmdstanr] with a focus
+on computational efficiency and robustness.
 
-In the following sections we outline our modelling methodology, current feature set stratified by module, and highlight implementation details. For each module we present both our default implementation as well as the more generic framework we support. Note that extensions to this methodology are warmly welcomed with our [community site](https://community.epinowcast.org/) being a good first point of contact.
+For a quick reference to all available features, see the
+[model features summary vignette](features.html).
+
+In the following sections we outline our modelling methodology,
+current feature set stratified by module, and highlight
+implementation details.
+For each module we present both our default implementation as well as
+the more generic framework we support.
+Note that extensions to this methodology are warmly welcomed with our
+[community site](https://community.epinowcast.org/) being a good
+first point of contact.
 
 # Decomposition into expected final notifications and report delay components
 
