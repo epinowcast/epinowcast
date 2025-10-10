@@ -86,20 +86,20 @@ enw_example <- function(type = c(
 
 #' @title Coerce Dates
 #'
-#' @description Provides consistent coercion of inputs to [IDate]
-#' with error handling
+#' @description Provides consistent coercion of inputs to
+#' \link[data.table]{IDate} with error handling
 #'
 #' @param dates A vector-like input, which the function attempts
 #' to coerce via [data.table::as.IDate()]. Defaults to NULL.
 #'
-#' @return An [IDate] vector.
+#' @return An \link[data.table]{IDate} vector.
 #'
 #' @details If any of the elements of `dates` cannot be coerced,
 #' this function will result in an error, indicating all indices
-#' which cannot be coerced to [IDate].
+#' which cannot be coerced to \link[data.table]{IDate}.
 #'
 #' Internal methods of [epinowcast] assume dates are represented
-#' as [IDate].
+#' as \link[data.table]{IDate}.
 #'
 #' @export
 #' @importFrom data.table as.IDate

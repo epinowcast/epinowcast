@@ -7,8 +7,8 @@
 re(formula)
 }
 \arguments{
-\item{formula}{A random effect as returned by \code{\link[lme4:findbars]{lme4::findbars()}}
-when a random effect is defined using the \link{lme4} syntax in
+\item{formula}{A random effect as returned by \link[lme4]{findbars}
+when a random effect is defined using the \link[lme4]{lme4} syntax in
 formula. Currently only simplified random effects (i.e
 LHS | RHS) are supported.}
 }

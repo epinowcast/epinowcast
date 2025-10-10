@@ -10,6 +10,13 @@
 
 ## Breaking changes
 
+- Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
+  - `enw_cumulative_to_incidence()` (deprecated 0.2.1, use `enw_add_incidence()`)
+  - `enw_incidence_to_cumulative()` (deprecated 0.2.1, use `enw_add_cumulative()`)
+  - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
+  - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
+  - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
+
 ## Bugs
 
 - Fixed bug in `enw_aggregate_cumulative()` where cumulative counts could incorrectly decrease at timestep boundaries when max_delay was an even multiple of the aggregation timestep. The function now uses cumulative sum to ensure monotonically non-decreasing counts for each reference date. Fixes #511 by @seabbs.

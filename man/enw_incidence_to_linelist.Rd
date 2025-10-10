@@ -44,8 +44,6 @@ Data converters
 \code{\link{enw_add_cumulative}()},
 \code{\link{enw_add_incidence}()},
 \code{\link{enw_aggregate_cumulative}()},
-\code{\link{enw_cumulative_to_incidence}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_linelist_to_incidence}()}
 }
 \concept{dataconverters}
