@@ -16,7 +16,6 @@
   - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
   - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
   - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
-- Fixed Rd cross-reference for `expose_functions` in `enw_stan_to_r` documentation to include package anchor.
 
 ## Bugs
 
