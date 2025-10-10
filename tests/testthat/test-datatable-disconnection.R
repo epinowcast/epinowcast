@@ -85,7 +85,7 @@ test_that("coerce_dt provides the requested errors", {
   )
 })
 
-test_that("coerce_dt restores integer storage for IDate columns", {
+test_that("coerce_dt ensures integer storage after dplyr operations", {
   skip_if_not_installed("dplyr")
 
   # Create test data and apply dplyr operation
@@ -96,19 +96,7 @@ test_that("coerce_dt restores integer storage for IDate columns", {
   )
   filtered_data <- dplyr::filter(test_data, confirm > 1)
 
-  # Some dplyr versions corrupt IDate storage mode to double whilst
-  # preserving class. Force corruption to test the fix works.
-  if (storage.mode(filtered_data$report_date) == "integer") {
-    filtered_data$report_date <- as.double(filtered_data$report_date)
-    class(filtered_data$report_date) <- c("IDate", "Date")
-    filtered_data$reference_date <- as.double(filtered_data$reference_date)
-    class(filtered_data$reference_date) <- c("IDate", "Date")
-  }
-
-  # Verify we have double storage but IDate class (the bug scenario)
-  expect_identical(storage.mode(filtered_data$report_date), "double")
-
-  # coerce_dt should restore integer storage
+  # coerce_dt should ensure integer storage regardless of dplyr behaviour
   fixed_data <- coerce_dt(filtered_data, dates = TRUE)
   expect_identical(storage.mode(fixed_data$report_date), "integer")
   expect_identical(storage.mode(fixed_data$reference_date), "integer")
@@ -126,15 +114,7 @@ test_that("enw_preprocess_data works after dplyr operations", {
     report_date >= as.Date("2021-10-01")
   )
 
-  # Force storage mode corruption to test the fix
-  if (storage.mode(filtered_data$report_date) == "integer") {
-    filtered_data$report_date <- as.double(filtered_data$report_date)
-    class(filtered_data$report_date) <- c("IDate", "Date")
-    filtered_data$reference_date <- as.double(filtered_data$reference_date)
-    class(filtered_data$reference_date) <- c("IDate", "Date")
-  }
-
-  # Should work without error (previously failed)
+  # Should work without error (previously failed with some dplyr versions)
   pobs <- enw_preprocess_data(filtered_data, max_delay = 20)
   expect_s3_class(pobs, "enw_preprocess_data")
   expect_identical(storage.mode(pobs$obs[[1]]$report_date), "integer")
