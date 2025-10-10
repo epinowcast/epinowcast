@@ -204,9 +204,15 @@ match your data structure and computational constraints.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>:
-Set timestep during preprocessing -
-<code><a href="../reference/enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code>: Convert between timesteps</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>: Set timestep during
+preprocessing</li>
+<li>
+<code><a href="../reference/enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code>: Convert between
+timesteps</li>
+</ul>
 <p><strong>Where to see it:</strong> The <a href="epinowcast.html">getting started vignette</a> uses daily data. For
 weekly or custom timesteps, simply change the <code>timestep</code>
 argument in <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>.</p>
@@ -264,9 +270,13 @@ age-stratified vignette</a></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>:
-Specify grouping with <code>by</code> argument - Formula interface:
-Control sharing via random effects</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_preprocess_data.html">enw_preprocess_data()</a></code>: Specify grouping with
+<code>by</code> argument</li>
+<li>Formula interface: Control sharing via random effects</li>
+</ul>
 <p><strong>Where to see it:</strong> The <a href="germany-age-stratified-nowcasting.html">Germany age-stratified
 case study</a> demonstrates multi-group nowcasting with age
 stratification and hierarchical effects.</p>
@@ -324,9 +334,12 @@ hazards, or combinations.</p>
 </table>
 <p><strong>Available distributions:</strong> See the <a href="distributions.html">distributions vignette</a> for details on the
 range of supported distributions.</p>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_reference.html">enw_reference()</a></code>:
-Specify delay model - See <code><a href="../reference/enw_reference.html">?enw_reference</a></code> for formula
-details</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_reference.html">enw_reference()</a></code>: Specify delay model</li>
+<li>See <code><a href="../reference/enw_reference.html">?enw_reference</a></code> for formula details</li>
+</ul>
 <p><strong>Where to see it:</strong> All vignettes use delay models. For
 non-parametric approaches and mixed models, see
 <code><a href="../reference/enw_reference.html">?enw_reference</a></code> examples.</p>
@@ -391,9 +404,13 @@ vignette</a></td>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_expectation.html">enw_expectation()</a></code>:
-Specify latent process model and observation modifiers - See
-<code><a href="../reference/enw_expectation.html">?enw_expectation</a></code> for details</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_expectation.html">enw_expectation()</a></code>: Specify latent process model and
+observation modifiers</li>
+<li>See <code><a href="../reference/enw_expectation.html">?enw_expectation</a></code> for details</li>
+</ul>
 <p><strong>Where to see it:</strong> The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
 demonstrates renewal process models with generation times.</p>
 </div>
@@ -449,9 +466,14 @@ demonstrates renewal process models with generation times.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_formula.html">enw_formula()</a></code>: Unified
-formula interface - <code><a href="../reference/rw.html">rw()</a></code>: Random walk helper - See
-<code><a href="../reference/enw_formula.html">?enw_formula</a></code> for syntax details</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_formula.html">enw_formula()</a></code>: Unified formula interface</li>
+<li>
+<code><a href="../reference/rw.html">rw()</a></code>: Random walk helper</li>
+<li>See <code><a href="../reference/enw_formula.html">?enw_formula</a></code> for syntax details</li>
+</ul>
 <p><strong>Where to see it:</strong> The <a href="germany-age-stratified-nowcasting.html">Germany case study</a>
 uses random effects for age groups. All model modules support the same
 formula interface.</p>
@@ -527,21 +549,37 @@ model recovers parameters</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_missing.html">enw_missing()</a></code>: Model
-for missing reference dates - <code><a href="../reference/enw_extend_date.html">enw_extend_date()</a></code>: Extend
-time series with unobserved dates -
-<code><a href="../reference/enw_flag_observed_observations.html">enw_flag_observed_observations()</a></code>: Flag observations based
-on NAs - <code><a href="../reference/enw_obs.html">enw_obs()</a></code>: Use <code>observation_indicator</code>
-to control likelihood</p>
-<p><strong>Notes:</strong> - The missing reference model assumes
-consistent reporting delay for observations with and without known
-reference dates - Any observations marked with
-<code>.observed = FALSE</code> can be excluded from the likelihood
-whilst still generating posterior predictions</p>
-<p><strong>Where to see it:</strong> - NA handling example: See
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_missing.html">enw_missing()</a></code>: Model for missing reference dates</li>
+<li>
+<code><a href="../reference/enw_extend_date.html">enw_extend_date()</a></code>: Extend time series with unobserved
+dates</li>
+<li>
+<code><a href="../reference/enw_flag_observed_observations.html">enw_flag_observed_observations()</a></code>: Flag observations
+based on NAs</li>
+<li>
+<code><a href="../reference/enw_obs.html">enw_obs()</a></code>: Use <code>observation_indicator</code> to
+control likelihood</li>
+</ul>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>The missing reference model assumes consistent reporting delay for
+observations with and without known reference dates</li>
+<li>Any observations marked with <code>.observed = FALSE</code> can be
+excluded from the likelihood whilst still generating posterior
+predictions</li>
+</ul>
+<p><strong>Where to see it:</strong></p>
+<ul>
+<li>NA handling example: See
 <code><a href="../reference/enw_flag_observed_observations.html">?enw_flag_observed_observations</a></code> and <code><a href="../reference/enw_obs.html">?enw_obs</a></code>
-for examples - Other use cases: See function documentation for
-<code>enw_missing</code>, <code>enw_extend_date</code></p>
+for examples</li>
+<li>Other use cases: See function documentation for
+<code>enw_missing</code>, <code>enw_extend_date</code>
+</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="model-evaluation">Model Evaluation<a class="anchor" aria-label="anchor" href="#model-evaluation"></a>
@@ -592,9 +630,14 @@ package</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_fit_opts.html">enw_fit_opts()</a></code>:
-Control outputs - <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: Visualise results - External:
-<code>loo</code>, <code>scoringutils</code> packages</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_fit_opts.html">enw_fit_opts()</a></code>: Control outputs</li>
+<li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: Visualise results</li>
+<li>External: <code>loo</code>, <code>scoringutils</code> packages</li>
+</ul>
 <p><strong>Where to see it:</strong> The <a href="single-timeseries-rt-estimation.html">Rt estimation vignette</a>
 shows model scoring and evaluation.</p>
 </div>
@@ -657,9 +700,12 @@ shows model scoring and evaluation.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Key functions:</strong> - <code><a href="../reference/enw_fit_opts.html">enw_fit_opts()</a></code>:
-Specify computational options - See <code><a href="../reference/enw_fit_opts.html">?enw_fit_opts</a></code> for
-details</p>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_fit_opts.html">enw_fit_opts()</a></code>: Specify computational options</li>
+<li>See <code><a href="../reference/enw_fit_opts.html">?enw_fit_opts</a></code> for details</li>
+</ul>
 <p><strong>Where to see it:</strong> See <a href="stan-help.html">Stan
 help vignette</a> for guidance on computational settings.</p>
 </div>
