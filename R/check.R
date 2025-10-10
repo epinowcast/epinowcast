@@ -126,8 +126,9 @@ check_modules_compatible <- function(modules) {
 
 #' @title Coerce `data.table`s
 #'
-#' @description Provides consistent coercion of inputs to [data.table]
-#' with error handling, column checking, and optional selection.
+#' @description Provides consistent coercion of inputs to
+#' \link[data.table]{data.table} with error handling, column checking, and
+#' optional selection.
 #'
 #' @param data Any of the types supported by [data.table::as.data.table()]
 #'
@@ -144,7 +145,7 @@ check_modules_compatible <- function(modules) {
 #'
 #' @param dates A logical; ensure the presence of `report_date` and
 #' `reference_date`? If `TRUE` (default), those columns will be coerced with
-#' [data.table::as.IDate()].
+#' \link[data.table]{as.IDate}.
 #'
 #' @param msg_required A character string; for `required_cols`-related error
 #' message
@@ -164,6 +165,13 @@ check_modules_compatible <- function(modules) {
 #' generally attempt to address garbage in from the *developer* - e.g. if asking
 #' for overlapping required and forbidden columns (though that will lead to an
 #' always-error condition).
+#'
+#' When `dates = TRUE`, this function ensures that `report_date` and
+#' `reference_date` columns are coerced to `IDate` class with integer storage
+#' mode. This is necessary because some operations (such as `dplyr::filter()`)
+#' can convert `IDate` columns to double storage mode whilst preserving the
+#' class, which violates data.table's requirements and causes errors in
+#' subsequent date arithmetic operations.
 #'
 #' @importFrom data.table as.data.table setDT
 #' @importFrom cli cli_abort
@@ -239,6 +247,16 @@ coerce_dt <- function(
         as.IDate(report_date), as.IDate(reference_date)
       )
     ]
+    # Restore integer storage mode if corrupted by dplyr operations
+    # dplyr can convert IDate to double storage whilst preserving class
+    if (storage.mode(dt$report_date) != "integer") {
+      dt[, report_date := as.integer(report_date)]
+      class(dt$report_date) <- c("IDate", "Date")
+    }
+    if (storage.mode(dt$reference_date) != "integer") {
+      dt[, reference_date := as.integer(reference_date)]
+      class(dt$reference_date) <- c("IDate", "Date")
+    }
   }
 
   if (length(select) > 0) { # if selecting particular list ...

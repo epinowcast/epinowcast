@@ -177,8 +177,8 @@ remove_rw_terms <- function(formula) {
 #' @description This function uses a series internal functions
 #' to break an input formula into its component parts each of which
 #' can then be handled separately. Currently supported components are
-#' fixed effects, [lme4] style random effects, and random walks using the
-#' [rw()] helper function.
+#' fixed effects, \link[lme4]{lme4} style random effects, and random walks
+#' using the [rw()] helper function.
 #'
 #' @section Reference:
 #' The random walk functions used internally by this function were
@@ -187,7 +187,7 @@ remove_rw_terms <- function(formula) {
 #'
 #' @return A list of formula components. These currently include:
 #'  - `fixed`: A character vector of fixed effect terms
-#'  - `random`: A list of of [lme4] style random effects
+#'  - `random`: A list of of \link[lme4]{lme4} style random effects
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #' @inheritParams enw_formula
 #' @importFrom lme4 nobars findbars
@@ -379,8 +379,8 @@ construct_rw <- function(rw, data) {
 
 #' Defines random effect terms using the lme4 syntax
 #'
-#' @param formula A random effect as returned by [lme4::findbars()]
-#' when a random effect is defined using the [lme4] syntax in
+#' @param formula A random effect as returned by \link[lme4]{findbars}
+#' when a random effect is defined using the \link[lme4]{lme4} syntax in
 #' formula. Currently only simplified random effects (i.e
 #'  LHS | RHS) are supported.
 #'
@@ -404,7 +404,8 @@ re <- function(formula) {
 #' Constructs random effect terms
 #'
 #' @param re A random effect as defined using [re()] which itself takes
-#' random effects specified in a model formula using the [lme4] syntax.
+#' random effects specified in a model formula using the \link[lme4]{lme4}
+#' syntax.
 #'
 #' @param data A `data.frame` of observations used to define the
 #' random effects. Must contain the variables specified in the
@@ -588,13 +589,13 @@ construct_re <- function(re, data) {
 #'
 #' @description This function allows models to be defined using a
 #' flexible formula interface that supports fixed effects, random effects
-#' (using [lme4] syntax). Note that the returned fixed effects design matrix is
-#' sparse and so the index supplied is required to link observations to the
-#' appropriate design matrix row.
+#' (using \link[lme4]{lme4} syntax). Note that the returned fixed effects design
+#' matrix is sparse and so the index supplied is required to link observations
+#' to the appropriate design matrix row.
 #'
 #' @param formula A model formula that may use standard fixed
-#' effects, random effects using [lme4] syntax (see [re()]), and random walks
-#' defined using the [rw()] helper function.
+#' effects, random effects using \link[lme4]{lme4} syntax (see [re()]), and
+#' random walks defined using the [rw()] helper function.
 #'
 #' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.

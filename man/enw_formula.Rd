@@ -8,8 +8,8 @@ enw_formula(formula, data, sparse = TRUE)
 }
 \arguments{
 \item{formula}{A model formula that may use standard fixed
-effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), and random walks
-defined using the \code{\link[=rw]{rw()}} helper function.}
+effects, random effects using \link[lme4]{lme4} syntax (see \code{\link[=re]{re()}}), and
+random walks defined using the \code{\link[=rw]{rw()}} helper function.}
 
 \item{data}{A \code{data.frame} of observations. It must include all
 variables used in the supplied formula.}
@@ -34,9 +34,9 @@ matrix, and the index linking the design matrix with random effects.
 \description{
 This function allows models to be defined using a
 flexible formula interface that supports fixed effects, random effects
-(using \link{lme4} syntax). Note that the returned fixed effects design matrix is
-sparse and so the index supplied is required to link observations to the
-appropriate design matrix row.
+(using \link[lme4]{lme4} syntax). Note that the returned fixed effects design
+matrix is sparse and so the index supplied is required to link observations
+to the appropriate design matrix row.
 }
 \examples{
 # Use meta data for references dates from the Germany COVID-19

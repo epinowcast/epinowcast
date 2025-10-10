@@ -91,13 +91,13 @@ For non-parametric approaches and mixed models, see `?enw_reference` examples.
 
 Specify the generative model for the expected latent process (e.g., infections, hospitalisations).
 
-| Model type | What it assumes | How to specify | Example |
+| Model type | What it assumes | How to specify (`r` argument) | Example |
 |------------|-----------------|----------------|---------|
-| Daily random effects | Flexible day-to-day changes | `r = ~0 + (1 | day:.group)` (default) | Most flexible |
-| Weekly random walk | Smooth week-to-week trends | `r = ~1 + rw(week, by = .group)` | Smoother estimates |
+| Daily random effects | Flexible day-to-day changes | `~0 + (1 | day:.group)` (default) | Most flexible |
+| Weekly random walk | Smooth week-to-week trends | `~1 + rw(week, by = .group)` | Smoother estimates |
 | Growth rate | Exponential growth/decline | `generation_time = 1` (default) | Simple trend |
 | Renewal process | Epidemic dynamics | `generation_time = c(0.2, 0.5, 0.3)` | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
-| Fixed effects | Covariates (e.g., interventions) | `r = ~1 + intervention + ...` | Include predictors |
+| Fixed effects | Covariates (e.g., interventions) | `~1 + intervention + ...` | Include predictors |
 | Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week` | Adjust for reporting patterns |
 
 **Key functions:**

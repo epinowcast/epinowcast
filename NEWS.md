@@ -12,6 +12,7 @@
 
 ## Bugs
 
+- Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
 - Fixed a bug where `enw_expose_stan_fns()` which has been deprecated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.
 - Fixed error in `enw_preprocess_data()` when processing data with
