@@ -210,6 +210,24 @@ Prepare and process data for nowcasting.
 
 **Where to see it:** The [getting started vignette](epinowcast.html) demonstrates the full data preprocessing workflow.
 
+# Current Limitations
+
+The following features are not currently supported but may be of interest.
+If you need any of these capabilities, please reach out via our [community forum](https://community.epinowcast.org/) or [GitHub discussions](https://github.com/epinowcast/epinowcast/discussions).
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Non-count data | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods |
+| Negative updates | Not supported | Cannot handle reporting corrections that reduce previously reported counts |
+| Structured reporting schedules | In development | PR exists for aggregated reporting with known schedules |
+| Delay-only or count-only models | Not supported | Currently requires joint modelling of delay and counts |
+| Susceptibility depletion | Not supported | Renewal process assumes constant susceptibility |
+| Uncertain generation time | Not supported | Generation time distribution treated as fixed and known |
+| Forecasting examples | Missing | Functionality exists but lacks worked examples in vignettes |
+
+**Get involved:** We welcome contributions and discussions about extending the package to support these features.
+See our [community forum](https://community.epinowcast.org/) for ongoing discussions.
+
 # Further Reading
 
 - [Getting started vignette](epinowcast.html): Basic workflow
