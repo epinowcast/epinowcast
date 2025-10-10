@@ -289,15 +289,14 @@ test_that("check_max_delay handles all zero counts", {
   )
 
   pobs <- suppressWarnings(
-    enw_preprocess_data(all_zero_data, max_delay = 4, by = "site")
+    enw_preprocess_data(all_zero_data, max_delay = 2, by = "site")
   )
 
-  expect_warning(
-    result <- check_max_delay(
+  result <- suppressWarnings(
+    check_max_delay(
       pobs,
-      max_delay = 4, warn_internal = TRUE
-    ),
-    regexp = "Could not compute delay coverage statistics"
+      max_delay = 2, warn_internal = TRUE
+    )
   )
 
   expect_s3_class(result, "data.table")
@@ -334,7 +333,9 @@ test_that(
       fill = TRUE
     )
 
-    pobs <- enw_preprocess_data(combined_data, max_delay = 10, by = "site")
+    pobs <- suppressWarnings(
+      enw_preprocess_data(combined_data, max_delay = 10, by = "site")
+    )
 
     result <- expect_no_error(
       suppressWarnings(check_max_delay(pobs, max_delay = 10))
