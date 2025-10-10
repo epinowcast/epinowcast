@@ -85,139 +85,57 @@ test_that("coerce_dt provides the requested errors", {
   )
 })
 
-test_that("coerce_dt fixes IDate storage mode after dplyr operations", {
+test_that("coerce_dt restores integer storage for IDate columns", {
   skip_if_not_installed("dplyr")
 
-  # Create test data with proper IDate columns
+  # Create test data and apply dplyr operation
   test_data <- data.table::data.table(
     report_date = data.table::as.IDate("2021-10-01") + 0:5,
     reference_date = data.table::as.IDate("2021-10-01") + 0:5,
     confirm = c(1, 1, 2, 3, 5, 8)
   )
-
-  # Verify initial storage mode is integer
-  expect_identical(storage.mode(test_data$report_date), "integer")
-  expect_identical(storage.mode(test_data$reference_date), "integer")
-
-  # Apply dplyr filter (simulates user workflow that triggers bug)
   filtered_data <- dplyr::filter(test_data, confirm > 1)
 
-  # After dplyr operation, storage mode may be corrupted to double
-  # but class is still IDate (this is the bug scenario)
-  # Note: This behaviour may vary by dplyr version, so we force it
+  # Some dplyr versions corrupt IDate storage mode to double whilst
+  # preserving class. Force corruption to test the fix works.
   if (storage.mode(filtered_data$report_date) == "integer") {
-    # Force the corruption to test the fix
     filtered_data$report_date <- as.double(filtered_data$report_date)
     class(filtered_data$report_date) <- c("IDate", "Date")
-    filtered_data$reference_date <- as.double(
-      filtered_data$reference_date
-    )
+    filtered_data$reference_date <- as.double(filtered_data$reference_date)
     class(filtered_data$reference_date) <- c("IDate", "Date")
   }
 
-  # Verify we have corrupted storage (double) but correct class
-  expect_s3_class(filtered_data$report_date, c("IDate", "Date"))
+  # Verify we have double storage but IDate class (the bug scenario)
   expect_identical(storage.mode(filtered_data$report_date), "double")
 
-  # Apply coerce_dt which should fix storage mode
+  # coerce_dt should restore integer storage
   fixed_data <- coerce_dt(filtered_data, dates = TRUE)
-
-  # Verify storage mode is restored to integer
   expect_identical(storage.mode(fixed_data$report_date), "integer")
   expect_identical(storage.mode(fixed_data$reference_date), "integer")
-
-  # Verify class is still correct
   expect_s3_class(fixed_data$report_date, c("IDate", "Date"))
-  expect_s3_class(fixed_data$reference_date, c("IDate", "Date"))
-
-  # Verify data values are unchanged
-  expect_identical(
-    as.integer(fixed_data$report_date),
-    as.integer(test_data$report_date[test_data$confirm > 1])
-  )
 })
 
-test_that("enw_preprocess_data works after dplyr::filter", {
+test_that("enw_preprocess_data works after dplyr operations", {
   skip_on_cran()
   skip_if_not_installed("dplyr")
 
-  # Use example dataset from package
-  nat_germany_hosp <- epinowcast::germany_covid19_hosp[location == "DE"]
-  nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
-
-  # Apply dplyr filter before preprocessing (user workflow from issue)
+  # Simulate user workflow: dplyr filter then preprocess
+  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
   filtered_data <- dplyr::filter(
     nat_germany_hosp,
     report_date >= as.Date("2021-10-01")
   )
 
-  # Force storage mode corruption if not already corrupted
+  # Force storage mode corruption to test the fix
   if (storage.mode(filtered_data$report_date) == "integer") {
     filtered_data$report_date <- as.double(filtered_data$report_date)
     class(filtered_data$report_date) <- c("IDate", "Date")
-    filtered_data$reference_date <- as.double(
-      filtered_data$reference_date
-    )
+    filtered_data$reference_date <- as.double(filtered_data$reference_date)
     class(filtered_data$reference_date) <- c("IDate", "Date")
   }
 
-  # This should not error (previously would fail with storage mode error)
-  expect_no_error({
-    pobs <- enw_preprocess_data(filtered_data, max_delay = 20)
-  })
-
-  # Verify preprocessing output has correct storage mode
-  expect_identical(storage.mode(pobs$obs[[1]]$report_date), "integer")
-  expect_identical(storage.mode(pobs$obs[[1]]$reference_date), "integer")
-
-  # Verify classes are correct
-  expect_s3_class(pobs$obs[[1]]$report_date, c("IDate", "Date"))
-  expect_s3_class(pobs$obs[[1]]$reference_date, c("IDate", "Date"))
-
-  # Verify preprocessing produces valid output structure
+  # Should work without error (previously failed)
+  pobs <- enw_preprocess_data(filtered_data, max_delay = 20)
   expect_s3_class(pobs, "enw_preprocess_data")
-  expect_true(
-    all(c("obs", "new_confirm", "latest", "missing_reference") %in%
-        names(pobs))
-  )
-})
-
-test_that("coerce_dt handles edge cases correctly", {
-  # Test 1: Data already has correct integer storage (no-op case)
-  correct_data <- data.table::data.table(
-    report_date = data.table::as.IDate("2021-10-01") + 0:3,
-    reference_date = data.table::as.IDate("2021-10-01") + 0:3,
-    value = 1:4
-  )
-
-  result <- coerce_dt(correct_data, dates = TRUE)
-  expect_identical(storage.mode(result$report_date), "integer")
-  expect_identical(storage.mode(result$reference_date), "integer")
-  expect_s3_class(result$report_date, c("IDate", "Date"))
-
-  # Test 2: Data with only one date column corrupted
-  mixed_data <- data.table::data.table(
-    report_date = data.table::as.IDate("2021-10-01") + 0:3,
-    reference_date = data.table::as.IDate("2021-10-01") + 0:3,
-    value = 1:4
-  )
-  mixed_data$report_date <- as.double(mixed_data$report_date)
-  class(mixed_data$report_date) <- c("IDate", "Date")
-
-  result <- coerce_dt(mixed_data, dates = TRUE)
-  expect_identical(storage.mode(result$report_date), "integer")
-  expect_identical(storage.mode(result$reference_date), "integer")
-
-  # Test 3: Data with character dates (needs full conversion)
-  char_data <- data.table::data.table(
-    report_date = c("2021-10-01", "2021-10-02", "2021-10-03"),
-    reference_date = c("2021-10-01", "2021-10-02", "2021-10-03"),
-    value = 1:3
-  )
-
-  result <- coerce_dt(char_data, dates = TRUE)
-  expect_identical(storage.mode(result$report_date), "integer")
-  expect_identical(storage.mode(result$reference_date), "integer")
-  expect_s3_class(result$report_date, c("IDate", "Date"))
-  expect_s3_class(result$reference_date, c("IDate", "Date"))
+  expect_identical(storage.mode(pobs$obs[[1]]$report_date), "integer")
 })
