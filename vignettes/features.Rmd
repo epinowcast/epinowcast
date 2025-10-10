@@ -132,7 +132,7 @@ Handle two types of missing data: missing reference dates and missing observatio
 
 | Type | What it handles | How to use | Key functions |
 |------|-----------------|------------|---------------|
-| Missing reference dates | Reports with known report date but unknown reference date | Model proportion via `enw_missing(formula = ~1)` | `enw_missing()` (experimental) |
+| Missing reference dates | Reports with known report date but unknown reference date | Model proportion via `enw_missing(formula = ~1)` | `enw_missing()` |
 | Missing observations (forecasting) | Extend time series with future dates to forecast | `enw_extend_date()` creates dates with `.observed = FALSE`, exclude from likelihood via `observation_indicator` in `enw_obs()` | `enw_extend_date()`, `enw_flag_observed_observations()`, `enw_obs()` |
 
 **Notes:**
