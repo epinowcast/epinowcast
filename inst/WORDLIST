@@ -12,6 +12,7 @@ Discretisation
 Discretised
 EpiEstim
 EpiNow
+ESS
 FelixGuenther
 Gelman
 Github
@@ -71,6 +72,7 @@ epidemia
 etc
 formulatools
 frac
+filepath
 geq
 github
 gt
@@ -155,6 +157,7 @@ stanc
 teojcryan
 th
 tidyverse
+timeseries
 timesteps
 toolset
 treedepth
@@ -164,3 +167,4 @@ underprediction
 unmodelled
 unsets
 zsusswein
+warmup
