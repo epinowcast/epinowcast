@@ -54,8 +54,6 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_assign_group.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_complete_dates.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_construct_data.html</loc></url>
-<url><loc>https://package.epinowcast.org/dev/reference/enw_cumulative_to_incidence.html</loc></url>
-<url><loc>https://package.epinowcast.org/dev/reference/enw_delay_metadata.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_design.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_effects_metadata.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_example.html</loc></url>
@@ -70,7 +68,6 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_formula_as_data_list.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_get_cache.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_impute_na_observations.html</loc></url>
-<url><loc>https://package.epinowcast.org/dev/reference/enw_incidence_to_cumulative.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_incidence_to_linelist.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_latest_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_linelist_to_incidence.html</loc></url>
@@ -103,7 +100,6 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_reps_with_complete_refs.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_sample.html</loc></url>
-<url><loc>https://package.epinowcast.org/dev/reference/enw_score_nowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_set_cache.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_simulate_missing_reference.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_stan_to_r.html</loc></url>
