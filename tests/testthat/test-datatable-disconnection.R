@@ -115,7 +115,8 @@ test_that("enw_preprocess_data works after dplyr operations", {
   )
 
   # Should work without error (previously failed with some dplyr versions)
-  pobs <- enw_preprocess_data(filtered_data, max_delay = 20)
+  # Suppress expected warning about max delay coverage (only 1 reference date)
+  pobs <- suppressWarnings(enw_preprocess_data(filtered_data, max_delay = 20))
   expect_s3_class(pobs, "enw_preprocess_data")
   expect_identical(storage.mode(pobs$obs[[1]]$report_date), "integer")
 })
