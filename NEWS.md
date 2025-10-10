@@ -14,6 +14,11 @@
 
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
 - Fixed a bug where `enw_expose_stan_fns()` which has been deprecated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.
+- Fixed error in `enw_preprocess_data()` when processing data with
+predominantly zero counts across multiple groups.
+The function now handles sparse data gracefully and provides informative
+warnings when delay coverage statistics cannot be computed.
+See #541 by @seabbs and self-reviewed.
 
 ## Package
 
