@@ -10,6 +10,13 @@
 
 ## Breaking changes
 
+- Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
+  - `enw_cumulative_to_incidence()` (deprecated 0.2.1, use `enw_add_incidence()`)
+  - `enw_incidence_to_cumulative()` (deprecated 0.2.1, use `enw_add_cumulative()`)
+  - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
+  - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
+  - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
+
 ## Bugs
 
 - Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
