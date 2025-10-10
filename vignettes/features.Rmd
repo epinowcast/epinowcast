@@ -180,7 +180,7 @@ Control computational efficiency and parallelisation.
 
 | Feature | What it does | How to specify | When to use |
 |---------|--------------|----------------|-------------|
-| Within-chain threading | Parallel likelihood calculation | `threads_per_chain = 4` | Large datasets |
+| Within-chain threading | Parallel likelihood calculation across strata | `threads_per_chain = 4` | Many strata, large datasets, complex models |
 | Parallel chains | Multiple chains simultaneously | `parallel_chains = 4` | Multiple cores available |
 | Sparse design matrices | Memory reduction | `sparse_design = TRUE` | Very sparse designs |
 | Likelihood aggregation | Parallelisation level | `likelihood_aggregation = "snapshots"` | Default usually best |
