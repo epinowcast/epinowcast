@@ -38,8 +38,9 @@ exposed for use in R.
 }
 \description{
 This function facilitates the exposure of Stan functions from
-the \url{epinowcast} package in R. It utilizes the \code{\link[=expose_functions]{expose_functions()}} method
-of \link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel} or this purpose. This function is useful for
+the \url{epinowcast} package in R. It utilizes the
+\link[cmdstanr]{expose_functions} method of \link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel} for
+this purpose. This function is useful for
 developers and contributors to the \link{epinowcast} package, as well as for
 users interested in exploring and prototyping with model functionalities.
 }
