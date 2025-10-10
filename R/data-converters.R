@@ -337,6 +337,12 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' first timestep will be "2022-10-23" if the minimum reference date is
 #' "2022-10-16").
 #'
+#' As of version 0.3.1, this function uses cumulative sum to ensure counts are
+#' monotonically non-decreasing for each reference date across report dates.
+#' This fixes a bug where cumulative counts could incorrectly decrease at
+#' timestep boundaries when max_delay was an even multiple of the aggregation
+#' timestep (issue #511).
+#'
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` numeric column, and `report_date` and
 #' `reference_date` date columns. The input must have a timestep of a day
@@ -414,24 +420,22 @@ enw_aggregate_cumulative <- function(
   )
 
   # For non-missing reference dates, aggregate over the reference date
-  # using the desired reporting timestep
+  # using the desired reporting timestep.
+  # Calculate cumulative sum over delays for each reference date
+  agg_obs[, confirm := cumsum(confirm), by = c("reference_date", ".group")]
+
+  # Filter to report dates at timestep boundaries
   agg_obs <- agg_obs[report_date_mod == 0]
 
-  # Aggregate over the timestep
-  agg_obs <- aggregate_rolling_sum(
-    agg_obs, internal_timestep, by = c("report_date", ".group")
-  )
-
-  # Set day of week for reference date and filter
+  # Filter to reference dates at timestep boundaries
   agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
   agg_obs <- agg_obs[reference_date >= min(report_date)]
 
   # If there are missing reference dates, aggregate over the report date
   # using the desired reporting timestep
   if (nrow(agg_obs_na_ref) > 0) {
-    agg_obs_na_ref <- aggregate_rolling_sum(
-      agg_obs_na_ref, internal_timestep, by = ".group"
-    )
+    # Calculate cumulative sum over report dates for NA reference dates
+    agg_obs_na_ref[, confirm := cumsum(confirm), by = ".group"]
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs, fill = TRUE)
   }

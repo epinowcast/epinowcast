@@ -54,6 +54,13 @@ determined by \code{min_date} + a single timestep (i.e. the
 first timestep will be "2022-10-23" if the minimum reference date is
 "2022-10-16").
 }
+\details{
+As of version 0.3.1, this function uses cumulative sum to ensure counts are
+monotonically non-decreasing for each reference date across report dates.
+This fixes a bug where cumulative counts could incorrectly decrease at
+timestep boundaries when max_delay was an even multiple of the aggregation
+timestep (issue #511).
+}
 \examples{
 nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 enw_aggregate_cumulative(nat_hosp, timestep = "week")
