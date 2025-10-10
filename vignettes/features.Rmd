@@ -128,20 +128,18 @@ All model modules support the same formula interface.
 
 # Missing Data Handling {#missing-data}
 
-Handle observations with missing reference dates and extend data for forecasting.
+Handle two types of missing data: missing reference dates and missing observations for forecasting.
 
-| Feature | What it does | How to use | Status |
-|---------|--------------|------------|--------|
-| Missing reference model | Models proportion of missing | `enw_missing(formula = ~1)` | Experimental |
-| Forecasting | Extend data with missing observations | `enw_extend_date()` + `enw_missing()` | Combine with missing data model |
-| Assumes consistent delays | Same delay for missing and observed | Automatic when missing data present | Limitation |
+| Type | What it handles | How to use | Key functions |
+|------|-----------------|------------|---------------|
+| Missing reference dates | Reports with known report date but unknown reference date | Model proportion via `enw_missing(formula = ~1)` | `enw_missing()` (experimental) |
+| Missing observations (forecasting) | Extend time series with future dates to forecast | `enw_extend_date()` creates dates with `.observed = FALSE`, exclude from likelihood via `observation_indicator` in `enw_obs()` | `enw_extend_date()`, `enw_flag_observed_observations()`, `enw_obs()` |
 
-**Key functions:**
-- `enw_missing()`: Specify missing data model
-- `enw_extend_date()`: Extend time series for forecasting
+**Notes:**
+- The missing reference model assumes consistent reporting delay for observations with and without known reference dates
+- For forecasting, extended dates are marked as unobserved and can be excluded from the likelihood to generate predictions
 
-**Where to see it:** See `?enw_missing` and `?enw_extend_date` for details.
-This feature is experimental.
+**Where to see it:** See `?enw_missing`, `?enw_extend_date`, `?enw_flag_observed_observations`, and `?enw_obs` for details.
 
 # Model Evaluation {#model-evaluation}
 
@@ -172,6 +170,7 @@ Control computational efficiency and parallelisation.
 | Sparse design matrices | Memory reduction | `sparse_design = TRUE` | Very sparse designs |
 | Likelihood aggregation | Parallelisation level | `likelihood_aggregation = "snapshots"` | Default usually best |
 | Pathfinder | Fast approximate inference | `sampler = enw_pathfinder` | Exploration/debugging |
+| Pathfinder initialisation | Use pathfinder to initialise MCMC | `init_method = "pathfinder"` in `enw_sample` | Improve MCMC convergence |
 
 **Key functions:**
 - `enw_fit_opts()`: Specify computational options
@@ -193,19 +192,6 @@ Prepare and process data for nowcasting.
 | Main preprocessing | `enw_preprocess_data()` | All-in-one wrapper |
 
 **Where to see it:** The [getting started vignette](epinowcast.html) demonstrates the full data preprocessing workflow.
-
-# Quick Start Workflow
-
-1. **Prepare data:** `enw_preprocess_data()`
-2. **Specify models:**
-   - Delays: `enw_reference()`
-   - Report effects: `enw_report()`
-   - Latent process: `enw_expectation()`
-   - Observation: `enw_obs()`
-3. **Fit:** `epinowcast()`
-4. **Evaluate:** `plot()`, `summary()`
-
-**Where to start:** The [getting started vignette](epinowcast.html) walks through this workflow step-by-step.
 
 # Further Reading
 

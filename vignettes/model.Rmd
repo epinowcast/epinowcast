@@ -39,7 +39,7 @@ Our modelling framework is implemented in the `stan` probabilistic
 programming language via `cmdstanr` [@stan; @cmdstanr] with a focus
 on computational efficiency and robustness.
 
-For a quick reference table of all available features, see the
+For a quick reference to all available features, see the
 [model features summary vignette](features.html).
 
 In the following sections we outline our modelling methodology,
