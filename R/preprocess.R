@@ -309,6 +309,15 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' obs$reference_date <- as.Date("2021-01-01")
 #' enw_add_delay(obs)
 enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
   internal_timestep <- get_internal_timestep(timestep)
   obs[, delay := as.numeric(report_date - reference_date) / internal_timestep]
@@ -558,6 +567,15 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' obs <- enw_example("preprocessed")$obs[[1]]
 #' enw_filter_delay(obs, max_delay = 2)
 enw_filter_delay <- function(obs, max_delay, timestep = "day") {
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
   obs <- coerce_dt(obs, required_cols = "reference_date", group = TRUE)
   internal_timestep <- get_internal_timestep(timestep)
   daily_max_delay <- internal_timestep * max_delay
@@ -900,6 +918,15 @@ enw_missing_reference <- function(obs) {
 #' @examples
 #' enw_metadata_delay(max_delay = 20, breaks = 4)
 enw_metadata_delay <- function(max_delay = 20, breaks = 4, timestep = "day") {
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
   delays <- data.table::data.table(delay = 0:(max_delay - 1))
   even_delay <- max_delay + max_delay %% 2
   internal_timestep <- get_internal_timestep(timestep)

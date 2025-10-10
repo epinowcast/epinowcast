@@ -23,7 +23,9 @@ zero before aggregation this may not be desirable if this missingness
 is meaningful.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in most user-facing functions
+and will throw an error if used.}
 
 \item{by}{A character vector of variables to also aggregate by (i.e. as well
 as using the \code{reference_date} and \code{report_date}). If not supplied

@@ -10,7 +10,9 @@ check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 \item{obs}{Any of the types supported by \code{\link[data.table:as.data.table]{data.table::as.data.table()}}.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in most user-facing functions
+and will throw an error if used.}
 
 \item{exact}{Logical, if \verb{TRUE``, checks if all differences exactly match the timestep. If }FALSE``, checks if the sum of the differences modulo the
 timestep equals zero. Default is \code{TRUE}.}

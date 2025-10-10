@@ -372,6 +372,15 @@ enw_aggregate_cumulative <- function(
   if (timestep == "day") {
     cli::cli_abort("The data already has a timestep of a day")
   }
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
   obs <- coerce_dt(
     obs,
     required_cols = c("confirm", by), forbidden_cols = ".group",

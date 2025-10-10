@@ -151,7 +151,9 @@ coerce_date <- function(dates = NULL) {
 #' If the input is a numeric whole number, it is returned as is.
 #'
 #' @param timestep The timestep to used. This can be a string ("day",
-#' "week", "month") or a numeric whole number representing the number of days.
+#' "week") or a numeric whole number representing the number of days.
+#' Note that "month" is not currently supported in most user-facing functions
+#' and will throw an error if used.
 #'
 #' @return A numeric value representing the number of days for "day" and
 #' "week", "month" for "month",  or the input value if it is a numeric whole

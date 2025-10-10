@@ -27,7 +27,9 @@ larger, then nowcasts for unmodelled dates are added by assuming that case
 counts beyond the modelled maximum delay are fully observed.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in most user-facing functions
+and will throw an error if used.}
 
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,

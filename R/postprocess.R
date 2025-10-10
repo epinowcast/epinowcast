@@ -96,6 +96,15 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
                                 probs = c(
                                   0.05, 0.2, 0.35, 0.5, 0.65, 0.8, 0.95
                                 )) {
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
   nowcast <- enw_posterior(
     fit,
     variables = "pp_inf_obs",
@@ -169,6 +178,15 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
 #'   "day"
 #'   )
 enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
+  if (timestep == "month") {
+    cli::cli_abort(
+      paste0(
+        "Calendar months are not currently supported. Consider using an ",
+        "approximate number of days (i.e. 28), a different timestep ",
+        "(i.e.'week'), or commenting on issue #309. "
+      )
+    )
+  }
   nowcast <- fit$draws(
     variables = "pp_inf_obs",
     format = "draws_df"
