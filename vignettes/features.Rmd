@@ -128,16 +128,31 @@ All model modules support the same formula interface.
 
 # Missing Data Handling {#missing-data}
 
-Handle two types of missing data: missing reference dates and missing observations for forecasting.
+Handle two types of missing data: missing reference dates and missing observations.
 
-| Type | What it handles | How to use | Key functions |
-|------|-----------------|------------|---------------|
-| Missing reference dates | Reports with known report date but unknown reference date | Model proportion via `enw_missing(formula = ~1)` | `enw_missing()` |
-| Missing observations (forecasting) | Extend time series with future dates to forecast | `enw_extend_date()` creates dates with `.observed = FALSE`, exclude from likelihood via `observation_indicator` in `enw_obs()` | `enw_extend_date()`, `enw_flag_observed_observations()`, `enw_obs()` |
+| Type | What it handles | Use cases | How to use |
+|------|-----------------|-----------|------------|
+| Missing reference dates | Reports with known report date but unknown reference date | Model partial reporting | `enw_missing(formula = ~1)` |
+| Missing observations | Control which observations are used in the likelihood | Forecasting, excluding outliers, handling NAs, testing parameter recovery | Set `.observed = FALSE` and use `observation_indicator` in `enw_obs()` |
+
+**Common missing observation workflows:**
+
+| Use case | How to implement |
+|----------|------------------|
+| Forecasting | `enw_extend_date()` to add future dates marked as unobserved |
+| Exclude outliers | Manually set `.observed = FALSE` for outlier observations |
+| Handle NAs | `enw_flag_observed_observations()` marks NA values as unobserved |
+| Test parameter recovery | Set `.observed = FALSE` for subset of data, check if model recovers parameters |
+
+**Key functions:**
+- `enw_missing()`: Model for missing reference dates
+- `enw_extend_date()`: Extend time series with unobserved dates
+- `enw_flag_observed_observations()`: Flag observations based on NAs
+- `enw_obs()`: Use `observation_indicator` to control likelihood
 
 **Notes:**
 - The missing reference model assumes consistent reporting delay for observations with and without known reference dates
-- For forecasting, extended dates are marked as unobserved and can be excluded from the likelihood to generate predictions
+- Any observations marked with `.observed = FALSE` can be excluded from the likelihood whilst still generating posterior predictions
 
 **Where to see it:** See `?enw_missing`, `?enw_extend_date`, `?enw_flag_observed_observations`, and `?enw_obs` for details.
 
