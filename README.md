@@ -45,7 +45,9 @@ vignettes](https://package.epinowcast.org/articles) for guidance.
 ## Installation
 
 <details>
+
 <summary>
+
 Installing the package
 </summary>
 
@@ -84,8 +86,11 @@ if needed, e.g. if you want to try out a specific unreleased feature,
 but not the absolute latest developmental version.*
 
 </details>
+
 <details>
+
 <summary>
+
 Installing CmdStan
 </summary>
 
@@ -114,8 +119,11 @@ need to install a past version of CmdStan, which you can do with the
 `version` argument.*
 
 </details>
+
 <details>
+
 <summary>
+
 Alternative: Docker
 </summary>
 
@@ -135,7 +143,9 @@ documentation, case studies, and community spaces to ask (and answer!)
 questions:
 
 <details>
+
 <summary>
+
 Package Website
 </summary>
 
@@ -146,21 +156,30 @@ documentation for [the latest development
 version](https://package.epinowcast.org/dev/).
 
 </details>
+
 <details>
+
 <summary>
+
 R Vignettes
 </summary>
 
 We have created [package
 vignettes](https://package.epinowcast.org/articles) to help you [get
 started
-nowcasting](https://package.epinowcast.org/articles/epinowcast.html) and
-to [highlight other features with case
+nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
+see a [quick reference to package
+capabilities](https://package.epinowcast.org/articles/features.html)
+(different timesteps, multi-stratification, mixed models, etc.), and
+[explore case
 studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
+
 <details>
+
 <summary>
+
 Organisation Website
 </summary>
 
@@ -170,8 +189,11 @@ and [seminar schedule](https://www.epinowcast.org/seminars.html) for
 both upcoming and past recordings.
 
 </details>
+
 <details>
+
 <summary>
+
 Community Forum
 </summary>
 
@@ -183,8 +205,11 @@ you are generally interested in real-time analysis of infectious
 disease, you may find this useful even if do not use `epinowcast`.
 
 </details>
+
 <details>
+
 <summary>
+
 Package Analysis Scripts
 </summary>
 
@@ -249,7 +274,9 @@ outline](https://package.epinowcast.org/articles/model.html). If you use
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
 
 All contributions to this project are gratefully acknowledged using the
@@ -301,5 +328,7 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>
 
 <!-- markdownlint-enable -->
+
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
