@@ -30,7 +30,7 @@ n.b. it is an error to include ".group"; use \code{group} argument for that}
 
 \item{dates}{A logical; ensure the presence of \code{report_date} and
 \code{reference_date}? If \code{TRUE} (default), those columns will be coerced with
-\code{\link[data.table:IDateTime]{data.table::as.IDate()}}.}
+\link[data.table]{as.IDate}.}
 
 \item{copy}{A logical; if \code{TRUE} (default), a new \code{data.table} is returned}
 
@@ -45,8 +45,9 @@ A \code{data.table}; the returned object will be a copy, unless
 \code{copy = FALSE}, in which case modifications are made in-place
 }
 \description{
-Provides consistent coercion of inputs to \link{data.table}
-with error handling, column checking, and optional selection.
+Provides consistent coercion of inputs to
+\link[data.table]{data.table} with error handling, column checking, and
+optional selection.
 }
 \details{
 This function provides a single-point function for getting a "local"

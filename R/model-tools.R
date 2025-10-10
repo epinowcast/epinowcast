@@ -532,8 +532,8 @@ enw_model <- function(model = system.file(
 #' package.
 #'
 #' @param global A logical value indicating whether to expose the functions
-#' globally. Defaults to `TRUE`. Passed to the [expose_functions()] method of
-#' [cmdstanr::CmdStanModel].
+#' globally. Defaults to `TRUE`. Passed to the \link[cmdstanr]{expose_functions}
+#' method of \link[cmdstanr]{CmdStanModel}.
 #'
 #' @param ... Additional arguments passed to [enw_model]().
 #'

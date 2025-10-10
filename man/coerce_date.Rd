@@ -11,19 +11,19 @@ coerce_date(dates = NULL)
 to coerce via \code{\link[data.table:IDateTime]{data.table::as.IDate()}}. Defaults to NULL.}
 }
 \value{
-An \link{IDate} vector.
+An \link[data.table]{IDate} vector.
 }
 \description{
-Provides consistent coercion of inputs to \link{IDate}
-with error handling
+Provides consistent coercion of inputs to
+\link[data.table]{IDate} with error handling
 }
 \details{
 If any of the elements of \code{dates} cannot be coerced,
 this function will result in an error, indicating all indices
-which cannot be coerced to \link{IDate}.
+which cannot be coerced to \link[data.table]{IDate}.
 
 Internal methods of \link{epinowcast} assume dates are represented
-as \link{IDate}.
+as \link[data.table]{IDate}.
 }
 \examples{
 # works

@@ -24,8 +24,8 @@ files. Defaults to the 'stan/functions' directory of the \code{\link[=epinowcast
 package.}
 
 \item{global}{A logical value indicating whether to expose the functions
-globally. Defaults to \code{TRUE}. Passed to the \code{\link[=expose_functions]{expose_functions()}} method of
-\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}.}
+globally. Defaults to \code{TRUE}. Passed to the \link[cmdstanr]{expose_functions}
+method of \link[cmdstanr]{CmdStanModel}.}
 
 \item{verbose}{Logical, defaults to \code{TRUE}. Should verbose
 messages be shown.}
