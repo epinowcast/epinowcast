@@ -70,10 +70,11 @@ enw_posterior <- function(fit, variables = NULL,
 #' posterior with the observations. The easiest source of this data is the
 #' output of latest output of [enw_preprocess_data()] or [enw_latest_data()].
 #'
-#' @param max_delay Maximum delay to which nowcasts should be summarised. Must
+#' @param max_delay Maximum delay to which nowcasts should be
+#' summarised, in units of the timestep used during preprocessing. Must
 #' be equal (default) or larger than the modelled maximum delay. If it is
-#' larger, then nowcasts for unmodelled dates are added by assuming that case
-#' counts beyond the modelled maximum delay are fully observed.
+#' larger, then nowcasts for unmodelled dates are added by assuming that
+#' case counts beyond the modelled maximum delay are fully observed.
 #'
 #' @inheritParams get_internal_timestep
 #' @return A `data.frame` summarising the model posterior nowcast prediction.
@@ -147,9 +148,10 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
 #' this function can be used directly on the output of [epinowcast()] using
 #' the supplied [summary.epinowcast()] method.
 #'
-#' @param max_delay Maximum delay to which nowcasts should be summarised. Must
-#' be equal (default) or larger than the modelled maximum delay. If it is
-#' larger, then nowcasts for unmodelled dates are added by assuming that case
+#' @param max_delay Maximum delay to which nowcasts should be extracted,
+#' in units of the timestep used during preprocessing. Must be equal
+#' (default) or larger than the modelled maximum delay. If it is larger,
+#' then nowcasts for unmodelled dates are added by assuming that case
 #' counts beyond the modelled maximum delay are fully observed.
 #'
 #' @return A `data.frame` of posterior samples for the nowcast prediction.
