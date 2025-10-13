@@ -230,10 +230,12 @@ get_internal_timestep <- function(timestep) {
   }
 
   # Add plural if needed
-  if (timestep_unit != "month" && max_delay != 1) {
-    timestep_unit <- paste0(timestep_unit, "s")
-  } else if (timestep_unit == "month" && max_delay != 1) {
-    timestep_unit <- "months"
+  if (!is.null(timestep_unit) && !is.na(timestep_unit)) {
+    if (timestep_unit != "month" && max_delay != 1) {
+      timestep_unit <- paste0(timestep_unit, "s")
+    } else if (timestep_unit == "month" && max_delay != 1) {
+      timestep_unit <- "months"
+    }
   }
 
   # Format based on whether conversion adds information
