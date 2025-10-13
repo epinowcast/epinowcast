@@ -16,6 +16,7 @@
   - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
   - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
   - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
+- Removed `simulate_double_censored_pmf()`. Users should use `primarycensored::dprimarycensored()` instead for generating double censored PMFs.
 
 ## Bugs
 
@@ -30,7 +31,6 @@
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
-- Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
 - A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
 
 ## Model
