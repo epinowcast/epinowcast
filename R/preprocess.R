@@ -471,6 +471,15 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
+    # validate include_days
+    if (!is.numeric(include_days) || is.na(include_days) ||
+        include_days < 0 || round(include_days) != include_days) {
+      cli::cli_abort("`include_days` must be a non-negative integer")
+    }
+    # explicit empty result for include_days = 0
+    if (include_days == 0) {
+      return(filt_obs[0L])
+    }
     earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days + 1
   }
   if (!missing(include_days) || !missing(earliest_date)) {
