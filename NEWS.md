@@ -10,6 +10,14 @@
 
 ## Breaking changes
 
+* Fixed off-by-one error in `enw_filter_reference_dates()` where `include_days = n`
+  incorrectly returned `n + 1` dates instead of exactly `n` dates. Now
+  `include_days = 10` returns exactly 10 reference dates, not 11. This brings
+  the function behaviour in line with its documentation and user expectations.
+  Users relying on the previous (incorrect) behaviour will need to adjust their
+  `include_days` arguments by subtracting 1 to maintain the same date range.
+  See issue #352 for details.
+
 ## Bugs
 
 - Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.

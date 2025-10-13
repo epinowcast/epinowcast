@@ -81,7 +81,7 @@ test_that("check_max_delay produces the expected output", {
     check_max_delay(obs, max_delay = 10),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8),
-      below_coverage = c(0.22727273, 0.22727273)
+      below_coverage = c(0.2272727, 0.2272727)
     ),
     tolerance = 0.0001
   )
