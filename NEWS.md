@@ -16,12 +16,18 @@
   - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
   - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
   - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
+- Removed `simulate_double_censored_pmf()`. Users should use `primarycensored::dprimarycensored()` instead for generating double censored PMFs.
 
 ## Bugs
 
 - Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
 - Fixed a bug where `enw_expose_stan_fns()` which has been deprecated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.
+- Fixed error in `enw_preprocess_data()` when processing data with
+predominantly zero counts across multiple groups.
+The function now handles sparse data gracefully and provides informative
+warnings when delay coverage statistics cannot be computed.
+See #541 by @seabbs and self-reviewed.
 
 ## Package
 
@@ -30,7 +36,6 @@
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
-- Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
 - A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
 
 ## Model
