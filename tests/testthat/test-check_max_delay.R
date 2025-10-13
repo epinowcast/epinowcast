@@ -129,9 +129,11 @@ test_that(
       )
 
     # week
-    weekly_pobs <- enw_preprocess_data(
-      weekly_nat_germany_hosp,
-      max_delay = 5, timestep = "week"
+    weekly_pobs <- suppressWarnings(
+      enw_preprocess_data(
+        weekly_nat_germany_hosp,
+        max_delay = 5, timestep = "week"
+      )
     )
 
     expect_snapshot(
@@ -152,9 +154,11 @@ test_that(
       weekly_nat_germany_hosp, earliest_date = "2021-05-10"
       )
 
-    weekly_pobs <- enw_preprocess_data(
-      weekly_nat_germany_hosp,
-      max_delay = 2, timestep = 14
+    weekly_pobs <- suppressWarnings(
+      enw_preprocess_data(
+        weekly_nat_germany_hosp,
+        max_delay = 2, timestep = 14
+      )
     )
 
     expect_snapshot(
