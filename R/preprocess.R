@@ -1070,15 +1070,6 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay,
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  if (timestep == "month") {
-    cli::cli_abort(
-      paste0(
-        "Calendar months are not currently supported. Consider using an ",
-        "approximate number of days (i.e. 28), a different timestep ",
-        "(i.e.'week'), or commenting on issue #309. "
-      )
-    )
-  }
   internal_timestep <- get_internal_timestep(timestep)
 
   # coerce obs - at this point, either making a copy or not

@@ -39,7 +39,9 @@ corresponds to no delay).}
 constructing a categorised version of numeric delays.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in user-facing functions
+and will throw an error if used.}
 }
 \value{
 A  \code{data.frame}  of delay metadata. This includes:

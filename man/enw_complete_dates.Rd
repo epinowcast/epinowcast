@@ -62,7 +62,9 @@ minimum reference date found in the data.}
 maximum report date found in the data.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in user-facing functions
+and will throw an error if used.}
 
 \item{missing_reference}{Logical, should entries for cases with missing
 reference date be completed as well?, Default: TRUE}
