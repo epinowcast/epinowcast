@@ -177,12 +177,11 @@ check_modules_compatible <- function(modules) {
 #' @importFrom cli cli_abort
 #' @family utils
 coerce_dt <- function(
-  data, select = NULL, required_cols = select,
-  forbidden_cols = NULL, group = FALSE,
-  dates = FALSE, copy = TRUE,
-  msg_required = "The following columns are required: ",
-  msg_forbidden = "The following columns are forbidden: "
-) {
+    data, select = NULL, required_cols = select,
+    forbidden_cols = NULL, group = FALSE,
+    dates = FALSE, copy = TRUE,
+    msg_required = "The following columns are required: ",
+    msg_forbidden = "The following columns are forbidden: ") {
   if (copy) {
     dt <- data.table::as.data.table(data)
   } else {
@@ -274,7 +273,15 @@ coerce_dt <- function(
 #' reference dates where the cumulative case count is below some aspired
 #' coverage.
 #'
-#' @details The coverage is with respect to the maximum observed case count for
+#' @details When data is very sparse (e.g., predominantly zero counts), the
+#' function may not be able to compute meaningful coverage statistics.
+#' In such cases, a warning is issued and the function treats the data as
+#' having no coverage issues.
+#' This typically occurs when groups have very few non-zero observations or
+#' when the specified \code{max_delay} is too large relative to available
+#' data.
+#'
+#' The coverage is with respect to the maximum observed case count for
 #' the corresponding reference date. As the maximum observed case count is
 #' likely smaller than the true overall case count for not yet fully observed
 #' reference dates (due to right truncation), only reference dates that are
@@ -317,7 +324,6 @@ check_max_delay <- function(data,
                             cum_coverage = 0.8,
                             maxdelay_quantile_outlier = 0.97,
                             warn = TRUE, warn_internal = FALSE) {
-
   if (!is.numeric(max_delay)) {
     cli::cli_abort("`max_delay` must be an integer and not NA")
   }
@@ -343,10 +349,18 @@ check_max_delay <- function(data,
 
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
   if (max_delay_obs < daily_max_delay) {
+    # Format delays with appropriate units
+    formatted_max <- .format_delay_with_units(
+      max_delay, timestep, daily_max_delay
+    )
+    formatted_obs <- .format_delay_with_units(
+      max_delay_obs / internal_timestep, timestep, max_delay_obs
+    )
+
     warning_message <- c(
       paste0(
-        "You specified a maximum delay of ", daily_max_delay, " days, ",
-        "but the maximum observed delay is only ", max_delay_obs, " days. "
+        "You specified a maximum delay of ", formatted_max, ", ",
+        "but the maximum observed delay is only ", formatted_obs, ". "
       ),
       paste0(
         "This is justified if you don't have much data yet (e.g. early ",
@@ -355,20 +369,21 @@ check_max_delay <- function(data,
         "distribution beyond the observed maximum delay."
       ),
       paste0(
-        "Otherwise, we recommend using a shorter maximum delay to speed up ",
-        "the nowcasting."
+        "Otherwise, we recommend using a shorter maximum delay to speed ",
+        "up the nowcasting."
       )
     )
     names(warning_message) <- c("", "*", "*")
     cli::cli_warn(warning_message)
   }
 
-  max_delay_ref <-  obs[
+  max_delay_ref <- obs[
     !is.na(reference_date) & cum_prop_reported == 1,
     .(.group, reference_date, delay)
-    ]
+  ]
   data.table::setorderv(max_delay_ref, c(".group", "reference_date", "delay"))
-  max_delay_ref <- max_delay_ref[,
+  max_delay_ref <- max_delay_ref[
+    ,
     .SD[, .(delay = first(delay)), by = reference_date]
   ] # we here assume the same maximum delay for all groups
 
@@ -394,15 +409,20 @@ check_max_delay <- function(data,
   )
 
   if (warn && !(max_delay_obs < daily_max_delay) && (latest_obs[, .N] < 5)) {
+    # Format max_delay_obs_q with appropriate units
+    formatted_obs_q <- .format_delay_with_units(
+      max_delay_obs_q / internal_timestep, timestep, max_delay_obs_q
+    )
+
     warning_message <- c(
       paste0(
         "The coverage of the specified maximum delay could not be ",
         "reliably checked."
       ),
       "*" = paste0(
-        "There are only very few (", latest_obs[, .N], ") reference dates",
-        " that are sufficiently far in the past (more than ",
-        max_delay_obs_q, " days) to compute coverage statistics for the ",
+        "There are only very few (", latest_obs[, .N], ") reference ",
+        "dates that are sufficiently far in the past (more than ",
+        formatted_obs_q, ") to compute coverage statistics for the ",
         "maximum delay. "
       )
     )
@@ -419,10 +439,10 @@ check_max_delay <- function(data,
       warning_message <- c(
         warning_message,
         "*" = paste0(
-          "If you think the truncation threshold of ", max_delay_obs_q, " ",
-          "days is based on an outlier, and the true maximum delay is likely ",
-          "shorter, you can decrease `maxdelay_quantile_outlier` to ",
-          "silence this warning."
+          "If you think the truncation threshold of ", formatted_obs_q,
+          " is based on an outlier, and the true maximum delay is ",
+          "likely shorter, you can decrease ",
+          "`maxdelay_quantile_outlier` to silence this warning."
         )
       )
     }
@@ -434,17 +454,45 @@ check_max_delay <- function(data,
       sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
         sum(!is.na(cum_prop_reported))
   ), by = .group]
-  mean_coverage <- low_coverage[, mean(below_coverage)]
 
-  if (warn && mean_coverage > 0.5) {
-    cli::cli_warn(paste0(
-      "The specified maximum reporting delay ",
-      "(", daily_max_delay, " days) ",
-      "covers less than ", 100 * cum_coverage,
-      "% of cases for the majority (>50%) of reference dates. ",
-      "Consider using a larger maximum delay to avoid potential model ",
-      "misspecification."
-    ),
+  # Check if all coverage values are NaN or NA (occurs with sparse data)
+  if (all(is.na(low_coverage$below_coverage) |
+    is.nan(low_coverage$below_coverage))) {
+    low_coverage[, below_coverage := 0]
+    mean_coverage <- 0
+    if (warn && warn_internal) {
+      warning_message <- c(
+        "Could not compute delay coverage statistics.",
+        "*" = paste0(
+          "All groups have insufficient data after filtering to ",
+          "compute meaningful coverage metrics."
+        ),
+        i = paste0(
+          "This typically occurs with sparse data or when max_delay ",
+          "is too large relative to available observations."
+        )
+      )
+      cli::cli_warn(warning_message)
+    }
+  } else {
+    mean_coverage <- low_coverage[, mean(below_coverage, na.rm = TRUE)]
+  }
+
+  if (warn && !is.na(mean_coverage) && mean_coverage > 0.5) {
+    # Format max_delay with appropriate units
+    formatted_max <- .format_delay_with_units(
+      max_delay, timestep, daily_max_delay
+    )
+
+    cli::cli_warn(
+      paste0(
+        "The specified maximum reporting delay ",
+        "(", formatted_max, ") ",
+        "covers less than ", 100 * cum_coverage,
+        "% of cases for the majority (>50%) of reference dates. ",
+        "Consider using a larger maximum delay to avoid potential model ",
+        "misspecification."
+      ),
       immediate. = TRUE
     )
   }
@@ -615,8 +663,10 @@ check_timestep_by_group <- function(obs, date_var, timestep = "day",
 
   # Check the timestep within each group
   obs[,
-   check_timestep(
-    .SD, date_var = date_var, timestep, exact, check_nrow = FALSE),
+    check_timestep(
+      .SD,
+      date_var = date_var, timestep, exact, check_nrow = FALSE
+    ),
     by = ".group"
   ]
 
@@ -650,16 +700,18 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
     )
   }
   obs[,
-      check_timestep(
-        .SD, date_var = "report_date", timestep, exact, check_nrow = FALSE
-      ),
-      by = c("reference_date", ".group")
+    check_timestep(
+      .SD,
+      date_var = "report_date", timestep, exact, check_nrow = FALSE
+    ),
+    by = c("reference_date", ".group")
   ]
   obs[,
-      check_timestep(
-        .SD, date_var = "reference_date", timestep, exact, check_nrow = FALSE
-      ),
-      by = c("report_date", ".group")
+    check_timestep(
+      .SD,
+      date_var = "reference_date", timestep, exact, check_nrow = FALSE
+    ),
+    by = c("report_date", ".group")
   ]
   return(invisible(NULL))
 }
@@ -681,10 +733,9 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
 #' @importFrom cli cli_abort
 #' @family check
 check_observation_indicator <- function(
-  new_confirm, observation_indicator = NULL
-) {
+    new_confirm, observation_indicator = NULL) {
   if (!is.null(observation_indicator) &&
-      !is.logical(new_confirm[[observation_indicator]])) {
+    !is.logical(new_confirm[[observation_indicator]])) {
     cli::cli_abort("observation_indicator must be a logical")
   }
   return(invisible(NULL))

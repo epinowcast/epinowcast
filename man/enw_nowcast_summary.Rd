@@ -21,13 +21,16 @@ most up to date observation for each date. This is used to align the
 posterior with the observations. The easiest source of this data is the
 output of latest output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} or \code{\link[=enw_latest_data]{enw_latest_data()}}.}
 
-\item{max_delay}{Maximum delay to which nowcasts should be summarised. Must
+\item{max_delay}{Maximum delay to which nowcasts should be
+summarised, in units of the timestep used during preprocessing. Must
 be equal (default) or larger than the modelled maximum delay. If it is
-larger, then nowcasts for unmodelled dates are added by assuming that case
-counts beyond the modelled maximum delay are fully observed.}
+larger, then nowcasts for unmodelled dates are added by assuming that
+case counts beyond the modelled maximum delay are fully observed.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in user-facing functions
+and will throw an error if used.}
 
 \item{probs}{A vector of numeric probabilities to produce
 quantile summaries for. By default these are the 5\%, 20\%, 80\%,

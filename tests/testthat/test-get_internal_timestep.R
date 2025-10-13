@@ -5,8 +5,11 @@ test_that("get_internal_timestep() works as expected", {
   # test with "week" timestep
   expect_identical(get_internal_timestep("week"), 7)
 
-  # test with "month" timestep
-  expect_identical(get_internal_timestep("month"), "month")
+  # test with "month" timestep throws error
+  expect_error(
+    get_internal_timestep("month"),
+    "Calendar months are not currently supported"
+  )
 
   # test with numeric whole number timestep
   expect_identical(get_internal_timestep(10), 10)
@@ -14,7 +17,7 @@ test_that("get_internal_timestep() works as expected", {
   # test with invalid string timestep
   expect_error(
     get_internal_timestep("invalid"),
-    "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
+    "Invalid timestep. Acceptable string inputs are 'day', 'week'."
   )
 
   # test with non-whole number timestep
