@@ -230,7 +230,8 @@ get_internal_timestep <- function(timestep) {
   }
 
   # Add plural if needed
-  if (!is.null(timestep_unit) && !is.na(timestep_unit)) {
+  if (!is.null(timestep_unit) && !is.na(timestep_unit) &&
+      !is.na(max_delay) && is.finite(max_delay)) {
     if (timestep_unit != "month" && max_delay != 1) {
       timestep_unit <- paste0(timestep_unit, "s")
     } else if (timestep_unit == "month" && max_delay != 1) {
@@ -239,6 +240,12 @@ get_internal_timestep <- function(timestep) {
   }
 
   # Format based on whether conversion adds information
+  # Handle NA or infinite values
+  if (is.na(daily_max_delay) || !is.finite(daily_max_delay) ||
+      is.na(max_delay) || !is.finite(max_delay)) {
+    return("unknown delay")
+  }
+
   if (is.character(timestep) && timestep == "day") {
     # Daily: just show days
     return(paste0(

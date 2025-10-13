@@ -120,13 +120,13 @@ test_that("check_timestep() works with monthly data", {
     )
   )
 
-  # test with "month" timestep and exact = FALSE, should still pass
+  # test with "month" timestep and exact = FALSE, should error
   expect_error(
     check_timestep(
       obs_monthly_missing,
       date_var = "date", timestep = "month", exact = FALSE
     ),
-    "Non-sequential dates are not currently supported for monthly data"
+    "Calendar months are not currently supported"
   )
 })
 
