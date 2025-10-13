@@ -77,20 +77,28 @@ dates</p>
 
 
 <dt id="arg-max-delay">max_delay<a class="anchor" aria-label="anchor" href="#arg-max-delay"></a></dt>
-<dd><p>The maximum number of days to model in the delay
-distribution. Must be an integer greater than or equal to 1. Observations
-with delays larger then the maximum delay will be dropped. If the specified
-maximum delay is too short, nowcasts can be biased as important parts of the
-true delay distribution are cut off. At the same time, computational cost
-scales non-linearly with this setting, so you want the maximum delay to be as
-long as necessary, but not much longer. Consider what delays are realistic
-for your application, and when in doubt, check if increasing the maximum
-delay noticeably changes the delay distribution or nowcasts as estimated by
-epinowcast. If it does, your maximum delay may still be too short.
-Note that delays are zero indexed and so include the reference date and
-<code>max_delay - 1</code> other days (i.e. a <code>max_delay</code> of 1 corresponds to
-no delay). You can use <code><a href="check_max_delay.html">check_max_delay()</a></code> to check the coverage of a delay
-distribution for different maximum delays.</p></dd>
+<dd><p>The maximum delay to model in the delay
+distribution, specified in units of the timestep (e.g., if
+<code>timestep = "week"</code>, then <code>max_delay = 3</code> means 3 weeks). If not
+specified the maximum observed delay is assumed to be the true maximum
+delay in the model. Otherwise, an integer greater than or equal to 1
+can be specified. Observations with delays larger than the maximum
+delay will be dropped. If the specified maximum delay is too short,
+nowcasts can be biased as important parts of the true delay
+distribution are cut off. At the same time, computational cost scales
+non-linearly with this setting, so you want the maximum delay to be
+as long as necessary, but not much longer.</p>
+<p>Steps to take to determine the maximum delay:</p><ul><li><p>Consider what is realistic and relevant for your application.</p></li>
+<li><p>Check the proportion of observations reported (<code>prop_reported</code>)
+by delay in the <code>new_confirm</code> output of <code>enw_preprocess_obs</code>.</p></li>
+<li><p>Use <code><a href="check_max_delay.html">check_max_delay()</a></code> to check the coverage of a candidate
+<code>max_delay</code>.</p></li>
+<li><p>If in doubt, check if increasing the maximum delay noticeably
+changes the delay distribution or nowcasts as estimated by
+<code>epinowcast</code>. If it does, your maximum delay may still be too short.</p></li>
+</ul><p>Note that delays are zero indexed and so include the reference date
+and <code>max_delay - 1</code> other intervals (i.e. a <code>max_delay</code> of 1
+corresponds to no delay).</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
