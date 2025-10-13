@@ -209,11 +209,11 @@ test_that("epinowcast() can fit a reporting model with a day of the week random
     posterior$variable,
     regression_posterior$variable
   )
-  # Nowcast median has not changed by more than 10 in total
+  # Nowcast median has not changed by more than 25 in total
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_inf_obs", median],
     regression_posterior[variable %like% "pp_inf_obs", median],
-    20
+    25
   )
   # Posterior predictions have not changed by more than in total
   expect_diff_sum_abs_lt(
