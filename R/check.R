@@ -349,10 +349,18 @@ check_max_delay <- function(data,
 
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
   if (max_delay_obs < daily_max_delay) {
+    # Format delays with appropriate units
+    formatted_max <- .format_delay_with_units(
+      max_delay, timestep, daily_max_delay
+    )
+    formatted_obs <- .format_delay_with_units(
+      max_delay_obs / internal_timestep, timestep, max_delay_obs
+    )
+
     warning_message <- c(
       paste0(
-        "You specified a maximum delay of ", daily_max_delay, " days, ",
-        "but the maximum observed delay is only ", max_delay_obs, " days. "
+        "You specified a maximum delay of ", formatted_max, ", ",
+        "but the maximum observed delay is only ", formatted_obs, ". "
       ),
       paste0(
         "This is justified if you don't have much data yet (e.g. early ",
@@ -361,8 +369,8 @@ check_max_delay <- function(data,
         "distribution beyond the observed maximum delay."
       ),
       paste0(
-        "Otherwise, we recommend using a shorter maximum delay to speed up ",
-        "the nowcasting."
+        "Otherwise, we recommend using a shorter maximum delay to speed ",
+        "up the nowcasting."
       )
     )
     names(warning_message) <- c("", "*", "*")
@@ -401,15 +409,20 @@ check_max_delay <- function(data,
   )
 
   if (warn && !(max_delay_obs < daily_max_delay) && (latest_obs[, .N] < 5)) {
+    # Format max_delay_obs_q with appropriate units
+    formatted_obs_q <- .format_delay_with_units(
+      max_delay_obs_q / internal_timestep, timestep, max_delay_obs_q
+    )
+
     warning_message <- c(
       paste0(
         "The coverage of the specified maximum delay could not be ",
         "reliably checked."
       ),
       "*" = paste0(
-        "There are only very few (", latest_obs[, .N], ") reference dates",
-        " that are sufficiently far in the past (more than ",
-        max_delay_obs_q, " days) to compute coverage statistics for the ",
+        "There are only very few (", latest_obs[, .N], ") reference ",
+        "dates that are sufficiently far in the past (more than ",
+        formatted_obs_q, ") to compute coverage statistics for the ",
         "maximum delay. "
       )
     )
@@ -426,10 +439,10 @@ check_max_delay <- function(data,
       warning_message <- c(
         warning_message,
         "*" = paste0(
-          "If you think the truncation threshold of ", max_delay_obs_q, " ",
-          "days is based on an outlier, and the true maximum delay is likely ",
-          "shorter, you can decrease `maxdelay_quantile_outlier` to ",
-          "silence this warning."
+          "If you think the truncation threshold of ", formatted_obs_q,
+          " is based on an outlier, and the true maximum delay is ",
+          "likely shorter, you can decrease ",
+          "`maxdelay_quantile_outlier` to silence this warning."
         )
       )
     }
@@ -466,14 +479,19 @@ check_max_delay <- function(data,
   }
 
   if (warn && !is.na(mean_coverage) && mean_coverage > 0.5) {
+    # Format max_delay with appropriate units
+    formatted_max <- .format_delay_with_units(
+      max_delay, timestep, daily_max_delay
+    )
+
     cli::cli_warn(
       paste0(
         "The specified maximum reporting delay ",
-        "(", daily_max_delay, " days) ",
+        "(", formatted_max, ") ",
         "covers less than ", 100 * cum_coverage,
         "% of cases for the majority (>50%) of reference dates. ",
-        "Consider using a larger maximum delay to avoid potential ",
-        "model misspecification."
+        "Consider using a larger maximum delay to avoid potential model ",
+        "misspecification."
       ),
       immediate. = TRUE
     )

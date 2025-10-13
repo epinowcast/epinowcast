@@ -26,8 +26,8 @@ NA values are replaced with the last available observation or 0.
 }
 \examples{
 dt <- data.frame(
- id = 1:3, confirm = c(NA, 1, 2),
- reference_date = as.Date("2021-01-01")
+  id = 1:3, confirm = c(NA, 1, 2),
+  reference_date = as.Date("2021-01-01")
 )
 enw_impute_na_observations(dt)
 }

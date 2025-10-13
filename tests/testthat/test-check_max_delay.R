@@ -144,7 +144,7 @@ test_that(
 
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
-      "specified maximum reporting delay \\(7 days\\) covers less"
+      "specified maximum reporting delay \\(1 week \\(7 days\\)\\) covers less"
     )
 
     # month
@@ -169,7 +169,10 @@ test_that(
 
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
-      "specified maximum reporting delay \\(14 days\\) covers less"
+      paste0(
+        "specified maximum reporting delay ",
+        "\\(1 14-day \\(14 days\\)\\) covers less"
+      )
     )
 
     expect_snapshot(
