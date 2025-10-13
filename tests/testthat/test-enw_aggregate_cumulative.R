@@ -201,7 +201,8 @@ test_that("enw_aggregate_cumulative preserves monotonic cumulative property
     delay = rep(0:14, length(reference_dates))
   )
   test_data[, report_date := reference_date + delay]
-  test_data[, confirm := rpois(.N, lambda = 10)]
+  test_data[, new_confirm := rpois(.N, lambda = 10)]
+  test_data[, confirm := cumsum(new_confirm), by = reference_date]
 
   # Keep only reports up to a fixed max report date
   max_report <- max(reference_dates) + 14
@@ -256,7 +257,8 @@ test_that("enw_aggregate_cumulative handles edge case with exact max_delay
     delay = rep(0:21, length(dates))
   )
   test_data[, report_date := reference_date + delay]
-  test_data[, confirm := rpois(.N, lambda = 5)]
+  test_data[, new_confirm := rpois(.N, lambda = 5)]
+  test_data[, confirm := cumsum(new_confirm), by = reference_date]
   test_data <- test_data[report_date <= max(dates) + 21]
 
   result <- enw_aggregate_cumulative(
@@ -286,7 +288,8 @@ test_that("enw_aggregate_cumulative preserves cumulative property with
     location = "A"
   )
   test_data_a[, report_date := reference_date + delay]
-  test_data_a[, confirm := rpois(.N, lambda = 8)]
+  test_data_a[, new_confirm := rpois(.N, lambda = 8)]
+  test_data_a[, confirm := cumsum(new_confirm), by = reference_date]
 
   test_data_b <- data.table::data.table(
     reference_date = rep(dates, each = 15),
@@ -294,7 +297,8 @@ test_that("enw_aggregate_cumulative preserves cumulative property with
     location = "B"
   )
   test_data_b[, report_date := reference_date + delay]
-  test_data_b[, confirm := rpois(.N, lambda = 8)]
+  test_data_b[, new_confirm := rpois(.N, lambda = 8)]
+  test_data_b[, confirm := cumsum(new_confirm), by = reference_date]
 
   test_data <- rbind(test_data_a, test_data_b)
   test_data <- test_data[report_date <= max(dates) + 14]
