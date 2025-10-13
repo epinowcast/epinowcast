@@ -92,7 +92,6 @@ test_that("enw_reference supports parametric models", {
 })
 
 test_that("enw_reference supports non-parametric models", {
-  skip("Snapshot test fails after include_days fix; needs investigation (issue #352)")
   expect_snapshot({
     ref <- enw_reference(
       parametric = ~0,
