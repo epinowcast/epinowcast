@@ -273,7 +273,15 @@ coerce_dt <- function(
 #' reference dates where the cumulative case count is below some aspired
 #' coverage.
 #'
-#' @details The coverage is with respect to the maximum observed case count for
+#' @details When data is very sparse (e.g., predominantly zero counts), the
+#' function may not be able to compute meaningful coverage statistics.
+#' In such cases, a warning is issued and the function treats the data as
+#' having no coverage issues.
+#' This typically occurs when groups have very few non-zero observations or
+#' when the specified \code{max_delay} is too large relative to available
+#' data.
+#'
+#' The coverage is with respect to the maximum observed case count for
 #' the corresponding reference date. As the maximum observed case count is
 #' likely smaller than the true overall case count for not yet fully observed
 #' reference dates (due to right truncation), only reference dates that are
@@ -446,9 +454,31 @@ check_max_delay <- function(data,
       sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
         sum(!is.na(cum_prop_reported))
   ), by = .group]
-  mean_coverage <- low_coverage[, mean(below_coverage)]
 
-  if (warn && mean_coverage > 0.5) {
+  # Check if all coverage values are NaN or NA (occurs with sparse data)
+  if (all(is.na(low_coverage$below_coverage) |
+    is.nan(low_coverage$below_coverage))) {
+    low_coverage[, below_coverage := 0]
+    mean_coverage <- 0
+    if (warn && warn_internal) {
+      warning_message <- c(
+        "Could not compute delay coverage statistics.",
+        "*" = paste0(
+          "All groups have insufficient data after filtering to ",
+          "compute meaningful coverage metrics."
+        ),
+        i = paste0(
+          "This typically occurs with sparse data or when max_delay ",
+          "is too large relative to available observations."
+        )
+      )
+      cli::cli_warn(warning_message)
+    }
+  } else {
+    mean_coverage <- low_coverage[, mean(below_coverage, na.rm = TRUE)]
+  }
+
+  if (warn && !is.na(mean_coverage) && mean_coverage > 0.5) {
     # Format max_delay with appropriate units
     formatted_max <- .format_delay_with_units(
       max_delay, timestep, daily_max_delay

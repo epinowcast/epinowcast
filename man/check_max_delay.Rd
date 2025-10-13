@@ -71,6 +71,14 @@ reference dates where the cumulative case count is below some aspired
 coverage.
 }
 \details{
+When data is very sparse (e.g., predominantly zero counts), the
+function may not be able to compute meaningful coverage statistics.
+In such cases, a warning is issued and the function treats the data as
+having no coverage issues.
+This typically occurs when groups have very few non-zero observations or
+when the specified \code{max_delay} is too large relative to available
+data.
+
 The coverage is with respect to the maximum observed case count for
 the corresponding reference date. As the maximum observed case count is
 likely smaller than the true overall case count for not yet fully observed

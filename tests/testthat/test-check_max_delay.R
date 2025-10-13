@@ -180,3 +180,171 @@ test_that(
     )
   }
 )
+
+test_that("check_max_delay handles sparse data with zero counts", {
+  sparse_data <- data.table::data.table(
+    site = c(
+      rep("A", 20), rep("B", 20)
+    ),
+    confirm = c(
+      0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+    ),
+    reference_date = as.IDate(c(
+      rep("2024-10-15", 5), rep("2024-10-16", 5),
+      rep("2024-10-17", 5), rep("2024-10-18", 5),
+      rep("2024-10-15", 5), rep("2024-10-16", 5),
+      rep("2024-10-17", 5), rep("2024-10-18", 5)
+    )),
+    report_date = as.IDate(c(
+      "2024-10-15", "2024-10-16", "2024-10-17", "2024-10-18", "2024-10-19",
+      "2024-10-16", "2024-10-17", "2024-10-18", "2024-10-19", "2024-10-20",
+      "2024-10-17", "2024-10-18", "2024-10-19", "2024-10-20", "2024-10-21",
+      "2024-10-18", "2024-10-19", "2024-10-20", "2024-10-21", "2024-10-22",
+      "2024-10-15", "2024-10-16", "2024-10-17", "2024-10-18", "2024-10-19",
+      "2024-10-16", "2024-10-17", "2024-10-18", "2024-10-19", "2024-10-20",
+      "2024-10-17", "2024-10-18", "2024-10-19", "2024-10-20", "2024-10-21",
+      "2024-10-18", "2024-10-19", "2024-10-20", "2024-10-21", "2024-10-22"
+    ))
+  )
+
+  pobs <- expect_no_error(
+    enw_preprocess_data(sparse_data, max_delay = 4, by = "site")
+  )
+
+  result <- suppressWarnings(
+    check_max_delay(pobs, max_delay = 4)
+  )
+
+  expect_s3_class(result, "data.table")
+  expect_identical(nrow(result), 3L)
+  expect_identical(
+    result$.group,
+    c("1", "2", "all")
+  )
+  expect_true(all(c(".group", "coverage", "below_coverage") %in% names(result)))
+})
+
+test_that("check_max_delay handles multiple groups with zero counts", {
+  sparse_multi_group <- data.table::data.table(
+    site = c(rep("A", 15), rep("B", 15)),
+    confirm = c(
+      rep(0, 10), 1, 0, 0, 0, 0,
+      rep(0, 14), 1
+    ),
+    reference_date = as.IDate(c(
+      rep("2024-10-15", 3), rep("2024-10-16", 3), rep("2024-10-17", 3),
+      rep("2024-10-18", 3), rep("2024-10-19", 3),
+      rep("2024-10-15", 3), rep("2024-10-16", 3), rep("2024-10-17", 3),
+      rep("2024-10-18", 3), rep("2024-10-19", 3)
+    )),
+    report_date = as.IDate(c(
+      "2024-10-15", "2024-10-16", "2024-10-17",
+      "2024-10-16", "2024-10-17", "2024-10-18",
+      "2024-10-17", "2024-10-18", "2024-10-19",
+      "2024-10-18", "2024-10-19", "2024-10-20",
+      "2024-10-19", "2024-10-20", "2024-10-21",
+      "2024-10-15", "2024-10-16", "2024-10-17",
+      "2024-10-16", "2024-10-17", "2024-10-18",
+      "2024-10-17", "2024-10-18", "2024-10-19",
+      "2024-10-18", "2024-10-19", "2024-10-20",
+      "2024-10-19", "2024-10-20", "2024-10-21"
+    ))
+  )
+
+  pobs <- suppressWarnings(
+    enw_preprocess_data(sparse_multi_group, max_delay = 4, by = "site")
+  )
+
+  result <- suppressWarnings(
+    check_max_delay(pobs, max_delay = 4)
+  )
+
+  expect_s3_class(result, "data.table")
+  expect_gte(nrow(result), 2)
+  expect_true(all(c(".group", "coverage", "below_coverage") %in% names(result)))
+})
+
+test_that("check_max_delay handles all zero counts", {
+  all_zero_data <- data.table::data.table(
+    site = c(rep("A", 10), rep("B", 10)),
+    confirm = rep(0, 20),
+    reference_date = as.IDate(c(
+      rep("2024-10-15", 2), rep("2024-10-16", 2),
+      rep("2024-10-17", 2), rep("2024-10-18", 2),
+      rep("2024-10-19", 2),
+      rep("2024-10-15", 2), rep("2024-10-16", 2),
+      rep("2024-10-17", 2), rep("2024-10-18", 2),
+      rep("2024-10-19", 2)
+    )),
+    report_date = as.IDate(c(
+      "2024-10-15", "2024-10-16",
+      "2024-10-16", "2024-10-17",
+      "2024-10-17", "2024-10-18",
+      "2024-10-18", "2024-10-19",
+      "2024-10-19", "2024-10-20",
+      "2024-10-15", "2024-10-16",
+      "2024-10-16", "2024-10-17",
+      "2024-10-17", "2024-10-18",
+      "2024-10-18", "2024-10-19",
+      "2024-10-19", "2024-10-20"
+    ))
+  )
+
+  pobs <- suppressWarnings(
+    enw_preprocess_data(all_zero_data, max_delay = 2, by = "site")
+  )
+
+  result <- suppressWarnings(
+    check_max_delay(
+      pobs,
+      max_delay = 2, warn_internal = TRUE
+    )
+  )
+
+  expect_s3_class(result, "data.table")
+  expect_gte(nrow(result), 1)
+  expect_true(all(c(".group", "coverage", "below_coverage") %in% names(result)))
+  expect_identical(result$below_coverage[result$.group == "all"], 0)
+})
+
+test_that(
+  "check_max_delay mixed scenario: some groups sparse, some normal",
+  {
+    normal_data <- enw_example(type = "observations")
+    normal_data[, site := "normal"]
+
+    sparse_data <- data.table::data.table(
+      site = "sparse",
+      confirm = c(0, 0, 1, 0, 0, 0, 0, 1),
+      reference_date = as.IDate(
+        c(
+          "2024-10-15", "2024-10-15", "2024-10-15", "2024-10-15",
+          "2024-10-16", "2024-10-16", "2024-10-16", "2024-10-16"
+        )
+      ),
+      report_date = as.IDate(
+        c(
+          "2024-10-15", "2024-10-16", "2024-10-17", "2024-10-18",
+          "2024-10-16", "2024-10-17", "2024-10-18", "2024-10-19"
+        )
+      )
+    )
+
+    combined_data <- data.table::rbindlist(
+      list(normal_data, sparse_data),
+      fill = TRUE
+    )
+
+    pobs <- suppressWarnings(
+      enw_preprocess_data(combined_data, max_delay = 10, by = "site")
+    )
+
+    result <- expect_no_error(
+      suppressWarnings(check_max_delay(pobs, max_delay = 10))
+    )
+
+    expect_s3_class(result, "data.table")
+    expect_gte(nrow(result), 2)
+  }
+)
