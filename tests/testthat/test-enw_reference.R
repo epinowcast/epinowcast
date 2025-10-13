@@ -2,7 +2,9 @@
 pobs <- enw_example("preprocessed")
 
 pobs_intermediate <- enw_filter_reference_dates(
-  data.table::copy(pobs$obs[[1]])[, ".group" := NULL], latest_date = "2021-07-20"
+  data.table::copy(pobs$obs[[1]])[, ".group" := NULL],
+  latest_date = "2021-07-20",
+  include_days = 40
 )
 
 pobs_intermediate <- enw_filter_report_dates(
@@ -92,21 +94,21 @@ test_that("enw_reference supports parametric models", {
 })
 
 test_that("enw_reference supports non-parametric models", {
+  ref_snapshot <- enw_reference(
+    parametric = ~0,
+    distribution = "none",
+    non_parametric = ~ 1 + (1 | delay) + rw(week),
+    data = pobs
+  )
   expect_snapshot({
-    ref <- enw_reference(
-      parametric = ~0,
-      distribution = "none",
-      non_parametric = ~ 1 + (1 | delay) + rw(week),
-      data = pobs_filt
-    )
-    ref$inits <- NULL
-    ref
+    ref_snapshot$inits <- NULL
+    ref_snapshot
   })
   ref <- enw_reference(
     parametric = ~0,
     distribution = "none",
     non_parametric = ~ 1 + delay + rw(week),
-    data = pobs_filt
+    data = pobs
   )
   inits <- ref$inits(ref$data, ref$priors)()
   zero_length <- c(
@@ -120,7 +122,7 @@ test_that("enw_reference supports non-parametric models", {
     parametric = ~0,
     distribution = "none",
     non_parametric = ~ 0 + delay,
-    data = pobs_filt
+    data = pobs
   )
   expect_identical(colnames(ref_no_int$data$refnp_fdesign), "delay")
   expect_identical(ref_no_int$data$refnp_fintercept, 0)
@@ -134,7 +136,7 @@ test_that("Parametric and non-parametric models can be jointly specified", {
     ref <- enw_reference(
       parametric = ~1,
       non_parametric = ~ 0 + (1 | delay_cat),
-      data = pobs_filt
+      data = pobs
     )
     ref$inits <- NULL
     ref
