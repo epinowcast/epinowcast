@@ -42,6 +42,7 @@ For function-specific details, see `?function_name`.
 | Custom | Any integer multiple of days | `timestep = 7` | `enw_preprocess_data(..., timestep = 7)` |
 
 **Key functions:**
+
 - `enw_preprocess_data()`: Set timestep during preprocessing
 - `enw_aggregate_cumulative()`: Convert between timesteps
 
@@ -61,6 +62,7 @@ Nowcast across multiple groups simultaneously with hierarchical sharing of infor
 | Hierarchical sharing | Partial pooling | Random effects in formulas | `~1 + (1 | .group)` |
 
 **Key functions:**
+
 - `enw_preprocess_data()`: Specify grouping with `by` argument
 - Formula interface: Control sharing via random effects
 
@@ -81,6 +83,7 @@ Model reporting delays using parametric distributions, non-parametric hazards, o
 **Available distributions:** See the [distributions vignette](distributions.html) for details on the range of supported distributions.
 
 **Key functions:**
+
 - `enw_reference()`: Specify delay model
 - See `?enw_reference` for formula details
 
@@ -101,6 +104,7 @@ Specify the generative model for the expected latent process (e.g., infections, 
 | Observation modifiers | Ascertainment variation (e.g., day of week) | `observation = ~1 + day_of_week` | Adjust for reporting patterns |
 
 **Key functions:**
+
 - `enw_expectation()`: Specify latent process model and observation modifiers
 - See `?enw_expectation` for details
 
@@ -119,6 +123,7 @@ Build hierarchical models using the formula interface.
 | Sparse design | Memory efficient | `sparse = TRUE` in `enw_formula()` | Large sparse matrices |
 
 **Key functions:**
+
 - `enw_formula()`: Unified formula interface
 - `rw()`: Random walk helper
 - See `?enw_formula` for syntax details
@@ -145,16 +150,19 @@ Handle two types of missing data: missing reference dates and missing observatio
 | Test parameter recovery | Set `.observed = FALSE` for subset of data, check if model recovers parameters |
 
 **Key functions:**
+
 - `enw_missing()`: Model for missing reference dates
 - `enw_extend_date()`: Extend time series with unobserved dates
 - `enw_flag_observed_observations()`: Flag observations based on NAs
 - `enw_obs()`: Use `observation_indicator` to control likelihood
 
 **Notes:**
+
 - The missing reference model assumes consistent reporting delay for observations with and without known reference dates
 - Any observations marked with `.observed = FALSE` can be excluded from the likelihood whilst still generating posterior predictions
 
 **Where to see it:**
+
 - NA handling example: See `?enw_flag_observed_observations` and `?enw_obs` for examples
 - Other use cases: See function documentation for `enw_missing`, `enw_extend_date`
 
@@ -170,6 +178,7 @@ Assess model fit and compare models.
 | Convergence diagnostics | MCMC quality checks | Check `$fit$summary()` | [Stan help vignette](stan-help.html) |
 
 **Key functions:**
+
 - `enw_fit_opts()`: Control outputs
 - `plot()`: Visualise results
 - External: `loo`, `scoringutils` packages
@@ -190,6 +199,7 @@ Control computational efficiency and parallelisation.
 | Pathfinder initialisation | Use pathfinder to initialise MCMC | `init_method = "pathfinder"` in `enw_sample` | Improve MCMC convergence |
 
 **Key functions:**
+
 - `enw_fit_opts()`: Specify computational options
 - See `?enw_fit_opts` for details
 

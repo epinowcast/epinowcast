@@ -14,9 +14,16 @@
   incorrectly returned `n + 1` dates instead of exactly `n` dates. Now
   `include_days = 10` returns exactly 10 reference dates, not 11. This brings
   the function behaviour in line with its documentation and user expectations.
-  Users relying on the previous (incorrect) behaviour will need to adjust their
+  Users relying on the previous behaviour will need to adjust their
   `include_days` arguments by subtracting 1 to maintain the same date range.
   See issue #352 for details.
+- Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
+  - `enw_cumulative_to_incidence()` (deprecated 0.2.1, use `enw_add_incidence()`)
+  - `enw_incidence_to_cumulative()` (deprecated 0.2.1, use `enw_add_cumulative()`)
+  - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
+  - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
+  - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
+- Removed `simulate_double_censored_pmf()`. Users should use `primarycensored::dprimarycensored()` instead for generating double censored PMFs.
 
 ## Bugs
 
@@ -31,7 +38,6 @@
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
-- Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
 - A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
 
 ## Model

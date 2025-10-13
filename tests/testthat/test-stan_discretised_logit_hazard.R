@@ -88,14 +88,14 @@ single_censored_pmf <- function(n, alpha, beta, fun = plnorm) {
   return(pmf)
 }
 
-# Simulate double censored data
+# Simulate double censored data using primarycensored package
 simulate_double_censored_pmf <- function(
-    alpha, beta, max, fun = rlnorm, n = 1000) {
-  primary <- runif(n, 0, 1)
-  secondary <- primary + fun(n, alpha, beta)
-  delay <- floor(secondary) - floor(primary)
-  cdf <- ecdf(delay)(0:max)
-  pmf <- c(cdf[1], diff(cdf))
+    alpha, beta, max, fun = plnorm, n = 1000) {
+  # Use primarycensored package for double censored PMF
+  # Parameters: alpha = meanlog, beta = sdlog for lognormal
+  pmf <- primarycensored::dprimarycensored(
+    0:max, fun, meanlog = alpha, sdlog = beta
+  )
   return(pmf)
 }
 
@@ -126,7 +126,7 @@ test_that(
     # with the discretisation near 0
     for (alpha in seq(0.4, 1.5, by = 0.1)) {
       for (beta in seq(0.3, 1.5, by = 0.1)) {
-        sim <- simulate_double_censored_pmf(alpha, beta, 100, rlnorm, 1000)
+        sim <- simulate_double_censored_pmf(alpha, beta, 100, plnorm)
         n <- length(sim)
         # Double censoring should have the same mean as the simulated data
         expect_equal(

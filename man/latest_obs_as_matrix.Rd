@@ -23,7 +23,6 @@ Helper functions for model modules
 \code{\link{enw_reference_by_report}()},
 \code{\link{enw_reps_with_complete_refs}()},
 \code{\link{extract_obs_metadata}()},
-\code{\link{extract_sparse_matrix}()},
-\code{\link{simulate_double_censored_pmf}()}
+\code{\link{extract_sparse_matrix}()}
 }
 \concept{modelmodulehelpers}
