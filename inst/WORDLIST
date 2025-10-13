@@ -7,13 +7,11 @@ CMD
 COVID
 CmdStan
 CmdStanR
-CmdStanModel
 Codecov
 Discretisation
 Discretised
 EpiEstim
 EpiNow
-ESS
 FelixGuenther
 Gelman
 Github
@@ -73,7 +71,6 @@ epidemia
 etc
 formulatools
 frac
-filepath
 geq
 github
 gt
@@ -144,7 +141,6 @@ runtimes
 rw
 samplerParams
 sbfnk
-scoringutils
 sd
 se
 seabbs
@@ -158,7 +154,6 @@ stanc
 teojcryan
 th
 tidyverse
-timeseries
 timesteps
 toolset
 treedepth
@@ -168,4 +163,3 @@ underprediction
 unmodelled
 unsets
 zsusswein
-warmup
