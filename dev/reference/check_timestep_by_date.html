@@ -83,7 +83,9 @@ performed for both <code>report_date</code> and <code>reference_date</code> and 
 
 <dt id="arg-timestep">timestep<a class="anchor" aria-label="anchor" href="#arg-timestep"></a></dt>
 <dd><p>The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.</p></dd>
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in user-facing functions
+and will throw an error if used.</p></dd>
 
 
 <dt id="arg-exact">exact<a class="anchor" aria-label="anchor" href="#arg-exact"></a></dt>
