@@ -118,11 +118,12 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' then the function will aggregate by just the `reference_date` and
 #' `report_date`.
 #'
-#' @param max_delay The maximum number of days between the `reference_date`
-#' and the `report_date`. If not supplied then the function will use the
-#' maximum number of days between the `reference_date` and the `report_date`
-#' in the `linelist`. If the `max_delay` is less than the maximum number of
-#' days between the `reference_date` and the `report_date` in the `linelist`
+#' @param max_delay The maximum delay (in days) between the
+#' `reference_date` and the `report_date`. If not supplied then the
+#' function will use the maximum observed delay. Note that this function
+#' operates before timestep conversion, so max_delay is always in days
+#' here. If the `max_delay` is less than the maximum number of days
+#' between the `reference_date` and the `report_date` in the `linelist`
 #' then the function will use this value instead and inform the user.
 #'
 #' @inheritParams enw_complete_dates
