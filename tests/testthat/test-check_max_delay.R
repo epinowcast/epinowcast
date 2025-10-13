@@ -142,7 +142,7 @@ test_that(
 
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
-      "specified maximum reporting delay \\(7 days\\) covers less"
+      "specified maximum reporting delay \\(7 days\\) covers less" # nolint: nonportable_path_linter
     )
 
     # month
@@ -167,7 +167,7 @@ test_that(
 
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
-      "specified maximum reporting delay \\(14 days\\) covers less"
+      "specified maximum reporting delay \\(14 days\\) covers less" # nolint: nonportable_path_linter
     )
 
     expect_snapshot(
