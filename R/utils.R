@@ -147,17 +147,16 @@ coerce_date <- function(dates = NULL) {
 #' This function converts the string representation of the timestep to its
 #' corresponding numeric value or returns the numeric input (if it is a whole
 #' number). For "day", "week", it returns 1 and 7 respectively.
-#' For "month", it returns "month" as months are not a fixed number of days.
+#' "month" is not supported and will throw an error.
 #' If the input is a numeric whole number, it is returned as is.
 #'
 #' @param timestep The timestep to used. This can be a string ("day",
 #' "week") or a numeric whole number representing the number of days.
-#' Note that "month" is not currently supported in most user-facing functions
+#' Note that "month" is not currently supported in user-facing functions
 #' and will throw an error if used.
 #'
 #' @return A numeric value representing the number of days for "day" and
-#' "week", "month" for "month",  or the input value if it is a numeric whole
-#' number.
+#' "week", or the input value if it is a numeric whole number.
 #' @importFrom cli cli_abort
 #' @family utils
 get_internal_timestep <- function(timestep) {
@@ -167,9 +166,15 @@ get_internal_timestep <- function(timestep) {
       timestep,
       day = 1,
       week = 7,
-      month = "month",  # months are not a fixed number of days
+      month = cli::cli_abort(
+        paste0(
+          "Calendar months are not currently supported. Consider using an ",
+          "approximate number of days (i.e. 28), a different timestep ",
+          "(i.e.'week'), or commenting on issue #309. "
+        )
+      ),
       cli::cli_abort(
-        "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
+        "Invalid timestep. Acceptable string inputs are 'day', 'week'."
       )
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {

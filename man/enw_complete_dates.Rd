@@ -50,7 +50,7 @@ maximum report date found in the data.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
 "week") or a numeric whole number representing the number of days.
-Note that "month" is not currently supported in most user-facing functions
+Note that "month" is not currently supported in user-facing functions
 and will throw an error if used.}
 
 \item{missing_reference}{Logical, should entries for cases with missing

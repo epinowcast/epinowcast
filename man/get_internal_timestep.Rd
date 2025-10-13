@@ -9,19 +9,18 @@ get_internal_timestep(timestep)
 \arguments{
 \item{timestep}{The timestep to used. This can be a string ("day",
 "week") or a numeric whole number representing the number of days.
-Note that "month" is not currently supported in most user-facing functions
+Note that "month" is not currently supported in user-facing functions
 and will throw an error if used.}
 }
 \value{
 A numeric value representing the number of days for "day" and
-"week", "month" for "month",  or the input value if it is a numeric whole
-number.
+"week", or the input value if it is a numeric whole number.
 }
 \description{
 This function converts the string representation of the timestep to its
 corresponding numeric value or returns the numeric input (if it is a whole
 number). For "day", "week", it returns 1 and 7 respectively.
-For "month", it returns "month" as months are not a fixed number of days.
+"month" is not supported and will throw an error.
 If the input is a numeric whole number, it is returned as is.
 }
 \seealso{
