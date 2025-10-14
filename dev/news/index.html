@@ -64,7 +64,8 @@
 </div>
 <div class="section level3">
 <h3 id="breaking-changes-0-3-9000">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-3-9000"></a></h3>
-<ul><li>Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
+<ul><li>Fixed off-by-one error in <code><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> where <code>include_days = n</code> incorrectly returned <code>n + 1</code> dates instead of exactly <code>n</code> dates. Now <code>include_days = 10</code> returns exactly 10 reference dates, not 11. This brings the function behaviour in line with its documentation and user expectations. Users relying on the previous behaviour will need to adjust their <code>include_days</code> arguments by subtracting 1 to maintain the same date range. See issue <a href="https://github.com/epinowcast/epinowcast/issues/352" class="external-link">#352</a> for details.</li>
+<li>Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
 <ul><li>
 <code>enw_cumulative_to_incidence()</code> (deprecated 0.2.1, use <code><a href="../reference/enw_add_incidence.html">enw_add_incidence()</a></code>)</li>
 <li>

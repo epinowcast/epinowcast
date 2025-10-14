@@ -107,7 +107,8 @@ columns.</p></dd>
 <dt id="arg-include-days">include_days<a class="anchor" aria-label="anchor" href="#arg-include-days"></a></dt>
 <dd><p>if <code>earliest_date</code> is not given, the number
 of reference dates to include, ending with the latest reference
-date included (determined by <code>latest_date</code> or <code>remove_days</code>).</p></dd>
+date included (determined by <code>latest_date</code> or <code>remove_days</code>).
+For example, <code>include_days = 10</code> returns exactly 10 reference dates.</p></dd>
 
 
 <dt id="arg-latest-date">latest_date<a class="anchor" aria-label="anchor" href="#arg-latest-date"></a></dt>
@@ -123,6 +124,14 @@ of reference dates to remove, starting from the latest date included.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A <code>data.table</code> filtered by report date</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The <code>include_days</code> parameter filters to include exactly the specified number
+of most recent reference dates.
+For example, if the latest reference date is 2021-10-20 and <code>include_days = 10</code>,
+the filtered data will contain reference dates from 2021-10-11 to 2021-10-20
+(10 days inclusive).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -176,17 +185,17 @@ of reference dates to remove, starting from the latest date included.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date location age_group confirm report_date</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-09-30       DE       00+     110  2021-09-30</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-10-01       DE       00+     105  2021-10-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-10-02       DE       00+      97  2021-10-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2021-10-03       DE       00+      41  2021-10-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2021-10-04       DE       00+      23  2021-10-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     1:     2021-10-01       DE       00+     105  2021-10-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     2:     2021-10-02       DE       00+      97  2021-10-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     3:     2021-10-03       DE       00+      41  2021-10-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     4:     2021-10-04       DE       00+      23  2021-10-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     5:     2021-10-05       DE       00+     120  2021-10-05</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    ---                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20940:     2021-09-30    DE-TH     05-14       1  2021-10-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20941:     2021-09-30    DE-TH     15-34       2  2021-10-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20942:     2021-09-30    DE-TH     35-59       6  2021-10-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20943:     2021-09-30    DE-TH     60-79       4  2021-10-20</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20944:     2021-09-30    DE-TH       80+      10  2021-10-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18441:     2021-10-01    DE-TH     05-14       0  2021-10-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18442:     2021-10-01    DE-TH     15-34       1  2021-10-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18443:     2021-10-01    DE-TH     35-59       3  2021-10-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18444:     2021-10-01    DE-TH     60-79       3  2021-10-20</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18445:     2021-10-01    DE-TH       80+       2  2021-10-20</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
