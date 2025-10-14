@@ -350,9 +350,6 @@ enw_aggregate_cumulative <- function(
   )
   # Ordering by reference and report date
   setorder(agg_obs, reference_date, report_date)
-  
-  # filter to report dates at timestep boundaries
-  agg_obs <- agg_obs[report_date_mod == 0]
 
   # Split into missing and non-missing reference dates
   agg_obs_na_ref <- agg_obs[is.na(reference_date)]
@@ -366,6 +363,9 @@ enw_aggregate_cumulative <- function(
 
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
+  agg_obs <- agg_obs[report_date_mod == 0]
+
+  # Aggregate over the timestep
   agg_obs <- aggregate_rolling_sum(
     agg_obs, internal_timestep, by = c("report_date", ".group")
   )
