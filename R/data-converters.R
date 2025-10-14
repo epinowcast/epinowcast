@@ -307,10 +307,11 @@ enw_aggregate_cumulative <- function(
     required_cols = c("confirm", by), forbidden_cols = ".group",
     dates = TRUE, copy = copy
   )
+  
+  obs <- enw_assign_group(obs, by = by)
+  check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 
-  # Calculate max delay from the data to ensure complete date coverage
-  # This fixes issue #511 where cumulative counts could decrease at
-  # timestep boundaries when max_delay is an even multiple of timestep
+  # Calculate max delay from the data
   max_delay_days <- max(
     obs$report_date - obs$reference_date,
     na.rm = TRUE
@@ -327,10 +328,7 @@ enw_aggregate_cumulative <- function(
     completion_beyond_max_report = FALSE,
     flag_observation = FALSE
   )
-
-  obs <- enw_assign_group(obs, by = by)
-  check_timestep_by_date(obs, timestep = "day", exact = TRUE)
-
+  
   internal_timestep <- get_internal_timestep(timestep)
 
   # Initial filtering to set when the timestep will start from
@@ -352,6 +350,9 @@ enw_aggregate_cumulative <- function(
   )
   # Ordering by reference and report date
   setorder(agg_obs, reference_date, report_date)
+  
+  # filter to report dates at timestep boundaries
+  agg_obs <- agg_obs[report_date_mod == 0]
 
   # Split into missing and non-missing reference dates
   agg_obs_na_ref <- agg_obs[is.na(reference_date)]
@@ -365,16 +366,9 @@ enw_aggregate_cumulative <- function(
 
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
-
-  # Apply rolling sum to ALL data (fix for issue #511)
-  # Group by reference_date instead of report_date to maintain cumulative
-  # property for each reference date
   agg_obs <- aggregate_rolling_sum(
     agg_obs, internal_timestep, by = c("reference_date", ".group")
   )
-
-  # THEN filter to report dates at timestep boundaries
-  agg_obs <- agg_obs[report_date_mod == 0]
 
   # Set day of week for reference date and filter
   agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
