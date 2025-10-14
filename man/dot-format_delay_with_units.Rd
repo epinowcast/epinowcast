@@ -18,7 +18,6 @@ Character string with formatted delay
 }
 \description{
 Internal helper to format delays with units based on timestep.
-For weekly/monthly/custom timesteps, shows both timestep units and
-days.
+For weekly/custom timesteps, shows both timestep units and days.
 }
 \keyword{internal}

@@ -43,11 +43,11 @@ test_that("check_timestep_by_group() handles groups correctly", {
     fixed = TRUE
   )
 
-  # Test with "month" timestep and exact = FALSE, should fail
+  # Test with "month" timestep - should fail as months not supported
   expect_error(
     check_timestep_by_group(
       obs, date_var = "date", timestep = "month", exact = FALSE
     ),
-    "date has a shorter timestep than the specified timestep of a month"
+    "Calendar months are not currently supported"
   )
 })

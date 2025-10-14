@@ -9,7 +9,7 @@ test_that("enw_reference_by_report can make a look-up with no delay", {
     missing_reference, complete_1, metareference, 1
   )
   expect_identical(ref_by_rep[, report_date], complete_1[, report_date])
-  expect_identical(ref_by_rep[, `0`], 1:41)
+  expect_identical(ref_by_rep[, `0`], 1:40)
 })
 
 test_that("enw_reference_by_report can make a look-up with 1 delay", {

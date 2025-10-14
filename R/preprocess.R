@@ -410,6 +410,13 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' occurs). This means that this function will also filter out any report dates
 #' that are earlier than their corresponding reference date.
 #'
+#' @details
+#' The `include_days` parameter filters to include exactly the specified number
+#' of most recent reference dates.
+#' For example, if the latest reference date is 2021-10-20 and `include_days = 10`,
+#' the filtered data will contain reference dates from 2021-10-11 to 2021-10-20
+#' (10 days inclusive).
+#'
 #' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
 #'
@@ -418,6 +425,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @param include_days if `earliest_date` is not given, the number
 #' of reference dates to include, ending with the latest reference
 #' date included (determined by `latest_date` or `remove_days`).
+#' For example, `include_days = 10` returns exactly 10 reference dates.
 #'
 #' @param latest_date Date, the latest reference date to include in the
 #' returned dataset.
@@ -462,7 +470,16 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
-    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
+    # validate include_days
+    if (!is.numeric(include_days) || is.na(include_days) ||
+        include_days < 0 || round(include_days) != include_days) {
+      cli::cli_abort("`include_days` must be a non-negative integer")
+    }
+    # explicit empty result for include_days = 0
+    if (include_days == 0) {
+      return(filt_obs[0L])
+    }
+    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days + 1
   }
   if (!missing(include_days) || !missing(earliest_date)) {
     filt_obs <- filt_obs[

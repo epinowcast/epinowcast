@@ -21,14 +21,14 @@ test_that(
       "1 week (7 days)"
     )
 
-    # Monthly timestep
-    expect_identical(
+    # Monthly timestep - no longer supported
+    expect_error(
       epinowcast:::.format_delay_with_units(2, "month"),
-      "2 months"
+      "Calendar months are not currently supported"
     )
-    expect_identical(
+    expect_error(
       epinowcast:::.format_delay_with_units(1, "month"),
-      "1 month"
+      "Calendar months are not currently supported"
     )
 
     # Custom numeric timestep

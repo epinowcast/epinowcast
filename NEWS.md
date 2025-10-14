@@ -10,6 +10,13 @@
 
 ## Breaking changes
 
+* Fixed off-by-one error in `enw_filter_reference_dates()` where `include_days = n`
+  incorrectly returned `n + 1` dates instead of exactly `n` dates. Now
+  `include_days = 10` returns exactly 10 reference dates, not 11. This brings
+  the function behaviour in line with its documentation and user expectations.
+  Users relying on the previous behaviour will need to adjust their
+  `include_days` arguments by subtracting 1 to maintain the same date range.
+  See issue #352 for details.
 - Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
   - `enw_cumulative_to_incidence()` (deprecated 0.2.1, use `enw_add_incidence()`)
   - `enw_incidence_to_cumulative()` (deprecated 0.2.1, use `enw_add_cumulative()`)

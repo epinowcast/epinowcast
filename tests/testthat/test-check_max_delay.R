@@ -82,7 +82,7 @@ test_that("check_max_delay produces the expected output", {
     check_max_delay(obs, max_delay = 10),
     data.table(
       .group = c(1, "all"), coverage = c(0.8, 0.8),
-      below_coverage = c(0.22727273, 0.22727273)
+      below_coverage = c(0.2380952, 0.2380952)
     ),
     tolerance = 0.0001
   )
@@ -93,7 +93,7 @@ test_that("check_max_delay produces the expected output", {
     check_max_delay(obs, max_delay = 10, cum_coverage = 0.7),
     data.table(
       .group = c(1, "all"), coverage = c(0.7, 0.7),
-      below_coverage = c(0.04545455, 0.04545455)
+      below_coverage = c(0.04761905, 0.04761905)
     ),
     tolerance = 0.0001
   )
