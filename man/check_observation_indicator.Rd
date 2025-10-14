@@ -25,7 +25,6 @@ that the \code{observation_indicator} is of the correct type.
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_calendar_timestep}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},
