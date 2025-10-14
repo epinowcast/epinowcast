@@ -192,8 +192,7 @@ get_internal_timestep <- function(timestep) {
 #' Format delay with appropriate units
 #'
 #' Internal helper to format delays with units based on timestep.
-#' For weekly/monthly/custom timesteps, shows both timestep units and
-#' days.
+#' For weekly/custom timesteps, shows both timestep units and days.
 #'
 #' @param max_delay Integer delay value in timestep units
 #' @param timestep Timestep specification (character or numeric)
@@ -206,14 +205,6 @@ get_internal_timestep <- function(timestep) {
   # Get internal timestep if not already computed
   if (is.null(daily_max_delay)) {
     internal_timestep <- get_internal_timestep(timestep)
-    if (is.character(internal_timestep) &&
-      internal_timestep == "month") {
-      # Months are variable, can't convert precisely
-      return(paste0(
-        max_delay, " month",
-        if (max_delay != 1) "s" else ""
-      ))
-    }
     daily_max_delay <- internal_timestep * max_delay
   }
 
@@ -221,8 +212,7 @@ get_internal_timestep <- function(timestep) {
   timestep_unit <- if (is.character(timestep)) {
     switch(timestep,
       day = "day",
-      week = "week",
-      month = "month"
+      week = "week"
     )
   } else {
     # Custom numeric timestep
@@ -230,10 +220,15 @@ get_internal_timestep <- function(timestep) {
   }
 
   # Add plural if needed
-  if (timestep_unit != "month" && max_delay != 1) {
+  if (!is.null(timestep_unit) && !is.na(timestep_unit) &&
+      !is.na(max_delay) && is.finite(max_delay) && max_delay != 1) {
     timestep_unit <- paste0(timestep_unit, "s")
-  } else if (timestep_unit == "month" && max_delay != 1) {
-    timestep_unit <- "months"
+  }
+
+  # Handle NA or infinite values
+  if (is.na(daily_max_delay) || !is.finite(daily_max_delay) ||
+      is.na(max_delay) || !is.finite(max_delay)) {
+    return("unknown delay")
   }
 
   # Format based on whether conversion adds information
@@ -243,9 +238,6 @@ get_internal_timestep <- function(timestep) {
       daily_max_delay, " day",
       if (daily_max_delay != 1) "s" else ""
     ))
-  } else if (is.character(timestep) && timestep == "month") {
-    # Months: can't show days reliably
-    return(paste0(max_delay, " ", timestep_unit))
   } else {
     # Weekly or custom: show both
     return(paste0(

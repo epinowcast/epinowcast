@@ -10,11 +10,11 @@ test_that("enw_reps_with_complete_refs can identify complete report dates", {
   )
   expect_identical(
     enw_reps_with_complete_refs(obs, max_delay = 10),
-    unique(obs[report_date >= as.Date("2021-07-22"), .(report_date)])
+    unique(obs[report_date >= as.Date("2021-07-23"), .(report_date)])
   )
   expect_identical(
     enw_reps_with_complete_refs(obs, max_delay = 20),
-    unique(obs[report_date >= as.Date("2021-08-01"), .(report_date)])
+    unique(obs[report_date >= as.Date("2021-08-02"), .(report_date)])
   )
 })
 

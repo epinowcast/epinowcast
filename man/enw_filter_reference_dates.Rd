@@ -20,7 +20,8 @@ columns.}
 
 \item{include_days}{if \code{earliest_date} is not given, the number
 of reference dates to include, ending with the latest reference
-date included (determined by \code{latest_date} or \code{remove_days}).}
+date included (determined by \code{latest_date} or \code{remove_days}).
+For example, \code{include_days = 10} returns exactly 10 reference dates.}
 
 \item{latest_date}{Date, the latest reference date to include in the
 returned dataset.}
@@ -40,6 +41,13 @@ assumed that report dates must be equal or greater than the corresponding
 reference date (i.e a report cannot happen before the event being reported
 occurs). This means that this function will also filter out any report dates
 that are earlier than their corresponding reference date.
+}
+\details{
+The \code{include_days} parameter filters to include exactly the specified number
+of most recent reference dates.
+For example, if the latest reference date is 2021-10-20 and \code{include_days = 10},
+the filtered data will contain reference dates from 2021-10-11 to 2021-10-20
+(10 days inclusive).
 }
 \examples{
 # Filter by date

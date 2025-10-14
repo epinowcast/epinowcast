@@ -180,7 +180,7 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
   expect_identical(nrow(nowcast$fit[[1]]$summary("refp_lh")), 30L)
-  expect_identical(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 21L)
+  expect_identical(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 20L)
 })
 
 test_that("epinowcast() can fit a reporting model with a day of the week random

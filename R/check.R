@@ -503,54 +503,19 @@ check_max_delay <- function(data,
   return(low_coverage[])
 }
 
-#' Check calendar timestep
-#'
-#' This function verifies if the difference in calendar dates in the provided
-#' observations corresponds to the provided timestep of "month".
-#'
-#' @param dates Vector of Date class representing dates.
-#' @param date_var The variable in `obs` representing dates.
-#' @param exact Logical, if `TRUE``, checks if all differences exactly match the
-#' timestep. If `FALSE``, checks if the sum of the differences modulo the
-#' timestep equals zero. Default is `TRUE`.
-#'
-#' @importFrom lubridate %m-%
-#' @return This function is used for its side effect of stopping if the check
-#' fails. If the check passes, the function returns invisibly.
-#' @importFrom cli cli_abort
-#' @family check
-check_calendar_timestep <- function(dates, date_var, exact = TRUE) {
-  diff_dates <- dates[-1] %m-% months(1L)
-  sequential_dates <- dates[-length(dates)] == diff_dates
-  all_sequential_dates <- all(sequential_dates)
-
-  if (any(diff_dates < dates[-length(dates)])) {
-    cli::cli_abort(
-      "{date_var} has a shorter timestep than the specified timestep of a month"
-    )
-  }
-
-  if (all_sequential_dates) {
-    return(invisible(NULL))
-  } else {
-    if (exact) {
-      cli::cli_abort("{date_var} does not have the specified timestep of month")
-    } else {
-      cli::cli_abort(
-        "Non-sequential dates are not currently supported for monthly data"
-      )
-    }
-  }
-}
 
 #' Check Numeric Timestep
 #'
 #' This function verifies if the difference in numeric dates in the provided
 #' observations corresponds to the provided timestep.
 #'
+#' @param dates Vector of Date class representing dates.
+#' @param date_var The variable in `obs` representing dates.
 #' @param timestep Numeric timestep for date difference.
+#' @param exact Logical, if `TRUE`, checks if all differences exactly match the
+#' timestep. If `FALSE`, checks if the sum of the differences modulo the
+#' timestep equals zero. Default is `TRUE`.
 #'
-#' @inheritParams check_calendar_timestep
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
 #' @importFrom cli cli_abort
@@ -605,9 +570,12 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
 #' observations. Default is `TRUE`. If `FALSE`, the function returns invisibly
 #' if there is only one observation.
 #'
+#' @param date_var The variable in `obs` representing dates.
+#' @param exact Logical, if `TRUE`, checks if all differences exactly match the
+#' timestep. If `FALSE`, checks if the sum of the differences modulo the
+#' timestep equals zero. Default is `TRUE`.
 #'
 #' @inheritParams get_internal_timestep
-#' @inheritParams check_calendar_timestep
 #'
 #' @return This function is used for its side effect of stopping if the check
 #' fails. If the check passes, the function returns invisibly.
@@ -633,12 +601,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   }
 
   internal_timestep <- get_internal_timestep(timestep)
-
-  if (internal_timestep == "month") {
-    check_calendar_timestep(dates, date_var, exact)
-  } else {
-    check_numeric_timestep(dates, date_var, internal_timestep, exact)
-  }
+  check_numeric_timestep(dates, date_var, internal_timestep, exact)
 
   return(invisible(NULL))
 }

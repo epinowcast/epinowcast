@@ -94,7 +94,6 @@ check_max_delay(pobs, max_delay = 20, cum_coverage = 0.8)
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_calendar_timestep}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},
