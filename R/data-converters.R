@@ -367,7 +367,7 @@ enw_aggregate_cumulative <- function(
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
   agg_obs <- aggregate_rolling_sum(
-    agg_obs, internal_timestep, by = c("reference_date", ".group")
+    agg_obs, internal_timestep, by = c("report_date", ".group")
   )
 
   # Set day of week for reference date and filter
