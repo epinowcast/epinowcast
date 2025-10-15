@@ -58,7 +58,7 @@ See #541 by @seabbs and self-reviewed.
 
 ## Documentation
 
-- Improved documentation of the formula interface to make it more accessible to users unfamiliar with formula syntax. Enhanced `enw_formula()` documentation with comprehensive details on fixed effects, random effects (lme4 syntax), and random walks, including explanation of the `~0` convention for disabling model components and how formulas map to model structure. Added references to relevant R resources and expanded examples. Updated model module documentation (`enw_reference()`, `enw_report()`, `enw_expectation()`, `enw_missing()`) to clarify formula usage and cross-reference the main formula documentation. Addresses #468 by @seabbs and self-reviewed.
+- Improved documentation of the formula interface to make it more accessible to users unfamiliar with formula syntax. Enhanced `enw_formula()` documentation with details on fixed effects, random effects (lme4 syntax), and random walks, including explanation of the `~0` convention for disabling model components and how formulas map to model structure. Added references to relevant R resources and expanded examples. Updated model module documentation (`enw_reference()`, `enw_report()`, `enw_expectation()`, `enw_missing()`) to clarify formula usage and cross-reference the main formula documentation. Addresses #468 by @seabbs and self-reviewed.
 - Linked the Stan function documentation to the package website. By @jamesmbaazam in #529 and reviewed by @seabbs.
 - Added support to render and deploy stan documentation using `doxygen` and a GitHub Actions workflow. See #500 and #502 by @jamesmbaazam and @seabbs respectively, and cross-reviewed.
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
