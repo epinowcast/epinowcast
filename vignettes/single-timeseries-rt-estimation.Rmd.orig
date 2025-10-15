@@ -230,6 +230,7 @@ gh_vis_cohorts_by_ref_rep |>
     aes(xintercept = as.Date(report_date)),
     linetype = 2, alpha = 0.9
   ) +
+  xlim(c(min(gh_vis_cohorts_by_ref_rep$reference_date), max(gh_vis_cohorts_by_ref_rep$reference_date))) +
   scale_y_continuous(labels = \(x)(scales::comma(x, accuracy = 1))) +
   scale_fill_brewer(
     palette = "Blues", aesthetics = c("color", "fill")

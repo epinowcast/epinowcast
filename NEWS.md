@@ -35,6 +35,7 @@ predominantly zero counts across multiple groups.
 The function now handles sparse data gracefully and provides informative
 warnings when delay coverage statistics cannot be computed.
 See #541 by @seabbs and self-reviewed.
+- Fixed stacked bar chart in Rt estimation vignette extending beyond actual reference date range. The plot now correctly limits the x-axis to the range of dates with data. See #634 by @seabbs and self-reviewed.
 
 ## Package
 
