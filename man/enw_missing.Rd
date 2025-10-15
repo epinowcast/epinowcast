@@ -10,8 +10,10 @@ enw_missing(formula = ~1, data)
 \item{formula}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}}) describing
 the missing data proportion on the logit scale by reference date. This can
 use features defined by reference date as defined in \code{metareference} as
-produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. "~0" implies no model is required.
-Otherwise an intercept is always needed}
+produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Set to \code{~0} to disable the missing
+data model when no missingness is present (the model is not estimated in
+this case). When a model is specified, an intercept is always required.
+See \code{\link[=enw_formula]{enw_formula()}} for details on formula syntax.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }

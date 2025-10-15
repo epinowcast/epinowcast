@@ -9,7 +9,8 @@ as_string_formula(formula)
 \arguments{
 \item{formula}{A model formula that may use standard fixed
 effects, random effects using \link[lme4]{lme4} syntax (see \code{\link[=re]{re()}}), and
-random walks defined using the \code{\link[=rw]{rw()}} helper function.}
+random walks defined using the \code{\link[=rw]{rw()}} helper function. See the Details
+section below for a comprehensive explanation of the supported syntax.}
 }
 \value{
 A character string of the supplied formula

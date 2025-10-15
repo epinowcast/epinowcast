@@ -17,8 +17,10 @@ the parametric reference date delay model. This can use features
 defined by report date as defined in \code{metareference} as produced by
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that this formula will be applied to all
 summary statistics of the chosen parametric distribution but each summary
-parameter will have separate effects. Use \code{~ 0} to not use a parametric
-model.}
+parameter will have separate effects. Set to \code{~0} to disable the parametric
+component (internally converted to \code{~1} with distribution set to "none").
+See \code{\link[=enw_formula]{enw_formula()}} for details on formula syntax including fixed effects,
+random effects, and random walks.}
 
 \item{distribution}{A character vector describing the parametric delay
 distribution to use. Current options are: "none", "lognormal", "gamma",
@@ -28,10 +30,13 @@ distribution to use. Current options are: "none", "lognormal", "gamma",
 describing the non-parametric logit hazard model. This can use features
 defined by reference date and by delay. It draws on a linked \code{data.frame}
 using \code{metareference} and \code{metadelay} as produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.
-When an effect per delay is specified this approximates the cox proportional
-hazard model in discrete time with a single strata. When used in conjunction
-with a parametric model it likely makes sense to disable the intercept in
-order to make the joint model identifiable (i.e. \code{~ 0 + (1 | delay)}).}
+When an effect per delay is specified this approximates the Cox proportional
+hazards model in discrete time with a single strata. Set to \code{~0} to disable
+the non-parametric component (internally converted to \code{~1} and flagged as
+inactive). When used in conjunction with a parametric model it often makes
+sense to disable the intercept to ensure model identifiability
+(e.g., \code{~ 0 + (1 | delay)}). See \code{\link[=enw_formula]{enw_formula()}} for details on formula
+syntax.}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
