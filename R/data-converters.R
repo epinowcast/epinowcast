@@ -308,8 +308,6 @@ enw_aggregate_cumulative <- function(
     dates = TRUE, copy = copy
   )
 
-  check_timestep_by_date(obs, timestep = "day", exact = TRUE)
-
   # Calculate max delay from the data
   max_delay_days <- max(
     obs$report_date - obs$reference_date,
