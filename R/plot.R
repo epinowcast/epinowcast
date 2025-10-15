@@ -109,16 +109,18 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
     geom_ribbon(aes(ymin = q5, ymax = q95, alpha = "90% CrI"),
       linewidth = 0.2
     ) +
-    geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI")) +
+    geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI"),
+      linewidth = 0.2
+    ) +
     geom_line(aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6) +
-    geom_line(aes(y = mean, linetype = "Mean")) +
+    geom_line(aes(y = mean, linetype = "Mean"), alpha = 0.6) +
     scale_linetype_manual(
       name = NULL,
       values = c(Median = 1, Mean = 2)
     ) +
     scale_alpha_manual(
       name = NULL,
-      values = c("90% CrI" = 0.2, "60% CrI" = 0.4)
+      values = c("90% CrI" = 0.2, "60% CrI" = 0.2)
     ) +
     guides(
       alpha = guide_legend(order = 1, nrow = 1),
