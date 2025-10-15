@@ -2809,10 +2809,10 @@
 <line x1='377.15' y1='517.20' x2='390.97' y2='517.20' style='stroke-width: 2.13; stroke: #000000; stroke-opacity: 0.60; stroke-linecap: butt;' />
 <text x='347.92' y='520.23' style='font-size: 8.80px; font-family: sans;' textLength='22.02px' lengthAdjust='spacingAndGlyphs'>Mean</text>
 <text x='398.18' y='520.23' style='font-size: 8.80px; font-family: sans;' textLength='28.87px' lengthAdjust='spacingAndGlyphs'>Median</text>
-<rect x='332.58' y='542.28' width='87.05' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='338.06' y='547.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='346.70' cy='556.40' r='1.53' style='stroke-width: 0.71; stroke: none; fill: #000000; fill-opacity: 0.70;' />
-<text x='360.82' y='559.43' style='font-size: 8.80px; font-family: sans;' textLength='53.33px' lengthAdjust='spacingAndGlyphs'>Nowcast data</text>
+<rect x='327.93' y='542.28' width='96.34' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='333.41' y='547.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='342.05' cy='556.40' r='1.53' style='stroke-width: 0.71; stroke: none; fill: #000000; fill-opacity: 0.70;' />
+<text x='356.17' y='559.43' style='font-size: 8.80px; font-family: sans;' textLength='62.63px' lengthAdjust='spacingAndGlyphs'>At nowcast date</text>
 <text x='37.69' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='213.54px' lengthAdjust='spacingAndGlyphs'>plot.epinowcast posterior predictions</text>
 </g>
 </svg>

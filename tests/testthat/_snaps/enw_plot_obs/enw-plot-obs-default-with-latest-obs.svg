@@ -127,13 +127,13 @@
 <text transform='translate(705.59,504.78) rotate(-90)' text-anchor='middle' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='27.89px' lengthAdjust='spacingAndGlyphs'>Aug 23</text>
 <text x='376.10' y='529.04' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='23.24px' lengthAdjust='spacingAndGlyphs'>Date</text>
 <text transform='translate(13.05,254.34) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-family: sans;' textLength='36.07px' lengthAdjust='spacingAndGlyphs'>confirm</text>
-<rect x='296.69' y='542.28' width='158.83' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<rect x='302.17' y='547.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='310.81' cy='556.40' r='1.53' style='stroke-width: 0.71; stroke: none; fill: #000000; fill-opacity: 0.70;' />
-<rect x='383.73' y='547.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<polygon points='392.37,554.02 394.43,557.59 390.32,557.59 ' style='stroke-width: 0.71; stroke: none; fill: #000000; fill-opacity: 0.70;' />
-<text x='324.93' y='559.43' style='font-size: 8.80px; font-family: sans;' textLength='53.33px' lengthAdjust='spacingAndGlyphs'>Nowcast data</text>
-<text x='406.49' y='559.43' style='font-size: 8.80px; font-family: sans;' textLength='43.55px' lengthAdjust='spacingAndGlyphs'>Latest data</text>
+<rect x='292.04' y='542.28' width='168.13' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<rect x='297.52' y='547.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='306.16' cy='556.40' r='1.53' style='stroke-width: 0.71; stroke: none; fill: #000000; fill-opacity: 0.70;' />
+<rect x='388.38' y='547.76' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<polygon points='397.02,554.02 399.08,557.59 394.96,557.59 ' style='stroke-width: 0.71; stroke: none; fill: #000000; fill-opacity: 0.70;' />
+<text x='320.28' y='559.43' style='font-size: 8.80px; font-family: sans;' textLength='62.63px' lengthAdjust='spacingAndGlyphs'>At nowcast date</text>
+<text x='411.14' y='559.43' style='font-size: 8.80px; font-family: sans;' textLength='43.55px' lengthAdjust='spacingAndGlyphs'>Latest data</text>
 <text x='37.69' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='212.09px' lengthAdjust='spacingAndGlyphs'>enw_plot_obs default with latest obs</text>
 </g>
 </svg>

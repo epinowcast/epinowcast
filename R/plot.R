@@ -28,7 +28,7 @@ enw_plot_theme <- function(plot) {
 #'
 #' @param ... Additional arguments passed to [ggplot2::aes()] must at least
 #' specify the x date variable.
-#' @return A `ggplot2` plot with legend showing "Nowcast data" (circles) and
+#' @return A `ggplot2` plot with legend showing "At nowcast date" (circles) and
 #' optionally "Latest data" (triangles) if `latest_obs` is provided.
 #'
 #' @family plot
@@ -48,7 +48,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     aes(...)
 
   plot <- plot +
-    geom_point(aes(y = confirm, shape = "Nowcast data"),
+    geom_point(aes(y = confirm, shape = "At nowcast date"),
       na.rm = TRUE, alpha = 0.7, size = 1.1
     )
 
@@ -65,11 +65,11 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   plot <- plot +
     scale_shape_manual(
       name = NULL,
-      values = c("Nowcast data" = 16, "Latest data" = 17),
+      values = c("At nowcast date" = 16, "Latest data" = 17),
       breaks = if (!is.null(latest_obs)) {
-        c("Nowcast data", "Latest data")
+        c("At nowcast date", "Latest data")
       } else {
-        "Nowcast data"
+        "At nowcast date"
       }
     )
 
