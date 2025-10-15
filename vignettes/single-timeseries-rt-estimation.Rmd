@@ -780,7 +780,7 @@ nowcast_cdf <- list(
 
 ggplot(nowcast_cdf) +
   aes(x = delay, y = mean, col = Data, fill = Data) +
-  geom_line(linewidth = 1.1, alpha = 0.7) +
+  geom_line(size = 1.1, alpha = 0.7) +
   geom_ribbon(
     aes(ymin = lower_90, ymax = upper_90),
     alpha = 0.25

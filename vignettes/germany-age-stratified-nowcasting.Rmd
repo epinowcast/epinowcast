@@ -65,17 +65,17 @@ retro_nat_germany <- nat_germany_hosp |>
 retro_nat_germany
 #>       reference_date location age_group confirm report_date
 #>               <IDat>   <fctr>    <fctr>   <int>      <IDat>
-#>    1:     2021-07-23       DE       00+      30  2021-07-23
-#>    2:     2021-07-24       DE       00+      31  2021-07-24
-#>    3:     2021-07-25       DE       00+       8  2021-07-25
-#>    4:     2021-07-26       DE       00+       9  2021-07-26
-#>    5:     2021-07-27       DE       00+      35  2021-07-27
+#>    1:     2021-07-24       DE       00+      31  2021-07-24
+#>    2:     2021-07-25       DE       00+       8  2021-07-25
+#>    3:     2021-07-26       DE       00+       9  2021-07-26
+#>    4:     2021-07-27       DE       00+      35  2021-07-27
+#>    5:     2021-07-28       DE       00+      51  2021-07-28
 #>   ---                                                      
-#> 6023:     2021-07-23       DE     05-14       1  2021-09-01
-#> 6024:     2021-07-23       DE     15-34      21  2021-09-01
-#> 6025:     2021-07-23       DE     35-59      39  2021-09-01
-#> 6026:     2021-07-23       DE     60-79      21  2021-09-01
-#> 6027:     2021-07-23       DE       80+       5  2021-09-01
+#> 5736:     2021-07-24       DE     05-14       0  2021-09-01
+#> 5737:     2021-07-24       DE     15-34      25  2021-09-01
+#> 5738:     2021-07-24       DE     35-59      27  2021-09-01
+#> 5739:     2021-07-24       DE     60-79      22  2021-09-01
+#> 5740:     2021-07-24       DE       80+      15  2021-09-01
 ```
 
 Similarly we then find the data that were available on the 20th of October for these dates, which will serve as the target "true" data.
@@ -100,13 +100,13 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
 pobs
 #>                     obs           new_confirm               latest
 #>                  <list>                <list>               <list>
-#> 1: <data.table[6020x9]> <data.table[6020x11]> <data.table[287x10]>
+#> 1: <data.table[5740x9]> <data.table[5740x11]> <data.table[280x10]>
 #>    missing_reference   reporting_triangle       metareference
 #>               <list>               <list>              <list>
-#> 1: <data.table[0x6]> <data.table[287x42]> <data.table[287x9]>
+#> 1: <data.table[0x6]> <data.table[280x42]> <data.table[280x9]>
 #>              metareport          metadelay max_delay  time snapshots        by
 #>                  <list>             <list>     <num> <int>     <int>    <list>
-#> 1: <data.table[560x12]> <data.table[40x5]>        40    41       287 age_group
+#> 1: <data.table[553x12]> <data.table[40x5]>        40    40       280 age_group
 #>    groups   max_date timestep
 #>     <int>     <IDat>   <char>
 #> 1:      7 2021-09-01      day
@@ -165,14 +165,14 @@ priors[, sd := sd * 1.5]
 priors
 #>            variable      mean    median         sd        mad        q5
 #>              <char>     <num>     <num>      <num>      <num>     <num>
-#> 1: refp_mean_int[1] 1.1076321 1.0995100 0.17138501 0.10470121 0.9402545
-#> 2:   refp_sd_int[1] 2.5812547 2.5733600 0.18830440 0.12121738 2.3878600
-#> 3:      sqrt_phi[1] 0.6439369 0.6435505 0.02715621 0.01895875 0.6133418
-#>         q20       q80       q95      rhat  ess_bulk ess_tail
-#>       <num>     <num>     <num>     <num>     <num>    <num>
-#> 1: 1.012036 1.1917780 1.3073580 0.9991323  698.8579 524.3550
-#> 2: 2.473288 2.6831340 2.7961235 0.9995040  698.7063 418.7872
-#> 3: 0.628594 0.6596474 0.6736205 0.9997282 1428.7212 698.8907
+#> 1: refp_mean_int[1] 1.1371871 1.1280639 0.18541068 0.11087884 0.9518327
+#> 2:   refp_sd_int[1] 2.6142446 2.6048354 0.20220206 0.12858701 2.4098483
+#> 3:      sqrt_phi[1] 0.6422278 0.6418099 0.02598049 0.01678396 0.6145246
+#>          q20       q80       q95      rhat  ess_bulk ess_tail
+#>        <num>     <num>     <num>     <num>     <num>    <num>
+#> 1: 1.0352810 1.2272812 1.3599117 1.0019551  911.8640 602.8367
+#> 2: 2.5040016 2.7224339 2.8582528 0.9992107  918.0769 572.9956
+#> 3: 0.6278215 0.6560701 0.6712986 1.0008176 1076.5049 724.1092
 ```
 
 ## Reference day of the week effect
@@ -506,10 +506,10 @@ loos <- map(nowcasts, \(x) x$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
 #> Reference: Age and week, Report: Day of week           0.0       0.0 
-#> Reference: Age and week by age, Report: Day of week   -1.7       3.4 
-#> Reference: Age, Report: Day of week                   -3.4       5.9 
-#> Reference: Fixed, Report: Day of week                -91.1      12.0 
-#> Reference: Fixed, Report: Fixed                     -631.9      46.7
+#> Reference: Age, Report: Day of week                   -0.9       5.4 
+#> Reference: Age and week by age, Report: Day of week   -2.2       3.5 
+#> Reference: Fixed, Report: Day of week                -85.6      11.4 
+#> Reference: Fixed, Report: Fixed                     -613.5      45.6
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -552,14 +552,14 @@ scores |>
 
 
 
-|model                                                    |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
-|:--------------------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
-|Reference: Fixed, Report: Fixed                          | -0.018| 6.1| 12.0|           4.30|             3.9|        4.1|       3.9|  17|        18|    1400|
-|Reference: Fixed, Report: Day of week                    | -0.240| 7.1| 12.0|           1.20|             7.4|        3.1|       4.3|  13|        16|     590|
-|Reference: Age, Report: Day of week                      | -0.390| 6.8| 10.0|           0.67|             6.3|        2.9|       4.2|  13|        13|     400|
-|Reference: Age and week, Report: Day of week             |  0.023| 5.5|  8.7|           3.40|             1.7|        3.5|       3.6|  15|        13|     630|
-|Reference: Age and week by age, Report: Day of week      | -0.190| 5.6|  8.5|           2.00|             3.1|        3.4|       3.7|  14|        12|     420|
-|Independent by age, Reference: Week, Report: Day of week | -0.024| 5.7|  9.9|           3.50|             1.4|        5.0|       3.7|  21|        15|    1100|
+|model                                                    |    bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
+|:--------------------------------------------------------|-------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
+|Reference: Fixed, Report: Fixed                          | -0.0069| 6.0| 12.0|            4.2|             3.8|        4.1|       3.9|  17|        17|    1200|
+|Reference: Fixed, Report: Day of week                    | -0.2400| 7.1| 12.0|            1.2|             7.4|        3.1|       4.5|  13|        15|     580|
+|Reference: Age, Report: Day of week                      | -0.3800| 6.7|  9.9|            0.7|             6.2|        3.0|       4.1|  13|        13|     400|
+|Reference: Age and week, Report: Day of week             |  0.0270| 5.4|  8.2|            3.1|             1.6|        3.6|       3.6|  15|        12|     550|
+|Reference: Age and week by age, Report: Day of week      | -0.1900| 5.6|  8.2|            1.7|             3.1|        3.5|       3.7|  15|        12|     390|
+|Independent by age, Reference: Week, Report: Day of week | -0.0370| 5.7|  9.6|            3.0|             1.3|        5.2|       3.7|  22|        14|     960|
 
 
 
