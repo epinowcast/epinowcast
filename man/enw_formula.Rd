@@ -9,7 +9,8 @@ enw_formula(formula, data, sparse = TRUE)
 \arguments{
 \item{formula}{A model formula that may use standard fixed
 effects, random effects using \link[lme4]{lme4} syntax (see \code{\link[=re]{re()}}), and
-random walks defined using the \code{\link[=rw]{rw()}} helper function.}
+random walks defined using the \code{\link[=rw]{rw()}} helper function. See the Details
+section below for a comprehensive explanation of the supported syntax.}
 
 \item{data}{A \code{data.frame} of observations. It must include all
 variables used in the supplied formula.}
@@ -34,9 +35,75 @@ matrix, and the index linking the design matrix with random effects.
 \description{
 This function allows models to be defined using a
 flexible formula interface that supports fixed effects, random effects
-(using \link[lme4]{lme4} syntax). Note that the returned fixed effects design
+(using \link[lme4]{lme4} syntax), and random walks. The formula syntax
+will be familiar to R users who have used \code{\link[stats:lm]{stats::lm()}} or similar
+modelling functions. Note that the returned fixed effects design
 matrix is sparse and so the index supplied is required to link observations
 to the appropriate design matrix row.
+}
+\details{
+\subsection{Formula syntax overview}{
+
+The formula interface supports three types of model components:
+
+\strong{Fixed effects}: Standard R formula syntax as used in \code{\link[stats:lm]{stats::lm()}} and
+similar functions. For example:
+\itemize{
+\item \code{~ 1}: intercept only
+\item \code{~ age_group}: intercept plus categorical predictor
+\item \code{~ age_group + location}: multiple predictors
+\item \code{~ 0 + age_group}: no intercept (contrasts)
+}
+
+\strong{Random effects}: Uses \link[lme4]{lme4} syntax with vertical bar notation.
+Random effects allow parameters to vary by group whilst sharing information
+across groups through partial pooling. For example:
+\itemize{
+\item \code{~ 1 + (1 | location)}: random intercepts by location
+\item \code{~ 1 + age_group + (1 | location)}: fixed age effect with random
+location intercepts
+\item \code{~ (age_group | location)}: random slopes for age within each location
+\item \code{~ (1 + week | location:month)}: random intercepts and week effects
+for each location-month combination
+}
+
+See the \link[lme4]{lme4} package documentation for more details on
+random effects syntax: \url{https://cran.r-project.org/package=lme4}
+
+\strong{Random walks}: Uses the \code{\link[=rw]{rw()}} helper function to specify time-varying
+effects that evolve smoothly over time. For example:
+\itemize{
+\item \code{~ rw(week)}: a random walk over weeks
+\item \code{~ rw(week, location)}: independent random walks for each location
+\item \code{~ rw(week, location, type = "dependent")}: random walks with shared
+variance across locations
+}
+
+These three types of effects can be combined in a single formula, for example:
+\code{~ 1 + age_group + (1 | location) + rw(week, location)} specifies fixed
+age effects, random location intercepts, and location-specific random
+walks over time.
+}
+
+\subsection{Turning off model components}{
+
+In \code{epinowcast} model specification functions (such as \code{\link[=enw_reference]{enw_reference()}},
+\code{\link[=enw_report]{enw_report()}}, \code{\link[=enw_expectation]{enw_expectation()}}), formula arguments can be set to \code{~0}
+to disable that model component entirely. This is a package-specific
+convention. Note that when a formula is specified as \code{~0}, it is typically
+converted internally to \code{~1} (intercept only) to ensure valid model
+structure, but the component is flagged as inactive.
+}
+
+\subsection{How formulas map to the model}{
+
+The formula you specify controls which covariates and effects enter the
+linear predictor of the model. For instance, in the reference date model
+(\code{\link[=enw_reference]{enw_reference()}}), the formula determines how reporting delay parameters
+vary by covariates and groups. The formula is converted to design matrices:
+a fixed effects matrix (which may be sparse for computational efficiency)
+and a random effects matrix that defines the hierarchical structure.
+}
 }
 \examples{
 # Use meta data for references dates from the Germany COVID-19
@@ -51,21 +118,57 @@ pobs <- enw_preprocess_data(
   )
 data <- pobs$metareference[[1]]
 
-# Model with fixed effects for age group
+## Examples of fixed effects formulas
+
+# Intercept only (baseline model with no covariates)
+enw_formula(~ 1, data)
+
+# Fixed effect for age group (separate parameter per age group)
 enw_formula(~ 1 + age_group, data)
 
-# Model with random effects for age group
+# Multiple fixed effects
+enw_formula(~ age_group + day_of_week, data)
+
+## Examples of random effects formulas
+
+# Random intercepts by age group (partial pooling across age groups)
 enw_formula(~ 1 + (1 | age_group), data)
 
-# Model with a random effect for age group and a random walk
-enw_formula(~ 1 + (1 | age_group) + rw(week), data)
+# Random slopes: day of week effect varies by age group
+enw_formula(~ 1 + (day_of_week | age_group), data)
+
+# Random effect using interaction (independent random effects per strata)
+enw_formula(~ (1 + day | week:month), data = data)
+
+## Examples of random walk formulas
+
+# Simple random walk over time
+enw_formula(~ 1 + rw(week), data)
+
+# Grouped random walk (separate random walk per age group)
+enw_formula(~ 1 + rw(week, age_group), data)
+
+## Examples combining multiple formula components
+
+# Fixed age effect + random location intercepts + random walk over time
+enw_formula(~ 1 + age_group + (1 | location) + rw(week), data)
+
+## Technical options
 
 # Model defined without a sparse fixed effects design matrix
-enw_formula(~1, data[1:20, ])
-
-# Model using an interaction in the right hand side of a random effect
-# to specify an independent random effect per strata.
-enw_formula(~ (1 + day | week:month), data = data)
+enw_formula(~1, data[1:20, ], sparse = FALSE)
+}
+\references{
+For users new to formula syntax in R:
+\itemize{
+\item \strong{Fixed effects}: See \code{?formula} and the "Statistical Models in R"
+chapter of "An Introduction to R": \url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R}
+\item \strong{Random effects}: See the \link[lme4]{lme4} package documentation
+and vignette: \url{https://cran.r-project.org/package=lme4}
+\item \strong{Mixed models}: Bates et al. (2015) "Fitting Linear Mixed-Effects
+Models Using lme4". Journal of Statistical Software, 67(1), 1-48.
+doi:10.18637/jss.v067.i01
+}
 }
 \seealso{
 Functions used to help convert formulas into model designs
