@@ -21,7 +21,8 @@ scale.}
 specify the x date variable.}
 }
 \value{
-A \code{ggplot2} plot.
+A \code{ggplot2} plot with legend showing "Nowcast data" (circles) and
+optionally "Latest data" (triangles) if \code{latest_obs} is provided.
 }
 \description{
 Generic quantile plot

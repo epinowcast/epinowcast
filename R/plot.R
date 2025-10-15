@@ -28,7 +28,8 @@ enw_plot_theme <- function(plot) {
 #'
 #' @param ... Additional arguments passed to [ggplot2::aes()] must at least
 #' specify the x date variable.
-#' @return A `ggplot2` plot.
+#' @return A `ggplot2` plot with legend showing "Nowcast data" (circles) and
+#' optionally "Latest data" (triangles) if `latest_obs` is provided.
 #'
 #' @family plot
 #' @importFrom scales comma
@@ -47,7 +48,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     aes(...)
 
   plot <- plot +
-    geom_point(aes(y = confirm, fill = NULL),
+    geom_point(aes(y = confirm, shape = "Nowcast data"),
       na.rm = TRUE, alpha = 0.7, size = 1.1
     )
 
@@ -56,10 +57,22 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     latest_obs[, latest_confirm := confirm]
     plot <- plot +
       geom_point(
-        data = latest_obs, aes(y = latest_confirm, fill = NULL),
-        na.rm = TRUE, alpha = 0.7, size = 1.1, shape = 2
+        data = latest_obs, aes(y = latest_confirm, shape = "Latest data"),
+        na.rm = TRUE, alpha = 0.7, size = 1.1
       )
   }
+
+  plot <- plot +
+    scale_shape_manual(
+      name = NULL,
+      values = c("Nowcast data" = 16, "Latest data" = 17),
+      breaks = if (!is.null(latest_obs)) {
+        c("Nowcast data", "Latest data")
+      } else {
+        "Nowcast data"
+      }
+    )
+
   if (log) {
     plot <- plot + scale_y_log10(labels = scales::comma)
   } else {
@@ -78,7 +91,9 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
 #' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible
 #' default labels.
 #'
-#' @return A `ggplot2` plot.
+#' @return A `ggplot2` plot with legend showing credible intervals (90% and
+#' 60% CrI as ribbons), summary statistics (median as solid line, mean as
+#' dashed line), and data points.
 #' @seealso [enw_plot_nowcast_quantiles()], [enw_plot_pp_quantiles()]
 #' @family plot
 #' @inheritParams enw_plot_obs
@@ -93,10 +108,27 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
   plot <- enw_plot_obs(posterior, latest_obs = latest_obs, log = log, ...)
 
   plot <- plot +
-    geom_line(aes(y = median), linewidth = 1, alpha = 0.6) +
-    geom_line(aes(y = mean), linetype = 2) +
-    geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, linewidth = 0.2) +
-    geom_ribbon(aes(ymin = q20, ymax = q80, col = NULL), alpha = 0.2)
+    geom_ribbon(aes(ymin = q5, ymax = q95, alpha = "90% CrI"),
+      fill = "grey40", linewidth = 0.2
+    ) +
+    geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI"),
+      fill = "grey40"
+    ) +
+    geom_line(aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6) +
+    geom_line(aes(y = mean, linetype = "Mean")) +
+    scale_linetype_manual(
+      name = NULL,
+      values = c(Median = 1, Mean = 2)
+    ) +
+    scale_alpha_manual(
+      name = NULL,
+      values = c("90% CrI" = 0.2, "60% CrI" = 0.4)
+    ) +
+    guides(
+      alpha = guide_legend(order = 1),
+      linetype = guide_legend(order = 2),
+      shape = guide_legend(order = 3)
+    )
   return(plot)
 }
 
