@@ -28,8 +28,7 @@ enw_plot_theme <- function(plot) {
 #'
 #' @param ... Additional arguments passed to [ggplot2::aes()] must at least
 #' specify the x date variable.
-#' @return A `ggplot2` plot with legend showing "At nowcast date" (circles) and
-#' optionally "Latest data" (triangles) if `latest_obs` is provided.
+#' @return A `ggplot2` plot.
 #'
 #' @family plot
 #' @importFrom scales comma
@@ -92,9 +91,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
 #' [enw_plot_nowcast_quantiles()] and [enw_plot_pp_quantiles()] with sensible
 #' default labels.
 #'
-#' @return A `ggplot2` plot with legend showing credible intervals (90% and
-#' 60% CrI as ribbons), summary statistics (median as solid line, mean as
-#' dashed line), and data points.
+#' @return A `ggplot2` plot.
 #' @seealso [enw_plot_nowcast_quantiles()], [enw_plot_pp_quantiles()]
 #' @family plot
 #' @inheritParams enw_plot_obs

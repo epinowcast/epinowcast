@@ -34,12 +34,10 @@ scale.}
 \item{...}{Additional arguments to the plot function specified by \code{type}.}
 }
 \value{
-\code{ggplot2} object with legend
+\code{ggplot2} object
 }
 \description{
-\code{plot} method for class "epinowcast". Produces plots with
-legends explaining all visual elements: credible intervals (ribbons),
-summary statistics (lines), and data points (shapes).
+\code{plot} method for class "epinowcast".
 }
 \examples{
 nowcast <- enw_example("nowcast")

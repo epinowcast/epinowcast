@@ -25,9 +25,7 @@ scale.}
 specify the x date variable.}
 }
 \value{
-A \code{ggplot2} plot with legend showing credible intervals (90\% and
-60\% CrI as ribbons), summary statistics (median as solid line, mean as
-dashed line), and data points.
+A \code{ggplot2} plot.
 }
 \description{
 Generic quantile plot

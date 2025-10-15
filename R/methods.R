@@ -62,9 +62,7 @@ summary.epinowcast <- function(object, type = c(
 
 #' Plot method for epinowcast
 #'
-#' @description `plot` method for class "epinowcast". Produces plots with
-#' legends explaining all visual elements: credible intervals (ribbons),
-#' summary statistics (lines), and data points (shapes).
+#' @description `plot` method for class "epinowcast".
 #'
 #' @param x A `data.table` of output as produced by [epinowcast()].
 #'
@@ -85,7 +83,7 @@ summary.epinowcast <- function(object, type = c(
 #' @family plot
 #' @method plot epinowcast
 #' @inheritParams enw_plot_nowcast_quantiles
-#' @return `ggplot2` object with legend
+#' @return `ggplot2` object
 #' @export
 #' @importFrom cli cli_abort
 #' @examples
