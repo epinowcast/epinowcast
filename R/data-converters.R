@@ -307,8 +307,7 @@ enw_aggregate_cumulative <- function(
     required_cols = c("confirm", by), forbidden_cols = ".group",
     dates = TRUE, copy = copy
   )
-  
-  obs <- enw_assign_group(obs, by = by)
+
   check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 
   # Calculate max delay from the data
@@ -328,7 +327,8 @@ enw_aggregate_cumulative <- function(
     completion_beyond_max_report = FALSE,
     flag_observation = FALSE
   )
-  
+
+  obs <- enw_assign_group(obs, by = by)
   internal_timestep <- get_internal_timestep(timestep)
 
   # Initial filtering to set when the timestep will start from
