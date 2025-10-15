@@ -703,45 +703,17 @@ construct_re <- function(re, data) {
 #'   )
 #' data <- pobs$metareference[[1]]
 #'
-#' ## Examples of fixed effects formulas
-#'
-#' # Intercept only (baseline model with no covariates)
+#' # Intercept only
 #' enw_formula(~ 1, data)
 #'
-#' # Fixed effect for age group (separate parameter per age group)
+#' # Fixed effect
 #' enw_formula(~ 1 + age_group, data)
 #'
-#' # Multiple fixed effects
-#' enw_formula(~ age_group + day_of_week, data)
-#'
-#' ## Examples of random effects formulas
-#'
-#' # Random intercepts by age group (partial pooling across age groups)
+#' # Random intercepts
 #' enw_formula(~ 1 + (1 | age_group), data)
 #'
-#' # Random slopes: day of week effect varies by age group
-#' enw_formula(~ 1 + (day_of_week | age_group), data)
-#'
-#' # Random effect using interaction (independent random effects per strata)
-#' enw_formula(~ (1 + day | week:month), data = data)
-#'
-#' ## Examples of random walk formulas
-#'
-#' # Simple random walk over time
+#' # Random walk
 #' enw_formula(~ 1 + rw(week), data)
-#'
-#' # Grouped random walk (separate random walk per age group)
-#' enw_formula(~ 1 + rw(week, age_group), data)
-#'
-#' ## Examples combining multiple formula components
-#'
-#' # Fixed age effect + random location intercepts + random walk over time
-#' enw_formula(~ 1 + age_group + (1 | location) + rw(week), data)
-#'
-#' ## Technical options
-#'
-#' # Model defined without a sparse fixed effects design matrix
-#' enw_formula(~1, data[1:20, ], sparse = FALSE)
 enw_formula <- function(formula, data, sparse = TRUE) {
   data <- coerce_dt(data)
 
