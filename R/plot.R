@@ -8,7 +8,7 @@ enw_plot_theme <- function(plot) {
   plot <- plot +
     theme_bw() +
     labs(x = "Date") +
-    theme(legend.position = "bottom", legend.box = "vertical") +
+    theme(legend.position = "bottom", legend.box = "horizontal") +
     scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
     theme(axis.text.x = element_text(angle = 90))
   return(plot)
@@ -48,7 +48,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     aes(...)
 
   plot <- plot +
-    geom_point(aes(y = confirm, shape = "At nowcast date"),
+    geom_point(aes(y = confirm, shape = "At nowcast date", alpha = NULL),
       na.rm = TRUE, alpha = 0.7, size = 1.1
     )
 
@@ -57,7 +57,8 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
     latest_obs[, latest_confirm := confirm]
     plot <- plot +
       geom_point(
-        data = latest_obs, aes(y = latest_confirm, shape = "Latest data"),
+        data = latest_obs,
+        aes(y = latest_confirm, shape = "Latest data", alpha = NULL),
         na.rm = TRUE, alpha = 0.7, size = 1.1
       )
   }
@@ -109,11 +110,9 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
 
   plot <- plot +
     geom_ribbon(aes(ymin = q5, ymax = q95, alpha = "90% CrI"),
-      fill = "grey40", linewidth = 0.2
+      linewidth = 0.2
     ) +
-    geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI"),
-      fill = "grey40"
-    ) +
+    geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI")) +
     geom_line(aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6) +
     geom_line(aes(y = mean, linetype = "Mean")) +
     scale_linetype_manual(
@@ -125,9 +124,9 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
       values = c("90% CrI" = 0.2, "60% CrI" = 0.4)
     ) +
     guides(
-      alpha = guide_legend(order = 1),
-      linetype = guide_legend(order = 2),
-      shape = guide_legend(order = 3)
+      alpha = guide_legend(order = 1, nrow = 1),
+      linetype = guide_legend(order = 2, nrow = 1),
+      shape = guide_legend(order = 3, nrow = 1)
     )
   return(plot)
 }
