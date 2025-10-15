@@ -65,7 +65,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   plot <- plot +
     scale_shape_manual(
       name = NULL,
-      values = c("At nowcast date" = 16, "Latest data" = 17),
+      values = c("At nowcast date" = 19, "Latest data" = 2),
       breaks = if (!is.null(latest_obs)) {
         c("At nowcast date", "Latest data")
       } else {
