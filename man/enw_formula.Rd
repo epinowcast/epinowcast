@@ -23,7 +23,7 @@ A list containing the following:
 \itemize{
 \item \code{formula}: The user supplied formula
 \item \code{parsed_formula}: The formula as parsed by \code{\link[=parse_formula]{parse_formula()}}
-\item \code{extended_formula}: The flattened version of the formula with
+\item \code{expanded_formula}: The flattened version of the formula with
 both user supplied terms and terms added for the user supplied
 complex model components.
 \item \code{fixed}:  A list containing the fixed effect formula, sparse design
@@ -36,10 +36,11 @@ matrix, and the index linking the design matrix with random effects.
 This function allows models to be defined using a
 flexible formula interface that supports fixed effects, random effects
 (using \link[lme4]{lme4} syntax), and random walks. The formula syntax
-will be familiar to R users who have used \code{\link[stats:lm]{stats::lm()}} or similar
-modelling functions. Note that the returned fixed effects design
-matrix is sparse and so the index supplied is required to link observations
-to the appropriate design matrix row.
+builds on standard R formula notation and extends it with \link[lme4]{lme4}
+style random effects and custom random walk terms. Users familiar with
+mixed models in lme4 or brms will recognise the syntax. Note that the
+returned fixed effects design matrix is sparse and so the index supplied
+is required to link observations to the appropriate design matrix row.
 }
 \details{
 \subsection{Formula syntax overview}{
@@ -57,7 +58,9 @@ similar functions. For example:
 
 \strong{Random effects}: Uses \link[lme4]{lme4} syntax with vertical bar notation.
 Random effects allow parameters to vary by group whilst sharing information
-across groups through partial pooling. For example:
+across groups through partial pooling. Note that \code{epinowcast} assumes
+independent standard deviations for random effects rather than correlated
+random effects as supported by \link[lme4]{lme4}. For example:
 \itemize{
 \item \code{~ 1 + (1 | location)}: random intercepts by location
 \item \code{~ 1 + age_group + (1 | location)}: fixed age effect with random
@@ -68,7 +71,7 @@ for each location-month combination
 }
 
 See the \link[lme4]{lme4} package documentation for more details on
-random effects syntax: \url{https://cran.r-project.org/package=lme4}
+random effects syntax.
 
 \strong{Random walks}: Uses the \code{\link[=rw]{rw()}} helper function to specify time-varying
 effects that evolve smoothly over time. For example:
@@ -164,7 +167,7 @@ For users new to formula syntax in R:
 \item \strong{Fixed effects}: See \code{?formula} and the "Statistical Models in R"
 chapter of "An Introduction to R": \url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R}
 \item \strong{Random effects}: See the \link[lme4]{lme4} package documentation
-and vignette: \url{https://cran.r-project.org/package=lme4}
+and vignettes.
 \item \strong{Mixed models}: Bates et al. (2015) "Fitting Linear Mixed-Effects
 Models Using lme4". Journal of Statistical Software, 67(1), 1-48.
 doi:10.18637/jss.v067.i01

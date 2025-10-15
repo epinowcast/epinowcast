@@ -590,10 +590,11 @@ construct_re <- function(re, data) {
 #' @description This function allows models to be defined using a
 #' flexible formula interface that supports fixed effects, random effects
 #' (using \link[lme4]{lme4} syntax), and random walks. The formula syntax
-#' will be familiar to R users who have used [stats::lm()] or similar
-#' modelling functions. Note that the returned fixed effects design
-#' matrix is sparse and so the index supplied is required to link observations
-#' to the appropriate design matrix row.
+#' builds on standard R formula notation and extends it with \link[lme4]{lme4}
+#' style random effects and custom random walk terms. Users familiar with
+#' mixed models in lme4 or brms will recognise the syntax. Note that the
+#' returned fixed effects design matrix is sparse and so the index supplied
+#' is required to link observations to the appropriate design matrix row.
 #'
 #' @param formula A model formula that may use standard fixed
 #' effects, random effects using \link[lme4]{lme4} syntax (see [re()]), and
@@ -620,7 +621,9 @@ construct_re <- function(re, data) {
 #'
 #' **Random effects**: Uses \link[lme4]{lme4} syntax with vertical bar notation.
 #' Random effects allow parameters to vary by group whilst sharing information
-#' across groups through partial pooling. For example:
+#' across groups through partial pooling. Note that `epinowcast` assumes
+#' independent standard deviations for random effects rather than correlated
+#' random effects as supported by \link[lme4]{lme4}. For example:
 #' - `~ 1 + (1 | location)`: random intercepts by location
 #' - `~ 1 + age_group + (1 | location)`: fixed age effect with random
 #' location intercepts
@@ -629,7 +632,7 @@ construct_re <- function(re, data) {
 #' for each location-month combination
 #'
 #' See the \link[lme4]{lme4} package documentation for more details on
-#' random effects syntax: \url{https://cran.r-project.org/package=lme4}
+#' random effects syntax.
 #'
 #' **Random walks**: Uses the [rw()] helper function to specify time-varying
 #' effects that evolve smoothly over time. For example:
@@ -666,7 +669,7 @@ construct_re <- function(re, data) {
 #' - **Fixed effects**: See `?formula` and the "Statistical Models in R"
 #' chapter of "An Introduction to R": \url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R}
 #' - **Random effects**: See the \link[lme4]{lme4} package documentation
-#' and vignette: \url{https://cran.r-project.org/package=lme4}
+#' and vignettes.
 #' - **Mixed models**: Bates et al. (2015) "Fitting Linear Mixed-Effects
 #' Models Using lme4". Journal of Statistical Software, 67(1), 1-48.
 #' doi:10.18637/jss.v067.i01
@@ -674,7 +677,7 @@ construct_re <- function(re, data) {
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
-#'  - `extended_formula`: The flattened version of the formula with
+#'  - `expanded_formula`: The flattened version of the formula with
 #'  both user supplied terms and terms added for the user supplied
 #'  complex model components.
 #'  - `fixed`:  A list containing the fixed effect formula, sparse design
