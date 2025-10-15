@@ -36,9 +36,11 @@ predominantly zero counts across multiple groups.
 The function now handles sparse data gracefully and provides informative
 warnings when delay coverage statistics cannot be computed.
 See #541 by @seabbs and self-reviewed.
+- Fixed stacked bar chart in Rt estimation vignette extending beyond actual reference date range. The plot now correctly limits the x-axis to the range of dates with data. See #634 by @seabbs and self-reviewed.
 
 ## Package
 
+- The package lifecycle has been updated from experimental to stable. The current interface has stabilised and users can expect interface stability in this version, though future major versions may include interface changes. See #370 by @seabbs.
 - Experimental support for `CmdStanModel$pathfinder` has been added to the package via `enw_pathfinder()`. This fitting method approximates the posterior distribution using a variational inference method. It may be useful for rapid prototyping, informing initialisation of HMC runs, and settings where compute time is limited. Likely downsides are poorly calibrated estimates and instability for more complex model formulations. See #464 by @seabbs and reviewed by @medewitt.
 - Added support for initialising methods in `enw_sample()`. Currently this allows either the default "random" which draws from the priors (previously the only option) or "pathfinder" which approximates the posterior distribution using the pathfinder variational inference method. Currently this does not support initialising the mass matrix for HMC but will do once support is available in `cmdstan`. See #504 by @seabbs and reviewed by @jamesmbaazam.
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
