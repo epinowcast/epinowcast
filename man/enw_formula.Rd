@@ -67,8 +67,13 @@ random effects as supported by \link[lme4]{lme4}. For example:
 location intercepts
 \item \code{~ (age_group | location)}: random slopes for age within each location
 \item \code{~ (1 + week | location:month)}: random intercepts and week effects
-for each location-month combination
+for each location-month combination (using interaction to create
+independent random effects per strata)
 }
+
+Interactions (e.g., \code{location:month}) can be used on the right-hand side
+of the vertical bar to specify independent random effects for each
+combination of the interacting variables.
 
 See the \link[lme4]{lme4} package documentation for more details on
 random effects syntax.
@@ -132,6 +137,16 @@ enw_formula(~ 1 + (1 | age_group), data)
 
 # Random walk
 enw_formula(~ 1 + rw(week), data)
+
+# Model with a random effect for age group and a random walk
+enw_formula(~ 1 + (1 | age_group) + rw(week), data)
+
+# Model defined without a sparse fixed effects design matrix
+enw_formula(~1, data[1:20, ], sparse = FALSE)
+
+# Model using an interaction in the right hand side of a random effect
+# to specify an independent random effect per strata.
+enw_formula(~ (1 + day | week:month), data = data)
 }
 \references{
 For users new to formula syntax in R:

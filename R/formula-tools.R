@@ -629,7 +629,12 @@ construct_re <- function(re, data) {
 #' location intercepts
 #' - `~ (age_group | location)`: random slopes for age within each location
 #' - `~ (1 + week | location:month)`: random intercepts and week effects
-#' for each location-month combination
+#' for each location-month combination (using interaction to create
+#' independent random effects per strata)
+#'
+#' Interactions (e.g., `location:month`) can be used on the right-hand side
+#' of the vertical bar to specify independent random effects for each
+#' combination of the interacting variables.
 #'
 #' See the \link[lme4]{lme4} package documentation for more details on
 #' random effects syntax.
@@ -714,6 +719,16 @@ construct_re <- function(re, data) {
 #'
 #' # Random walk
 #' enw_formula(~ 1 + rw(week), data)
+#'
+#' # Model with a random effect for age group and a random walk
+#' enw_formula(~ 1 + (1 | age_group) + rw(week), data)
+#'
+#' # Model defined without a sparse fixed effects design matrix
+#' enw_formula(~1, data[1:20, ], sparse = FALSE)
+#'
+#' # Model using an interaction in the right hand side of a random effect
+#' # to specify an independent random effect per strata.
+#' enw_formula(~ (1 + day | week:month), data = data)
 enw_formula <- function(formula, data, sparse = TRUE) {
   data <- coerce_dt(data)
 
