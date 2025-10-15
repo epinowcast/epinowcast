@@ -7,13 +7,19 @@
   };
 </script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Define a model using a formula interface — enw_formula"><meta name="description" content="This function allows models to be defined using a
 flexible formula interface that supports fixed effects, random effects
-(using lme4 syntax). Note that the returned fixed effects design
-matrix is sparse and so the index supplied is required to link observations
-to the appropriate design matrix row."><meta property="og:description" content="This function allows models to be defined using a
+(using lme4 syntax), and random walks. The formula syntax
+builds on standard R formula notation and extends it with lme4
+style random effects and custom random walk terms. Users familiar with
+mixed models in lme4 or brms will recognise the syntax. Note that the
+returned fixed effects design matrix is sparse and so the index supplied
+is required to link observations to the appropriate design matrix row."><meta property="og:description" content="This function allows models to be defined using a
 flexible formula interface that supports fixed effects, random effects
-(using lme4 syntax). Note that the returned fixed effects design
-matrix is sparse and so the index supplied is required to link observations
-to the appropriate design matrix row."><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
+(using lme4 syntax), and random walks. The formula syntax
+builds on standard R formula notation and extends it with lme4
+style random effects and custom random walk terms. Users familiar with
+mixed models in lme4 or brms will recognise the syntax. Note that the
+returned fixed effects design matrix is sparse and so the index supplied
+is required to link observations to the appropriate design matrix row."><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -66,9 +72,12 @@ to the appropriate design matrix row."><meta property="og:image" content="https:
     <div class="ref-description section level2">
     <p>This function allows models to be defined using a
 flexible formula interface that supports fixed effects, random effects
-(using <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> syntax). Note that the returned fixed effects design
-matrix is sparse and so the index supplied is required to link observations
-to the appropriate design matrix row.</p>
+(using <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> syntax), and random walks. The formula syntax
+builds on standard R formula notation and extends it with <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a>
+style random effects and custom random walk terms. Users familiar with
+mixed models in lme4 or brms will recognise the syntax. Note that the
+returned fixed effects design matrix is sparse and so the index supplied
+is required to link observations to the appropriate design matrix row.</p>
     </div>
 
     <div class="section level2">
@@ -83,7 +92,8 @@ to the appropriate design matrix row.</p>
 <dl><dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
 <dd><p>A model formula that may use standard fixed
 effects, random effects using <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> syntax (see <code><a href="re.html">re()</a></code>), and
-random walks defined using the <code><a href="rw.html">rw()</a></code> helper function.</p></dd>
+random walks defined using the <code><a href="rw.html">rw()</a></code> helper function. See the Details
+section below for a comprehensive explanation of the supported syntax.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
@@ -100,13 +110,88 @@ matrix be sparely defined.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list containing the following:</p><ul><li><p><code>formula</code>: The user supplied formula</p></li>
 <li><p><code>parsed_formula</code>: The formula as parsed by <code><a href="parse_formula.html">parse_formula()</a></code></p></li>
-<li><p><code>extended_formula</code>: The flattened version of the formula with
+<li><p><code>expanded_formula</code>: The flattened version of the formula with
 both user supplied terms and terms added for the user supplied
 complex model components.</p></li>
 <li><p><code>fixed</code>:  A list containing the fixed effect formula, sparse design
 matrix, and the index linking the design matrix with observations.</p></li>
 <li><p><code>random</code>: A list containing the random effect formula, sparse design
 matrix, and the index linking the design matrix with random effects.</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+
+<div class="section">
+<h3 id="formula-syntax-overview">Formula syntax overview<a class="anchor" aria-label="anchor" href="#formula-syntax-overview"></a></h3>
+
+
+<p>The formula interface supports three types of model components:</p>
+<p><strong>Fixed effects</strong>: Standard R formula syntax as used in <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">stats::lm()</a></code> and
+similar functions. For example:</p><ul><li><p><code>~ 1</code>: intercept only</p></li>
+<li><p><code>~ age_group</code>: intercept plus categorical predictor</p></li>
+<li><p><code>~ age_group + location</code>: multiple predictors</p></li>
+<li><p><code>~ 0 + age_group</code>: no intercept (contrasts)</p></li>
+</ul><p><strong>Random effects</strong>: Uses <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> syntax with vertical bar notation.
+Random effects allow parameters to vary by group whilst sharing information
+across groups through partial pooling. Note that <code>epinowcast</code> assumes
+independent standard deviations for random effects rather than correlated
+random effects as supported by <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a>. For example:</p><ul><li><p><code>~ 1 + (1 | location)</code>: random intercepts by location</p></li>
+<li><p><code>~ 1 + age_group + (1 | location)</code>: fixed age effect with random
+location intercepts</p></li>
+<li><p><code>~ (age_group | location)</code>: random slopes for age within each location</p></li>
+<li><p><code>~ (1 + week | location:month)</code>: random intercepts and week effects
+for each location-month combination (using interaction to create
+independent random effects per strata)</p></li>
+</ul><p>Interactions (e.g., <code>location:month</code>) can be used on the right-hand side
+of the vertical bar to specify independent random effects for each
+combination of the interacting variables.</p>
+<p>See the <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> package documentation for more details on
+random effects syntax.</p>
+<p><strong>Random walks</strong>: Uses the <code><a href="rw.html">rw()</a></code> helper function to specify time-varying
+effects that evolve smoothly over time. For example:</p><ul><li><p><code>~ rw(week)</code>: a random walk over weeks</p></li>
+<li><p><code>~ rw(week, location)</code>: independent random walks for each location</p></li>
+<li><p><code>~ rw(week, location, type = "dependent")</code>: random walks with shared
+variance across locations</p></li>
+</ul><p>These three types of effects can be combined in a single formula, for example:
+<code>~ 1 + age_group + (1 | location) + rw(week, location)</code> specifies fixed
+age effects, random location intercepts, and location-specific random
+walks over time.</p>
+</div>
+
+<div class="section">
+<h3 id="turning-off-model-components">Turning off model components<a class="anchor" aria-label="anchor" href="#turning-off-model-components"></a></h3>
+
+
+<p>In <code>epinowcast</code> model specification functions (such as <code><a href="enw_reference.html">enw_reference()</a></code>,
+<code><a href="enw_report.html">enw_report()</a></code>, <code><a href="enw_expectation.html">enw_expectation()</a></code>), formula arguments can be set to <code>~0</code>
+to disable that model component entirely. This is a package-specific
+convention. Note that when a formula is specified as <code>~0</code>, it is typically
+converted internally to <code>~1</code> (intercept only) to ensure valid model
+structure, but the component is flagged as inactive.</p>
+</div>
+
+<div class="section">
+<h3 id="how-formulas-map-to-the-model">How formulas map to the model<a class="anchor" aria-label="anchor" href="#how-formulas-map-to-the-model"></a></h3>
+
+
+<p>The formula you specify controls which covariates and effects enter the
+linear predictor of the model. For instance, in the reference date model
+(<code><a href="enw_reference.html">enw_reference()</a></code>), the formula determines how reporting delay parameters
+vary by covariates and groups. The formula is converted to design matrices:
+a fixed effects matrix (which may be sparse for computational efficiency)
+and a random effects matrix that defines the hierarchical structure.</p>
+</div>
+
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>For users new to formula syntax in R:</p><ul><li><p><strong>Fixed effects</strong>: See <code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">?formula</a></code> and the "Statistical Models in R"
+chapter of "An Introduction to R": <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R" class="external-link">https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R</a></p></li>
+<li><p><strong>Random effects</strong>: See the <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> package documentation
+and vignettes.</p></li>
+<li><p><strong>Mixed models</strong>: Bates et al. (2015) "Fitting Linear Mixed-Effects
+Models Using lme4". Journal of Statistical Software, 67(1), 1-48.
+doi:10.18637/jss.v067.i01</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -137,7 +222,61 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">pobs</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Model with fixed effects for age group</span></span></span>
+<span class="r-in"><span><span class="co"># Intercept only</span></span></span>
+<span class="r-in"><span><span class="fu">enw_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span>, <span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula$fixed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula$random</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula$rw</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> character(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $expanded_formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [38] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [75] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [112] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [149] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [186] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [223] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random$formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random$design</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      (Intercept)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random$index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> integer(0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "enw_formula" "list"       </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fixed effect</span></span></span>
 <span class="r-in"><span><span class="fu">enw_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span>, <span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + age_group"</span>
@@ -211,7 +350,7 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "enw_formula" "list"       </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Model with random effects for age group</span></span></span>
+<span class="r-in"><span><span class="co"># Random intercepts</span></span></span>
 <span class="r-in"><span><span class="fu">enw_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">age_group</span><span class="op">)</span>, <span class="va">data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + (1 | age_group)"</span>
@@ -283,6 +422,70 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random$index</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5 6 7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "enw_formula" "list"       </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Random walk</span></span></span>
+<span class="r-in"><span><span class="fu">enw_formula</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span><span class="op">)</span>, <span class="va">data</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + rw(week)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula$fixed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula$random</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parsed_formula$rw</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "rw(week)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $expanded_formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1 + cweek1 + cweek2 + cweek3 + cweek4 + cweek5"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    (Intercept) cweek1 cweek2 cweek3 cweek4 cweek5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1            1      0      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8            1      1      0      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15           1      1      1      0      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22           1      1      1      1      0      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29           1      1      1      1      1      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36           1      1      1      1      1      1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1] 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [38] 6 6 6 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [75] 5 6 6 6 6 6 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4 5 5 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [112] 5 5 5 5 6 6 6 6 6 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4 4 4 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [149] 5 5 5 5 5 5 5 6 6 6 6 6 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4 4 4 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [186] 4 4 4 5 5 5 5 5 5 5 6 6 6 6 6 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3 3 3 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [223] 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6 6 6 6 1 1 1 1 1 1 1 2 2 2 2 2 2 2 3 3 3 3 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [260] 3 3 4 4 4 4 4 4 4 5 5 5 5 5 5 5 6 6 6 6 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random$formula</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~0 + fixed + rw__week"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random$design</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fixed rw__week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     0        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $random$index</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1 2 3 4 5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
@@ -488,7 +691,7 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "enw_formula" "list"       </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Model defined without a sparse fixed effects design matrix</span></span></span>
-<span class="r-in"><span><span class="fu">enw_formula</span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">enw_formula</span><span class="op">(</span><span class="op">~</span><span class="fl">1</span>, <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="op">]</span>, sparse <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -511,11 +714,32 @@ matrix, and the index linking the design matrix with random effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$design</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   (Intercept)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    (Intercept)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9            1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20           1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fixed$index</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1]  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $random</span>

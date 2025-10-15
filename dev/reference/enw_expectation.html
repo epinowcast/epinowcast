@@ -80,10 +80,12 @@
 the generative process used for expected incidence. This can use features
 defined by reference date as defined in <code>metareference</code> as produced by
 <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>. By default this is set to use a daily random effect
-by group. This parameterisation is highly flexible and so may not be the
+by group. This parameterisation is highly flexible and may not be the
 most appropriate choice when data is sparsely reported or reporting delays
-are substantially. These settings an alternative could be a group specific
-weekly random walk (specified as <code>rw(week, by = .group</code>).</p></dd>
+are substantial. In these settings an alternative could be a group-specific
+weekly random walk (specified as <code>rw(week, by = .group)</code>). Setting to <code>~0</code>
+will produce an error as an expectation model is required. See <code><a href="enw_formula.html">enw_formula()</a></code>
+for details on formula syntax.</p></dd>
 
 
 <dt id="arg-generation-time">generation_time<a class="anchor" aria-label="anchor" href="#arg-generation-time"></a></dt>
@@ -98,8 +100,10 @@ the daily growth rate.</p></dd>
 the modifiers used to adjust expected observations. This can use features
 defined by reference date as defined in <code>metareference</code> as produced by
 <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>. By default no modifiers are used but a common choice
-might be to adjust for the day of the week. Note as the baseline is no
-modification an intercept is always used and it is set to 0.</p></dd>
+might be to adjust for the day of the week. Note that as the baseline is no
+modification, an intercept is always used and is set to 0. Set to <code>~0</code> to
+disable observation modifiers (internally converted to <code>~1</code> and flagged as
+inactive). See <code><a href="enw_formula.html">enw_formula()</a></code> for details on formula syntax.</p></dd>
 
 
 <dt id="arg-latent-reporting-delay">latent_reporting_delay<a class="anchor" aria-label="anchor" href="#arg-latent-reporting-delay"></a></dt>
@@ -875,8 +879,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5602b8237c08&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5602b8229cb0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x559df592fad0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x559df58517c8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>

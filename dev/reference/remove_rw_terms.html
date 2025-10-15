@@ -77,7 +77,8 @@ processed on their own.</p>
 <dl><dt id="arg-formula">formula<a class="anchor" aria-label="anchor" href="#arg-formula"></a></dt>
 <dd><p>A model formula that may use standard fixed
 effects, random effects using <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> syntax (see <code><a href="re.html">re()</a></code>), and
-random walks defined using the <code><a href="rw.html">rw()</a></code> helper function.</p></dd>
+random walks defined using the <code><a href="rw.html">rw()</a></code> helper function. See the Details
+section below for a comprehensive explanation of the supported syntax.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -111,11 +112,11 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_rw_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="va">location</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group + location</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5602c23b8248&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x559e0f3ecc78&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_rw_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span> <span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group + location</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5602c4ea5870&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x559dff935a08&gt;</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

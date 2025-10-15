@@ -82,8 +82,10 @@ the parametric reference date delay model. This can use features
 defined by report date as defined in <code>metareference</code> as produced by
 <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that this formula will be applied to all
 summary statistics of the chosen parametric distribution but each summary
-parameter will have separate effects. Use <code>~ 0</code> to not use a parametric
-model.</p></dd>
+parameter will have separate effects. Set to <code>~0</code> to disable the parametric
+component (internally converted to <code>~1</code> with distribution set to "none").
+See <code><a href="enw_formula.html">enw_formula()</a></code> for details on formula syntax including fixed effects,
+random effects, and random walks.</p></dd>
 
 
 <dt id="arg-distribution">distribution<a class="anchor" aria-label="anchor" href="#arg-distribution"></a></dt>
@@ -97,10 +99,13 @@ distribution to use. Current options are: "none", "lognormal", "gamma",
 describing the non-parametric logit hazard model. This can use features
 defined by reference date and by delay. It draws on a linked <code>data.frame</code>
 using <code>metareference</code> and <code>metadelay</code> as produced by <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>.
-When an effect per delay is specified this approximates the cox proportional
-hazard model in discrete time with a single strata. When used in conjunction
-with a parametric model it likely makes sense to disable the intercept in
-order to make the joint model identifiable (i.e. <code>~ 0 + (1 | delay)</code>).</p></dd>
+When an effect per delay is specified this approximates the Cox proportional
+hazards model in discrete time with a single strata. Set to <code>~0</code> to disable
+the non-parametric component (internally converted to <code>~1</code> and flagged as
+inactive). When used in conjunction with a parametric model it often makes
+sense to disable the intercept to ensure model identifiability
+(e.g., <code>~ 0 + (1 | delay)</code>). See <code><a href="enw_formula.html">enw_formula()</a></code> for details on formula
+syntax.</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
@@ -1124,8 +1129,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5602b4dbb170&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5602b4d00420&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x559e0c8996b0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x559e04a874f0&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Non-parametric model with a random effect per delay</span></span></span>
@@ -3749,8 +3754,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5602b4dbb170&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5602c2cce758&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x559e0c8996b0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x559dfef36910&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined parametric and non-parametric model</span></span></span>
@@ -4765,8 +4770,8 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5602b4dbb170&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5602c5cc5510&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x559e0c8996b0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x559e0b188240&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
