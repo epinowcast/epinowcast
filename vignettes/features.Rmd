@@ -94,7 +94,7 @@ For non-parametric approaches and mixed models, see `?enw_reference` examples.
 
 Specify the generative model for the expected latent process (e.g., infections, hospitalisations).
 
-| Model type | What it assumes | How to specify (`r` argument) | Example |
+| Model type | What it assumes | How to specify (formulas for `r` unless stated) | Example |
 |------------|-----------------|----------------|---------|
 | Daily random effects | Flexible day-to-day changes | `~0 + (1 | day:.group)` (default) | Most flexible |
 | Weekly random walk | Smooth week-to-week trends | `~1 + rw(week, by = .group)` | Smoother estimates |
@@ -174,7 +174,7 @@ Assess model fit and compare models.
 |--------|------------------|------------|----------------|
 | Posterior predictive checks | Visual fit assessment | `enw_fit_opts(pp = TRUE)` | [Model vignette](model.html) |
 | LOO-CV | Model comparison | `enw_fit_opts(output_loglik = TRUE)` + `loo` package | See `?loo::loo` |
-| Scoring rules | Probabilistic forecast evaluation | `scoringutils` package | [Rt vignette](single-timeseries-rt-estimation.html) |
+| Scoring rules | Probabilistic forecast evaluation | `scoringutils` package | [Germany hierarchical vignette](germany-age-stratified-nowcasting.html) |
 | Convergence diagnostics | MCMC quality checks | Check `$fit$summary()` | [Stan help vignette](stan-help.html) |
 
 **Key functions:**
