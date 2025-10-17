@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Flexible Hierarchical Nowcasting <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
+# A Bayesian Framework for Real-time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
 
 <!-- badges: start -->
 
