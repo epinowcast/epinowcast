@@ -589,13 +589,17 @@ construct_re <- function(re, data) {
 #'
 #' @description This function allows models to be defined using a
 #' flexible formula interface that supports fixed effects, random effects
-#' (using \link[lme4]{lme4} syntax). Note that the returned fixed effects design
-#' matrix is sparse and so the index supplied is required to link observations
-#' to the appropriate design matrix row.
+#' (using \link[lme4]{lme4} syntax), and random walks. The formula syntax
+#' builds on standard R formula notation and extends it with \link[lme4]{lme4}
+#' style random effects and custom random walk terms. Users familiar with
+#' mixed models in lme4 or brms will recognise the syntax. Note that the
+#' returned fixed effects design matrix is sparse and so the index supplied
+#' is required to link observations to the appropriate design matrix row.
 #'
 #' @param formula A model formula that may use standard fixed
 #' effects, random effects using \link[lme4]{lme4} syntax (see [re()]), and
-#' random walks defined using the [rw()] helper function.
+#' random walks defined using the [rw()] helper function. See the Details
+#' section below for a comprehensive explanation of the supported syntax.
 #'
 #' @param data A `data.frame` of observations. It must include all
 #' variables used in the supplied formula.
@@ -603,10 +607,82 @@ construct_re <- function(re, data) {
 #' @param sparse Logical, defaults to  `TRUE`. Should the fixed effects design
 #' matrix be sparely defined.
 #'
+#' @details
+#' ## Formula syntax overview
+#'
+#' The formula interface supports three types of model components:
+#'
+#' **Fixed effects**: Standard R formula syntax as used in [stats::lm()] and
+#' similar functions. For example:
+#' - `~ 1`: intercept only
+#' - `~ age_group`: intercept plus categorical predictor
+#' - `~ age_group + location`: multiple predictors
+#' - `~ 0 + age_group`: no intercept (contrasts)
+#'
+#' **Random effects**: Uses \link[lme4]{lme4} syntax with vertical bar notation.
+#' Random effects allow parameters to vary by group whilst sharing information
+#' across groups through partial pooling. Note that `epinowcast` assumes
+#' independent standard deviations for random effects rather than correlated
+#' random effects as supported by \link[lme4]{lme4}. For example:
+#' - `~ 1 + (1 | location)`: random intercepts by location
+#' - `~ 1 + age_group + (1 | location)`: fixed age effect with random
+#' location intercepts
+#' - `~ (age_group | location)`: random slopes for age within each location
+#' - `~ (1 + week | location:month)`: random intercepts and week effects
+#' for each location-month combination (using interaction to create
+#' independent random effects per strata)
+#'
+#' Interactions (e.g., `location:month`) can be used on the right-hand side
+#' of the vertical bar to specify independent random effects for each
+#' combination of the interacting variables.
+#'
+#' See the \link[lme4]{lme4} package documentation for more details on
+#' random effects syntax.
+#'
+#' **Random walks**: Uses the [rw()] helper function to specify time-varying
+#' effects that evolve smoothly over time. For example:
+#' - `~ rw(week)`: a random walk over weeks
+#' - `~ rw(week, location)`: independent random walks for each location
+#' - `~ rw(week, location, type = "dependent")`: random walks with shared
+#' variance across locations
+#'
+#' These three types of effects can be combined in a single formula, for example:
+#' `~ 1 + age_group + (1 | location) + rw(week, location)` specifies fixed
+#' age effects, random location intercepts, and location-specific random
+#' walks over time.
+#'
+#' ## Turning off model components
+#'
+#' In `epinowcast` model specification functions (such as [enw_reference()],
+#' [enw_report()], [enw_expectation()]), formula arguments can be set to `~0`
+#' to disable that model component entirely. This is a package-specific
+#' convention. Note that when a formula is specified as `~0`, it is typically
+#' converted internally to `~1` (intercept only) to ensure valid model
+#' structure, but the component is flagged as inactive.
+#'
+#' ## How formulas map to the model
+#'
+#' The formula you specify controls which covariates and effects enter the
+#' linear predictor of the model. For instance, in the reference date model
+#' ([enw_reference()]), the formula determines how reporting delay parameters
+#' vary by covariates and groups. The formula is converted to design matrices:
+#' a fixed effects matrix (which may be sparse for computational efficiency)
+#' and a random effects matrix that defines the hierarchical structure.
+#'
+#' @references
+#' For users new to formula syntax in R:
+#' - **Fixed effects**: See `?formula` and the "Statistical Models in R"
+#' chapter of "An Introduction to R": \url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R}
+#' - **Random effects**: See the \link[lme4]{lme4} package documentation
+#' and vignettes.
+#' - **Mixed models**: Bates et al. (2015) "Fitting Linear Mixed-Effects
+#' Models Using lme4". Journal of Statistical Software, 67(1), 1-48.
+#' doi:10.18637/jss.v067.i01
+#'
 #' @return A list containing the following:
 #'  - `formula`: The user supplied formula
 #'  - `parsed_formula`: The formula as parsed by [parse_formula()]
-#'  - `extended_formula`: The flattened version of the formula with
+#'  - `expanded_formula`: The flattened version of the formula with
 #'  both user supplied terms and terms added for the user supplied
 #'  complex model components.
 #'  - `fixed`:  A list containing the fixed effect formula, sparse design
@@ -632,17 +708,23 @@ construct_re <- function(re, data) {
 #'   )
 #' data <- pobs$metareference[[1]]
 #'
-#' # Model with fixed effects for age group
+#' # Intercept only
+#' enw_formula(~ 1, data)
+#'
+#' # Fixed effect
 #' enw_formula(~ 1 + age_group, data)
 #'
-#' # Model with random effects for age group
+#' # Random intercepts
 #' enw_formula(~ 1 + (1 | age_group), data)
+#'
+#' # Random walk
+#' enw_formula(~ 1 + rw(week), data)
 #'
 #' # Model with a random effect for age group and a random walk
 #' enw_formula(~ 1 + (1 | age_group) + rw(week), data)
 #'
 #' # Model defined without a sparse fixed effects design matrix
-#' enw_formula(~1, data[1:20, ])
+#' enw_formula(~1, data[1:20, ], sparse = FALSE)
 #'
 #' # Model using an interaction in the right hand side of a random effect
 #' # to specify an independent random effect per strata.

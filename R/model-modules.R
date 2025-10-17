@@ -9,8 +9,10 @@
 #' defined by report date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. Note that this formula will be applied to all
 #' summary statistics of the chosen parametric distribution but each summary
-#' parameter will have separate effects. Use `~ 0` to not use a parametric
-#' model.
+#' parameter will have separate effects. Set to `~0` to disable the parametric
+#' component (internally converted to `~1` with distribution set to "none").
+#' See [enw_formula()] for details on formula syntax including fixed effects,
+#' random effects, and random walks.
 #'
 #' @param distribution A character vector describing the parametric delay
 #' distribution to use. Current options are: "none", "lognormal", "gamma",
@@ -20,10 +22,13 @@
 #' describing the non-parametric logit hazard model. This can use features
 #' defined by reference date and by delay. It draws on a linked `data.frame`
 #' using `metareference` and `metadelay` as produced by [enw_preprocess_data()].
-#' When an effect per delay is specified this approximates the cox proportional
-#' hazard model in discrete time with a single strata. When used in conjunction
-#' with a parametric model it likely makes sense to disable the intercept in
-#' order to make the joint model identifiable (i.e. `~ 0 + (1 | delay)`).
+#' When an effect per delay is specified this approximates the Cox proportional
+#' hazards model in discrete time with a single strata. Set to `~0` to disable
+#' the non-parametric component (internally converted to `~1` and flagged as
+#' inactive). When used in conjunction with a parametric model it often makes
+#' sense to disable the intercept to ensure model identifiability
+#' (e.g., `~ 0 + (1 | delay)`). See [enw_formula()] for details on formula
+#' syntax.
 #'
 #' @return A list containing the supplied formulas, data passed into a list
 #' describing the models, a `data.frame` describing the priors used, and a
@@ -216,12 +221,14 @@ enw_reference <- function(
 #' Report date logit hazard reporting  model module
 #'
 #' @param non_parametric A formula (as implemented in [enw_formula()])
-#' describing the non-parametric logit hazard model. This can use features
-#' defined by report date as defined in `metareport` as produced by
-#' [enw_preprocess_data()]. Note that the intercept for this model is set to 0
-#' as it should be used for specifying report date related hazards vs time
-#' invariant hazards which should instead be modelled using the
-#' `non_parametric` argument of [enw_reference()]
+#' describing the non-parametric logit hazard model for report date effects.
+#' This can use features defined by report date as defined in `metareport` as
+#' produced by [enw_preprocess_data()]. Note that the intercept for this model
+#' is set to 0 as it should be used for specifying report date related hazards
+#' rather than time-invariant hazards, which should instead be modelled using
+#' the `non_parametric` argument of [enw_reference()]. Set to `~0` to disable
+#' (internally converted to `~1` and flagged as inactive). See [enw_formula()]
+#' for details on formula syntax.
 #'
 #' @param structural A formula with fixed effects and using only binary
 #' variables, and factors describing the known reporting structure (i.e weekday
@@ -317,10 +324,12 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' the generative process used for expected incidence. This can use features
 #' defined by reference date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. By default this is set to use a daily random effect
-#' by group. This parameterisation is highly flexible and so may not be the
+#' by group. This parameterisation is highly flexible and may not be the
 #' most appropriate choice when data is sparsely reported or reporting delays
-#' are substantially. These settings an alternative could be a group specific
-#' weekly random walk (specified as `rw(week, by = .group`).
+#' are substantial. In these settings an alternative could be a group-specific
+#' weekly random walk (specified as `rw(week, by = .group)`). Setting to `~0`
+#' will produce an error as an expectation model is required. See [enw_formula()]
+#' for details on formula syntax.
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
@@ -331,8 +340,10 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
 #' the modifiers used to adjust expected observations. This can use features
 #' defined by reference date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. By default no modifiers are used but a common choice
-#' might be to adjust for the day of the week. Note as the baseline is no
-#' modification an intercept is always used and it is set to 0.
+#' might be to adjust for the day of the week. Note that as the baseline is no
+#' modification, an intercept is always used and is set to 0. Set to `~0` to
+#' disable observation modifiers (internally converted to `~1` and flagged as
+#' inactive). See [enw_formula()] for details on formula syntax.
 #'
 #' @param latent_reporting_delay A numeric vector that defaults to 1.
 #' Describes the weighting to apply to past and current latent expected
@@ -520,8 +531,10 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 #' @param formula A formula (as implemented in [enw_formula()]) describing
 #' the missing data proportion on the logit scale by reference date. This can
 #' use features defined by reference date as defined in `metareference` as
-#' produced by [enw_preprocess_data()]. "~0" implies no model is required.
-#' Otherwise an intercept is always needed
+#' produced by [enw_preprocess_data()]. Set to `~0` to disable the missing
+#' data model when no missingness is present (the model is not estimated in
+#' this case). When a model is specified, an intercept is always required.
+#' See [enw_formula()] for details on formula syntax.
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
