@@ -12,14 +12,16 @@ may be desirable if testing using a weekly timestep or if you are very
 concerned about runtime. Note that the start of the timestep will be
 determined by min_date + a single timestep (i.e. the
 first timestep will be "2022-10-23" if the minimum reference date is
-"2022-10-16").'><meta property="og:description" content='This function aggregates observations over a specified timestep,
+"2022-10-16"). Observations where the report dates do not form a complete
+timestep will be dropped from the aggregated output.'><meta property="og:description" content='This function aggregates observations over a specified timestep,
 ensuring alignment on the same day of week for report and reference dates.
 It is  useful for aggregating data to a weekly timestep, for example which
 may be desirable if testing using a weekly timestep or if you are very
 concerned about runtime. Note that the start of the timestep will be
 determined by min_date + a single timestep (i.e. the
 first timestep will be "2022-10-23" if the minimum reference date is
-"2022-10-16").'><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
+"2022-10-16"). Observations where the report dates do not form a complete
+timestep will be dropped from the aggregated output.'><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -77,7 +79,8 @@ may be desirable if testing using a weekly timestep or if you are very
 concerned about runtime. Note that the start of the timestep will be
 determined by <code>min_date</code> + a single timestep (i.e. the
 first timestep will be "2022-10-23" if the minimum reference date is
-"2022-10-16").</p>
+"2022-10-16"). Observations where the report dates do not form a complete
+timestep will be dropped from the aggregated output.</p>
     </div>
 
     <div class="section level2">
@@ -102,7 +105,9 @@ which must have a <code>new_confirm</code> numeric column, and <code>report_date
 and be complete. See <code><a href="enw_complete_dates.html">enw_complete_dates()</a></code> for more information. If
 NA values are present in the <code>confirm</code> column then these will be set to
 zero before aggregation this may not be desirable if this missingness
-is meaningful.</p></dd>
+is meaningful. Before aggregation, dates will be completed up to the
+last reference date to ensure all reference dates have the required
+report dates for the specified timestep.</p></dd>
 
 
 <dt id="arg-timestep">timestep<a class="anchor" aria-label="anchor" href="#arg-timestep"></a></dt>
@@ -151,19 +156,20 @@ matches the reporting timestep.</p></dd>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">nat_hosp</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="fu">enw_aggregate_cumulative</span><span class="op">(</span><span class="va">nat_hosp</span>, timestep <span class="op">=</span> <span class="st">"week"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      reference_date location age_group confirm report_date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;      &lt;IDat&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   1:     2021-04-12       DE       00+    3505  2021-04-12</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   2:     2021-04-12       DE       00+    5276  2021-04-19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   3:     2021-04-12       DE       00+    5993  2021-04-26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   4:     2021-04-12       DE       00+    6362  2021-05-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   5:     2021-04-12       DE       00+    6594  2021-05-10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 266:     2021-10-04       DE       00+    2091  2021-10-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 267:     2021-10-04       DE       00+    2346  2021-10-18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 268:     2021-10-11       DE       00+    1312  2021-10-11</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 269:     2021-10-11       DE       00+    2163  2021-10-18</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 270:     2021-10-18       DE       00+    1597  2021-10-18</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;reference_date, report_date&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      report_date reference_date location age_group confirm new_confirm delay</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>           &lt;IDat&gt;         &lt;IDat&gt;   &lt;fctr&gt;    &lt;fctr&gt;   &lt;int&gt;       &lt;int&gt; &lt;int&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   1:  2021-04-12           &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;       0           0     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   2:  2021-04-19           &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;       0           0     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   3:  2021-04-26           &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;       0           0     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   4:  2021-05-03           &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;       0           0     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   5:  2021-05-10           &lt;NA&gt;     &lt;NA&gt;      &lt;NA&gt;       0           0     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  ---                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 430:  2021-10-11     2021-10-04       DE       00+    2091         799     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 431:  2021-10-18     2021-10-04       DE       00+    2346         255     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 432:  2021-10-11     2021-10-11       DE       00+    1312        1312     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 433:  2021-10-18     2021-10-11       DE       00+    2163         851     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 434:  2021-10-18     2021-10-18       DE       00+    1597        1597     0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
