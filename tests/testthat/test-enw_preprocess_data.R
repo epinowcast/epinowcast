@@ -94,7 +94,9 @@ test_that(
     expect_identical(weekly_pobs$max_delay[[1]], 5)
     expect_identical(weekly_pobs$timestep[[1]], "week")
     expect_identical(
-      unique(weekly_pobs$obs[[1]]$reference_date)[1:2],
+      unique(weekly_pobs$obs[[1]]$reference_date[
+        !is.na(weekly_pobs$obs[[1]]$reference_date)
+      ])[1:2],
       as.IDate(c("2021-05-10", "2021-05-17"))
     )
     expect_identical(
