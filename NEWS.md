@@ -27,6 +27,7 @@
 
 ## Bugs
 
+- Fixed `enw_aggregate_cumulative()` incorrectly counting when max_delay is an even multiple of the timestep and dropping case counts not part of a complete timestep. The function now completes dates before aggregation and adds missing incidence counts after aggregation to ensure all counts are preserved and cumulative sums are correctly calculated. Fixes #511 and #427.
 - Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
 - Fixed a bug where `enw_expose_stan_fns()` which has been deprecated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.

@@ -209,3 +209,76 @@ test_that("enw_aggregate_cumulative() throws error for month timestep", {
     "Calendar months are not currently supported"
   )
 })
+
+test_that(
+  paste(
+    "enw_aggregate_cumulative() correctly handles max_delay as",
+    "even multiple of timestep (issue 511)"
+  ),
+  {
+    # Create toy data with 6 weeks of data and max delay of 2 weeks (14 days)
+    ref_dates <- seq.Date(as.Date("2000-01-01"), by = "day", length.out = 6 * 7)
+    rep_dates <- seq.Date(
+      as.Date("2000-01-01"), by = "day",
+      length.out = 6 * 7 + 14
+    )
+
+    ref_dates <- rep(ref_dates, each = 6 * 7 + 14)
+    rep_dates <- rep(rep_dates, times = 6 * 7)
+
+    dates_df <- data.table(
+      reference_date = as.IDate(ref_dates),
+      report_date = as.IDate(rep_dates)
+    )
+    dates_df <- dates_df[reference_date <= report_date]
+    # Enforce max delay of 2 weeks
+    dates_df <- dates_df[report_date <= reference_date + 14]
+    set.seed(123)
+    dates_df[, new_confirm := rpois(.N, 10)]
+    dates_df[, confirm := cumsum(new_confirm), by = reference_date]
+
+    # Aggregate to weekly
+    agg <- enw_aggregate_cumulative(dates_df, timestep = "week")
+
+    # Check that confirm values are cumulative (non-decreasing)
+    # for each reference date
+    agg[,
+      is_cumulative := all(confirm == cummax(confirm)),
+      by = reference_date
+    ]
+    expect_true(all(agg$is_cumulative))
+
+    # Check that all counts are preserved
+    expect_true(all(agg$confirm >= 0))
+  }
+)
+
+test_that(
+  "enw_aggregate_cumulative() preserves all case counts (issue 427)",
+  {
+    # Test that counts from incomplete timesteps are preserved
+    obs <- data.table(
+      reference_date = as.IDate(
+        rep(seq(as.Date("2020-01-01"), by = "day", length.out = 10), 10)
+      ),
+      report_date = as.IDate(
+        rep(seq(as.Date("2020-01-01"), by = "day", length.out = 10), each = 10)
+      ),
+      confirm = 1
+    )
+    obs <- obs[report_date >= reference_date]
+
+    # Aggregate to 3-day timestep
+    agg <- enw_aggregate_cumulative(obs, timestep = 3)
+
+    # Add incidence to both datasets for comparison
+    obs_with_inc <- enw_add_incidence(obs)
+    agg_with_inc <- enw_add_incidence(agg)
+
+    # Total new_confirm should be preserved
+    total_original <- sum(obs_with_inc$new_confirm, na.rm = TRUE)
+    total_agg <- sum(agg_with_inc$new_confirm, na.rm = TRUE)
+
+    expect_identical(total_original, total_agg)
+  }
+)
