@@ -1,15 +1,16 @@
 pandoc: 3.1.11
-pkgdown: 2.0.8.9000
-pkgdown_sha: d139e038a1ddb7b7696a435aac0798dea2c3ce44
+pkgdown: 2.1.3.9000
+pkgdown_sha: 34f217f67fb908fccaf55b0db07dae33322e7349
 articles:
   distributions: distributions.html
   epinowcast: epinowcast.html
+  features: features.html
   germany-age-stratified-nowcasting: germany-age-stratified-nowcasting.html
   model: model.html
+  package-use-cases: package-use-cases.html
   single-timeseries-rt-estimation: single-timeseries-rt-estimation.html
   stan-help: stan-help.html
-last_built: 2024-04-16T09:25Z
+last_built: 2025-10-17T14:39Z
 urls:
   reference: https://package.epinowcast.org/reference
   article: https://package.epinowcast.org/articles
-
