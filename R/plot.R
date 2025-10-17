@@ -120,7 +120,7 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
     ) +
     scale_alpha_manual(
       name = NULL,
-      values = c("90% CrI" = 0.2, "60% CrI" = 0.2)
+      values = c("90% CrI" = 0.2, "60% CrI" = 0.4)
     ) +
     guides(
       alpha = guide_legend(order = 1, nrow = 1),
