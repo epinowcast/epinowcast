@@ -20,7 +20,9 @@ which must have a \code{new_confirm} numeric column, and \code{report_date} and
 and be complete. See \code{\link[=enw_complete_dates]{enw_complete_dates()}} for more information. If
 NA values are present in the \code{confirm} column then these will be set to
 zero before aggregation this may not be desirable if this missingness
-is meaningful.}
+is meaningful. Before aggregation, dates will be completed up to the
+last reference date to ensure all reference dates have the required
+report dates for the specified timestep.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
 "week") or a numeric whole number representing the number of days.
@@ -54,7 +56,8 @@ may be desirable if testing using a weekly timestep or if you are very
 concerned about runtime. Note that the start of the timestep will be
 determined by \code{min_date} + a single timestep (i.e. the
 first timestep will be "2022-10-23" if the minimum reference date is
-"2022-10-16").
+"2022-10-16"). Observations where the report dates do not form a complete
+timestep will be dropped from the aggregated output.
 }
 \examples{
 nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]

@@ -264,7 +264,8 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
 #' concerned about runtime. Note that the start of the timestep will be
 #' determined by `min_date` + a single timestep (i.e. the
 #' first timestep will be "2022-10-23" if the minimum reference date is
-#' "2022-10-16").
+#' "2022-10-16"). Observations where the report dates do not form a complete
+#' timestep will be dropped from the aggregated output.
 #'
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` numeric column, and `report_date` and
@@ -272,7 +273,9 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
 #' and be complete. See [enw_complete_dates()] for more information. If
 #' NA values are present in the `confirm` column then these will be set to
 #' zero before aggregation this may not be desirable if this missingness
-#' is meaningful.
+#' is meaningful. Before aggregation, dates will be completed up to the
+#' last reference date to ensure all reference dates have the required
+#' report dates for the specified timestep.
 #'
 #' @param min_reference_date The minimum reference date to start the
 #' aggregation from. Note that the timestep will start from the minimum
@@ -306,7 +309,10 @@ enw_aggregate_cumulative <- function(
     required_cols = c("confirm", by), forbidden_cols = ".group",
     dates = TRUE, copy = copy
   )
-
+  if (nrow(obs) < 2) {
+    cli::cli_abort("There must be at least two observations")
+  }
+  obs <- enw_complete_dates(obs, by = by, timestep = "day")
   obs <- enw_assign_group(obs, by = by)
   check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 
@@ -364,7 +370,8 @@ enw_aggregate_cumulative <- function(
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs, fill = TRUE)
   }
-
+  # Add in any missing new confirm counts
+  agg_obs <- enw_add_incidence(agg_obs, by = by, copy = FALSE)
   # Drop internal processing columns
   agg_obs[,
    c("reference_date_mod", "report_date_mod", ".group") := NULL
