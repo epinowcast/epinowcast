@@ -370,7 +370,7 @@ enw_aggregate_cumulative <- function(
   # Group by reference_date instead of report_date to maintain cumulative
   # property for each reference date
   agg_obs <- aggregate_rolling_sum(
-    agg_obs, internal_timestep, by = c("reference_date", ".group")
+    agg_obs, internal_timestep, by = c("report_date", ".group")
   )
 
   # THEN filter to report dates at timestep boundaries
