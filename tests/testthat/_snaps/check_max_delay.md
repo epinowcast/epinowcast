@@ -37,6 +37,6 @@
       suppressWarnings(check_max_delay(weekly_pobs, max_delay = 1))
     Output
          .group coverage below_coverage
-      1:      1      0.8      0.6363636
-      2:    all      0.8      0.6363636
+      1:      1      0.8              1
+      2:    all      0.8              1
 

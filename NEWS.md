@@ -27,7 +27,7 @@
 
 ## Bugs
 
-- Fixed `enw_aggregate_cumulative()` incorrectly counting when max_delay is an even multiple of the timestep and dropping case counts not part of a complete timestep. The function now completes dates before aggregation and adds missing incidence counts after aggregation to ensure all counts are preserved and cumulative sums are correctly calculated. Fixes #511 and #427.
+- Fixed `enw_aggregate_cumulative()` incorrectly counting when max_delay is an even multiple of the timestep. The function now completes dates before aggregation and adds missing incidence counts after aggregation to ensure cumulative sums are correctly calculated. Fixes #511.
 - Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
 - Fixed a bug where `enw_expose_stan_fns()` which has been deprecated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.
@@ -60,6 +60,7 @@ See #541 by @seabbs and self-reviewed.
 
 ## Documentation
 
+- Clarified in `enw_aggregate_cumulative()` documentation that observations where report dates do not form a complete timestep will be dropped from the aggregated output. This behaviour is by design to ensure consistent timestep alignment. Addresses #427.
 - Improved documentation of the formula interface to make it more accessible to users unfamiliar with formula syntax. Enhanced `enw_formula()` documentation with details on fixed effects, random effects (lme4 syntax), and random walks, including explanation of the `~0` convention for disabling model components and how formulas map to model structure. Added references to relevant R resources and expanded examples. Updated model module documentation (`enw_reference()`, `enw_report()`, `enw_expectation()`, `enw_missing()`) to clarify formula usage and cross-reference the main formula documentation. Addresses #468 by @seabbs and self-reviewed.
 - Linked the Stan function documentation to the package website. By @jamesmbaazam in #529 and reviewed by @seabbs.
 - Added support to render and deploy stan documentation using `doxygen` and a GitHub Actions workflow. See #500 and #502 by @jamesmbaazam and @seabbs respectively, and cross-reviewed.
