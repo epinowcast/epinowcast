@@ -1,4 +1,20 @@
-# epinowcast 0.3.9000
+# epinowcast 0.4.0
+
+This release adds a new use cases vignette to help users understand when and how to apply the package to different problems.
+Documentation has been enhanced with clearer guidance on the formula interface, including details on fixed effects, random effects, and random walks, making the package more accessible to users unfamiliar with formula syntax.
+
+Performance improvements include optimised Stan functions, support for sparse design matrices for memory-intensive models, and tightened priors to improve run times.
+Experimental pathfinder support has been added for rapid prototyping and informing initialisation of HMC runs.
+Model enhancements include a negative binomial observation model with linear mean-variance relationship and improved probability aggregation support.
+
+The package lifecycle has been updated from experimental to stable, with interface stability expected in this version.
+
+The release has a single breaking change that fixes an off-by-one error in `enw_filter_reference_dates()` where `include_days = n` incorrectly returned `n + 1` dates.
+Functions deprecated at version 0.4.0 or earlier have been removed.
+
+A range of bug fixes have been implemented, including fixes for `enw_aggregate_cumulative()` counting when the maximum delay is an even multiple of the timestep and IDate storage mode compatibility with dplyr workflows.
+
+Full details on changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.4.0).
 
 ## Contributors
 
