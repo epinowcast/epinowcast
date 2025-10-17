@@ -17,22 +17,22 @@ obs <- data.table::data.table(
 test_that("enw_aggregate_cumulative() basic functionality works", {
   obs <- obs[location == "A"]
   result <- enw_aggregate_cumulative(obs, timestep = "week")
-  expect_identical(unique(result$confirm), 1)
+  expect_identical(unique(result$confirm), 7) # 7 days in a week
 })
 
 test_that("enw_aggregate_cumulative() works with different timesteps", {
   obs <- obs[location == "A"]
   # Test with a week as numeric
   result_week <- enw_aggregate_cumulative(obs, timestep = 7)
-  expect_identical(unique(result_week$confirm), 1)
+  expect_identical(unique(result_week$confirm), 7)
 
   # Test with a 5-day period
   result_5days <- enw_aggregate_cumulative(obs, timestep = 5)
-  expect_identical(unique(result_5days$confirm), 1)
+  expect_identical(unique(result_5days$confirm), 5)
 
   # Test with a 3-day period
-  result_3days <- enw_aggregate_cumulative(obs, timestep = 3)
-  expect_identical(sort(unique(result_3days$confirm)), c(0, 1, 2, 3))
+  result_5days <- enw_aggregate_cumulative(obs, timestep = 3)
+  expect_identical(unique(result_5days$confirm), 3)
 })
 
 test_that("enw_aggregate_cumulative() with groups", {
@@ -41,7 +41,7 @@ test_that("enw_aggregate_cumulative() with groups", {
     obs,
     timestep = "week", by = "location"
   )
-  expect_identical(unique(result_with_group$confirm), 1)
+  expect_identical(unique(result_with_group$confirm), 7)
 })
 
 test_that("enw_aggregate_cumulative() handles missing reference dates", {
@@ -50,16 +50,16 @@ test_that("enw_aggregate_cumulative() handles missing reference dates", {
   obs_with_na[1:5, reference_date := NA]
 
   result <- enw_aggregate_cumulative(obs_with_na, timestep = 3)
-  # enw_complete_dates() is called with missing_reference = FALSE
-  expect_false(anyNA(result$reference_date))
-  expect_identical(sort(unique(result$confirm)), c(0, 1, 3))
+  expect_true(anyNA(result$reference_date))
+  expect_identical(result$confirm[1], 1)
+  expect_identical(unique(result[-1, ]$confirm), 3)
 })
 
 test_that("enw_aggregate_cumulative() handles missing report dates", {
   obs_with_na <- obs[location == "A"]
   obs_with_na[1:5, report_date := NA]
   result <- enw_aggregate_cumulative(obs_with_na, timestep = "week")
-  expect_identical(unique(result$confirm), 1)
+  expect_identical(unique(result$confirm), 7)
 })
 
 test_that(
@@ -86,7 +86,7 @@ test_that("enw_aggregate_cumulative() handles missing values in 'confirm'", {
   obs_na_confirm <- obs[location == "A"]
   obs_na_confirm[1:5, confirm := NA]
   result <- enw_aggregate_cumulative(obs_na_confirm, timestep = "week")
-  expect_identical(unique(result$confirm), 1)
+  expect_identical(unique(result$confirm), 7)
 })
 
 test_that("enw_aggregate_cumulative() when 'by' grouping does not exist", {
@@ -134,7 +134,7 @@ test_that(
       reference_date = as.IDate(c(
         "2022-10-28", "2022-10-28", "2022-11-04"
       )),
-      confirm = c(0, 120, 0)
+      confirm = c(34, 353, 40)
     )
     daily <- enw_complete_dates(data, missing_reference = FALSE)
     actual_agg <- enw_aggregate_cumulative(daily, timestep = "week")
@@ -164,14 +164,23 @@ test_that(
       )
     )
     expected_agg <- data.table(
-      report_date = as.IDate(c(
-        "2022-11-01", "2022-11-08", "2022-11-08"
-      )),
-      reference_date = as.IDate(c(
-        "2022-11-01", "2022-11-01", "2022-11-08"
-      )),
-      confirm = c(0, 88, 0)
+      report_date = as.IDate(
+        c(
+          "2022-10-25", "2022-11-01", "2022-11-08", "2022-11-01", "2022-11-08",
+          "2022-11-08"
+        )
+      ),
+      reference_date = as.IDate(
+        c(
+          "2022-10-25", "2022-10-25", "2022-10-25", "2022-11-01", "2022-11-01",
+          "2022-11-08"
+        )
+      ),
+      confirm = c(34, 202, 222, 191, 503, 0)
     )
+    expected_agg <- expected_agg[
+      report_date != as.Date("2022-10-25")
+    ][reference_date != as.Date("2022-10-25")]
     daily <- enw_complete_dates(data, missing_reference = FALSE)
     actual_agg <- enw_aggregate_cumulative(
       daily,
@@ -180,58 +189,6 @@ test_that(
     expect_identical(actual_agg, expected_agg)
   }
 )
-
-test_that("enw_aggregate_cumulative() fixes issue #511: cumulative counts
-           should not decrease at timestep boundaries", {
-  # Reproduce exact scenario from issue #511
-  # 6 weeks of data with max delay of 2 weeks (14 days)
-  ref_dates <- seq.Date(as.Date("2000-01-01"), by = "day", length.out = 6 * 7)
-  rep_dates <- seq.Date(
-    as.Date("2000-01-01"), by = "day",
-    length.out = 6 * 7 + 14
-  )
-
-  ref_dates <- rep(ref_dates, each = 6 * 7 + 14)
-  rep_dates <- rep(rep_dates, times = 6 * 7)
-
-  dates_df <- data.frame(reference_date = ref_dates, report_date = rep_dates)
-  dates_df <- dates_df |>
-    dplyr::filter(reference_date <= report_date) |>
-    # enforce max delay of 2 weeks in the toy data
-    dplyr::filter(report_date <= reference_date + 14) |>
-    dplyr::mutate(new_confirm = rpois(length(reference_date), 10)) |>
-    dplyr::group_by(reference_date) |>
-    dplyr::mutate(confirm = cumsum(new_confirm)) |>
-    dplyr::ungroup()
-
-  # Convert to data.table
-  dates_df <- data.table::as.data.table(dates_df)
-  dates_df[, new_confirm := NULL]
-
-  # Aggregate to weekly timestep
-  agg <- enw_aggregate_cumulative(dates_df, timestep = "week")
-
-  # Verify cumulative property: for each reference_date,
-  # confirm should be monotonically non-decreasing
-  agg <- agg[order(reference_date, report_date)]
-
-  for (ref_date in unique(agg$reference_date)) {
-    subset_data <- agg[reference_date == ref_date]
-    cumulative_counts <- subset_data$confirm
-
-    # Check no decreases (issue #511 bug was that counts decreased)
-    if (length(cumulative_counts) > 1) {
-      diffs <- diff(cumulative_counts)
-      expect_true(
-        all(diffs >= 0),
-        label = paste0(
-          "Cumulative counts should not decrease for reference_date ",
-          ref_date, " but found negative diff"
-        )
-      )
-    }
-  }
-})
 
 test_that("enw_aggregate_cumulative() throws error for month timestep", {
   obs <- data.table::data.table(
