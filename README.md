@@ -22,17 +22,21 @@ contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)]
 
 ## Summary
 
-Tools to enable flexible and efficient hierarchical nowcasting of
-right-truncated epidemiological time-series using a semi-mechanistic
-Bayesian model with support for a range of reporting and generative
-processes. Nowcasting, in this context, is gaining situational awareness
-using currently available observations and the reporting patterns of
-historical observations. This can be useful when tracking the spread of
-infectious disease in real-time: without nowcasting, changes in trends
-can be obfuscated by partial reporting or their detection may be delayed
-due to the use of simpler methods like truncation. While the package has
-been designed with epidemiological applications in mind, it could be
-applied to any set of right-truncated time-series count data.
+A modular Bayesian framework for real-time infectious disease
+surveillance. Provides tools for nowcasting, reproduction number
+estimation, delay estimation, and forecasting from data subject to
+reporting delays, right-truncation, missing data, and incomplete
+ascertainment. Users can build models suited to their setting using a
+flexible formula interface supporting fixed effects, random effects,
+random walks, and time-varying parameters, with options including
+parametric and non-parametric delay distributions with optional
+modifiers (via discrete-time hazard models), renewal processes,
+observation models, missing data imputation, and stratified analyses
+with partial pooling. By jointly estimating disease dynamics and
+reporting patterns, our framework enables earlier and more reliable
+detection of trends. While designed with epidemiological applications in
+mind, the framework can be applied to any right-truncated time series
+count data.
 
 ## Important Note on Model Specification
 
@@ -45,9 +49,7 @@ vignettes](https://package.epinowcast.org/articles) for guidance.
 ## Installation
 
 <details>
-
 <summary>
-
 Installing the package
 </summary>
 
@@ -86,11 +88,8 @@ if needed, e.g. if you want to try out a specific unreleased feature,
 but not the absolute latest developmental version.*
 
 </details>
-
 <details>
-
 <summary>
-
 Installing CmdStan
 </summary>
 
@@ -119,11 +118,8 @@ need to install a past version of CmdStan, which you can do with the
 `version` argument.*
 
 </details>
-
 <details>
-
 <summary>
-
 Alternative: Docker
 </summary>
 
@@ -143,9 +139,7 @@ documentation, case studies, and community spaces to ask (and answer!)
 questions:
 
 <details>
-
 <summary>
-
 Package Website
 </summary>
 
@@ -156,11 +150,8 @@ documentation for [the latest development
 version](https://package.epinowcast.org/dev/).
 
 </details>
-
 <details>
-
 <summary>
-
 R Vignettes
 </summary>
 
@@ -175,11 +166,8 @@ capabilities](https://package.epinowcast.org/articles/features.html)
 studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
-
 <details>
-
 <summary>
-
 Organisation Website
 </summary>
 
@@ -189,11 +177,8 @@ and [seminar schedule](https://www.epinowcast.org/seminars.html) for
 both upcoming and past recordings.
 
 </details>
-
 <details>
-
 <summary>
-
 Community Forum
 </summary>
 
@@ -205,11 +190,8 @@ you are generally interested in real-time analysis of infectious
 disease, you may find this useful even if do not use `epinowcast`.
 
 </details>
-
 <details>
-
 <summary>
-
 Package Analysis Scripts
 </summary>
 
@@ -274,9 +256,7 @@ outline](https://package.epinowcast.org/articles/model.html). If you use
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-
 <!-- prettier-ignore-start -->
-
 <!-- markdownlint-disable -->
 
 All contributions to this project are gratefully acknowledged using the
@@ -328,7 +308,5 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>
 
 <!-- markdownlint-enable -->
-
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
