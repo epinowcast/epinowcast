@@ -308,6 +308,10 @@ enw_aggregate_cumulative <- function(
     dates = TRUE, copy = copy
   )
 
+  if (nrow(obs) < 2) {
+    cli::cli_abort("There must be at least two observations")
+  }
+
   # Calculate max delay from the data
   max_delay_days <- max(
     obs$report_date - obs$reference_date,
@@ -361,12 +365,16 @@ enw_aggregate_cumulative <- function(
 
   # For non-missing reference dates, aggregate over the reference date
   # using the desired reporting timestep
-  agg_obs <- agg_obs[report_date_mod == 0]
 
-  # Aggregate over the timestep
+  # Apply rolling sum to ALL data (fix for issue #511)
+  # Group by reference_date instead of report_date to maintain cumulative
+  # property for each reference date
   agg_obs <- aggregate_rolling_sum(
-    agg_obs, internal_timestep, by = c("report_date", ".group")
+    agg_obs, internal_timestep, by = c("reference_date", ".group")
   )
+
+  # THEN filter to report dates at timestep boundaries
+  agg_obs <- agg_obs[report_date_mod == 0]
 
   # Set day of week for reference date and filter
   agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
