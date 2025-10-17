@@ -1,13 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Flexible Hierarchical Nowcasting <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
+# A Bayesian Framework for Real-time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
 
 <!-- badges: start -->
 
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/epinowcast/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml/badge.svg?branch=main)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
 </br>
@@ -22,17 +22,29 @@ contributors](https://img.shields.io/github/contributors/epinowcast/epinowcast)]
 
 ## Summary
 
-Tools to enable flexible and efficient hierarchical nowcasting of
-right-truncated epidemiological time-series using a semi-mechanistic
-Bayesian model with support for a range of reporting and generative
-processes. Nowcasting, in this context, is gaining situational awareness
-using currently available observations and the reporting patterns of
-historical observations. This can be useful when tracking the spread of
-infectious disease in real-time: without nowcasting, changes in trends
-can be obfuscated by partial reporting or their detection may be delayed
-due to the use of simpler methods like truncation. While the package has
-been designed with epidemiological applications in mind, it could be
-applied to any set of right-truncated time-series count data.
+A modular Bayesian framework for real-time infectious disease
+surveillance. Provides tools for nowcasting, reproduction number
+estimation, delay estimation, and forecasting from data subject to
+reporting delays, right-truncation, missing data, and incomplete
+ascertainment. Users can build models suited to their setting using a
+flexible formula interface supporting fixed effects, random effects,
+random walks, and time-varying parameters, with options including
+parametric and non-parametric delay distributions with optional
+modifiers (via discrete-time hazard models), renewal processes,
+observation models, missing data imputation, and stratified analyses
+with partial pooling. By jointly estimating disease dynamics and
+reporting patterns, our framework enables earlier and more reliable
+detection of trends. While designed with epidemiological applications in
+mind, the framework can be applied to any right-truncated time series
+count data.
+
+## Important Note on Model Specification
+
+**The default lognormal reporting delay distribution may not suit all
+data.** It can fail with multimodal or complex delay patterns. Evaluate
+model fit and consider alternatives (e.g., non-parametric hazards) as
+needed. See the [package
+vignettes](https://package.epinowcast.org/articles) for guidance.
 
 ## Installation
 
@@ -146,8 +158,11 @@ R Vignettes
 We have created [package
 vignettes](https://package.epinowcast.org/articles) to help you [get
 started
-nowcasting](https://package.epinowcast.org/articles/epinowcast.html) and
-to [highlight other features with case
+nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
+see a [quick reference to package
+capabilities](https://package.epinowcast.org/articles/features.html)
+(different timesteps, multi-stratification, mixed models, etc.), and
+[explore case
 studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
@@ -245,10 +260,9 @@ outline](https://package.epinowcast.org/articles/model.html). If you use
 <!-- markdownlint-disable -->
 
 All contributions to this project are gratefully acknowledged using the
-[`allcontributors`
-package](https://github.com/ropenscilabs/allcontributors) following the
-[all-contributors](https://allcontributors.org) specification.
-Contributions of any kind are welcome!
+[`allcontributors` package](https://github.com/ropensci/allcontributors)
+following the [all-contributors](https://allcontributors.org)
+specification. Contributions of any kind are welcome!
 
 ### Code
 
@@ -264,6 +278,7 @@ Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian">jessalynnsebastian</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt">kathsherratt</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova">barbora-sobolova</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson">kaitejohnson</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
@@ -277,7 +292,11 @@ Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Abeansrowning">beansrowning</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajbracher">jbracher</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Azsusswein">zsusswein</a>,
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Achristinesangphet">christinesangphet</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Achristinesangphet">christinesangphet</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Arumackaaron">rumackaaron</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amicahwiesner67">micahwiesner67</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Akylieainslie">kylieainslie</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amaria-tang">maria-tang</a>
 
 ### Issue Contributors
 

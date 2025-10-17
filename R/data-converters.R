@@ -118,11 +118,12 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
 #' then the function will aggregate by just the `reference_date` and
 #' `report_date`.
 #'
-#' @param max_delay The maximum number of days between the `reference_date`
-#' and the `report_date`. If not supplied then the function will use the
-#' maximum number of days between the `reference_date` and the `report_date`
-#' in the `linelist`. If the `max_delay` is less than the maximum number of
-#' days between the `reference_date` and the `report_date` in the `linelist`
+#' @param max_delay The maximum delay (in days) between the
+#' `reference_date` and the `report_date`. If not supplied then the
+#' function will use the maximum observed delay. Note that this function
+#' operates before timestep conversion, so max_delay is always in days
+#' here. If the `max_delay` is less than the maximum number of days
+#' between the `reference_date` and the `report_date` in the `linelist`
 #' then the function will use this value instead and inform the user.
 #'
 #' @inheritParams enw_complete_dates
@@ -252,78 +253,6 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
   return(obs[])
 }
 
-#' Calculate incidence of new reports from cumulative reports
-#'
-#' @description `r lifecycle::badge('deprecated')`
-#'
-#' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
-#' observations), and `confirm` (cumulative observations by reference and report
-#' date).
-#'
-#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
-#' counts (for calculated incidence of observations) be set to zero. Currently
-#' downstream modelling does not support negative counts and so setting must be
-#' TRUE if intending to use [epinowcast()].
-#'
-#' @return The input `data.frame` with a new variable `new_confirm`. If
-#' `max_confirm` was present in the `data.frame` then the proportion
-#' reported on each day (`prop_reported`) is also added.
-#'
-#' @inheritParams enw_filter_delay
-#' @inheritParams enw_preprocess_data
-#' @family dataconverters
-#' @keywords internal
-#' @export
-#' @importFrom lifecycle deprecate_warn
-#' @examples
-#' # Default reconstruct incidence
-#' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-#' enw_add_incidence(dt)
-#'
-#' # Make use of maximum reported to calculate empirical daily reporting
-#' dt <- enw_add_max_reported(dt)
-#' enw_add_incidence(dt)
-enw_cumulative_to_incidence <- function(obs, set_negatives_to_zero = TRUE,
-                                        by = NULL) {
-  lifecycle::deprecate_warn(
-    "0.2.1", "enw_cumulative_to_incidence()", "enw_add_incidence()"
-  )
-  return(enw_add_incidence(obs, set_negatives_to_zero, by))
-}
-
-#' Calculate cumulative reported cases from incidence of new reports
-#'
-#' @description `r lifecycle::badge('deprecated')`
-#'
-#' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
-#' observations), and `new_confirm` (incident observations by reference and
-#' report date).
-#'
-#' @return The input `data.frame` with a new variable `confirm`.
-#'
-#' @inheritParams enw_filter_delay
-#' @inheritParams enw_preprocess_data
-#' @family dataconverters
-#' @keywords internal
-#' @export
-#' @importFrom lifecycle deprecate_warn
-#' @examples
-#' # Default reconstruct incidence
-#' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-#' dt <- enw_add_incidence(dt)
-#' dt <- dt[, confirm := NULL]
-#' enw_add_cumulative(dt)
-#'
-#' # Make use of maximum reported to calculate empirical daily reporting
-#' enw_add_cumulative(dt)
-enw_incidence_to_cumulative <- function(obs, by = NULL) {
-  lifecycle::deprecate_warn(
-    "0.2.1", "enw_incidence_to_cumulative()", "enw_add_cumulative()"
-  )
-  return(enw_add_cumulative(obs, by = by))
-}
 
 #' Aggregate observations over a given timestep for both report and reference
 #' dates.
@@ -335,7 +264,8 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' concerned about runtime. Note that the start of the timestep will be
 #' determined by `min_date` + a single timestep (i.e. the
 #' first timestep will be "2022-10-23" if the minimum reference date is
-#' "2022-10-16").
+#' "2022-10-16"). Observations where the report dates do not form a complete
+#' timestep will be dropped from the aggregated output.
 #'
 #' @param obs An object coercible to a `data.table` (such as a `data.frame`)
 #' which must have a `new_confirm` numeric column, and `report_date` and
@@ -343,7 +273,9 @@ enw_incidence_to_cumulative <- function(obs, by = NULL) {
 #' and be complete. See [enw_complete_dates()] for more information. If
 #' NA values are present in the `confirm` column then these will be set to
 #' zero before aggregation this may not be desirable if this missingness
-#' is meaningful.
+#' is meaningful. Before aggregation, dates will be completed up to the
+#' last reference date to ensure all reference dates have the required
+#' report dates for the specified timestep.
 #'
 #' @param min_reference_date The minimum reference date to start the
 #' aggregation from. Note that the timestep will start from the minimum
@@ -377,7 +309,10 @@ enw_aggregate_cumulative <- function(
     required_cols = c("confirm", by), forbidden_cols = ".group",
     dates = TRUE, copy = copy
   )
-
+  if (nrow(obs) < 2) {
+    cli::cli_abort("There must be at least two observations")
+  }
+  obs <- enw_complete_dates(obs, by = by, timestep = "day")
   obs <- enw_assign_group(obs, by = by)
   check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 
@@ -435,7 +370,8 @@ enw_aggregate_cumulative <- function(
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]
     agg_obs <- rbind(agg_obs_na_ref, agg_obs, fill = TRUE)
   }
-
+  # Add in any missing new confirm counts
+  agg_obs <- enw_add_incidence(agg_obs, by = by, copy = FALSE)
   # Drop internal processing columns
   agg_obs[,
    c("reference_date_mod", "report_date_mod", ".group") := NULL

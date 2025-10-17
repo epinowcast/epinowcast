@@ -299,7 +299,6 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
 #' and `report_date` for each observation.
 #'
 #' @return A `data.table` of observations with a new column `delay`.
-#' @inheritParams enw_cumulative_to_incidence
 #' @inheritParams enw_add_incidence
 #' @inheritParams get_internal_timestep
 #' @family preprocess
@@ -411,6 +410,13 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' occurs). This means that this function will also filter out any report dates
 #' that are earlier than their corresponding reference date.
 #'
+#' @details
+#' The `include_days` parameter filters to include exactly the specified number
+#' of most recent reference dates.
+#' For example, if the latest reference date is 2021-10-20 and `include_days = 10`,
+#' the filtered data will contain reference dates from 2021-10-11 to 2021-10-20
+#' (10 days inclusive).
+#'
 #' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
 #'
@@ -419,6 +425,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' @param include_days if `earliest_date` is not given, the number
 #' of reference dates to include, ending with the latest reference
 #' date included (determined by `latest_date` or `remove_days`).
+#' For example, `include_days = 10` returns exactly 10 reference dates.
 #'
 #' @param latest_date Date, the latest reference date to include in the
 #' returned dataset.
@@ -463,7 +470,16 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
         "`include_days` and `earliest_date` can't both be specified."
       )
     }
-    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days
+    # validate include_days
+    if (!is.numeric(include_days) || is.na(include_days) ||
+        include_days < 0 || round(include_days) != include_days) {
+      cli::cli_abort("`include_days` must be a non-negative integer")
+    }
+    # explicit empty result for include_days = 0
+    if (include_days == 0) {
+      return(filt_obs[0L])
+    }
+    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days + 1
   }
   if (!missing(include_days) || !missing(earliest_date)) {
     filt_obs <- filt_obs[
@@ -503,47 +519,8 @@ enw_latest_data <- function(obs) {
   return(latest_data[])
 }
 
-#' Filter observations to restrict the maximum reporting delay
-#'
-#' @description `r lifecycle::badge("deprecated")`
-#'
-#' @return A `data.frame` filtered so that dates by report are less than or
-#' equal the reference date plus the maximum delay.
-#'
-#' @inheritParams enw_filter_delay
-#' @inheritParams enw_add_incidence
-#' @inheritParams enw_preprocess_data
-#' @importFrom lifecycle deprecate_stop
-#' @family preprocess
-#' @keywords internal
-#' @export
-enw_filter_delay <- function(obs, max_delay, timestep = "day") {
-  lifecycle::deprecate_warn(
-    when = "0.2.3",
-    what = "enw_delay_filter()",
-    with = "enw_filter_delay()",
-    details = "Please file an issue if deprecating this \
-      function has caused any issues."
-  )
-  return(enw_filter_delay(obs, max_delay, timestep))
-}
 
 #' Filter observations to have a consistent maximum delay period
-#'
-#' @param max_delay The maximum number of days to model in the delay
-#' distribution. Must be an integer greater than or equal to 1. Observations
-#' with delays larger then the maximum delay will be dropped. If the specified
-#' maximum delay is too short, nowcasts can be biased as important parts of the
-#' true delay distribution are cut off. At the same time, computational cost
-#' scales non-linearly with this setting, so you want the maximum delay to be as
-#' long as necessary, but not much longer. Consider what delays are realistic
-#' for your application, and when in doubt, check if increasing the maximum
-#' delay noticeably changes the delay distribution or nowcasts as estimated by
-#' epinowcast. If it does, your maximum delay may still be too short.
-#' Note that delays are zero indexed and so include the reference date and
-#' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
-#' no delay). You can use [check_max_delay()] to check the coverage of a delay
-#' distribution for different maximum delays.
 #'
 #' @return A `data.frame` filtered so that dates by report are less than or
 #' equal the reference date plus the maximum delay.
@@ -657,7 +634,7 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
   obs <- coerce_dt(obs, required_cols = "confirm", copy = copy)
   if (is.null(obs[[".observed"]])) {
     obs[, .observed := !is.na(confirm)]
-  }else {
+  } else {
     obs[, .observed := .observed & !is.na(confirm)]
   }
   return(obs[])
@@ -683,17 +660,18 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
 #' @export
 #' @examples
 #' dt <- data.frame(
-#'  id = 1:3, confirm = c(NA, 1, 2),
-#'  reference_date = as.Date("2021-01-01")
+#'   id = 1:3, confirm = c(NA, 1, 2),
+#'   reference_date = as.Date("2021-01-01")
 #' )
 #' enw_impute_na_observations(dt)
 enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
   obs <- coerce_dt(
-    obs, required_cols = c("confirm", "reference_date", by),
+    obs,
+    required_cols = c("confirm", "reference_date", by),
     copy = copy
   )
   data.table::setkeyv(obs, c(data.table::key(obs), "reference_date"))
-    # impute missing as last available observation or 0
+  # impute missing as last available observation or 0
   obs[,
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", by)
@@ -762,7 +740,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   internal_timestep <- get_internal_timestep(timestep)
 
   dates <- seq.Date(
-    as.IDate(min_date), as.IDate(max_date), by = internal_timestep
+    as.IDate(min_date), as.IDate(max_date),
+    by = internal_timestep
   )
   dates <- as.IDate(dates)
 
@@ -777,7 +756,8 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
     .group = groups$.group,
     report_date = 0:max_delay
   )
-  completion <- completion[,
+  completion <- completion[
+    ,
     report_date := reference_date + report_date * internal_timestep
   ]
   if (!completion_beyond_max_report) {
@@ -919,39 +899,6 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4, timestep = "day") {
   return(delays[])
 }
 
-#' Calculate reporting delay metadata for a given maximum delay
-#'
-#' @description `r lifecycle::badge('deprecated')`
-#'
-#' @description Calculate delay metadata based on the supplied maximum delay and
-#'   independent of other metadata or date indexing. These data are meant to be
-#'   used in conjunction with metadata on the date of reference. Users can build
-#'   additional features this  `data.frame`  or regenerate it using this
-#'   function in the output of `enw_preprocess_data()`.
-#'
-#'   `enw_delay_metadata()` was renamed to [`enw_metadata_delay()`] for better
-#'   consistency.
-#'
-#' @return A  `data.frame`  of delay metadata. This includes:
-#'  - `delay`: The numeric delay from reference date to report.
-#'  - `delay_cat`: The categorised delay. This may be useful for model building.
-#'  - `delay_week`: The numeric week since the delay was reported. This again
-#'   may be useful for model building.
-#'  - `delay_tail`: A logical variable defining if the delay is in the upper
-#'   75% of the potential delays. This may be particularly useful when building
-#'   models that assume a parametric distribution in order to increase the
-#'   weight of the tail of the reporting distribution in a pragmatic way.
-#' @inheritParams enw_metadata_delay
-#' @keywords internal
-#' @export
-#' @examples
-#' enw_delay_metadata(max_delay = 20, breaks = 4)
-enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
-  lifecycle::deprecate_warn(
-    "0.2.3", "enw_delay_metadata()", "enw_metadata_delay()"
-  )
-  return(enw_metadata_delay(max_delay, breaks))
-}
 
 #' Construct preprocessed data
 #'
@@ -981,8 +928,6 @@ enw_delay_metadata <- function(max_delay = 20, breaks = 4) {
 #'
 #' @param metadelay Metadata for reporting delays produced using
 #'  [enw_metadata_delay()].
-#'
-#' @param max_delay Maximum delay to be modelled by epinowcast.
 #'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
@@ -1058,28 +1003,31 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 #' when modelling multiple time series in order to identify them for
 #' downstream modelling
 #'
-#' @param max_delay The maximum number of days to model in the delay
-#' distribution. If not specified the maximum observed delay is assumed to be
-#' the true maximum delay in the model. Otherwise, an integer greater than or
-#' equal to 1 can be specified. Observations with delays larger then the maximum
-#' delay will be dropped. If the specified maximum delay is too short, nowcasts
-#' can be biased as important parts of the true delay distribution are cut off.
-#' At the same time, computational cost scales non-linearly with this setting,
-#' so you want the maximum delay to be as long as necessary, but not much
-#' longer.
+#' @param max_delay The maximum delay to model in the delay
+#' distribution, specified in units of the timestep (e.g., if
+#' `timestep = "week"`, then `max_delay = 3` means 3 weeks). If not
+#' specified the maximum observed delay is assumed to be the true maximum
+#' delay in the model. Otherwise, an integer greater than or equal to 1
+#' can be specified. Observations with delays larger than the maximum
+#' delay will be dropped. If the specified maximum delay is too short,
+#' nowcasts can be biased as important parts of the true delay
+#' distribution are cut off. At the same time, computational cost scales
+#' non-linearly with this setting, so you want the maximum delay to be
+#' as long as necessary, but not much longer.
 #'
 #' Steps to take to determine the maximum delay:
 #' - Consider what is realistic and relevant for your application.
 #' - Check the proportion of observations reported (`prop_reported`)
 #'  by delay in the `new_confirm` output of `enw_preprocess_obs`.
-#' - Use [check_max_delay()] to check the coverage of a candidate `max_delay`.
-#' - If in doubt, check if increasing the maximum delay noticeably changes the
-#' delay distribution or nowcasts as estimated by `epinowcast`. If it does,
-#' your maximum delay may still be too short.
+#' - Use [check_max_delay()] to check the coverage of a candidate
+#' `max_delay`.
+#' - If in doubt, check if increasing the maximum delay noticeably
+#' changes the delay distribution or nowcasts as estimated by
+#' `epinowcast`. If it does, your maximum delay may still be too short.
 #'
-#' Note that delays are zero indexed and so include the reference date and
-#' `max_delay - 1` other days (i.e. a `max_delay` of 1 corresponds to
-#' no delay).
+#' Note that delays are zero indexed and so include the reference date
+#' and `max_delay - 1` other intervals (i.e. a `max_delay` of 1
+#' corresponds to no delay).
 #'
 #' @param timestep The timestep to used in the process model (i.e. the
 #' reference date model). This can be a string ("day", "week", "month") or a
@@ -1139,15 +1087,6 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
 enw_preprocess_data <- function(obs, by = NULL, max_delay,
                                 timestep = "day", set_negatives_to_zero = TRUE,
                                 ..., copy = TRUE) {
-  if (timestep == "month") {
-    cli::cli_abort(
-      paste0(
-        "Calendar months are not currently supported. Consider using an ",
-        "approximate number of days (i.e. 28), a different timestep ",
-        "(i.e.'week'), or commenting on issue #309. "
-      )
-    )
-  }
   internal_timestep <- get_internal_timestep(timestep)
 
   # coerce obs - at this point, either making a copy or not
@@ -1189,7 +1128,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 
   # filter by the maximum delay modelled
   obs <- enw_filter_delay(
-    obs, max_delay = orig_scale_max_delay, timestep = timestep
+    obs,
+    max_delay = orig_scale_max_delay, timestep = timestep
   )
 
   diff_obs <- enw_add_incidence(
@@ -1248,7 +1188,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 
   # extract and add features for delays
   metadelay <- enw_metadata_delay(
-    orig_scale_max_delay, breaks = 4, timestep = timestep
+    orig_scale_max_delay,
+    breaks = 4, timestep = timestep
   )
 
   out <- enw_construct_data(

@@ -8,5 +8,5 @@
       1: expr_lelatent_int[1,1]    4      4  0   0        0          4
       2: expr_lelatent_int[1,1]    4      4  0   0        0          4
       3: expr_lelatent_int[1,1]    4      4  0   0        1          4
-      4: expr_lelatent_int[1,1]    4      4  0   0        1          4
+      4: expr_lelatent_int[1,1]    4      4  0   0        1          5
 

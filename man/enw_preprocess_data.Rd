@@ -25,30 +25,33 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{max_delay}{The maximum number of days to model in the delay
-distribution. If not specified the maximum observed delay is assumed to be
-the true maximum delay in the model. Otherwise, an integer greater than or
-equal to 1 can be specified. Observations with delays larger then the maximum
-delay will be dropped. If the specified maximum delay is too short, nowcasts
-can be biased as important parts of the true delay distribution are cut off.
-At the same time, computational cost scales non-linearly with this setting,
-so you want the maximum delay to be as long as necessary, but not much
-longer.
+\item{max_delay}{The maximum delay to model in the delay
+distribution, specified in units of the timestep (e.g., if
+\code{timestep = "week"}, then \code{max_delay = 3} means 3 weeks). If not
+specified the maximum observed delay is assumed to be the true maximum
+delay in the model. Otherwise, an integer greater than or equal to 1
+can be specified. Observations with delays larger than the maximum
+delay will be dropped. If the specified maximum delay is too short,
+nowcasts can be biased as important parts of the true delay
+distribution are cut off. At the same time, computational cost scales
+non-linearly with this setting, so you want the maximum delay to be
+as long as necessary, but not much longer.
 
 Steps to take to determine the maximum delay:
 \itemize{
 \item Consider what is realistic and relevant for your application.
 \item Check the proportion of observations reported (\code{prop_reported})
 by delay in the \code{new_confirm} output of \code{enw_preprocess_obs}.
-\item Use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a candidate \code{max_delay}.
-\item If in doubt, check if increasing the maximum delay noticeably changes the
-delay distribution or nowcasts as estimated by \code{epinowcast}. If it does,
-your maximum delay may still be too short.
+\item Use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a candidate
+\code{max_delay}.
+\item If in doubt, check if increasing the maximum delay noticeably
+changes the delay distribution or nowcasts as estimated by
+\code{epinowcast}. If it does, your maximum delay may still be too short.
 }
 
-Note that delays are zero indexed and so include the reference date and
-\code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
-no delay).}
+Note that delays are zero indexed and so include the reference date
+and \code{max_delay - 1} other intervals (i.e. a \code{max_delay} of 1
+corresponds to no delay).}
 
 \item{timestep}{The timestep to used in the process model (i.e. the
 reference date model). This can be a string ("day", "week", "month") or a

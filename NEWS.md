@@ -1,8 +1,24 @@
-# epinowcast 0.3.9000
+# epinowcast 0.4.0
+
+This release adds a new use cases vignette to help users understand when and how to apply the package to different problems.
+Documentation has been enhanced with clearer guidance on the formula interface, including details on fixed effects, random effects, and random walks, making the package more accessible to users unfamiliar with formula syntax.
+
+Performance improvements include optimised Stan functions, support for sparse design matrices for memory-intensive models, and tightened priors to improve run times.
+Experimental pathfinder support has been added for rapid prototyping and informing initialisation of HMC runs.
+Model enhancements include a negative binomial observation model with linear mean-variance relationship and improved probability aggregation support.
+
+The package lifecycle has been updated from experimental to stable, with interface stability expected in this version.
+
+The release has a single breaking change that fixes an off-by-one error in `enw_filter_reference_dates()` where `include_days = n` incorrectly returned `n + 1` dates.
+Functions deprecated at version 0.4.0 or earlier have been removed.
+
+A range of bug fixes have been implemented, including fixes for `enw_aggregate_cumulative()` counting when the maximum delay is an even multiple of the timestep and IDate storage mode compatibility with dplyr workflows.
+
+Full details on changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.4.0).
 
 ## Contributors
 
-@athowes, @kaitejohnson, @jamesmbaazam, @jessalynnsebastian, @Bisaloo, and @seabbs contributed code to this release.
+@athowes, @kaitejohnson, @jamesmbaazam, @jessalynnsebastian, @Bisaloo, @barbora-sobolova and @seabbs contributed code to this release.
 
 @medewitt, @jessalynnsebastian, @pearsonca, @jamesmbaazam, and @seabbs reviewed pull requests for this release.
 
@@ -10,19 +26,43 @@
 
 ## Breaking changes
 
+* Fixed off-by-one error in `enw_filter_reference_dates()` where `include_days = n`
+  incorrectly returned `n + 1` dates instead of exactly `n` dates. Now
+  `include_days = 10` returns exactly 10 reference dates, not 11. This brings
+  the function behaviour in line with its documentation and user expectations.
+  Users relying on the previous behaviour will need to adjust their
+  `include_days` arguments by subtracting 1 to maintain the same date range.
+  See issue #352 for details.
+- Removed deprecated functions scheduled for removal at version 0.4.0 or earlier:
+  - `enw_cumulative_to_incidence()` (deprecated 0.2.1, use `enw_add_incidence()`)
+  - `enw_incidence_to_cumulative()` (deprecated 0.2.1, use `enw_add_cumulative()`)
+  - `enw_delay_filter()` (deprecated 0.2.3, use `enw_filter_delay()`)
+  - `enw_delay_metadata()` (deprecated 0.2.3, use `enw_metadata_delay()`)
+  - `enw_score_nowcast()` (deprecated 0.4.0, use `as_forecast_sample()`)
+- Removed `simulate_double_censored_pmf()`. Users should use `primarycensored::dprimarycensored()` instead for generating double censored PMFs.
+
 ## Bugs
 
+- Fixed `enw_aggregate_cumulative()` incorrectly counting when max_delay is an even multiple of the timestep. The function now completes dates before aggregation and adds missing incidence counts after aggregation to ensure cumulative sums are correctly calculated. Fixes #511.
+- Fixed IDate storage mode error when using `dplyr::filter()` before `enw_preprocess_data()`. The `coerce_dt()` function now explicitly restores integer storage mode for IDate columns that may have been converted to double storage by dplyr operations whilst preserving the IDate class. This ensures compatibility with both dplyr and data.table workflows. Fixes #557.
 - Fixed a bug where `enw_nowcast_summary()` and `enw_nowcast_samples()` incorrectly selected reference dates to include in their outputs when time steps were not days. See #473 by @jessalynnsebastian and reviewed by @seabbs.
 - Fixed a bug where `enw_expose_stan_fns()` which has been deprecated was being used in the stan docs for `expected_obs()`. See #488 by @seabbs and reviewed by @jessalynnsebastian.
+- Fixed error in `enw_preprocess_data()` when processing data with
+predominantly zero counts across multiple groups.
+The function now handles sparse data gracefully and provides informative
+warnings when delay coverage statistics cannot be computed.
+See #541 by @seabbs and self-reviewed.
+- Fixed stacked bar chart in Rt estimation vignette extending beyond actual reference date range. The plot now correctly limits the x-axis to the range of dates with data. See #634 by @seabbs and self-reviewed.
 
 ## Package
 
+- The package lifecycle has been updated from experimental to stable. The current interface has stabilised and users can expect interface stability in this version, though future major versions may include interface changes. See #370 by @seabbs.
 - Experimental support for `CmdStanModel$pathfinder` has been added to the package via `enw_pathfinder()`. This fitting method approximates the posterior distribution using a variational inference method. It may be useful for rapid prototyping, informing initialisation of HMC runs, and settings where compute time is limited. Likely downsides are poorly calibrated estimates and instability for more complex model formulations. See #464 by @seabbs and reviewed by @medewitt.
 - Added support for initialising methods in `enw_sample()`. Currently this allows either the default "random" which draws from the priors (previously the only option) or "pathfinder" which approximates the posterior distribution using the pathfinder variational inference method. Currently this does not support initialising the mass matrix for HMC but will do once support is available in `cmdstan`. See #504 by @seabbs and reviewed by @jamesmbaazam.
 - Added checks for partial argument matching and fixed all instances. See #343 by @Bisaloo and reviewed by @seabbs.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
-- Deprecated `simulate_double_censored_pmf()` in favour of functionality from the `primarycensored` package.
+- A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
 
 ## Model
 
@@ -32,17 +72,23 @@
 - Tightened the prior on the overdispersion parameter to provide less support to extreme overdispersion. This change is unlikely to impact results for most users but should help to improve run time. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Optimised internal performance critical stan functions to improve speed and reduce memory usage. See #513 by @seabbs and reviewed by @pearsonca.
 - Added support for sparse design matrices to the model (see `sparse_design` in `enw_fit_opts()`). For very sparse design matrices this can reduce memory requirements and computation time. A heuristic has been added to inform users if sparse design matrices are useful for you. See #514 by @seabbs and reviewed by @pearsonca.
+- Added support for a negative binomial observation model with a linear mean-variance relationship as an option of the `model_obs` argument of `epinowcast()`. See #590 by @barbora-sobolova and reviewed by @seabbs.
 
 ## Documentation
 
+- Clarified in `enw_aggregate_cumulative()` documentation that observations where report dates do not form a complete timestep will be dropped from the aggregated output. This behaviour is by design to ensure consistent timestep alignment. Addresses #427.
+- Improved documentation of the formula interface to make it more accessible to users unfamiliar with formula syntax. Enhanced `enw_formula()` documentation with details on fixed effects, random effects (lme4 syntax), and random walks, including explanation of the `~0` convention for disabling model components and how formulas map to model structure. Added references to relevant R resources and expanded examples. Updated model module documentation (`enw_reference()`, `enw_report()`, `enw_expectation()`, `enw_missing()`) to clarify formula usage and cross-reference the main formula documentation. Addresses #468 by @seabbs and self-reviewed.
 - Linked the Stan function documentation to the package website. By @jamesmbaazam in #529 and reviewed by @seabbs.
 - Added support to render and deploy stan documentation using `doxygen` and a GitHub Actions workflow. See #500 and #502 by @jamesmbaazam and @seabbs respectively, and cross-reviewed.
 - Standardised punctuation in the `pkgdown` reference. See #458 by @athowes and reviewed by @seabbs.
 - Reduced the `adapt_delta` and `max_treedepth` arguments in the vignettes and examples and tested to see that this did not impact the results. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Made vignette progress messaging dependent on the user being interactive. See #501 by @seabbs and reviewed by @jessalynnsebastian.
 - Added a vignette to document package use cases. See #524 by @kaitejohnson and reviewed by @seabbs.
+- Switched to using `{primarycensored}` for simulating the primary censored and right truncated processes needed to correctly model the discrete delays. See #549 by @seabbs and self-reviewed.
 
 ## Depreciations
+
+- `enw_score_nowcast()` has been deprecated in favour of `scoringutils::score()`. See #550 by @seabbs and self-reviewed.
 
 # epinowcast 0.3.0
 

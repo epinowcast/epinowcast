@@ -13,12 +13,12 @@ knitr::opts_chunk$set(
   message = FALSE, warning = FALSE
 )
 ```
-# Flexible Hierarchical Nowcasting <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
+# A Bayesian Framework for Real-time Infectious Disease Surveillance <a href="https://package.epinowcast.org/"><img src="man/figures/logo.png" align="right" height="139" alt="epinowcast website" /></a>
 
 <!-- badges: start -->
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
-[![R-CMD-check](https://github.com/epinowcast/epinowcast/workflows/R-CMD-check/badge.svg)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml/badge.svg?branch=main)](https://github.com/epinowcast/epinowcast/actions/workflows/R-CMD-check.yaml) [![Codecov test coverage](https://codecov.io/gh/epinowcast/epinowcast/branch/main/graph/badge.svg)](https://app.codecov.io/gh/epinowcast/epinowcast)
 </br>
 [![Universe](https://epinowcast.r-universe.dev/badges/epinowcast)](https://epinowcast.r-universe.dev/epinowcast)
 [![MIT
@@ -33,6 +33,13 @@ license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/
 ```{r, results = "asis", echo=FALSE}
 cat(gsub("\n[ ]+", " ", packageDescription("epinowcast")$Description))
 ```
+
+## Important Note on Model Specification
+
+**The default lognormal reporting delay distribution may not suit all data.**
+It can fail with multimodal or complex delay patterns.
+Evaluate model fit and consider alternatives (e.g., non-parametric hazards) as needed.
+See the [package vignettes](https://package.epinowcast.org/articles) for guidance.
 
 ## Installation
   
@@ -79,7 +86,14 @@ The [`epinowcast` website](https://package.epinowcast.org/) includes a function 
 
 <details><summary>R Vignettes</summary>
 
-We have created [package vignettes](https://package.epinowcast.org/articles) to help you [get started nowcasting](https://package.epinowcast.org/articles/epinowcast.html) and to [highlight other features with case studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
+We have created [package vignettes](https://package.epinowcast.org/articles)
+to help you
+[get started nowcasting](https://package.epinowcast.org/articles/epinowcast.html),
+see a
+[quick reference to package capabilities](https://package.epinowcast.org/articles/features.html)
+(different timesteps, multi-stratification, mixed models, etc.),
+and
+[explore case studies](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html).
 
 </details>
 
@@ -132,11 +146,13 @@ If making use of our methodology or the methodology on which ours is based, plea
 
 
 
+
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 
-All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropenscilabs/allcontributors) following the [all-contributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
+All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [all-contributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
 
 ### Code
 
@@ -153,6 +169,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian">jessalynnsebastian</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt">kathsherratt</a>, 
+<a href="https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova">barbora-sobolova</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson">kaitejohnson</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>, 
@@ -169,7 +186,11 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Abeansrowning">beansrowning</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Ajbracher">jbracher</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Azsusswein">zsusswein</a>, 
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Achristinesangphet">christinesangphet</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Achristinesangphet">christinesangphet</a>, 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Arumackaaron">rumackaaron</a>, 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amicahwiesner67">micahwiesner67</a>, 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Akylieainslie">kylieainslie</a>, 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amaria-tang">maria-tang</a>
 
 
 
@@ -187,6 +208,8 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+
 
 
 

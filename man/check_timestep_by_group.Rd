@@ -12,9 +12,12 @@ check_timestep_by_group(obs, date_var, timestep = "day", exact = TRUE)
 \item{date_var}{The variable in \code{obs} representing dates.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in user-facing functions
+and will throw an error if used.}
 
-\item{exact}{Logical, if \verb{TRUE``, checks if all differences exactly match the timestep. If }FALSE``, checks if the sum of the differences modulo the
+\item{exact}{Logical, if \code{TRUE}, checks if all differences exactly match the
+timestep. If \code{FALSE}, checks if the sum of the differences modulo the
 timestep equals zero. Default is \code{TRUE}.}
 }
 \value{
@@ -29,7 +32,6 @@ performed for the specified \code{date_var} and for each group in \code{obs}.
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_calendar_timestep}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},

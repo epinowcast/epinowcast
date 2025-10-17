@@ -3,11 +3,11 @@
 \docType{package}
 \name{epinowcast-package}
 \alias{epinowcast-package}
-\title{epinowcast: Flexible Hierarchical Nowcasting}
+\title{epinowcast: A Bayesian Framework for Real-time Infectious Disease Surveillance}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Tools to enable flexible and efficient hierarchical nowcasting of right-truncated epidemiological time-series using a semi-mechanistic Bayesian model with support for a range of reporting and generative processes. Nowcasting, in this context, is gaining situational awareness using currently available observations and the reporting patterns of historical observations. This can be useful when tracking the spread of infectious disease in real-time: without nowcasting, changes in trends can be obfuscated by partial reporting or their detection may be delayed due to the use of simpler methods like truncation. While the package has been designed with epidemiological applications in mind, it could be applied to any set of right-truncated time-series count data.
+A modular Bayesian framework for real-time infectious disease surveillance. Provides tools for nowcasting, reproduction number estimation, delay estimation, and forecasting from data subject to reporting delays, right-truncation, missing data, and incomplete ascertainment. Users can build models suited to their setting using a flexible formula interface supporting fixed effects, random effects, random walks, and time-varying parameters, with options including parametric and non-parametric delay distributions with optional modifiers (via discrete-time hazard models), renewal processes, observation models, missing data imputation, and stratified analyses with partial pooling. By jointly estimating disease dynamics and reporting patterns, our framework enables earlier and more reliable detection of trends. While designed with epidemiological applications in mind, the framework can be applied to any right-truncated time series count data.
 }
 \seealso{
 Useful links:
@@ -45,6 +45,7 @@ Other contributors:
   \item Nikos Bosse \email{nikos.bosse@lshtm.ac.uk} (\href{https://orcid.org/0000-0002-7750-5280}{ORCID}) [contributor]
   \item Adam Howes \email{adamthowes@gmail.com} (\href{https://orcid.org/0000-0003-2386-4031}{ORCID}) [contributor]
   \item Kaitlyn Johnson \email{johnsonkaitlyne9@gmail.com} (\href{https://orcid.org/0000-0001-8011-0012}{ORCID}) [contributor]
+  \item Barbora Nemcova \email{barbora.nemcova@kit.edu} (\href{https://orcid.org/0009-0004-7565-4145}{ORCID}) [contributor]
 }
 
 }

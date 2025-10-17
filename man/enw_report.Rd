@@ -8,12 +8,14 @@ enw_report(non_parametric = ~0, structural = NULL, data)
 }
 \arguments{
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
-describing the non-parametric logit hazard model. This can use features
-defined by report date as defined in \code{metareport} as produced by
-\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that the intercept for this model is set to 0
-as it should be used for specifying report date related hazards vs time
-invariant hazards which should instead be modelled using the
-\code{non_parametric} argument of \code{\link[=enw_reference]{enw_reference()}}}
+describing the non-parametric logit hazard model for report date effects.
+This can use features defined by report date as defined in \code{metareport} as
+produced by \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that the intercept for this model
+is set to 0 as it should be used for specifying report date related hazards
+rather than time-invariant hazards, which should instead be modelled using
+the \code{non_parametric} argument of \code{\link[=enw_reference]{enw_reference()}}. Set to \code{~0} to disable
+(internally converted to \code{~1} and flagged as inactive). See \code{\link[=enw_formula]{enw_formula()}}
+for details on formula syntax.}
 
 \item{structural}{A nested list of matrices by group and reference date
 describing the known reporting structure (i.e weekday only reporting).

@@ -34,6 +34,8 @@ navbar:
       - text: Model details
       - text: Model definition and implementation
         href: articles/model.html
+      - text: Model features summary
+        href: articles/features.html
       - text: Discretised distributions
         href: articles/distributions.html
       - text: Case studies

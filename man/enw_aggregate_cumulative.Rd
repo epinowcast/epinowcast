@@ -20,10 +20,14 @@ which must have a \code{new_confirm} numeric column, and \code{report_date} and
 and be complete. See \code{\link[=enw_complete_dates]{enw_complete_dates()}} for more information. If
 NA values are present in the \code{confirm} column then these will be set to
 zero before aggregation this may not be desirable if this missingness
-is meaningful.}
+is meaningful. Before aggregation, dates will be completed up to the
+last reference date to ensure all reference dates have the required
+report dates for the specified timestep.}
 
 \item{timestep}{The timestep to used. This can be a string ("day",
-"week", "month") or a numeric whole number representing the number of days.}
+"week") or a numeric whole number representing the number of days.
+Note that "month" is not currently supported in user-facing functions
+and will throw an error if used.}
 
 \item{by}{A character vector of variables to also aggregate by (i.e. as well
 as using the \code{reference_date} and \code{report_date}). If not supplied
@@ -52,7 +56,8 @@ may be desirable if testing using a weekly timestep or if you are very
 concerned about runtime. Note that the start of the timestep will be
 determined by \code{min_date} + a single timestep (i.e. the
 first timestep will be "2022-10-23" if the minimum reference date is
-"2022-10-16").
+"2022-10-16"). Observations where the report dates do not form a complete
+timestep will be dropped from the aggregated output.
 }
 \examples{
 nat_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
@@ -62,8 +67,6 @@ enw_aggregate_cumulative(nat_hosp, timestep = "week")
 Data converters
 \code{\link{enw_add_cumulative}()},
 \code{\link{enw_add_incidence}()},
-\code{\link{enw_cumulative_to_incidence}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_incidence_to_linelist}()},
 \code{\link{enw_linelist_to_incidence}()}
 }

@@ -2,10 +2,8 @@
 % Please edit documentation in R/preprocess.R
 \name{enw_filter_delay}
 \alias{enw_filter_delay}
-\title{Filter observations to restrict the maximum reporting delay}
+\title{Filter observations to have a consistent maximum delay period}
 \usage{
-enw_filter_delay(obs, max_delay, timestep = "day")
-
 enw_filter_delay(obs, max_delay, timestep = "day")
 }
 \arguments{
@@ -14,20 +12,33 @@ enw_filter_delay(obs, max_delay, timestep = "day")
 observations), and \code{confirm} (cumulative observations by reference and report
 date).}
 
-\item{max_delay}{The maximum number of days to model in the delay
-distribution. Must be an integer greater than or equal to 1. Observations
-with delays larger then the maximum delay will be dropped. If the specified
-maximum delay is too short, nowcasts can be biased as important parts of the
-true delay distribution are cut off. At the same time, computational cost
-scales non-linearly with this setting, so you want the maximum delay to be as
-long as necessary, but not much longer. Consider what delays are realistic
-for your application, and when in doubt, check if increasing the maximum
-delay noticeably changes the delay distribution or nowcasts as estimated by
-epinowcast. If it does, your maximum delay may still be too short.
-Note that delays are zero indexed and so include the reference date and
-\code{max_delay - 1} other days (i.e. a \code{max_delay} of 1 corresponds to
-no delay). You can use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a delay
-distribution for different maximum delays.}
+\item{max_delay}{The maximum delay to model in the delay
+distribution, specified in units of the timestep (e.g., if
+\code{timestep = "week"}, then \code{max_delay = 3} means 3 weeks). If not
+specified the maximum observed delay is assumed to be the true maximum
+delay in the model. Otherwise, an integer greater than or equal to 1
+can be specified. Observations with delays larger than the maximum
+delay will be dropped. If the specified maximum delay is too short,
+nowcasts can be biased as important parts of the true delay
+distribution are cut off. At the same time, computational cost scales
+non-linearly with this setting, so you want the maximum delay to be
+as long as necessary, but not much longer.
+
+Steps to take to determine the maximum delay:
+\itemize{
+\item Consider what is realistic and relevant for your application.
+\item Check the proportion of observations reported (\code{prop_reported})
+by delay in the \code{new_confirm} output of \code{enw_preprocess_obs}.
+\item Use \code{\link[=check_max_delay]{check_max_delay()}} to check the coverage of a candidate
+\code{max_delay}.
+\item If in doubt, check if increasing the maximum delay noticeably
+changes the delay distribution or nowcasts as estimated by
+\code{epinowcast}. If it does, your maximum delay may still be too short.
+}
+
+Note that delays are zero indexed and so include the reference date
+and \code{max_delay - 1} other intervals (i.e. a \code{max_delay} of 1
+corresponds to no delay).}
 
 \item{timestep}{The timestep to used in the process model (i.e. the
 reference date model). This can be a string ("day", "week", "month") or a
@@ -38,12 +49,9 @@ have this timestep then you may wish to make use of
 \value{
 A \code{data.frame} filtered so that dates by report are less than or
 equal the reference date plus the maximum delay.
-
-A \code{data.frame} filtered so that dates by report are less than or
-equal the reference date plus the maximum delay.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+Filter observations to have a consistent maximum delay period
 }
 \examples{
 obs <- enw_example("preprocessed")$obs[[1]]
@@ -69,26 +77,5 @@ Preprocessing functions
 \code{\link{enw_preprocess_data}()},
 \code{\link{enw_reporting_triangle}()},
 \code{\link{enw_reporting_triangle_to_long}()}
-
-Preprocessing functions
-\code{\link{enw_add_delay}()},
-\code{\link{enw_add_max_reported}()},
-\code{\link{enw_add_metaobs_features}()},
-\code{\link{enw_assign_group}()},
-\code{\link{enw_complete_dates}()},
-\code{\link{enw_construct_data}()},
-\code{\link{enw_extend_date}()},
-\code{\link{enw_filter_reference_dates}()},
-\code{\link{enw_filter_report_dates}()},
-\code{\link{enw_flag_observed_observations}()},
-\code{\link{enw_impute_na_observations}()},
-\code{\link{enw_latest_data}()},
-\code{\link{enw_metadata}()},
-\code{\link{enw_metadata_delay}()},
-\code{\link{enw_missing_reference}()},
-\code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_reporting_triangle_to_long}()}
 }
 \concept{preprocess}
-\keyword{internal}

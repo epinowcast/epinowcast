@@ -86,20 +86,20 @@ enw_example <- function(type = c(
 
 #' @title Coerce Dates
 #'
-#' @description Provides consistent coercion of inputs to [IDate]
-#' with error handling
+#' @description Provides consistent coercion of inputs to
+#' \link[data.table]{IDate} with error handling
 #'
 #' @param dates A vector-like input, which the function attempts
 #' to coerce via [data.table::as.IDate()]. Defaults to NULL.
 #'
-#' @return An [IDate] vector.
+#' @return An \link[data.table]{IDate} vector.
 #'
 #' @details If any of the elements of `dates` cannot be coerced,
 #' this function will result in an error, indicating all indices
-#' which cannot be coerced to [IDate].
+#' which cannot be coerced to \link[data.table]{IDate}.
 #'
 #' Internal methods of [epinowcast] assume dates are represented
-#' as [IDate].
+#' as \link[data.table]{IDate}.
 #'
 #' @export
 #' @importFrom data.table as.IDate
@@ -147,27 +147,33 @@ coerce_date <- function(dates = NULL) {
 #' This function converts the string representation of the timestep to its
 #' corresponding numeric value or returns the numeric input (if it is a whole
 #' number). For "day", "week", it returns 1 and 7 respectively.
-#' For "month", it returns "month" as months are not a fixed number of days.
+#' "month" is not supported and will throw an error.
 #' If the input is a numeric whole number, it is returned as is.
 #'
 #' @param timestep The timestep to used. This can be a string ("day",
-#' "week", "month") or a numeric whole number representing the number of days.
+#' "week") or a numeric whole number representing the number of days.
+#' Note that "month" is not currently supported in user-facing functions
+#' and will throw an error if used.
 #'
 #' @return A numeric value representing the number of days for "day" and
-#' "week", "month" for "month",  or the input value if it is a numeric whole
-#' number.
+#' "week", or the input value if it is a numeric whole number.
 #' @importFrom cli cli_abort
 #' @family utils
 get_internal_timestep <- function(timestep) {
   # check if the input is a character
   if (is.character(timestep)) {
-    switch(
-      timestep,
+    switch(timestep,
       day = 1,
       week = 7,
-      month = "month",  # months are not a fixed number of days
+      month = cli::cli_abort(
+        paste0(
+          "Calendar months are not currently supported. Consider using an ",
+          "approximate number of days (i.e. 28), a different timestep ",
+          "(i.e.'week'), or commenting on issue #309. "
+        )
+      ),
       cli::cli_abort(
-        "Invalid timestep. Acceptable string inputs are 'day', 'week', 'month'."
+        "Invalid timestep. Acceptable string inputs are 'day', 'week'."
       )
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
@@ -180,6 +186,64 @@ get_internal_timestep <- function(timestep) {
         "number representing the number of days."
       )
     )
+  }
+}
+
+#' Format delay with appropriate units
+#'
+#' Internal helper to format delays with units based on timestep.
+#' For weekly/custom timesteps, shows both timestep units and days.
+#'
+#' @param max_delay Integer delay value in timestep units
+#' @param timestep Timestep specification (character or numeric)
+#' @param daily_max_delay Pre-computed delay in days (optional)
+#'
+#' @return Character string with formatted delay
+#' @keywords internal
+.format_delay_with_units <- function(max_delay, timestep,
+                                     daily_max_delay = NULL) {
+  # Get internal timestep if not already computed
+  if (is.null(daily_max_delay)) {
+    internal_timestep <- get_internal_timestep(timestep)
+    daily_max_delay <- internal_timestep * max_delay
+  }
+
+  # Determine timestep unit name
+  timestep_unit <- if (is.character(timestep)) {
+    switch(timestep,
+      day = "day",
+      week = "week"
+    )
+  } else {
+    # Custom numeric timestep
+    paste0(timestep, "-day")
+  }
+
+  # Add plural if needed
+  if (!is.null(timestep_unit) && !is.na(timestep_unit) &&
+      !is.na(max_delay) && is.finite(max_delay) && max_delay != 1) {
+    timestep_unit <- paste0(timestep_unit, "s")
+  }
+
+  # Handle NA or infinite values
+  if (is.na(daily_max_delay) || !is.finite(daily_max_delay) ||
+      is.na(max_delay) || !is.finite(max_delay)) {
+    return("unknown delay")
+  }
+
+  # Format based on whether conversion adds information
+  if (is.character(timestep) && timestep == "day") {
+    # Daily: just show days
+    return(paste0(
+      daily_max_delay, " day",
+      if (daily_max_delay != 1) "s" else ""
+    ))
+  } else {
+    # Weekly or custom: show both
+    return(paste0(
+      max_delay, " ", timestep_unit, " (",
+      daily_max_delay, " days)"
+    ))
   }
 }
 
@@ -242,9 +306,8 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   mod_col_name <- paste0(date_column, "_mod")
 
   dt[, c(mod_col_name) := as.numeric(
-        get(date_column) - min(get(date_column), na.rm = TRUE)
-      ) %% timestep
-  ]
+    get(date_column) - min(get(date_column), na.rm = TRUE)
+  ) %% timestep]
   return(dt[])
 }
 
@@ -268,28 +331,28 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
 #'
 #' @keywords internal
 cache_location_message <- function() {
-    cache_location <- Sys.getenv("enw_cache_location")
-    if (check_environment_unset(cache_location)) {
+  cache_location <- Sys.getenv("enw_cache_location")
+  if (check_environment_unset(cache_location)) {
     # nolint start
-        msg <- c(
-            "!" = "`enw_cache_location` is not set.",
-            i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
-            i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
-            i = "For example: `enw_set_cache(tools::R_user_dir(package =
+    msg <- c(
+      "!" = "`enw_cache_location` is not set.",
+      i = "Using `tempdir()` at {tempdir()} for the epinowcast model cache location.",
+      i = "Set a specific cache location using `enw_set_cache` to control Stan recompilation in this R session or across R sessions.",
+      i = "For example: `enw_set_cache(tools::R_user_dir(package =
             \"epinowcast\", \"cache\"), type = c('session', 'persistent'))`.",
-            i = "See `?enw_set_cache` for details."
-        )
-    # nolint end 
-    } else {
-        msg <- c(
-            i = sprintf(
-                "Using `%s` for the epinowcast model cache location.", # nolint line_length
-                cache_location
-            )
-        )
-    }
+      i = "See `?enw_set_cache` for details."
+    )
+    # nolint end
+  } else {
+    msg <- c(
+      i = sprintf(
+        "Using `%s` for the epinowcast model cache location.", # nolint line_length
+        cache_location
+      )
+    )
+  }
 
-    return(msg)
+  return(msg)
 }
 
 #' Check environment setting
@@ -317,7 +380,6 @@ check_environment_unset <- function(x) {
 #' @return A list containing the contents of the `.Renviron` file and its path.
 #' @keywords internal
 get_renviron_contents <- function() {
-
   env_location <- getwd()
 
   if (file.exists(file.path(env_location, ".Renviron"))) {
@@ -350,7 +412,7 @@ get_renviron_contents <- function() {
 #' setting is found and successfully removed, a success message is displayed.
 #' If the setting is not found, a warning message is displayed.
 #'
-#' @param alter_on_not_set A logical value indicating whether to display a
+#' @param alert_on_not_set A logical value indicating whether to display a
 #' warning message if the `enw_cache_location` setting is not found in the
 #' `.Renviron` file. Defaults to `TRUE`.
 #'
@@ -359,24 +421,24 @@ get_renviron_contents <- function() {
 #' @seealso [get_renviron_contents()]
 #' @keywords internal
 unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
-    environ <- get_renviron_contents()
-    cache_loc_environ <- check_renviron_for_cache(environ)
-    if (any(cache_loc_environ)) {
-      new_environ <- environ
-      new_environ[["env_contents"]] <-
-       environ[["env_contents"]][!cache_loc_environ]
-      writeLines(new_environ$env_contents, new_environ$env_path)
-      cli::cli_alert_success(
-        "Removed `enw_cache_location` setting from `.Renviron`."
+  environ <- get_renviron_contents()
+  cache_loc_environ <- check_renviron_for_cache(environ)
+  if (any(cache_loc_environ)) {
+    new_environ <- environ
+    new_environ[["env_contents"]] <-
+      environ[["env_contents"]][!cache_loc_environ]
+    writeLines(new_environ$env_contents, new_environ$env_path)
+    cli::cli_alert_success(
+      "Removed `enw_cache_location` setting from `.Renviron`."
+    )
+  } else {
+    if (isTRUE(alert_on_not_set)) {
+      cli::cli_alert_danger(
+        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
       )
-    } else {
-      if (isTRUE(alert_on_not_set)) {
-        cli::cli_alert_danger(
-          "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
-        )
-      }
     }
-    return(invisible(NULL))
+  }
+  return(invisible(NULL))
 }
 
 #' Check `.Renviron` for cache location setting
@@ -385,7 +447,8 @@ unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
 #' @keywords internal
 check_renviron_for_cache <- function(environ) {
   cache_loc_environ <- grepl(
-    "enw_cache_location", environ[["env_contents"]], fixed = TRUE
+    "enw_cache_location", environ[["env_contents"]],
+    fixed = TRUE
   )
   return(cache_loc_environ)
 }

@@ -8,14 +8,15 @@ parse_formula(formula)
 }
 \arguments{
 \item{formula}{A model formula that may use standard fixed
-effects, random effects using \link{lme4} syntax (see \code{\link[=re]{re()}}), and random walks
-defined using the \code{\link[=rw]{rw()}} helper function.}
+effects, random effects using \link[lme4]{lme4} syntax (see \code{\link[=re]{re()}}), and
+random walks defined using the \code{\link[=rw]{rw()}} helper function. See the Details
+section below for a comprehensive explanation of the supported syntax.}
 }
 \value{
 A list of formula components. These currently include:
 \itemize{
 \item \code{fixed}: A character vector of fixed effect terms
-\item \code{random}: A list of of \link{lme4} style random effects
+\item \code{random}: A list of of \link[lme4]{lme4} style random effects
 \item \code{rw}: A character vector of \code{\link[=rw]{rw()}} random walk terms.
 }
 }
@@ -23,8 +24,8 @@ A list of formula components. These currently include:
 This function uses a series internal functions
 to break an input formula into its component parts each of which
 can then be handled separately. Currently supported components are
-fixed effects, \link{lme4} style random effects, and random walks using the
-\code{\link[=rw]{rw()}} helper function.
+fixed effects, \link[lme4]{lme4} style random effects, and random walks
+using the \code{\link[=rw]{rw()}} helper function.
 }
 \section{Reference}{
 

@@ -33,11 +33,12 @@ as using the \code{reference_date} and \code{report_date}). If not supplied
 then the function will aggregate by just the \code{reference_date} and
 \code{report_date}.}
 
-\item{max_delay}{The maximum number of days between the \code{reference_date}
-and the \code{report_date}. If not supplied then the function will use the
-maximum number of days between the \code{reference_date} and the \code{report_date}
-in the \code{linelist}. If the \code{max_delay} is less than the maximum number of
-days between the \code{reference_date} and the \code{report_date} in the \code{linelist}
+\item{max_delay}{The maximum delay (in days) between the
+\code{reference_date} and the \code{report_date}. If not supplied then the
+function will use the maximum observed delay. Note that this function
+operates before timestep conversion, so max_delay is always in days
+here. If the \code{max_delay} is less than the maximum number of days
+between the \code{reference_date} and the \code{report_date} in the \code{linelist}
 then the function will use this value instead and inform the user.}
 
 \item{completion_beyond_max_report}{Logical, should entries be completed
@@ -75,8 +76,6 @@ Data converters
 \code{\link{enw_add_cumulative}()},
 \code{\link{enw_add_incidence}()},
 \code{\link{enw_aggregate_cumulative}()},
-\code{\link{enw_cumulative_to_incidence}()},
-\code{\link{enw_incidence_to_cumulative}()},
 \code{\link{enw_incidence_to_linelist}()}
 }
 \concept{dataconverters}

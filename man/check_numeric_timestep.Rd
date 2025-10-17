@@ -13,7 +13,8 @@ check_numeric_timestep(dates, date_var, timestep, exact = TRUE)
 
 \item{timestep}{Numeric timestep for date difference.}
 
-\item{exact}{Logical, if \verb{TRUE``, checks if all differences exactly match the timestep. If }FALSE``, checks if the sum of the differences modulo the
+\item{exact}{Logical, if \code{TRUE}, checks if all differences exactly match the
+timestep. If \code{FALSE}, checks if the sum of the differences modulo the
 timestep equals zero. Default is \code{TRUE}.}
 }
 \value{
@@ -26,7 +27,6 @@ observations corresponds to the provided timestep.
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{check_calendar_timestep}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},

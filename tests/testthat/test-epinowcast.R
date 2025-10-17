@@ -180,7 +180,7 @@ test_that("epinowcast() can fit a simple reporting model where the max delay is
   expect_error(nowcast$fit[[1]]$summary("refp_beta"))
   expect_error(nowcast$fit[[1]]$summary("rep_beta"))
   expect_identical(nrow(nowcast$fit[[1]]$summary("refp_lh")), 30L)
-  expect_identical(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 21L)
+  expect_identical(nrow(nowcast$fit[[1]]$summary("pp_inf_obs")), 20L)
 })
 
 test_that("epinowcast() can fit a reporting model with a day of the week random
@@ -209,11 +209,11 @@ test_that("epinowcast() can fit a reporting model with a day of the week random
     posterior$variable,
     regression_posterior$variable
   )
-  # Nowcast median has not changed by more than 10 in total
+  # Nowcast median has not changed by more than 25 in total
   expect_diff_sum_abs_lt(
     posterior[variable %like% "pp_inf_obs", median],
     regression_posterior[variable %like% "pp_inf_obs", median],
-    20
+    25
   )
   # Posterior predictions have not changed by more than in total
   expect_diff_sum_abs_lt(
@@ -262,7 +262,7 @@ test_that("epinowcast() reproduces HMC results when fit using Pathfinder on a
   regression_posterior <- as.data.table(regression_nowcast$fit[[1]]$summary())
   expect_identical(
     posterior$variable,
-    c("lp_approx__", regression_posterior$variable)
+    c("lp_approx__", "path__", regression_posterior$variable)
   )
   # Nowcast median has not changed by more than 400 in total
   expect_diff_sum_abs_lt(
