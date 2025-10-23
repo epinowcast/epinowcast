@@ -36,7 +36,7 @@ enw_flag_report_day <- function(data) {
 # Aggregate data to weekly reporting cycle
 repcycle_germany_hosp <- nat_germany_hosp |>
   _[, day_of_week := weekdays(report_date)] |>
-  epinowcast:::aggregate_rolling_sum(
+  aggregate_rolling_sum(
     internal_timestep = 7,
     by = "reference_date",
     value_col = "confirm"

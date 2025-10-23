@@ -34,7 +34,9 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
                      int ref_p, int rep_h, int ref_as_p, array[] real phi,
                      int model_obs, vector refnp_lh, int ref_np,
                      array[] int sdmax, array[] int csdmax,
-                     int rep_agg_p, array[,] matrix rep_agg_indicators) {
+                     int rep_agg_p, array[,] matrix rep_agg_indicators,
+                     array[,,] int rep_agg_n_selected,
+                     array[,,,] int rep_agg_selected_idx) {
   real tar = 0;
   // Where am I in the observed data?
   array[3] int nc = filt_obs_indexes(start, end, cnsl, nsl);
@@ -54,7 +56,8 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
 
     // combine expected final obs and time effects to get expected obs
     log_exp_obs = expected_obs_from_snaps(
-      start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_indicators
+      start, end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
+      rep_agg_n_selected, rep_agg_selected_idx
     );
 
     // observation error model (across all reference dates and groups)
@@ -133,7 +136,9 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
                       array[] int sdmax, array[] int csdmax,
                       array[] int miss_st, array[] int miss_cst,
                       vector refnp_lh, int ref_np,
-                      int rep_agg_p, array[,] matrix rep_agg_indicators) {
+                      int rep_agg_p, array[,] matrix rep_agg_indicators,
+                      array[,,] int rep_agg_n_selected,
+                      array[,,,] int rep_agg_selected_idx) {
   // Where am I?
   real tar = 0;
   int i_start = ts[1, start];
@@ -157,7 +162,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
 
     // Calculate all expected observations
     log_exp_all = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_indicators
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sdmax, csdmax, sg, st, f[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
+      rep_agg_n_selected, rep_agg_selected_idx
     );
 
     // Allocate to just those actually observed
@@ -179,7 +185,8 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     }
   }else{
     log_exp_obs = expected_obs_from_snaps(
-      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_indicators
+      i_start, i_end, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, sl, csl, sg, st, n[3], refnp_lh, ref_np, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
+      rep_agg_n_selected, rep_agg_selected_idx
     );
   }
   // Observation error model (across all reference dates and groups)
@@ -192,16 +199,63 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     for (i in 1:nc[3]) {
       filt_obs_lookup_local[i] = filt_obs_lookup[i] - n[1] + 1;
     }
-    print("Observed");
-    print(filt_obs);
-    print("Expected");
-    print(log_exp_obs);
-    print("Expected observed");
-    print(log_exp_obs[filt_obs_lookup_local]);
 
+    // === DEBUG: Check for -Inf at observed positions ===
+    print("=== LIKELIHOOD nc[3]=", nc[3], " n[3]=", n[3], " ===");
+
+    // Check ALL log_exp_obs for non-finite values
+    int n_inf_total = 0;
+    int n_nan_total = 0;
+    for (i in 1:n[3]) {
+      if (is_inf(log_exp_obs[i]) && log_exp_obs[i] < 0) n_inf_total += 1;
+      if (is_nan(log_exp_obs[i])) n_nan_total += 1;
+    }
+    print("Total -Inf in log_exp_obs:", n_inf_total, "/", n[3]);
+    print("Total NaN in log_exp_obs:", n_nan_total, "/", n[3]);
+
+    // Check at observed positions
+    int n_inf_at_obs = 0;
+    int n_nan_at_obs = 0;
+    for (i in 1:nc[3]) {
+      int idx = filt_obs_lookup_local[i];
+      if (is_inf(log_exp_obs[idx]) && log_exp_obs[idx] < 0) {
+        n_inf_at_obs += 1;
+        if (n_inf_at_obs <= 5) {
+          print("  -Inf at obs ", i, " idx=", idx, " count=", filt_obs[i]);
+        }
+      }
+      if (is_nan(log_exp_obs[idx])) {
+        n_nan_at_obs += 1;
+        if (n_nan_at_obs <= 5) {
+          print("  NaN at obs ", i, " idx=", idx, " count=", filt_obs[i]);
+        }
+      }
+    }
+    print("Total -Inf at observed positions:", n_inf_at_obs, "/", nc[3]);
+    print("Total NaN at observed positions:", n_nan_at_obs, "/", nc[3]);
+
+    if (n_inf_at_obs > 0 || n_nan_at_obs > 0) {
+      print("*** CRITICAL ERROR: Non-finite values at observed positions! ***");
+    }
+
+    // Compute likelihood
     tar = obs_lpmf(
       filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
     );
+
+    // Check if likelihood is finite
+    print("Likelihood tar:", tar, " is_finite:", !is_inf(tar) && !is_nan(tar));
+    if (is_inf(tar) || is_nan(tar)) {
+      print("*** LIKELIHOOD IS NOT FINITE! ***");
+      print("  First few log_exp_obs values:");
+      for (i in 1:min(5, nc[3])) {
+        int idx = filt_obs_lookup_local[i];
+        print("    obs[", i, "]:", filt_obs[i], " log_exp:", log_exp_obs[idx]);
+      }
+      print("  phi[1]:", phi[1]);
+      print("  model_obs:", model_obs);
+    }
+    print("============================");
   }
   if (model_miss && miss_obs) {
     array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);

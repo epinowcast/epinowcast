@@ -266,7 +266,9 @@ get_internal_timestep <- function(timestep) {
 #' @family utils
 aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL,
   value_col = "confirm") {
-  dt[, value_col := {
+  # Use .SD approach to access column
+  dt[, (value_col) := {
+    col_values <- .SD[[1]]  # Get first column from .SD
     n_vals <- if (.N <= internal_timestep) {
       seq_len(.N)
     } else {
@@ -275,10 +277,11 @@ aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL,
         rep(internal_timestep, .N - (internal_timestep - 1))
       )
     }
-    frollsum(value_col, n_vals, adaptive = TRUE)
+    frollsum(col_values, n_vals, adaptive = TRUE)
   },
   by = by,
-  env = list(internal_timestep = internal_timestep, value_col = value_col)
+  .SDcols = value_col,
+  env = list(internal_timestep = internal_timestep)
   ]
 
   return(dt[])

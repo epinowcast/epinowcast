@@ -99,7 +99,10 @@
  * eobs |> exp() |> plot()
  * @endcode
  */
-vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p, matrix rep_agg_indicator) {
+vector expected_obs(
+  real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p,
+  matrix rep_agg_indicator, array[] int n_selected, array[,] int selected_idx
+) {
   vector[l] p;
   if (ref_as_p == 1) {
     p = lh;
@@ -111,8 +114,63 @@ vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p,
     p = hazard_to_log_prob(p, l);
     }
   }
+  // === DEBUG: Check p before aggregation ===
   if (rep_agg_p == 1) {
-    p = log(rep_agg_indicator * exp(p));
+    vector[l] p_prob_before = exp(p);
+    int n_inf_before = 0;
+    for (i in 1:l) {
+      if (is_inf(p[i]) && p[i] < 0) n_inf_before += 1;
+    }
+    print("=== AGGREGATION l=", l, " ===");
+    print("Before agg: prob_sum=", sum(p_prob_before), " n_inf=", n_inf_before);
+    if (n_inf_before > 0) {
+      print("WARNING: -Inf exists BEFORE aggregation!");
+    }
+
+    // Check matrix
+    int n_nonzero_rows = 0;
+    for (row in 1:l) {
+      if (sum(rep_agg_indicator[row,:]) > 0) {
+        n_nonzero_rows += 1;
+      }
+    }
+    print("Matrix non-zero rows:", n_nonzero_rows);
+
+    // Use log_sum_exp for numerical stability with precomputed indices
+    // Indices were precomputed on R side to avoid computation in autodiff
+    // Filter indices to only include those <= l (for variable-length extraction)
+    vector[l] p_aggregated;
+    for (i in 1:l) {
+      int n_sel_orig = n_selected[i];
+      array[l] int valid_idx;
+      int n_valid = 0;
+
+      // Filter indices to only those within bounds
+      // Also limit loop to l since selected_idx is dimensioned [l, l]
+      int max_j = min(n_sel_orig, l);
+      for (j in 1:max_j) {
+        if (selected_idx[i, j] <= l && selected_idx[i, j] > 0) {
+          n_valid += 1;
+          valid_idx[n_valid] = selected_idx[i, j];
+        }
+      }
+
+      // Aggregate the selected p values using log_sum_exp
+      if (n_valid > 0) {
+        p_aggregated[i] = log_sum_exp(p[valid_idx[1:n_valid]]);
+      } else {
+        p_aggregated[i] = negative_infinity();
+      }
+    }
+    p = p_aggregated;
+
+    // Check after
+    int n_inf_after = 0;
+    for (i in 1:l) {
+      if (is_inf(p[i]) && p[i] < 0) n_inf_after += 1;
+    }
+    print("After agg: n_inf=", n_inf_after, " (expected ", l - n_nonzero_rows, ")");
+    print("========================");
   }
   return(tar_obs + p);
 }

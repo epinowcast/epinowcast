@@ -55,13 +55,17 @@
  *  - `expected_obs`
  *
  */
-vector expected_obs_from_index(int i, array[] vector imp_obs,
-                               array[,] int rdlurd, vector srdlh,
-                               matrix refp_lh, array[] int dpmfs, int ref_p,
-                               int rep_h, int ref_as_p, int g, int t, int l,
-                               vector refnp_lh, int ref_np, int p,
-                               int rep_agg_p, 
-                               array[,] matrix rep_agg_indicator) {
+vector expected_obs_from_index(
+  int i, array[] vector imp_obs,
+  array[,] int rdlurd, vector srdlh,
+  matrix refp_lh, array[] int dpmfs, int ref_p,
+  int rep_h, int ref_as_p, int g, int t, int l,
+  vector refnp_lh, int ref_np, int p,
+  int rep_agg_p,
+  array[,] matrix rep_agg_indicator,
+  array[,,] int rep_agg_n_selected,
+  array[,,,] int rep_agg_selected_idx
+) {
   vector[l] lh;
   vector[l] log_exp_obs;
   profile("model_likelihood_hazard_allocations") {
@@ -72,14 +76,43 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
   }
   // Extract the reporting aggregation matrix for the given group and time
   matrix[l, l] rep_agg_indicator_mat;
+  array[l] int n_sel;
+  array[l, l] int sel_idx;
   if (rep_agg_p == 1) {
     rep_agg_indicator_mat = rep_agg_indicator[g][t][1:l, 1:l];
+    // Extract the precomputed selected indices for this group/time
+    n_sel = rep_agg_n_selected[g, t, 1:l];
+    sel_idx = rep_agg_selected_idx[g, t, 1:l, 1:l];
+
+    // === DEBUG: Print full and extracted matrices for first few observations ===
+    // if (i <= 5) {
+    //   print("=== MATRIX EXTRACTION i=", i, " g=", g, " t=", t, " l=", l, " ===");
+    //   print("Full 7x7 matrix from array [g][t]:");
+    //   print(rep_agg_indicator[g][t]);
+    //   print("Extracted submatrix [1:", l, ", 1:", l, "]:");
+    //   print(rep_agg_indicator_mat);
+
+    //   // Count non-zero rows in both
+    //   int full_nonzero = 0;
+    //   int sub_nonzero = 0;
+    //   for (row in 1:7) {
+    //     if (sum(rep_agg_indicator[g][t][row,:]) > 0) full_nonzero += 1;
+    //   }
+    //   for (row in 1:l) {
+    //     if (sum(rep_agg_indicator_mat[row,:]) > 0) sub_nonzero += 1;
+    //   }
+    //   print("Full matrix non-zero rows:", full_nonzero);
+    //   print("Submatrix non-zero rows:", sub_nonzero);
+    //   print("=========================================");
+    // }
   }
   // Find final observed/imputed expected observation
   // combine expected final obs and time effects to get expected obs
   profile("model_likelihood_expected_obs") {
-    log_exp_obs = expected_obs(imp_obs[g][t], lh, l, ref_as_p, rep_agg_p,
-    rep_agg_indicator_mat);
+    log_exp_obs = expected_obs(
+      imp_obs[g][t], lh, l, ref_as_p, rep_agg_p,
+      rep_agg_indicator_mat, n_sel, sel_idx
+    );
   }
   return(log_exp_obs);
 }
@@ -143,15 +176,19 @@ vector expected_obs_from_index(int i, array[] vector imp_obs,
  * Dependencies:
  *  - `expected_obs_from_index`
  */
-vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
-                               array[,] int rdlurd, vector srdlh,
-                               matrix refp_lh, array[] int dpmfs,
-                               int ref_p, int rep_h, int ref_as_p,
-                               array[] int sl, array[] int csl,
-                               array[] int sg, array[] int st, int n,
-                               vector refnp_lh, int ref_np, array[] int sdmax,
-                               array[] int csdmax, int rep_agg_p,
-                               array[,] matrix rep_agg_indicator) {
+vector expected_obs_from_snaps(
+  int start, int end, array[] vector imp_obs,
+  array[,] int rdlurd, vector srdlh,
+  matrix refp_lh, array[] int dpmfs,
+  int ref_p, int rep_h, int ref_as_p,
+  array[] int sl, array[] int csl,
+  array[] int sg, array[] int st, int n,
+  vector refnp_lh, int ref_np, array[] int sdmax,
+  array[] int csdmax, int rep_agg_p,
+  array[,] matrix rep_agg_indicator,
+  array[,,] int rep_agg_n_selected,
+  array[,,,] int rep_agg_selected_idx
+) {
   vector[n] log_exp_obs;
   int ssnap = 1;
   int esnap = 0;
@@ -173,7 +210,8 @@ vector expected_obs_from_snaps(int start, int end, array[] vector imp_obs,
       esnap += l;
       log_exp_obs[ssnap:esnap] = expected_obs_from_index(
         i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t,
-        l, refnp_lh, ref_np, p, rep_agg_p, rep_agg_indicator
+        l, refnp_lh, ref_np, p, rep_agg_p, rep_agg_indicator,
+        rep_agg_n_selected, rep_agg_selected_idx
       );
       ssnap += l;
     }

@@ -116,6 +116,9 @@ data {
   // Reporting probability aggregation indicators
   int rep_agg_p;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0] matrix [rep_agg_p ? dmax : 0, rep_agg_p ? dmax : 0] rep_agg_indicators;
+  // Precomputed selected indices for log_sum_exp aggregation
+  array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
+  array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0, rep_agg_p ? dmax : 0] int rep_agg_selected_idx;
 
   // Missing reference date model
   int model_miss;
@@ -320,6 +323,19 @@ transformed parameters{
 } 
   
 model {
+  print("=== MODEL BLOCK ENTRY ===");
+  print("Initial target():", target());
+  print("Key parameters:");
+  print("  sqrt_phi[1]:", sqrt_phi[1]);
+  print("  phi[1]:", phi[1]);
+  if (model_refp) {
+    print("  refp_mean_int:", refp_mean_int);
+    if (model_refp > 1) {
+      print("  refp_sd_int:", refp_sd_int);
+    }
+  }
+  print("  expr_lelatent_int[1]:", expr_lelatent_int[1]);
+
   profile("model_priors") {
   // Expectation model
   // ---- Growth rate submodule ----
@@ -388,8 +404,14 @@ model {
   }
   
   }
+
+  print("=== AFTER PRIORS ===");
+  print("Target after priors:", target());
+  print("Is target finite?:", !is_inf(target()) && !is_nan(target()));
+
   // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
+    print("=== ENTERING LIKELIHOOD ===");
     profile("model_likelihood") {
     if (parallelise_likelihood) {
       if (ll_aggregation) {
@@ -398,14 +420,16 @@ model {
           flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-          refnp_lh, model_refnp, rep_agg_p, rep_agg_indicators
+          refnp_lh, model_refnp, rep_agg_p, rep_agg_indicators,
+          rep_agg_n_selected, rep_agg_selected_idx
         );
       } else {
         target += reduce_sum(
           delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
-          model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_indicators
+          model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
+          rep_agg_n_selected, rep_agg_selected_idx
         );
       }
     } else {
@@ -414,7 +438,8 @@ model {
         ts, st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-        refnp_lh, model_refnp, rep_agg_p, rep_agg_indicators
+        refnp_lh, model_refnp, rep_agg_p, rep_agg_indicators,
+        rep_agg_n_selected, rep_agg_selected_idx
       );
     }
   }
@@ -443,7 +468,8 @@ generated quantities {
     log_exp_obs_all = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
-      model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_indicators
+      model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
+      rep_agg_n_selected, rep_agg_selected_idx
     );
     
     if (model_miss) {

@@ -286,15 +286,51 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
       )
     }
     data_list$rep_agg_p <- 1
+    # Initialize empty array
     data_list$rep_agg_indicators <- array(
-      unlist(structural),
+      0,
       dim = c(
         data$groups[[1]], data$time[[1]], data$max_delay, data$max_delay
       )
     )
+    # Fill array manually to preserve matrix structure
+    # Using unlist() would scramble matrices across time points
+    for (g in seq_along(structural)) {
+      for (t in seq_along(structural[[g]])) {
+        data_list$rep_agg_indicators[g, t, , ] <- structural[[g]][[t]]
+      }
+    }
+
+    # Precompute selected indices for log_sum_exp aggregation
+    # For each row, find which columns have 1s
+    max_d <- data$max_delay
+    data_list$rep_agg_n_selected <- array(
+      0L,
+      dim = c(data$groups[[1]], data$time[[1]], max_d)
+    )
+    data_list$rep_agg_selected_idx <- array(
+      0L,
+      dim = c(data$groups[[1]], data$time[[1]], max_d, max_d)
+    )
+
+    for (g in seq_along(structural)) {
+      for (t in seq_along(structural[[g]])) {
+        mat <- structural[[g]][[t]]
+        for (row in seq_len(nrow(mat))) {
+          indices <- which(mat[row, ] > 0)
+          n_sel <- length(indices)
+          data_list$rep_agg_n_selected[g, t, row] <- n_sel
+          if (n_sel > 0) {
+            data_list$rep_agg_selected_idx[g, t, row, seq_len(n_sel)] <- indices
+          }
+        }
+      }
+    }
   } else {
     data_list$rep_agg_p <- 0
     data_list$rep_agg_indicators <- list()
+    data_list$rep_agg_n_selected <- array(0L, dim = c(0, 0, 0))
+    data_list$rep_agg_selected_idx <- array(0L, dim = c(0, 0, 0, 0))
   }
 
   # map report date effects to groups and times
