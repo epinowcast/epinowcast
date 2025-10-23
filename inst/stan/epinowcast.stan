@@ -323,19 +323,6 @@ transformed parameters{
 } 
   
 model {
-  print("=== MODEL BLOCK ENTRY ===");
-  print("Initial target():", target());
-  print("Key parameters:");
-  print("  sqrt_phi[1]:", sqrt_phi[1]);
-  print("  phi[1]:", phi[1]);
-  if (model_refp) {
-    print("  refp_mean_int:", refp_mean_int);
-    if (model_refp > 1) {
-      print("  refp_sd_int:", refp_sd_int);
-    }
-  }
-  print("  expr_lelatent_int[1]:", expr_lelatent_int[1]);
-
   profile("model_priors") {
   // Expectation model
   // ---- Growth rate submodule ----
@@ -405,13 +392,8 @@ model {
   
   }
 
-  print("=== AFTER PRIORS ===");
-  print("Target after priors:", target());
-  print("Is target finite?:", !is_inf(target()) && !is_nan(target()));
-
   // Log-Likelihood either by snapshot or group depending on settings/model
   if (likelihood) {
-    print("=== ENTERING LIKELIHOOD ===");
     profile("model_likelihood") {
     if (parallelise_likelihood) {
       if (ll_aggregation) {

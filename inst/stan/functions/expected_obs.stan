@@ -114,28 +114,7 @@ vector expected_obs(
     p = hazard_to_log_prob(p, l);
     }
   }
-  // === DEBUG: Check p before aggregation ===
   if (rep_agg_p == 1) {
-    vector[l] p_prob_before = exp(p);
-    int n_inf_before = 0;
-    for (i in 1:l) {
-      if (is_inf(p[i]) && p[i] < 0) n_inf_before += 1;
-    }
-    print("=== AGGREGATION l=", l, " ===");
-    print("Before agg: prob_sum=", sum(p_prob_before), " n_inf=", n_inf_before);
-    if (n_inf_before > 0) {
-      print("WARNING: -Inf exists BEFORE aggregation!");
-    }
-
-    // Check matrix
-    int n_nonzero_rows = 0;
-    for (row in 1:l) {
-      if (sum(rep_agg_indicator[row,:]) > 0) {
-        n_nonzero_rows += 1;
-      }
-    }
-    print("Matrix non-zero rows:", n_nonzero_rows);
-
     // Use log_sum_exp for numerical stability with precomputed indices
     // Indices were precomputed on R side to avoid computation in autodiff
     // Filter indices to only include those <= l (for variable-length extraction)
@@ -163,14 +142,6 @@ vector expected_obs(
       }
     }
     p = p_aggregated;
-
-    // Check after
-    int n_inf_after = 0;
-    for (i in 1:l) {
-      if (is_inf(p[i]) && p[i] < 0) n_inf_after += 1;
-    }
-    print("After agg: n_inf=", n_inf_after, " (expected ", l - n_nonzero_rows, ")");
-    print("========================");
   }
   return(tar_obs + p);
 }

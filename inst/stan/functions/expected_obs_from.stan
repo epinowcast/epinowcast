@@ -84,27 +84,6 @@ vector expected_obs_from_index(
     n_sel = rep_agg_n_selected[g, t, 1:l];
     sel_idx = rep_agg_selected_idx[g, t, 1:l, 1:l];
 
-    // === DEBUG: Print full and extracted matrices for first few observations ===
-    // if (i <= 5) {
-    //   print("=== MATRIX EXTRACTION i=", i, " g=", g, " t=", t, " l=", l, " ===");
-    //   print("Full 7x7 matrix from array [g][t]:");
-    //   print(rep_agg_indicator[g][t]);
-    //   print("Extracted submatrix [1:", l, ", 1:", l, "]:");
-    //   print(rep_agg_indicator_mat);
-
-    //   // Count non-zero rows in both
-    //   int full_nonzero = 0;
-    //   int sub_nonzero = 0;
-    //   for (row in 1:7) {
-    //     if (sum(rep_agg_indicator[g][t][row,:]) > 0) full_nonzero += 1;
-    //   }
-    //   for (row in 1:l) {
-    //     if (sum(rep_agg_indicator_mat[row,:]) > 0) sub_nonzero += 1;
-    //   }
-    //   print("Full matrix non-zero rows:", full_nonzero);
-    //   print("Submatrix non-zero rows:", sub_nonzero);
-    //   print("=========================================");
-    // }
   }
   // Find final observed/imputed expected observation
   // combine expected final obs and time effects to get expected obs
