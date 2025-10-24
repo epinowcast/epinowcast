@@ -230,13 +230,15 @@ enw_reference <- function(
 #' (internally converted to `~1` and flagged as inactive). See [enw_formula()]
 #' for details on formula syntax.
 #'
-#' @param structural A nested list of matrices by group and reference date
-#' describing the known reporting structure (i.e weekday only reporting).
-#' Each matrix should have dimensions of max_delay x max_delay, where
-#' each column represents the probability of an observation being reported
-#' on a specific day given the delay. This is particularly useful for
-#' modeling fixed reporting cycles, such as weekly reporting on Wednesdays
-#' as seen in the German hospitalization data example.
+#' @param structural A `data.table` describing the known reporting structure
+#' (e.g., weekday-only reporting). This should be created using
+#' [enw_dayofweek_structural_reporting()] for day-of-week patterns, or
+#' [enw_structural_reporting_metadata()] as a base for custom patterns.
+#' The data.table must have columns: `.group`, `date`, `report_date`, and
+#' `report` (binary indicator where 1 = reporting occurs). This is particularly
+#' useful for modeling fixed reporting cycles, such as Wednesday-only reporting
+#' as seen in the German hospitalisation data example. Set to `NULL` to
+#' disable (default).
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
@@ -245,7 +247,17 @@ enw_reference <- function(
 #' @family modelmodules
 #' @export
 #' @examples
+#' # Basic report model
 #' enw_report(data = enw_example("preprocessed"))
+#'
+#' \dontrun{
+#' # With Wednesday-only reporting structure
+#' pobs <- enw_example("preprocessed")
+#' structural <- enw_dayofweek_structural_reporting(
+#'   pobs, day_of_week = "Wednesday"
+#' )
+#' enw_report(structural = structural, data = pobs)
+#' }
 enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
@@ -266,66 +278,22 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     cli::cli_alert_warning(
       "The structural reporting model is in experimental development"
     )
-    if (!is.list(structural) ||
-        length(structural) != data$groups[[1]] ||
-        !all(sapply(structural, function(x) length(x) == data$time[[1]])) ||
-        !all(sapply(structural, function(x) {
-          all(
-            sapply(
-              x, function(y) all(dim(y) == c(data$max_delay, data$max_delay))
-            )
-          )
-        })
-      )) {
-      cli::cli_abort(
-        paste0(
-          "`structural` should be a list of groups, each containing a list of ",
-          "reference times, where each entry is a matrix of Max Delay x Max
-           Delay."
-        )
-      )
-    }
+
+    # Convert data.table to nested list of matrices
+    structural <- .structural_reporting_to_matrices(structural, data)
+
     data_list$rep_agg_p <- 1
-    # Initialize empty array
-    data_list$rep_agg_indicators <- array(
-      0,
-      dim = c(
-        data$groups[[1]], data$time[[1]], data$max_delay, data$max_delay
-      )
+    # Convert structural list to arrays for Stan
+    # This preserves matrix structure and precomputes indices for log_sum_exp
+    arrays <- .convert_structural_to_arrays(
+      structural,
+      n_groups = data$groups[[1]],
+      n_times = data$time[[1]],
+      max_delay = data$max_delay
     )
-    # Fill array manually to preserve matrix structure
-    # Using unlist() would scramble matrices across time points
-    for (g in seq_along(structural)) {
-      for (t in seq_along(structural[[g]])) {
-        data_list$rep_agg_indicators[g, t, , ] <- structural[[g]][[t]]
-      }
-    }
-
-    # Precompute selected indices for log_sum_exp aggregation
-    # For each row, find which columns have 1s
-    max_d <- data$max_delay
-    data_list$rep_agg_n_selected <- array(
-      0L,
-      dim = c(data$groups[[1]], data$time[[1]], max_d)
-    )
-    data_list$rep_agg_selected_idx <- array(
-      0L,
-      dim = c(data$groups[[1]], data$time[[1]], max_d, max_d)
-    )
-
-    for (g in seq_along(structural)) {
-      for (t in seq_along(structural[[g]])) {
-        mat <- structural[[g]][[t]]
-        for (row in seq_len(nrow(mat))) {
-          indices <- which(mat[row, ] > 0)
-          n_sel <- length(indices)
-          data_list$rep_agg_n_selected[g, t, row] <- n_sel
-          if (n_sel > 0) {
-            data_list$rep_agg_selected_idx[g, t, row, seq_len(n_sel)] <- indices
-          }
-        }
-      }
-    }
+    data_list$rep_agg_indicators <- arrays$indicators
+    data_list$rep_agg_n_selected <- arrays$n_selected
+    data_list$rep_agg_selected_idx <- arrays$selected_idx
   } else {
     data_list$rep_agg_p <- 0
     data_list$rep_agg_indicators <- list()

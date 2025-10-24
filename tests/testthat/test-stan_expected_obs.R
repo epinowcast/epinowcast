@@ -64,19 +64,63 @@ test_that("expected_obs() works correctly with multiple hazards", {
   expect_equal(eobs, expected, tolerance = 1e-3)
 })
 
-test_that("expected_obs() aggregates probabilities correctly", {
+test_that("expected_obs() aggregates probabilities with precomputed indices", {
   tar_obs <- log(1)
   lh <- log(
     (plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
-    )
+  )
+
+  # Create aggregation matrix: every 5th element aggregates the previous 5
   agg_probs <- matrix(c(rep(0, times = 30 * 4),
                         rep(c(rep(1, times = 5),
                               rep(0, times = 6 * 5 + 30 * 4)),
                             times = 5),
                         rep(1, times = 5)), ncol = 30, byrow = TRUE)
+
+  # Precompute indices using helper function
+  indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
+  n_selected <- indices_list$n_selected
+  selected_idx <- indices_list$selected_idx
+
+  # Test with precomputed indices
   exp_obs <- expected_obs(
-    tar_obs, lh, length(lh), ref_as_p = 1, 1, agg_probs
+    tar_obs, lh, length(lh), ref_as_p = 1, 1,
+    agg_probs, n_selected, selected_idx
   )
+
+  # Expected output using matrix multiplication
   exp_output <- as.vector(tar_obs + log(agg_probs %*% exp(lh)))
-  expect_equal(object = exp_obs, expected = exp_output, tolerance = 1e-15)
+
+  expect_equal(object = exp_obs, expected = exp_output, tolerance = 1e-10)
+})
+
+test_that("expected_obs() handles structural zeros with precomputed indices", {
+  # Wednesday-only reporting: only day 4 reports (aggregates days 1-7)
+  tar_obs <- log(100)
+  lh <- log(c(0.2, 0.2, 0.2, 0.2, 0.1, 0.05, 0.05))
+
+  # Aggregation matrix: only row 4 has entries
+  agg_probs <- matrix(0, nrow = 7, ncol = 7)
+  agg_probs[4, ] <- 1
+
+  # Precompute indices using helper function
+  indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
+  n_selected <- indices_list$n_selected
+  selected_idx <- indices_list$selected_idx
+
+  exp_obs <- expected_obs(
+    tar_obs, lh, 7, ref_as_p = 1, 1,
+    agg_probs, n_selected, selected_idx
+  )
+
+  # Only Wednesday (day 4) should have finite value
+  expect_true(is.finite(exp_obs[4]))
+  expect_true(all(is.infinite(exp_obs[-4])))
+
+  # Wednesday should aggregate all probabilities
+  expect_equal(
+    exp_obs[4],
+    tar_obs + log(sum(exp(lh))),
+    tolerance = 1e-10
+  )
 })
