@@ -89,7 +89,6 @@ See #541 by @seabbs and self-reviewed.
 - Support for probability aggregation has been added to `expected_obs()`. See #482 by @jessalynnsebastian and reviewed by @seabbs.
 - Added actions to build precompiled actions both when updated and pushed to main and on a schedule. This aims to avoid issues where the precompiled actions are not up to date with the latest changes. See #494 by @seabbs and reviewed by @sbfnk.
 - A new interface has been added to `scoringutils` to allow for scoring nowcasts. This is now available in `epinowcast` via `as_forecast_sample()`. See #550 by @seabbs and self-reviewed.
-- Exported `enw_rolling_sum()` function for aggregating observations over timesteps. This function was previously internal but is needed for users working with non-daily reporting cycles. See #528 by @seabbs and self-reviewed.
 
 ## Model
 
