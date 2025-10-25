@@ -276,7 +276,7 @@ enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
         rep(internal_timestep, .N - (internal_timestep - 1))
       )
     }
-    frollsum(get(value_col), n_vals, adaptive = TRUE)
+    frollsum(.SD[[value_col]], n_vals, adaptive = TRUE)
   },
   by = by,
   env = list(internal_timestep = internal_timestep, value_col = value_col)
