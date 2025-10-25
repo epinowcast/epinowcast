@@ -99,7 +99,6 @@ See #541 by @seabbs and self-reviewed.
 - Optimised internal performance critical stan functions to improve speed and reduce memory usage. See #513 by @seabbs and reviewed by @pearsonca.
 - Added support for sparse design matrices to the model (see `sparse_design` in `enw_fit_opts()`). For very sparse design matrices this can reduce memory requirements and computation time. A heuristic has been added to inform users if sparse design matrices are useful for you. See #514 by @seabbs and reviewed by @pearsonca.
 - Added support for a negative binomial observation model with a linear mean-variance relationship as an option of the `model_obs` argument of `epinowcast()`. See #590 by @barbora-sobolova and reviewed by @seabbs.
-- Added support for structural reporting patterns in `enw_report()` via new helper functions `enw_structural_reporting_metadata()` and `enw_dayofweek_structural_reporting()`. This enables modelling of non-daily reporting cycles (e.g., weekly) with a daily underlying generative model. Stan optimizations include precomputing sparse index lookups for aggregation operations to improve computational efficiency and numerical stability. See #528 by @seabbs and self-reviewed.
 
 ## Documentation
 
