@@ -1,3 +1,29 @@
+# epinowcast 0.4.0.1000
+
+## Contributors
+
+@athowes, @kaitejohnson, @jamesmbaazam, @jessalynnsebastian, @Bisaloo, @barbora-sobolova and @seabbs contributed code to this release.
+
+@medewitt, @jessalynnsebastian, @pearsonca, @jamesmbaazam, and @seabbs reviewed pull requests for this release.
+
+@pearsonca, @jessalynnsebastian, @athowes, @medewitt, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+
+## Breaking changes
+
+## Bugs
+
+## Package
+
+- Exported `enw_rolling_sum()` function for aggregating observations over timesteps. This function was previously internal but is needed for users working with non-daily reporting cycles. See #528 by @seabbs and self-reviewed.
+
+## Model
+
+- Added support for structural reporting patterns in `enw_report()` via new helper functions `enw_structural_reporting_metadata()` and `enw_dayofweek_structural_reporting()`. This enables modelling of non-daily reporting cycles (e.g., weekly) with a daily underlying generative model. Stan optimizations include precomputing sparse index lookups for aggregation operations to improve computational efficiency and numerical stability. See #528 by @seabbs and self-reviewed.
+
+## Documentation
+
+## Depreciations
+
 # epinowcast 0.4.0
 
 This release adds a new use cases vignette to help users understand when and how to apply the package to different problems.
