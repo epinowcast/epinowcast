@@ -353,7 +353,7 @@ enw_aggregate_cumulative <- function(
   agg_obs <- agg_obs[report_date_mod == 0]
 
   # Aggregate over the timestep
-  agg_obs <- aggregate_rolling_sum(
+  agg_obs <- enw_rolling_sum(
     agg_obs, internal_timestep, by = c("report_date", ".group")
   )
 
@@ -364,7 +364,7 @@ enw_aggregate_cumulative <- function(
   # If there are missing reference dates, aggregate over the report date
   # using the desired reporting timestep
   if (nrow(agg_obs_na_ref) > 0) {
-    agg_obs_na_ref <- aggregate_rolling_sum(
+    agg_obs_na_ref <- enw_rolling_sum(
       agg_obs_na_ref, internal_timestep, by = ".group"
     )
     agg_obs_na_ref <- agg_obs_na_ref[report_date_mod == 0]

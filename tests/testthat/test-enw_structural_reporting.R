@@ -84,3 +84,57 @@ test_that("enw_dayofweek_structural_reporting maintains grid structure", {
         structural[order(.group, date, report_date), .I])
   )
 })
+
+test_that("epinowcast() with weekly reporting and structural model converges", {
+  skip_on_cran()
+  skip_on_local()
+
+  # Prepare weekly reporting data like the example
+  obs <- run_window_filter(
+    germany_covid19_hosp[age_group == "00+"][location == "DE"]
+  )
+
+  # Add day of week and aggregate to weekly
+  obs[, day_of_week := weekdays(report_date)]
+  weekly_obs <- enw_rolling_sum(
+    obs,
+    internal_timestep = 7,
+    by = "reference_date",
+    value_col = "confirm"
+  )
+
+  # Keep only Wednesday reports
+  weekly_obs[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)]
+  weekly_obs <- enw_flag_observed_observations(weekly_obs)
+
+  # Preprocess
+  pobs <- enw_preprocess_data(weekly_obs, max_delay = 10)
+
+  # Create Wednesday structural reporting
+  structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
+
+  # Fit model
+  nowcast <- suppressMessages(epinowcast(pobs,
+    expectation = enw_expectation(~1, data = pobs),
+    report = enw_report(structural = structural, data = pobs),
+    fit = enw_fit_opts(
+      save_warmup = FALSE, pp = FALSE,
+      chains = 2, iter_warmup = 250, iter_sampling = 250
+    ),
+    obs = enw_obs(family = "negbin", observation_indicator = ".observed", data = pobs)
+  ))
+
+  # Check model structure
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_type(nowcast$data[[1]], "list")
+
+  # Check data includes structural aggregation arrays
+  expect_true("rep_agg_p" %in% names(nowcast$data[[1]]))
+  expect_equal(nowcast$data[[1]]$rep_agg_p, 1)
+  expect_true("rep_agg_n_selected" %in% names(nowcast$data[[1]]))
+  expect_true("rep_agg_selected_idx" %in% names(nowcast$data[[1]]))
+
+  # Check convergence
+  expect_lt(nowcast$max_rhat, 1.05)
+  expect_lt(nowcast$per_divergent_transitions, 0.05)
+})

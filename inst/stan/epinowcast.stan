@@ -113,10 +113,8 @@ data {
   int rep_rncol; 
   matrix[rep_fncol, rep_rncol + 1] rep_rdesign; 
   array[2, 1] real rep_beta_sd_p;
-  // Reporting probability aggregation indicators
+  // Reporting probability aggregation: precomputed indices for log_sum_exp
   int rep_agg_p;
-  array[rep_agg_p ? g : 0, rep_agg_p ? t : 0] matrix [rep_agg_p ? dmax : 0, rep_agg_p ? dmax : 0] rep_agg_indicators;
-  // Precomputed selected indices for log_sum_exp aggregation
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0] int rep_agg_n_selected;
   array[rep_agg_p ? g : 0, rep_agg_p ? t : 0, rep_agg_p ? dmax : 0, rep_agg_p ? dmax : 0] int rep_agg_selected_idx;
 
@@ -402,16 +400,16 @@ model {
           flat_obs_lookup, exp_lobs, t, sg, ts, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
           obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-          refnp_lh, model_refnp, rep_agg_p, rep_agg_indicators,
-          rep_agg_n_selected, rep_agg_selected_idx
+          refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
+          rep_agg_selected_idx
         );
       } else {
         target += reduce_sum(
           delay_snap_lupmf, st, 1, flat_obs, lsl, clsl, nsl, cnsl,
           flat_obs_lookup, exp_lobs, sg, st, rep_findex, srdlh, refp_lh,
           refp_findex, model_refp, rep_fncol, ref_as_p, phi, model_obs, refnp_lh,
-          model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
-          rep_agg_n_selected, rep_agg_selected_idx
+          model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
+          rep_agg_selected_idx
         );
       }
     } else {
@@ -420,8 +418,8 @@ model {
         ts, st, rep_findex, srdlh, refp_lh, refp_findex, model_refp, rep_fncol,
         ref_as_p, phi, model_obs, model_miss, miss_obs, missing_reference,
         obs_by_report, miss_ref_lprop, sdmax, csdmax, miss_st, miss_cst,
-        refnp_lh, model_refnp, rep_agg_p, rep_agg_indicators,
-        rep_agg_n_selected, rep_agg_selected_idx
+        refnp_lh, model_refnp, rep_agg_p, rep_agg_n_selected,
+        rep_agg_selected_idx
       );
     }
   }
@@ -450,8 +448,8 @@ generated quantities {
     log_exp_obs_all = expected_obs_from_snaps(
       1, s,  exp_lobs, rep_findex, srdlh, refp_lh, refp_findex, model_refp,
       rep_fncol, ref_as_p, sdmax, csdmax, sg, st, csdmax[s], refnp_lh,
-      model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_indicators,
-      rep_agg_n_selected, rep_agg_selected_idx
+      model_refnp, sdmax, csdmax, rep_agg_p, rep_agg_n_selected,
+      rep_agg_selected_idx
     );
     
     if (model_miss) {

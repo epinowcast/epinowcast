@@ -25,10 +25,10 @@ If the input is a numeric whole number, it is returned as is.
 }
 \seealso{
 Utility functions
-\code{\link{aggregate_rolling_sum}()},
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{date_to_numeric_modulus}()},
+\code{\link{enw_rolling_sum}()},
 \code{\link{is.Date}()},
 \code{\link{stan_fns_as_string}()}
 }

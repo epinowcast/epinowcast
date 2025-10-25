@@ -17,4 +17,9 @@ NULL (invisible). Aborts with error if validation fails.
 Checks that a structural reporting data.table has the required columns
 and correct structure for conversion to matrices.
 }
+\details{
+The structural reporting matrix ensures reports can only aggregate from
+the current or earlier delays. For example, a report on delay 5 can
+aggregate delays 1 through 5, but not delay 6 or later.
+}
 \keyword{internal}

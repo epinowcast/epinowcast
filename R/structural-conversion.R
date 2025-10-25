@@ -15,7 +15,7 @@
 #'
 #' @details
 #' This helper function is primarily used in tests and by
-#' `.convert_structural_to_arrays()` to precompute sparse index lookups for
+#' `.precompute_aggregation_lookups()` to precompute sparse index lookups for
 #' aggregation operations.
 #'
 #' @keywords internal
@@ -41,11 +41,11 @@
   )
 }
 
-#' Convert nested structural list to arrays for Stan
+
+#' Precompute aggregation index lookups for Stan
 #'
-#' Converts a nested list structure of aggregation indicator matrices into
-#' the array format required by Stan, preserving matrix structure. Also
-#' precomputes indices for numerically stable log_sum_exp operations.
+#' Takes a nested list structure of aggregation indicator matrices and
+#' precomputes sparse index lookups for efficient Stan operations.
 #'
 #' @param structural A nested list structure: list(groups) of list(times) of
 #'   matrices (max_delay x max_delay). Each matrix contains 0s and 1s
@@ -57,33 +57,20 @@
 #'
 #' @param max_delay Integer maximum delay.
 #'
-#' @return A list with three components:
-#'   - `indicators`: 4D array [groups, times, max_delay, max_delay] of
-#'     aggregation indicator matrices
+#' @return A list with two components:
 #'   - `n_selected`: 3D array [groups, times, max_delay] containing the
 #'     number of selected indices per row
 #'   - `selected_idx`: 4D array [groups, times, max_delay, max_delay]
 #'     containing the column indices where each row has 1s
 #'
 #' @details
-#' This function carefully preserves the matrix structure during conversion
-#' to avoid the scrambling that occurs with naive `array(unlist())` usage.
-#' The nested loop explicitly assigns each matrix to the correct position
-#' in the 4D array.
-#'
-#' The precomputed indices enable Stan to use `log_sum_exp()` for numerical
-#' stability instead of `log(matrix * exp(vector))` which can create
-#' gradient singularities.
+#' Row i of the precomputed indices only contains column indices j where
+#' j <= i, ensuring reports aggregate from current or earlier delays only.
 #'
 #' @keywords internal
-.convert_structural_to_arrays <- function(structural, n_groups, n_times,
-                                          max_delay) {
+.precompute_aggregation_lookups <- function(structural, n_groups, n_times,
+                                            max_delay) {
   # Initialize arrays
-  indicators <- array(
-    0,
-    dim = c(n_groups, n_times, max_delay, max_delay)
-  )
-
   n_selected <- array(
     0L,
     dim = c(n_groups, n_times, max_delay)
@@ -94,13 +81,10 @@
     dim = c(n_groups, n_times, max_delay, max_delay)
   )
 
-  # Fill arrays preserving matrix structure
+  # Fill arrays with precomputed indices
   for (g in seq_along(structural)) {
     for (t in seq_along(structural[[g]])) {
       mat <- structural[[g]][[t]]
-
-      # Store the indicator matrix
-      indicators[g, t, , ] <- mat
 
       # Precompute indices using helper function
       indices_list <- .precompute_matrix_indices(mat)
@@ -110,7 +94,6 @@
   }
 
   list(
-    indicators = indicators,
     n_selected = n_selected,
     selected_idx = selected_idx
   )
@@ -125,6 +108,11 @@
 #'   `report_date`, and `report`.
 #'
 #' @return NULL (invisible). Aborts with error if validation fails.
+#'
+#' @details
+#' The structural reporting matrix ensures reports can only aggregate from
+#' the current or earlier delays. For example, a report on delay 5 can
+#' aggregate delays 1 through 5, but not delay 6 or later.
 #'
 #' @keywords internal
 .validate_structural_reporting <- function(structural) {

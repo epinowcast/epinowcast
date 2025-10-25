@@ -247,7 +247,7 @@ get_internal_timestep <- function(timestep) {
   }
 }
 
-#' Internal function to perform rolling sum aggregation
+#' Perform rolling sum aggregation
 #'
 #' This function takes a data.table and applies a rolling sum over a given
 #' timestep, aggregating by specified columns. It's particularly useful for
@@ -262,13 +262,12 @@ get_internal_timestep <- function(timestep) {
 #'
 #' @return A modified data.table with aggregated observations.
 #'
+#' @export
 #' @importFrom data.table frollsum
 #' @family utils
-aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL,
+enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
   value_col = "confirm") {
-  # Use .SD approach to access column
   dt[, (value_col) := {
-    col_values <- .SD[[1]]  # Get first column from .SD
     n_vals <- if (.N <= internal_timestep) {
       seq_len(.N)
     } else {
@@ -277,11 +276,10 @@ aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL,
         rep(internal_timestep, .N - (internal_timestep - 1))
       )
     }
-    frollsum(col_values, n_vals, adaptive = TRUE)
+    frollsum(get(value_col), n_vals, adaptive = TRUE)
   },
   by = by,
-  .SDcols = value_col,
-  env = list(internal_timestep = internal_timestep)
+  env = list(internal_timestep = internal_timestep, value_col = value_col)
   ]
 
   return(dt[])

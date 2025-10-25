@@ -62,7 +62,6 @@ vector expected_obs_from_index(
   int rep_h, int ref_as_p, int g, int t, int l,
   vector refnp_lh, int ref_np, int p,
   int rep_agg_p,
-  array[,] matrix rep_agg_indicator,
   array[,,] int rep_agg_n_selected,
   array[,,,] int rep_agg_selected_idx
 ) {
@@ -74,23 +73,18 @@ vector expected_obs_from_index(
       p
     );
   }
-  // Extract the reporting aggregation matrix for the given group and time
-  matrix[l, l] rep_agg_indicator_mat;
+  // Extract the precomputed selected indices for this group/time
   array[l] int n_sel;
   array[l, l] int sel_idx;
   if (rep_agg_p == 1) {
-    rep_agg_indicator_mat = rep_agg_indicator[g][t][1:l, 1:l];
-    // Extract the precomputed selected indices for this group/time
     n_sel = rep_agg_n_selected[g, t, 1:l];
     sel_idx = rep_agg_selected_idx[g, t, 1:l, 1:l];
-
   }
   // Find final observed/imputed expected observation
   // combine expected final obs and time effects to get expected obs
   profile("model_likelihood_expected_obs") {
     log_exp_obs = expected_obs(
-      imp_obs[g][t], lh, l, ref_as_p, rep_agg_p,
-      rep_agg_indicator_mat, n_sel, sel_idx
+      imp_obs[g][t], lh, l, ref_as_p, rep_agg_p, n_sel, sel_idx
     );
   }
   return(log_exp_obs);
@@ -164,7 +158,6 @@ vector expected_obs_from_snaps(
   array[] int sg, array[] int st, int n,
   vector refnp_lh, int ref_np, array[] int sdmax,
   array[] int csdmax, int rep_agg_p,
-  array[,] matrix rep_agg_indicator,
   array[,,] int rep_agg_n_selected,
   array[,,,] int rep_agg_selected_idx
 ) {
@@ -189,8 +182,8 @@ vector expected_obs_from_snaps(
       esnap += l;
       log_exp_obs[ssnap:esnap] = expected_obs_from_index(
         i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p, g, t,
-        l, refnp_lh, ref_np, p, rep_agg_p, rep_agg_indicator,
-        rep_agg_n_selected, rep_agg_selected_idx
+        l, refnp_lh, ref_np, p, rep_agg_p, rep_agg_n_selected,
+        rep_agg_selected_idx
       );
       ssnap += l;
     }

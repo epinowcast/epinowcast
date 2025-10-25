@@ -19,10 +19,9 @@
  *
  * @param rep_agg_p An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
  *
- * @param rep_agg_indicator A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities,
- * designed to be left-multiplied to a column vector of reporting probabilities. 
- * Presence of a 1 in a column indicates that that index in the probability column vector will be aggregated,
- * and presence of a 1 in a row indicates that aggregated probability will be placed on that index in the new probability vector.
+ * @param n_selected Array of counts of selected indices per row
+ *
+ * @param selected_idx Array of column indices for aggregation
  * 
  * @return A vector representing the expected observations for each date by
  * date of report. The length of the vector matches the length of `lh`.
@@ -101,7 +100,7 @@
  */
 vector expected_obs(
   real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p,
-  matrix rep_agg_indicator, array[] int n_selected, array[,] int selected_idx
+  array[] int n_selected, array[,] int selected_idx
 ) {
   vector[l] p;
   if (ref_as_p == 1) {
@@ -115,30 +114,10 @@ vector expected_obs(
     }
   }
   if (rep_agg_p == 1) {
-    // Use log_sum_exp for numerical stability with precomputed indices
-    // Indices were precomputed on R side to avoid computation in autodiff
-    // Filter indices to only include those <= l (for variable-length extraction)
-    vector[l] p_aggregated;
+    vector[l] p_aggregated = rep_vector(negative_infinity(), l);
     for (i in 1:l) {
-      int n_sel_orig = n_selected[i];
-      array[l] int valid_idx;
-      int n_valid = 0;
-
-      // Filter indices to only those within bounds
-      // Also limit loop to l since selected_idx is dimensioned [l, l]
-      int max_j = min(n_sel_orig, l);
-      for (j in 1:max_j) {
-        if (selected_idx[i, j] <= l && selected_idx[i, j] > 0) {
-          n_valid += 1;
-          valid_idx[n_valid] = selected_idx[i, j];
-        }
-      }
-
-      // Aggregate the selected p values using log_sum_exp
-      if (n_valid > 0) {
-        p_aggregated[i] = log_sum_exp(p[valid_idx[1:n_valid]]);
-      } else {
-        p_aggregated[i] = negative_infinity();
+      if (n_selected[i] > 0) {
+        p_aggregated[i] = log_sum_exp(p[selected_idx[i, 1:n_selected[i]]]);
       }
     }
     p = p_aggregated;

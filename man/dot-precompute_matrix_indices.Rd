@@ -26,7 +26,7 @@ has 1s. This is used for numerically stable aggregation operations in Stan.
 }
 \details{
 This helper function is primarily used in tests and by
-\code{.convert_structural_to_arrays()} to precompute sparse index lookups for
+\code{.precompute_aggregation_lookups()} to precompute sparse index lookups for
 aggregation operations.
 }
 \keyword{internal}

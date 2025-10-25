@@ -33,12 +33,12 @@ This is a convenience function that builds on
 pobs <- enw_preprocess_data(obs, max_delay = 30)
 
 # Wednesday-only reporting
-structural <- enw_dayofweek_structural_reporting(
+enw_dayofweek_structural_reporting(
   pobs, day_of_week = "Wednesday"
 )
 
 # Multiple reporting days
-structural <- enw_dayofweek_structural_reporting(
+enw_dayofweek_structural_reporting(
   pobs, day_of_week = c("Monday", "Wednesday", "Friday")
 )
 }

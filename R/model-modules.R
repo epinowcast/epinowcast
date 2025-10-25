@@ -288,20 +288,17 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     structural <- .structural_reporting_to_matrices(structural, data)
 
     data_list$rep_agg_p <- 1
-    # Convert structural list to arrays for Stan
-    # This preserves matrix structure and precomputes indices for log_sum_exp
-    arrays <- .convert_structural_to_arrays(
+    # Precompute aggregation lookups for Stan
+    arrays <- .precompute_aggregation_lookups(
       structural,
       n_groups = data$groups[[1]],
       n_times = data$time[[1]],
       max_delay = data$max_delay
     )
-    data_list$rep_agg_indicators <- arrays$indicators
     data_list$rep_agg_n_selected <- arrays$n_selected
     data_list$rep_agg_selected_idx <- arrays$selected_idx
   } else {
     data_list$rep_agg_p <- 0
-    data_list$rep_agg_indicators <- list()
     data_list$rep_agg_n_selected <- array(0L, dim = c(0, 0, 0))
     data_list$rep_agg_selected_idx <- array(0L, dim = c(0, 0, 0, 0))
   }
