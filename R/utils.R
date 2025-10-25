@@ -267,6 +267,12 @@ get_internal_timestep <- function(timestep) {
 #' @family utils
 enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
   value_col = "confirm") {
+  # Create environment for internal_timestep to ensure safe scoping
+  env <- list2env(
+    list(internal_timestep = internal_timestep),
+    parent = parent.frame()
+  )
+
   dt[, (value_col) := {
     n_vals <- if (.N <= internal_timestep) {
       seq_len(.N)
@@ -279,9 +285,8 @@ enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
     frollsum(.SD[[value_col]], n_vals, adaptive = TRUE)
   },
   by = by,
-  env = list(internal_timestep = internal_timestep, value_col = value_col)
+  env = env
   ]
-
   return(dt[])
 }
 

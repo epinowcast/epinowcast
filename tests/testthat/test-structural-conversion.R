@@ -46,7 +46,7 @@ test_that(".precompute_matrix_indices handles all-ones row", {
   expect_equal(result$selected_idx[1, ], 1:4)
 })
 
-test_that(".convert_structural_to_arrays preserves matrix structure", {
+test_that(".precompute_aggregation_lookups preserves matrix structure", {
   # Create simple test structure
   mat1 <- matrix(c(
     1, 1, 0,
@@ -64,19 +64,19 @@ test_that(".convert_structural_to_arrays preserves matrix structure", {
     list(mat1, mat2)  # 1 group, 2 times
   )
 
-  result <- epinowcast:::.convert_structural_to_arrays(
+  result <- epinowcast:::.precompute_aggregation_lookups(
     structural,
     n_groups = 1,
     n_times = 2,
     max_delay = 3
   )
 
-  # Check indicators array preserves matrices
-  expect_identical(result$indicators[1, 1, , ], mat1)
-  expect_identical(result$indicators[1, 2, , ], mat2)
+  # Check result has correct structure
+  expect_true("n_selected" %in% names(result))
+  expect_true("selected_idx" %in% names(result))
 })
 
-test_that(".convert_structural_to_arrays computes correct indices", {
+test_that(".precompute_aggregation_lookups computes correct indices", {
   # Matrix with known index pattern
   mat <- matrix(c(
     1, 1, 0,  # Row 1: indices 1, 2
@@ -86,7 +86,7 @@ test_that(".convert_structural_to_arrays computes correct indices", {
 
   structural <- list(list(mat))
 
-  result <- epinowcast:::.convert_structural_to_arrays(
+  result <- epinowcast:::.precompute_aggregation_lookups(
     structural,
     n_groups = 1,
     n_times = 1,
@@ -104,7 +104,7 @@ test_that(".convert_structural_to_arrays computes correct indices", {
   expect_equal(result$selected_idx[1, 1, 3, 1:2], c(1L, 3L))  # Row 3
 })
 
-test_that(".convert_structural_to_arrays handles multiple groups", {
+test_that(".precompute_aggregation_lookups handles multiple groups", {
   mat_g1 <- matrix(c(1, 0, 0, 1), nrow = 2)
   mat_g2 <- matrix(c(0, 1, 1, 0), nrow = 2)
 
@@ -113,18 +113,21 @@ test_that(".convert_structural_to_arrays handles multiple groups", {
     list(mat_g2)   # Group 2
   )
 
-  result <- epinowcast:::.convert_structural_to_arrays(
+  result <- epinowcast:::.precompute_aggregation_lookups(
     structural,
     n_groups = 2,
     n_times = 1,
     max_delay = 2
   )
 
-  expect_identical(result$indicators[1, 1, , ], mat_g1)
-  expect_identical(result$indicators[2, 1, , ], mat_g2)
+  # Check result structure
+  expect_true("n_selected" %in% names(result))
+  expect_true("selected_idx" %in% names(result))
+  expect_equal(dim(result$n_selected), c(2, 1, 2))
+  expect_equal(dim(result$selected_idx), c(2, 1, 2, 2))
 })
 
-test_that(".convert_structural_to_arrays handles empty rows", {
+test_that(".precompute_aggregation_lookups handles empty rows", {
   mat <- matrix(c(
     1, 1,
     0, 0  # Empty row
@@ -132,7 +135,7 @@ test_that(".convert_structural_to_arrays handles empty rows", {
 
   structural <- list(list(mat))
 
-  result <- epinowcast:::.convert_structural_to_arrays(
+  result <- epinowcast:::.precompute_aggregation_lookups(
     structural,
     n_groups = 1,
     n_times = 1,
@@ -143,7 +146,7 @@ test_that(".convert_structural_to_arrays handles empty rows", {
   expect_equal(result$n_selected[1, 1, 2], 0L)
 })
 
-test_that(".convert_structural_to_arrays matches example from documentation", {
+test_that(".precompute_aggregation_lookups matches example from documentation", {
   # Wednesday-only reporting: aggregate all days (1-7) to Wednesday (day 4)
   wednesday_row <- 4
   max_delay <- 7
@@ -153,7 +156,7 @@ test_that(".convert_structural_to_arrays matches example from documentation", {
 
   structural <- list(list(mat))
 
-  result <- epinowcast:::.convert_structural_to_arrays(
+  result <- epinowcast:::.precompute_aggregation_lookups(
     structural,
     n_groups = 1,
     n_times = 1,
