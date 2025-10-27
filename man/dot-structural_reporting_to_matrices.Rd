@@ -7,10 +7,11 @@
 .structural_reporting_to_matrices(structural, pobs)
 }
 \arguments{
-\item{structural}{A \code{data.table} with columns \code{.group}, \code{date},
-\code{report_date}, and \code{report}.}
+\item{structural}{A \code{data.table} or \code{data.frame} with columns \code{.group},
+\code{date}, \code{report_date}, and \code{report}.}
 
-\item{pobs}{Preprocessed observation list containing max_delay.}
+\item{pobs}{A preprocessed observation list from
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
 \value{
 A nested list: list(groups) of list(times) of matrices

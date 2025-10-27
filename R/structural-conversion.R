@@ -104,37 +104,29 @@
 #' Checks that a structural reporting data.table has the required columns
 #' and correct structure for conversion to matrices.
 #'
-#' @param structural A `data.table` with columns `.group`, `date`,
-#'   `report_date`, and `report`.
+#' @param structural A `data.table` or `data.frame` with columns `.group`,
+#'   `date`, `report_date`, and `report`.
 #'
-#' @return NULL (invisible). Aborts with error if validation fails.
+#' @return The validated and coerced `data.table` (invisible). Aborts with
+#'   error if validation fails.
 #'
 #' @details
 #' The structural reporting matrix ensures reports can only aggregate from
 #' the current or earlier delays. For example, a report on delay 5 can
-#' aggregate delays 1 through 5, but not delay 6 or later.
+#' aggregate delays 1 through 5, but not delay 6 or later. This function
+#' validates that `report_date >= date` to ensure valid delays.
 #'
 #' @keywords internal
 .validate_structural_reporting <- function(structural) {
-  if (!data.table::is.data.table(structural)) {
-    cli::cli_abort(
-      "`structural` must be a data.table."
-    )
-  }
+  # Coerce to data.table and check for required columns
+  structural <- coerce_dt(
+    structural,
+    required_cols = c(".group", "date", "report_date", "report"),
+    copy = FALSE,
+    msg_required = "`structural` is missing required columns: "
+  )
 
-  required_cols <- c(".group", "date", "report_date", "report")
-  missing_cols <- setdiff(required_cols, names(structural))
-
-  if (length(missing_cols) > 0) {
-    cli::cli_abort(
-      paste0(
-        "`structural` is missing required columns: ",
-        paste(missing_cols, collapse = ", "),
-        "."
-      )
-    )
-  }
-
+  # Validate report column contains only 0s and 1s
   if (!is.numeric(structural$report) ||
       !all(structural$report %in% c(0, 1))) {
     cli::cli_abort(
@@ -142,7 +134,14 @@
     )
   }
 
-  invisible(NULL)
+  # Validate that report_date >= date (ensures delay >= 0)
+  if (any(structural$report_date < structural$date)) {
+    cli::cli_abort(
+      "`report_date` must be greater than or equal to `date` (delay >= 0)."
+    )
+  }
+
+  invisible(structural)
 }
 
 #' Convert structural reporting data.table to nested list of matrices
@@ -151,9 +150,8 @@
 #' list structure required by `.convert_structural_to_arrays()`. This
 #' involves creating delay columns and splitting by group and date.
 #'
-#' @param structural A `data.table` with columns `.group`, `date`,
-#'   `report_date`, and `report`.
-#' @param pobs Preprocessed observation list containing max_delay.
+#' @inheritParams .validate_structural_reporting
+#' @inheritParams enw_structural_reporting_metadata
 #'
 #' @return A nested list: list(groups) of list(times) of matrices
 #'   (max_delay x max_delay). Each matrix contains 0s and 1s indicating
@@ -161,7 +159,7 @@
 #'
 #' @keywords internal
 .structural_reporting_to_matrices <- function(structural, pobs) {
-  .validate_structural_reporting(structural)
+  structural <- .validate_structural_reporting(structural)
 
   max_delay <- pobs$max_delay
 

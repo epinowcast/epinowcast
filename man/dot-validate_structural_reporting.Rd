@@ -7,11 +7,12 @@
 .validate_structural_reporting(structural)
 }
 \arguments{
-\item{structural}{A \code{data.table} with columns \code{.group}, \code{date},
-\code{report_date}, and \code{report}.}
+\item{structural}{A \code{data.table} or \code{data.frame} with columns \code{.group},
+\code{date}, \code{report_date}, and \code{report}.}
 }
 \value{
-NULL (invisible). Aborts with error if validation fails.
+The validated and coerced \code{data.table} (invisible). Aborts with
+error if validation fails.
 }
 \description{
 Checks that a structural reporting data.table has the required columns
@@ -20,6 +21,7 @@ and correct structure for conversion to matrices.
 \details{
 The structural reporting matrix ensures reports can only aggregate from
 the current or earlier delays. For example, a report on delay 5 can
-aggregate delays 1 through 5, but not delay 6 or later.
+aggregate delays 1 through 5, but not delay 6 or later. This function
+validates that \code{report_date >= date} to ensure valid delays.
 }
 \keyword{internal}
