@@ -189,7 +189,7 @@ test_that(".validate_structural_reporting accepts valid data.table", {
   expect_invisible(epinowcast:::.validate_structural_reporting(structural))
 })
 
-test_that(".validate_structural_reporting rejects non-data.table", {
+test_that(".validate_structural_reporting accepts and converts data.frame", {
   structural <- data.frame(
     .group = 1,
     date = as.Date("2021-01-01"),
@@ -197,10 +197,9 @@ test_that(".validate_structural_reporting rejects non-data.table", {
     report = 1
   )
 
-  expect_error(
-    epinowcast:::.validate_structural_reporting(structural),
-    "data.table"
-  )
+  result <- epinowcast:::.validate_structural_reporting(structural)
+  expect_true(data.table::is.data.table(result))
+  expect_equal(nrow(result), 1)
 })
 
 test_that(".validate_structural_reporting rejects missing columns", {
