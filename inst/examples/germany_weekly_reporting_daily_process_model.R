@@ -70,11 +70,12 @@ rt_nat_germany <- enw_filter_reference_dates(
 max_delay <- 30
 
 # Get latest observations for the nowcast period (max_delay days)
-latest_obs <- enw_latest_data(repcycle_germany_hosp)
-latest_obs <- enw_filter_reference_dates(
-  latest_obs,
-  remove_days = 20, include_days = max_delay
-)
+latest_obs <- repcycle_germany_hosp |>
+  enw_filter_delay(max_delay = max_delay) |>
+  enw_latest_data() |>
+  enw_filter_reference_dates(
+    remove_days = 20, include_days = max_delay
+  )
 
 # Preprocess observations
 pobs <- enw_preprocess_data(
@@ -84,20 +85,26 @@ pobs <- enw_preprocess_data(
 # Create structural reporting data for Wednesday reporting
 structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
 
-# Fit a simple nowcasting model with fixed growth rate and a
-# log-normal reporting distribution.
+# Fit a simple nowcasting model
 # Add probability aggregation to "structural" argument to handle the fixed reporting cycle.
-nowcast <- epinowcast(pobs,
-  expectation = enw_expectation(~1, data = pobs),
+nowcast <- epinowcast(
+  pobs,
+  expectation = enw_expectation(~ rw(week) + (1 | day_of_week), data = pobs),
   report = enw_report(structural = structural, data = pobs),
   fit = enw_fit_opts(
     init_method = "prior",
-    save_warmup = FALSE, pp = TRUE,
-    chains = 2, iter_warmup = 500, iter_sampling = 500,
+    save_warmup = FALSE,
+    pp = TRUE,
+    chains = 2,
+    iter_warmup = 250,
+    iter_sampling = 500,
+    max_treedepth = 12
   ),
-  obs = enw_obs(family = "negbin",
+  obs = enw_obs(
+    family = "negbin",
     observation_indicator = ".observed",
-    data = pobs),
+    data = pobs
+  ),
 )
 
 plot(nowcast, latest_obs = latest_obs)
