@@ -22,7 +22,7 @@
 
 ## Documentation
 
-## Depreciations
+## Deprecations
 
 # epinowcast 0.4.0
 
@@ -112,7 +112,7 @@ See #541 by @seabbs and self-reviewed.
 - Added a vignette to document package use cases. See #524 by @kaitejohnson and reviewed by @seabbs.
 - Switched to using `{primarycensored}` for simulating the primary censored and right truncated processes needed to correctly model the discrete delays. See #549 by @seabbs and self-reviewed.
 
-## Depreciations
+## Deprecations
 
 - `enw_score_nowcast()` has been deprecated in favour of `scoringutils::score()`. See #550 by @seabbs and self-reviewed.
 
@@ -202,7 +202,7 @@ Full details on the changes in this release can be found in the following sectio
 - Removed named individuals from vignettes and moved to team authorship. See #421 by @seabbs and self-reviewed.
 - Improved documentation of the maximum delay in the stan code. See #425 by @adrianlison and reviewed by @seabbs.
 
-## Depreciations
+## Deprecations
 
 - `enw_delay_filter()`: Deprecated with a warning in favour of `enw_filter_delay()`. This renaming is to better reflect the function's purpose. See #365 by @kathsherratt and reviewed by @seabbs.
 
@@ -262,7 +262,7 @@ Full details on the changes in this release can be found in the following sectio
 - Fixed a bug in `enw_plot_quantiles()` where the documented default for `log` was `FALSE` but the actual default was `TRUE`. See #209 by @seabbs and self-reviewed.
 - Fixed a bug in `enw_expectation()` where when models were specified with zero intercept a initial condition was still being specified for the intercept of the growth rate (`expr_r_int`, #246). This was not flagged as an issue by `cmdstan 2.31.0` but as of `cmdstan 2.32.0`, due to improvements in how initial conditions were being read in ([stan-dev/stan#3182](https://github.com/stan-dev/stan/issues/3182)), it throws an error causing models to fail. Solution suggested by @WardBrian, implemented in #255 by @seabbs, and reviewed by @pearsonca.
 
-## Depreciations
+## Deprecations
 
 - `enw_incidence_to_cumulative()`: Deprecated with a warning in favour of `enw_add_cumulative()`. This renaming is to better reflect the function's purpose. `enw_incidence_to_cumulative()` will be removed in `0.3.0`. See #247 by @seabbs and reviewed by @pearsonca.
 - `enw_cumulative_to_incidence()`: Deprecated with a warning in favour of `enw_add_incidence()`. This renaming is to better reflect the function's purpose. `enw_cumulative_to_incidence()` will be removed in `0.3.0`. See #247 by @seabbs and reviewed by @pearsonca.
