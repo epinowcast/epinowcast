@@ -2,7 +2,9 @@
 nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
 
 test_that("enw_structural_reporting_metadata creates correct grid structure", {
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
 
   metadata <- enw_structural_reporting_metadata(pobs)
 
@@ -25,7 +27,9 @@ test_that("enw_structural_reporting_metadata creates correct grid structure", {
 })
 
 test_that("enw_dayofweek_structural_reporting works with single weekday", {
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
 
   structural <- enw_dayofweek_structural_reporting(
     pobs, day_of_week = "Wednesday"
@@ -48,7 +52,9 @@ test_that("enw_dayofweek_structural_reporting works with single weekday", {
 })
 
 test_that("enw_dayofweek_structural_reporting works with multiple weekdays", {
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
 
   structural <- enw_dayofweek_structural_reporting(
     pobs, day_of_week = c("Monday", "Wednesday", "Friday")
@@ -65,7 +71,9 @@ test_that("enw_dayofweek_structural_reporting works with multiple weekdays", {
 })
 
 test_that("enw_dayofweek_structural_reporting maintains grid structure", {
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
 
   structural <- enw_dayofweek_structural_reporting(
     pobs, day_of_week = "Wednesday"

@@ -247,7 +247,9 @@ test_that(".validate_structural_reporting rejects NA report values", {
 
 test_that(".structural_reporting_to_matrices creates correct structure", {
   nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
 
   # Create simple structural pattern from real data
   structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
@@ -267,7 +269,9 @@ test_that(".structural_reporting_to_matrices creates correct structure", {
 
 test_that(".structural_reporting_to_matrices handles custom patterns", {
   nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-  pobs <- enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
 
   # Create structural with multiple reporting days
   structural <- enw_dayofweek_structural_reporting(
