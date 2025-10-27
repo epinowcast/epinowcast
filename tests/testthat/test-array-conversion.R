@@ -100,16 +100,6 @@ test_that("array(unlist()) scrambles nested matrix structures", {
     info = "array(unlist()) should NOT preserve Group 1, Time 1 matrix"
   )
 
-  # Show what actually happens with array(unlist())
-  # The matrices get scrambled across time points
-  cat("\n=== Demonstrating the bug ===\n")
-  cat("Expected g1_t1 at [1,1,,] - row 1 should have non-zero values:\n")
-  print(g1_t1)
-  cat("\nActual result from array(unlist()):\n")
-  print(broken_array[1, 1, , ])
-  cat("\nCorrect result from manual loop:\n")
-  print(correct_array[1, 1, , ])
-
   # Verify the key property: each matrix should have exactly 1 non-zero row
   count_nonzero_rows <- function(mat) {
     sum(apply(mat, 1, function(row) any(row != 0)))
@@ -141,10 +131,6 @@ test_that("array(unlist()) scrambles nested matrix structures", {
     any(broken_counts != 1),
     info = "array(unlist()) should produce matrices with != 1 non-zero rows"
   )
-
-  cat("\nNon-zero row counts with array(unlist()):", broken_counts, "\n")
-  cat("Expected: all 1s\n")
-  cat("This demonstrates why the manual loop is necessary.\n")
 })
 
 test_that("array conversion preserves matrix structure for real data size", {
@@ -218,10 +204,4 @@ test_that("array conversion preserves matrix structure for real data size", {
     broken_correct_count < times,
     info = "array(unlist()) should break structure for some time points"
   )
-
-  cat(sprintf(
-    "\nWith array(unlist()): %d/%d matrices preserved correctly\n",
-    broken_correct_count, times
-  ))
-  cat("This demonstrates the scrambling effect.\n")
 })
