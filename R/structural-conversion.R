@@ -134,10 +134,14 @@
     )
   }
 
-  # Validate that report_date >= date (ensures delay >= 0)
+  # Validate report_date >= date. This ensures reports can only aggregate
+  # from current or earlier delays (e.g., delay 5 aggregates delays 1-5, not 6+)
   if (any(structural$report_date < structural$date)) {
     cli::cli_abort(
-      "`report_date` must be greater than or equal to `date` (delay >= 0)."
+      c(
+        "`report_date` must be greater than or equal to `date`.",
+        "i" = "Reports can only aggregate from current or earlier delays."
+      )
     )
   }
 
