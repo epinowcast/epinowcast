@@ -23,9 +23,8 @@ for details on formula syntax.}
 \code{\link[=enw_structural_reporting_metadata]{enw_structural_reporting_metadata()}} as a base for custom patterns.
 The data.table must have columns: \code{.group}, \code{date}, \code{report_date}, and
 \code{report} (binary indicator where 1 = reporting occurs). This is particularly
-useful for modeling fixed reporting cycles, such as Wednesday-only reporting
-as seen in the German hospitalisation data example. Set to \code{NULL} to
-disable (default).}
+useful for modeling fixed reporting cycles, such as Wednesday-only reporting.
+Set to \code{NULL} to disable (default).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }

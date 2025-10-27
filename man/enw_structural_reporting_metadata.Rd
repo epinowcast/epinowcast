@@ -28,8 +28,8 @@ This grid serves as the foundation for defining custom reporting patterns.
 pobs <- enw_preprocess_data(obs, max_delay = 30)
 metadata <- enw_structural_reporting_metadata(pobs)
 
-# Add custom reporting pattern
-metadata[, report := lubridate::day(report_date) == 1]
+# Add custom reporting pattern (e.g., only report on first day of month)
+metadata[, report := as.integer(format(report_date, "\%d") == "01")]
 }
 }
 \seealso{

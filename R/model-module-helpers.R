@@ -416,8 +416,8 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
 #' pobs <- enw_preprocess_data(obs, max_delay = 30)
 #' metadata <- enw_structural_reporting_metadata(pobs)
 #'
-#' # Add custom reporting pattern
-#' metadata[, report := lubridate::day(report_date) == 1]
+#' # Add custom reporting pattern (e.g., only report on first day of month)
+#' metadata[, report := as.integer(format(report_date, "%d") == "01")]
 #' }
 enw_structural_reporting_metadata <- function(pobs) {
   metadata <- data.table::copy(pobs$metareference[[1]])
@@ -441,8 +441,7 @@ enw_structural_reporting_metadata <- function(pobs) {
 #' This is a convenience function that builds on
 #' [enw_structural_reporting_metadata()].
 #'
-#' @param pobs A preprocessed observation list from
-#' [enw_preprocess_data()].
+#' @inheritParams enw_preprocess_data
 #' @param day_of_week Character vector of weekday names when reporting
 #' occurs (e.g., `"Wednesday"` or `c("Monday", "Wednesday")`).
 #'

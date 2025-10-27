@@ -236,9 +236,8 @@ enw_reference <- function(
 #' [enw_structural_reporting_metadata()] as a base for custom patterns.
 #' The data.table must have columns: `.group`, `date`, `report_date`, and
 #' `report` (binary indicator where 1 = reporting occurs). This is particularly
-#' useful for modeling fixed reporting cycles, such as Wednesday-only reporting
-#' as seen in the German hospitalisation data example. Set to `NULL` to
-#' disable (default).
+#' useful for modeling fixed reporting cycles, such as Wednesday-only reporting.
+#' Set to `NULL` to disable (default).
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
@@ -263,11 +262,6 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     non_parametric <- ~1
   }
 
-  # Handle structural = ~0 (no structural model)
-  if (inherits(structural, "formula") && as_string_formula(structural) == "~0") {
-    structural <- NULL
-  }
-
   form <- enw_formula(non_parametric, data$metareport[[1]], sparse = TRUE)
   check_design_matrix_sparsity(
     form$fixed$design, name = "report date effects"
@@ -280,10 +274,6 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 
   # Check for structural model and define
   if (!is.null(structural)) {
-    cli::cli_alert_warning(
-      "The structural reporting model is in experimental development"
-    )
-
     # Convert data.table to nested list of matrices
     structural <- .structural_reporting_to_matrices(structural, data)
 
