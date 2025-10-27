@@ -136,9 +136,9 @@
   }
 
   if (!is.numeric(structural$report) ||
-      !all(structural$report %in% c(0, 1, NA))) {
+      !all(structural$report %in% c(0, 1))) {
     cli::cli_abort(
-      "`report` column must contain only 0s, 1s, and NAs."
+      "`report` column must contain only 0s and 1s."
     )
   }
 

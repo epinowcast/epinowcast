@@ -227,7 +227,21 @@ test_that(".validate_structural_reporting rejects invalid report values", {
 
   expect_error(
     epinowcast:::.validate_structural_reporting(structural),
-    "only 0s, 1s, and NAs"
+    "only 0s and 1s"
+  )
+})
+
+test_that(".validate_structural_reporting rejects NA report values", {
+  structural <- data.table::data.table(
+    .group = 1,
+    date = as.Date("2021-01-01"),
+    report_date = as.Date("2021-01-02"),
+    report = NA_real_
+  )
+
+  expect_error(
+    epinowcast:::.validate_structural_reporting(structural),
+    "only 0s and 1s"
   )
 })
 
