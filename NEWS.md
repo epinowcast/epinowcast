@@ -2,11 +2,11 @@
 
 ## Contributors
 
-@athowes, @kaitejohnson, @jamesmbaazam, @jessalynnsebastian, @Bisaloo, @barbora-sobolova and @seabbs contributed code to this release.
+@jessalynnsebastian and @seabbs contributed code to this release.
 
-@medewitt, @jessalynnsebastian, @pearsonca, @jamesmbaazam, and @seabbs reviewed pull requests for this release.
+@jessalynnsebastian and @seabbs reviewed pull requests for this release.
 
-@pearsonca, @jessalynnsebastian, @athowes, @medewitt, and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
+@jessalynnsebastian and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Breaking changes
 
