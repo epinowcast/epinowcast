@@ -19,10 +19,9 @@
  *
  * @param rep_agg_p An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
  *
- * @param rep_agg_indicator A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities,
- * designed to be left-multiplied to a column vector of reporting probabilities. 
- * Presence of a 1 in a column indicates that that index in the probability column vector will be aggregated,
- * and presence of a 1 in a row indicates that aggregated probability will be placed on that index in the new probability vector.
+ * @param n_selected Array of counts of selected indices per row
+ *
+ * @param selected_idx Array of column indices for aggregation
  * 
  * @return A vector representing the expected observations for each date by
  * date of report. The length of the vector matches the length of `lh`.
@@ -99,7 +98,10 @@
  * eobs |> exp() |> plot()
  * @endcode
  */
-vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p, matrix rep_agg_indicator) {
+vector expected_obs(
+  real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p,
+  array[] int n_selected, array[,] int selected_idx
+) {
   vector[l] p;
   if (ref_as_p == 1) {
     p = lh;
@@ -112,7 +114,13 @@ vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p,
     }
   }
   if (rep_agg_p == 1) {
-    p = log(rep_agg_indicator * exp(p));
+    vector[l] p_aggregated = rep_vector(negative_infinity(), l);
+    for (i in 1:l) {
+      if (n_selected[i] > 0) {
+        p_aggregated[i] = log_sum_exp(p[selected_idx[i, 1:n_selected[i]]]);
+      }
+    }
+    p = p_aggregated;
   }
   return(tar_obs + p);
 }

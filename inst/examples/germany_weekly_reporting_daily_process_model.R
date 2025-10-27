@@ -9,10 +9,10 @@ cmdstanr::set_cmdstan_path()
 options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"] |>
-  _[age_group == "00+"] |>
-  _[, age_group := NULL] |>
-  _[, location := NULL]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
+nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
+nat_germany_hosp[, age_group := NULL]
+nat_germany_hosp[, location := NULL]
 
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
@@ -34,18 +34,21 @@ enw_flag_report_day <- function(data) {
 }
 
 # Aggregate data to weekly reporting cycle
-repcycle_germany_hosp <- nat_germany_hosp |>
-  _[, day_of_week := weekdays(report_date)] |>
-  epinowcast:::aggregate_rolling_sum(
-    internal_timestep = 7,
-    by = "reference_date",
-    value_col = "confirm"
-  ) |>
-  _[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)] |>
-  enw_flag_report_day() |>
-  enw_flag_observed_observations() |>
-  enw_impute_na_observations() |>
-  enw_add_incidence()
+repcycle_germany_hosp <- data.table::copy(nat_germany_hosp)
+repcycle_germany_hosp[, day_of_week := weekdays(report_date)]
+repcycle_germany_hosp <- enw_rolling_sum(
+  repcycle_germany_hosp,
+  internal_timestep = 7,
+  by = "reference_date",
+  value_col = "confirm"
+)
+repcycle_germany_hosp[, confirm := fifelse(
+  day_of_week == "Wednesday", confirm, NA_real_
+)]
+repcycle_germany_hosp <- enw_flag_report_day(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_flag_observed_observations(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_impute_na_observations(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_add_incidence(repcycle_germany_hosp)
 
 # Make sure observations are complete (we don't need to do this here as we have
 # already done this above but for completeness we include it (as it would be
@@ -64,91 +67,47 @@ rt_nat_germany <- enw_filter_reference_dates(
   include_days = 90
 )
 
-# Get latest observations for the same time period
-latest_obs <- enw_latest_data(repcycle_germany_hosp)
-latest_obs <- enw_filter_reference_dates(
-  latest_obs,
-  remove_days = 20, include_days = 7
-)
-
 # I think we need to skip data that is not on a reported day in the likelihood
 # otherwise we are not identifying the reporting delay properly.
 
-max_delay <- 7
-# Preprocess observations (note this maximum delay is likely too short)
+max_delay <- 30
+
+# Get latest observations for the nowcast period (max_delay days)
+latest_obs <- repcycle_germany_hosp |>
+  enw_filter_delay(max_delay = max_delay) |>
+  enw_latest_data() |>
+  enw_filter_reference_dates(
+    remove_days = 20, include_days = max_delay
+  )
+
+# Preprocess observations
 pobs <- enw_preprocess_data(
   rt_nat_germany, max_delay = max_delay, timestep = "day"
 )
 
-# Create structual reporting data for wednesday reporting
-metadata <- pobs$metareference[[1]] |>
-  _[, key := 1] |>
-  _[, .(key, .group, date)] |>
-  _[pobs$metadelay[[1]][, key := 1], on = "key", allow.cartesian = TRUE] |>
-  _[, .(.group, date, report_date = date + delay)] |>
-  setorder(.group, date, report_date) |>
-  _[, day_of_week := weekdays(report_date)] |>
-  _[, report := ifelse(day_of_week == "Wednesday", 1, 0)]
+# Create structural reporting data for Wednesday reporting
+structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
 
-# Generic munging to make it easier to find reporting
-metadata <- metadata |>
-  _[, cum_report := cumsum(report) + 1, by = .(.group, date)] |>
-  _[day_of_week == "Wednesday", cum_report := cum_report - 1]
-
-# Add columns for 1:max_delay
-# Create a data.table with columns called delay_1 to delay_35 programmatically
-delays <- data.table()
-# Add columns delay_1 to delay_35
-for (i in 1:max_delay) {
-  delays[, paste0("delay_", i) := 0]
-}
-
-# Add delay columns to metadata
-metadata <- metadata |>
-  _[, key := 1] |>
-  merge(delays[, key := 1], by = "key") |>
-  _[, key := NULL]
-
-# Fill in the delay columns based on reporting
-metadata[report == 1, (paste0("delay_", 1:max_delay)) := as.list(
-  as.numeric(cum_report == cum_report[which(report == 1)])
-), by = .(.group, date)
-]
-
-# Join pobs$new_confirm to metadata
-metadata <- pobs$new_confirm[[1]] |>
-  _[, .(date = reference_date, report_date, .observed)] |>
-  _[metadata, on = c("date", "report_date")]
-
-# Check if .observed is 0 for all rows that aren't reported
-metadata[isTRUE(.observed) && report == 0][]
-metadata[isFALSE(.observed) && report == 1][]
-
-# Split by date and group, and get delay_ vars as a matrix
-agg_indicators <- metadata |>
-  _[,
-    c(".group", "date", grep("^delay_", names(metadata), value = TRUE)),
-    with = FALSE
-  ] |>
-  split(by = ".group", drop = TRUE) |>
-  purrr::map(\(group_data) {
-    group_data |>
-      split(by = "date", drop = TRUE) |>
-      purrr::map(\(x) as.matrix(x[, -c(".group", "date")]))
-  })
-
-# Fit a simple nowcasting model with fixed growth rate and a
-# log-normal reporting distribution.
+# Fit a simple nowcasting model
 # Add probability aggregation to "structural" argument to handle the fixed reporting cycle.
-nowcast <- epinowcast(pobs,
-  expectation = enw_expectation(~1, data = pobs),
-  report = enw_report(structural = agg_indicators, data = pobs),
+nowcast <- epinowcast(
+  pobs,
+  expectation = enw_expectation(~ rw(week) + (1 | day_of_week), data = pobs),
+  report = enw_report(structural = structural, data = pobs),
   fit = enw_fit_opts(
     init_method = "prior",
-    save_warmup = FALSE, pp = TRUE,
-    chains = 2, iter_warmup = 500, iter_sampling = 500,
+    save_warmup = FALSE,
+    pp = TRUE,
+    chains = 2,
+    iter_warmup = 250,
+    iter_sampling = 500,
+    max_treedepth = 12
   ),
-  obs = enw_obs(family = "negbin",
+  obs = enw_obs(
+    family = "negbin",
     observation_indicator = ".observed",
-    data = pobs),
+    data = pobs
+  ),
 )
+
+plot(nowcast, latest_obs = latest_obs)

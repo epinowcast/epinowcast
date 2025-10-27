@@ -247,7 +247,7 @@ get_internal_timestep <- function(timestep) {
   }
 }
 
-#' Internal function to perform rolling sum aggregation
+#' Perform rolling sum aggregation
 #'
 #' This function takes a data.table and applies a rolling sum over a given
 #' timestep, aggregating by specified columns. It's particularly useful for
@@ -262,11 +262,18 @@ get_internal_timestep <- function(timestep) {
 #'
 #' @return A modified data.table with aggregated observations.
 #'
+#' @export
 #' @importFrom data.table frollsum
 #' @family utils
-aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL,
+enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
   value_col = "confirm") {
-  dt[, value_col := {
+  # Create environment for internal_timestep to ensure safe scoping
+  env <- list2env(
+    list(internal_timestep = internal_timestep),
+    parent = parent.frame()
+  )
+
+  dt[, (value_col) := {
     n_vals <- if (.N <= internal_timestep) {
       seq_len(.N)
     } else {
@@ -275,12 +282,11 @@ aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL,
         rep(internal_timestep, .N - (internal_timestep - 1))
       )
     }
-    frollsum(value_col, n_vals, adaptive = TRUE)
+    frollsum(.SD[[value_col]], n_vals, adaptive = TRUE)
   },
   by = by,
-  env = list(internal_timestep = internal_timestep, value_col = value_col)
+  env = env
   ]
-
   return(dt[])
 }
 
@@ -509,6 +515,6 @@ utils::globalVariables(
     "person", "id", "latest", "type", "below_coverage", "num_reference_date",
     "num_report_date", "rep_mod", "ref_mod", "count", "reference_date_mod",
     "report_date_mod", "timestep", ".observed", "lookup", "max_obs_delay",
-    "coverage"
+    "coverage", "cum_report", "day_of_week_col", "report"
   )
 )

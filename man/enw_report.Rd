@@ -17,13 +17,14 @@ the \code{non_parametric} argument of \code{\link[=enw_reference]{enw_reference(
 (internally converted to \code{~1} and flagged as inactive). See \code{\link[=enw_formula]{enw_formula()}}
 for details on formula syntax.}
 
-\item{structural}{A nested list of matrices by group and reference date
-describing the known reporting structure (i.e weekday only reporting).
-Each matrix should have dimensions of max_delay x max_delay, where
-each column represents the probability of an observation being reported
-on a specific day given the delay. This is particularly useful for
-modeling fixed reporting cycles, such as weekly reporting on Wednesdays
-as seen in the German hospitalization data example.}
+\item{structural}{A \code{data.table} describing the known reporting structure
+(e.g., weekday-only reporting). This should be created using
+\code{\link[=enw_dayofweek_structural_reporting]{enw_dayofweek_structural_reporting()}} for day-of-week patterns, or
+\code{\link[=enw_structural_reporting_metadata]{enw_structural_reporting_metadata()}} as a base for custom patterns.
+The data.table must have columns: \code{.group}, \code{date}, \code{report_date}, and
+\code{report} (binary indicator where 1 = reporting occurs). This is particularly
+useful for modeling fixed reporting cycles, such as Wednesday-only reporting.
+Set to \code{NULL} to disable (default).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
@@ -37,7 +38,17 @@ can be used to sample from a tightened version of the prior distribution.
 Report date logit hazard reporting  model module
 }
 \examples{
+# Basic report model
 enw_report(data = enw_example("preprocessed"))
+
+\dontrun{
+# With Wednesday-only reporting structure
+pobs <- enw_example("preprocessed")
+structural <- enw_dayofweek_structural_reporting(
+  pobs, day_of_week = "Wednesday"
+)
+enw_report(structural = structural, data = pobs)
+}
 }
 \seealso{
 Model modules

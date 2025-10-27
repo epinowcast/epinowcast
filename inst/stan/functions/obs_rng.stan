@@ -21,14 +21,22 @@
 array[] int obs_rng(vector log_exp_obs, array[] real phi, int model_obs) {
   int n = num_elements(log_exp_obs);
   array[n] int pp;
-  if (model_obs == 0) {
-    pp = poisson_log_rng(log_exp_obs);
-  }else if (model_obs == 1) {
-    pp = neg_binomial_2_log_rng(log_exp_obs, phi[1]);
-  }else{
-    int m = num_elements(log_exp_obs);
-    vector[m] log_phi_nb1 = log_exp_obs + log(phi[1]);
-    pp = neg_binomial_2_log_rng(log_exp_obs, exp(log_phi_nb1));
+
+  // Handle -Inf values (structural zeros from reporting aggregation)
+  // For days with zero reporting probability, set prediction to 0
+  for (i in 1:n) {
+    if (is_inf(log_exp_obs[i])) {
+      pp[i] = 0;
+    } else {
+      if (model_obs == 0) {
+        pp[i] = poisson_log_rng(log_exp_obs[i]);
+      } else if (model_obs == 1) {
+        pp[i] = neg_binomial_2_log_rng(log_exp_obs[i], phi[1]);
+      } else {
+        real log_phi_nb1 = log_exp_obs[i] + log(phi[1]);
+        pp[i] = neg_binomial_2_log_rng(log_exp_obs[i], exp(log_phi_nb1));
+      }
+    }
   }
   return(pp);
 }
