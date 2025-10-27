@@ -10,7 +10,8 @@ test_that("expected_obs() works correctly with no reporting day effect", {
   )
   rep_lh <- rep(0, 30)
   eobs <- exp(expected_obs(
-    tar_obs, date_p + rep(0, 30), 30, 1, 0, matrix(0, nrow = 0, ncol = 0)
+    tar_obs, date_p + rep(0, 30), 30, 1, 0,
+    array(integer(0)), matrix(integer(0), nrow = 0, ncol = 0)
   ))
   expect_equal(eobs, exp(date_p), tolerance = 1e-7)
 })
@@ -25,7 +26,7 @@ test_that(
   eobs <- exp(
     expected_obs(
       tar_obs, ref_lh, 30, 0, 0,
-      matrix(numeric(0), nrow = 0, ncol = 0)
+      array(integer(0)), matrix(integer(0), nrow = 0, ncol = 0)
     )
   )
   expect_equal(eobs, exp(date_p), tolerance = 1e-7)
@@ -40,7 +41,7 @@ test_that(
   eobs <- round(exp(
     expected_obs(
       tar_obs, equal_lh + rep_lh, 30, 0, 0,
-      matrix(numeric(0), nrow = 0, ncol = 0)
+      array(integer(0)), matrix(integer(0), nrow = 0, ncol = 0)
     )
   ), 3)
   expected <- c(0.508, 0.250, 0.123, 0.060, 0.030, 0.015, 0.013, 0.001)
@@ -56,7 +57,7 @@ test_that("expected_obs() works correctly with multiple hazards", {
   eobs <- round(exp(
     expected_obs(
       tar_obs, equal_lh + rep_lh, 30, 0, 0,
-      matrix(numeric(0), nrow = 0, ncol = 0)
+      array(integer(0)), matrix(integer(0), nrow = 0, ncol = 0)
     )
   ), 3)
   expected <- c(0.508, 0.060, 0.219, 0.108, 0.053, 0.046, 0.003, 0.002, 0.001,
@@ -85,7 +86,7 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   # Test with precomputed indices
   exp_obs <- expected_obs(
     tar_obs, lh, length(lh), ref_as_p = 1, 1,
-    agg_probs, n_selected, selected_idx
+    n_selected, selected_idx
   )
 
   # Expected output using matrix multiplication
@@ -110,7 +111,7 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
 
   exp_obs <- expected_obs(
     tar_obs, lh, 7, ref_as_p = 1, 1,
-    agg_probs, n_selected, selected_idx
+    n_selected, selected_idx
   )
 
   # Only Wednesday (day 4) should have finite value

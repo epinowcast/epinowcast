@@ -38,6 +38,7 @@ PMF
 PMFs
 Poisson
 Precompiling
+Precompute
 Renviron
 Rstudio
 SEIR
@@ -110,6 +111,7 @@ modelmodulehelpers
 modelmodules
 modeltools
 modelvalidation
+modeling
 natemcintosh
 negbin
 ness
@@ -137,6 +139,9 @@ postprocess
 postprocessing
 pratikunterwegs
 precompiled
+precompute
+precomputes
+precomputing
 predictives
 readibility
 rumackaaron
