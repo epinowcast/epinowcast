@@ -441,7 +441,7 @@ enw_structural_reporting_metadata <- function(pobs) {
 #' This is a convenience function that builds on
 #' [enw_structural_reporting_metadata()].
 #'
-#' @inheritParams enw_preprocess_data
+#' @inheritParams enw_structural_reporting_metadata
 #' @param day_of_week Character vector of weekday names when reporting
 #' occurs (e.g., `"Wednesday"` or `c("Monday", "Wednesday")`).
 #'

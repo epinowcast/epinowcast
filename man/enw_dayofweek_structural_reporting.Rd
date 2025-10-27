@@ -7,6 +7,9 @@
 enw_dayofweek_structural_reporting(pobs, day_of_week)
 }
 \arguments{
+\item{pobs}{A preprocessed observation list from
+\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
+
 \item{day_of_week}{Character vector of weekday names when reporting
 occurs (e.g., \code{"Wednesday"} or \code{c("Monday", "Wednesday")}).}
 }

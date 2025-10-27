@@ -262,6 +262,11 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     non_parametric <- ~1
   }
 
+  # Handle structural = ~0 (disable structural model)
+  if (inherits(structural, "formula") && as_string_formula(structural) == "~0") {
+    structural <- NULL
+  }
+
   form <- enw_formula(non_parametric, data$metareport[[1]], sparse = TRUE)
   check_design_matrix_sparsity(
     form$fixed$design, name = "report date effects"
