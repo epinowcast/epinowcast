@@ -244,6 +244,20 @@ test_that(".validate_structural_reporting rejects NA report values", {
   )
 })
 
+test_that(".validate_structural_reporting rejects report_date < date", {
+  structural <- data.table::data.table(
+    .group = 1,
+    date = as.Date("2021-01-05"),
+    report_date = as.Date("2021-01-02"),  # Before reference date
+    report = 1
+  )
+
+  expect_error(
+    epinowcast:::.validate_structural_reporting(structural),
+    "report_date.*must be greater than or equal to.*date"
+  )
+})
+
 test_that(".structural_reporting_to_matrices creates correct structure", {
   nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
   pobs <- suppressWarnings(

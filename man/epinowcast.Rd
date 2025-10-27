@@ -8,7 +8,7 @@ epinowcast(
   data,
   reference = epinowcast::enw_reference(parametric = ~1, distribution = "lognormal",
     non_parametric = ~0, data = data),
-  report = epinowcast::enw_report(non_parametric = ~0, structural = ~0, data = data),
+  report = epinowcast::enw_report(non_parametric = ~0, structural = NULL, data = data),
   expectation = epinowcast::enw_expectation(r = ~0 + (1 | day:.group), generation_time =
     1, observation = ~1, latent_reporting_delay = 1, data = data),
   missing = epinowcast::enw_missing(formula = ~0, data = data),
