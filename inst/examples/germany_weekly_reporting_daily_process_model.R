@@ -9,10 +9,10 @@ cmdstanr::set_cmdstan_path()
 options(mc.cores = 2)
 
 # Load and filter germany hospitalisations
-nat_germany_hosp <- germany_covid19_hosp[location == "DE"] |>
-  _[age_group == "00+"] |>
-  _[, age_group := NULL] |>
-  _[, location := NULL]
+nat_germany_hosp <- germany_covid19_hosp[location == "DE"]
+nat_germany_hosp <- nat_germany_hosp[age_group == "00+"]
+nat_germany_hosp[, age_group := NULL]
+nat_germany_hosp[, location := NULL]
 
 nat_germany_hosp <- enw_filter_report_dates(
   nat_germany_hosp,
@@ -34,18 +34,21 @@ enw_flag_report_day <- function(data) {
 }
 
 # Aggregate data to weekly reporting cycle
-repcycle_germany_hosp <- nat_germany_hosp |>
-  _[, day_of_week := weekdays(report_date)] |>
-  enw_rolling_sum(
-    internal_timestep = 7,
-    by = "reference_date",
-    value_col = "confirm"
-  ) |>
-  _[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)] |>
-  enw_flag_report_day() |>
-  enw_flag_observed_observations() |>
-  enw_impute_na_observations() |>
-  enw_add_incidence()
+repcycle_germany_hosp <- data.table::copy(nat_germany_hosp)
+repcycle_germany_hosp[, day_of_week := weekdays(report_date)]
+repcycle_germany_hosp <- enw_rolling_sum(
+  repcycle_germany_hosp,
+  internal_timestep = 7,
+  by = "reference_date",
+  value_col = "confirm"
+)
+repcycle_germany_hosp[, confirm := fifelse(
+  day_of_week == "Wednesday", confirm, NA_real_
+)]
+repcycle_germany_hosp <- enw_flag_report_day(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_flag_observed_observations(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_impute_na_observations(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_add_incidence(repcycle_germany_hosp)
 
 # Make sure observations are complete (we don't need to do this here as we have
 # already done this above but for completeness we include it (as it would be

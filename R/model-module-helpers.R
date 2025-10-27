@@ -420,13 +420,16 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
 #' metadata[, report := lubridate::day(report_date) == 1]
 #' }
 enw_structural_reporting_metadata <- function(pobs) {
-  metadata <- pobs$metareference[[1]] |>
-    _[, key := 1] |>
-    _[, .(key, .group, date)] |>
-    _[pobs$metadelay[[1]][, key := 1], on = "key",
-      allow.cartesian = TRUE] |>
-    _[, .(.group, date, report_date = date + delay)] |>
-    data.table::setorder(.group, date, report_date)
+  metadata <- data.table::copy(pobs$metareference[[1]])
+  metadata[, key := 1]
+  metadata <- metadata[, .(key, .group, date)]
+
+  delay_data <- data.table::copy(pobs$metadelay[[1]])
+  delay_data[, key := 1]
+
+  metadata <- metadata[delay_data, on = "key", allow.cartesian = TRUE]
+  metadata <- metadata[, .(.group, date, report_date = date + delay)]
+  data.table::setorder(metadata, .group, date, report_date)
 
   return(metadata[])
 }
