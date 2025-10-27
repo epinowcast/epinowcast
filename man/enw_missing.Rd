@@ -35,12 +35,10 @@ enw_missing(~0, data = enw_example("preprocessed"))
 }
 \seealso{
 Model modules
-\code{\link{enw_dayofweek_structural_reporting}()},
 \code{\link{enw_expectation}()},
 \code{\link{enw_fit_opts}()},
 \code{\link{enw_obs}()},
 \code{\link{enw_reference}()},
-\code{\link{enw_report}()},
-\code{\link{enw_structural_reporting_metadata}()}
+\code{\link{enw_report}()}
 }
 \concept{modelmodules}

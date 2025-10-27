@@ -409,7 +409,7 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
 #' * `date`: Reference date
 #' * `report_date`: Report date (reference date + delay)
 #'
-#' @family modelmodules
+#' @family modelmodulehelpers
 #' @export
 #' @examples
 #' \dontrun{
@@ -452,7 +452,7 @@ enw_structural_reporting_metadata <- function(pobs) {
 #' * `report_date`: Report date
 #' * `report`: Binary indicator (1 = reporting occurs, 0 = no reporting)
 #'
-#' @family modelmodules
+#' @family modelmodulehelpers
 #' @export
 #' @examples
 #' \dontrun{

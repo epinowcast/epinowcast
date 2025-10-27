@@ -1,46 +1,20 @@
 /**
  * Calculate expected observations for a given index
- * 
+ *
  * Computes the expected observations for a specific time index by combining
  * final observed/imputed expected observation with time effects. This function
- * integrates various hazard effects and reference adjustments to produce the 
+ * integrates various hazard effects and reference adjustments to produce the
  * expected observations.
- * 
+ *
+ * @copydoc common_parameters_delay_lpmf_funcs
+ *
  * @param i Index for accessing elements in various arrays.
  *
- * @param imp_obs Array of imputed observed data, organized by group and time.
+ * @param g Group index for data access.
+ * @param t Time index for data access.
+ * @param l Length parameter for data processing.
+ * @param p Position parameter for data access.
  *
- * @param rdlurd Array indicating reporting dates lookup reference data.
- *
- * @param srdlh Vector of standardized reporting date log hazards.
- *
- * @param refp_lh Matrix of reference date logit hazards.
- *
- * @param dpmfs Array of indices for accessing reference date effects in 
- * `refp_lh`.
- *
- * @param ref_p, rep_h, ref_as_p Flags indicating presence of reference date,
- * reporting hazards, and reference-as-probability.
-
- * @param g, t, l, p Group, time, length, and position parameters for data 
- * access and processing.
- *
- * @param refnp_lh Vector of non-parametric reference log hazards.
- *
- * @param ref_np Flag indicating presence of non-parametric reference effects.
- * 
- * @param rep_agg_p An integer flag (0 or 1) indicating whether the reporting 
- * probabilities should be aggregated. Set to 1 when the probabilities should 
- * be aggregated, otherwise 0.
- *
- * @param rep_agg_indicator An array of matrices of integer flags (0 or 1) 
- * representing the aggregation of reporting probabilities for each group and 
- * reference time. Each matrix is designed to be left-multiplied to a column 
- * vector of reporting probabilities. Presence of a 1 in a column indicates 
- * that that index in the probability column vector will be aggregated, and 
- * presence of a 1 in a row indicates that aggregated probability will be 
- * placed on that index in the new probability vector.
- * 
  * @return A vector of expected observations for the given index.
  * 
  * @note This function performs several steps:
@@ -92,49 +66,17 @@ vector expected_obs_from_index(
 
 /**
  * Calculate expected observations for a set of indexes
- * 
- * Computes expected observations for a range of time indexes, effectively 
+ *
+ * Computes expected observations for a range of time indexes, effectively
  * aggregating individual calculations over a specified range. This function
- * considers various factors like hazard effects, reference adjustments, and 
+ * considers various factors like hazard effects, reference adjustments, and
  * grouping to produce expected observations for each index within the range.
- * 
- * @param start, end Start and end indexes for the allocation range.
  *
- * @param imp_obs Array of imputed observed data, organized by group and time.
- *
- * @param rdlurd Array indicating reporting dates lookup reference data.
- *
- * @param srdlh Vector of standardized reporting date log hazards.
- *
- * @param refp_lh Matrix of reference date logit hazards.
- *
- * @param dpmfs, sl, csl, sg, st Arrays for accessing various indices and 
- * supporting data.
- *
- * @param ref_p, rep_h, ref_as_p Flags for presence of different hazard effects.
+ * @copydoc common_parameters_delay_lpmf_funcs
  *
  * @param n Number of discrete points for observations.
  *
- * @param refnp_lh Vector of non-parametric reference log hazards.
- *
- * @param ref_np Flag for non-parametric reference effects.
- *
- * @param sdmax, csdmax Arrays of maximum start dates and cumulative start
- * dates.
- *
- * @param rep_agg_p An integer flag (0 or 1) indicating whether the reporting 
- * probabilities should be aggregated. Set to 1 when the probabilities should 
- * be aggregated, otherwise 0.
- *
- * @param rep_agg_indicator An array of matrices of integer flags (0 or 1) 
- * representing the aggregation of reporting probabilities for each group and 
- * reference time. Each matrix is designed to be left-multiplied to a column 
- * vector of reporting probabilities. Presence of a 1 in a column indicates 
- * that that index in the probability column vector will be aggregated, and 
- * presence of a 1 in a row indicates that aggregated probability will be 
- * placed on that index in the new probability vector.
- * 
- * @return A vector of expected observations across the specified range of 
+ * @return A vector of expected observations across the specified range of
  *         indexes.
  * 
  * @note This function executes the following steps:

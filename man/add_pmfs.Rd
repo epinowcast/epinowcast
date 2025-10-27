@@ -39,8 +39,10 @@ lines(cdf, col = "black")
 Helper functions for model modules
 \code{\link{add_max_observed_delay}()},
 \code{\link{convolution_matrix}()},
+\code{\link{enw_dayofweek_structural_reporting}()},
 \code{\link{enw_reference_by_report}()},
 \code{\link{enw_reps_with_complete_refs}()},
+\code{\link{enw_structural_reporting_metadata}()},
 \code{\link{extract_obs_metadata}()},
 \code{\link{extract_sparse_matrix}()},
 \code{\link{latest_obs_as_matrix}()}

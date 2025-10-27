@@ -44,13 +44,15 @@ enw_dayofweek_structural_reporting(
 }
 }
 \seealso{
-Model modules
-\code{\link{enw_expectation}()},
-\code{\link{enw_fit_opts}()},
-\code{\link{enw_missing}()},
-\code{\link{enw_obs}()},
-\code{\link{enw_reference}()},
-\code{\link{enw_report}()},
-\code{\link{enw_structural_reporting_metadata}()}
+Helper functions for model modules
+\code{\link{add_max_observed_delay}()},
+\code{\link{add_pmfs}()},
+\code{\link{convolution_matrix}()},
+\code{\link{enw_reference_by_report}()},
+\code{\link{enw_reps_with_complete_refs}()},
+\code{\link{enw_structural_reporting_metadata}()},
+\code{\link{extract_obs_metadata}()},
+\code{\link{extract_sparse_matrix}()},
+\code{\link{latest_obs_as_matrix}()}
 }
-\concept{modelmodules}
+\concept{modelmodulehelpers}
