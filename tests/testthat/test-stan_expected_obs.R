@@ -80,7 +80,7 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
 
   # Precompute indices using helper function
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
-  n_selected <- indices_list$n_selected
+  n_selected <- as.array(indices_list$n_selected)
   selected_idx <- indices_list$selected_idx
 
   # Test with precomputed indices
@@ -106,7 +106,7 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
 
   # Precompute indices using helper function
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
-  n_selected <- indices_list$n_selected
+  n_selected <- as.array(indices_list$n_selected)
   selected_idx <- indices_list$selected_idx
 
   exp_obs <- expected_obs(

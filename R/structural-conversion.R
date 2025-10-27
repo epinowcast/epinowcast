@@ -58,9 +58,9 @@
 #' @param max_delay Integer maximum delay.
 #'
 #' @return A list with two components:
-#'   - `n_selected`: 3D array [groups, times, max_delay] containing the
+#'   - `n_selected`: 3D array with dimensions (groups, times, max_delay) containing the
 #'     number of selected indices per row
-#'   - `selected_idx`: 4D array [groups, times, max_delay, max_delay]
+#'   - `selected_idx`: 4D array with dimensions (groups, times, max_delay, max_delay)
 #'     containing the column indices where each row has 1s
 #'
 #' @details
