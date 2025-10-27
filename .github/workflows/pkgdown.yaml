@@ -47,7 +47,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Upload website
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: website
           retention-days: 5
