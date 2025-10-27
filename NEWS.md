@@ -4,7 +4,7 @@
 
 @jessalynnsebastian and @seabbs contributed code to this release.
 
-@jessalynnsebastian and @seabbs reviewed pull requests for this release.
+@seabbs reviewed pull requests for this release.
 
 @jessalynnsebastian and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
