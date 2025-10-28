@@ -296,3 +296,16 @@ test_that(".structural_reporting_to_matrices handles custom patterns", {
   expect_equal(length(result), pobs$groups[[1]])
   expect_equal(length(result[[1]]), pobs$time[[1]])
 })
+
+test_that(".structural_reporting_to_matrices produces expected matrix structure", {
+  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+  pobs <- suppressWarnings(
+    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+  )
+
+  structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
+  result <- epinowcast:::.structural_reporting_to_matrices(structural, pobs)
+
+  # Snapshot first 7 matrices to verify structure remains consistent
+  expect_snapshot(result[[1]][1:7])
+})
