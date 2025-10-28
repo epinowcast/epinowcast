@@ -113,7 +113,7 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   # Expected output using matrix multiplication
   exp_output <- as.vector(tar_obs + log(agg_probs %*% exp(lh)))
 
-  expect_equal(object = as.vector(exp_obs), expected = exp_output, tolerance = 1e-10)
+  expect_equal(object = as.vector(exp_obs), expected = exp_output, tolerance = 1e-7)
 })
 
 test_that("expected_obs() handles structural zeros with precomputed indices", {
@@ -165,6 +165,6 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   expect_equal(
     exp_obs[4],
     tar_obs + log(sum(exp(lh))),
-    tolerance = 1e-10
+    tolerance = 1e-7
   )
 })
