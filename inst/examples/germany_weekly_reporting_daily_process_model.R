@@ -85,16 +85,16 @@ pobs <- enw_preprocess_data(
   rt_nat_germany, max_delay = max_delay, timestep = "day"
 )
 
-# Create structural reporting data for Wednesday reporting
-structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
+# Create structural reporting data for Monday reporting
+structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Monday")
 
-# Fit a simple nowcasting model
-# Add probability aggregation to "structural" argument to handle the fixed reporting cycle.
-nowcast <- epinowcast(
-  pobs,
-  expectation = enw_expectation(~ rw(week) + (1 | day_of_week), data = pobs),
-  report = enw_report(structural = structural, data = pobs),
-  fit = enw_fit_opts(
+# Fit a simple nowcasting model first with fitting reporting as a baseline  
+# and then with known reporting.
+# We use the same expectation module for both models.
+expectation_module <- enw_expectation(~ rw(week) + (1 | day_of_week), data = pobs)
+
+# We use the same fit module for both models.
+fit_module <- enw_fit_opts(
     init_method = "prior",
     save_warmup = FALSE,
     pp = TRUE,
@@ -102,12 +102,39 @@ nowcast <- epinowcast(
     iter_warmup = 250,
     iter_sampling = 500,
     max_treedepth = 12
-  ),
-  obs = enw_obs(
-    family = "negbin",
-    observation_indicator = ".observed",
-    data = pobs
-  ),
 )
 
-plot(nowcast, latest_obs = latest_obs)
+# We use the same observation module for both models with different observation indicators.
+obs_module_fn <- function(data, ...) {
+  enw_obs(
+    family = "negbin",
+    data = data,
+    ...
+  )
+}
+
+# First model with fitting reporting as a baseline
+# Here we assume reporting has a random effect for the day of the week.
+nowcast <- epinowcast(
+  pobs,
+  expectation = expectation_module,
+  report = enw_report(~ (1 | day_of_week), data = pobs),
+  fit = fit_module,
+  obs = obs_module_fn(data = pobs),
+)
+
+p_fitting_reporting <- plot(nowcast, latest_obs = latest_obs)
+p_fitting_reporting
+
+# Second model with known reporting
+# Here we assume reporting is fixed and known
+nowcast_known_reporting <- epinowcast(
+  pobs,
+  expectation = expectation_module,
+  report = enw_report(structural = structural, data = pobs),
+  fit = fit_module,
+  obs = obs_module_fn(data = pobs, observation_indicator = ".observed"),
+)
+
+p_known_reporting <- plot(nowcast_known_reporting, latest_obs = latest_obs)
+p_known_reporting
