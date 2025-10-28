@@ -43,7 +43,7 @@ repcycle_germany_hosp <- enw_rolling_sum(
   value_col = "confirm"
 )
 repcycle_germany_hosp[, confirm := fifelse(
-  day_of_week == "Wednesday", confirm, NA_real_
+  day_of_week == "Monday", confirm, NA_real_
 )]
 repcycle_germany_hosp <- enw_flag_report_day(repcycle_germany_hosp)
 repcycle_germany_hosp <- enw_flag_observed_observations(repcycle_germany_hosp)
