@@ -1,6 +1,6 @@
 functions {
-#include ../../../inst/stan/functions/hazard.stan
-#include ../../../inst/stan/functions/expected_obs.stan
+#include functions/hazard.stan
+#include functions/expected_obs.stan
 }
 data {
   int l;

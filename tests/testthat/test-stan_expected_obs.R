@@ -87,7 +87,11 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
 
   # Use standalone Stan model via generated quantities
-  model <- cmdstanr::cmdstan_model("stan/test_expected_obs.stan")
+  # Specify include paths to find Stan functions in installed package
+  model <- cmdstanr::cmdstan_model(
+    "stan/test_expected_obs.stan",
+    include_paths = system.file("stan", package = "epinowcast")
+  )
 
   stan_data <- list(
     tar_obs = tar_obs,
@@ -134,7 +138,11 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
 
   # Use standalone Stan model via generated quantities
-  model <- cmdstanr::cmdstan_model("stan/test_expected_obs.stan")
+  # Specify include paths to find Stan functions in installed package
+  model <- cmdstanr::cmdstan_model(
+    "stan/test_expected_obs.stan",
+    include_paths = system.file("stan", package = "epinowcast")
+  )
 
   stan_data <- list(
     tar_obs = tar_obs,
