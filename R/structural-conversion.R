@@ -111,11 +111,10 @@
 
       # Validate that mat has correct dimensions
       mat_dims <- dim(mat)
-      expected_dims <- c(max_delay, max_delay)
-      if (!identical(mat_dims, expected_dims)) {
+      if (mat_dims[1] != max_delay || mat_dims[2] != max_delay) {
         stop(
           "structural[[", g, "]][[", t, "]] must have dimensions (",
-          expected_dims[1], ", ", expected_dims[2], "), but got (",
+          max_delay, ", ", max_delay, "), but got (",
           mat_dims[1], ", ", mat_dims[2], ")"
         )
       }
