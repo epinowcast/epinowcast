@@ -109,7 +109,8 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
     fixed_param = TRUE,
     iter_sampling = 1,
     chains = 1,
-    refresh = 0
+    refresh = 0,
+    show_messages = FALSE
   )
 
   exp_obs <- fit$draws("result", format = "matrix")[1, ]
@@ -160,7 +161,8 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
     fixed_param = TRUE,
     iter_sampling = 1,
     chains = 1,
-    refresh = 0
+    refresh = 0,
+    show_messages = FALSE
   )
 
   exp_obs <- fit$draws("result", format = "matrix")[1, ]

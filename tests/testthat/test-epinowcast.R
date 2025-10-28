@@ -652,6 +652,7 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
     expectation = enw_expectation(~1, data = pobs),
     report = enw_report(structural = structural, data = pobs),
     fit = enw_fit_opts(
+      sampler = silent_enw_sample,
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 250, iter_sampling = 250
     ),
