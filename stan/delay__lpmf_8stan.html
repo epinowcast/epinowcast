@@ -114,14 +114,14 @@ $(function(){initNavTree('delay__lpmf_8stan.html',''); initResizable(true); });
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac79711bce05e33d8a014adb1f5413bf9" id="r_ac79711bce05e33d8a014adb1f5413bf9"><td class="memItemLeft" align="right" valign="top">real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac79711bce05e33d8a014adb1f5413bf9">delay_snap_lpmf</a> (array[] int dummy, int start, int end, array[] int obs, array[] int sl, array[] int csl, array[] int nsl, array[] int cnsl, array[] int obs_lookup, array[] vector imp_obs, array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, array[] real phi, int model_obs, vector refnp_lh, int ref_np, array[] int sdmax, array[] int csdmax)</td></tr>
-<tr class="separator:ac79711bce05e33d8a014adb1f5413bf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba62e1661fa86d028a16ca540f7b2626" id="r_aba62e1661fa86d028a16ca540f7b2626"><td class="memItemLeft" align="right" valign="top">real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba62e1661fa86d028a16ca540f7b2626">delay_group_lpmf</a> (array[] int groups, int start, int end, array[] int obs, array[] int sl, array[] int csl, array[] int nsl, array[] int cnsl, array[] int obs_lookup, array[] vector imp_obs, int t, array[] int sg, array[,] int ts, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, array[] real phi, int model_obs, int model_miss, int miss_obs, array[] int missing_reference, array[,] int obs_by_report, vector miss_ref_lprop, array[] int sdmax, array[] int csdmax, array[] int miss_st, array[] int miss_cst, vector refnp_lh, int ref_np)</td></tr>
-<tr class="separator:aba62e1661fa86d028a16ca540f7b2626"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d7b60a845b193a41c77092fc07c56ac" id="r_a5d7b60a845b193a41c77092fc07c56ac"><td class="memItemLeft" align="right" valign="top">real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d7b60a845b193a41c77092fc07c56ac">delay_snap_lpmf</a> (array[] int dummy, int start, int end, array[] int obs, array[] int sl, array[] int csl, array[] int nsl, array[] int cnsl, array[] int obs_lookup, array[] vector imp_obs, array[] int sg, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, array[] real phi, int model_obs, vector refnp_lh, int ref_np, array[] int sdmax, array[] int csdmax, int rep_agg_p, array[,,] int rep_agg_n_selected, array[,,,] int rep_agg_selected_idx)</td></tr>
+<tr class="separator:a5d7b60a845b193a41c77092fc07c56ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9bc37719833067632e88ab5bb01996d" id="r_ac9bc37719833067632e88ab5bb01996d"><td class="memItemLeft" align="right" valign="top">real&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9bc37719833067632e88ab5bb01996d">delay_group_lpmf</a> (array[] int groups, int start, int end, array[] int obs, array[] int sl, array[] int csl, array[] int nsl, array[] int cnsl, array[] int obs_lookup, array[] vector imp_obs, int t, array[] int sg, array[,] int ts, array[] int st, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, array[] real phi, int model_obs, int model_miss, int miss_obs, array[] int missing_reference, array[,] int obs_by_report, vector miss_ref_lprop, array[] int sdmax, array[] int csdmax, array[] int miss_st, array[] int miss_cst, vector refnp_lh, int ref_np, int rep_agg_p, array[,,] int rep_agg_n_selected, array[,,,] int rep_agg_selected_idx)</td></tr>
+<tr class="separator:ac9bc37719833067632e88ab5bb01996d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="aba62e1661fa86d028a16ca540f7b2626" name="aba62e1661fa86d028a16ca540f7b2626"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba62e1661fa86d028a16ca540f7b2626">&#9670;&#160;</a></span>delay_group_lpmf()</h2>
+<a id="ac9bc37719833067632e88ab5bb01996d" name="ac9bc37719833067632e88ab5bb01996d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac9bc37719833067632e88ab5bb01996d">&#9670;&#160;</a></span>delay_group_lpmf()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -294,7 +294,22 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ref_np</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ref_np</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_n_selected</em></span>[,,], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_selected_idx</em></span>[,,,]&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -325,7 +340,10 @@ Functions</h2></td></tr>
     <tr><td class="paramname">refnp_lh</td><td>Vector of non-parametric reference log hazards.</td></tr>
     <tr><td class="paramname">ref_np</td><td>Binary flag for non-parametric reference effects presence.</td></tr>
     <tr><td class="paramname">sdmax</td><td>Array of maximum start dates for each period.</td></tr>
-    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.   </td></tr>
+    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.</td></tr>
+    <tr><td class="paramname">rep_agg_p</td><td>Binary flag indicating whether reporting probabilities should be aggregated for structural reporting patterns (e.g., fixed reporting cycles).</td></tr>
+    <tr><td class="paramname">rep_agg_n_selected</td><td>3D array of counts of selected indices per row for probability aggregation, with dimensions [groups, times, max_delay].</td></tr>
+    <tr><td class="paramname">rep_agg_selected_idx</td><td>4D array of column indices for aggregation, with dimensions [groups, times, max_delay, max_delay].   </td></tr>
     <tr><td class="paramname">groups</td><td>Array of group identifiers.</td></tr>
     <tr><td class="paramname">t</td><td>Integer representing the current time index.</td></tr>
     <tr><td class="paramname">groups</td><td>Array of group identifiers.</td></tr>
@@ -359,12 +377,12 @@ Functions</h2></td></tr>
 </ul>
 <p>This function is similar to <code>delay_snap_lpmf</code> but is specifically designed for group data and includes additional steps for missing data. </p>
 
-<p class="definition">Definition at line <a class="el" href="delay__lpmf_8stan_source.html#l00122">122</a> of file <a class="el" href="delay__lpmf_8stan_source.html">delay_lpmf.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="delay__lpmf_8stan_source.html#l00125">125</a> of file <a class="el" href="delay__lpmf_8stan_source.html">delay_lpmf.stan</a>.</p>
 
 </div>
 </div>
-<a id="ac79711bce05e33d8a014adb1f5413bf9" name="ac79711bce05e33d8a014adb1f5413bf9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac79711bce05e33d8a014adb1f5413bf9">&#9670;&#160;</a></span>delay_snap_lpmf()</h2>
+<a id="a5d7b60a845b193a41c77092fc07c56ac" name="a5d7b60a845b193a41c77092fc07c56ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d7b60a845b193a41c77092fc07c56ac">&#9670;&#160;</a></span>delay_snap_lpmf()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -492,7 +510,22 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>csdmax</em></span>&#160;)</td>
+          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>csdmax</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_n_selected</em></span>[,,], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_selected_idx</em></span>[,,,]&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -523,7 +556,10 @@ Functions</h2></td></tr>
     <tr><td class="paramname">refnp_lh</td><td>Vector of non-parametric reference log hazards.</td></tr>
     <tr><td class="paramname">ref_np</td><td>Binary flag for non-parametric reference effects presence.</td></tr>
     <tr><td class="paramname">sdmax</td><td>Array of maximum start dates for each period.</td></tr>
-    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.   </td></tr>
+    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.</td></tr>
+    <tr><td class="paramname">rep_agg_p</td><td>Binary flag indicating whether reporting probabilities should be aggregated for structural reporting patterns (e.g., fixed reporting cycles).</td></tr>
+    <tr><td class="paramname">rep_agg_n_selected</td><td>3D array of counts of selected indices per row for probability aggregation, with dimensions [groups, times, max_delay].</td></tr>
+    <tr><td class="paramname">rep_agg_selected_idx</td><td>4D array of column indices for aggregation, with dimensions [groups, times, max_delay, max_delay].   </td></tr>
     <tr><td class="paramname">dummy</td><td>Dummy array parameter, not used in the calculation.</td></tr>
   </table>
   </dd>

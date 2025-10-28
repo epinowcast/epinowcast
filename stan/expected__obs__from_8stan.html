@@ -114,14 +114,14 @@ $(function(){initNavTree('expected__obs__from_8stan.html',''); initResizable(tru
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac2d2ed46a70a696529267c79ebb87076" id="r_ac2d2ed46a70a696529267c79ebb87076"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac2d2ed46a70a696529267c79ebb87076">expected_obs_from_index</a> (int i, array[] vector imp_obs, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, int g, int t, int l, vector refnp_lh, int ref_np, int p)</td></tr>
-<tr class="separator:ac2d2ed46a70a696529267c79ebb87076"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad28da8d9766a912374b78daf38710af5" id="r_ad28da8d9766a912374b78daf38710af5"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad28da8d9766a912374b78daf38710af5">expected_obs_from_snaps</a> (int start, int end, array[] vector imp_obs, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, array[] int sl, array[] int csl, array[] int sg, array[] int st, int n, vector refnp_lh, int ref_np, array[] int sdmax, array[] int csdmax)</td></tr>
-<tr class="separator:ad28da8d9766a912374b78daf38710af5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89e18a0813cdae5895b1621e48267d40" id="r_a89e18a0813cdae5895b1621e48267d40"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89e18a0813cdae5895b1621e48267d40">expected_obs_from_index</a> (int i, array[] vector imp_obs, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, int g, int t, int l, vector refnp_lh, int ref_np, int p, int rep_agg_p, array[,,] int rep_agg_n_selected, array[,,,] int rep_agg_selected_idx)</td></tr>
+<tr class="separator:a89e18a0813cdae5895b1621e48267d40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad16d62a15119b422c7f112d3dcf25caf" id="r_ad16d62a15119b422c7f112d3dcf25caf"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad16d62a15119b422c7f112d3dcf25caf">expected_obs_from_snaps</a> (int start, int end, array[] vector imp_obs, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int ref_as_p, array[] int sl, array[] int csl, array[] int sg, array[] int st, int n, vector refnp_lh, int ref_np, array[] int sdmax, array[] int csdmax, int rep_agg_p, array[,,] int rep_agg_n_selected, array[,,,] int rep_agg_selected_idx)</td></tr>
+<tr class="separator:ad16d62a15119b422c7f112d3dcf25caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ac2d2ed46a70a696529267c79ebb87076" name="ac2d2ed46a70a696529267c79ebb87076"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2d2ed46a70a696529267c79ebb87076">&#9670;&#160;</a></span>expected_obs_from_index()</h2>
+<a id="a89e18a0813cdae5895b1621e48267d40" name="a89e18a0813cdae5895b1621e48267d40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89e18a0813cdae5895b1621e48267d40">&#9670;&#160;</a></span>expected_obs_from_index()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -199,7 +199,22 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>p</em></span>&#160;)</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_n_selected</em></span>[,,], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_selected_idx</em></span>[,,,]&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -207,16 +222,38 @@ Functions</h2></td></tr>
 <p>Computes the expected observations for a specific time index by combining final observed/imputed expected observation with time effects. This function integrates various hazard effects and reference adjustments to produce the expected observations.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">i</td><td>Index for accessing elements in various arrays.</td></tr>
+    <tr><td class="paramname">start</td><td>Start index for the range of interest.</td></tr>
+    <tr><td class="paramname">end</td><td>End index for the range of interest.</td></tr>
+    <tr><td class="paramname">obs</td><td>Array of observed data, stored as a flat vector.</td></tr>
+    <tr><td class="paramname">sl</td><td>Array of start index for each observation period.</td></tr>
+    <tr><td class="paramname">csl</td><td>Array of cumulative start indexes.</td></tr>
+    <tr><td class="paramname">nsl</td><td>Array of next start indexes, indicating the start of the next period.</td></tr>
+    <tr><td class="paramname">cnsl</td><td>Array of cumulative next start indexes.</td></tr>
+    <tr><td class="paramname">obs_lookup</td><td>Array of indexes linking observed data to modeled expectations.</td></tr>
     <tr><td class="paramname">imp_obs</td><td>Array of imputed observed data, organized by group and time.</td></tr>
+    <tr><td class="paramname">sg</td><td>Array indicating group index for each observation.</td></tr>
+    <tr><td class="paramname">st</td><td>Array indicating time index for each observation.</td></tr>
     <tr><td class="paramname">rdlurd</td><td>Array indicating reporting dates lookup reference data.</td></tr>
     <tr><td class="paramname">srdlh</td><td>Vector of standardized reporting date log hazards.</td></tr>
     <tr><td class="paramname">refp_lh</td><td>Matrix of reference date logit hazards.</td></tr>
     <tr><td class="paramname">dpmfs</td><td>Array of indices for accessing reference date effects in <code>refp_lh</code>.</td></tr>
-    <tr><td class="paramname">ref_p,rep_h,ref_as_p</td><td>Flags indicating presence of reference date, reporting hazards, and reference-as-probability.</td></tr>
-    <tr><td class="paramname">g,t,l,p</td><td>Group, time, length, and position parameters for data access and processing.</td></tr>
+    <tr><td class="paramname">ref_p</td><td>Binary flag for reference date effects presence.</td></tr>
+    <tr><td class="paramname">rep_h</td><td>Binary flag for reporting hazard effects presence.</td></tr>
+    <tr><td class="paramname">ref_as_p</td><td>Binary flag indicating if reference date input should be treated as probability.</td></tr>
+    <tr><td class="paramname">phi</td><td>Array of dispersion parameters for negative binomial distribution.</td></tr>
+    <tr><td class="paramname">model_obs</td><td>Binary flag indicating if a negative binomial model is used.</td></tr>
     <tr><td class="paramname">refnp_lh</td><td>Vector of non-parametric reference log hazards.</td></tr>
-    <tr><td class="paramname">ref_np</td><td>Flag indicating presence of non-parametric reference effects.</td></tr>
+    <tr><td class="paramname">ref_np</td><td>Binary flag for non-parametric reference effects presence.</td></tr>
+    <tr><td class="paramname">sdmax</td><td>Array of maximum start dates for each period.</td></tr>
+    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.</td></tr>
+    <tr><td class="paramname">rep_agg_p</td><td>Binary flag indicating whether reporting probabilities should be aggregated for structural reporting patterns (e.g., fixed reporting cycles).</td></tr>
+    <tr><td class="paramname">rep_agg_n_selected</td><td>3D array of counts of selected indices per row for probability aggregation, with dimensions [groups, times, max_delay].</td></tr>
+    <tr><td class="paramname">rep_agg_selected_idx</td><td>4D array of column indices for aggregation, with dimensions [groups, times, max_delay, max_delay].   </td></tr>
+    <tr><td class="paramname">i</td><td>Index for accessing elements in various arrays.</td></tr>
+    <tr><td class="paramname">g</td><td>Group index for data access. </td></tr>
+    <tr><td class="paramname">t</td><td>Time index for data access. </td></tr>
+    <tr><td class="paramname">l</td><td>Length parameter for data processing. </td></tr>
+    <tr><td class="paramname">p</td><td>Position parameter for data access.</td></tr>
   </table>
   </dd>
 </dl>
@@ -232,12 +269,12 @@ Functions</h2></td></tr>
 <li><code>expected_obs</code> </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="expected__obs__from_8stan_source.html#l00046">46</a> of file <a class="el" href="expected__obs__from_8stan_source.html">expected_obs_from.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expected__obs__from_8stan_source.html#l00032">32</a> of file <a class="el" href="expected__obs__from_8stan_source.html">expected_obs_from.stan</a>.</p>
 
 </div>
 </div>
-<a id="ad28da8d9766a912374b78daf38710af5" name="ad28da8d9766a912374b78daf38710af5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad28da8d9766a912374b78daf38710af5">&#9670;&#160;</a></span>expected_obs_from_snaps()</h2>
+<a id="ad16d62a15119b422c7f112d3dcf25caf" name="ad16d62a15119b422c7f112d3dcf25caf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad16d62a15119b422c7f112d3dcf25caf">&#9670;&#160;</a></span>expected_obs_from_snaps()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -335,7 +372,22 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>csdmax</em></span>&#160;)</td>
+          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>csdmax</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_n_selected</em></span>[,,], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array int</td>          <td class="paramname"><span class="paramname"><em>rep_agg_selected_idx</em></span>[,,,]&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -343,17 +395,34 @@ Functions</h2></td></tr>
 <p>Computes expected observations for a range of time indexes, effectively aggregating individual calculations over a specified range. This function considers various factors like hazard effects, reference adjustments, and grouping to produce expected observations for each index within the range.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">start,end</td><td>Start and end indexes for the allocation range.</td></tr>
+    <tr><td class="paramname">start</td><td>Start index for the range of interest.</td></tr>
+    <tr><td class="paramname">end</td><td>End index for the range of interest.</td></tr>
+    <tr><td class="paramname">obs</td><td>Array of observed data, stored as a flat vector.</td></tr>
+    <tr><td class="paramname">sl</td><td>Array of start index for each observation period.</td></tr>
+    <tr><td class="paramname">csl</td><td>Array of cumulative start indexes.</td></tr>
+    <tr><td class="paramname">nsl</td><td>Array of next start indexes, indicating the start of the next period.</td></tr>
+    <tr><td class="paramname">cnsl</td><td>Array of cumulative next start indexes.</td></tr>
+    <tr><td class="paramname">obs_lookup</td><td>Array of indexes linking observed data to modeled expectations.</td></tr>
     <tr><td class="paramname">imp_obs</td><td>Array of imputed observed data, organized by group and time.</td></tr>
+    <tr><td class="paramname">sg</td><td>Array indicating group index for each observation.</td></tr>
+    <tr><td class="paramname">st</td><td>Array indicating time index for each observation.</td></tr>
     <tr><td class="paramname">rdlurd</td><td>Array indicating reporting dates lookup reference data.</td></tr>
     <tr><td class="paramname">srdlh</td><td>Vector of standardized reporting date log hazards.</td></tr>
     <tr><td class="paramname">refp_lh</td><td>Matrix of reference date logit hazards.</td></tr>
-    <tr><td class="paramname">dpmfs,sl,csl,sg,st</td><td>Arrays for accessing various indices and supporting data.</td></tr>
-    <tr><td class="paramname">ref_p,rep_h,ref_as_p</td><td>Flags for presence of different hazard effects.</td></tr>
-    <tr><td class="paramname">n</td><td>Number of discrete points for observations.</td></tr>
+    <tr><td class="paramname">dpmfs</td><td>Array of indices for accessing reference date effects in <code>refp_lh</code>.</td></tr>
+    <tr><td class="paramname">ref_p</td><td>Binary flag for reference date effects presence.</td></tr>
+    <tr><td class="paramname">rep_h</td><td>Binary flag for reporting hazard effects presence.</td></tr>
+    <tr><td class="paramname">ref_as_p</td><td>Binary flag indicating if reference date input should be treated as probability.</td></tr>
+    <tr><td class="paramname">phi</td><td>Array of dispersion parameters for negative binomial distribution.</td></tr>
+    <tr><td class="paramname">model_obs</td><td>Binary flag indicating if a negative binomial model is used.</td></tr>
     <tr><td class="paramname">refnp_lh</td><td>Vector of non-parametric reference log hazards.</td></tr>
-    <tr><td class="paramname">ref_np</td><td>Flag for non-parametric reference effects.</td></tr>
-    <tr><td class="paramname">sdmax,csdmax</td><td>Arrays of maximum start dates and cumulative start dates.</td></tr>
+    <tr><td class="paramname">ref_np</td><td>Binary flag for non-parametric reference effects presence.</td></tr>
+    <tr><td class="paramname">sdmax</td><td>Array of maximum start dates for each period.</td></tr>
+    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.</td></tr>
+    <tr><td class="paramname">rep_agg_p</td><td>Binary flag indicating whether reporting probabilities should be aggregated for structural reporting patterns (e.g., fixed reporting cycles).</td></tr>
+    <tr><td class="paramname">rep_agg_n_selected</td><td>3D array of counts of selected indices per row for probability aggregation, with dimensions [groups, times, max_delay].</td></tr>
+    <tr><td class="paramname">rep_agg_selected_idx</td><td>4D array of column indices for aggregation, with dimensions [groups, times, max_delay, max_delay].   </td></tr>
+    <tr><td class="paramname">n</td><td>Number of discrete points for observations.</td></tr>
   </table>
   </dd>
 </dl>
@@ -369,7 +438,7 @@ Functions</h2></td></tr>
 <li><code>expected_obs_from_index</code> </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="expected__obs__from_8stan_source.html#l00117">117</a> of file <a class="el" href="expected__obs__from_8stan_source.html">expected_obs_from.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="expected__obs__from_8stan_source.html#l00094">94</a> of file <a class="el" href="expected__obs__from_8stan_source.html">expected_obs_from.stan</a>.</p>
 
 </div>
 </div>

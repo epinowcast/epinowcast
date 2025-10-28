@@ -108,26 +108,35 @@ $(function(){initNavTree('expected__obs_8stan_source.html',''); initResizable(tr
 </div><!--header-->
 <div class="contents">
 <a href="expected__obs_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">  102</a></span>vector <a class="code hl_function" href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a>(real tar_obs, vector lh, <span class="keywordtype">int</span> l, <span class="keywordtype">int</span> ref_as_p, <span class="keywordtype">int</span> agg_probs, matrix agg_indicator) {</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  vector[l] p;</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordflow">if</span> (ref_as_p == 1) {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    p = lh;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  }<span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_inv_logit&quot;</span>) {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    p = inv_logit(lh);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_hazard_to_prob&quot;</span>) {</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    p = <a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(p, l);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  }</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  <span class="keywordflow">if</span> (agg_probs == 1) {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    p = log(agg_indicator * exp(p));</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  <span class="keywordflow">return</span>(tar_obs + p);</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>}</div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="}">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="expected__obs_8stan.html#a7fb0101b75e4b1c4170850cc856f94cf">  101</a></span>vector <a class="code hl_function" href="expected__obs_8stan.html#a7fb0101b75e4b1c4170850cc856f94cf">expected_obs</a>(</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  real tar_obs, vector lh, <span class="keywordtype">int</span> l, <span class="keywordtype">int</span> ref_as_p, <span class="keywordtype">int</span> rep_agg_p,</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>  array[] <span class="keywordtype">int</span> n_selected, array[,] <span class="keywordtype">int</span> selected_idx</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  vector[l] p;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="keywordflow">if</span> (ref_as_p == 1) {</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    p = lh;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  }<span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_inv_logit&quot;</span>) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    p = inv_logit(lh);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    profile(<span class="stringliteral">&quot;model_likelihood_expected_obs_hazard_to_prob&quot;</span>) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    p = <a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(p, l);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>  }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordflow">if</span> (rep_agg_p == 1) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    vector[l] p_aggregated = rep_vector(negative_infinity(), l);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">for</span> (i in 1:l) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>      <span class="keywordflow">if</span> (n_selected[i] &gt; 0) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        p_aggregated[i] = log_sum_exp(p[selected_idx[i, 1:n_selected[i]]]);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    p = p_aggregated;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <span class="keywordflow">return</span>(tar_obs + p);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
 </div>
-<div class="ttc" id="aexpected__obs_8stan_html_a3286f3ebd9691b3251d298644a2e64ec"><div class="ttname"><a href="expected__obs_8stan.html#a3286f3ebd9691b3251d298644a2e64ec">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, matrix agg_indicator)</div><div class="ttdef"><b>Definition</b> <a href="#l00102">expected_obs.stan:102</a></div></div>
+<div class="ttc" id="aexpected__obs_8stan_html_a7fb0101b75e4b1c4170850cc856f94cf"><div class="ttname"><a href="expected__obs_8stan.html#a7fb0101b75e4b1c4170850cc856f94cf">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p, array[] int n_selected, array[,] int selected_idx)</div><div class="ttdef"><b>Definition</b> <a href="#l00101">expected_obs.stan:101</a></div></div>
 <div class="ttc" id="ahazard_8stan_html_ae596473f33916489e56f6e555d08f211"><div class="ttname"><a href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h, int l)</div><div class="ttdef"><b>Definition</b> <a href="hazard_8stan_source.html#l00078">hazard.stan:78</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

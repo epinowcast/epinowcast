@@ -132,7 +132,10 @@ $(function(){initNavTree('common_parameters_delay_lpmf_funcs.html',''); initResi
     <tr><td class="paramname">refnp_lh</td><td>Vector of non-parametric reference log hazards.</td></tr>
     <tr><td class="paramname">ref_np</td><td>Binary flag for non-parametric reference effects presence.</td></tr>
     <tr><td class="paramname">sdmax</td><td>Array of maximum start dates for each period.</td></tr>
-    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates. </td></tr>
+    <tr><td class="paramname">csdmax</td><td>Array of cumulative start dates.</td></tr>
+    <tr><td class="paramname">rep_agg_p</td><td>Binary flag indicating whether reporting probabilities should be aggregated for structural reporting patterns (e.g., fixed reporting cycles).</td></tr>
+    <tr><td class="paramname">rep_agg_n_selected</td><td>3D array of counts of selected indices per row for probability aggregation, with dimensions [groups, times, max_delay].</td></tr>
+    <tr><td class="paramname">rep_agg_selected_idx</td><td>4D array of column indices for aggregation, with dimensions [groups, times, max_delay, max_delay]. </td></tr>
   </table>
   </dd>
 </dl>
