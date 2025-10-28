@@ -80,13 +80,13 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
 
   # Precompute indices using helper function
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
-  n_selected <- as.array(indices_list$n_selected)
-  selected_idx <- indices_list$selected_idx
 
   # Test with precomputed indices
+  # Stan array[] int: integer array with explicit 1D dimension
   exp_obs <- expected_obs(
     tar_obs, lh, length(lh), ref_as_p = 1, 1,
-    n_selected, selected_idx
+    array(as.integer(indices_list$n_selected), dim = length(indices_list$n_selected)),
+    matrix(as.integer(indices_list$selected_idx), nrow = nrow(indices_list$selected_idx))
   )
 
   # Expected output using matrix multiplication
@@ -106,12 +106,12 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
 
   # Precompute indices using helper function
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
-  n_selected <- as.array(indices_list$n_selected)
-  selected_idx <- indices_list$selected_idx
 
+  # Stan array[] int: integer array with explicit 1D dimension
   exp_obs <- expected_obs(
     tar_obs, lh, 7, ref_as_p = 1, 1,
-    n_selected, selected_idx
+    array(as.integer(indices_list$n_selected), dim = length(indices_list$n_selected)),
+    matrix(as.integer(indices_list$selected_idx), nrow = nrow(indices_list$selected_idx))
   )
 
   # Only Wednesday (day 4) should have finite value

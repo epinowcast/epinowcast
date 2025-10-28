@@ -83,8 +83,42 @@
 
   # Fill arrays with precomputed indices
   for (g in seq_along(structural)) {
+    # Validate that structural[[g]] exists and is a list
+    if (!is.list(structural[[g]])) {
+      stop(
+        "structural[[", g, "]] must be a list, but got ",
+        class(structural[[g]])[1]
+      )
+    }
+    # Validate that structural[[g]] has correct length
+    if (length(structural[[g]]) != n_times) {
+      stop(
+        "structural[[", g, "]] must have length ", n_times,
+        ", but got ", length(structural[[g]])
+      )
+    }
+
     for (t in seq_along(structural[[g]])) {
       mat <- structural[[g]][[t]]
+
+      # Validate that mat is a matrix
+      if (!inherits(mat, "matrix")) {
+        stop(
+          "structural[[", g, "]][[", t, "]] must be a matrix, but got ",
+          class(mat)[1]
+        )
+      }
+
+      # Validate that mat has correct dimensions
+      mat_dims <- dim(mat)
+      expected_dims <- c(max_delay, max_delay)
+      if (!identical(mat_dims, expected_dims)) {
+        stop(
+          "structural[[", g, "]][[", t, "]] must have dimensions (",
+          expected_dims[1], ", ", expected_dims[2], "), but got (",
+          mat_dims[1], ", ", mat_dims[2], ")"
+        )
+      }
 
       # Precompute indices using helper function
       indices_list <- .precompute_matrix_indices(mat)
