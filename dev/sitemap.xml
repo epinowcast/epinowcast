@@ -15,7 +15,6 @@
 <url><loc>https://package.epinowcast.org/dev/news/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/add_max_observed_delay.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/add_pmfs.html</loc></url>
-<url><loc>https://package.epinowcast.org/dev/reference/aggregate_rolling_sum.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/as_forecast_sample.epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/as_string_formula.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/build_ord_obs.html</loc></url>
@@ -42,6 +41,10 @@
 <url><loc>https://package.epinowcast.org/dev/reference/create_cache_dir.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/date_to_numeric_modulus.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/dot-format_delay_with_units.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-precompute_aggregation_lookups.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-precompute_matrix_indices.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-structural_reporting_to_matrices.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/dot-validate_structural_reporting.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_add_cumulative.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_add_cumulative_membership.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_add_delay.html</loc></url>
@@ -54,6 +57,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_assign_group.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_complete_dates.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_construct_data.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_dayofweek_structural_reporting.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_design.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_effects_metadata.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_example.html</loc></url>
@@ -99,10 +103,12 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_reps_with_complete_refs.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_rolling_sum.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_sample.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_set_cache.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_simulate_missing_reference.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_stan_to_r.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_structural_reporting_metadata.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_summarise_samples.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_unset_cache.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/epinowcast-package.html</loc></url>

@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.0.1000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_report</span><span class="op">(</span>non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, structural <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, <span class="va">data</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">enw_report</span><span class="op">(</span>non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, structural <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">data</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -81,16 +81,14 @@ for details on formula syntax.</p></dd>
 
 
 <dt id="arg-structural">structural<a class="anchor" aria-label="anchor" href="#arg-structural"></a></dt>
-<dd><p>A formula with fixed effects and using only binary
-variables, and factors describing the known reporting structure (i.e weekday
-only reporting). The base case (i.e the first factor entry) should describe
-the dates for which reporting is possible. Internally dates with a non-zero
-element in the design matrix have their hazard set to 0. This can use
-features defined by report date as defined in <code>metareport</code> as produced by
-<code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>. Note that the intercept for this model is set to 0
-in order to allow all dates without other structural reasons to not be
-reported to be reported. Note that this feature is not yet available to
-users.</p></dd>
+<dd><p>A <code>data.table</code> describing the known reporting structure
+(e.g., weekday-only reporting). This should be created using
+<code><a href="enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting()</a></code> for day-of-week patterns, or
+<code><a href="enw_structural_reporting_metadata.html">enw_structural_reporting_metadata()</a></code> as a base for custom patterns.
+The data.table must have columns: <code>.group</code>, <code>date</code>, <code>report_date</code>, and
+<code>report</code> (binary indicator where 1 = reporting occurs). This is particularly
+useful for modeling fixed reporting cycles, such as Wednesday-only reporting.
+Set to <code>NULL</code> to disable (default).</p></dd>
 
 
 <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
@@ -107,16 +105,17 @@ can be used to sample from a tightened version of the prior distribution.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Model modules
-<code><a href="enw_expectation.html">enw_expectation</a>()</code>,
-<code><a href="enw_fit_opts.html">enw_fit_opts</a>()</code>,
-<code><a href="enw_missing.html">enw_missing</a>()</code>,
-<code><a href="enw_obs.html">enw_obs</a>()</code>,
-<code><a href="enw_reference.html">enw_reference</a>()</code></p></div>
+<code><a href="enw_expectation.html">enw_expectation()</a></code>,
+<code><a href="enw_fit_opts.html">enw_fit_opts()</a></code>,
+<code><a href="enw_missing.html">enw_missing()</a></code>,
+<code><a href="enw_obs.html">enw_obs()</a></code>,
+<code><a href="enw_reference.html">enw_reference()</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">enw_report</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Basic report model</span></span></span>
+<span class="r-in"><span><span class="fu">enw_report</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $formula$non_parametric</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "~1"</span>
@@ -158,6 +157,19 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"assign")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$rep_agg_p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$rep_agg_n_selected</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 x 0 array of integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $data$rep_agg_selected_idx</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;0 x 0 x 0 x 0 array of integer&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $data$rep_t</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 59</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -190,9 +202,18 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x557253ee76d8&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557253eebe80&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x5579cbf58d10&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5579cbf58398&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># With Wednesday-only reporting structure</span></span></span>
+<span class="r-in"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">structural</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">pobs</span>, day_of_week <span class="op">=</span> <span class="st">"Wednesday"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">enw_report</span><span class="op">(</span>structural <span class="op">=</span> <span class="va">structural</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

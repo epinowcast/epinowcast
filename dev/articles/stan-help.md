@@ -1,0 +1,472 @@
+# Resources to help with model fitting using Stan
+
+Before we start, it is important to know that Bayesian modelling can be
+complex and most, if not all, practitioners (including the authors of
+[epinowcast](https://package.epinowcast.org)) are still learning on the
+job. Having problems that you may need to work through is part of the
+process. Part of the aim of the
+[epinowcast](https://package.epinowcast.org) community is to lower the
+barriers to entry for this type of modelling in real-time infectious
+disease analysis so we really appreciate any input into how to make our
+documentation easier to use.
+
+## Epinowcast and Stan
+
+[Stan](https://mc-stan.org/) is the probabilistic programming language
+and statistical platform for statistical modelling that powers the
+Bayesian inference in [epinowcast](https://package.epinowcast.org). The
+statistical models used in [epinowcast](https://package.epinowcast.org)
+are primarily written in the [Stan programming
+language](https://mc-stan.org/docs/reference-manual/index.html), a
+statically typed programming language with syntax similar to C/C++.
+[epinowcast](https://package.epinowcast.org) utilises the
+[`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to interface with
+CmdStan, the program which executes the models written in the Stan
+programming language. It is important to understand that CmdStan is a
+program that is **distinct** from but interfaced through R. R calling a
+separate program to execute calculations is similar to
+[`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies
+on the [JAGS
+library](https://cran.r-project.org/web/packages/rjags/INSTALL) and
+[R-INLA](https://www.r-inla.org/what-is-inla). As described in the
+[epinowcast](https://package.epinowcast.org) project
+[README](https://package.epinowcast.org/dev/articles/index.md), you will
+need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) an R
+package which also has the ability to install CmdStan using an R
+interface. Additionally, you will need to make sure that the software
+required by CmdStan is installed and configured on your machine.
+
+### Ensuring you have the proper toolchain
+
+The Stan code that is written in the
+[epinowcast](https://package.epinowcast.org) package is
+converted[¹](#fn1) to optimised C++ code and then compiled to
+machine-readable instructions. Because Stan needs several programs to
+execute this compilation process such as the build tool
+[make](https://en.wikipedia.org/wiki/Make_(software)) and a C++
+compiler, you will need to ensure that your system has the appropriate
+supporting software, known as a toolchain. The steps to install this
+additional software are in addition to R and are **platform specific**.
+As a reminder, these installation steps occur **outside of R**. The Stan
+team has assembled very detailed instructions for each platform:
+
+- [**Windows**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#windows)
+- [**MacOS**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#macos)
+- [**Linux**](https://mc-stan.org/docs/cmdstan-guide/cmdstan-installation.html#linux)
+
+After completing your platform-specific toolchain installation, you can
+move on to R.
+
+### Now install CmdStanR and CmdStan
+
+Now you can open a session of R using your favourite IDE like Rstudio or
+Vscode. You’ll need to install the CmdStanR package, the R package which
+allows you to interface with CmdStan through R code. There is a [very
+detailed installation guide available for
+CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which
+provides the authoritative installation instructions.
+
+The [cmdstanr](https://mc-stan.org/cmdstanr/) package is installed as a
+dependency when you install `epinowcast`. To ensure that your toolchain
+installation occurred successfully, run the following code in your R
+terminal:
+
+Code
+
+``` r
+library(cmdstanr)
+check_cmdstan_toolchain()
+```
+
+This function will report back if the toolchain is available and set up
+as follows:
+
+Code
+
+``` r
+#> The C++ toolchain required for CmdStan is set up properly!
+```
+
+If you do not get this message, return to [the installation
+instructions](#toolchain) and ensure that all steps were followed.
+
+Assuming you have the toolchain installed, you can install CmdStanR.
+
+Code
+
+``` r
+cmdstanr::install_cmdstan(cores = 2)
+```
+
+## Epinowcast modelling
+
+### Installation
+
+As described in the project `README`, you can install the
+`"{epinowcast}"` package within R.
+
+### Running your first model
+
+As a reminder, in each session, each time you run a model, Stan will
+compile your model code. The first time you run this model it will take
+a moment for the compilation to occur.
+
+### Setting `enw_fit_opts`
+
+The `enw_fit_opts` allows you to set several critical components for the
+Stan computational engine. These parameters are passed to Stan during
+the model fitting process and influence the computation time and quality
+of the model fit. These options are inference engine agnostic and will
+be parsed depending on the sampler you choose (e.g.,
+[`epinowcast::enw_sample`](https://package.epinowcast.org/dev/reference/enw_sample.md)
+for full Bayesian inference). Knowing when and if the defaults need to
+be changed is an important part of the Bayesian workflow.^(\[1\]) All of
+the parameters are passed to the `sampling` function available from
+[`{cmdstanr}`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html)
+when used with the default approach of
+[`epinowcast::enw_sample`](https://package.epinowcast.org/dev/reference/enw_sample.md).
+
+## Investigating the quality of the model fit
+
+In this section we will discuss the most common approaches when working
+with [epinowcast](https://package.epinowcast.org) specifically and
+CmdStan/ Bayesian inference more generally. A major component of
+Bayesian inference and a key component of the Bayesian workflow is
+validating the quality of the model fit. As a consequence, the Bayesian
+workflow utilises tools that make issues of fit very apparent.^(\[1\])
+Additionally, [epinowcast](https://package.epinowcast.org) provides
+supplemental information to complement the existing Stan messages to
+help you spot and diagnose potential model fitting issues. The solutions
+to these issues typically require you to investigate your [sampler
+settings](#samplerParams), [model settings](#modelParams), or
+[interrogate your data](#modelData) further. It is also important to
+examine your posterior predictive
+
+### Sampler settings
+
+[epinowcast](https://package.epinowcast.org) provides users the ability
+to pass arguments directly to CmdStan which can improve model run time
+and produce better inferences. These parameters can be passed the
+`enw_fit_opts` function.
+
+#### `chains`
+
+One of the key components of Bayesian inference is creating draws from
+independent Markov chains (See [this
+post](https://betanalpha.github.io/assets/case_studies/markov_chain_monte_carlo.html#2_markov_chain_of_command)
+by Michael Betancourt for a more detailed introduction). To assess
+convergence and the reliability of a given posterior distribution at
+least two chains must be used with **`4` chains** being the more common
+default.
+
+#### `threads_per_chain`
+
+Stan allows for multi-threading and the Stan code used within
+[epinowcast](https://package.epinowcast.org) has tried to take advantage
+of these capabilities where possible. Multi-threading allows for the
+calculations to be spread across multiple threads, which could
+accelerate inference by allowing embarrassingly parallel calculations to
+be spread across threads and then later combined. If possible, a good
+default is `2`, however, if you have available compute on your machine,
+you can increase this to a higher value and may see some fit time
+reductions. Please note that the `theads_per_chain` has no impact on
+model convergence or fittings and is purely a means of speeding up the
+model fitting time.
+
+**The product of the `thread_per_chain` and `chains`** arguments should
+be equal to or less than the number of cores on your machine!
+
+#### iter_warmup and iter_sampling
+
+The number of samples used for the warmup phase of Stan and the number
+of sampling iterations are controlled by the `iter_warmup` and
+`iter_sampling` arguments, respectively. Stan requires a sufficient
+number of warmup iterations to dynamically estimate the step change
+sizes during model fitting. Unlike with Gibbs sampling (such as the
+method used in JAGS), you generally do not need to set large values for
+`iter_warmup` or `iter_sampling`, but this can vary based on the [match
+between your data and your
+model](https://discourse.mc-stan.org/t/number-of-iterations/1674/3).
+Conversely, setting large values for iterations could be a sign of poor
+model fit and indicates that other approaches need to be employed (e.g.,
+`priors`, `adapt_delta`, `max_treedepth`). A [general
+heuristic](https://mc-stan.org/rstan/reference/Rhat.html#:~:text=Both%20bulk%2DESS%20and%20tail,respective%20posterior%20quantiles%20are%20reliable)
+is to have your bulk and tail effective sample sizes (ESS) greater than
+100. However, [depending on the complexity of your
+problem](https://discourse.mc-stan.org/t/number-of-iterations/1674/13)
+increasing the number of iterations can be appropriate (i.e., your
+[\\\hat{R}\\ values are near 1](https://arxiv.org/pdf/1903.08008.pdf),
+[your Monte Carlo Standard
+errors](https://mc-stan.org/docs/cmdstan-guide/stansummary.html) are
+low) especially if you want to make inferences regarding tail
+behaviours. During the initial model fitting process, you may want to
+start with a lower number for `iter_warmup` such as 500 iterations per
+chain and increase to 750-1000 per chain (or more) if needed. Starting
+with slightly short warm-ups can speed up model development timelines.
+Typically we have found that 1000-2000 samples per chain for
+`iter_sampling` are good starting values for initial model fitting.
+
+#### max_treedepth
+
+This value controls the maximum size of the trajectory taken by the
+sample (in power of 2) for each step. If this value is too low, the
+sampler may terminate too early causing excess runtimes. While this does
+not necessarily indicate model fit issues, it does represent a runtime
+performance opportunity (i.e., more efficient sampling). You can
+increase the `max_treedepth` to an integer value greater than `10` up to
+`15` (or lower). For the models used in
+[epinowcast](https://package.epinowcast.org) it is common to have the
+`max_treedepth` set between 12 and 15.
+
+#### adapt_delta
+
+This parameter sets the target average proposal acceptance probability
+during NUTS sampling (and is a real number value between 0 and 1).
+Higher values of `adapt_delta` will result in smaller step sizes during
+sampling which will slow the model fitting time but can help to address
+*divergent transitions.* The default value is 0.8, but this will likely
+need to be set slightly higher like 0.9 to 0.99 given the complexity of
+the models being fit.
+
+#### Some decent defaults
+
+For a computer with 8 cores, a reasonable configuration would be the
+following:
+
+Code
+
+``` r
+enw_fit_opts(
+    save_warmup = FALSE,
+    pp = TRUE,
+    chains = 4,
+    threads_per_chain = 2,
+    adapt_delta = 0.95,
+    max_treedepth = 12,
+    iter_sampling = 2000,
+    iter_warmup = 1000,
+    show_messages = FALSE
+)
+```
+
+For very simple models `threads_per_chain = 1` may lead to models
+fitting faster even if more cores are available due to the overhead from
+within chain multi-threading. This may also be the case for models with
+very complex generative processes (i.e. models that use complex \\R_t\\
+formulas). We suggest you explore what works best for your data and
+models.
+
+### Model settings
+
+#### Setting priors
+
+Setting sensible priors is important for Bayesian inference. When
+pre-processing your data, you can retrieve the prior arguments using the
+`enw_reference` function. As shown below, you can retrieve your current
+files and manipulate them as needed.
+
+Code
+
+``` r
+default_priors <- enw_reference(data = enw_example("preprocessed"))
+default_priors
+```
+
+In the above example, if you have some reason to believe that the
+standard deviation of the means used could we smaller, you could reduce
+them by half to 0.5.
+
+Code
+
+``` r
+new_priors <- default_priors$priors
+
+new_priors[ ,sd := 0.5]
+```
+
+You could then pass these new priors to the `epinowcast` function.
+
+Code
+
+``` r
+epinowcast(pobs,
+  expectation = expectation_module,
+  fit = fit,
+  model = multithread_model,
+  priors = new_priors
+)
+```
+
+Similarly, you could take an empirical Bayes approach and use the
+posteriors of a [fitted model as described in another
+vignette](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting.html#using-the-inflated-posterior-as-a-prior).
+
+### Exploring your data
+
+It is important to understand the data being passed to `epinowcast` and
+have some ideas regarding the data-generating process for your data. For
+instance, if there are significant changes in your reporting triangle,
+this could manifest as multi-modality in the posterior distribution
+(i.e., Stan is trying to fit two different reporting delays with the
+same parameters). These different reporting regimes could result in long
+model run times, very wide posteriors, and ultimately nonsensical
+inferences. Given the nuances of your data, you may need to identify and
+fit different regimes of your data. These problems can also manifest
+over longer timescales, so while more data are generally better, too
+much data can result in ill-fitting models. Sometimes it is easier to
+examine these features before you fit your model due to domain
+knowledge; however, a key component of the Bayesian Workflow is to
+examine your [posterior predictions](#posteriorPreds).
+
+### Posterior predictions
+
+[Posterior
+predictions](https://mc-stan.org/docs/stan-users-guide/ppcs.html), in
+addition to model fitting diagnostics, provides a way to examine how
+well [your model captured your
+data](https://betanalpha.github.io/assets/case_studies/principled_bayesian_workflow.html#Step_Fourteen:_Posterior_Retrodictive_Checks65).
+If your model poorly captured your data (e.g., your data points were
+consistently outside of the posterior credible intervals), your model
+will likely lead to poor inferences. However, by examining the posterior
+predictions with your data, you may be able to both qualitatively and
+quantitatively discern if your posteriors captured your data and if
+there are patterns which hint at issues. Issues in your posterior
+predictions without any warnings from the diagnostics could indicate
+that you need to examine your
+[priors](https://package.epinowcast.org/dev/articles/.settingPriors) and
+your underlying data. Utilise the `enw_plot_pp_quantiles` to examine the
+posterior predictive quantiles from the nowcast fits.
+
+### Approaches to solve common problems
+
+#### My model takes too long to run
+
+One of the more common issues with Bayesian inference is that the
+sampler may take a long time to run. This can occur because the sampler
+is having difficulty exploring the posterior parameter space given the
+model and your data (i.e., the [Folk Theorem of Statistical
+Computing](https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/)
+“when you have computational problems, often there’s a problem with your
+model”). In other words, you may have a mismatch between your data and
+the model you are trying to fit. There a few simple steps to assist with
+this:
+
+1.  Increase the
+    [`max_treedepth`](https://package.epinowcast.org/dev/articles/.maxTree)
+    argument to 15 which will allow longer trajectories to be used for
+    steps when sampling. This is especially important if the
+    `per_at_max_treedepth` value is high in the returned CmdStan
+    diagnostics.
+2.  Use more [informative
+    priors](https://package.epinowcast.org/dev/articles/.settingPriors).
+3.  Try to simplify the model to understand potential degeneracies.
+4.  Reduce the amount of data you are trying to fit. This might include
+    reducing the duration of time points over which you are trying to
+    fit. Once you can confirm that the model will fit your data, it may
+    just be a question of computational power when fitting larger data.
+5.  Head to the [community forum](https://community.epinowcast.org/) and
+    ask for some assistance.
+
+#### Divergent transitions
+
+CmdStan may alert you that you have [“divergent
+transitions”](https://mc-stan.org/docs/reference-manual/divergent-transitions.html)
+detected during your model fit.
+
+Code
+
+``` r
+#>1: There were 32 divergent transitions after warmup.
+```
+
+A higher number of divergent transitions indicates that the model
+outputs are not to be trusted. The first step in addressing this is to
+increase the [`adapt_delta`](#adaptDelta) argument to a numeric near one
+(e.g., 0.99 or 0.99). This will allow for a smaller step size and may
+result in more reliable inferences. Importantly, if the number of
+divergent transitions remains high, your model may be misspecified given
+the available data. Regardless of if this resolves your problem,
+exploring divergent transitions can be a helpful way to improve your
+models so we don’t recommend just setting `adapt_delta` to be high
+without checking to see if you can improve things! Sensible places to
+start are to investigate if the model parameterisation is correct for
+the data you have available and if your priors are reasonable.
+
+#### My \\\hat{R}\\s are high and my `ess`s are low
+
+High values of \\\hat{R}\\, the Gelman-Rubin statistic used to measure
+convergence, indicate a lack of convergence between the different model
+chains. Values greater than 1.01 to 1.05 are [considered
+unreliable](https://projecteuclid.org/journals/bayesian-analysis/volume-16/issue-2/Rank-Normalization-Folding-and-Localization--An-Improved-R%CB%86-for/10.1214/20-BA1221.full).
+Once you have used \\\hat{R}\\ to assess convergence other [important
+measures](https://discourse.mc-stan.org/t/summarising-rhat-values-over-multiple-variables-fits/23957/5)
+are the effective sample size and
+[MCSE](https://avehtari.github.io/rhat_ess/ess_comparison.html#Comparison_of_ESS_estimators_for_bimodal_distribution).
+Lower values for the [effective sample
+size](https://mc-stan.org/docs/reference-manual/effective-sample-size.html)
+are especially problematic. The effective sample size provides insight
+into how many independent samples you have drawn from the posterior,
+accounting for the autocorrelation within the Markov chains. Ideally,
+you want these values to be near your total number of samples passed in
+the `iter_sample` argument. If `r_hat` is large and `ess_bulk`/
+`ess_tail` are low, consider:
+
+1.  Increasing your [adapt_delta](#adaptDelta) argument to a numeric
+    value near 1 (e.g., 0.99). This will reduce the step size and could
+    help with sampling at the risk of possible increases in runtime.
+2.  Use more [informative
+    priors](https://package.epinowcast.org/dev/articles/.settingPriors).
+
+#### The posterior estimates are very wide
+
+Wide posterior values indicate that there is a high degree of
+uncertainty given the data and model. If no other warnings are shown
+(e.g., divergent transitions, low ESS), then this result is simply the
+inference given the available data and prior likelihood.
+
+However, Bayesian model building is often an iterative process^(\[1\])
+and, in practice, it’s common to realize that that the model’s prior
+likelihood doesn’t accurately reflect your prior beliefs. Priors that
+were thought to be non-informative can turn out to [strongly influence
+the
+posterior](http://www.stat.columbia.edu/~gelman/research/published/entropy-19-00555-v2.pdf),
+often in unexpected and undesirable ways. If you suspect that this might
+be the case, it can make sense to revisit your priors, iteratively
+inspecting the joint prior model through prior predictive simulation and
+tweaking marginal distributions over individual parameters. The (Stan
+Prior Choice
+wiki)\[<https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations>\]
+is often a useful guide to this process.
+
+## Other resources
+
+Both the Epinowcast and Stan communities are pretty warm and open places
+and are receptive to helping others. If you find yourself having issues
+with [epinowcast](https://package.epinowcast.org), reach out!
+
+### Technical issues
+
+- [epinowcast forum](https://community.epinowcast.org/)
+- [epinowcast issues](https://github.com/epinowcast/epinowcast/issues)
+- [Stan forums](https://discourse.mc-stan.org/)
+- [Stan guide to warnings](https://mc-stan.org/misc/warnings.html)
+
+### Learning more about Stan and Bayesian inference
+
+- [Michael Betancourt’s case
+  studies](https://betanalpha.github.io/writing/)
+- Aki Vehtari [Bayesian Data
+  Analysis](https://avehtari.github.io/BDA_R_demos/demos_rstan/) and
+  [case studies](https://users.aalto.fi/~ave/casestudies.html)
+
+1\. Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter,
+B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020,
+November 3). *Bayesian Workflow*.
+<https://doi.org/10.48550/arXiv.2011.01808>
+
+------------------------------------------------------------------------
+
+1.  The Stan code is first passed to a Stan-specific compiled written in
+    Ocaml called [stanc3](https://github.com/stan-dev/stanc3). The
+    optimised C++ code generated from this first step is then passed to
+    the C++ compiler.

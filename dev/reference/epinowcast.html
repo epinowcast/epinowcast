@@ -23,7 +23,7 @@ case studies for example model specifications for different tasks."><meta proper
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.3.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.0.1000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -80,7 +80,7 @@ case studies for example model specifications for different tasks.</p>
 <span>  <span class="va">data</span>,</span>
 <span>  reference <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_reference.html">enw_reference</a></span><span class="op">(</span>parametric <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, distribution <span class="op">=</span> <span class="st">"lognormal"</span>,</span>
 <span>    non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
-<span>  report <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_report.html">enw_report</a></span><span class="op">(</span>non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, structural <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
+<span>  report <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_report.html">enw_report</a></span><span class="op">(</span>non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, structural <span class="op">=</span> <span class="cn">NULL</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_expectation.html">enw_expectation</a></span><span class="op">(</span>r <span class="op">=</span> <span class="op">~</span><span class="fl">0</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day</span><span class="op">:</span><span class="va">.group</span><span class="op">)</span>, generation_time <span class="op">=</span></span>
 <span>    <span class="fl">1</span>, observation <span class="op">=</span> <span class="op">~</span><span class="fl">1</span>, latent_reporting_delay <span class="op">=</span> <span class="fl">1</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
 <span>  missing <span class="op">=</span> <span class="fu">epinowcast</span><span class="fu">::</span><span class="fu"><a href="enw_missing.html">enw_missing</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">data</span><span class="op">)</span>,</span>
@@ -164,8 +164,8 @@ priors, and output from the sampler specified in <code><a href="enw_fit_opts.htm
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other epinowcast:
-<code><a href="plot.epinowcast.html">plot.epinowcast</a>()</code>,
-<code><a href="summary.epinowcast.html">summary.epinowcast</a>()</code></p></div>
+<code><a href="plot.epinowcast.html">plot.epinowcast()</a></code>,
+<code><a href="summary.epinowcast.html">summary.epinowcast()</a></code></p></div>
     </div>
 
     <div class="section level2">

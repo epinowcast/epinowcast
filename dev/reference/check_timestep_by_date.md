@@ -1,0 +1,53 @@
+# Check timestep by date
+
+This function verifies if the difference in dates within each date in
+the provided observations corresponds to the provided timestep. This
+check is performed for both `report_date` and `reference_date` and for
+each group in `obs`.
+
+## Usage
+
+``` r
+check_timestep_by_date(obs, timestep = "day", exact = TRUE)
+```
+
+## Arguments
+
+- obs:
+
+  Any of the types supported by
+  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html).
+
+- timestep:
+
+  The timestep to used. This can be a string ("day", "week") or a
+  numeric whole number representing the number of days. Note that
+  "month" is not currently supported in user-facing functions and will
+  throw an error if used.
+
+- exact:
+
+  Logical, if `TRUE`, checks if all differences exactly match the
+  timestep. If `FALSE`, checks if the sum of the differences modulo the
+  timestep equals zero. Default is `TRUE`.
+
+## Value
+
+This function is used for its side effect of checking the timestep by
+date in `obs`. If the check passes for all dates, the function returns
+invisibly. Otherwise, it stops and returns an error message.
+
+## See also
+
+Functions used for checking inputs
+[`check_design_matrix_sparsity()`](https://package.epinowcast.org/dev/reference/check_design_matrix_sparsity.md),
+[`check_group()`](https://package.epinowcast.org/dev/reference/check_group.md),
+[`check_group_date_unique()`](https://package.epinowcast.org/dev/reference/check_group_date_unique.md),
+[`check_max_delay()`](https://package.epinowcast.org/dev/reference/check_max_delay.md),
+[`check_module()`](https://package.epinowcast.org/dev/reference/check_module.md),
+[`check_modules_compatible()`](https://package.epinowcast.org/dev/reference/check_modules_compatible.md),
+[`check_numeric_timestep()`](https://package.epinowcast.org/dev/reference/check_numeric_timestep.md),
+[`check_observation_indicator()`](https://package.epinowcast.org/dev/reference/check_observation_indicator.md),
+[`check_quantiles()`](https://package.epinowcast.org/dev/reference/check_quantiles.md),
+[`check_timestep()`](https://package.epinowcast.org/dev/reference/check_timestep.md),
+[`check_timestep_by_group()`](https://package.epinowcast.org/dev/reference/check_timestep_by_group.md)
