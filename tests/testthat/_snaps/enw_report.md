@@ -67,6 +67,19 @@
       attr(,"assign")
       [1] 0
       
+      $data$rep_agg_p
+      [1] 0
+      
+      $data$rep_agg_n_selected
+      <0 x 0 x 0 array of integer>
+          
+      
+      
+      $data$rep_agg_selected_idx
+      <0 x 0 x 0 x 0 array of integer>
+          
+      
+      
       $data$rep_t
       [1] 59
       

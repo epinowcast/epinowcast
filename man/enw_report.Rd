@@ -4,7 +4,7 @@
 \alias{enw_report}
 \title{Report date logit hazard reporting  model module}
 \usage{
-enw_report(non_parametric = ~0, structural = ~0, data)
+enw_report(non_parametric = ~0, structural = NULL, data)
 }
 \arguments{
 \item{non_parametric}{A formula (as implemented in \code{\link[=enw_formula]{enw_formula()}})
@@ -17,16 +17,14 @@ the \code{non_parametric} argument of \code{\link[=enw_reference]{enw_reference(
 (internally converted to \code{~1} and flagged as inactive). See \code{\link[=enw_formula]{enw_formula()}}
 for details on formula syntax.}
 
-\item{structural}{A formula with fixed effects and using only binary
-variables, and factors describing the known reporting structure (i.e weekday
-only reporting). The base case (i.e the first factor entry) should describe
-the dates for which reporting is possible. Internally dates with a non-zero
-element in the design matrix have their hazard set to 0. This can use
-features defined by report date as defined in \code{metareport} as produced by
-\code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. Note that the intercept for this model is set to 0
-in order to allow all dates without other structural reasons to not be
-reported to be reported. Note that this feature is not yet available to
-users.}
+\item{structural}{A \code{data.table} describing the known reporting structure
+(e.g., weekday-only reporting). This should be created using
+\code{\link[=enw_dayofweek_structural_reporting]{enw_dayofweek_structural_reporting()}} for day-of-week patterns, or
+\code{\link[=enw_structural_reporting_metadata]{enw_structural_reporting_metadata()}} as a base for custom patterns.
+The data.table must have columns: \code{.group}, \code{date}, \code{report_date}, and
+\code{report} (binary indicator where 1 = reporting occurs). This is particularly
+useful for modeling fixed reporting cycles, such as Wednesday-only reporting.
+Set to \code{NULL} to disable (default).}
 
 \item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
 }
@@ -40,7 +38,17 @@ can be used to sample from a tightened version of the prior distribution.
 Report date logit hazard reporting  model module
 }
 \examples{
+# Basic report model
 enw_report(data = enw_example("preprocessed"))
+
+\dontrun{
+# With Wednesday-only reporting structure
+pobs <- enw_example("preprocessed")
+structural <- enw_dayofweek_structural_reporting(
+  pobs, day_of_week = "Wednesday"
+)
+enw_report(structural = structural, data = pobs)
+}
 }
 \seealso{
 Model modules

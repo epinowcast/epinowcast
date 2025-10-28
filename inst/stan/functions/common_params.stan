@@ -53,4 +53,14 @@
  *
  * @param csdmax Array of cumulative start dates.
  *
+ * @param rep_agg_p Binary flag indicating whether reporting probabilities
+ * should be aggregated for structural reporting patterns (e.g., fixed reporting
+ * cycles).
+ *
+ * @param rep_agg_n_selected 3D array of counts of selected indices per row
+ * for probability aggregation, with dimensions [groups, times, max_delay].
+ *
+ * @param rep_agg_selected_idx 4D array of column indices for aggregation,
+ * with dimensions [groups, times, max_delay, max_delay].
+ *
  */

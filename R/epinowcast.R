@@ -111,7 +111,7 @@ epinowcast <- function(data,
                        ),
                        report = epinowcast::enw_report(
                          non_parametric = ~0,
-                         structural = ~0,
+                         structural = NULL,
                          data = data
                        ),
                        expectation = epinowcast::enw_expectation(

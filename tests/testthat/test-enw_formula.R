@@ -7,10 +7,10 @@ obs <- enw_filter_report_dates(
   remove_days = 10
 )
 obs <- enw_filter_reference_dates(obs, include_days = 14)
-pobs <- enw_preprocess_data(
+pobs <- suppressWarnings(enw_preprocess_data(
   obs,
   by = c("age_group", "location"), max_delay = 14
-)
+))
 data <- pobs$metareference[[1]]
 data <- data[age_group %in% c("00+", "15-34")]
 data <- data[day_of_week %in% c("Monday", "Tuesday")]

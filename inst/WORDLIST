@@ -38,6 +38,7 @@ PMF
 PMFs
 Poisson
 Precompiling
+Precompute
 Renviron
 Rstudio
 SEIR
@@ -106,6 +107,7 @@ modelData
 modelParams
 modeldesign
 modeled
+modeling
 modelmodulehelpers
 modelmodules
 modeltools
@@ -137,6 +139,9 @@ postprocess
 postprocessing
 pratikunterwegs
 precompiled
+precompute
+precomputes
+precomputing
 predictives
 readibility
 rumackaaron

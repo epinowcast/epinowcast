@@ -394,3 +394,84 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
   )
   return(out)
 }
+
+#' Create structural reporting metadata grid
+#'
+#' Creates a base metadata grid for structural reporting patterns by
+#' generating all combinations of reference dates, delays, and report dates.
+#' This grid serves as the foundation for defining custom reporting patterns.
+#'
+#' @param pobs A preprocessed observation list from
+#' [enw_preprocess_data()].
+#'
+#' @return A `data.table` with columns:
+#' * `.group`: Group identifier
+#' * `date`: Reference date
+#' * `report_date`: Report date (reference date + delay)
+#'
+#' @family modelmodulehelpers
+#' @export
+#' @examples
+#' \dontrun{
+#' pobs <- enw_preprocess_data(obs, max_delay = 30)
+#' metadata <- enw_structural_reporting_metadata(pobs)
+#'
+#' # Add custom reporting pattern (e.g., only report on first day of month)
+#' metadata[, report := as.integer(format(report_date, "%d") == "01")]
+#' }
+enw_structural_reporting_metadata <- function(pobs) {
+  metadata <- data.table::copy(pobs$metareference[[1]])
+  metadata[, key := 1]
+  metadata <- metadata[, .(key, .group, date)]
+
+  delay_data <- data.table::copy(pobs$metadelay[[1]])
+  delay_data[, key := 1]
+
+  metadata <- metadata[delay_data, on = "key", allow.cartesian = TRUE]
+  metadata <- metadata[, .(.group, date, report_date = date + delay)]
+  data.table::setorder(metadata, .group, date, report_date)
+
+  return(metadata[])
+}
+
+#' Create day-of-week structural reporting pattern
+#'
+#' Creates a structural reporting pattern for cases where reporting only
+#' occurs on specific days of the week (e.g., Wednesday-only reporting).
+#' This is a convenience function that builds on
+#' [enw_structural_reporting_metadata()].
+#'
+#' @inheritParams enw_structural_reporting_metadata
+#' @param day_of_week Character vector of weekday names when reporting
+#' occurs (e.g., `"Wednesday"` or `c("Monday", "Wednesday")`).
+#'
+#' @return A `data.table` with columns:
+#' * `.group`: Group identifier
+#' * `date`: Reference date
+#' * `report_date`: Report date
+#' * `report`: Binary indicator (1 = reporting occurs, 0 = no reporting)
+#'
+#' @family modelmodulehelpers
+#' @export
+#' @examples
+#' \dontrun{
+#' pobs <- enw_preprocess_data(obs, max_delay = 30)
+#'
+#' # Wednesday-only reporting
+#' enw_dayofweek_structural_reporting(
+#'   pobs, day_of_week = "Wednesday"
+#' )
+#'
+#' # Multiple reporting days
+#' enw_dayofweek_structural_reporting(
+#'   pobs, day_of_week = c("Monday", "Wednesday", "Friday")
+#' )
+#' }
+enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
+  metadata <- enw_structural_reporting_metadata(pobs)
+  metadata[, day_of_week_col := weekdays(report_date)]
+  metadata[, report := as.integer(day_of_week_col %in% day_of_week)]
+  metadata[, day_of_week_col := NULL]
+
+  return(metadata[, .(.group, date, report_date, report)])
+}

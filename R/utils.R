@@ -247,38 +247,45 @@ get_internal_timestep <- function(timestep) {
   }
 }
 
-#' Internal function to perform rolling sum aggregation
+#' Perform rolling sum aggregation
 #'
 #' This function takes a data.table and applies a rolling sum over a given
-#' timestep,
-#' aggregating by specified columns. It's particularly useful for aggregating
-#' observations over certain periods.
+#' timestep, aggregating by specified columns. It's particularly useful for
+#' aggregating observations over certain periods.
 #'
 #' @param dt A `data.table` to be aggregated.
 #' @param internal_timestep An integer indicating the period over which to
 #' aggregate.
 #' @param by A character vector specifying the columns to aggregate by.
+#' @param value_col A character string specifying the column to aggregate.
+#' Defaults to "confirm".
 #'
 #' @return A modified data.table with aggregated observations.
 #'
+#' @export
 #' @importFrom data.table frollsum
 #' @family utils
-aggregate_rolling_sum <- function(dt, internal_timestep, by = NULL) {
-  dt <- dt[,
-    `:=`(
-      confirm = {
-        n_vals <- if (.N <= internal_timestep) {
-          seq_len(.N)
-        } else {
-          c(
-            1:(internal_timestep - 1),
-            rep(internal_timestep, .N - (internal_timestep - 1))
-          )
-        }
-        frollsum(confirm, n_vals, adaptive = TRUE)
-      }
-    ),
-    by = by
+enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
+  value_col = "confirm") {
+  # Create environment for internal_timestep to ensure safe scoping
+  env <- list2env(
+    list(internal_timestep = internal_timestep),
+    parent = parent.frame()
+  )
+
+  dt[, (value_col) := {
+    n_vals <- if (.N <= internal_timestep) {
+      seq_len(.N)
+    } else {
+      c(
+        1:(internal_timestep - 1),
+        rep(internal_timestep, .N - (internal_timestep - 1))
+      )
+    }
+    frollsum(.SD[[value_col]], n_vals, adaptive = TRUE)
+  },
+  by = by,
+  env = env
   ]
   return(dt[])
 }
@@ -508,6 +515,6 @@ utils::globalVariables(
     "person", "id", "latest", "type", "below_coverage", "num_reference_date",
     "num_report_date", "rep_mod", "ref_mod", "count", "reference_date_mod",
     "report_date_mod", "timestep", ".observed", "lookup", "max_obs_delay",
-    "coverage"
+    "coverage", "cum_report", "day_of_week_col", "report"
   )
 )

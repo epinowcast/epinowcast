@@ -17,12 +17,11 @@
  * @param ref_as_p An integer flag (0 or 1) indicating whether the reference date input should be treated as a logit hazard or probability. Set to 1 when
  * no report date effects are present, otherwise 0.
  *
- * @param agg_probs An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
+ * @param rep_agg_p An integer flag (0 or 1) indicating whether the reporting probabilities should be aggregated. Set to 1 when the probabilities should be aggregated, otherwise 0.
  *
- * @param agg_indicator A matrix of integer flags (0 or 1) representing the aggregation of reporting probabilities,
- * designed to be left-multiplied to a column vector of reporting probabilities. 
- * Presence of a 1 in a column indicates that that index in the probability column vector will be aggregated,
- * and presence of a 1 in a row indicates that aggregated probability will be placed on that index in the new probability vector.
+ * @param n_selected Array of counts of selected indices per row
+ *
+ * @param selected_idx Array of column indices for aggregation
  * 
  * @return A vector representing the expected observations for each date by
  * date of report. The length of the vector matches the length of `lh`.
@@ -86,12 +85,12 @@
  *               rep(0.000, 21))
  *
  * Example with aggregation of probabilities where aggregation occurs on every fifth day
- * agg_probs <- matrix(c(rep(0, times = 30 * 4),
+ * rep_agg_p <- matrix(c(rep(0, times = 30 * 4),
  *                       rep(c(rep(1, times = 5),
  *                             rep(0, times = 6 * 5 + 30 * 4)),
  *                           times = 5),
  *                       rep(1, times = 5)), ncol = 30, byrow = TRUE)
- * eobs <- exp(expected_obs(tar_obs, date_p + rep(0, 30), 30, 1, 1, agg_probs))
+ * eobs <- exp(expected_obs(tar_obs, date_p + rep(0, 30), 30, 1, 1, rep_agg_p))
  * # -Inf -Inf -Inf -Inf -0.4630154 -Inf -Inf -Inf -Inf -1.8219081
  * # -Inf -Inf -Inf -Inf -2.4549990 -Inf -Inf -Inf -Inf -2.8994851
  * # -Inf -Inf -Inf -Inf -3.2477183 -Inf -Inf -Inf -Inf -3.5362414
@@ -99,7 +98,10 @@
  * eobs |> exp() |> plot()
  * @endcode
  */
-vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs, matrix agg_indicator) {
+vector expected_obs(
+  real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p,
+  array[] int n_selected, array[,] int selected_idx
+) {
   vector[l] p;
   if (ref_as_p == 1) {
     p = lh;
@@ -111,8 +113,14 @@ vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int agg_probs,
     p = hazard_to_log_prob(p, l);
     }
   }
-  if (agg_probs == 1) {
-    p = log(agg_indicator * exp(p));
+  if (rep_agg_p == 1) {
+    vector[l] p_aggregated = rep_vector(negative_infinity(), l);
+    for (i in 1:l) {
+      if (n_selected[i] > 0) {
+        p_aggregated[i] = log_sum_exp(p[selected_idx[i, 1:n_selected[i]]]);
+      }
+    }
+    p = p_aggregated;
   }
   return(tar_obs + p);
 }

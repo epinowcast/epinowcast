@@ -230,16 +230,14 @@ enw_reference <- function(
 #' (internally converted to `~1` and flagged as inactive). See [enw_formula()]
 #' for details on formula syntax.
 #'
-#' @param structural A formula with fixed effects and using only binary
-#' variables, and factors describing the known reporting structure (i.e weekday
-#' only reporting). The base case (i.e the first factor entry) should describe
-#' the dates for which reporting is possible. Internally dates with a non-zero
-#' element in the design matrix have their hazard set to 0. This can use
-#' features defined by report date as defined in `metareport` as produced by
-#' [enw_preprocess_data()]. Note that the intercept for this model is set to 0
-#' in order to allow all dates without other structural reasons to not be
-#' reported to be reported. Note that this feature is not yet available to
-#' users.
+#' @param structural A `data.table` describing the known reporting structure
+#' (e.g., weekday-only reporting). This should be created using
+#' [enw_dayofweek_structural_reporting()] for day-of-week patterns, or
+#' [enw_structural_reporting_metadata()] as a base for custom patterns.
+#' The data.table must have columns: `.group`, `date`, `report_date`, and
+#' `report` (binary indicator where 1 = reporting occurs). This is particularly
+#' useful for modeling fixed reporting cycles, such as Wednesday-only reporting.
+#' Set to `NULL` to disable (default).
 #'
 #' @inherit enw_reference return
 #' @inheritParams enw_obs
@@ -248,14 +246,18 @@ enw_reference <- function(
 #' @family modelmodules
 #' @export
 #' @examples
+#' # Basic report model
 #' enw_report(data = enw_example("preprocessed"))
-enw_report <- function(non_parametric = ~0, structural = ~0, data) {
-  if (as_string_formula(structural) != "~0") {
-    cli::cli_abort(
-      "The structural reporting model has not yet been implemented"
-    )
-  }
-
+#'
+#' \dontrun{
+#' # With Wednesday-only reporting structure
+#' pobs <- enw_example("preprocessed")
+#' structural <- enw_dayofweek_structural_reporting(
+#'   pobs, day_of_week = "Wednesday"
+#' )
+#' enw_report(structural = structural, data = pobs)
+#' }
+enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
   }
@@ -269,6 +271,27 @@ enw_report <- function(non_parametric = ~0, structural = ~0, data) {
     form,
     prefix = "rep", drop_intercept = TRUE
   )
+
+  # Check for structural model and define
+  if (!is.null(structural)) {
+    # Convert data.table to nested list of matrices
+    structural <- .structural_reporting_to_matrices(structural, data)
+
+    data_list$rep_agg_p <- 1
+    # Precompute aggregation lookups for Stan
+    arrays <- .precompute_aggregation_lookups(
+      structural,
+      n_groups = data$groups[[1]],
+      n_times = data$time[[1]],
+      max_delay = data$max_delay
+    )
+    data_list$rep_agg_n_selected <- arrays$n_selected
+    data_list$rep_agg_selected_idx <- arrays$selected_idx
+  } else {
+    data_list$rep_agg_p <- 0
+    data_list$rep_agg_n_selected <- array(0L, dim = c(0, 0, 0))
+    data_list$rep_agg_selected_idx <- array(0L, dim = c(0, 0, 0, 0))
+  }
 
   # map report date effects to groups and times
   data_list$rep_findex <- t(
