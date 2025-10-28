@@ -571,7 +571,7 @@ enw_reporting_triangle <- function(obs) {
     required_cols = c("new_confirm", "reference_date", "delay"),
     group = TRUE
   )
-  if (any(obs$new_confirm < 0)) {
+  if (any(obs$new_confirm < 0, na.rm = TRUE)) {
     cli::cli_warn(
       paste0(
         "Negative new confirmed cases found. ",
@@ -1094,6 +1094,16 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
   check_group(obs)
   data.table::setkeyv(obs, "reference_date")
+
+  # Check for NA values in confirm column
+  if ("confirm" %in% names(obs) && any(is.na(obs$confirm))) {
+    cli::cli_abort(
+      c(
+        "NA values found in {.field confirm} column.",
+        "i" = "Use {.fn enw_impute_na_observations} to impute missing values before preprocessing."
+      )
+    )
+  }
 
   obs <- enw_assign_group(obs, by = by, copy = FALSE)
   check_group_date_unique(obs)

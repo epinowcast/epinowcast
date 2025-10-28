@@ -638,6 +638,8 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   # Keep only Wednesday reports
   weekly_obs[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)]
   weekly_obs <- enw_flag_observed_observations(weekly_obs)
+  weekly_obs <- enw_impute_na_observations(weekly_obs)
+  weekly_obs <- enw_add_incidence(weekly_obs)
 
   # Preprocess
   pobs <- suppressWarnings(enw_preprocess_data(weekly_obs, max_delay = 10))
