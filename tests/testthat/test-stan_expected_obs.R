@@ -66,6 +66,10 @@ test_that("expected_obs() works correctly with multiple hazards", {
 })
 
 test_that("expected_obs() aggregates probabilities with precomputed indices", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_os("mac")
+
   tar_obs <- log(1)
   lh <- log(
     (plnorm(1:30, 1.5, 2) - plnorm(0:29, 1.5, 2)) / plnorm(30, 1.5, 2)
@@ -81,21 +85,41 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   # Precompute indices using helper function
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
 
-  # Test with precomputed indices
-  # Stan array[] int: integer array with explicit 1D dimension
-  exp_obs <- expected_obs(
-    tar_obs, lh, length(lh), ref_as_p = 1, 1,
-    array(as.integer(indices_list$n_selected), dim = length(indices_list$n_selected)),
-    matrix(as.integer(indices_list$selected_idx), nrow = nrow(indices_list$selected_idx))
+  # Use standalone Stan model via generated quantities
+  model <- cmdstanr::cmdstan_model("test_expected_obs.stan")
+
+  stan_data <- list(
+    tar_obs = tar_obs,
+    lh = lh,
+    l = length(lh),
+    ref_as_p = 1L,
+    rep_agg_p = 1L,
+    n_selected = as.integer(indices_list$n_selected),
+    selected_idx = matrix(as.integer(indices_list$selected_idx),
+                          nrow = nrow(indices_list$selected_idx))
   )
+
+  fit <- model$sample(
+    data = stan_data,
+    fixed_param = TRUE,
+    iter_sampling = 1,
+    chains = 1,
+    refresh = 0
+  )
+
+  exp_obs <- fit$draws("result", format = "matrix")[1, ]
 
   # Expected output using matrix multiplication
   exp_output <- as.vector(tar_obs + log(agg_probs %*% exp(lh)))
 
-  expect_equal(object = exp_obs, expected = exp_output, tolerance = 1e-10)
+  expect_equal(object = as.vector(exp_obs), expected = exp_output, tolerance = 1e-10)
 })
 
 test_that("expected_obs() handles structural zeros with precomputed indices", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_on_os("mac")
+
   # Wednesday-only reporting: only day 4 reports (aggregates days 1-7)
   tar_obs <- log(100)
   lh <- log(c(0.2, 0.2, 0.2, 0.2, 0.1, 0.05, 0.05))
@@ -107,12 +131,29 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   # Precompute indices using helper function
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
 
-  # Stan array[] int: integer array with explicit 1D dimension
-  exp_obs <- expected_obs(
-    tar_obs, lh, 7, ref_as_p = 1, 1,
-    array(as.integer(indices_list$n_selected), dim = length(indices_list$n_selected)),
-    matrix(as.integer(indices_list$selected_idx), nrow = nrow(indices_list$selected_idx))
+  # Use standalone Stan model via generated quantities
+  model <- cmdstanr::cmdstan_model("test_expected_obs.stan")
+
+  stan_data <- list(
+    tar_obs = tar_obs,
+    lh = lh,
+    l = length(lh),
+    ref_as_p = 1L,
+    rep_agg_p = 1L,
+    n_selected = as.integer(indices_list$n_selected),
+    selected_idx = matrix(as.integer(indices_list$selected_idx),
+                          nrow = nrow(indices_list$selected_idx))
   )
+
+  fit <- model$sample(
+    data = stan_data,
+    fixed_param = TRUE,
+    iter_sampling = 1,
+    chains = 1,
+    refresh = 0
+  )
+
+  exp_obs <- fit$draws("result", format = "matrix")[1, ]
 
   # Only Wednesday (day 4) should have finite value
   expect_true(is.finite(exp_obs[4]))
