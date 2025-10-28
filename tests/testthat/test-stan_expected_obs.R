@@ -69,6 +69,7 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   skip_on_cran()
   skip_on_os("windows")
   skip_on_os("mac")
+  skip_on_local()
 
   tar_obs <- log(1)
   lh <- log(
@@ -86,7 +87,7 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
 
   # Use standalone Stan model via generated quantities
-  model <- cmdstanr::cmdstan_model("test_expected_obs.stan")
+  model <- cmdstanr::cmdstan_model("stan/test_expected_obs.stan")
 
   stan_data <- list(
     tar_obs = tar_obs,
@@ -119,6 +120,7 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   skip_on_cran()
   skip_on_os("windows")
   skip_on_os("mac")
+  skip_on_local()
 
   # Wednesday-only reporting: only day 4 reports (aggregates days 1-7)
   tar_obs <- log(100)
@@ -132,7 +134,7 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   indices_list <- epinowcast:::.precompute_matrix_indices(agg_probs)
 
   # Use standalone Stan model via generated quantities
-  model <- cmdstanr::cmdstan_model("test_expected_obs.stan")
+  model <- cmdstanr::cmdstan_model("stan/test_expected_obs.stan")
 
   stan_data <- list(
     tar_obs = tar_obs,

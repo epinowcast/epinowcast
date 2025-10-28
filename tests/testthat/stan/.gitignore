@@ -1,0 +1,4 @@
+# Compiled Stan models
+*.hpp
+*.exe
+test_expected_obs

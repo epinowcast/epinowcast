@@ -3,9 +3,9 @@ functions {
 #include ../../inst/stan/functions/expected_obs.stan
 }
 data {
+  int l;
   real tar_obs;
   vector[l] lh;
-  int l;
   int ref_as_p;
   int rep_agg_p;
   array[l] int n_selected;
