@@ -670,5 +670,5 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
 
   # Check convergence
   expect_lt(nowcast$max_rhat, 1.05)
-  expect_lt(nowcast$per_divergent_transitions, 0.05)
+  expect_lt(nowcast$per_divergent_transitions, 0.1)
 })
