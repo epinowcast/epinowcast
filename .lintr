@@ -1,11 +1,12 @@
 linters: all_linters(
     packages = "lintr",
     implicit_integer_linter = NULL,
-    extraction_operator_linter = NULL,
     undesirable_function_linter = NULL,
     function_argument_linter = NULL,
     indentation_linter = NULL,
     object_name_linter = NULL,
+    object_overwrite_linter = NULL,
+    object_length_linter = NULL,
     cyclocomp_linter(25L)
   )
 exclusions: list(
