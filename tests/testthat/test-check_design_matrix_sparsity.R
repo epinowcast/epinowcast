@@ -12,8 +12,8 @@ test_that("check_design_matrix_sparsity is silent for non-sparse matrices", {
 
 test_that("check_design_matrix_sparsity gives message for sparse matrices", {
   sparse_matrix <- matrix(0, nrow = 10, ncol = 20)
-  sparse_matrix[sample(200, 10)] <- 1
-  expect_message(check_design_matrix_sparsity(sparse_matrix), 
+  sparse_matrix[sample.int(200, 10)] <- 1
+  expect_message(check_design_matrix_sparsity(sparse_matrix),
                  "The checked design matrix is sparse")
 })
 

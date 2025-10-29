@@ -145,7 +145,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' enw_effects_metadata(design)
 enw_effects_metadata <- function(design) {
   dt <- data.table::data.table(effects = colnames(design), fixed = 1)
-  dt <- dt[!effects == "(Intercept)"]
+  dt <- dt[effects != "(Intercept)"]
   return(dt[])
 }
 

@@ -173,7 +173,7 @@
     cli::cli_abort(
       c(
         "`report_date` must be greater than or equal to `date`.",
-        "i" = "Reports can only aggregate from current or earlier delays."
+        i = "Reports can only aggregate from current or earlier delays."
       )
     )
   }

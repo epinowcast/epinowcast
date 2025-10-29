@@ -374,7 +374,7 @@ cache_location_message <- function() {
 #' (either null or an empty string).
 #' @keywords internal
 check_environment_unset <- function(x) {
-  return(is.null(x) || x == "")
+  return(is.null(x) || !nzchar(x))
 }
 
 #' Identify cache location in .Renviron

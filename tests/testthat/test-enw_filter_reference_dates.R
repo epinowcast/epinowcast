@@ -183,5 +183,5 @@ test_that("enw_filter_reference_dates preserves data structure after fix", {
   expect_s3_class(filtered, "data.table")
 
   # Check no NA reference dates in filtered result
-  expect_false(any(is.na(filtered$reference_date)))
+  expect_false(anyNA(filtered$reference_date))
 })

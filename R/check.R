@@ -408,7 +408,7 @@ check_max_delay <- function(data,
     latest_date = fully_observed_date
   )
 
-  if (warn && !(max_delay_obs < daily_max_delay) && (latest_obs[, .N] < 5)) {
+  if (warn && max_delay_obs >= daily_max_delay && (latest_obs[, .N] < 5)) {
     # Format max_delay_obs_q with appropriate units
     formatted_obs_q <- .format_delay_with_units(
       max_delay_obs_q / internal_timestep, timestep, max_delay_obs_q

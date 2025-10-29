@@ -1096,11 +1096,11 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
   data.table::setkeyv(obs, "reference_date")
 
   # Check for NA values in confirm column
-  if ("confirm" %in% names(obs) && any(is.na(obs$confirm))) {
+  if ("confirm" %in% names(obs) && anyNA(obs$confirm)) {
     cli::cli_abort(
       c(
         "NA values found in {.field confirm} column.",
-        "i" = "Use {.fn enw_impute_na_observations} to impute missing values before preprocessing."
+        i = "Use {.fn enw_impute_na_observations} to impute missing values before preprocessing."
       )
     )
   }

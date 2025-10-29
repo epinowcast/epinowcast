@@ -42,4 +42,3 @@ test_that("enw_metadata_delay produces the expected features", {
     c(rep(FALSE, 14), rep(TRUE, 5))
   )
 })
-
