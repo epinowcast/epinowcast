@@ -14,11 +14,11 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   if (!all(data.table::between(req_probs, 0, 1, incbounds = FALSE))) {
     cli::cli_abort("Please provide probabilities as numbers between 0 and 1.")
   }
-  return(coerce_dt(
+  coerce_dt(
     posterior,
     required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
     msg_required = "The following quantiles must be present (set with `probs`):"
-  ))
+  )
 }
 
 #' Check observations for reserved grouping variables
@@ -30,11 +30,11 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #'
 #' @family check
 check_group <- function(obs) {
-  return(coerce_dt(
+  coerce_dt(
     obs,
     forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
     msg_forbidden = "The following are reserved grouping columns:"
-  ))
+  )
 }
 
 #' Check observations for uniqueness of grouping variables with respect
@@ -65,7 +65,7 @@ check_group_date_unique <- function(obs) {
       )
     )
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Check a model module contains the required components
@@ -88,7 +88,7 @@ check_module <- function(module) {
   if (!is.list(module[["data"]])) {
     cli::cli_abort("`data` must be a list of required data")
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Check that model modules have compatible specifications
@@ -121,7 +121,7 @@ check_modules_compatible <- function(modules) {
       immediate. = TRUE
     )
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' @title Coerce `data.table`s
@@ -260,9 +260,9 @@ coerce_dt <- function(
   }
 
   if (length(select) > 0) { # if selecting particular list ...
-    return(dt[, .SD, .SDcols = c(select)][])
+    dt[, .SD, .SDcols = c(select)][]
   } else {
-    return(dt[])
+    dt[]
   }
 }
 
@@ -500,7 +500,7 @@ check_max_delay <- function(data,
   low_coverage <- rbind(low_coverage, list("all", mean_coverage))
   low_coverage[, coverage := cum_coverage]
   data.table::setcolorder(low_coverage, c(".group", "coverage"))
-  return(low_coverage[])
+  low_coverage[]
 }
 
 

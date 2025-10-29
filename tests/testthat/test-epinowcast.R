@@ -9,7 +9,7 @@ test_that("epinowcast() preprocesses data and model modules as expected", {
   nowcast <- suppressMessages(epinowcast(pobs,
     fit = enw_fit_opts(
       sampler = function(init, data, ...) {
-        return(data.table::data.table(init = list(init), data = list(data)))
+        data.table::data.table(init = list(init), data = list(data))
       },
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 500

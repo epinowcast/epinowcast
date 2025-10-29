@@ -69,7 +69,7 @@ enw_formula_as_data_list <- function(formula, prefix, drop_intercept = FALSE) {
 
   }
   names(data) <- sprintf("%s_%s", prefix, names(data))
-  return(data)
+  data
 }
 
 #' Convert prior `data.frame` to list
@@ -93,7 +93,7 @@ enw_priors_as_data_list <- function(priors) {
   priors[, variable := paste0(variable, "_p")]
   priors <- split(priors, by = "variable", keep.by = FALSE)
   priors <- purrr::map(priors, ~ as.array(t(.)))
-  return(priors)
+  priors
 }
 
 #' Replace default priors with user specified priors
@@ -152,7 +152,7 @@ enw_replace_priors <- function(priors, custom_priors) {
     priors, required_cols = "variable"
   )[!(variable %in% variables)]
   priors <- rbind(priors, custom_priors, fill = TRUE)
-  return(priors[])
+  priors[]
 }
 
 #' Remove profiling statements from a character vector representing stan code
@@ -168,7 +168,7 @@ remove_profiling <- function(s) {
       perl = TRUE
     )
   }
-  return(s)
+  s
 }
 
 #' Write copies of the .stan files of a Stan model and its #include files
@@ -235,7 +235,7 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
       )
     }
   }
-  return(list(model = main_model, include_paths = include_paths_no_profile))
+  list(model = main_model, include_paths = include_paths_no_profile)
 }
 
 #' Fit a CmdStan model using NUTS
@@ -330,7 +330,7 @@ enw_sample <- function(data, model = epinowcast::enw_model(),
     timing <- round(fit$time()$total, 1)
     out[, run_time := timing]
   }
-  return(out[])
+  out[]
 }
 
 #' Update initial values for model fitting
@@ -364,7 +364,7 @@ update_inits <- function(data, model, init,
     method_output <- NULL
   }
 
-  return(list(init = updated_init, method_output = method_output))
+  list(init = updated_init, method_output = method_output)
 }
 
 #' Fit a CmdStan model using the pathfinder algorithm
@@ -423,7 +423,7 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
     timing <- round(fit$time()$total, 1)
     out[, run_time := timing]
   }
-  return(out[])
+  out[]
 }
 
 #' Load and compile the nowcasting model
@@ -498,7 +498,7 @@ enw_model <- function(model = system.file(
     monitor <- suppressMessages
     if (verbose) {
       monitor <- function(x) {
-        return(x)
+        x
       }
     }
     cpp_options$stan_threads <- threads
@@ -510,7 +510,7 @@ enw_model <- function(model = system.file(
       ...
     ))
   }
-  return(model)
+  model
 }
 
 #' Expose `epinowcast` stan functions in R
@@ -600,7 +600,7 @@ enw_stan_to_r <- function(
   if (isTRUE(global)) {
     mod$expose_functions(global = TRUE)
   }
-  return(mod)
+  mod
 }
 
 #' Set caching location for Stan models
@@ -684,7 +684,7 @@ enw_set_cache <- function(path, type = c("session", "persistent", "all")) {
     Sys.setenv(enw_cache_location = candidate_path)
   }
 
-  return(invisible(candidate_path))
+  invisible(candidate_path)
 }
 
 #' Unset Stan cache location
@@ -740,7 +740,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
     unset_cache_from_environ()
   }
 
-  return(invisible(prior_location))
+  invisible(prior_location)
 }
 
 #' Retrieve Stan cache location
@@ -765,5 +765,5 @@ enw_get_cache <- function() {
 
   create_cache_dir(cache_location)
 
-  return(cache_location)
+  cache_location
 }

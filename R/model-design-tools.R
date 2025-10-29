@@ -24,11 +24,11 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
     sparse_design <- design
     index <- seq_len(nrow(design))
   }
-  return(list(
+  list(
     formula = as_string_formula(formula),
     design = sparse_design,
     index = index
-  ))
+  )
 }
 
 #' A helper function to construct a design matrix from a formula
@@ -146,7 +146,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 enw_effects_metadata <- function(design) {
   dt <- data.table::data.table(effects = colnames(design), fixed = 1)
   dt <- dt[effects != "(Intercept)"]
-  return(dt[])
+  dt[]
 }
 
 #' @title Add a pooling effect to model design metadata

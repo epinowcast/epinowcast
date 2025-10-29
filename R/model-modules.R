@@ -211,11 +211,11 @@ enw_reference <- function(
           )))
         }
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Report date logit hazard reporting  model module
@@ -334,11 +334,11 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
           priors$rep_beta_sd_p[2] / 10
         )))
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Expectation model module
@@ -542,11 +542,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           priors$expl_beta_sd_p[2] / 10
         )))
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Missing reference data model module
@@ -681,11 +681,11 @@ enw_missing <- function(formula = ~1, data) {
           )))
         }
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Setup observation model and data
@@ -808,11 +808,11 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
         )
         init$phi <- 1 / (init$sqrt_phi^2)
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Format model fitting options for use with stan
@@ -899,5 +899,5 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     sparse_design = as.integer(sparse_design)
   )
   out$args <- list(threads_per_chain = threads_per_chain, ...)
-  return(out)
+  out
 }

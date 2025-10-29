@@ -10,12 +10,12 @@ epinowcast_as_data <- function(...) {
   nowcast <- suppressMessages(epinowcast(
     fit = enw_fit_opts(
       sampler = function(init, data, ...) {
-        return(data.table::data.table(init = list(init), data = list(data)))
+        data.table::data.table(init = list(init), data = list(data))
       }
     ),
     model = NULL
   ))
-  return(nowcast)
+  nowcast
 }
 
 skip_on_local <- function() {
@@ -28,7 +28,7 @@ skip_on_local <- function() {
 round_numerics <- function(dt) {
   cols <- colnames(dt)[purrr::map_lgl(dt, is.numeric)]
   dt <- dt[, (cols) := lapply(.SD, round, 0), .SDcols = cols]
-  return(dt)
+  dt
 }
 
 dt_copies <- function(...) {
@@ -54,9 +54,9 @@ check_r_version <- function(min_major = 4, min_minor = 0) {
   )
 
   if (current_version >= target_min_version) {
-    return(TRUE)
+    TRUE
   } else {
-    return(FALSE)
+    FALSE
   }
 }
 
@@ -68,19 +68,19 @@ run_window_filter <- function(
   obs <- enw_filter_reference_dates(
     obs, include_days = filter_reference_include
   )
-  return(obs)
+  obs
 }
 
 silent_enw_sample <- function(...) {
   utils::capture.output(
     fit <- suppressMessages(enw_sample(...)) # nolint: implicit_assignment_linter
   )
-  return(fit)
+  fit
 }
 
 silent_enw_pathfinder <- function(...) {
   utils::capture.output(
     fit <- suppressMessages(enw_pathfinder(...)) # nolint: implicit_assignment_linter
   )
-  return(fit)
+  fit
 }

@@ -77,7 +77,7 @@ enw_manual_formula <- function(data, fixed = NULL, random = NULL,
     rand_form <- as.formula(paste0("~ ", paste(rand_form, collapse = " + ")))
     random <- enw_design(rand_form, effects, sparse = FALSE)
   }
-  return(list(fixed = fixed, random = random))
+  list(fixed = fixed, random = random)
 }
 
 #' Converts formulas to strings
@@ -90,7 +90,7 @@ enw_manual_formula <- function(data, fixed = NULL, random = NULL,
 as_string_formula <- function(formula) {
   form <- paste(deparse(formula), collapse = " ")
   form <- gsub("\\s+", " ", form, perl = FALSE)
-  return(form)
+  form
 }
 
 #' Split formula into individual terms
@@ -104,7 +104,7 @@ split_formula_to_terms <- function(formula) {
   formula <- as_string_formula(formula)
   formula <- gsub("~", "", formula, fixed = TRUE)
   formula <- strsplit(formula, " + ", fixed = TRUE)[[1]]
-  return(formula)
+  formula
 }
 
 #' Finds random walk terms in a formula object
@@ -134,7 +134,7 @@ rw_terms <- function(formula) {
 
   # ignore when included in a random effects term
   match <- match & !grepl("|", trms, fixed = TRUE)
-  return(trms[match])
+  trms[match]
 }
 
 #' Remove random walk terms from a formula object
@@ -169,7 +169,7 @@ remove_rw_terms <- function(formula) {
       as.formula(paste(form, 1))
     }
   )
-  return(form)
+  form
 }
 
 #' Parse a formula into components
@@ -215,7 +215,7 @@ parse_formula <- function(formula) {
     random = random,
     rw = rw
   )
-  return(model_terms)
+  model_terms
 }
 
 #' Adds random walks with Gaussian steps to the model.
@@ -261,7 +261,7 @@ rw <- function(time, by, type = c("independent", "dependent")) {
   }
   out <- list(time = time, by = by, type = type)
   class(out) <- "enw_rw_term"
-  return(out)
+  out
 }
 
 #' Constructs random walk terms
@@ -374,7 +374,7 @@ construct_rw <- function(rw, data) {
       )
     }
   }
-  return(list(data = data, terms = terms, effects = effects))
+  list(data = data, terms = terms, effects = effects)
 }
 
 #' Defines random effect terms using the lme4 syntax
@@ -398,7 +398,7 @@ re <- function(formula) {
   terms <- strsplit(as_string_formula(formula), " | ", fixed = TRUE)[[1]]
   out <- list(fixed = terms[1], random = terms[2])
   class(out) <- "enw_re_term"
-  return(out)
+  out
 }
 
 #' Constructs random effect terms
@@ -528,7 +528,7 @@ construct_re <- function(re, data) {
           j <- loc_terms[1:(length(loc_terms) - 2)]
         }
         j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
-        return(j)
+        j
       })
     } else {
       j <- list(loc_terms)
@@ -582,7 +582,7 @@ construct_re <- function(re, data) {
       }
     }
   }
-  return(list(data = data, terms = terms, effects = effects))
+  list(data = data, terms = terms, effects = effects)
 }
 
 #' Define a model using a formula interface
@@ -838,5 +838,5 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     random = random
   )
   class(out) <- c("enw_formula", class(out))
-  return(out)
+  out
 }

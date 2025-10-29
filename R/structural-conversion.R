@@ -245,5 +245,5 @@
         purrr::map(\(x) as.matrix(x[, -c(".group", "date")]))
     })
 
-  return(agg_indicators)
+  agg_indicators
 }

@@ -32,7 +32,7 @@ stan_fns_as_string <- function(files, include) {
     ),
     "\n }"
   )
-  return(functions)
+  functions
 }
 
 #' Load a package example
@@ -74,13 +74,11 @@ enw_example <- function(type = c(
   type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
-    return(readRDS(
+    readRDS(
       system.file("extdata", sprintf("%s.rds", type), package = "epinowcast")
-    ))
-  } else if (type == "script") {
-    return(
-      system.file("examples", "germany_dow.R", package = "epinowcast")
     )
+  } else if (type == "script") {
+    system.file("examples", "germany_dow.R", package = "epinowcast")
   }
 }
 
@@ -127,7 +125,7 @@ coerce_date <- function(dates = NULL) {
     tryCatch(
       data.table::as.IDate(d, optional = TRUE),
       error = function(e) {
-        return(data.table::as.IDate(NA))
+        data.table::as.IDate(NA)
       }
     )
   }, FUN.VALUE = data.table::as.IDate(0)))
@@ -138,7 +136,7 @@ coerce_date <- function(dates = NULL) {
       "(indices {toString(which(is.na(res)))})."
     ))
   } else {
-    return(res)
+    res
   }
 }
 
@@ -178,7 +176,7 @@ get_internal_timestep <- function(timestep) {
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
     # check if the input is a whole number
-    return(timestep)
+    timestep
   } else {
     cli::cli_abort(
       paste0(
@@ -287,7 +285,7 @@ enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
   by = by,
   env = env
   ]
-  return(dt[])
+  dt[]
 }
 
 #' Convert date column to numeric and calculate its modulus with given timestep.
@@ -314,7 +312,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   dt[, c(mod_col_name) := as.numeric(
     get(date_column) - min(get(date_column), na.rm = TRUE)
   ) %% timestep]
-  return(dt[])
+  dt[]
 }
 
 #' Cache location message for epinowcast package
@@ -358,7 +356,7 @@ cache_location_message <- function() {
     )
   }
 
-  return(msg)
+  msg
 }
 
 #' Check environment setting
@@ -374,7 +372,7 @@ cache_location_message <- function() {
 #' (either null or an empty string).
 #' @keywords internal
 check_environment_unset <- function(x) {
-  return(is.null(x) || !nzchar(x))
+  is.null(x) || !nzchar(x)
 }
 
 #' Identify cache location in .Renviron
@@ -406,7 +404,7 @@ get_renviron_contents <- function() {
     env_path = env_path
   )
 
-  return(output)
+  output
 }
 
 #' Remove Cache Location Setting from `.Renviron`
@@ -444,7 +442,7 @@ unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
       )
     }
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Check `.Renviron` for cache location setting
@@ -456,7 +454,7 @@ check_renviron_for_cache <- function(environ) {
     "enw_cache_location", environ[["env_contents"]],
     fixed = TRUE
   )
-  return(cache_loc_environ)
+  cache_loc_environ
 }
 
 #' Create Stan cache directory
@@ -484,7 +482,7 @@ create_cache_dir <- function(path) {
       )
     }
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 # This is an alternative to dir.create(recursive = TRUE) that doesn't throw
