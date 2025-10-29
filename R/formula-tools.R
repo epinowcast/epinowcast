@@ -425,6 +425,14 @@ re <- function(formula) {
           )
         )
       }
+      if (!current_random[2] %in% colnames(data)) {
+        cli::cli_abort(
+          paste0(
+            "Random effect variable {current_random[2]} is not present ",
+            "in the data."
+          )
+        )
+      }
       if (length(unique(data[[current_random[2]]])) < 2) {
         cli::cli_inform(
           paste0(
@@ -467,8 +475,9 @@ re <- function(formula) {
 
   names(terms_int) <- terms
   terms <- gsub("1:", "", terms, fixed = TRUE)
-  terms <- terms[!startsWith(terms, "0:")]
-  terms_int <- terms_int[!startsWith(terms, "0:")]
+  keep <- !startsWith(terms, "0:")
+  terms <- terms[keep]
+  terms_int <- terms_int[keep]
 
   list(terms = terms, terms_int = terms_int)
 }

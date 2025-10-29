@@ -236,7 +236,7 @@
   # Split by group and date into matrices
   delay_cols <- paste0("delay_", seq_len(max_delay))
   split_to_matrix <- function(x) {
-    as.matrix(x[, -c(".group", "date")])
+    as.matrix(x[, .SD, .SDcols = !c(".group", "date")])
   }
   split_by_date <- function(group_data) {
     group_data |>

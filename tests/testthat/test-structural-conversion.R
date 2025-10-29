@@ -201,7 +201,7 @@ test_that(".validate_structural_reporting accepts and converts data.frame", {
 
   result <- epinowcast:::.validate_structural_reporting(structural)
   expect_true(data.table::is.data.table(result))
-  expect_length(nrow(result), 1L)
+  expect_identical(nrow(result), 1L)
 })
 
 test_that(".validate_structural_reporting rejects missing columns", {
