@@ -14,10 +14,10 @@ Check that model modules have compatible specifications
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{.validate_check_max_delay_args}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},
+\code{\link{check_max_delay}()},
 \code{\link{check_module}()},
 \code{\link{check_numeric_timestep}()},
 \code{\link{check_observation_indicator}()},

@@ -319,6 +319,120 @@ coerce_dt <- function(
 #' @examples
 #' pobs <- enw_example(type = "preprocessed_observations")
 #' check_max_delay(pobs, max_delay = 20, cum_coverage = 0.8)
+check_max_delay <- function(data,
+                            max_delay = data$max_delay,
+                            cum_coverage = 0.8,
+                            maxdelay_quantile_outlier = 0.97,
+                            warn = TRUE, warn_internal = FALSE) {
+  max_delay <- .validate_check_max_delay_args(
+    max_delay, cum_coverage, maxdelay_quantile_outlier
+  )
+
+  timestep <- data$timestep
+  internal_timestep <- get_internal_timestep(timestep)
+  daily_max_delay <- internal_timestep * max_delay
+
+  obs <- data.table::copy(data$obs[[1]])
+  obs[, delay := internal_timestep * delay]
+
+  max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
+  if (max_delay_obs < daily_max_delay) {
+    .warn_max_delay_exceeds_observed(
+      max_delay, timestep, daily_max_delay, max_delay_obs, internal_timestep
+    )
+  }
+
+  max_delay_ref <- obs[
+    !is.na(reference_date) & cum_prop_reported == 1,
+    .(.group, reference_date, delay)
+  ]
+  data.table::setorderv(max_delay_ref, c(".group", "reference_date", "delay"))
+  max_delay_ref <- max_delay_ref[
+    ,
+    .SD[, .(delay = first(delay)), by = reference_date]
+  ] # we here assume the same maximum delay for all groups
+
+  max_delay_obs_q <- ceiling(
+    max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
+  ) + 1
+
+  # Filter by the user-specified maximum delay with daily resolution
+  obs <- enw_filter_delay(obs, max_delay = daily_max_delay, timestep = "day")
+
+  # filter by earliest observed report date
+  obs <- obs[,
+    .SD[reference_date >= min(report_date) | is.na(reference_date)],
+    by = .group
+  ]
+
+  latest_obs <- enw_latest_data(obs)
+  fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs_q + 1
+  # filter by the maximum observed delay to reduce right truncation bias
+  latest_obs <- enw_filter_reference_dates(
+    latest_obs,
+    latest_date = fully_observed_date
+  )
+
+  if (warn && max_delay_obs >= daily_max_delay && (latest_obs[, .N] < 5)) {
+    .warn_insufficient_coverage_data(
+      latest_obs[, .N], max_delay_obs_q, timestep, internal_timestep,
+      warn_internal
+    )
+  }
+
+  low_coverage <- latest_obs[, .(
+    below_coverage =
+      sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
+        sum(!is.na(cum_prop_reported))
+  ), by = .group]
+
+  # Check if all coverage values are NaN or NA (occurs with sparse data)
+  if (all(is.na(low_coverage$below_coverage) |
+    is.nan(low_coverage$below_coverage))) {
+    low_coverage[, below_coverage := 0]
+    mean_coverage <- 0
+    if (warn && warn_internal) {
+      warning_message <- c(
+        "Could not compute delay coverage statistics.",
+        "*" = paste0(
+          "All groups have insufficient data after filtering to ",
+          "compute meaningful coverage metrics."
+        ),
+        i = paste0(
+          "This typically occurs with sparse data or when max_delay ",
+          "is too large relative to available observations."
+        )
+      )
+      cli::cli_warn(warning_message)
+    }
+  } else {
+    mean_coverage <- low_coverage[, mean(below_coverage, na.rm = TRUE)]
+  }
+
+  if (warn && !is.na(mean_coverage) && mean_coverage > 0.5) {
+    # Format max_delay with appropriate units
+    formatted_max <- .format_delay_with_units(
+      max_delay, timestep, daily_max_delay
+    )
+
+    cli::cli_warn(
+      paste0(
+        "The specified maximum reporting delay ",
+        "(", formatted_max, ") ",
+        "covers less than ", 100 * cum_coverage,
+        "% of cases for the majority (>50%) of reference dates. ",
+        "Consider using a larger maximum delay to avoid potential model ",
+        "misspecification."
+      ),
+      immediate. = TRUE
+    )
+  }
+
+  low_coverage <- rbind(low_coverage, list("all", mean_coverage))
+  low_coverage[, coverage := cum_coverage]
+  data.table::setcolorder(low_coverage, c(".group", "coverage"))
+  low_coverage[]
+}
 
 #' Validate check_max_delay arguments
 #'
@@ -436,122 +550,6 @@ coerce_dt <- function(
   }
   cli::cli_warn(warning_message)
 }
-
-check_max_delay <- function(data,
-                            max_delay = data$max_delay,
-                            cum_coverage = 0.8,
-                            maxdelay_quantile_outlier = 0.97,
-                            warn = TRUE, warn_internal = FALSE) {
-  max_delay <- .validate_check_max_delay_args(
-    max_delay, cum_coverage, maxdelay_quantile_outlier
-  )
-
-  timestep <- data$timestep
-  internal_timestep <- get_internal_timestep(timestep)
-  daily_max_delay <- internal_timestep * max_delay
-
-  obs <- data.table::copy(data$obs[[1]])
-  obs[, delay := internal_timestep * delay]
-
-  max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
-  if (max_delay_obs < daily_max_delay) {
-    .warn_max_delay_exceeds_observed(
-      max_delay, timestep, daily_max_delay, max_delay_obs, internal_timestep
-    )
-  }
-
-  max_delay_ref <- obs[
-    !is.na(reference_date) & cum_prop_reported == 1,
-    .(.group, reference_date, delay)
-  ]
-  data.table::setorderv(max_delay_ref, c(".group", "reference_date", "delay"))
-  max_delay_ref <- max_delay_ref[
-    ,
-    .SD[, .(delay = first(delay)), by = reference_date]
-  ] # we here assume the same maximum delay for all groups
-
-  max_delay_obs_q <- ceiling(
-    max_delay_ref[, quantile(delay, maxdelay_quantile_outlier, na.rm = TRUE)]
-  ) + 1
-
-  # Filter by the user-specified maximum delay with daily resolution
-  obs <- enw_filter_delay(obs, max_delay = daily_max_delay, timestep = "day")
-
-  # filter by earliest observed report date
-  obs <- obs[,
-    .SD[reference_date >= min(report_date) | is.na(reference_date)],
-    by = .group
-  ]
-
-  latest_obs <- enw_latest_data(obs)
-  fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs_q + 1
-  # filter by the maximum observed delay to reduce right truncation bias
-  latest_obs <- enw_filter_reference_dates(
-    latest_obs,
-    latest_date = fully_observed_date
-  )
-
-  if (warn && max_delay_obs >= daily_max_delay && (latest_obs[, .N] < 5)) {
-    .warn_insufficient_coverage_data(
-      latest_obs[, .N], max_delay_obs_q, timestep, internal_timestep,
-      warn_internal
-    )
-  }
-
-  low_coverage <- latest_obs[, .(
-    below_coverage =
-      sum(cum_prop_reported < cum_coverage, na.rm = TRUE) /
-        sum(!is.na(cum_prop_reported))
-  ), by = .group]
-
-  # Check if all coverage values are NaN or NA (occurs with sparse data)
-  if (all(is.na(low_coverage$below_coverage) |
-    is.nan(low_coverage$below_coverage))) {
-    low_coverage[, below_coverage := 0]
-    mean_coverage <- 0
-    if (warn && warn_internal) {
-      warning_message <- c(
-        "Could not compute delay coverage statistics.",
-        "*" = paste0(
-          "All groups have insufficient data after filtering to ",
-          "compute meaningful coverage metrics."
-        ),
-        i = paste0(
-          "This typically occurs with sparse data or when max_delay ",
-          "is too large relative to available observations."
-        )
-      )
-      cli::cli_warn(warning_message)
-    }
-  } else {
-    mean_coverage <- low_coverage[, mean(below_coverage, na.rm = TRUE)]
-  }
-
-  if (warn && !is.na(mean_coverage) && mean_coverage > 0.5) {
-    # Format max_delay with appropriate units
-    formatted_max <- .format_delay_with_units(
-      max_delay, timestep, daily_max_delay
-    )
-
-    cli::cli_warn(
-      paste0(
-        "The specified maximum reporting delay ",
-        "(", formatted_max, ") ",
-        "covers less than ", 100 * cum_coverage,
-        "% of cases for the majority (>50%) of reference dates. ",
-        "Consider using a larger maximum delay to avoid potential model ",
-        "misspecification."
-      ),
-      immediate. = TRUE
-    )
-  }
-
-  low_coverage <- rbind(low_coverage, list("all", mean_coverage))
-  low_coverage[, coverage := cum_coverage]
-  data.table::setcolorder(low_coverage, c(".group", "coverage"))
-  low_coverage[]
-}
-
 
 #' Check Numeric Timestep
 #'

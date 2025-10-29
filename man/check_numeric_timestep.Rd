@@ -27,10 +27,10 @@ observations corresponds to the provided timestep.
 }
 \seealso{
 Functions used for checking inputs
-\code{\link{.validate_check_max_delay_args}()},
 \code{\link{check_design_matrix_sparsity}()},
 \code{\link{check_group}()},
 \code{\link{check_group_date_unique}()},
+\code{\link{check_max_delay}()},
 \code{\link{check_module}()},
 \code{\link{check_modules_compatible}()},
 \code{\link{check_observation_indicator}()},

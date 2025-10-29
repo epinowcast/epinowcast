@@ -2,7 +2,7 @@
 % Please edit documentation in R/check.R
 \name{.validate_check_max_delay_args}
 \alias{.validate_check_max_delay_args}
-\title{Check appropriateness of maximum delay}
+\title{Validate check_max_delay arguments}
 \usage{
 .validate_check_max_delay_args(
   max_delay,
@@ -16,65 +16,11 @@
 \item{cum_coverage}{Cumulative coverage threshold}
 
 \item{maxdelay_quantile_outlier}{Quantile for outlier detection}
-
-\item{data}{Output from \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}.}
-
-\item{warn}{Should a warning be issued if the cumulative case count is
-below \code{cum_coverage} for the majority of reference dates?}
-
-\item{warn_internal}{Should only be \code{TRUE} if this function is called
-internally by another \code{epinowcast} function. Then, warnings are adjusted to
-avoid confusing the user.}
 }
 \value{
-A \code{data.table} with the share of reference dates where the
-cumulative case count is below \code{cum_coverage}, stratified by group.
-
 Integer max_delay value
 }
 \description{
-Check if maximum delay specified by the user is long enough and
-raise potential warnings. This is achieved by computing the share of
-reference dates where the cumulative case count is below some aspired
-coverage.
-}
-\details{
-When data is very sparse (e.g., predominantly zero counts), the
-function may not be able to compute meaningful coverage statistics.
-In such cases, a warning is issued and the function treats the data as
-having no coverage issues.
-This typically occurs when groups have very few non-zero observations or
-when the specified \code{max_delay} is too large relative to available
-data.
-
-The coverage is with respect to the maximum observed case count for
-the corresponding reference date. As the maximum observed case count is
-likely smaller than the true overall case count for not yet fully observed
-reference dates (due to right truncation), only reference dates that are
-more than the maximum observed delay ago are included. Still, because we
-can only use the maximum observed delay, not the unknown true maximum
-delay, the computed coverage values should be interpreted with care, as they
-are only proxies for the true coverage.
-}
-\examples{
-pobs <- enw_example(type = "preprocessed_observations")
-check_max_delay(pobs, max_delay = 20, cum_coverage = 0.8)
 Validate check_max_delay arguments
-
 }
-\seealso{
-Functions used for checking inputs
-\code{\link{check_design_matrix_sparsity}()},
-\code{\link{check_group}()},
-\code{\link{check_group_date_unique}()},
-\code{\link{check_module}()},
-\code{\link{check_modules_compatible}()},
-\code{\link{check_numeric_timestep}()},
-\code{\link{check_observation_indicator}()},
-\code{\link{check_quantiles}()},
-\code{\link{check_timestep}()},
-\code{\link{check_timestep_by_date}()},
-\code{\link{check_timestep_by_group}()}
-}
-\concept{check}
 \keyword{internal}
