@@ -448,7 +448,7 @@ subset_obs <- function(ord_obs, max_delay, internal_timestep,
                                               na.rm = TRUE) -
                                           max_delay * internal_timestep))
   if (!is.logical(to_keep)) {
-    stop("reference_subset must be a relational operator")
+    stop("reference_subset must be a relational operator", call. = FALSE)
   }
   ord_obs[to_keep, ]
 }

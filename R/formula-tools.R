@@ -646,10 +646,10 @@ construct_re <- function(re, data) {
 #' - `~ rw(week, location, type = "dependent")`: random walks with shared
 #' variance across locations
 #'
-#' These three types of effects can be combined in a single formula, for example:
-#' `~ 1 + age_group + (1 | location) + rw(week, location)` specifies fixed
-#' age effects, random location intercepts, and location-specific random
-#' walks over time.
+#' These three types of effects can be combined in a single formula, for
+#' example: `~ 1 + age_group + (1 | location) + rw(week, location)`
+#' specifies fixed age effects, random location intercepts, and
+#' location-specific random walks over time.
 #'
 #' ## Turning off model components
 #'
@@ -672,7 +672,10 @@ construct_re <- function(re, data) {
 #' @references
 #' For users new to formula syntax in R:
 #' - **Fixed effects**: See `?formula` and the "Statistical Models in R"
-#' chapter of "An Introduction to R": \url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R}
+#' chapter of "An Introduction to R" at the URL:
+#'
+#' <https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R> # nolint: line_length_linter
+#'
 #' - **Random effects**: See the \link[lme4]{lme4} package documentation
 #' and vignettes.
 #' - **Mixed models**: Bates et al. (2015) "Fitting Linear Mixed-Effects
@@ -824,7 +827,9 @@ enw_formula <- function(formula, data, sparse = TRUE) {
     random_formula <- as.formula(
       paste0(
         "~ 0 + ",
-        paste(paste0("`", colnames(metadata)[-1], "`"), collapse = " + ")
+        paste(
+          paste0("`", colnames(metadata)[-1], "`"), collapse = " + "
+        )
       )
     )
     random <- enw_design(random_formula, metadata, sparse = FALSE)

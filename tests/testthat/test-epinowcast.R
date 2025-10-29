@@ -636,7 +636,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   )
 
   # Keep only Wednesday reports
-  weekly_obs[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)]
+  weekly_obs[,
+    confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)
+  ]
   weekly_obs <- enw_flag_observed_observations(weekly_obs)
   weekly_obs <- enw_impute_na_observations(weekly_obs)
   weekly_obs <- enw_add_incidence(weekly_obs)
@@ -645,7 +647,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   pobs <- suppressWarnings(enw_preprocess_data(weekly_obs, max_delay = 10))
 
   # Create Wednesday structural reporting
-  structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
+  structural <- enw_dayofweek_structural_reporting(
+    pobs, day_of_week = "Wednesday"
+  )
 
   # Fit model
   nowcast <- suppressMessages(epinowcast(pobs,
@@ -656,7 +660,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 250, iter_sampling = 250
     ),
-    obs = enw_obs(family = "negbin", observation_indicator = ".observed", data = pobs)
+    obs = enw_obs(
+      family = "negbin", observation_indicator = ".observed", data = pobs
+    )
   ))
 
   # Check model structure

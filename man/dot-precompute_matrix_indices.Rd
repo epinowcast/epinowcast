@@ -15,9 +15,9 @@ A list with two components:
 \itemize{
 \item \code{n_selected}: Integer vector of length \code{nrow(matrix)} containing the
 number of selected (non-zero) indices per row
-\item \code{selected_idx}: Integer matrix of dimensions \verb{[nrow(matrix), ncol(matrix)]}
-containing the column indices where each row has 1s, with unused
-positions filled with 0
+\item \code{selected_idx}: Integer matrix of dimensions
+\verb{[nrow(matrix), ncol(matrix)]} containing the column indices where
+each row has 1s, with unused positions filled with 0
 }
 }
 \description{

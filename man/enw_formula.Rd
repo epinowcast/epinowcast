@@ -87,10 +87,10 @@ effects that evolve smoothly over time. For example:
 variance across locations
 }
 
-These three types of effects can be combined in a single formula, for example:
-\code{~ 1 + age_group + (1 | location) + rw(week, location)} specifies fixed
-age effects, random location intercepts, and location-specific random
-walks over time.
+These three types of effects can be combined in a single formula, for
+example: \code{~ 1 + age_group + (1 | location) + rw(week, location)}
+specifies fixed age effects, random location intercepts, and
+location-specific random walks over time.
 }
 
 \subsection{Turning off model components}{
@@ -152,7 +152,11 @@ enw_formula(~ (1 + day | week:month), data = data)
 For users new to formula syntax in R:
 \itemize{
 \item \strong{Fixed effects}: See \code{?formula} and the "Statistical Models in R"
-chapter of "An Introduction to R": \url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R}
+chapter of "An Introduction to R" at the URL:
+}
+
+\url{https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R} # nolint: line_length_linter
+\itemize{
 \item \strong{Random effects}: See the \link[lme4]{lme4} package documentation
 and vignettes.
 \item \strong{Mixed models}: Bates et al. (2015) "Fitting Linear Mixed-Effects

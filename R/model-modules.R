@@ -350,9 +350,9 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' by group. This parameterisation is highly flexible and may not be the
 #' most appropriate choice when data is sparsely reported or reporting delays
 #' are substantial. In these settings an alternative could be a group-specific
-#' weekly random walk (specified as `rw(week, by = .group)`). Setting to `~0`
-#' will produce an error as an expectation model is required. See [enw_formula()]
-#' for details on formula syntax.
+#' weekly random walk (specified as `rw(week, by = .group)`). Setting to
+#' `~0` will produce an error as an expectation model is required. See
+#' [enw_formula()] for details on formula syntax.
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
@@ -363,10 +363,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' the modifiers used to adjust expected observations. This can use features
 #' defined by reference date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. By default no modifiers are used but a common choice
-#' might be to adjust for the day of the week. Note that as the baseline is no
-#' modification, an intercept is always used and is set to 0. Set to `~0` to
-#' disable observation modifiers (internally converted to `~1` and flagged as
-#' inactive). See [enw_formula()] for details on formula syntax.
+#' might be to adjust for the day of the week. Note that as the baseline is
+#' no modification, an intercept is always used and is set to 0. Set to `~0`
+#' to disable observation modifiers (internally converted to `~1` and flagged
+#' as inactive). See [enw_formula()] for details on formula syntax.
 #'
 #' @param latent_reporting_delay A numeric vector that defaults to 1.
 #' Describes the weighting to apply to past and current latent expected
@@ -488,8 +488,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
-      rep("Intercept for initial log observations (ordered by group and then
-          time)", length(seed_obs)),
+      rep(
+        paste0(
+          "Intercept for initial log observations ",
+          "(ordered by group and then time)"
+        ),
+        length(seed_obs)
+      ),
       "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(

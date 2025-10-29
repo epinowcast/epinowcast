@@ -144,6 +144,7 @@ test_that(
 
     expect_warning(
       check_max_delay(weekly_pobs, max_delay = 1),
+      # nolint next: nonportable_path_linter. This is a regex, not a path.
       "specified maximum reporting delay \\(1 week \\(7 days\\)\\) covers less"
     )
 

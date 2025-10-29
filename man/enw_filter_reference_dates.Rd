@@ -43,11 +43,11 @@ occurs). This means that this function will also filter out any report dates
 that are earlier than their corresponding reference date.
 }
 \details{
-The \code{include_days} parameter filters to include exactly the specified number
-of most recent reference dates.
-For example, if the latest reference date is 2021-10-20 and \code{include_days = 10},
-the filtered data will contain reference dates from 2021-10-11 to 2021-10-20
-(10 days inclusive).
+The \code{include_days} parameter filters to include exactly the specified
+number of most recent reference dates. For example, if the latest
+reference date is 2021-10-20 and \code{include_days = 10}, the filtered data
+will contain reference dates from 2021-10-11 to 2021-10-20 (10 days
+inclusive).
 }
 \examples{
 # Filter by date

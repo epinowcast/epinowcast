@@ -146,7 +146,9 @@ test_that(".precompute_aggregation_lookups handles empty rows", {
   expect_identical(result$n_selected[1, 1, 2], 0L)
 })
 
-test_that(".precompute_aggregation_lookups matches example from documentation", {
+test_that(
+  ".precompute_aggregation_lookups matches example from documentation",
+  {
   # Wednesday-only reporting: aggregate all days (1-7) to Wednesday (day 4)
   wednesday_row <- 4
   max_delay <- 7
@@ -265,7 +267,9 @@ test_that(".structural_reporting_to_matrices creates correct structure", {
   )
 
   # Create simple structural pattern from real data
-  structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
+  structural <- enw_dayofweek_structural_reporting(
+    pobs, day_of_week = "Wednesday"
+  )
 
   result <- epinowcast:::.structural_reporting_to_matrices(structural, pobs)
 
@@ -297,15 +301,22 @@ test_that(".structural_reporting_to_matrices handles custom patterns", {
   expect_length(result[[1]], pobs$time[[1]])
 })
 
-test_that(".structural_reporting_to_matrices produces expected matrix structure", {
-  nat_germany_hosp <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
-  pobs <- suppressWarnings(
-    enw_preprocess_data(nat_germany_hosp, max_delay = 5)
-  )
+test_that(
+  ".structural_reporting_to_matrices produces expected matrix structure",
+  {
+    nat_germany_hosp <- germany_covid19_hosp[
+      location == "DE"
+    ][age_group == "00+"]
+    pobs <- suppressWarnings(
+      enw_preprocess_data(nat_germany_hosp, max_delay = 5)
+    )
 
-  structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
-  result <- epinowcast:::.structural_reporting_to_matrices(structural, pobs)
+      structural <- enw_dayofweek_structural_reporting(
+      pobs, day_of_week = "Wednesday"
+    )
+    result <- epinowcast:::.structural_reporting_to_matrices(structural, pobs)
 
-  # Snapshot first 7 matrices to verify structure remains consistent
-  expect_snapshot(result[[1]][1:7])
-})
+    # Snapshot first 7 matrices to verify structure remains consistent
+    expect_snapshot(result[[1]][1:7])
+  }
+)

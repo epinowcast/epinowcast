@@ -111,7 +111,9 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
     geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI"),
       linewidth = 0.2
     ) +
-    geom_line(aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6) +
+    geom_line(
+      aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6
+    ) +
     geom_line(aes(y = mean, linetype = "Mean"), alpha = 0.6) +
     scale_linetype_manual(
       name = NULL,

@@ -21,9 +21,9 @@ defined by reference date as defined in \code{metareference} as produced by
 by group. This parameterisation is highly flexible and may not be the
 most appropriate choice when data is sparsely reported or reporting delays
 are substantial. In these settings an alternative could be a group-specific
-weekly random walk (specified as \code{rw(week, by = .group)}). Setting to \code{~0}
-will produce an error as an expectation model is required. See \code{\link[=enw_formula]{enw_formula()}}
-for details on formula syntax.}
+weekly random walk (specified as \code{rw(week, by = .group)}). Setting to
+\code{~0} will produce an error as an expectation model is required. See
+\code{\link[=enw_formula]{enw_formula()}} for details on formula syntax.}
 
 \item{generation_time}{A numeric vector that sums to 1 and defaults to 1.
 Describes the weighting to apply to previous generations (i.e as part of a
@@ -34,10 +34,10 @@ the daily growth rate.}
 the modifiers used to adjust expected observations. This can use features
 defined by reference date as defined in \code{metareference} as produced by
 \code{\link[=enw_preprocess_data]{enw_preprocess_data()}}. By default no modifiers are used but a common choice
-might be to adjust for the day of the week. Note that as the baseline is no
-modification, an intercept is always used and is set to 0. Set to \code{~0} to
-disable observation modifiers (internally converted to \code{~1} and flagged as
-inactive). See \code{\link[=enw_formula]{enw_formula()}} for details on formula syntax.}
+might be to adjust for the day of the week. Note that as the baseline is
+no modification, an intercept is always used and is set to 0. Set to \code{~0}
+to disable observation modifiers (internally converted to \code{~1} and flagged
+as inactive). See \code{\link[=enw_formula]{enw_formula()}} for details on formula syntax.}
 
 \item{latent_reporting_delay}{A numeric vector that defaults to 1.
 Describes the weighting to apply to past and current latent expected

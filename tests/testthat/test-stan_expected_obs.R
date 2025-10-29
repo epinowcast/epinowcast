@@ -89,7 +89,7 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   # Use standalone Stan model via generated quantities
   # Specify include paths to find Stan functions in installed package
   model <- cmdstanr::cmdstan_model(
-    "stan/test_expected_obs.stan",
+    file.path("stan", "test_expected_obs.stan"),
     include_paths = system.file("stan", package = "epinowcast")
   )
 
@@ -118,7 +118,9 @@ test_that("expected_obs() aggregates probabilities with precomputed indices", {
   # Expected output using matrix multiplication
   exp_output <- as.vector(tar_obs + log(agg_probs %*% exp(lh)))
 
-  expect_equal(object = as.vector(exp_obs), expected = exp_output, tolerance = 1e-7)
+  expect_equal(
+    object = as.vector(exp_obs), expected = exp_output, tolerance = 1e-7
+  )
 })
 
 test_that("expected_obs() handles structural zeros with precomputed indices", {
@@ -141,7 +143,7 @@ test_that("expected_obs() handles structural zeros with precomputed indices", {
   # Use standalone Stan model via generated quantities
   # Specify include paths to find Stan functions in installed package
   model <- cmdstanr::cmdstan_model(
-    "stan/test_expected_obs.stan",
+    file.path("stan", "test_expected_obs.stan"),
     include_paths = system.file("stan", package = "epinowcast")
   )
 

@@ -20,10 +20,11 @@ indicating which delays aggregate to which reporting delays.}
 \value{
 A list with two components:
 \itemize{
-\item \code{n_selected}: 3D array with dimensions (groups, times, max_delay) containing the
-number of selected indices per row
-\item \code{selected_idx}: 4D array with dimensions (groups, times, max_delay, max_delay)
-containing the column indices where each row has 1s
+\item \code{n_selected}: 3D array with dimensions (groups, times, max_delay)
+containing the number of selected indices per row
+\item \code{selected_idx}: 4D array with dimensions
+(groups, times, max_delay, max_delay) containing the column indices
+where each row has 1s
 }
 }
 \description{

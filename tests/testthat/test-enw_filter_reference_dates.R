@@ -65,7 +65,9 @@ test_that("enw_filter_reference_dates filters as expected when data is present w
     min(filt_days$reference_date, na.rm = TRUE), as.IDate("2021-10-11")
   )
   # Verify exact count of dates
-  n_dates <- length(unique(filt_days$reference_date[!is.na(filt_days$reference_date)]))
+  n_dates <- length(
+    unique(filt_days$reference_date[!is.na(filt_days$reference_date)])
+  )
   expect_identical(n_dates, 10L)
   filt_date <- enw_filter_reference_dates(
     nat_germany_hosp,
