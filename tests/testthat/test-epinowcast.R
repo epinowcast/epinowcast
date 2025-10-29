@@ -665,7 +665,7 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
 
   # Check data includes structural aggregation arrays
   expect_true("rep_agg_p" %in% names(nowcast$data[[1]]))
-  expect_equal(nowcast$data[[1]]$rep_agg_p, 1)
+  expect_identical(nowcast$data[[1]]$rep_agg_p, 1L)
   expect_true("rep_agg_n_selected" %in% names(nowcast$data[[1]]))
   expect_true("rep_agg_selected_idx" %in% names(nowcast$data[[1]]))
 
