@@ -277,7 +277,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     # Convert data.table to nested list of matrices
     structural <- .structural_reporting_to_matrices(structural, data)
 
-    data_list$rep_agg_p <- 1
+    data_list$rep_agg_p <- 1L
     # Precompute aggregation lookups for Stan
     arrays <- .precompute_aggregation_lookups(
       structural,
@@ -288,7 +288,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     data_list$rep_agg_n_selected <- arrays$n_selected
     data_list$rep_agg_selected_idx <- arrays$selected_idx
   } else {
-    data_list$rep_agg_p <- 0
+    data_list$rep_agg_p <- 0L
     data_list$rep_agg_n_selected <- array(0L, dim = c(0, 0, 0))
     data_list$rep_agg_selected_idx <- array(0L, dim = c(0, 0, 0, 0))
   }
