@@ -82,15 +82,15 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 
   # make model.matrix helper
 
+  if (length(no_contrasts) == 1 && is.logical(no_contrasts) &&
+      !no_contrasts) {
+    design <- mod_matrix(formula, data, sparse = sparse, ...)
+    return(design)
+  }
   if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
-    if (no_contrasts) {
-      no_contrasts <- colnames(data)[
-        sapply(data, function(x) is.factor(x) | is.character(x))
-      ]
-    } else {
-      design <- mod_matrix(formula, data, sparse = sparse, ...)
-      return(design)
-    }
+    no_contrasts <- colnames(data)[
+      sapply(data, function(x) is.factor(x) | is.character(x))
+    ]
   }
 
   # what is in the formula

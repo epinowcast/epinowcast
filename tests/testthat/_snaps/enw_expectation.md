@@ -685,11 +685,11 @@
       2:      expr_beta_sd         1
       3: expr_lelatent_int         1
       4:      expl_beta_sd         1
-                                                                                description
-      1:                                                   Intercept of the log growth rate
-      2:                        Standard deviation of scaled pooled log growth rate effects
-      3: Intercept for initial log observations (ordered by group and then\n          time)
-      4:                        Standard deviation of scaled pooled log growth rate effects
+                                                                     description
+      1:                                        Intercept of the log growth rate
+      2:             Standard deviation of scaled pooled log growth rate effects
+      3: Intercept for initial log observations (ordered by group and then time)
+      4:             Standard deviation of scaled pooled log growth rate effects
                   distribution mean  sd
       1:                Normal  0.0 0.2
       2: Zero truncated normal  0.0 1.0
@@ -1182,11 +1182,11 @@
       2:      expr_beta_sd         1
       3: expr_lelatent_int         1
       4:      expl_beta_sd         1
-                                                                                description
-      1:                                                   Intercept of the log growth rate
-      2:                        Standard deviation of scaled pooled log growth rate effects
-      3: Intercept for initial log observations (ordered by group and then\n          time)
-      4:                        Standard deviation of scaled pooled log growth rate effects
+                                                                     description
+      1:                                        Intercept of the log growth rate
+      2:             Standard deviation of scaled pooled log growth rate effects
+      3: Intercept for initial log observations (ordered by group and then time)
+      4:             Standard deviation of scaled pooled log growth rate effects
                   distribution mean  sd
       1:                Normal  0.0 0.2
       2: Zero truncated normal  0.0 1.0
@@ -1508,16 +1508,16 @@
       7: expr_lelatent_int         5
       8: expr_lelatent_int         6
       9:      expl_beta_sd         1
-                                                                                description
-      1:                                                   Intercept of the log growth rate
-      2:                        Standard deviation of scaled pooled log growth rate effects
-      3: Intercept for initial log observations (ordered by group and then\n          time)
-      4: Intercept for initial log observations (ordered by group and then\n          time)
-      5: Intercept for initial log observations (ordered by group and then\n          time)
-      6: Intercept for initial log observations (ordered by group and then\n          time)
-      7: Intercept for initial log observations (ordered by group and then\n          time)
-      8: Intercept for initial log observations (ordered by group and then\n          time)
-      9:                        Standard deviation of scaled pooled log growth rate effects
+                                                                     description
+      1:                                        Intercept of the log growth rate
+      2:             Standard deviation of scaled pooled log growth rate effects
+      3: Intercept for initial log observations (ordered by group and then time)
+      4: Intercept for initial log observations (ordered by group and then time)
+      5: Intercept for initial log observations (ordered by group and then time)
+      6: Intercept for initial log observations (ordered by group and then time)
+      7: Intercept for initial log observations (ordered by group and then time)
+      8: Intercept for initial log observations (ordered by group and then time)
+      9:             Standard deviation of scaled pooled log growth rate effects
                   distribution mean  sd
       1:                Normal  0.0 0.2
       2: Zero truncated normal  0.0 1.0

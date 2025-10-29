@@ -401,6 +401,209 @@ re <- function(formula) {
   out
 }
 
+#' Process random effect interactions
+#'
+#' @param random Character vector of random effects terms.
+#' @param data Data frame containing the variables.
+#'
+#' @return A list with expanded_random (unique variables), random_int
+#' (logical vector indicating interactions), and updated random vector.
+#' @noRd
+.process_random_interactions <- function(random, data) {
+  expanded_random <- NULL
+  random_int <- rep(FALSE, length(random))
+
+  for (i in seq_along(random)) {
+    current_random <- strsplit(random[i], ":", fixed = TRUE)[[1]]
+
+    if (length(current_random) > 1) {
+      if (length(current_random) > 2) {
+        cli::cli_abort(
+          paste0(
+            "Interactions between more than 2 variables are not currently ",
+            "supported on the right hand side of random effects"
+          )
+        )
+      }
+      if (length(unique(data[[current_random[2]]])) < 2) {
+        cli::cli_inform(
+          paste0(
+            "A random effect using {current_random[2]} is not possible as ",
+            "this variable has fewer than 2 unique values."
+          )
+        )
+        random[i] <- current_random[1]
+      } else {
+        random_int[i] <- TRUE
+      }
+    }
+    expanded_random <- c(expanded_random, current_random)
+  }
+
+  list(
+    expanded_random = unique(expanded_random),
+    random_int = random_int,
+    random = random
+  )
+}
+
+#' Construct fixed effects terms from random and fixed components
+#'
+#' @param fixed Character vector of fixed effects.
+#' @param random Character vector of random effects.
+#' @param random_int Logical vector indicating which random effects are
+#' interactions.
+#'
+#' @return A list with terms and terms_int.
+#' @noRd
+.construct_fe_terms <- function(fixed, random, random_int) {
+  terms <- NULL
+  terms_int <- NULL
+
+  for (i in seq_along(random)) {
+    terms <- c(terms, paste0(fixed, ":", random[i]))
+    terms_int <- c(terms_int, rep(random_int[i], length(fixed)))
+  }
+
+  names(terms_int) <- terms
+  terms <- gsub("1:", "", terms, fixed = TRUE)
+  terms <- terms[!startsWith(terms, "0:")]
+  terms_int <- terms_int[!startsWith(terms, "0:")]
+
+  list(terms = terms, terms_int = terms_int)
+}
+
+#' Add pooling effect for single term with interaction
+#'
+#' @param effects Effects data frame.
+#' @param k Term components.
+#'
+#' @return Updated effects data frame.
+#' @noRd
+.add_pooling_single_interaction <- function(effects, k) {
+  enw_add_pooling_effect(
+    effects, var_name = gsub(":", "__", k, fixed = TRUE),
+    finder_fn = function(effect, pattern) {
+      grepl(pattern[1], effect) &
+        grepl(pattern[2], effect, fixed = TRUE) &
+        lengths(
+          regmatches(effect, gregexpr(":", effect, fixed = TRUE))
+        ) == 1
+    },
+    pattern = strsplit(k, ":", fixed = TRUE)[[1]]
+  )
+}
+
+#' Add pooling effect for single term without interaction
+#'
+#' @param effects Effects data frame.
+#' @param k Term components.
+#'
+#' @return Updated effects data frame.
+#' @noRd
+.add_pooling_single_no_interaction <- function(effects, k) {
+  enw_add_pooling_effect(
+    effects, var_name = k,
+    finder_fn = function(effect, pattern) {
+      grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
+    },
+    pattern = k
+  )
+}
+
+#' Add pooling effect for multiple terms with interaction
+#'
+#' @param effects Effects data frame.
+#' @param k Term components.
+#'
+#' @return Updated effects data frame.
+#' @noRd
+.add_pooling_multi_interaction <- function(effects, k) {
+  enw_add_pooling_effect(
+    effects,
+    var_name = paste(gsub(":", "__", k, fixed = TRUE), collapse = "__"),
+    finder_fn = function(effect, pattern) {
+      grepl(pattern[1], effect) & grepl(pattern[2], effect) &
+        grepl(pattern[3], effect)
+    },
+    pattern = c(k[1], strsplit(k[-1], ":", fixed = TRUE)[[1]])
+  )
+}
+
+#' Add pooling effect for multiple terms without interaction
+#'
+#' @param effects Effects data frame.
+#' @param k Term components.
+#'
+#' @return Updated effects data frame.
+#' @noRd
+.add_pooling_multi_no_interaction <- function(effects, k) {
+  enw_add_pooling_effect(
+    effects, var_name = paste(k, collapse = "__"),
+    finder_fn = function(effect, pattern) {
+      grepl(pattern[1], effect) & grepl(pattern[2], effect)
+    },
+    pattern = rev(k)
+  )
+}
+
+#' Add pooling effects for a single term
+#'
+#' @param effects Effects data frame.
+#' @param k Term components.
+#' @param is_interaction Logical indicating if term has interaction.
+#'
+#' @return Updated effects data frame.
+#' @noRd
+.add_pooling_for_term <- function(effects, k, is_interaction) {
+  if (length(k) == 1 && is_interaction) {
+    return(.add_pooling_single_interaction(effects, k))
+  }
+  if (length(k) == 1) {
+    return(.add_pooling_single_no_interaction(effects, k))
+  }
+  if (is_interaction) {
+    return(.add_pooling_multi_interaction(effects, k))
+  }
+  .add_pooling_multi_no_interaction(effects, k)
+}
+
+#' Implement random effects structure
+#'
+#' @param effects Effects metadata data frame.
+#' @param terms Character vector of terms.
+#' @param terms_int Named logical vector indicating interactions.
+#' @param data Data frame containing the variables.
+#'
+#' @return Updated effects data frame.
+#' @importFrom purrr map
+#' @noRd
+.implement_re_structure <- function(effects, terms, terms_int, data) {
+  for (i in seq_along(terms)) {
+    loc_terms <- strsplit(terms[i], ":", fixed = TRUE)[[1]]
+
+    if (terms_int[i]) {
+      expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
+      expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
+      j <- purrr::map(expanded_int, function(x) {
+        j <- NULL
+        if (length(loc_terms) > 2) {
+          j <- loc_terms[1:(length(loc_terms) - 2)]
+        }
+        j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
+        j
+      })
+    } else {
+      j <- list(loc_terms)
+    }
+
+    for (k in j) {
+      effects <- .add_pooling_for_term(effects, k, terms_int[i])
+    }
+  }
+  effects
+}
+
 #' Constructs random effect terms
 #'
 #' @param re A random effect as defined using [re()] which itself takes
@@ -446,142 +649,32 @@ construct_re <- function(re, data) {
     )
   }
 
-  # extract random and fixed effects
   fixed <- strsplit(re$fixed, " + ", fixed = TRUE)[[1]]
   random <- strsplit(re$random, " + ", fixed = TRUE)[[1]]
 
-  # expand random effects that are interactions
-  expanded_random <- NULL
-  random_int <- rep(FALSE, length(random))
-  for (i in seq_along(random)) {
-    current_random <- strsplit(random[i], ":", fixed = TRUE)[[1]]
+  processed <- .process_random_interactions(random, data)
+  random <- processed$random
+  random_int <- processed$random_int
+  expanded_random <- processed$expanded_random
 
-    if (length(current_random) > 1) {
-      if (length(current_random) > 2) {
-        cli::cli_abort(
-          paste0(
-            "Interactions between more than 2 variables are not currently ",
-            "supported on the right hand side of random effects"
-          )
-        )
-      }
-      if (length(unique(data[[current_random[2]]])) < 2) {
-        cli::cli_inform(
-          paste0(
-            "A random effect using {current_random[2]} is not possible as ",
-            "this variable has fewer than 2 unique values."
-          )
-        )
-        random[i] <- current_random[1]
-      } else {
-        random_int[i] <- TRUE
-      }
-    }
-    expanded_random <- c(expanded_random, current_random)
-  }
-  expanded_random <- unique(expanded_random)
-  # detect if random effect interactions are present
-  # loop through random effect interactions
-  # make new random effects using unique values
-  # add these new random effects to the data
-  # add these new random effects to list of all random effects
+  fe_terms <- .construct_fe_terms(fixed, random, random_int)
+  terms <- fe_terms$terms
+  terms_int <- fe_terms$terms_int
 
-  # combine into fixed effects terms
-  terms <- NULL
-  terms_int <- NULL
-  for (i in seq_along(random)) {
-    terms <- c(terms, paste0(fixed, ":", random[i]))
-    terms_int <- c(terms_int, rep(random_int[i], length(fixed)))
-  }
-  names(terms_int) <- terms
-  terms <- gsub("1:", "", terms, fixed = TRUE)
-  terms <- terms[!startsWith(terms, "0:")]
-  terms_int <- terms_int[!startsWith(terms, "0:")]
-
-  # make all right hand side random effects factors
   data <- coerce_dt(data, required_cols = expanded_random)[,
     (expanded_random) := lapply(.SD, as.factor),
     .SDcols = expanded_random
   ]
 
-  # make a fixed effects design matrix
   fixed <- enw_manual_formula(
     data,
     fixed = terms, no_contrasts = TRUE,
     add_intercept = FALSE
   )$fixed$design
 
-  # extract effects metadata
   effects <- enw_effects_metadata(fixed)
+  effects <- .implement_re_structure(effects, terms, terms_int, data)
 
-  # implement random effects structure
-  for (i in seq_along(terms)) {
-    loc_terms <- strsplit(terms[i], ":", fixed = TRUE)[[1]]
-    # expand right hand side random effect if its an interaction
-    # and make a list to map to effects
-    if (terms_int[i]) {
-      expanded_int <- unique(data[[loc_terms[length(loc_terms)]]])
-      expanded_int <- paste0(loc_terms[length(loc_terms)], expanded_int)
-      j <- purrr::map(expanded_int, function(x) {
-        j <- NULL
-        if (length(loc_terms) > 2) {
-          j <- loc_terms[1:(length(loc_terms) - 2)]
-        }
-        j <- c(j, paste0(loc_terms[length(loc_terms) - 1], ":", x))
-        j
-      })
-    } else {
-      j <- list(loc_terms)
-    }
-    # link random effects with fixed effects
-    # here we need to differentiate between random effects with
-    # and without rhs interactions
-    for (k in j) {
-      if (length(k) == 1) {
-          if (terms_int[i]) {
-            effects <- enw_add_pooling_effect(
-              effects, var_name = gsub(":", "__", k, fixed = TRUE),
-              finder_fn = function(effect, pattern) {
-                grepl(pattern[1], effect) &
-                  grepl(pattern[2], effect, fixed = TRUE) &
-                  lengths(
-                    regmatches(effect, gregexpr(":", effect, fixed = TRUE))
-                  ) == 1
-              },
-              pattern = strsplit(k, ":", fixed = TRUE)[[1]]
-            )
-          } else {
-            effects <- enw_add_pooling_effect(
-              effects, var_name = k,
-              finder_fn = function(effect, pattern) {
-                grepl(pattern, effect) & !grepl(":", effect, fixed = TRUE)
-              },
-              pattern = k
-            )
-          }
-      } else {
-        if (terms_int[i]) {
-          effects <- enw_add_pooling_effect(
-            effects,
-            var_name = paste(gsub(":", "__", k, fixed = TRUE), collapse = "__"),
-            finder_fn = function(effect, pattern) {
-              grepl(pattern[1], effect) & grepl(pattern[2], effect) &
-              grepl(pattern[3], effect)
-            },
-            pattern = c(k[1], strsplit(k[-1], ":", fixed = TRUE)[[1]])
-          )
-        } else {
-          effects <- enw_add_pooling_effect(
-            effects, var_name = paste(k, collapse = "__"),
-            finder_fn = function(effect, pattern) {
-              grepl(pattern[1], effect) & grepl(pattern[2], effect)
-            },
-            pattern = rev(k)
-          )
-        }
-      }
-    }
-  }
   list(data = data, terms = terms, effects = effects)
 }
 

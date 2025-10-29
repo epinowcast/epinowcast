@@ -13,5 +13,8 @@ exclusions: list(
     "inst",
     "tests/testthat.R" = list(
       unused_import_linter = Inf
+    ),
+    "tests/testthat" = list(
+      undesirable_operator_linter = Inf
     )
   )

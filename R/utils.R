@@ -135,9 +135,8 @@ coerce_date <- function(dates = NULL) {
       "Failed to parse with `as.IDate`: {toString(dates[is.na(res)])} ",
       "(indices {toString(which(is.na(res)))})."
     ))
-  } else {
-    res
   }
+  res
 }
 
 #' Get internal timestep
@@ -187,6 +186,73 @@ get_internal_timestep <- function(timestep) {
   }
 }
 
+#' Get timestep unit name
+#'
+#' @param timestep Timestep specification (character or numeric)
+#' @return Character string with unit name (singular form)
+#' @keywords internal
+.get_timestep_unit <- function(timestep) {
+  if (is.character(timestep)) {
+    switch(timestep,
+      day = "day",
+      week = "week",
+      "day"
+    )
+  } else {
+    paste0(timestep, "-day")
+  }
+}
+
+#' Pluralise unit name if needed
+#'
+#' @param unit Character string with unit name
+#' @param count Numeric value to determine if plural needed
+#' @return Character string with potentially pluralised unit
+#' @keywords internal
+.pluralise_unit <- function(unit, count) {
+  if (is.na(count) || !is.finite(count) || count == 1) {
+    unit
+  } else {
+    paste0(unit, "s")
+  }
+}
+
+#' Check if delay values are valid
+#'
+#' @param max_delay Delay value in timestep units
+#' @param daily_max_delay Delay value in days
+#' @return Logical indicating if values are valid
+#' @keywords internal
+.are_delays_valid <- function(max_delay, daily_max_delay) {
+  !is.na(daily_max_delay) && is.finite(daily_max_delay) &&
+    !is.na(max_delay) && is.finite(max_delay)
+}
+
+#' Format delay for daily timestep
+#'
+#' @param daily_max_delay Delay value in days
+#' @return Formatted string
+#' @keywords internal
+.format_daily_delay <- function(daily_max_delay) {
+  paste0(daily_max_delay, " ", .pluralise_unit("day", daily_max_delay))
+}
+
+#' Format delay for non-daily timestep
+#'
+#' @param max_delay Delay value in timestep units
+#' @param timestep_unit Unit name
+#' @param daily_max_delay Delay value in days
+#' @return Formatted string
+#' @keywords internal
+.format_nondaily_delay <- function(max_delay, timestep_unit,
+                                   daily_max_delay) {
+  timestep_unit_plural <- .pluralise_unit(timestep_unit, max_delay)
+  paste0(
+    max_delay, " ", timestep_unit_plural, " (",
+    daily_max_delay, " days)"
+  )
+}
+
 #' Format delay with appropriate units
 #'
 #' Internal helper to format delays with units based on timestep.
@@ -200,48 +266,22 @@ get_internal_timestep <- function(timestep) {
 #' @keywords internal
 .format_delay_with_units <- function(max_delay, timestep,
                                      daily_max_delay = NULL) {
-  # Get internal timestep if not already computed
   if (is.null(daily_max_delay)) {
     internal_timestep <- get_internal_timestep(timestep)
     daily_max_delay <- internal_timestep * max_delay
   }
 
-  # Determine timestep unit name
-  timestep_unit <- if (is.character(timestep)) {
-    switch(timestep,
-      day = "day",
-      week = "week"
-    )
-  } else {
-    # Custom numeric timestep
-    paste0(timestep, "-day")
-  }
-
-  # Add plural if needed
-  if (!is.null(timestep_unit) && !is.na(timestep_unit) &&
-      !is.na(max_delay) && is.finite(max_delay) && max_delay != 1) {
-    timestep_unit <- paste0(timestep_unit, "s")
-  }
-
-  # Handle NA or infinite values
-  if (is.na(daily_max_delay) || !is.finite(daily_max_delay) ||
-      is.na(max_delay) || !is.finite(max_delay)) {
+  if (!.are_delays_valid(max_delay, daily_max_delay)) {
     return("unknown delay")
   }
 
-  # Format based on whether conversion adds information
-  if (is.character(timestep) && timestep == "day") {
-    # Daily: just show days
-    return(paste0(
-      daily_max_delay, " day",
-      if (daily_max_delay != 1) "s" else ""
-    ))
+  is_daily <- is.character(timestep) && timestep == "day"
+
+  if (is_daily) {
+    .format_daily_delay(daily_max_delay)
   } else {
-    # Weekly or custom: show both
-    return(paste0(
-      max_delay, " ", timestep_unit, " (",
-      daily_max_delay, " days)"
-    ))
+    timestep_unit <- .get_timestep_unit(timestep)
+    .format_nondaily_delay(max_delay, timestep_unit, daily_max_delay)
   }
 }
 
@@ -435,12 +475,12 @@ unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
     cli::cli_alert_success(
       "Removed `enw_cache_location` setting from `.Renviron`."
     )
-  } else {
-    if (isTRUE(alert_on_not_set)) {
-      cli::cli_alert_danger(
-        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
-      )
-    }
+    return(invisible(NULL))
+  }
+  if (isTRUE(alert_on_not_set)) {
+    cli::cli_alert_danger(
+      "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+    )
   }
   invisible(NULL)
 }
@@ -469,20 +509,19 @@ check_renviron_for_cache <- function(environ) {
 #' @keywords internal
 #' @importFrom cli cli_alert_info cli_alert_success cli_abort
 create_cache_dir <- function(path) {
-  if (!dir.exists(path)) {
-    dir.create(path, recursive = TRUE, showWarnings = FALSE)
-    if (dir.exists(path)) {
-      cli::cli_alert_success(
-        "Created cache directory at {path}"
-      )
-      return(invisible(NULL))
-    } else {
-      cli::cli_abort(
-        "Failed to create cache directory at {path}"
-      )
-    }
+  if (dir.exists(path)) {
+    return(invisible(NULL))
   }
-  invisible(NULL)
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (dir.exists(path)) {
+    cli::cli_alert_success(
+      "Created cache directory at {path}"
+    )
+    return(invisible(NULL))
+  }
+  cli::cli_abort(
+    "Failed to create cache directory at {path}"
+  )
 }
 
 # This is an alternative to dir.create(recursive = TRUE) that doesn't throw

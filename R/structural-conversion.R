@@ -235,16 +235,20 @@
 
   # Split by group and date into matrices
   delay_cols <- paste0("delay_", seq_len(max_delay))
+  split_to_matrix <- function(x) {
+    as.matrix(x[, -c(".group", "date")])
+  }
+  split_by_date <- function(group_data) {
+    group_data |>
+      split(by = "date", drop = TRUE) |>
+      purrr::map(split_to_matrix)
+  }
   agg_indicators <- structural[,
     c(".group", "date", delay_cols),
     with = FALSE
   ] |>
     split(by = ".group", drop = TRUE) |>
-    purrr::map(\(group_data) {
-      group_data |>
-        split(by = "date", drop = TRUE) |>
-        purrr::map(\(x) as.matrix(x[, -c(".group", "date")]))
-    })
+    purrr::map(split_by_date)
 
   agg_indicators
 }
