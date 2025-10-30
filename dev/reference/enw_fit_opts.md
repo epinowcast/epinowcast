@@ -142,9 +142,9 @@ enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 #>         timing <- round(fit$time()$total, 1)
 #>         out[, `:=`(run_time, timing)]
 #>     }
-#>     return(out[])
+#>     out[]
 #> }
-#> <bytecode: 0x55d62b021eb0>
+#> <bytecode: 0x5645fe5ab0f8>
 #> <environment: namespace:epinowcast>
 #> 
 #> $data

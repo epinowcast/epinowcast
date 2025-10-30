@@ -1074,12 +1074,12 @@ enw_reference(
 #>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))
 #>             }
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d642042870>
-#> <environment: 0x55d642013c90>
+#> <bytecode: 0x564609edfd18>
+#> <environment: 0x564609ecc990>
 #> 
 
 # Non-parametric model with a random effect per delay
@@ -3699,12 +3699,12 @@ enw_reference(
 #>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))
 #>             }
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d642042870>
-#> <environment: 0x55d646537988>
+#> <bytecode: 0x564609edfd18>
+#> <environment: 0x564609810f10>
 #> 
 
 # Combined parametric and non-parametric model
@@ -4715,11 +4715,11 @@ enw_reference(
 #>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))
 #>             }
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d642042870>
-#> <environment: 0x55d645d8db08>
+#> <bytecode: 0x564609edfd18>
+#> <environment: 0x5646031eb690>
 #> 
 ```

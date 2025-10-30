@@ -152,10 +152,10 @@ effects that evolve smoothly over time. For example:</p><ul><li><p><code>~ rw(we
 <li><p><code>~ rw(week, location)</code>: independent random walks for each location</p></li>
 <li><p><code>~ rw(week, location, type = "dependent")</code>: random walks with shared
 variance across locations</p></li>
-</ul><p>These three types of effects can be combined in a single formula, for example:
-<code>~ 1 + age_group + (1 | location) + rw(week, location)</code> specifies fixed
-age effects, random location intercepts, and location-specific random
-walks over time.</p>
+</ul><p>These three types of effects can be combined in a single formula, for
+example: <code>~ 1 + age_group + (1 | location) + rw(week, location)</code>
+specifies fixed age effects, random location intercepts, and
+location-specific random walks over time.</p>
 </div>
 
 <div class="section">
@@ -186,8 +186,8 @@ and a random effects matrix that defines the hierarchical structure.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>For users new to formula syntax in R:</p><ul><li><p><strong>Fixed effects</strong>: See <code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">?formula</a></code> and the "Statistical Models in R"
-chapter of "An Introduction to R": <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R" class="external-link">https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R</a></p></li>
-<li><p><strong>Random effects</strong>: See the <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> package documentation
+chapter of "An Introduction to R" at the URL:</p></li>
+</ul><p><a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R" class="external-link">https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R</a> # nolint: line_length_linter</p><ul><li><p><strong>Random effects</strong>: See the <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> package documentation
 and vignettes.</p></li>
 <li><p><strong>Mixed models</strong>: Bates et al. (2015) "Fitting Linear Mixed-Effects
 Models Using lme4". Journal of Statistical Software, 67(1), 1-48.

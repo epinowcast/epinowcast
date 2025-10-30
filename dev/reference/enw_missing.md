@@ -217,12 +217,12 @@ enw_missing(data = enw_example("preprocessed"))
 #>                   priors$miss_beta_sd_p[1], priors$miss_beta_sd_p[2]/10)))
 #>             }
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d6407762b0>
-#> <environment: 0x55d640421390>
+#> <bytecode: 0x564609df07d8>
+#> <environment: 0x564609ded5d8>
 #> 
 
 # No missingness model specified
@@ -307,11 +307,11 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #>                   priors$miss_beta_sd_p[1], priors$miss_beta_sd_p[2]/10)))
 #>             }
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d6407762b0>
-#> <environment: 0x55d63ba28fd8>
+#> <bytecode: 0x564609df07d8>
+#> <environment: 0x5646096e5640>
 #> 
 ```

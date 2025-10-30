@@ -340,11 +340,11 @@ enw_obs(data = enw_example("preprocessed"))
 #>                 priors$sqrt_phi_p[2]/10)))
 #>             init$phi <- 1/(init$sqrt_phi^2)
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d63a6f07b0>
-#> <environment: 0x55d63a6f4698>
+#> <bytecode: 0x56460005ca20>
+#> <environment: 0x56460004c198>
 #> 
 ```

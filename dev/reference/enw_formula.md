@@ -147,8 +147,11 @@ For users new to formula syntax in R:
 
 - **Fixed effects**: See
   [`?formula`](https://rdrr.io/r/stats/formula.html) and the
-  "Statistical Models in R" chapter of "An Introduction to R":
-  <https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R>
+  "Statistical Models in R" chapter of "An Introduction to R" at the
+  URL:
+
+<https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R>
+\# nolint: line_length_linter
 
 - **Random effects**: See the
   [lme4](https://rdrr.io/pkg/lme4/man/lme4-package.html) package

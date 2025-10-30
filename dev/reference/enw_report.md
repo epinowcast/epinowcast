@@ -150,12 +150,12 @@ enw_report(data = enw_example("preprocessed"))
 #>             init$rep_beta_sd <- array(abs(rnorm(data$rep_rncol, 
 #>                 priors$rep_beta_sd_p[1], priors$rep_beta_sd_p[2]/10)))
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d63736f1e0>
-#> <environment: 0x55d637369448>
+#> <bytecode: 0x564605fc1ee0>
+#> <environment: 0x564605fbd6c8>
 #> 
 
 if (FALSE) { # \dontrun{

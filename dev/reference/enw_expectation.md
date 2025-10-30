@@ -787,12 +787,12 @@ enw_expectation(data = enw_example("preprocessed"))
 #> 2:      expr_beta_sd         1
 #> 3: expr_lelatent_int         1
 #> 4:      expl_beta_sd         1
-#>                                                                           description
-#>                                                                                <char>
-#> 1:                                                   Intercept of the log growth rate
-#> 2:                        Standard deviation of scaled pooled log growth rate effects
-#> 3: Intercept for initial log observations (ordered by group and then\n          time)
-#> 4:                        Standard deviation of scaled pooled log growth rate effects
+#>                                                                description
+#>                                                                     <char>
+#> 1:                                        Intercept of the log growth rate
+#> 2:             Standard deviation of scaled pooled log growth rate effects
+#> 3: Intercept for initial log observations (ordered by group and then time)
+#> 4:             Standard deviation of scaled pooled log growth rate effects
 #>             distribution  mean    sd
 #>                   <char> <num> <num>
 #> 1:                Normal   0.0   0.2
@@ -832,11 +832,11 @@ enw_expectation(data = enw_example("preprocessed"))
 #>             init$expl_beta_sd <- array(abs(rnorm(data$expl_rncol, 
 #>                 priors$expl_beta_sd_p[1], priors$expl_beta_sd_p[2]/10)))
 #>         }
-#>         return(init)
+#>         init
 #>     }
-#>     return(fn)
+#>     fn
 #> }
-#> <bytecode: 0x55d62d493590>
-#> <environment: 0x55d62d484720>
+#> <bytecode: 0x5646100b35e8>
+#> <environment: 0x5646100ba0e8>
 #> 
 ```
