@@ -46,7 +46,8 @@ bugs):
 
 ``` r
 remotes::install_github(
-  "epinowcast/epinowcast", dependencies = TRUE
+  "epinowcast/epinowcast",
+  dependencies = TRUE
 )
 ```
 
@@ -56,7 +57,8 @@ tag (e.g. this installs
 
 ``` r
 remotes::install_github(
-  "epinowcast/epinowcast", dependencies = TRUE, ref = "v0.2.0"
+  "epinowcast/epinowcast",
+  dependencies = TRUE, ref = "v0.2.0"
 )
 ```
 
