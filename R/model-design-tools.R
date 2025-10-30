@@ -24,11 +24,11 @@ mod_matrix <- function(formula, data, sparse = TRUE, ...) {
     sparse_design <- design
     index <- seq_len(nrow(design))
   }
-  return(list(
+  list(
     formula = as_string_formula(formula),
     design = sparse_design,
     index = index
-  ))
+  )
 }
 
 #' A helper function to construct a design matrix from a formula
@@ -82,15 +82,15 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 
   # make model.matrix helper
 
+  if (length(no_contrasts) == 1 && is.logical(no_contrasts) &&
+      !no_contrasts) {
+    design <- mod_matrix(formula, data, sparse = sparse, ...)
+    return(design)
+  }
   if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
-    if (no_contrasts) {
-      no_contrasts <- colnames(data)[
-        sapply(data, function(x) is.factor(x) | is.character(x))
-      ]
-    } else {
-      design <- mod_matrix(formula, data, sparse = sparse, ...)
-      return(design)
-    }
+    no_contrasts <- colnames(data)[
+      sapply(data, function(x) is.factor(x) | is.character(x))
+    ]
   }
 
   # what is in the formula
@@ -145,8 +145,8 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 #' enw_effects_metadata(design)
 enw_effects_metadata <- function(design) {
   dt <- data.table::data.table(effects = colnames(design), fixed = 1)
-  dt <- dt[!effects == "(Intercept)"]
-  return(dt[])
+  dt <- dt[effects != "(Intercept)"]
+  dt[]
 }
 
 #' @title Add a pooling effect to model design metadata

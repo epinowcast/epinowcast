@@ -179,9 +179,9 @@ epinowcast <- function(data,
     init_inner_fn <- function() {
       inits <- purrr::map(init_fns, do.call, args = list())
       inits <- purrr::flatten(inits)
-      return(inits)
+      inits
     }
-    return(init_inner_fn)
+    init_inner_fn
   }
 
   fit <- do.call(

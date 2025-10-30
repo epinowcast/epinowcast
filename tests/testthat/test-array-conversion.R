@@ -111,7 +111,9 @@ test_that("array(unlist()) scrambles nested matrix structures", {
       n_nonzero <- count_nonzero_rows(correct_array[g, t, , ])
       expect_equal(
         n_nonzero, 1,
-        info = sprintf("Correct array [%d,%d,,] should have 1 non-zero row", g, t)
+        info = sprintf(
+          "Correct array [%d,%d,,] should have 1 non-zero row", g, t
+        )
       )
     }
   }
@@ -179,7 +181,9 @@ test_that("array conversion preserves matrix structure for real data size", {
       } else {
         expect_true(
           all(mat[row, ] == 0),
-          info = sprintf("Time %d: Non-Wednesday row %d should be all 0s", t, row)
+          info = sprintf(
+            "Time %d: Non-Wednesday row %d should be all 0s", t, row
+          )
         )
       }
     }

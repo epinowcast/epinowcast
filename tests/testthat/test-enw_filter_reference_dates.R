@@ -65,7 +65,9 @@ test_that("enw_filter_reference_dates filters as expected when data is present w
     min(filt_days$reference_date, na.rm = TRUE), as.IDate("2021-10-11")
   )
   # Verify exact count of dates
-  n_dates <- length(unique(filt_days$reference_date[!is.na(filt_days$reference_date)]))
+  n_dates <- length(
+    unique(filt_days$reference_date[!is.na(filt_days$reference_date)])
+  )
   expect_identical(n_dates, 10L)
   filt_date <- enw_filter_reference_dates(
     nat_germany_hosp,
@@ -183,5 +185,5 @@ test_that("enw_filter_reference_dates preserves data structure after fix", {
   expect_s3_class(filtered, "data.table")
 
   # Check no NA reference dates in filtered result
-  expect_false(any(is.na(filtered$reference_date)))
+  expect_false(anyNA(filtered$reference_date))
 })

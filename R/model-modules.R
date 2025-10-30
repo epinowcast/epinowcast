@@ -211,11 +211,11 @@ enw_reference <- function(
           )))
         }
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Report date logit hazard reporting  model module
@@ -277,7 +277,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     # Convert data.table to nested list of matrices
     structural <- .structural_reporting_to_matrices(structural, data)
 
-    data_list$rep_agg_p <- 1
+    data_list$rep_agg_p <- 1L
     # Precompute aggregation lookups for Stan
     arrays <- .precompute_aggregation_lookups(
       structural,
@@ -288,7 +288,7 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
     data_list$rep_agg_n_selected <- arrays$n_selected
     data_list$rep_agg_selected_idx <- arrays$selected_idx
   } else {
-    data_list$rep_agg_p <- 0
+    data_list$rep_agg_p <- 0L
     data_list$rep_agg_n_selected <- array(0L, dim = c(0, 0, 0))
     data_list$rep_agg_selected_idx <- array(0L, dim = c(0, 0, 0, 0))
   }
@@ -334,11 +334,11 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
           priors$rep_beta_sd_p[2] / 10
         )))
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Expectation model module
@@ -350,9 +350,9 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' by group. This parameterisation is highly flexible and may not be the
 #' most appropriate choice when data is sparsely reported or reporting delays
 #' are substantial. In these settings an alternative could be a group-specific
-#' weekly random walk (specified as `rw(week, by = .group)`). Setting to `~0`
-#' will produce an error as an expectation model is required. See [enw_formula()]
-#' for details on formula syntax.
+#' weekly random walk (specified as `rw(week, by = .group)`). Setting to
+#' `~0` will produce an error as an expectation model is required. See
+#' [enw_formula()] for details on formula syntax.
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a
@@ -363,10 +363,10 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' the modifiers used to adjust expected observations. This can use features
 #' defined by reference date as defined in `metareference` as produced by
 #' [enw_preprocess_data()]. By default no modifiers are used but a common choice
-#' might be to adjust for the day of the week. Note that as the baseline is no
-#' modification, an intercept is always used and is set to 0. Set to `~0` to
-#' disable observation modifiers (internally converted to `~1` and flagged as
-#' inactive). See [enw_formula()] for details on formula syntax.
+#' might be to adjust for the day of the week. Note that as the baseline is
+#' no modification, an intercept is always used and is set to 0. Set to `~0`
+#' to disable observation modifiers (internally converted to `~1` and flagged
+#' as inactive). See [enw_formula()] for details on formula syntax.
 #'
 #' @param latent_reporting_delay A numeric vector that defaults to 1.
 #' Describes the weighting to apply to past and current latent expected
@@ -488,8 +488,13 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
     description = c(
       "Intercept of the log growth rate",
       "Standard deviation of scaled pooled log growth rate effects",
-      rep("Intercept for initial log observations (ordered by group and then
-          time)", length(seed_obs)),
+      rep(
+        paste0(
+          "Intercept for initial log observations ",
+          "(ordered by group and then time)"
+        ),
+        length(seed_obs)
+      ),
       "Standard deviation of scaled pooled log growth rate effects"
     ),
     distribution = c(
@@ -542,11 +547,11 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
           priors$expl_beta_sd_p[2] / 10
         )))
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Missing reference data model module
@@ -681,11 +686,11 @@ enw_missing <- function(formula = ~1, data) {
           )))
         }
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Setup observation model and data
@@ -808,11 +813,11 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
         )
         init$phi <- 1 / (init$sqrt_phi^2)
       }
-      return(init)
+      init
     }
-    return(fn)
+    fn
   }
-  return(out)
+  out
 }
 
 #' Format model fitting options for use with stan
@@ -899,5 +904,5 @@ enw_fit_opts <- function(sampler = epinowcast::enw_sample,
     sparse_design = as.integer(sparse_design)
   )
   out$args <- list(threads_per_chain = threads_per_chain, ...)
-  return(out)
+  out
 }

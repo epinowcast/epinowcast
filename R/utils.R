@@ -32,7 +32,7 @@ stan_fns_as_string <- function(files, include) {
     ),
     "\n }"
   )
-  return(functions)
+  functions
 }
 
 #' Load a package example
@@ -74,13 +74,11 @@ enw_example <- function(type = c(
   type <- match.arg(type)
 
   if (type %in% c("nowcast", "preprocessed_observations", "observations")) {
-    return(readRDS(
+    readRDS(
       system.file("extdata", sprintf("%s.rds", type), package = "epinowcast")
-    ))
-  } else if (type == "script") {
-    return(
-      system.file("examples", "germany_dow.R", package = "epinowcast")
     )
+  } else if (type == "script") {
+    system.file("examples", "germany_dow.R", package = "epinowcast")
   }
 }
 
@@ -127,7 +125,7 @@ coerce_date <- function(dates = NULL) {
     tryCatch(
       data.table::as.IDate(d, optional = TRUE),
       error = function(e) {
-        return(data.table::as.IDate(NA))
+        data.table::as.IDate(NA)
       }
     )
   }, FUN.VALUE = data.table::as.IDate(0)))
@@ -137,9 +135,8 @@ coerce_date <- function(dates = NULL) {
       "Failed to parse with `as.IDate`: {toString(dates[is.na(res)])} ",
       "(indices {toString(which(is.na(res)))})."
     ))
-  } else {
-    return(res)
   }
+  res
 }
 
 #' Get internal timestep
@@ -178,7 +175,7 @@ get_internal_timestep <- function(timestep) {
     )
   } else if (is.numeric(timestep) && timestep == round(timestep)) {
     # check if the input is a whole number
-    return(timestep)
+    timestep
   } else {
     cli::cli_abort(
       paste0(
@@ -187,6 +184,73 @@ get_internal_timestep <- function(timestep) {
       )
     )
   }
+}
+
+#' Get timestep unit name
+#'
+#' @param timestep Timestep specification (character or numeric)
+#' @return Character string with unit name (singular form)
+#' @keywords internal
+.get_timestep_unit <- function(timestep) {
+  if (is.character(timestep)) {
+    switch(timestep,
+      day = "day",
+      week = "week",
+      "day"
+    )
+  } else {
+    paste0(timestep, "-day")
+  }
+}
+
+#' Pluralise unit name if needed
+#'
+#' @param unit Character string with unit name
+#' @param count Numeric value to determine if plural needed
+#' @return Character string with potentially pluralised unit
+#' @keywords internal
+.pluralise_unit <- function(unit, count) {
+  if (is.na(count) || !is.finite(count) || count == 1) {
+    unit
+  } else {
+    paste0(unit, "s")
+  }
+}
+
+#' Check if delay values are valid
+#'
+#' @param max_delay Delay value in timestep units
+#' @param daily_max_delay Delay value in days
+#' @return Logical indicating if values are valid
+#' @keywords internal
+.are_delays_valid <- function(max_delay, daily_max_delay) {
+  !is.na(daily_max_delay) && is.finite(daily_max_delay) &&
+    !is.na(max_delay) && is.finite(max_delay)
+}
+
+#' Format delay for daily timestep
+#'
+#' @param daily_max_delay Delay value in days
+#' @return Formatted string
+#' @keywords internal
+.format_daily_delay <- function(daily_max_delay) {
+  paste0(daily_max_delay, " ", .pluralise_unit("day", daily_max_delay))
+}
+
+#' Format delay for non-daily timestep
+#'
+#' @param max_delay Delay value in timestep units
+#' @param timestep_unit Unit name
+#' @param daily_max_delay Delay value in days
+#' @return Formatted string
+#' @keywords internal
+.format_nondaily_delay <- function(max_delay, timestep_unit,
+                                   daily_max_delay) {
+  timestep_unit_plural <- .pluralise_unit(timestep_unit, max_delay)
+  paste0(
+    max_delay, " ", timestep_unit_plural, " (",
+    daily_max_delay, " days)"
+  )
 }
 
 #' Format delay with appropriate units
@@ -202,48 +266,22 @@ get_internal_timestep <- function(timestep) {
 #' @keywords internal
 .format_delay_with_units <- function(max_delay, timestep,
                                      daily_max_delay = NULL) {
-  # Get internal timestep if not already computed
   if (is.null(daily_max_delay)) {
     internal_timestep <- get_internal_timestep(timestep)
     daily_max_delay <- internal_timestep * max_delay
   }
 
-  # Determine timestep unit name
-  timestep_unit <- if (is.character(timestep)) {
-    switch(timestep,
-      day = "day",
-      week = "week"
-    )
-  } else {
-    # Custom numeric timestep
-    paste0(timestep, "-day")
-  }
-
-  # Add plural if needed
-  if (!is.null(timestep_unit) && !is.na(timestep_unit) &&
-      !is.na(max_delay) && is.finite(max_delay) && max_delay != 1) {
-    timestep_unit <- paste0(timestep_unit, "s")
-  }
-
-  # Handle NA or infinite values
-  if (is.na(daily_max_delay) || !is.finite(daily_max_delay) ||
-      is.na(max_delay) || !is.finite(max_delay)) {
+  if (!.are_delays_valid(max_delay, daily_max_delay)) {
     return("unknown delay")
   }
 
-  # Format based on whether conversion adds information
-  if (is.character(timestep) && timestep == "day") {
-    # Daily: just show days
-    return(paste0(
-      daily_max_delay, " day",
-      if (daily_max_delay != 1) "s" else ""
-    ))
+  is_daily <- is.character(timestep) && timestep == "day"
+
+  if (is_daily) {
+    .format_daily_delay(daily_max_delay)
   } else {
-    # Weekly or custom: show both
-    return(paste0(
-      max_delay, " ", timestep_unit, " (",
-      daily_max_delay, " days)"
-    ))
+    timestep_unit <- .get_timestep_unit(timestep)
+    .format_nondaily_delay(max_delay, timestep_unit, daily_max_delay)
   }
 }
 
@@ -287,7 +325,7 @@ enw_rolling_sum <- function(dt, internal_timestep, by = NULL,
   by = by,
   env = env
   ]
-  return(dt[])
+  dt[]
 }
 
 #' Convert date column to numeric and calculate its modulus with given timestep.
@@ -314,7 +352,7 @@ date_to_numeric_modulus <- function(dt, date_column, timestep) {
   dt[, c(mod_col_name) := as.numeric(
     get(date_column) - min(get(date_column), na.rm = TRUE)
   ) %% timestep]
-  return(dt[])
+  dt[]
 }
 
 #' Cache location message for epinowcast package
@@ -358,7 +396,7 @@ cache_location_message <- function() {
     )
   }
 
-  return(msg)
+  msg
 }
 
 #' Check environment setting
@@ -374,7 +412,7 @@ cache_location_message <- function() {
 #' (either null or an empty string).
 #' @keywords internal
 check_environment_unset <- function(x) {
-  return(is.null(x) || x == "")
+  is.null(x) || !nzchar(x)
 }
 
 #' Identify cache location in .Renviron
@@ -406,7 +444,7 @@ get_renviron_contents <- function() {
     env_path = env_path
   )
 
-  return(output)
+  output
 }
 
 #' Remove Cache Location Setting from `.Renviron`
@@ -437,14 +475,14 @@ unset_cache_from_environ <- function(alert_on_not_set = TRUE) {
     cli::cli_alert_success(
       "Removed `enw_cache_location` setting from `.Renviron`."
     )
-  } else {
-    if (isTRUE(alert_on_not_set)) {
-      cli::cli_alert_danger(
-        "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
-      )
-    }
+    return(invisible(NULL))
   }
-  return(invisible(NULL))
+  if (isTRUE(alert_on_not_set)) {
+    cli::cli_alert_danger(
+      "`enw_cache_location` not set in `.Renviron`. Nothing to remove."
+    )
+  }
+  invisible(NULL)
 }
 
 #' Check `.Renviron` for cache location setting
@@ -456,7 +494,7 @@ check_renviron_for_cache <- function(environ) {
     "enw_cache_location", environ[["env_contents"]],
     fixed = TRUE
   )
-  return(cache_loc_environ)
+  cache_loc_environ
 }
 
 #' Create Stan cache directory
@@ -471,20 +509,19 @@ check_renviron_for_cache <- function(environ) {
 #' @keywords internal
 #' @importFrom cli cli_alert_info cli_alert_success cli_abort
 create_cache_dir <- function(path) {
-  if (!dir.exists(path)) {
-    dir.create(path, recursive = TRUE, showWarnings = FALSE)
-    if (dir.exists(path)) {
-      cli::cli_alert_success(
-        "Created cache directory at {path}"
-      )
-      return(invisible(NULL))
-    } else {
-      cli::cli_abort(
-        "Failed to create cache directory at {path}"
-      )
-    }
+  if (dir.exists(path)) {
+    return(invisible(NULL))
   }
-  return(invisible(NULL))
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  if (dir.exists(path)) {
+    cli::cli_alert_success(
+      "Created cache directory at {path}"
+    )
+    return(invisible(NULL))
+  }
+  cli::cli_abort(
+    "Failed to create cache directory at {path}"
+  )
 }
 
 # This is an alternative to dir.create(recursive = TRUE) that doesn't throw

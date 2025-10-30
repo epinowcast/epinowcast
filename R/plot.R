@@ -11,7 +11,7 @@ enw_plot_theme <- function(plot) {
     theme(legend.position = "bottom", legend.box = "horizontal") +
     scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
     theme(axis.text.x = element_text(angle = 90))
-  return(plot)
+  plot
 }
 
 #' Generic quantile plot
@@ -78,8 +78,7 @@ enw_plot_obs <- function(obs, latest_obs = NULL, log = TRUE, ...) {
   } else {
     plot <- plot + scale_y_continuous(labels = scales::comma)
   }
-  plot <- enw_plot_theme(plot)
-  return(plot)
+  enw_plot_theme(plot)
 }
 
 #' Generic quantile plot
@@ -112,7 +111,9 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
     geom_ribbon(aes(ymin = q20, ymax = q80, alpha = "60% CrI"),
       linewidth = 0.2
     ) +
-    geom_line(aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6) +
+    geom_line(
+      aes(y = median, linetype = "Median"), linewidth = 1, alpha = 0.6
+    ) +
     geom_line(aes(y = mean, linetype = "Mean"), alpha = 0.6) +
     scale_linetype_manual(
       name = NULL,

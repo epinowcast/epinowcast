@@ -227,7 +227,9 @@ test_that("enw_aggregate_cumulative() throws error for month timestep", {
       origin = "1970-01-01"),
     confirm = 1
   )
-  obs <- obs[report_date < as.Date("2020-01-15") & report_date >= reference_date, ]
+  obs <- obs[
+    report_date < as.Date("2020-01-15") & report_date >= reference_date,
+  ]
   data.table::setorderv(obs, "reference_date")
 
   expect_error(

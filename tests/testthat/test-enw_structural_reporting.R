@@ -22,8 +22,8 @@ test_that("enw_structural_reporting_metadata creates correct grid structure", {
   n_groups <- pobs$groups[[1]]
   n_times <- pobs$time[[1]]
   max_delay <- pobs$max_delay
-  expected_rows <- n_groups * n_times * max_delay
-  expect_equal(nrow(metadata), expected_rows)
+  expected_rows <- as.integer(n_groups * n_times * max_delay)
+  expect_identical(nrow(metadata), expected_rows)
 })
 
 test_that("enw_dayofweek_structural_reporting works with single weekday", {
@@ -83,8 +83,8 @@ test_that("enw_dayofweek_structural_reporting maintains grid structure", {
   n_groups <- pobs$groups[[1]]
   n_times <- pobs$time[[1]]
   max_delay <- pobs$max_delay
-  expected_rows <- n_groups * n_times * max_delay
-  expect_equal(nrow(structural), expected_rows)
+  expected_rows <- as.integer(n_groups * n_times * max_delay)
+  expect_identical(nrow(structural), expected_rows)
 
   # Check sorted by group, date, report_date
   expect_true(

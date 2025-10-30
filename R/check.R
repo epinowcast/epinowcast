@@ -14,11 +14,11 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
   if (!all(data.table::between(req_probs, 0, 1, incbounds = FALSE))) {
     cli::cli_abort("Please provide probabilities as numbers between 0 and 1.")
   }
-  return(coerce_dt(
+  coerce_dt(
     posterior,
     required_cols = sprintf("q%g", req_probs * 100), copy = FALSE,
     msg_required = "The following quantiles must be present (set with `probs`):"
-  ))
+  )
 }
 
 #' Check observations for reserved grouping variables
@@ -30,11 +30,11 @@ check_quantiles <- function(posterior, req_probs = c(0.5, 0.95, 0.2, 0.8)) {
 #'
 #' @family check
 check_group <- function(obs) {
-  return(coerce_dt(
+  coerce_dt(
     obs,
     forbidden_cols = c(".group", ".new_group", ".old_group"), copy = FALSE,
     msg_forbidden = "The following are reserved grouping columns:"
-  ))
+  )
 }
 
 #' Check observations for uniqueness of grouping variables with respect
@@ -65,7 +65,7 @@ check_group_date_unique <- function(obs) {
       )
     )
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Check a model module contains the required components
@@ -88,7 +88,7 @@ check_module <- function(module) {
   if (!is.list(module[["data"]])) {
     cli::cli_abort("`data` must be a list of required data")
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' Check that model modules have compatible specifications
@@ -121,7 +121,7 @@ check_modules_compatible <- function(modules) {
       immediate. = TRUE
     )
   }
-  return(invisible(NULL))
+  invisible(NULL)
 }
 
 #' @title Coerce `data.table`s
@@ -260,9 +260,9 @@ coerce_dt <- function(
   }
 
   if (length(select) > 0) { # if selecting particular list ...
-    return(dt[, .SD, .SDcols = c(select)][])
+    dt[, .SD, .SDcols = c(select)][]
   } else {
-    return(dt[])
+    dt[]
   }
 }
 
@@ -324,21 +324,9 @@ check_max_delay <- function(data,
                             cum_coverage = 0.8,
                             maxdelay_quantile_outlier = 0.97,
                             warn = TRUE, warn_internal = FALSE) {
-  if (!is.numeric(max_delay)) {
-    cli::cli_abort("`max_delay` must be an integer and not NA")
-  }
-  max_delay <- as.integer(max_delay)
-  if (max_delay < 1) {
-    cli::cli_abort("`max_delay` must be greater than or equal to one")
-  }
-  if (!(cum_coverage > 0 && cum_coverage <= 1)) {
-    cli::cli_abort("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%.")
-  }
-  if (!(maxdelay_quantile_outlier > 0 && maxdelay_quantile_outlier <= 1)) {
-    cli::cli_abort(
-      "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%."
-    )
-  }
+  max_delay <- .validate_check_max_delay_args(
+    max_delay, cum_coverage, maxdelay_quantile_outlier
+  )
 
   timestep <- data$timestep
   internal_timestep <- get_internal_timestep(timestep)
@@ -349,32 +337,9 @@ check_max_delay <- function(data,
 
   max_delay_obs <- obs[, max(delay, na.rm = TRUE)] + internal_timestep
   if (max_delay_obs < daily_max_delay) {
-    # Format delays with appropriate units
-    formatted_max <- .format_delay_with_units(
-      max_delay, timestep, daily_max_delay
+    .warn_max_delay_exceeds_observed(
+      max_delay, timestep, daily_max_delay, max_delay_obs, internal_timestep
     )
-    formatted_obs <- .format_delay_with_units(
-      max_delay_obs / internal_timestep, timestep, max_delay_obs
-    )
-
-    warning_message <- c(
-      paste0(
-        "You specified a maximum delay of ", formatted_max, ", ",
-        "but the maximum observed delay is only ", formatted_obs, ". "
-      ),
-      paste0(
-        "This is justified if you don't have much data yet (e.g. early ",
-        "phase of an outbreak) and expect a longer maximum delay than ",
-        "currently observed. epinowcast will then extrapolate the delay ",
-        "distribution beyond the observed maximum delay."
-      ),
-      paste0(
-        "Otherwise, we recommend using a shorter maximum delay to speed ",
-        "up the nowcasting."
-      )
-    )
-    names(warning_message) <- c("", "*", "*")
-    cli::cli_warn(warning_message)
   }
 
   max_delay_ref <- obs[
@@ -408,45 +373,11 @@ check_max_delay <- function(data,
     latest_date = fully_observed_date
   )
 
-  if (warn && !(max_delay_obs < daily_max_delay) && (latest_obs[, .N] < 5)) {
-    # Format max_delay_obs_q with appropriate units
-    formatted_obs_q <- .format_delay_with_units(
-      max_delay_obs_q / internal_timestep, timestep, max_delay_obs_q
+  if (warn && max_delay_obs >= daily_max_delay && (latest_obs[, .N] < 5)) {
+    .warn_insufficient_coverage_data(
+      latest_obs[, .N], max_delay_obs_q, timestep, internal_timestep,
+      warn_internal
     )
-
-    warning_message <- c(
-      paste0(
-        "The coverage of the specified maximum delay could not be ",
-        "reliably checked."
-      ),
-      "*" = paste0(
-        "There are only very few (", latest_obs[, .N], ") reference ",
-        "dates that are sufficiently far in the past (more than ",
-        formatted_obs_q, ") to compute coverage statistics for the ",
-        "maximum delay. "
-      )
-    )
-    if (warn_internal) {
-      warning_message <- c(
-        warning_message,
-        "*" = paste0(
-          "You can test different maximum delays and obtain coverage ",
-          "statistics using the function ",
-          "{.help [check_max_delay()](epinowcast::check_max_delay)}."
-        )
-      )
-    } else {
-      warning_message <- c(
-        warning_message,
-        "*" = paste0(
-          "If you think the truncation threshold of ", formatted_obs_q,
-          " is based on an outlier, and the true maximum delay is ",
-          "likely shorter, you can decrease ",
-          "`maxdelay_quantile_outlier` to silence this warning."
-        )
-      )
-    }
-    cli::cli_warn(warning_message)
   }
 
   low_coverage <- latest_obs[, .(
@@ -500,9 +431,125 @@ check_max_delay <- function(data,
   low_coverage <- rbind(low_coverage, list("all", mean_coverage))
   low_coverage[, coverage := cum_coverage]
   data.table::setcolorder(low_coverage, c(".group", "coverage"))
-  return(low_coverage[])
+  low_coverage[]
 }
 
+#' Validate check_max_delay arguments
+#'
+#' @param max_delay Maximum delay
+#' @param cum_coverage Cumulative coverage threshold
+#' @param maxdelay_quantile_outlier Quantile for outlier detection
+#' @return Integer max_delay value
+#' @keywords internal
+.validate_check_max_delay_args <- function(max_delay, cum_coverage,
+                                           maxdelay_quantile_outlier) {
+  if (!is.numeric(max_delay)) {
+    cli::cli_abort("`max_delay` must be an integer and not NA")
+  }
+  max_delay <- as.integer(max_delay)
+  if (max_delay < 1) {
+    cli::cli_abort("`max_delay` must be greater than or equal to one")
+  }
+  if (!(cum_coverage > 0 && cum_coverage <= 1)) {
+    cli::cli_abort("`cum_coverage` must be between 0 and 1, e.g. 0.8 for 80%.")
+  }
+  if (!(maxdelay_quantile_outlier > 0 && maxdelay_quantile_outlier <= 1)) {
+    cli::cli_abort(
+      "`maxdelay_quantile_outlier` must be between 0 and 1, e.g. 0.97 for 97%."
+    )
+  }
+  max_delay
+}
+
+#' Warn about max delay exceeding observed delay
+#'
+#' @param max_delay Maximum delay in timestep units
+#' @param timestep Timestep specification
+#' @param max_delay_obs Maximum observed delay in daily units
+#' @param daily_max_delay Specified maximum delay in daily units
+#' @param internal_timestep Internal timestep multiplier
+#' @keywords internal
+.warn_max_delay_exceeds_observed <- function(max_delay, timestep,
+                                             daily_max_delay, max_delay_obs,
+                                             internal_timestep) {
+  formatted_max <- .format_delay_with_units(
+    max_delay, timestep, daily_max_delay
+  )
+  formatted_obs <- .format_delay_with_units(
+    max_delay_obs / internal_timestep, timestep, max_delay_obs
+  )
+
+  warning_message <- c(
+    paste0(
+      "You specified a maximum delay of ", formatted_max, ", ",
+      "but the maximum observed delay is only ", formatted_obs, ". "
+    ),
+    paste0(
+      "This is justified if you don't have much data yet (e.g. early ",
+      "phase of an outbreak) and expect a longer maximum delay than ",
+      "currently observed. epinowcast will then extrapolate the delay ",
+      "distribution beyond the observed maximum delay."
+    ),
+    paste0(
+      "Otherwise, we recommend using a shorter maximum delay to speed ",
+      "up the nowcasting."
+    )
+  )
+  names(warning_message) <- c("", "*", "*")
+  cli::cli_warn(warning_message)
+}
+
+#' Warn about insufficient data for coverage check
+#'
+#' @param latest_obs_count Number of observations in filtered data
+#' @param max_delay_obs_q Quantile-based maximum delay
+#' @param timestep Timestep specification
+#' @param internal_timestep Internal timestep multiplier
+#' @param warn_internal Whether function is called internally
+#' @keywords internal
+.warn_insufficient_coverage_data <- function(latest_obs_count,
+                                             max_delay_obs_q, timestep,
+                                             internal_timestep,
+                                             warn_internal) {
+  formatted_obs_q <- .format_delay_with_units(
+    max_delay_obs_q / internal_timestep, timestep, max_delay_obs_q
+  )
+
+  warning_message <- c(
+    paste0(
+      "The coverage of the specified maximum delay could not be ",
+      "reliably checked."
+    ),
+    "*" = paste0(
+      "There are only very few (", latest_obs_count, ") reference ",
+      "dates that are sufficiently far in the past (more than ",
+      formatted_obs_q, ") to compute coverage statistics for the ",
+      "maximum delay. "
+    )
+  )
+
+  if (warn_internal) {
+    warning_message <- c(
+      warning_message,
+      "*" = paste0(
+        "You can test different maximum delays and obtain coverage ",
+        "statistics using the function ",
+        "{.help [check_max_delay()](epinowcast::check_max_delay)}."
+      )
+    )
+  } else {
+    warning_message <- c(
+      warning_message,
+      "*" = paste0(
+        "If you think the truncation threshold of ", formatted_obs_q,
+        " is based on an outlier, and the true maximum delay is ",
+        "likely shorter, you can decrease ",
+        "`maxdelay_quantile_outlier` to silence this warning."
+      )
+    )
+  }
+  cli::cli_warn(warning_message)
+}
 
 #' Check Numeric Timestep
 #'
@@ -546,13 +593,12 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
     check <- sum(diffs %% timestep) == 0
   }
 
-  if (check) {
-    return(invisible(NULL))
-  } else {
+  if (!check) {
     cli::cli_abort(
       "{date_var} does not have the specified timestep of {timestep} day(s)"
     )
   }
+  return(invisible(NULL))
 }
 
 #' Check timestep
@@ -592,12 +638,11 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   dates <- sort(dates)
   dates <- dates[!is.na(dates)]
 
+  if (length(dates) <= 1 && !check_nrow) {
+    return(invisible(NULL))
+  }
   if (length(dates) <= 1) {
-    if (check_nrow) {
-      cli::cli_abort("There must be at least two observations")
-    } else {
-      return(invisible(NULL))
-    }
+    cli::cli_abort("There must be at least two observations")
   }
 
   internal_timestep <- get_internal_timestep(timestep)

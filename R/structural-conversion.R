@@ -9,9 +9,9 @@
 #' @return A list with two components:
 #'   - `n_selected`: Integer vector of length `nrow(matrix)` containing the
 #'     number of selected (non-zero) indices per row
-#'   - `selected_idx`: Integer matrix of dimensions `[nrow(matrix), ncol(matrix)]`
-#'     containing the column indices where each row has 1s, with unused
-#'     positions filled with 0
+#'   - `selected_idx`: Integer matrix of dimensions
+#'     `[nrow(matrix), ncol(matrix)]` containing the column indices where
+#'     each row has 1s, with unused positions filled with 0
 #'
 #' @details
 #' This helper function is primarily used in tests and by
@@ -58,10 +58,11 @@
 #' @param max_delay Integer maximum delay.
 #'
 #' @return A list with two components:
-#'   - `n_selected`: 3D array with dimensions (groups, times, max_delay) containing the
-#'     number of selected indices per row
-#'   - `selected_idx`: 4D array with dimensions (groups, times, max_delay, max_delay)
-#'     containing the column indices where each row has 1s
+#'   - `n_selected`: 3D array with dimensions (groups, times, max_delay)
+#'     containing the number of selected indices per row
+#'   - `selected_idx`: 4D array with dimensions
+#'     (groups, times, max_delay, max_delay) containing the column indices
+#'     where each row has 1s
 #'
 #' @details
 #' Row i of the precomputed indices only contains column indices j where
@@ -87,14 +88,14 @@
     if (!is.list(structural[[g]])) {
       stop(
         "structural[[", g, "]] must be a list, but got ",
-        class(structural[[g]])[1]
+        class(structural[[g]])[1], call. = FALSE
       )
     }
     # Validate that structural[[g]] has correct length
     if (length(structural[[g]]) != n_times) {
       stop(
         "structural[[", g, "]] must have length ", n_times,
-        ", but got ", length(structural[[g]])
+        ", but got ", length(structural[[g]]), call. = FALSE
       )
     }
 
@@ -105,7 +106,7 @@
       if (!inherits(mat, "matrix")) {
         stop(
           "structural[[", g, "]][[", t, "]] must be a matrix, but got ",
-          class(mat)[1]
+          class(mat)[1], call. = FALSE
         )
       }
 
@@ -115,7 +116,7 @@
         stop(
           "structural[[", g, "]][[", t, "]] must have dimensions (",
           max_delay, ", ", max_delay, "), but got (",
-          mat_dims[1], ", ", mat_dims[2], ")"
+          mat_dims[1], ", ", mat_dims[2], ")", call. = FALSE
         )
       }
 
@@ -173,7 +174,7 @@
     cli::cli_abort(
       c(
         "`report_date` must be greater than or equal to `date`.",
-        "i" = "Reports can only aggregate from current or earlier delays."
+        i = "Reports can only aggregate from current or earlier delays."
       )
     )
   }
@@ -234,16 +235,20 @@
 
   # Split by group and date into matrices
   delay_cols <- paste0("delay_", seq_len(max_delay))
+  split_to_matrix <- function(x) {
+    as.matrix(x[, .SD, .SDcols = !c(".group", "date")])
+  }
+  split_by_date <- function(group_data) {
+    group_data |>
+      split(by = "date", drop = TRUE) |>
+      purrr::map(split_to_matrix)
+  }
   agg_indicators <- structural[,
     c(".group", "date", delay_cols),
     with = FALSE
   ] |>
     split(by = ".group", drop = TRUE) |>
-    purrr::map(\(group_data) {
-      group_data |>
-        split(by = "date", drop = TRUE) |>
-        purrr::map(\(x) as.matrix(x[, -c(".group", "date")]))
-    })
+    purrr::map(split_by_date)
 
-  return(agg_indicators)
+  agg_indicators
 }

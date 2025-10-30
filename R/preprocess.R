@@ -49,7 +49,7 @@ enw_metadata <- function(obs, target_date = c(
   )
   metaobs <- metaobs[, .SD[1, ], by = c("date", ".group")]
   data.table::setkeyv(metaobs, c(".group", "date"))
-  return(metaobs[])
+  metaobs[]
 }
 
 #' @title Add common metadata variables
@@ -143,17 +143,17 @@ enw_add_metaobs_features <- function(metaobs,
 
   # function to transform numbers to be referenced from 0
   zerobase <- function(x) {
-    return(x - min(x))
+    x - min(x)
   }
   # function to transform by weeks
   to0week <- function(x) {
-    return(x %/% 7L)
+    x %/% 7L
   }
   # function to count months from series start
   toevermonths <- function(d) {
     m <- data.table::month(d)
     y <- zerobase(data.table::year(d))
-    return(m + 12 * y)
+    m + 12 * y
   }
 
   # functions to extract date indices; defined as
@@ -187,7 +187,7 @@ enw_add_metaobs_features <- function(metaobs,
     metaobs[, c(tarcols) := lapply(xforms, do.call, .(get(datecol)))]
   }
 
-  return(metaobs[])
+  metaobs[]
 }
 
 #' @title Extend a time series with additional dates
@@ -250,7 +250,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
     exts[, observed := FALSE]
   )
   data.table::setkeyv(exts, c(".group", "date"))
-  return(exts[])
+  exts[]
 }
 
 #' @title Assign a group to each row of a data.table
@@ -289,7 +289,7 @@ enw_assign_group <- function(obs, by = NULL, copy = TRUE) {
   }
   # update or set key to include .group
   data.table::setkeyv(obs, union(".group", data.table::key(obs)))
-  return(obs[])
+  obs[]
 }
 
 #' @title Add a delay variable to the observations
@@ -311,7 +311,7 @@ enw_add_delay <- function(obs, timestep = "day", copy = TRUE) {
   obs <- coerce_dt(obs, dates = TRUE, copy = copy)
   internal_timestep <- get_internal_timestep(timestep)
   obs[, delay := as.numeric(report_date - reference_date) / internal_timestep]
-  return(obs[])
+  obs[]
 }
 
 #' @title Add the maximum number of reported cases for each `reference_date`
@@ -353,7 +353,7 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
   obs[is.na(reference_date), max_confirm := confirm]
   obs[, cum_prop_reported := confirm / max_confirm]
   setcolorder(obs, c("reference_date", "report_date", ".group"))
-  return(obs[])
+  obs[]
 }
 
 #' Filter by report dates
@@ -396,7 +396,7 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
     latest_date <- max(filt_obs$report_date) - remove_days
   }
   filt_obs <- filt_obs[report_date <= as.Date(latest_date)]
-  return(filt_obs[])
+  filt_obs[]
 }
 
 #' Filter by reference dates
@@ -411,11 +411,11 @@ enw_filter_report_dates <- function(obs, latest_date, remove_days) {
 #' that are earlier than their corresponding reference date.
 #'
 #' @details
-#' The `include_days` parameter filters to include exactly the specified number
-#' of most recent reference dates.
-#' For example, if the latest reference date is 2021-10-20 and `include_days = 10`,
-#' the filtered data will contain reference dates from 2021-10-11 to 2021-10-20
-#' (10 days inclusive).
+#' The `include_days` parameter filters to include exactly the specified
+#' number of most recent reference dates. For example, if the latest
+#' reference date is 2021-10-20 and `include_days = 10`, the filtered data
+#' will contain reference dates from 2021-10-11 to 2021-10-20 (10 days
+#' inclusive).
 #'
 #' @param obs A `data.frame`; must have `report_date` and `reference_date`
 #' columns.
@@ -471,15 +471,18 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
       )
     }
     # validate include_days
-    if (!is.numeric(include_days) || is.na(include_days) ||
-        include_days < 0 || round(include_days) != include_days) {
+    if (
+      !is.numeric(include_days) || is.na(include_days) ||
+      include_days < 0 || round(include_days) != include_days
+    ) {
       cli::cli_abort("`include_days` must be a non-negative integer")
     }
     # explicit empty result for include_days = 0
     if (include_days == 0) {
       return(filt_obs[0L])
     }
-    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) - include_days + 1
+    earliest_date <- max(filt_obs$reference_date, na.rm = TRUE) -
+      include_days + 1
   }
   if (!missing(include_days) || !missing(earliest_date)) {
     filt_obs <- filt_obs[
@@ -488,7 +491,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
       report_date >= as.Date(earliest_date)
     ]
   }
-  return(filt_obs[])
+  filt_obs[]
 }
 
 #' Filter observations to the latest available reported
@@ -516,7 +519,7 @@ enw_latest_data <- function(obs) {
     .SD[report_date == (max(report_date)) & !is.na(reference_date)],
     by = "reference_date"
   ]
-  return(latest_data[])
+  latest_data[]
 }
 
 
@@ -545,7 +548,7 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
     ],
     by = c("reference_date", ".group")
   ]
-  return(obs[])
+  obs[]
 }
 
 #' Construct the reporting triangle
@@ -584,7 +587,7 @@ enw_reporting_triangle <- function(obs) {
     value.var = "new_confirm", fill = 0
   )
   data.table::setkeyv(reports, c(".group", "reference_date"))
-  return(reports[])
+  reports[]
 }
 
 #' Recast the reporting triangle from wide to long format
@@ -609,7 +612,7 @@ enw_reporting_triangle_to_long <- function(obs) {
     variable.name = "delay", value.name = "new_confirm"
   )
   data.table::setkeyv(reports_long, c(".group", "reference_date", "delay"))
-  return(reports_long[])
+  reports_long[]
 }
 
 #' Flag observed observations
@@ -637,7 +640,7 @@ enw_flag_observed_observations <- function(obs, copy = TRUE) {
   } else {
     obs[, .observed := .observed & !is.na(confirm)]
   }
-  return(obs[])
+  obs[]
 }
 
 #' Impute NA observations
@@ -676,7 +679,7 @@ enw_impute_na_observations <- function(obs, by = NULL, copy = TRUE) {
     confirm := nafill(nafill(confirm, "locf"), fill = 0),
     by = c("reference_date", by)
   ]
-  return(obs[])
+  obs[]
 }
 
 #' Complete missing reference and report dates
@@ -790,7 +793,7 @@ enw_complete_dates <- function(obs, by = NULL, max_delay,
   obs[, .group := NULL]
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
   data.table::setcolorder(obs, c(by, "report_date", "reference_date"))
-  return(obs[])
+  obs[]
 }
 
 #' Extract reports with missing reference dates
@@ -843,7 +846,7 @@ enw_missing_reference <- function(obs) {
   ref_missing[, prop_missing := confirm / (confirm + .confirm_avail)]
   ref_missing[, .confirm_avail := NULL]
   data.table::setkeyv(ref_missing, c(".group", "report_date"))
-  return(ref_missing[])
+  ref_missing[]
 }
 
 #' Calculate reporting delay metadata for a given maximum delay
@@ -896,7 +899,7 @@ enw_metadata_delay <- function(max_delay = 20, breaks = 4, timestep = "day") {
     delay_head = delay < quantile(delay, probs = 0.25),
     delay_tail = delay > quantile(delay, probs = 0.75)
   )]
-  return(delays[])
+  delays[]
 }
 
 
@@ -972,7 +975,7 @@ enw_construct_data <- function(obs, new_confirm, latest, missing_reference,
     timestep = timestep
   )
   class(out) <- c("enw_preprocess_data", class(out))
-  return(out[])
+  out[]
 }
 
 #' Preprocess observations
@@ -1096,11 +1099,14 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
   data.table::setkeyv(obs, "reference_date")
 
   # Check for NA values in confirm column
-  if ("confirm" %in% names(obs) && any(is.na(obs$confirm))) {
+  if ("confirm" %in% names(obs) && anyNA(obs$confirm)) {
     cli::cli_abort(
       c(
         "NA values found in {.field confirm} column.",
-        "i" = "Use {.fn enw_impute_na_observations} to impute missing values before preprocessing."
+        i = paste0(
+          "Use {.fn enw_impute_na_observations} to impute missing values ",
+          "before preprocessing."
+        )
       )
     )
   }
@@ -1219,5 +1225,5 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
   # apply checks
   check_max_delay(out[], warn = TRUE, warn_internal = TRUE)
 
-  return(out[])
+  out[]
 }

@@ -52,7 +52,7 @@ enw_posterior <- function(fit, variables = NULL,
     cbind(x, y)
   }
   sfit <- purrr::reduce(sfit, cbind_custom)
-  return(sfit[])
+  sfit[]
 }
 
 
@@ -137,7 +137,7 @@ enw_nowcast_summary <- function(fit, obs, max_delay = NULL, timestep = "day",
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL]
-  return(nowcast[])
+  nowcast[]
 }
 
 #' @title Extract posterior samples for the nowcast prediction
@@ -222,7 +222,7 @@ enw_nowcast_samples <- function(fit, obs, max_delay = NULL, timestep = "day") {
 
   data.table::setorderv(nowcast, c(".group", "reference_date"))
   nowcast[, variable := NULL][, .draws := NULL]
-  return(nowcast[])
+  nowcast[]
 }
 
 #' @title Summarise posterior samples
@@ -317,7 +317,7 @@ enw_add_latest_obs_to_nowcast <- function(nowcast, obs) {
     out,
     neworder = c("reference_date", ".group", "latest_confirm", "confirm")
   )
-  return(out[])
+  out[]
 }
 
 #' @title Posterior predictive summary
@@ -382,7 +382,7 @@ enw_quantiles_to_long <- function(posterior) {
   )
   long[, quantile := gsub("q", "", quantile, fixed = TRUE)]
   long[, quantile := as.numeric(quantile) / 100]
-  return(long[])
+  long[]
 }
 
 #' Build the ord_obs `data.table`.
@@ -448,7 +448,7 @@ subset_obs <- function(ord_obs, max_delay, internal_timestep,
                                               na.rm = TRUE) -
                                           max_delay * internal_timestep))
   if (!is.logical(to_keep)) {
-    stop("reference_subset must be a relational operator")
+    stop("reference_subset must be a relational operator", call. = FALSE)
   }
-  return(ord_obs[to_keep, ])
+  ord_obs[to_keep, ]
 }

@@ -9,7 +9,7 @@ test_that("epinowcast() preprocesses data and model modules as expected", {
   nowcast <- suppressMessages(epinowcast(pobs,
     fit = enw_fit_opts(
       sampler = function(init, data, ...) {
-        return(data.table::data.table(init = list(init), data = list(data)))
+        data.table::data.table(init = list(init), data = list(data))
       },
       save_warmup = FALSE, pp = TRUE,
       chains = 2, iter_warmup = 500, iter_sampling = 500
@@ -528,95 +528,6 @@ test_that("epinowcast() can fit a simple combined parametric and non-parametric
   )
 })
 
-# test_that("epinowcast() works with different init_methods", {
-#   skip_on_cran()
-#   skip_on_local()
-
-#   # Test with random initialization
-#   nowcast_random <- suppressMessages(epinowcast(pobs,
-#     fit = enw_fit_opts(
-#       sampler = silent_enw_sample,
-#       save_warmup = FALSE, pp = TRUE,
-#       init_method = "prior",
-#       chains = 2, iter_warmup = 250, iter_sampling = 500,
-#       refresh = 0, show_messages = FALSE
-#     ),
-#     obs = enw_obs(family = "poisson", data = pobs),
-#     model = model
-#   ))
-#   expect_s3_class(nowcast_random, "epinowcast")
-
-#   expect_true("init_method_output" %in% names(nowcast_random))
-#   expect_null(nowcast_random$init_method_output[[1]])
-#   expect_convergence(nowcast_random)
-
-#   # Test with pathfinder initialization
-#   nowcast_pathfinder <- suppressMessages(epinowcast(pobs,
-#     fit = enw_fit_opts(
-#       sampler = silent_enw_sample,
-#       save_warmup = FALSE, pp = TRUE,
-#       init_method = "pathfinder", init_method_args = list(num_paths = 10),
-#       chains = 2, iter_warmup = 500, iter_sampling = 500,
-#       refresh = 0, show_messages = FALSE
-#     ),
-#     obs = enw_obs(family = "poisson", data = pobs),
-#     model = model
-#   ))
-#   expect_s3_class(nowcast_pathfinder, "epinowcast")
-#   expect_true("init_method_output" %in% names(nowcast_pathfinder))
-#   expect_convergence(nowcast_pathfinder)
-
-#   # Compare results between random and pathfinder initialization
-#   pathfinder_posterior <- as.data.table(nowcast_pathfinder$fit[[1]]$summary())
-#   random_posterior <- as.data.table(nowcast_random$fit[[1]]$summary())
-
-#   # Nowcast median should be similar between methods
-#   expect_diff_sum_abs_lt(
-#     random_posterior[variable %like% "pp_inf_obs", median],
-#     pathfinder_posterior[variable %like% "pp_inf_obs", median],
-#     50
-#   )
-
-#   # Reporting distribution parameters should be similar between methods
-#   expect_diff_abs_lt_per(
-#     random_posterior[variable %like% "refp_mean", median],
-#     pathfinder_posterior[variable %like% "refp_mean", median],
-#     0.25
-#   )
-#   expect_diff_abs_lt_per(
-#     random_posterior[variable %like% "refp_sd", median],
-#     pathfinder_posterior[variable %like% "refp_sd", median],
-#     0.25
-#   )
-
-#   # Test that invalid init_method throws an error
-#   expect_error(
-#     epinowcast(pobs,
-#       fit = enw_fit_opts(
-#         sampler = silent_enw_sample,
-#         init_method = "invalid"
-#       ),
-#       obs = enw_obs(family = "poisson", data = pobs),
-#       model = model
-#     ),
-#     "`init_method` must be one of"
-#   )
-
-#   # Correct passes init_method_args
-#   nowcast_pathfinder_args <- suppressMessages(epinowcast(pobs,
-#     fit = enw_fit_opts(
-#       sampler = silent_enw_sample,
-#       init_method = "pathfinder",
-#       init_method_args = list(num_paths = 2)
-#     ),
-#     obs = enw_obs(family = "poisson", data = pobs),
-#     model = model
-#   ))
-#   expect_identical(
-#     nowcast_pathfinder_args$init_method_output[[1]]$fit_args[[1]]$num_paths, 2
-#   )
-# })
-
 test_that("epinowcast() with weekly reporting and structural model converges", {
   skip_on_cran()
   skip_on_local()
@@ -636,7 +547,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   )
 
   # Keep only Wednesday reports
-  weekly_obs[, confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)]
+  weekly_obs[,
+    confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)
+  ]
   weekly_obs <- enw_flag_observed_observations(weekly_obs)
   weekly_obs <- enw_impute_na_observations(weekly_obs)
   weekly_obs <- enw_add_incidence(weekly_obs)
@@ -645,7 +558,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   pobs <- suppressWarnings(enw_preprocess_data(weekly_obs, max_delay = 10))
 
   # Create Wednesday structural reporting
-  structural <- enw_dayofweek_structural_reporting(pobs, day_of_week = "Wednesday")
+  structural <- enw_dayofweek_structural_reporting(
+    pobs, day_of_week = "Wednesday"
+  )
 
   # Fit model
   nowcast <- suppressMessages(epinowcast(pobs,
@@ -656,7 +571,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
       save_warmup = FALSE, pp = FALSE,
       chains = 2, iter_warmup = 250, iter_sampling = 250
     ),
-    obs = enw_obs(family = "negbin", observation_indicator = ".observed", data = pobs)
+    obs = enw_obs(
+      family = "negbin", observation_indicator = ".observed", data = pobs
+    )
   ))
 
   # Check model structure
@@ -665,7 +582,7 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
 
   # Check data includes structural aggregation arrays
   expect_true("rep_agg_p" %in% names(nowcast$data[[1]]))
-  expect_equal(nowcast$data[[1]]$rep_agg_p, 1)
+  expect_identical(nowcast$data[[1]]$rep_agg_p, 1L)
   expect_true("rep_agg_n_selected" %in% names(nowcast$data[[1]]))
   expect_true("rep_agg_selected_idx" %in% names(nowcast$data[[1]]))
 

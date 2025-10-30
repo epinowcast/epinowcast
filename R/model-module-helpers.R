@@ -21,7 +21,7 @@ enw_reps_with_complete_refs <- function(
     by = c(by, "report_date")
   ][n >= max_delay]
   rep_with_complete_ref[, n := NULL]
-  return(rep_with_complete_ref[])
+  rep_with_complete_ref[]
 }
 
 #' Construct a lookup of references dates by report
@@ -74,7 +74,7 @@ enw_reference_by_report <- function(missing_reference, reps_with_complete_refs,
     complete_miss_lk[, .(report_date, .id, delay)], report_date ~ delay,
     value.var = ".id"
   )
-  return(refs_by_report[])
+  refs_by_report[]
 }
 #' Convert latest observed data to a matrix
 #'
@@ -145,7 +145,7 @@ convolution_matrix <- function(dist, t, include_partial = FALSE) {
   if (!include_partial && ldist[1] > 1) {
     conv[1:(ldist[1] - 1), ] <- 0
   }
-  return(conv)
+  conv
 }
 
 #' Add probability mass functions
@@ -188,17 +188,15 @@ add_pmfs <- function(pmfs) {
     return(pmfs)
   }
   # P(Z = z) = sum_over_x(P(X = x) * P(Y = z - x)) # nolint
-  return(
-    Reduce(x = pmfs, f = function(conv, pmf) {
-      lc <- length(conv)
-      wd <- seq_len(lc) - 1
-      proc <- numeric(lc + length(pmf))
-      for (j in seq_along(pmf)) {
-        proc[j + wd] <- proc[j + wd] + pmf[j] * conv
-      }
-      return(proc)
-    })
-  )
+  Reduce(x = pmfs, f = function(conv, pmf) {
+    lc <- length(conv)
+    wd <- seq_len(lc) - 1
+    proc <- numeric(lc + length(pmf))
+    for (j in seq_along(pmf)) {
+      proc[j + wd] <- proc[j + wd] + pmf[j] * conv
+    }
+    proc
+  })
 }
 
 #' Extract sparse matrix elements
@@ -278,7 +276,7 @@ extract_sparse_matrix <- function(mat, prefix = "") {
     names(sparse_mat) <- paste0(prefix, "_", names(sparse_mat))
   }
 
-  return(sparse_mat)
+  sparse_mat
 }
 
 #' Add maximum observed delay
@@ -307,7 +305,7 @@ add_max_observed_delay <- function(new_confirm, observation_indicator = NULL) {
       max_obs_delay := max(max_obs_delay), by = c("reference_date", ".group")
     ]
   }
-  return(new_confirm[])
+  new_confirm[]
 }
 
 #' Extract observation metadata
@@ -392,7 +390,7 @@ extract_obs_metadata <- function(new_confirm,  observation_indicator = NULL) {
     cnsl = cumsum(nc_snap_length),
     sg = unique(new_confirm[, .(reference_date, .group)])$.group
   )
-  return(out)
+  out
 }
 
 #' Create structural reporting metadata grid
@@ -431,7 +429,7 @@ enw_structural_reporting_metadata <- function(pobs) {
   metadata <- metadata[, .(.group, date, report_date = date + delay)]
   data.table::setorder(metadata, .group, date, report_date)
 
-  return(metadata[])
+  metadata[]
 }
 
 #' Create day-of-week structural reporting pattern
@@ -473,5 +471,5 @@ enw_dayofweek_structural_reporting <- function(pobs, day_of_week) {
   metadata[, report := as.integer(day_of_week_col %in% day_of_week)]
   metadata[, day_of_week_col := NULL]
 
-  return(metadata[, .(.group, date, report_date, report)])
+  metadata[, .(.group, date, report_date, report)]
 }
