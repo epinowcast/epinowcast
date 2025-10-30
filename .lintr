@@ -11,6 +11,7 @@ linters: all_linters(
   )
 exclusions: list(
     "inst",
+    "vignettes/chunks/_readme-install-epinowcast.Rmd",
     "tests/testthat.R" = list(
       unused_import_linter = Inf
     ),

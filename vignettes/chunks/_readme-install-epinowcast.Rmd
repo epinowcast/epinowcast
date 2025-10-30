@@ -10,7 +10,7 @@ Alternatively, you can use the [`remotes` package](https://remotes.r-lib.org/) t
 
 ```{r, eval = FALSE}
 remotes::install_github(
-  "epinowcast/epinowcast", # nolint: nonportable_path_linter. GitHub repo.
+  "epinowcast/epinowcast",
   dependencies = TRUE
 )
 ```
@@ -19,7 +19,7 @@ Similarly, you can install historical versions by specifying the release tag (e.
 
 ```{r, eval = FALSE}
 remotes::install_github(
-  "epinowcast/epinowcast", # nolint: nonportable_path_linter. GitHub repo.
+  "epinowcast/epinowcast",
   dependencies = TRUE, ref = "v0.2.0"
 )
 ```
