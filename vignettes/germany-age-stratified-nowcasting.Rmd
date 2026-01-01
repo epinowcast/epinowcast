@@ -163,16 +163,16 @@ priors <- summary(
 )
 priors[, sd := sd * 1.5]
 priors
-#>            variable      mean    median         sd        mad        q5
-#>              <char>     <num>     <num>      <num>      <num>     <num>
-#> 1: refp_mean_int[1] 1.1318689 1.1196686 0.18657252 0.12073145 0.9469384
-#> 2:   refp_sd_int[1] 2.6065242 2.6016583 0.19868103 0.12495316 2.3955185
-#> 3:      sqrt_phi[1] 0.6415712 0.6405367 0.02783982 0.01837323 0.6110610
-#>         q20       q80       q95      rhat  ess_bulk ess_tail
-#>       <num>     <num>     <num>     <num>     <num>    <num>
-#> 1: 1.025191 1.2311490 1.3463330 1.0024219  803.2077 746.8305
-#> 2: 2.497948 2.7124564 2.8303578 1.0030131  780.4954 604.5020
-#> 3: 0.626158 0.6569649 0.6719854 0.9997664 1475.4872 780.1094
+#>            variable      mean    median         sd       mad        q5
+#>              <char>     <num>     <num>      <num>     <num>     <num>
+#> 1: refp_mean_int[1] 1.1364707 1.1239064 0.18016742 0.1144006 0.9585552
+#> 2:   refp_sd_int[1] 2.6075065 2.5954597 0.20160569 0.1310521 2.4008619
+#> 3:      sqrt_phi[1] 0.6425381 0.6424595 0.02815313 0.0193515 0.6122594
+#>          q20       q80      q95      rhat  ess_bulk ess_tail
+#>        <num>     <num>    <num>     <num>     <num>    <num>
+#> 1: 1.0353065 1.2320594 1.355411 1.0003013  644.7866 720.1026
+#> 2: 2.4947331 2.7160736 2.847596 0.9995041  698.2150 723.0251
+#> 3: 0.6268561 0.6585133 0.672892 0.9995109 1301.0911 858.8799
 ```
 
 ## Reference day of the week effect
@@ -505,11 +505,11 @@ As a crude measure of general out of sample performance we can use the leave one
 loos <- map(nowcasts, \(x) x$fit[[1]]$loo())
 loo_compare(loos)
 #>                                                     elpd_diff se_diff
-#> Reference: Age, Report: Day of week                    0.0       0.0 
-#> Reference: Age and week, Report: Day of week          -0.9       5.7 
-#> Reference: Age and week by age, Report: Day of week   -2.8       4.2 
-#> Reference: Fixed, Report: Day of week                -86.9      11.4 
-#> Reference: Fixed, Report: Fixed                     -619.2      46.0
+#> Reference: Age and week, Report: Day of week           0.0       0.0 
+#> Reference: Age, Report: Day of week                   -2.5       5.5 
+#> Reference: Age and week by age, Report: Day of week   -3.8       3.4 
+#> Reference: Fixed, Report: Day of week                -89.5      11.8 
+#> Reference: Fixed, Report: Fixed                     -620.3      46.2
 ```
 
 We see that the most model which includes day of the week effects for the date of report substantially outperformed the baseline model with no adjustment and that the more complex models that adjusted for variation by age and week for the date of test improved estimated out of sample performance but uncertainty around these estimates was wide.
@@ -552,14 +552,14 @@ scores |>
 
 
 
-|model                                                    |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
-|:--------------------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
-|Reference: Fixed, Report: Fixed                          | -0.011| 6.0| 12.0|           4.30|             3.8|        4.1|       3.9|  17|        18|    1300|
-|Reference: Fixed, Report: Day of week                    | -0.250| 7.0| 12.0|           1.20|             7.5|        3.0|       4.2|  13|        16|     560|
-|Reference: Age, Report: Day of week                      | -0.390| 6.8|  9.9|           0.68|             6.3|        2.9|       4.0|  12|        13|     400|
-|Reference: Age and week, Report: Day of week             |  0.048| 5.5|  8.4|           3.30|             1.6|        3.5|       3.6|  15|        12|     570|
-|Reference: Age and week by age, Report: Day of week      | -0.200| 5.7|  8.4|           1.80|             3.1|        3.5|       3.7|  15|        12|     430|
-|Independent by age, Reference: Week, Report: Day of week | -0.039| 5.7|  9.4|           2.90|             1.4|        5.1|       3.7|  21|        13|     910|
+|model                                                    |    bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean|
+|:--------------------------------------------------------|-------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|
+|Reference: Fixed, Report: Fixed                          | -0.0130| 6.1| 12.0|           4.30|             3.8|        4.1|       3.9|  17|        17|    1300|
+|Reference: Fixed, Report: Day of week                    | -0.2400| 7.1| 12.0|           1.20|             7.5|        3.1|       4.2|  13|        15|     570|
+|Reference: Age, Report: Day of week                      | -0.4000| 6.8| 10.0|           0.62|             6.5|        2.9|       4.1|  12|        13|     400|
+|Reference: Age and week, Report: Day of week             |  0.0076| 5.4|  8.1|           2.90|             1.8|        3.4|       3.6|  15|        12|     470|
+|Reference: Age and week by age, Report: Day of week      | -0.2100| 5.6|  8.3|           1.60|             3.3|        3.4|       3.7|  14|        12|     390|
+|Independent by age, Reference: Week, Report: Day of week | -0.0360| 5.7|  9.5|           2.90|             1.4|        5.2|       3.7|  22|        13|     980|
 
 
 
