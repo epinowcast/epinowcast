@@ -11,13 +11,13 @@ test_that("subset_obs() returns correct subset of reference dates when timesteps
   result <- subset_obs(obs_daily, max_delay, internal_timestep,
                        reference_subset = ">")
   expect_true(all(result$reference_date > expected_cutoff))
-  expect_identical(unique(diff(result$reference_date)),
+  expect_identical(as.integer(unique(diff(result$reference_date))),
                    as.integer(internal_timestep))
   # test not-modelled
   result <- subset_obs(obs_daily, max_delay, internal_timestep,
                        reference_subset = "<=")
   expect_true(all(result$reference_date <= expected_cutoff))
-  expect_identical(unique(diff(result$reference_date)),
+  expect_identical(as.integer(unique(diff(result$reference_date))),
                    as.integer(internal_timestep))
 })
 
@@ -31,13 +31,13 @@ test_that("subset_obs() returns correct subset of reference dates when timesteps
   result <- subset_obs(obs_weekly, max_delay, internal_timestep,
                        reference_subset = ">")
   expect_true(all(result$reference_date > expected_cutoff))
-  expect_identical(unique(diff(result$reference_date)),
+  expect_identical(as.integer(unique(diff(result$reference_date))),
                    as.integer(internal_timestep))
   # test not-modelled
   result <- subset_obs(obs_weekly, max_delay, internal_timestep,
                        reference_subset = "<=")
   expect_true(all(result$reference_date <= expected_cutoff))
-  expect_identical(unique(diff(result$reference_date)),
+  expect_identical(as.integer(unique(diff(result$reference_date))),
                    as.integer(internal_timestep))
 })
 
