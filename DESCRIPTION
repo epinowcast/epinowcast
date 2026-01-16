@@ -121,6 +121,7 @@ Imports:
     cmdstanr,
     data.table,
     lme4,
+    reformulas,
     ggplot2,
     posterior,
     purrr,
