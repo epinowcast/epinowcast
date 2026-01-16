@@ -53,6 +53,7 @@ adaptDelta
 adrian
 ae
 args
+artifact
 athowes
 barbora
 beansrowning
@@ -63,6 +64,7 @@ com
 crps
 cyclomatic
 dataconverters
+difftime
 discretisation
 discretised
 doi
@@ -94,6 +96,7 @@ lifecycle
 linelist
 linter
 linters
+lintr
 lison
 lme
 loglogistic
