@@ -190,7 +190,7 @@ remove_rw_terms <- function(formula) {
 #'  - `random`: A list of of \link[lme4]{lme4} style random effects
 #'  - `rw`: A character vector of [rw()] random walk terms.
 #' @inheritParams enw_formula
-#' @importFrom lme4 nobars findbars
+#' @importFrom reformulas nobars findbars
 #' @importFrom cli cli_abort
 #' @family formulatools
 #' @examples
@@ -207,8 +207,8 @@ parse_formula <- function(formula) {
   }
   rw <- rw_terms(formula)
   formula <- remove_rw_terms(formula)
-  fixed <- lme4::nobars(formula)
-  random <- lme4::findbars(formula)
+  fixed <- reformulas::nobars(formula)
+  random <- reformulas::findbars(formula)
 
   model_terms <- list(
     fixed = split_formula_to_terms(fixed),
@@ -379,7 +379,7 @@ construct_rw <- function(rw, data) {
 
 #' Defines random effect terms using the lme4 syntax
 #'
-#' @param formula A random effect as returned by \link[lme4]{findbars}
+#' @param formula A random effect as returned by \link[reformulas]{findbars}
 #' when a random effect is defined using the \link[lme4]{lme4} syntax in
 #' formula. Currently only simplified random effects (i.e
 #'  LHS | RHS) are supported.
