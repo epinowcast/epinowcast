@@ -54,7 +54,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/epinowcast/epinowcast/blob/v0.5.0/inst/CITATION)
+[`inst/CITATION`](https://github.com/epinowcast/epinowcast/blob/main/inst/CITATION)
 
 Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F, DeWitt M,
 Azam J, Sebastian J (NULL). *epinowcast: A Bayesian Framework for
