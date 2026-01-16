@@ -1,0 +1,67 @@
+# Discretised distributions
+
+This vignette describes the parametric delay distributions that are
+currently available in `epinowcast` and explains how they are internally
+discretised.
+
+## Available distributions
+
+The currently available parametric delay distributions are continuous
+probability distributions with (up to) two parameters \\\mu\_{g,t}\\ and
+\\\upsilon\_{g,t}\\. The table below provides a link to the definition
+of each distribution, specifies how the parameters \\\mu\_{g,t}\\ and
+\\\upsilon\_{g,t}\\ are mapped to the parameters of the distribution
+(according to the referenced definition), and states the resulting mean
+of the distribution (before discretization and adjustment for the
+assumed maximum delay).
+
+|                                       Distribution                                        |                      Parametrization                       |                                    Mean                                     |
+|:-----------------------------------------------------------------------------------------:|:----------------------------------------------------------:|:---------------------------------------------------------------------------:|
+|         [Log-normal](https://mc-stan.org/docs/functions-reference/lognormal.html)         |      \\\mu=\mu\_{g,t}\\, \\\sigma = \upsilon\_{g,t}\\      |              \\\exp(\mu\_{g,t}+\frac{\upsilon\_{g,t}^2}{2})\\               |
+| [Exponential](https://mc-stan.org/docs/functions-reference/exponential-distribution.html) |               \\\beta = \exp(-\mu\_{g,t})\\                |                            \\\exp(\mu\_{g,t})\\                             |
+|       [Gamma](https://mc-stan.org/docs/functions-reference/gamma-distribution.html)       | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ |                    \\\exp(\mu\_{g,t})/\upsilon\_{g,t}\\                     |
+|          [Log-logistic](https://en.wikipedia.org/wiki/Log-logistic_distribution)          | \\\alpha = \exp(\mu\_{g,t})\\, \\\beta = \upsilon\_{g,t}\\ | \\\frac{\exp(\mu\_{g,t})\\\pi/\upsilon\_{g,t}}{\sin(\pi/\upsilon\_{g,t})}\\ |
+
+## Discretisation and adjustment for maximum delay
+
+In `epinowcast`, delays are modeled in discrete time and with an assumed
+maximum delay (specified via the `max_delay` argument). Therefore, the
+continuous delay distributions must be discretised and adjusted for the
+maximum delay.
+
+The exact form of this discretisation is complex due to the interaction
+between primary and secondary events. Rather than modelling this
+explicitly, we approximate it by assuming a uniform censoring interval
+of 2 days for each delay. This comes from assuming daily censoring of
+both the primary and secondary events, which together define the delay
+distribution, and ignoring potential interactions between primary and
+secondary events. As a result, the probability of reporting a delay of
+\\d\\ days equals the probability of reporting a delay of \\d+1\\ days
+or less, minus the probability of reporting a delay of \\d-1\\ days or
+less. This is then normalised by the overall probability of reporting
+any delay up to some maximum observed delay, \\D\\.
+
+More formally, we define this in terms of the cumulative distribution
+function of the delay distribution. Let \\F^{\mu\_{g,t},
+\upsilon\_{g,t}}\\ be the cumulative distribution function of a
+continuous probability distribution of delays with parameters
+\\\mu\_{g,t}\\ and \\\upsilon\_{g,t}\\. Then, the probability of
+reporting a delay of \\d\\ days is \\p\_{g,t,d} = \frac{F^{\mu\_{g,t},
+\upsilon\_{g,t}}(d+1) - F^{\mu\_{g,t},
+\upsilon\_{g,t}}(d-1)}{F^{\mu\_{g,t}, \upsilon\_{g,t}}(D + 1 ) +
+F^{\mu\_{g,t}, \upsilon\_{g,t}}(D)}.\\
+
+Unless \\d = 0\\ then we instead have
+
+\\p\_{g,t,0} = \frac{F^{\mu\_{g,t}, \upsilon\_{g,t}}(1)}{F^{\mu\_{g,t},
+\upsilon\_{g,t}}(D + 1 ) + F^{\mu\_{g,t}, \upsilon\_{g,t}}(D)}.\\
+
+Normalising by \\F^{\mu\_{g,t}, \upsilon\_{g,t}}(D+1) + F^{\mu\_{g,t},
+\upsilon\_{g,t}}(D)\\, ensures that the \\p^{\prime}\_{g,t,d}\\ sum
+to 1. Since \\F^{\mu\_{g,t}, \upsilon\_{g,t}}(D)\\ is the probability of
+reporting before the maximum delay, this can also be interpreted as
+conditioning our distribution on the maximum delay.
+
+Note that because of the discretisation and normalization, the discrete
+delay distribution we obtain only approximates the original continuous
+distribution, and the approximation is worse for shorter delays.

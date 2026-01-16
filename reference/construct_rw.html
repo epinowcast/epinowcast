@@ -23,7 +23,7 @@ random effect structure.'><meta property="og:image" content="https://package.epi
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,7 +61,7 @@ random effect structure.'><meta property="og:image" content="https://package.epi
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Constructs random walk terms</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.4.0/R/formula-tools.R" class="external-link"><code>R/formula-tools.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/formula-tools.R" class="external-link"><code>R/formula-tools.R</code></a></small>
       <div class="d-none name"><code>construct_rw.Rd</code></div>
     </div>
 
@@ -106,16 +106,16 @@ new effects.</p></li>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Functions used to help convert formulas into model designs
-<code><a href="as_string_formula.html">as_string_formula</a>()</code>,
-<code><a href="construct_re.html">construct_re</a>()</code>,
-<code><a href="enw_formula.html">enw_formula</a>()</code>,
-<code><a href="enw_manual_formula.html">enw_manual_formula</a>()</code>,
-<code><a href="parse_formula.html">parse_formula</a>()</code>,
-<code><a href="re.html">re</a>()</code>,
-<code><a href="remove_rw_terms.html">remove_rw_terms</a>()</code>,
-<code><a href="rw.html">rw</a>()</code>,
-<code><a href="rw_terms.html">rw_terms</a>()</code>,
-<code><a href="split_formula_to_terms.html">split_formula_to_terms</a>()</code></p></div>
+<code><a href="as_string_formula.html">as_string_formula()</a></code>,
+<code><a href="construct_re.html">construct_re()</a></code>,
+<code><a href="enw_formula.html">enw_formula()</a></code>,
+<code><a href="enw_manual_formula.html">enw_manual_formula()</a></code>,
+<code><a href="parse_formula.html">parse_formula()</a></code>,
+<code><a href="re.html">re()</a></code>,
+<code><a href="remove_rw_terms.html">remove_rw_terms()</a></code>,
+<code><a href="rw.html">rw()</a></code>,
+<code><a href="rw_terms.html">rw_terms()</a></code>,
+<code><a href="split_formula_to_terms.html">split_formula_to_terms()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -168,6 +168,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;IDat&gt;  &lt;num&gt;   &lt;fctr&gt;    &lt;fctr&gt; &lt;num&gt;      &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0      0      0      0      0</span>
@@ -211,6 +212,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39:      1      1      1      1      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40:      1      1      1      1      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cweek1" "cweek2" "cweek3" "cweek4" "cweek5"</span>
@@ -271,6 +273,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;IDat&gt;  &lt;num&gt;   &lt;fctr&gt;    &lt;fctr&gt; &lt;num&gt;      &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:      0      0      0      0      0</span>
@@ -314,6 +317,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39:      1      1      1      1      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40:      1      1      1      1      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     cweek1 cweek2 cweek3 cweek4 cweek5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "day_of_week:cweek1" "day_of_week:cweek2" "day_of_week:cweek3"</span>
@@ -358,6 +362,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:   day_of_weekTuesday:cweek5     0                              0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35: day_of_weekWednesday:cweek5     0                              1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                         effects fixed rw__day_of_weekWednesday__week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          &lt;char&gt; &lt;num&gt;                          &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rw__day_of_weekThursday__week rw__day_of_weekFriday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                             0                           1</span>
@@ -396,6 +401,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:                             0                           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35:                             0                           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rw__day_of_weekThursday__week rw__day_of_weekFriday__week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rw__day_of_weekSaturday__week rw__day_of_weekSunday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                             0                           0</span>
@@ -434,6 +440,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:                             0                           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35:                             0                           0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rw__day_of_weekSaturday__week rw__day_of_weekSunday__week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                             &lt;num&gt;                       &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rw__day_of_weekMonday__week rw__day_of_weekTuesday__week</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                           &lt;num&gt;                        &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  1:                           0                            0</span>
@@ -472,6 +479,7 @@ new effects.</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 34:                           0                            1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 35:                           0                            0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rw__day_of_weekMonday__week rw__day_of_weekTuesday__week</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                           &lt;num&gt;                        &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -484,7 +492,7 @@ new effects.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer></div>

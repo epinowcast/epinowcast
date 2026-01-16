@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,8 +58,7 @@
 
       <div class="section-desc"><p>Functions for nowcasting.</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -70,13 +69,15 @@
 
         </dt>
         <dd>Nowcast using partially observed data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="plot.epinowcast.html">plot(<i>&lt;epinowcast&gt;</i>)</a></code>
 
         </dt>
         <dd>Plot method for epinowcast</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="summary.epinowcast.html">summary(<i>&lt;epinowcast&gt;</i>)</a></code>
 
@@ -87,8 +88,7 @@
 
       <div class="section-desc"><p>Functions for converting between data formats</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -99,25 +99,29 @@
 
         </dt>
         <dd>Calculate cumulative reported cases from incidence of new reports</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_add_incidence.html">enw_add_incidence()</a></code>
 
         </dt>
         <dd>Calculate incidence of new reports from cumulative reports</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_aggregate_cumulative.html">enw_aggregate_cumulative()</a></code>
 
         </dt>
         <dd>Aggregate observations over a given timestep for both report and reference dates.</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_incidence_to_linelist.html">enw_incidence_to_linelist()</a></code>
 
         </dt>
         <dd>Convert Aggregate Counts (Incidence) to a Line List</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_linelist_to_incidence.html">enw_linelist_to_incidence()</a></code>
 
@@ -128,8 +132,7 @@
 
       <div class="section-desc"><p>Functions for preprocessing observations</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -140,109 +143,127 @@
 
         </dt>
         <dd>Add a delay variable to the observations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_add_max_reported.html">enw_add_max_reported()</a></code>
 
         </dt>
         <dd>Add the maximum number of reported cases for each <code>reference_date</code></dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_add_metaobs_features.html">enw_add_metaobs_features()</a></code>
 
         </dt>
         <dd>Add common metadata variables</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_assign_group.html">enw_assign_group()</a></code>
 
         </dt>
         <dd>Assign a group to each row of a data.table</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_complete_dates.html">enw_complete_dates()</a></code>
 
         </dt>
         <dd>Complete missing reference and report dates</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_construct_data.html">enw_construct_data()</a></code>
 
         </dt>
         <dd>Construct preprocessed data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_extend_date.html">enw_extend_date()</a></code>
 
         </dt>
         <dd>Extend a time series with additional dates</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_filter_delay.html">enw_filter_delay()</a></code>
 
         </dt>
         <dd>Filter observations to have a consistent maximum delay period</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code>
 
         </dt>
         <dd>Filter by reference dates</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_filter_report_dates.html">enw_filter_report_dates()</a></code>
 
         </dt>
         <dd>Filter by report dates</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_flag_observed_observations.html">enw_flag_observed_observations()</a></code>
 
         </dt>
         <dd>Flag observed observations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_impute_na_observations.html">enw_impute_na_observations()</a></code>
 
         </dt>
         <dd>Impute NA observations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_latest_data.html">enw_latest_data()</a></code>
 
         </dt>
         <dd>Filter observations to the latest available reported</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_metadata.html">enw_metadata()</a></code>
 
         </dt>
         <dd>Extract metadata from raw data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_metadata_delay.html">enw_metadata_delay()</a></code>
 
         </dt>
         <dd>Calculate reporting delay metadata for a given maximum delay</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_missing_reference.html">enw_missing_reference()</a></code>
 
         </dt>
         <dd>Extract reports with missing reference dates</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code>
 
         </dt>
         <dd>Preprocess observations</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_reporting_triangle.html">enw_reporting_triangle()</a></code>
 
         </dt>
         <dd>Construct the reporting triangle</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_reporting_triangle_to_long.html">enw_reporting_triangle_to_long()</a></code>
 
@@ -253,8 +274,7 @@
 
       <div class="section-desc"><p>Modular model components</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -265,31 +285,36 @@
 
         </dt>
         <dd>Expectation model module</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_fit_opts.html">enw_fit_opts()</a></code>
 
         </dt>
         <dd>Format model fitting options for use with stan</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_missing.html">enw_missing()</a></code>
 
         </dt>
         <dd>Missing reference data model module</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_obs.html">enw_obs()</a></code>
 
         </dt>
         <dd>Setup observation model and data</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_reference.html">enw_reference()</a></code>
 
         </dt>
         <dd>Reference date logit hazard reporting model module</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_report.html">enw_report()</a></code>
 
@@ -300,8 +325,7 @@
 
       <div class="section-desc"><p>Functions that help with the setup of model modules and that may be specific to individual modules</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -312,43 +336,64 @@
 
         </dt>
         <dd>Add maximum observed delay</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="add_pmfs.html">add_pmfs()</a></code>
 
         </dt>
         <dd>Add probability mass functions</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="convolution_matrix.html">convolution_matrix()</a></code>
 
         </dt>
         <dd>Construct a convolution matrix</dd>
-      </dl><dl><dt>
+
+        <dt>
+
+          <code><a href="enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting()</a></code>
+
+        </dt>
+        <dd>Create day-of-week structural reporting pattern</dd>
+
+        <dt>
 
           <code><a href="enw_reference_by_report.html">enw_reference_by_report()</a></code>
 
         </dt>
         <dd>Construct a lookup of references dates by report</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_reps_with_complete_refs.html">enw_reps_with_complete_refs()</a></code>
 
         </dt>
         <dd>Identify report dates with complete (i.e up to the maximum delay) reference dates</dd>
-      </dl><dl><dt>
+
+        <dt>
+
+          <code><a href="enw_structural_reporting_metadata.html">enw_structural_reporting_metadata()</a></code>
+
+        </dt>
+        <dd>Create structural reporting metadata grid</dd>
+
+        <dt>
 
           <code><a href="extract_obs_metadata.html">extract_obs_metadata()</a></code>
 
         </dt>
         <dd>Extract observation metadata</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="extract_sparse_matrix.html">extract_sparse_matrix()</a></code>
 
         </dt>
         <dd>Extract sparse matrix elements</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="latest_obs_as_matrix.html">latest_obs_as_matrix()</a></code>
 
@@ -359,8 +404,7 @@
 
       <div class="section-desc"><p>Generic functions that assist with combining and using modular models</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -371,67 +415,78 @@
 
         </dt>
         <dd>Format formula data for use with stan</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_get_cache.html">enw_get_cache()</a></code>
 
         </dt>
         <dd>Retrieve Stan cache location</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_model.html">enw_model()</a></code>
 
         </dt>
         <dd>Load and compile the nowcasting model</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_pathfinder.html">enw_pathfinder()</a></code>
 
         </dt>
         <dd>Fit a CmdStan model using the pathfinder algorithm</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_priors_as_data_list.html">enw_priors_as_data_list()</a></code>
 
         </dt>
         <dd>Convert prior <code>data.frame</code> to list</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_replace_priors.html">enw_replace_priors()</a></code>
 
         </dt>
         <dd>Replace default priors with user specified priors</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_sample.html">enw_sample()</a></code>
 
         </dt>
         <dd>Fit a CmdStan model using NUTS</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_set_cache.html">enw_set_cache()</a></code>
 
         </dt>
         <dd>Set caching location for Stan models</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_stan_to_r.html">enw_stan_to_r()</a></code>
 
         </dt>
         <dd>Expose <code>epinowcast</code> stan functions in R</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_unset_cache.html">enw_unset_cache()</a></code>
 
         </dt>
         <dd>Unset Stan cache location</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="remove_profiling.html">remove_profiling()</a></code>
 
         </dt>
         <dd>Remove profiling statements from a character vector representing stan code</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="write_stan_files_no_profile.html">write_stan_files_no_profile()</a></code>
 
@@ -442,8 +497,7 @@
 
       <div class="section-desc"><p>Functions for postprocessing model output</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -454,49 +508,57 @@
 
         </dt>
         <dd>Build the ord_obs <code>data.table</code>.</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_add_latest_obs_to_nowcast.html">enw_add_latest_obs_to_nowcast()</a></code>
 
         </dt>
         <dd>Add latest observations to nowcast output</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_nowcast_samples.html">enw_nowcast_samples()</a></code>
 
         </dt>
         <dd>Extract posterior samples for the nowcast prediction</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_nowcast_summary.html">enw_nowcast_summary()</a></code>
 
         </dt>
         <dd>Summarise the posterior nowcast prediction</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_posterior.html">enw_posterior()</a></code>
 
         </dt>
         <dd>Summarise the posterior</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_pp_summary.html">enw_pp_summary()</a></code>
 
         </dt>
         <dd>Posterior predictive summary</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_quantiles_to_long.html">enw_quantiles_to_long()</a></code>
 
         </dt>
         <dd>Convert summarised quantiles from wide to long format</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_summarise_samples.html">enw_summarise_samples()</a></code>
 
         </dt>
         <dd>Summarise posterior samples</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="subset_obs.html">subset_obs()</a></code>
 
@@ -507,8 +569,7 @@
 
       <div class="section-desc"><p>Functions for plotting postprocessed nowcast model output</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -519,31 +580,36 @@
 
         </dt>
         <dd>Plot nowcast quantiles</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_plot_obs.html">enw_plot_obs()</a></code>
 
         </dt>
         <dd>Generic quantile plot</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code>
 
         </dt>
         <dd>Plot posterior prediction quantiles</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_plot_quantiles.html">enw_plot_quantiles()</a></code>
 
         </dt>
         <dd>Generic quantile plot</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_plot_theme.html">enw_plot_theme()</a></code>
 
         </dt>
         <dd>Package plot theme</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="plot.epinowcast.html">plot(<i>&lt;epinowcast&gt;</i>)</a></code>
 
@@ -554,8 +620,7 @@
 
       <div class="section-desc"><p>Functions for validating model fits</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -571,8 +636,7 @@
 
       <div class="section-desc"><p>Functions that assist with interpreting model formulas</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -583,61 +647,71 @@
 
         </dt>
         <dd>Converts formulas to strings</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="construct_re.html">construct_re()</a></code>
 
         </dt>
         <dd>Constructs random effect terms</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="construct_rw.html">construct_rw()</a></code>
 
         </dt>
         <dd>Constructs random walk terms</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_formula.html">enw_formula()</a></code>
 
         </dt>
         <dd>Define a model using a formula interface</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_manual_formula.html">enw_manual_formula()</a></code>
 
         </dt>
         <dd>Define a model manually using fixed and random effects</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="parse_formula.html">parse_formula()</a></code>
 
         </dt>
         <dd>Parse a formula into components</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="re.html">re()</a></code>
 
         </dt>
         <dd>Defines random effect terms using the lme4 syntax</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="remove_rw_terms.html">remove_rw_terms()</a></code>
 
         </dt>
         <dd>Remove random walk terms from a formula object</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="rw.html">rw()</a></code>
 
         </dt>
         <dd>Adds random walks with Gaussian steps to the model.</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="rw_terms.html">rw_terms()</a></code>
 
         </dt>
         <dd>Finds random walk terms in a formula object</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="split_formula_to_terms.html">split_formula_to_terms()</a></code>
 
@@ -648,8 +722,7 @@
 
       <div class="section-desc"><p>Functions that assist with designing models</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -660,25 +733,29 @@
 
         </dt>
         <dd>Add a cumulative membership effect to a <code>data.frame</code></dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_add_pooling_effect.html">enw_add_pooling_effect()</a></code>
 
         </dt>
         <dd>Add a pooling effect to model design metadata</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_design.html">enw_design()</a></code>
 
         </dt>
         <dd>A helper function to construct a design matrix from a formula</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_effects_metadata.html">enw_effects_metadata()</a></code>
 
         </dt>
         <dd>Extracts metadata from a design matrix</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="enw_one_hot_encode_feature.html">enw_one_hot_encode_feature()</a></code>
 
@@ -689,8 +766,7 @@
 
       <div class="section-desc"><p>Package datasets used in examples and by users to explore the package functionality</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -701,7 +777,8 @@
 
         </dt>
         <dd>Load a package example</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="germany_covid19_hosp.html">germany_covid19_hosp</a></code>
 
@@ -712,8 +789,7 @@
 
       <div class="section-desc"><p>Tools for simulating datasets</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -729,8 +805,7 @@
 
       <div class="section-desc"><p>Functions to check the structure of user inputs</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
@@ -741,67 +816,78 @@
 
         </dt>
         <dd>Check design matrix sparsity</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_group.html">check_group()</a></code>
 
         </dt>
         <dd>Check observations for reserved grouping variables</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_group_date_unique.html">check_group_date_unique()</a></code>
 
         </dt>
         <dd>Check observations for uniqueness of grouping variables with respect to <code>reference_date</code> and <code>report_date</code></dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_max_delay.html">check_max_delay()</a></code>
 
         </dt>
         <dd>Check appropriateness of maximum delay</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_module.html">check_module()</a></code>
 
         </dt>
         <dd>Check a model module contains the required components</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_modules_compatible.html">check_modules_compatible()</a></code>
 
         </dt>
         <dd>Check that model modules have compatible specifications</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_numeric_timestep.html">check_numeric_timestep()</a></code>
 
         </dt>
         <dd>Check Numeric Timestep</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_observation_indicator.html">check_observation_indicator()</a></code>
 
         </dt>
         <dd>Check observation indicator</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_quantiles.html">check_quantiles()</a></code>
 
         </dt>
         <dd>Check required quantiles are present</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_timestep.html">check_timestep()</a></code>
 
         </dt>
         <dd>Check timestep</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_timestep_by_date.html">check_timestep_by_date()</a></code>
 
         </dt>
         <dd>Check timestep by date</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="check_timestep_by_group.html">check_timestep_by_group()</a></code>
 
@@ -812,49 +898,54 @@
 
       <div class="section-desc"><p>Utility functions</p></div>
 
-
-    </div><div class="section level2">
+      <dl></dl></div><div class="section level2">
 
 
 
 
       <dl><dt>
 
-          <code><a href="aggregate_rolling_sum.html">aggregate_rolling_sum()</a></code>
-
-        </dt>
-        <dd>Internal function to perform rolling sum aggregation</dd>
-      </dl><dl><dt>
-
           <code><a href="coerce_date.html">coerce_date()</a></code>
 
         </dt>
         <dd>Coerce Dates</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="coerce_dt.html">coerce_dt()</a></code>
 
         </dt>
         <dd>Coerce <code>data.table</code>s</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="date_to_numeric_modulus.html">date_to_numeric_modulus()</a></code>
 
         </dt>
         <dd>Convert date column to numeric and calculate its modulus with given timestep.</dd>
-      </dl><dl><dt>
+
+        <dt>
+
+          <code><a href="enw_rolling_sum.html">enw_rolling_sum()</a></code>
+
+        </dt>
+        <dd>Perform rolling sum aggregation</dd>
+
+        <dt>
 
           <code><a href="get_internal_timestep.html">get_internal_timestep()</a></code>
 
         </dt>
         <dd>Get internal timestep</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="is.Date.html">is.Date()</a></code>
 
         </dt>
         <dd>Check an object is a Date</dd>
-      </dl><dl><dt>
+
+        <dt>
 
           <code><a href="stan_fns_as_string.html">stan_fns_as_string()</a></code>
 
@@ -870,7 +961,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer></div>

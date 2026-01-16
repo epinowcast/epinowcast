@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,7 @@
 Team</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.4.0/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/vignettes/features.Rmd" class="external-link"><code>vignettes/features.Rmd</code></a></small>
       <div class="d-none name"><code>features.Rmd</code></div>
     </div>
 
@@ -141,21 +141,26 @@ definition vignette</a>. For function-specific details, see
 <td><a href="#delay-modelling">Delay modelling</a></td>
 </tr>
 <tr class="even">
+<td><strong>Report date effects</strong></td>
+<td>Day-of-week patterns, structural reporting</td>
+<td><a href="#report-date-effects">Report date effects</a></td>
+</tr>
+<tr class="odd">
 <td><strong>Latent process models</strong></td>
 <td>Growth rates, renewal processes</td>
 <td><a href="#latent-models">Latent models</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Hierarchical effects</strong></td>
 <td>Random effects, random walks</td>
 <td><a href="#hierarchical">Hierarchical structure</a></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><strong>Missing data handling</strong></td>
 <td>Missing reference dates</td>
 <td><a href="#missing-data">Missing data</a></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><strong>Model comparison</strong></td>
 <td>LOO-CV, posterior predictive checks</td>
 <td><a href="#model-evaluation">Model evaluation</a></td>
@@ -342,6 +347,71 @@ range of supported distributions.</p>
 <p><strong>Where to see it:</strong> All vignettes use delay models. For
 non-parametric approaches and mixed models, see
 <code><a href="../reference/enw_reference.html">?enw_reference</a></code> examples.</p>
+</div>
+<div class="section level2">
+<h2 id="report-date-effects">Report Date Effects and Structural Reporting<a class="anchor" aria-label="anchor" href="#report-date-effects"></a>
+</h2>
+<p>Model report date effects and known reporting structures.</p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="27%">
+<col width="33%">
+<col width="18%">
+</colgroup>
+<thead><tr class="header">
+<th>Approach</th>
+<th>When to use</th>
+<th>How to specify</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Non-parametric report effects</td>
+<td>Day-of-week or other report date patterns</td>
+<td><code>enw_report(non_parametric = ~1 + (1 | day_of_week))</code></td>
+<td>Flexible report date effects</td>
+</tr>
+<tr class="even">
+<td>Structural reporting schedules</td>
+<td>Known fixed reporting cycles (e.g., weekly)</td>
+<td><code>enw_report(structural = structural_data)</code></td>
+<td>Weekly reporting on specific days</td>
+</tr>
+<tr class="odd">
+<td>Day-of-week structural</td>
+<td>Weekly reporting pattern</td>
+<td><code>enw_dayofweek_structural_reporting(pobs, "Monday")</code></td>
+<td>Monday-only reporting</td>
+</tr>
+<tr class="even">
+<td>Custom structural patterns</td>
+<td>Complex reporting schedules</td>
+<td>
+<code><a href="../reference/enw_structural_reporting_metadata.html">enw_structural_reporting_metadata()</a></code> with custom
+data</td>
+<td>Flexible aggregation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_report.html">enw_report()</a></code>: Specify report date model</li>
+<li>
+<code><a href="../reference/enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting()</a></code>: Helper for
+day-of-week patterns</li>
+<li>
+<code><a href="../reference/enw_structural_reporting_metadata.html">enw_structural_reporting_metadata()</a></code>: Create custom
+structural reporting metadata</li>
+<li>
+<code><a href="../reference/enw_rolling_sum.html">enw_rolling_sum()</a></code>: Aggregate observations over
+timesteps</li>
+<li>See <code><a href="../reference/enw_report.html">?enw_report</a></code> for details</li>
+</ul>
+<p><strong>Where to see it:</strong> See
+<code>inst/examples/germany_weekly_reporting_daily_process_model.R</code>
+for an example with weekly reporting and a daily process model.</p>
 </div>
 <div class="section level2">
 <h2 id="latent-models">Latent Process Models<a class="anchor" aria-label="anchor" href="#latent-models"></a>
@@ -796,26 +866,21 @@ likelihoods</td>
 counts</td>
 </tr>
 <tr class="odd">
-<td>Structured reporting schedules</td>
-<td>In development</td>
-<td>PR exists for aggregated reporting with known schedules</td>
-</tr>
-<tr class="even">
 <td>Delay-only or count-only models</td>
 <td>Not supported</td>
 <td>Currently requires joint modelling of delay and counts</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Susceptibility depletion</td>
 <td>Not supported</td>
 <td>Renewal process assumes constant susceptibility</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Uncertain generation time</td>
 <td>Not supported</td>
 <td>Generation time distribution treated as fixed and known</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Forecasting examples</td>
 <td>Missing</td>
 <td>Functionality exists but lacks worked examples in vignettes</td>
@@ -863,7 +928,7 @@ API</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer>

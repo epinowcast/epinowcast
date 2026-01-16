@@ -15,7 +15,7 @@ and/or non-parametric hazard formulations."><meta property="og:image" content="h
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,7 @@ and/or non-parametric hazard formulations."><meta property="og:image" content="h
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Reference date logit hazard reporting model module</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.4.0/R/model-modules.R" class="external-link"><code>R/model-modules.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/model-modules.R" class="external-link"><code>R/model-modules.R</code></a></small>
       <div class="d-none name"><code>enw_reference.Rd</code></div>
     </div>
 
@@ -122,11 +122,11 @@ can be used to sample from a tightened version of the prior distribution.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Model modules
-<code><a href="enw_expectation.html">enw_expectation</a>()</code>,
-<code><a href="enw_fit_opts.html">enw_fit_opts</a>()</code>,
-<code><a href="enw_missing.html">enw_missing</a>()</code>,
-<code><a href="enw_obs.html">enw_obs</a>()</code>,
-<code><a href="enw_report.html">enw_report</a>()</code></p></div>
+<code><a href="enw_expectation.html">enw_expectation()</a></code>,
+<code><a href="enw_fit_opts.html">enw_fit_opts()</a></code>,
+<code><a href="enw_missing.html">enw_missing()</a></code>,
+<code><a href="enw_obs.html">enw_obs()</a></code>,
+<code><a href="enw_report.html">enw_report()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -1125,12 +1125,12 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(init)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d724f89e10&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d724ed2b30&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x562ca92f2f08&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562ca9a0e2a8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Non-parametric model with a random effect per delay</span></span></span>
@@ -3750,12 +3750,12 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(init)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d724f89e10&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d726361538&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x562ca92f2f08&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562ca5bd2110&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Combined parametric and non-parametric model</span></span></span>
@@ -4766,12 +4766,12 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                   priors$refnp_beta_sd_p[1], priors$refnp_beta_sd_p[2]/10)))</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>             }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         return(init)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         init</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     return(fn)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55d724f89e10&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55d722e86078&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x562ca92f2f08&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562ca907d5e8&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
     </div>
@@ -4784,7 +4784,7 @@ can be used to sample from a tightened version of the prior distribution.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer></div>

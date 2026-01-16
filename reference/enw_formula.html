@@ -27,7 +27,7 @@ is required to link observations to the appropriate design matrix row."><meta pr
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,7 @@ is required to link observations to the appropriate design matrix row."><meta pr
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Define a model using a formula interface</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.4.0/R/formula-tools.R" class="external-link"><code>R/formula-tools.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/formula-tools.R" class="external-link"><code>R/formula-tools.R</code></a></small>
       <div class="d-none name"><code>enw_formula.Rd</code></div>
     </div>
 
@@ -152,10 +152,10 @@ effects that evolve smoothly over time. For example:</p><ul><li><p><code>~ rw(we
 <li><p><code>~ rw(week, location)</code>: independent random walks for each location</p></li>
 <li><p><code>~ rw(week, location, type = "dependent")</code>: random walks with shared
 variance across locations</p></li>
-</ul><p>These three types of effects can be combined in a single formula, for example:
-<code>~ 1 + age_group + (1 | location) + rw(week, location)</code> specifies fixed
-age effects, random location intercepts, and location-specific random
-walks over time.</p>
+</ul><p>These three types of effects can be combined in a single formula, for
+example: <code>~ 1 + age_group + (1 | location) + rw(week, location)</code>
+specifies fixed age effects, random location intercepts, and
+location-specific random walks over time.</p>
 </div>
 
 <div class="section">
@@ -186,8 +186,8 @@ and a random effects matrix that defines the hierarchical structure.</p>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>For users new to formula syntax in R:</p><ul><li><p><strong>Fixed effects</strong>: See <code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">?formula</a></code> and the "Statistical Models in R"
-chapter of "An Introduction to R": <a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R" class="external-link">https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R</a></p></li>
-<li><p><strong>Random effects</strong>: See the <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> package documentation
+chapter of "An Introduction to R" at the URL:</p></li>
+</ul><p><a href="https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R" class="external-link">https://cran.r-project.org/doc/manuals/r-release/R-intro.html#Statistical-models-in-R</a> # nolint: line_length_linter</p><ul><li><p><strong>Random effects</strong>: See the <a href="https://rdrr.io/pkg/lme4/man/lme4-package.html" class="external-link">lme4</a> package documentation
 and vignettes.</p></li>
 <li><p><strong>Mixed models</strong>: Bates et al. (2015) "Fitting Linear Mixed-Effects
 Models Using lme4". Journal of Statistical Software, 67(1), 1-48.
@@ -196,16 +196,16 @@ doi:10.18637/jss.v067.i01</p></li>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Functions used to help convert formulas into model designs
-<code><a href="as_string_formula.html">as_string_formula</a>()</code>,
-<code><a href="construct_re.html">construct_re</a>()</code>,
-<code><a href="construct_rw.html">construct_rw</a>()</code>,
-<code><a href="enw_manual_formula.html">enw_manual_formula</a>()</code>,
-<code><a href="parse_formula.html">parse_formula</a>()</code>,
-<code><a href="re.html">re</a>()</code>,
-<code><a href="remove_rw_terms.html">remove_rw_terms</a>()</code>,
-<code><a href="rw.html">rw</a>()</code>,
-<code><a href="rw_terms.html">rw_terms</a>()</code>,
-<code><a href="split_formula_to_terms.html">split_formula_to_terms</a>()</code></p></div>
+<code><a href="as_string_formula.html">as_string_formula()</a></code>,
+<code><a href="construct_re.html">construct_re()</a></code>,
+<code><a href="construct_rw.html">construct_rw()</a></code>,
+<code><a href="enw_manual_formula.html">enw_manual_formula()</a></code>,
+<code><a href="parse_formula.html">parse_formula()</a></code>,
+<code><a href="re.html">re()</a></code>,
+<code><a href="remove_rw_terms.html">remove_rw_terms()</a></code>,
+<code><a href="rw.html">rw()</a></code>,
+<code><a href="rw_terms.html">rw_terms()</a></code>,
+<code><a href="split_formula_to_terms.html">split_formula_to_terms()</a></code></p></div>
     </div>
 
     <div class="section level2">
@@ -1097,7 +1097,7 @@ doi:10.18637/jss.v067.i01</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer></div>
