@@ -149,4 +149,5 @@ enw_linelist_to_incidence(
 #> 27:  2021-01-09     2021-01-05           0       0     4
 #> 28:  2021-01-10     2021-01-05           0       0     5
 #>     report_date reference_date new_confirm confirm delay
+#>          <IDat>         <IDat>       <int>   <int> <int>
 ```

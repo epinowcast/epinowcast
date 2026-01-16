@@ -94,6 +94,7 @@ enw_posterior(fit$fit[[1]], variables = "expr_beta")
 #> 38: expr_beta[38]  0.17819387  0.16938760 0.6788880 0.6819758 -0.9490598
 #> 39: expr_beta[39]  0.42262333  0.42980613 0.7639196 0.7547569 -0.8700442
 #>          variable        mean      median        sd       mad         q5
+#>            <char>       <num>       <num>     <num>     <num>      <num>
 #>             q20         q80         q95      rhat  ess_bulk ess_tail
 #>           <num>       <num>       <num>     <num>     <num>    <num>
 #>  1: -0.87133971  0.12555731  0.56508046 0.9989587 1034.8155 784.3484
@@ -136,4 +137,5 @@ enw_posterior(fit$fit[[1]], variables = "expr_beta")
 #> 38: -0.41310494  0.76460447  1.32156526 0.9987118 1650.8947 567.5275
 #> 39: -0.19550220  1.07287042  1.63541228 1.0052628 1443.3048 638.0017
 #>             q20         q80         q95      rhat  ess_bulk ess_tail
+#>           <num>       <num>       <num>     <num>     <num>    <num>
 ```

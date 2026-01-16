@@ -159,6 +159,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #> 38: 2021-08-21      1       DE       00+     0    Saturday    38     5     1
 #> 39: 2021-08-22      1       DE       00+     0      Sunday    39     5     1
 #>           date .group location age_group delay day_of_week   day  week month
+#>         <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
 #> 
 #> $data_raw$observation
 #> Key: <.group, date>
@@ -205,6 +206,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1
 #> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1
 #>           date .group location age_group delay day_of_week   day  week month
+#>         <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
 #> 
 #> 
 #> $data
@@ -836,7 +838,7 @@ enw_expectation(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x564e0a82a198>
-#> <environment: 0x564e0a7fcc18>
+#> <bytecode: 0x55aa89db1b88>
+#> <environment: 0x55aa89da7258>
 #> 
 ```

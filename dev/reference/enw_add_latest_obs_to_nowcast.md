@@ -74,6 +74,7 @@ enw_add_latest_obs_to_nowcast(nowcast, obs)
 #> 19:     2021-08-21      1            339     112  2021-08-22         112
 #> 20:     2021-08-22      1            258      45  2021-08-22          45
 #>     reference_date .group latest_confirm confirm report_date max_confirm
+#>             <IDat>  <num>          <int>   <int>      <IDat>       <int>
 #>     location age_group cum_prop_reported delay prop_reported    mean median
 #>       <fctr>    <fctr>             <num> <num>         <num>   <num>  <num>
 #>  1:       DE       00+                 1    19   0.000000000 149.000  149.0
@@ -97,6 +98,7 @@ enw_add_latest_obs_to_nowcast(nowcast, obs)
 #> 19:       DE       00+                 1     1   0.383928571 310.440  304.0
 #> 20:       DE       00+                 1     0   1.000000000 384.142  368.0
 #>     location age_group cum_prop_reported delay prop_reported    mean median
+#>       <fctr>    <fctr>             <num> <num>         <num>   <num>  <num>
 #>             sd     mad     q5   q20    q35   q50   q65   q80    q95      rhat
 #>          <num>   <num>  <num> <num>  <num> <num> <num> <num>  <num>     <num>
 #>  1:   0.000000  0.0000 149.00   149 149.00 149.0   149 149.0 149.00        NA
@@ -120,6 +122,7 @@ enw_add_latest_obs_to_nowcast(nowcast, obs)
 #> 19:  50.020660 47.4432 238.95   269 287.00 304.0   324 349.0 396.10 0.9996761
 #> 20: 115.713601 97.8516 235.00   288 329.65 368.0   406 462.2 602.00 1.0026839
 #>             sd     mad     q5   q20    q35   q50   q65   q80    q95      rhat
+#>          <num>   <num>  <num> <num>  <num> <num> <num> <num>  <num>     <num>
 #>      ess_bulk  ess_tail
 #>         <num>     <num>
 #>  1:        NA        NA
@@ -143,4 +146,5 @@ enw_add_latest_obs_to_nowcast(nowcast, obs)
 #> 19: 1254.5799  923.0215
 #> 20: 1616.8851  595.4893
 #>      ess_bulk  ess_tail
+#>         <num>     <num>
 ```

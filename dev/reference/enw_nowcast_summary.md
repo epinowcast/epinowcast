@@ -112,6 +112,7 @@ enw_nowcast_summary(
 #> 19:     2021-08-21  2021-08-22      1         112       DE       00+     112
 #> 20:     2021-08-22  2021-08-22      1          45       DE       00+      45
 #>     reference_date report_date .group max_confirm location age_group confirm
+#>             <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
 #>     cum_prop_reported delay prop_reported    mean median         sd     mad
 #>                 <num> <num>         <num>   <num>  <num>      <num>   <num>
 #>  1:                 1    19   0.000000000 149.000  149.0   0.000000  0.0000
@@ -135,6 +136,7 @@ enw_nowcast_summary(
 #> 19:                 1     1   0.383928571 310.440  304.0  50.020660 47.4432
 #> 20:                 1     0   1.000000000 384.142  368.0 115.713601 97.8516
 #>     cum_prop_reported delay prop_reported    mean median         sd     mad
+#>                 <num> <num>         <num>   <num>  <num>      <num>   <num>
 #>         q5   q20    q35   q50   q65   q80    q95      rhat  ess_bulk  ess_tail
 #>      <num> <num>  <num> <num> <num> <num>  <num>     <num>     <num>     <num>
 #>  1: 149.00   149 149.00 149.0   149 149.0 149.00        NA        NA        NA
@@ -158,4 +160,5 @@ enw_nowcast_summary(
 #> 19: 238.95   269 287.00 304.0   324 349.0 396.10 0.9996761 1254.5799  923.0215
 #> 20: 235.00   288 329.65 368.0   406 462.2 602.00 1.0026839 1616.8851  595.4893
 #>         q5   q20    q35   q50   q65   q80    q95      rhat  ess_bulk  ess_tail
+#>      <num> <num>  <num> <num> <num> <num>  <num>     <num>     <num>     <num>
 ```

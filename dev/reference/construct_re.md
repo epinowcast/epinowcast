@@ -49,6 +49,10 @@ Functions used to help convert formulas into model designs
 ``` r
 # Simple examples
 form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
+#> Warning: the ‘nobars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.
+#> This warning is displayed once per session.
+#> Warning: the ‘findbars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.
+#> This warning is displayed once per session.
 data <- enw_example("prepr")$metareference[[1]]
 random_effect <- re(form$random[[1]])
 epinowcast:::construct_re(random_effect, data)
@@ -97,6 +101,7 @@ epinowcast:::construct_re(random_effect, data)
 #> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1
 #> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1
 #>           date .group location age_group delay day_of_week   day  week month
+#>         <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
 #> 
 #> $terms
 #> [1] "day_of_week"
@@ -155,6 +160,7 @@ epinowcast:::construct_re(random_effect, mtcars)
 #> 31:  15.0      8 301.0   335  3.54 3.570 14.60     0     1     5     8
 #> 32:  21.4      4 121.0   109  4.11 2.780 18.60     1     1     4     2
 #>       mpg    cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+#>     <num> <fctr> <num> <num> <num> <num> <num> <num> <num> <num> <num>
 #> 
 #> $terms
 #> [1] "cyl"      "gear:cyl"
@@ -208,6 +214,7 @@ epinowcast:::construct_re(random_effect2, mtcars)
 #> 31:  15.0     8 301.0   335  3.54 3.570 14.60     0      1     5     8
 #> 32:  21.4     4 121.0   109  4.11 2.780 18.60     1      1     4     2
 #>       mpg   cyl  disp    hp  drat    wt  qsec    vs     am  gear  carb
+#>     <num> <num> <num> <num> <num> <num> <num> <num> <fctr> <num> <num>
 #> 
 #> $terms
 #> [1] "wt:am"

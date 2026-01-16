@@ -86,6 +86,7 @@ enw_summarise_samples(samples, probs = c(0.05, 0.5, 0.95))
 #> 19:     2021-08-21      1  2021-08-22         112       DE       00+     112
 #> 20:     2021-08-22      1  2021-08-22          45       DE       00+      45
 #>     reference_date .group report_date max_confirm location age_group confirm
+#>             <IDat>  <num>      <IDat>       <int>   <fctr>    <fctr>   <int>
 #>     cum_prop_reported delay prop_reported    mean median         sd     mad
 #>                 <num> <num>         <num>   <num>  <num>      <num>   <num>
 #>  1:                 1    19   0.000000000 149.000  149.0   0.000000  0.0000
@@ -109,6 +110,7 @@ enw_summarise_samples(samples, probs = c(0.05, 0.5, 0.95))
 #> 19:                 1     1   0.383928571 310.440  304.0  50.020660 47.4432
 #> 20:                 1     0   1.000000000 384.142  368.0 115.713601 97.8516
 #>     cum_prop_reported delay prop_reported    mean median         sd     mad
+#>                 <num> <num>         <num>   <num>  <num>      <num>   <num>
 #>         q5   q50    q95
 #>      <num> <num>  <num>
 #>  1: 149.00 149.0 149.00
@@ -132,4 +134,5 @@ enw_summarise_samples(samples, probs = c(0.05, 0.5, 0.95))
 #> 19: 238.95 304.0 396.10
 #> 20: 235.00 368.0 602.00
 #>         q5   q50    q95
+#>      <num> <num>  <num>
 ```

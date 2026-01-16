@@ -12,9 +12,8 @@ re(formula)
 
 - formula:
 
-  A random effect as returned by
-  [findbars](https://rdrr.io/pkg/reformulas/man/formfuns.html) when a
-  random effect is defined using the
+  A random effect as returned by findbars when a random effect is
+  defined using the
   [lme4](https://rdrr.io/pkg/lme4/man/lme4-package.html) syntax in
   formula. Currently only simplified random effects (i.e LHS \| RHS) are
   supported.

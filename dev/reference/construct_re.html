@@ -107,6 +107,10 @@ converted into one.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Simple examples</span></span></span>
 <span class="r-in"><span><span class="va">form</span> <span class="op">&lt;-</span> <span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu"><a href="parse_formula.html">parse_formula</a></span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">|</span> <span class="va">day_of_week</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the ‘nobars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once per session.</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>the ‘findbars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once per session.</span></span>
 <span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"prepr"</span><span class="op">)</span><span class="op">$</span><span class="va">metareference</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">random_effect</span> <span class="op">&lt;-</span> <span class="fu"><a href="re.html">re</a></span><span class="op">(</span><span class="va">form</span><span class="op">$</span><span class="va">random</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">construct_re</span><span class="op">(</span><span class="va">random_effect</span>, <span class="va">data</span><span class="op">)</span></span></span>
@@ -155,6 +159,7 @@ converted into one.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           date .group location age_group delay day_of_week   day  week month</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;IDat&gt;  &lt;num&gt;   &lt;fctr&gt;    &lt;fctr&gt; &lt;num&gt;      &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "day_of_week"</span>
@@ -213,6 +218,7 @@ converted into one.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31:  15.0      8 301.0   335  3.54 3.570 14.60     0     1     5     8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 32:  21.4      4 121.0   109  4.11 2.780 18.60     1     1     4     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       mpg    cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;num&gt; &lt;fctr&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "cyl"      "gear:cyl"</span>
@@ -266,6 +272,7 @@ converted into one.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 31:  15.0     8 301.0   335  3.54 3.570 14.60     0      1     5     8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 32:  21.4     4 121.0   109  4.11 2.780 18.60     1      1     4     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       mpg   cyl  disp    hp  drat    wt  qsec    vs     am  gear  carb</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;fctr&gt; &lt;num&gt; &lt;num&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $terms</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "wt:am"</span>

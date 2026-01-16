@@ -146,6 +146,7 @@ basemeta
 #> 39:     2021-05-14       DE       80+      15  2021-05-14      Friday    38
 #> 40:     2021-05-15       DE       80+      23  2021-05-15    Saturday    39
 #>     reference_date location age_group confirm report_date day_of_week   day
+#>             <IDat>   <fctr>    <fctr>   <int>      <Date>      <fctr> <num>
 #>      week month
 #>     <num> <num>
 #>  1:     0     0
@@ -189,6 +190,7 @@ basemeta
 #> 39:     5     1
 #> 40:     5     1
 #>      week month
+#>     <num> <num>
 
 # with holidays - n.b.: holidays not found are silently ignored
 holidaymeta <- enw_add_metaobs_features(
@@ -246,6 +248,7 @@ holidaymeta
 #> 39:     2021-05-14       DE       80+      15  2021-05-14      Friday    38
 #> 40:     2021-05-15       DE       80+      23  2021-05-15    Saturday    39
 #>     reference_date location age_group confirm report_date day_of_week   day
+#>             <IDat>   <fctr>    <fctr>   <int>      <Date>      <fctr> <num>
 #>      week month
 #>     <num> <num>
 #>  1:     0     0
@@ -289,6 +292,7 @@ holidaymeta
 #> 39:     5     1
 #> 40:     5     1
 #>      week month
+#>     <num> <num>
 subset(holidaymeta, day_of_week == "Holiday")
 #> Key: <report_date>
 #>    reference_date location age_group confirm report_date day_of_week   day

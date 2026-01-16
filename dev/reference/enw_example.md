@@ -116,6 +116,7 @@ enw_example(type = "observations")
 #> 19:     2021-08-21       DE       00+  2021-10-01     339
 #> 20:     2021-08-22       DE       00+  2021-10-01     258
 #>     reference_date location age_group report_date confirm
+#>             <IDat>   <fctr>    <fctr>      <IDat>   <int>
 
 # Load the script used to generate these examples
 # Optionally source this script to regenerate the example

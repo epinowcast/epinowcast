@@ -133,4 +133,5 @@ enw_metadata_delay(max_delay = 20, breaks = 4)
 #> 19:    18   [15,20)          2      FALSE       TRUE
 #> 20:    19   [15,20)          2      FALSE       TRUE
 #>     delay delay_cat delay_week delay_head delay_tail
+#>     <int>    <fctr>      <int>     <lgcl>     <lgcl>
 ```

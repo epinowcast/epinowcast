@@ -94,6 +94,7 @@ enw_reporting_triangle(obs)
 #> 39:      1     2021-08-21    69    43     0     0     0     0     0     0     0
 #> 40:      1     2021-08-22    45     0     0     0     0     0     0     0     0
 #>     .group reference_date     0     1     2     3     4     5     6     7     8
+#>      <num>         <IDat> <int> <int> <int> <int> <int> <int> <int> <int> <int>
 #>         9    10    11    12    13    14    15    16    17    18    19
 #>     <int> <int> <int> <int> <int> <int> <int> <int> <int> <int> <int>
 #>  1:     3     0     1     0     3     1     0     1     0     0     0
@@ -137,4 +138,5 @@ enw_reporting_triangle(obs)
 #> 39:     0     0     0     0     0     0     0     0     0     0     0
 #> 40:     0     0     0     0     0     0     0     0     0     0     0
 #>         9    10    11    12    13    14    15    16    17    18    19
+#>     <int> <int> <int> <int> <int> <int> <int> <int> <int> <int> <int>
 ```

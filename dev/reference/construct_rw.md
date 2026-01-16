@@ -106,6 +106,7 @@ epinowcast:::construct_rw(rw(week), data)
 #> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1
 #> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1
 #>           date .group location age_group delay day_of_week   day  week month
+#>         <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
 #>     cweek1 cweek2 cweek3 cweek4 cweek5
 #>      <num>  <num>  <num>  <num>  <num>
 #>  1:      0      0      0      0      0
@@ -149,6 +150,7 @@ epinowcast:::construct_rw(rw(week), data)
 #> 39:      1      1      1      1      1
 #> 40:      1      1      1      1      1
 #>     cweek1 cweek2 cweek3 cweek4 cweek5
+#>      <num>  <num>  <num>  <num>  <num>
 #> 
 #> $terms
 #> [1] "cweek1" "cweek2" "cweek3" "cweek4" "cweek5"
@@ -209,6 +211,7 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> 39: 2021-08-21      1       DE       00+     0    Saturday    38     5     1
 #> 40: 2021-08-22      1       DE       00+     0      Sunday    39     5     1
 #>           date .group location age_group delay day_of_week   day  week month
+#>         <IDat>  <num>   <fctr>    <fctr> <num>      <fctr> <num> <num> <num>
 #>     cweek1 cweek2 cweek3 cweek4 cweek5
 #>      <num>  <num>  <num>  <num>  <num>
 #>  1:      0      0      0      0      0
@@ -252,6 +255,7 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> 39:      1      1      1      1      1
 #> 40:      1      1      1      1      1
 #>     cweek1 cweek2 cweek3 cweek4 cweek5
+#>      <num>  <num>  <num>  <num>  <num>
 #> 
 #> $terms
 #> [1] "day_of_week:cweek1" "day_of_week:cweek2" "day_of_week:cweek3"
@@ -296,6 +300,7 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> 34:   day_of_weekTuesday:cweek5     0                              0
 #> 35: day_of_weekWednesday:cweek5     0                              1
 #>                         effects fixed rw__day_of_weekWednesday__week
+#>                          <char> <num>                          <num>
 #>     rw__day_of_weekThursday__week rw__day_of_weekFriday__week
 #>                             <num>                       <num>
 #>  1:                             0                           1
@@ -334,6 +339,7 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> 34:                             0                           0
 #> 35:                             0                           0
 #>     rw__day_of_weekThursday__week rw__day_of_weekFriday__week
+#>                             <num>                       <num>
 #>     rw__day_of_weekSaturday__week rw__day_of_weekSunday__week
 #>                             <num>                       <num>
 #>  1:                             0                           0
@@ -372,6 +378,7 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> 34:                             0                           0
 #> 35:                             0                           0
 #>     rw__day_of_weekSaturday__week rw__day_of_weekSunday__week
+#>                             <num>                       <num>
 #>     rw__day_of_weekMonday__week rw__day_of_weekTuesday__week
 #>                           <num>                        <num>
 #>  1:                           0                            0
@@ -410,5 +417,6 @@ epinowcast:::construct_rw(rw(week, day_of_week), data)
 #> 34:                           0                            1
 #> 35:                           0                            0
 #>     rw__day_of_weekMonday__week rw__day_of_weekTuesday__week
+#>                           <num>                        <num>
 #> 
 ```

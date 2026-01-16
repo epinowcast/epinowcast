@@ -199,4 +199,5 @@ enw_complete_dates(obs, completion_beyond_max_report = TRUE, max_delay = 10)
 #> 35:  2021-10-12     2021-10-03       0
 #> 36:  2021-10-13     2021-10-03       0
 #>     report_date reference_date confirm
+#>          <IDat>         <IDat>   <num>
 ```
