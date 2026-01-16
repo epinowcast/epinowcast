@@ -115,7 +115,7 @@ URL: https://package.epinowcast.org,
     https://github.com/epinowcast/epinowcast/
 BugReports: https://github.com/epinowcast/epinowcast/issues/
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.4.0)
 Imports:
     cli,
     cmdstanr,
