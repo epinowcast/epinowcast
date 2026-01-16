@@ -55,7 +55,7 @@ processed on their own."><meta property="og:image" content="https://package.epin
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Remove random walk terms from a formula object</h1>
-      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/main/R/formula-tools.R" class="external-link"><code>R/formula-tools.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/epinowcast/epinowcast/blob/v0.5.0/R/formula-tools.R" class="external-link"><code>R/formula-tools.R</code></a></small>
       <div class="d-none name"><code>remove_rw_terms.Rd</code></div>
     </div>
 
@@ -112,11 +112,11 @@ the <code>epidemia</code> package (https://github.com/ImperialCollegeLondon/epid
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_rw_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="va">location</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group + location</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562ca0f27c10&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55cfd9b374a8&gt;</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">epinowcast</span><span class="fu">:::</span><span class="fu">remove_rw_terms</span><span class="op">(</span><span class="op">~</span> <span class="fl">1</span> <span class="op">+</span> <span class="va">age_group</span> <span class="op">+</span> <span class="va">location</span> <span class="op">+</span> <span class="fu"><a href="rw.html">rw</a></span><span class="op">(</span><span class="va">week</span>, <span class="va">location</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~1 + age_group + location</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x562ca0c83b10&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55cfea588d00&gt;</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
