@@ -1,28 +1,40 @@
-# epinowcast 0.4.0.1000
+# epinowcast 0.5.0
+
+This release includes minor improvements to the package infrastructure and documentation.
 
 ## Contributors
 
-@jessalynnsebastian and @seabbs contributed code to this release.
+@seabbs and @Bisaloo contributed code to this release.
 
 @seabbs reviewed pull requests for this release.
 
-@jessalynnsebastian and @seabbs reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
-
-## Breaking changes
-
-## Bugs
+@seabbs and @Bisaloo reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Package
 
-- Exported `enw_rolling_sum()` function for aggregating observations over timesteps. This function was previously internal but is needed for users working with non-daily reporting cycles. See #528 by @seabbs and self-reviewed.
+- Exported `enw_rolling_sum()` function for aggregating observations over timesteps.
+  This function was previously internal but is needed for users working with non-daily reporting cycles.
+  See #528 by @seabbs and self-reviewed.
+- Updated minimum R version to 4.4.0 to align with Matrix package.
+- Updated GitHub Actions to use latest versions (checkout v6, upload-artifact v5).
 
 ## Model
 
-- Added support for structural reporting patterns in `enw_report()` via new helper functions `enw_structural_reporting_metadata()` and `enw_dayofweek_structural_reporting()`. This enables modelling of non-daily reporting cycles (e.g., weekly) with a daily underlying generative model. Stan optimizations include precomputing sparse index lookups for aggregation operations to improve computational efficiency and numerical stability. See #528 by @seabbs and self-reviewed.
+- Added support for structural reporting patterns in `enw_report()` via new helper functions `enw_structural_reporting_metadata()` and `enw_dayofweek_structural_reporting()`.
+  This enables modelling of non-daily reporting cycles (e.g., weekly) with a daily underlying generative model.
+  Stan optimisations include precomputing sparse index lookups for aggregation operations to improve computational efficiency and numerical stability.
+  See #528 by @seabbs and self-reviewed.
+
+## Bugs
+
+- Fixed difftime vs integer comparison in test-subset_obs.R.
+  See #692.
+- Fixed lintr 3.2.0 violations to ensure code quality standards are maintained.
+  See #670.
 
 ## Documentation
 
-## Deprecations
+- Updated features vignette to reflect that structural reporting schedules are now supported rather than in development.
 
 # epinowcast 0.4.0
 

@@ -1,6 +1,6 @@
 Package: epinowcast
 Title: A Bayesian Framework for Real-time Infectious Disease Surveillance
-Version: 0.4.0.1000
+Version: 0.5.0
 Authors@R:
   c(person(given = "Sam Abbott",
            role = c("aut", "cre"),

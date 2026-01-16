@@ -26,6 +26,7 @@ For function-specific details, see `?function_name`.
 | **Flexible timesteps** | Daily, weekly, or custom aggregation | [Different timesteps](#timesteps) |
 | **Multi-stratification** | Age groups, regions, pathogens | [Stratification](#stratification) |
 | **Mixed delay models** | Parametric + non-parametric delays | [Delay modelling](#delay-modelling) |
+| **Report date effects** | Day-of-week patterns, structural reporting | [Report date effects](#report-date-effects) |
 | **Latent process models** | Growth rates, renewal processes | [Latent models](#latent-models) |
 | **Hierarchical effects** | Random effects, random walks | [Hierarchical structure](#hierarchical) |
 | **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
@@ -89,6 +90,27 @@ Model reporting delays using parametric distributions, non-parametric hazards, o
 
 **Where to see it:** All vignettes use delay models.
 For non-parametric approaches and mixed models, see `?enw_reference` examples.
+
+# Report Date Effects and Structural Reporting {#report-date-effects}
+
+Model report date effects and known reporting structures.
+
+| Approach | When to use | How to specify | Example |
+|----------|-------------|----------------|---------|
+| Non-parametric report effects | Day-of-week or other report date patterns | `enw_report(non_parametric = ~1 + (1 | day_of_week))` | Flexible report date effects |
+| Structural reporting schedules | Known fixed reporting cycles (e.g., weekly) | `enw_report(structural = structural_data)` | Weekly reporting on specific days |
+| Day-of-week structural | Weekly reporting pattern | `enw_dayofweek_structural_reporting(pobs, "Monday")` | Monday-only reporting |
+| Custom structural patterns | Complex reporting schedules | `enw_structural_reporting_metadata()` with custom data | Flexible aggregation |
+
+**Key functions:**
+
+- `enw_report()`: Specify report date model
+- `enw_dayofweek_structural_reporting()`: Helper for day-of-week patterns
+- `enw_structural_reporting_metadata()`: Create custom structural reporting metadata
+- `enw_rolling_sum()`: Aggregate observations over timesteps
+- See `?enw_report` for details
+
+**Where to see it:** See `inst/examples/germany_weekly_reporting_daily_process_model.R` for an example with weekly reporting and a daily process model.
 
 # Latent Process Models {#latent-models}
 
@@ -229,7 +251,6 @@ If you need any of these capabilities, please reach out via our [community forum
 |---------|--------|-------|
 | Non-count data | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods |
 | Negative updates | Not supported | Cannot handle reporting corrections that reduce previously reported counts |
-| Structured reporting schedules | In development | PR exists for aggregated reporting with known schedules |
 | Delay-only or count-only models | Not supported | Currently requires joint modelling of delay and counts |
 | Susceptibility depletion | Not supported | Renewal process assumes constant susceptibility |
 | Uncertain generation time | Not supported | Generation time distribution treated as fixed and known |
