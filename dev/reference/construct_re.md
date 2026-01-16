@@ -49,10 +49,6 @@ Functions used to help convert formulas into model designs
 ``` r
 # Simple examples
 form <- epinowcast:::parse_formula(~ 1 + (1 | day_of_week))
-#> Warning: the ‘nobars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.
-#> This warning is displayed once per session.
-#> Warning: the ‘findbars’ function has moved to the reformulas package. Please update your imports, or ask an upstream package maintainter to do so.
-#> This warning is displayed once per session.
 data <- enw_example("prepr")$metareference[[1]]
 random_effect <- re(form$random[[1]])
 epinowcast:::construct_re(random_effect, data)
