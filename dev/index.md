@@ -219,15 +219,16 @@ specification. Contributions of any kind are welcome!
 [medewitt](https://github.com/epinowcast/epinowcast/commits?author=medewitt),
 [jamesmbaazam](https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam),
 [pitmonticone](https://github.com/epinowcast/epinowcast/commits?author=pitmonticone),
-[athowes](https://github.com/epinowcast/epinowcast/commits?author=athowes),
 [jessalynnsebastian](https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian),
+[athowes](https://github.com/epinowcast/epinowcast/commits?author=athowes),
 [kathsherratt](https://github.com/epinowcast/epinowcast/commits?author=kathsherratt),
 [barbora-sobolova](https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova),
 [kaitejohnson](https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson),
 [Lnrivas](https://github.com/epinowcast/epinowcast/commits?author=Lnrivas),
 [natemcintosh](https://github.com/epinowcast/epinowcast/commits?author=natemcintosh),
 [nikosbosse](https://github.com/epinowcast/epinowcast/commits?author=nikosbosse),
-[pratikunterwegs](https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs)
+[pratikunterwegs](https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs),
+[seabbs-bot](https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot)
 
 ### Issue Authors
 
