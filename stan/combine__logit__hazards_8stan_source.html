@@ -113,23 +113,22 @@ $(function(){initNavTree('combine__logit__hazards_8stan_source.html',''); initRe
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                             matrix refp_lh, array[] <span class="keywordtype">int</span> dpmfs, <span class="keywordtype">int</span> ref_p,</div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                             <span class="keywordtype">int</span> rep_h, <span class="keywordtype">int</span> g, <span class="keywordtype">int</span> t, <span class="keywordtype">int</span> l, vector refnp_lh, <span class="keywordtype">int</span> refnp_p, <span class="keywordtype">int</span> p) {</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  vector[l] lh;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="comment">// allocate reference date effects</span></div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  <span class="comment">// set reference date effects (or zero if none)</span></div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  <span class="keywordflow">if</span> (ref_p) {</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    lh = refp_lh[1:l, dpmfs[i]];</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  }<span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    lh = rep_vector(0, l);</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="comment">// allocate reference non-parametric effects</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  <span class="comment">// add non-parametric reference effects</span></div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  <span class="keywordflow">if</span> (refnp_p) {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    lh = lh + segment(refnp_lh, p, l);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    lh += segment(refnp_lh, p, l);</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>  }</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  <span class="comment">// allocate reporting time effects</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>  <span class="comment">// add reporting time effects</span></div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  <span class="keywordflow">if</span> (rep_h) {</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    vector[l] rlh = srdlh[rdlurd[g, t:(t + l - 1)]];</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    lh = lh + rlh;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>  <span class="keywordflow">return</span>(lh);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    lh += srdlh[rdlurd[g, t:(t + l - 1)]];</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>  }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>  <span class="keywordflow">return</span>(lh);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
 </div>
 <div class="ttc" id="acombine__logit__hazards_8stan_html_a9a6061dd1cadd700fa8ec3d38adcb2cf"><div class="ttname"><a href="combine__logit__hazards_8stan.html#a9a6061dd1cadd700fa8ec3d38adcb2cf">combine_logit_hazards</a></div><div class="ttdeci">vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int g, int t, int l, vector refnp_lh, int refnp_p, int p)</div><div class="ttdef"><b>Definition</b> <a href="#l00041">combine_logit_hazards.stan:41</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

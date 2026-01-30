@@ -111,39 +111,30 @@ $(function(){initNavTree('hazard_8stan_source.html',''); initResizable(true); })
 <div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">   15</a></span>vector <a class="code hl_function" href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">prob_to_hazard</a>(vector p) {</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="keywordtype">int</span> l = num_elements(p);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="keywordtype">int</span> i = l - 1;</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  vector[l] h;</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  vector[i] cum_p;</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  cum_p[1] = 0;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  cum_p[2:i] = cumulative_sum(p[1:(i-1)]);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>  h[1:i] = p[1:i] .* inv(1 - cum_p);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>  h[l] = 1;</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>  <span class="keywordflow">return</span>(h);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <span class="comment">// h[i] = p[i] / (1 - sum(p[1:(i-1)])), with h[l] = 1 by definition</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <span class="keywordflow">return</span> append_row(</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    p[1:(l-1)] .* inv(1 - append_row(0.0, cumulative_sum(p[1:(l-2)]))),</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    1.0</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  );</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
 </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">   44</a></span>vector <a class="code hl_function" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a>(vector h, <span class="keywordtype">int</span> l) {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>  vector[l] h_shifted;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>  vector[l] ch;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>  h_shifted[1] = 0;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>  <span class="keywordflow">if</span> (l &gt; 1) {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    h_shifted[2:l] = h[1:(l-1)];</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>  }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>  ch = log1m(h_shifted);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>  ch = cumulative_sum(ch);</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>  <span class="keywordflow">return</span>(ch);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">   41</a></span>vector <a class="code hl_function" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a>(vector h, <span class="keywordtype">int</span> l) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>  <span class="comment">// Shift hazards by one time unit: [0, h[1], h[2], ..., h[l-1]]</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>  <span class="comment">// Then compute cumulative sum of log(1 - h_shifted) for survival probability</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>  <span class="keywordflow">return</span> cumulative_sum(log1m(append_row(0.0, h[1:(l-1)])));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
 </div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="foldopen" id="foldopen00078" data-start="{" data-end="}">
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">   78</a></span>vector <a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(vector h, <span class="keywordtype">int</span> l) {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  <span class="keywordflow">return</span>(log(h) + <a class="code hl_function" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a>(h, l));</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">   69</a></span>vector <a class="code hl_function" href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a>(vector h, <span class="keywordtype">int</span> l) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keywordflow">return</span>(log(h) + <a class="code hl_function" href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a>(h, l));</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
 </div>
 <div class="ttc" id="ahazard_8stan_html_a5ed5adf2b346feec0505225a6fc73cd6"><div class="ttname"><a href="hazard_8stan.html#a5ed5adf2b346feec0505225a6fc73cd6">prob_to_hazard</a></div><div class="ttdeci">vector prob_to_hazard(vector p)</div><div class="ttdef"><b>Definition</b> <a href="#l00015">hazard.stan:15</a></div></div>
-<div class="ttc" id="ahazard_8stan_html_a9a601aef6dbbacb82146a2e23689712c"><div class="ttname"><a href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a></div><div class="ttdeci">vector cumulative_converse_log_hazard(vector h, int l)</div><div class="ttdef"><b>Definition</b> <a href="#l00044">hazard.stan:44</a></div></div>
-<div class="ttc" id="ahazard_8stan_html_ae596473f33916489e56f6e555d08f211"><div class="ttname"><a href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h, int l)</div><div class="ttdef"><b>Definition</b> <a href="#l00078">hazard.stan:78</a></div></div>
+<div class="ttc" id="ahazard_8stan_html_a9a601aef6dbbacb82146a2e23689712c"><div class="ttname"><a href="hazard_8stan.html#a9a601aef6dbbacb82146a2e23689712c">cumulative_converse_log_hazard</a></div><div class="ttdeci">vector cumulative_converse_log_hazard(vector h, int l)</div><div class="ttdef"><b>Definition</b> <a href="#l00041">hazard.stan:41</a></div></div>
+<div class="ttc" id="ahazard_8stan_html_ae596473f33916489e56f6e555d08f211"><div class="ttname"><a href="hazard_8stan.html#ae596473f33916489e56f6e555d08f211">hazard_to_log_prob</a></div><div class="ttdeci">vector hazard_to_log_prob(vector h, int l)</div><div class="ttdef"><b>Definition</b> <a href="#l00069">hazard.stan:69</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

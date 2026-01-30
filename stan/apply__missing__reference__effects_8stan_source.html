@@ -109,18 +109,20 @@ $(function(){initNavTree('apply__missing__reference__effects_8stan_source.html',
 <div class="contents">
 <a href="apply__missing__reference__effects_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="apply__missing__reference__effects_8stan.html#a862c232c15648fa2ee775e1b084b27e5">   28</a></span>vector <a class="code hl_function" href="apply__missing__reference__effects_8stan.html#a862c232c15648fa2ee775e1b084b27e5">apply_missing_reference_effects</a>(<span class="keywordtype">int</span> start, <span class="keywordtype">int</span> end, vector obs, </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="apply__missing__reference__effects_8stan.html#a862c232c15648fa2ee775e1b084b27e5">   28</a></span>vector <a class="code hl_function" href="apply__missing__reference__effects_8stan.html#a862c232c15648fa2ee775e1b084b27e5">apply_missing_reference_effects</a>(<span class="keywordtype">int</span> start, <span class="keywordtype">int</span> end, vector obs,</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                       array[] <span class="keywordtype">int</span> sl, array[] <span class="keywordtype">int</span> csl,</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                                       vector miss_ref_lprop) {</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  array[3] <span class="keywordtype">int</span> n = <a class="code hl_function" href="filt__obs__indexes_8stan.html#ae8b4601b76d5ade38e74bd3f715892e2">filt_obs_indexes</a>(start, end, csl, sl);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  vector[n[3]] alloc_obs;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordflow">for</span> (i in start:end) {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    array[3] <span class="keywordtype">int</span> l = <a class="code hl_function" href="filt__obs__indexes_8stan.html#ae8b4601b76d5ade38e74bd3f715892e2">filt_obs_indexes</a>(i, i, csl, sl);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    alloc_obs[l[1]:l[2]] =</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      segment(obs, l[1], l[3]) + miss_ref_lprop[i];</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  }</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keywordflow">return</span>(alloc_obs);        </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="comment">// Declare once outside loop to avoid repeated allocation</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  array[3] <span class="keywordtype">int</span> l;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>  <span class="keywordflow">for</span> (i in start:end) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    l = <a class="code hl_function" href="filt__obs__indexes_8stan.html#ae8b4601b76d5ade38e74bd3f715892e2">filt_obs_indexes</a>(i, i, csl, sl);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    alloc_obs[l[1]:l[2]] =</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      segment(obs, l[1], l[3]) + miss_ref_lprop[i];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>  }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>  <span class="keywordflow">return</span>(alloc_obs);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
 </div>
 <div class="ttc" id="aapply__missing__reference__effects_8stan_html_a862c232c15648fa2ee775e1b084b27e5"><div class="ttname"><a href="apply__missing__reference__effects_8stan.html#a862c232c15648fa2ee775e1b084b27e5">apply_missing_reference_effects</a></div><div class="ttdeci">vector apply_missing_reference_effects(int start, int end, vector obs, array[] int sl, array[] int csl, vector miss_ref_lprop)</div><div class="ttdef"><b>Definition</b> <a href="#l00028">apply_missing_reference_effects.stan:28</a></div></div>
 <div class="ttc" id="afilt__obs__indexes_8stan_html_ae8b4601b76d5ade38e74bd3f715892e2"><div class="ttname"><a href="filt__obs__indexes_8stan.html#ae8b4601b76d5ade38e74bd3f715892e2">filt_obs_indexes</a></div><div class="ttdeci">array[] int filt_obs_indexes(int start, int end, array[] int csl, array[] int sl)</div><div class="ttdef"><b>Definition</b> <a href="filt__obs__indexes_8stan_source.html#l00025">filt_obs_indexes.stan:25</a></div></div>

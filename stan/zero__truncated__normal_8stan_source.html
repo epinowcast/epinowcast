@@ -110,11 +110,8 @@ $(function(){initNavTree('zero__truncated__normal_8stan_source.html',''); initRe
 <a href="zero__truncated__normal_8stan.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="zero__truncated__normal_8stan.html#a11d06b4331460fc15126be737ee9bcab">   29</a></span>real <a class="code hl_function" href="zero__truncated__normal_8stan.html#a11d06b4331460fc15126be737ee9bcab">zero_truncated_normal_lpdf</a>(vector y, real mu, real sigma) {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  real tar;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>  real g = num_elements(y);</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>  tar = normal_lpdf(y | mu, sigma)  -  g * normal_lccdf(0 | mu, sigma);</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keywordflow">return</span>(tar);</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keywordflow">return</span> normal_lpdf(y | mu, sigma) - num_elements(y) * normal_lccdf(0 | mu, sigma);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
 </div>
 <div class="ttc" id="azero__truncated__normal_8stan_html_a11d06b4331460fc15126be737ee9bcab"><div class="ttname"><a href="zero__truncated__normal_8stan.html#a11d06b4331460fc15126be737ee9bcab">zero_truncated_normal_lpdf</a></div><div class="ttdeci">real zero_truncated_normal_lpdf(vector y, real mu, real sigma)</div><div class="ttdef"><b>Definition</b> <a href="#l00029">zero_truncated_normal.stan:29</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

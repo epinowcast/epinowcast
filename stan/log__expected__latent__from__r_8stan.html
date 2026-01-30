@@ -114,10 +114,56 @@ $(function(){initNavTree('log__expected__latent__from__r_8stan.html',''); initRe
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a012e6547e1e583e24b73b6611076dda4" id="r_a012e6547e1e583e24b73b6611076dda4"><td class="memItemLeft" align="right" valign="top">vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a012e6547e1e583e24b73b6611076dda4">extract_group_rates</a> (vector r, array[] int r_g, int k, int r_t)</td></tr>
+<tr class="separator:a012e6547e1e583e24b73b6611076dda4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94b5723677737336dce68db1d4500d43" id="r_a94b5723677737336dce68db1d4500d43"><td class="memItemLeft" align="right" valign="top">array[] vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94b5723677737336dce68db1d4500d43">log_expected_latent_from_r</a> (matrix lexp_latent_int, vector r, array[] int r_g, int r_t, int r_seed, int gt_n, vector lrgt, int t, int g)</td></tr>
 <tr class="separator:a94b5723677737336dce68db1d4500d43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="a012e6547e1e583e24b73b6611076dda4" name="a012e6547e1e583e24b73b6611076dda4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a012e6547e1e583e24b73b6611076dda4">&#9670;&#160;</a></span>extract_group_rates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector extract_group_rates </td>
+          <td>(</td>
+          <td class="paramtype">vector</td>          <td class="paramname"><span class="paramname"><em>r</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">array[]int</td>          <td class="paramname"><span class="paramname"><em>r_g</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>k</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>r_t</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Extract log growth rates for a specific group</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">r</td><td>Vector of all group growth rates concatenated. </td></tr>
+    <tr><td class="paramname">r_g</td><td>Array of indices marking the start of each group in r. </td></tr>
+    <tr><td class="paramname">k</td><td>Group index (1-indexed). </td></tr>
+    <tr><td class="paramname">r_t</td><td>Number of time periods.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Vector of log growth rates for group k. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="log__expected__latent__from__r_8stan_source.html#l00011">11</a> of file <a class="el" href="log__expected__latent__from__r_8stan_source.html">log_expected_latent_from_r.stan</a>.</p>
+
+</div>
+</div>
 <a id="a94b5723677737336dce68db1d4500d43" name="a94b5723677737336dce68db1d4500d43"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a94b5723677737336dce68db1d4500d43">&#9670;&#160;</a></span>log_expected_latent_from_r()</h2>
 
@@ -193,7 +239,7 @@ Functions</h2></td></tr>
 </ol>
 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="log__expected__latent__from__r_8stan_source.html#l00049">49</a> of file <a class="el" href="log__expected__latent__from__r_8stan_source.html">log_expected_latent_from_r.stan</a>.</p>
+<p class="definition">Definition at line <a class="el" href="log__expected__latent__from__r_8stan_source.html#l00063">63</a> of file <a class="el" href="log__expected__latent__from__r_8stan_source.html">log_expected_latent_from_r.stan</a>.</p>
 
 </div>
 </div>

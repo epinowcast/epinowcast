@@ -6,5 +6,6 @@ var searchData=
   ['expected_5fobs_2estan_3',['expected_obs.stan',['../expected__obs_8stan.html',1,'']]],
   ['expected_5fobs_5ffrom_2estan_4',['expected_obs_from.stan',['../expected__obs__from_8stan.html',1,'']]],
   ['expected_5fobs_5ffrom_5findex_5',['expected_obs_from_index',['../expected__obs__from_8stan.html#a89e18a0813cdae5895b1621e48267d40',1,'expected_obs_from.stan']]],
-  ['expected_5fobs_5ffrom_5fsnaps_6',['expected_obs_from_snaps',['../expected__obs__from_8stan.html#ad16d62a15119b422c7f112d3dcf25caf',1,'expected_obs_from.stan']]]
+  ['expected_5fobs_5ffrom_5fsnaps_6',['expected_obs_from_snaps',['../expected__obs__from_8stan.html#ad16d62a15119b422c7f112d3dcf25caf',1,'expected_obs_from.stan']]],
+  ['extract_5fgroup_5frates_7',['extract_group_rates',['../log__expected__latent__from__r_8stan.html#a012e6547e1e583e24b73b6611076dda4',1,'log_expected_latent_from_r.stan']]]
 ];

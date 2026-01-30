@@ -228,42 +228,41 @@ $(function(){initNavTree('discretised__logit__hazard_8stan_source.html',''); ini
 <div class="foldopen" id="foldopen00233" data-start="{" data-end="}">
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno"><a class="line" href="discretised__logit__hazard_8stan.html#acbffe4a50f7fe04889eb84ff12b28465">  233</a></span>vector <a class="code hl_function" href="discretised__logit__hazard_8stan.html#acbffe4a50f7fe04889eb84ff12b28465">log_hazard_to_logit_hazard</a>(vector lhaz) {</div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>  <span class="keywordtype">int</span> n = num_elements(lhaz);</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  vector[n] logit_haz;</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>  <span class="comment">// Logit transformation</span></div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>  logit_haz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);</div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>  <span class="comment">// Set last logit transformed hazard to Inf (i.e h[n] = 1)</span></div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>  logit_haz[n] = positive_infinity();</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  <span class="keywordflow">return</span>(logit_haz);</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>}</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>  <span class="comment">// Logit transform all but last, then append Inf (last hazard h[n] = 1)</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>  <span class="keywordflow">return</span> append_row(</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]),</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    positive_infinity()</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>  );</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>}</div>
 </div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
-<div class="foldopen" id="foldopen00286" data-start="{" data-end="}">
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno"><a class="line" href="discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725">  286</a></span>vector <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725">discretised_logit_hazard</a>(real mu, real sigma, <span class="keywordtype">int</span> dmax, <span class="keywordtype">int</span> dist, </div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>                                <span class="keywordtype">int</span> max_strat, <span class="keywordtype">int</span> ref_as_p) {</div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  vector[dmax] lcdf;</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>  vector[dmax] lprob;</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  vector[dmax] logit_haz; </div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  lcdf = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#aecb7062dcaa570ef1e4a3a4d343dc262">lcdf_discretised</a>(mu, sigma, dmax, dist);</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>  lcdf = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a60124e6aac4f33f6014f30e11bcd4c76">normalise_lcdf_as_uniform_double_censored</a>(lcdf, dmax, max_strat);</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>  lprob = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a435fb15b332f9d0688612c0dc6345ded">lcdf_to_uniform_double_censored_log_prob</a>(lcdf, dmax);</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>  <span class="keywordflow">if</span> (ref_as_p == 1) {</div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="comment">// In the mode where there are no hazard effects downstream functions</span></div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="comment">// make use of the log probability directly so we return it here without</span></div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    <span class="comment">// converting to the logit hazard.</span></div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    logit_haz = lprob;</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>  }<span class="keywordflow">else</span>{</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    vector[dmax] lhaz;</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    lhaz = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a8b4225ccb5a12fc1ac249dcd33c38380">lprob_to_uniform_double_censored_log_hazard</a>(lprob, lcdf, dmax);</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    logit_haz = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#acbffe4a50f7fe04889eb84ff12b28465">log_hazard_to_logit_hazard</a>(lhaz);</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>  }</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>  <span class="keywordflow">return</span>(logit_haz);</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>}</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="foldopen" id="foldopen00285" data-start="{" data-end="}">
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno"><a class="line" href="discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725">  285</a></span>vector <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725">discretised_logit_hazard</a>(real mu, real sigma, <span class="keywordtype">int</span> dmax, <span class="keywordtype">int</span> dist, </div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                                <span class="keywordtype">int</span> max_strat, <span class="keywordtype">int</span> ref_as_p) {</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>  vector[dmax] lcdf;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>  vector[dmax] lprob;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>  vector[dmax] logit_haz; </div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>  lcdf = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#aecb7062dcaa570ef1e4a3a4d343dc262">lcdf_discretised</a>(mu, sigma, dmax, dist);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>  lcdf = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a60124e6aac4f33f6014f30e11bcd4c76">normalise_lcdf_as_uniform_double_censored</a>(lcdf, dmax, max_strat);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>  lprob = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a435fb15b332f9d0688612c0dc6345ded">lcdf_to_uniform_double_censored_log_prob</a>(lcdf, dmax);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>  <span class="keywordflow">if</span> (ref_as_p == 1) {</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    <span class="comment">// In the mode where there are no hazard effects downstream functions</span></div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="comment">// make use of the log probability directly so we return it here without</span></div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    <span class="comment">// converting to the logit hazard.</span></div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    logit_haz = lprob;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>  }<span class="keywordflow">else</span>{</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    vector[dmax] lhaz;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    lhaz = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#a8b4225ccb5a12fc1ac249dcd33c38380">lprob_to_uniform_double_censored_log_hazard</a>(lprob, lcdf, dmax);</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    logit_haz = <a class="code hl_function" href="discretised__logit__hazard_8stan.html#acbffe4a50f7fe04889eb84ff12b28465">log_hazard_to_logit_hazard</a>(lhaz);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>  }</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>  <span class="keywordflow">return</span>(logit_haz);</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>}</div>
 </div>
 <div class="ttc" id="adiscretised__logit__hazard_8stan_html_a435fb15b332f9d0688612c0dc6345ded"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#a435fb15b332f9d0688612c0dc6345ded">lcdf_to_uniform_double_censored_log_prob</a></div><div class="ttdeci">vector lcdf_to_uniform_double_censored_log_prob(vector lcdf, int u)</div><div class="ttdef"><b>Definition</b> <a href="#l00138">discretised_logit_hazard.stan:138</a></div></div>
 <div class="ttc" id="adiscretised__logit__hazard_8stan_html_a523a7a17eab96dcdd5637336795e2410"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#a523a7a17eab96dcdd5637336795e2410">loglogistic_lcdf</a></div><div class="ttdeci">real loglogistic_lcdf(real y, real alpha, real beta)</div><div class="ttdef"><b>Definition</b> <a href="#l00016">discretised_logit_hazard.stan:16</a></div></div>
 <div class="ttc" id="adiscretised__logit__hazard_8stan_html_a60124e6aac4f33f6014f30e11bcd4c76"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#a60124e6aac4f33f6014f30e11bcd4c76">normalise_lcdf_as_uniform_double_censored</a></div><div class="ttdeci">vector normalise_lcdf_as_uniform_double_censored(vector lcdf, int u, int max_strat)</div><div class="ttdef"><b>Definition</b> <a href="#l00084">discretised_logit_hazard.stan:84</a></div></div>
 <div class="ttc" id="adiscretised__logit__hazard_8stan_html_a8b4225ccb5a12fc1ac249dcd33c38380"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#a8b4225ccb5a12fc1ac249dcd33c38380">lprob_to_uniform_double_censored_log_hazard</a></div><div class="ttdeci">vector lprob_to_uniform_double_censored_log_hazard(vector lprob, vector lcdf, int u)</div><div class="ttdoc">Compute discretised logit hazard.</div><div class="ttdef"><b>Definition</b> <a href="#l00195">discretised_logit_hazard.stan:195</a></div></div>
-<div class="ttc" id="adiscretised__logit__hazard_8stan_html_a92a86aaea1391034e8db98b6bf72e725"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725">discretised_logit_hazard</a></div><div class="ttdeci">vector discretised_logit_hazard(real mu, real sigma, int dmax, int dist, int max_strat, int ref_as_p)</div><div class="ttdef"><b>Definition</b> <a href="#l00286">discretised_logit_hazard.stan:286</a></div></div>
+<div class="ttc" id="adiscretised__logit__hazard_8stan_html_a92a86aaea1391034e8db98b6bf72e725"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#a92a86aaea1391034e8db98b6bf72e725">discretised_logit_hazard</a></div><div class="ttdeci">vector discretised_logit_hazard(real mu, real sigma, int dmax, int dist, int max_strat, int ref_as_p)</div><div class="ttdef"><b>Definition</b> <a href="#l00285">discretised_logit_hazard.stan:285</a></div></div>
 <div class="ttc" id="adiscretised__logit__hazard_8stan_html_acbffe4a50f7fe04889eb84ff12b28465"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#acbffe4a50f7fe04889eb84ff12b28465">log_hazard_to_logit_hazard</a></div><div class="ttdeci">vector log_hazard_to_logit_hazard(vector lhaz)</div><div class="ttdef"><b>Definition</b> <a href="#l00233">discretised_logit_hazard.stan:233</a></div></div>
 <div class="ttc" id="adiscretised__logit__hazard_8stan_html_aecb7062dcaa570ef1e4a3a4d343dc262"><div class="ttname"><a href="discretised__logit__hazard_8stan.html#aecb7062dcaa570ef1e4a3a4d343dc262">lcdf_discretised</a></div><div class="ttdeci">vector lcdf_discretised(real mu, real sigma, int u, int dist)</div><div class="ttdef"><b>Definition</b> <a href="#l00040">discretised_logit_hazard.stan:40</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
