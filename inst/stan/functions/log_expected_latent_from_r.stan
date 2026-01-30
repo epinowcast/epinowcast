@@ -68,20 +68,22 @@ array[] vector log_expected_latent_from_r(
 
   if (gt_n == 1) {
     // Exponential growth: cumulative sum on log scale
+    vector[r_t] local_r;
     for (k in 1:g) {
-      vector[r_t] local_r = extract_group_rates(r, r_g, k, r_t);
+      local_r = extract_group_rates(r, r_g, k, r_t);
       exp_lobs[k][1] = lexp_latent_int[1, k];
       exp_lobs[k][(r_seed + 1):t] = exp_lobs[k][1] + cumulative_sum(local_r);
     }
   } else {
     // Renewal equation: work on natural scale for numerical stability
     vector[gt_n] rgt = exp(lrgt);
+    vector[t] exp_obs;
+    vector[r_t] local_R;
     for (k in 1:g) {
-      vector[r_t] local_r = extract_group_rates(r, r_g, k, r_t);
-      vector[t] exp_obs;
+      // Extract and exponentiate growth rates in one step
+      local_R = exp(extract_group_rates(r, r_g, k, r_t));
       exp_obs[1:r_seed] = exp(lexp_latent_int[1:r_seed, k]);
       // Convolve recent cases with generation time to get new cases
-      vector[r_t] local_R = exp(local_r);
       for (i in 1:r_t) {
         exp_obs[r_seed + i] = local_R[i] * dot_product(
           segment(exp_obs, r_seed + i - gt_n, gt_n), rgt

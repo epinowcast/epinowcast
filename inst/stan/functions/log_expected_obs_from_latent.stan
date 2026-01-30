@@ -60,8 +60,10 @@ array[] vector log_expected_obs_from_latent(
     }
   } else {
     int ft = t + rd_n - 1;
+    // Declare once outside loop to avoid repeated allocation
+    vector[ft] exp_obs;
     for (k in 1:g) {
-      vector[ft] exp_obs = csr_matrix_times_vector(
+      exp_obs = csr_matrix_times_vector(
         ft, ft, w, v, u, exp(exp_llatent[k])
       );
       exp_lobs[k] = log(exp_obs[rd_n:ft]) +
