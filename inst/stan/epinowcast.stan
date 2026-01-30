@@ -491,22 +491,18 @@ generated quantities {
       for (i in 1:s) {
         array[3] int l = filt_obs_indexes(i, i, cnsl, nsl);
         log_lik[i] = 0;
-        if (nsl[i]) {
-          for (j in 1:nsl[i]) {
-            log_lik[i] += obs_lpmf(
-              flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1], 
-              phi, model_obs
-            );
-          } 
+        for (j in 1:nsl[i]) {
+          log_lik[i] += obs_lpmf(
+            flat_obs[l[1] + j - 1]  | log_exp_obs[l[1] + j - 1],
+            phi, model_obs
+          );
         }
       }
       // Add log lik component for missing reference model
-      if (miss_obs) {
-        for (i in 1:miss_obs) {
-          log_lik[dmax + i - 1] += obs_lpmf(
-            missing_reference[i] | log_exp_miss_ref[i], phi, model_obs
-          );
-        }
+      for (i in 1:miss_obs) {
+        log_lik[dmax + i - 1] += obs_lpmf(
+          missing_reference[i] | log_exp_miss_ref[i], phi, model_obs
+        );
       }
     }
     }

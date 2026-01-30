@@ -33,9 +33,7 @@ real obs_lpmf(array[] int obs, vector log_exp_obs, array[] real phi,
   }else if (model_obs == 1) {
     tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, phi[1]);
   }else{
-    int m = num_elements(log_exp_obs);
-    vector[m] log_phi_nb1 = log_exp_obs + log(phi[1]);
-    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, exp(log_phi_nb1));
+    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, exp(log_exp_obs + log(phi[1])));
   }
   return(tar);
 }
@@ -48,8 +46,7 @@ real obs_lpmf(int obs, real log_exp_obs, array[] real phi,
   }else if (model_obs == 1) {
     tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, phi[1]);
   }else{
-    real log_phi_nb1 = log_exp_obs + log(phi[1]);
-    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, exp(log_phi_nb1));
+    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, exp(log_exp_obs + log(phi[1])));
   }
   return(tar);
 }
