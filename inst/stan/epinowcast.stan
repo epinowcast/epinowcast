@@ -487,8 +487,10 @@ generated quantities {
     // Likelihood by snapshot (rather than by observation)
     profile("generated_loglik") {
     if (ologlik) {
+      // Declare once outside loop to avoid repeated allocation
+      array[3] int l;
       for (i in 1:s) {
-        array[3] int l = filt_obs_indexes(i, i, cnsl, nsl);
+        l = filt_obs_indexes(i, i, cnsl, nsl);
         log_lik[i] = 0;
         for (j in 1:nsl[i]) {
           log_lik[i] += obs_lpmf(
@@ -508,15 +510,19 @@ generated quantities {
     // Posterior prediction for final reported data (i.e at t + dmax + 1)
     // Organise into a grouped and time structured array
     profile("generated_obs") {
+    // Declare once outside loops to avoid repeated allocation
+    array[3] int f;
+    array[3] int l;
+    array[3] int nl;
     for (k in 1:g) {
       int start_t = max(t - dmax, 0);
       int nowcast_t = min(dmax, t);
       for (i in 1:nowcast_t) {
         // Where am I?
         int i_start = ts[start_t + i, k];
-        array[3] int f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
-        array[3] int l = filt_obs_indexes(i_start, i_start, csl, sl);
-        array[3] int nl = filt_obs_indexes(i_start, i_start, cnsl, nsl);
+        f = filt_obs_indexes(i_start, i_start, csdmax, sdmax);
+        l = filt_obs_indexes(i_start, i_start, csl, sl);
+        nl = filt_obs_indexes(i_start, i_start, cnsl, nsl);
         // Add all estimated reported observations
         pp_inf_obs[i, k] = sum(segment(pp_obs_all, f[1], f[3]));
 
