@@ -53,19 +53,20 @@ array[] vector log_expected_obs_from_latent(
   int g, vector latent_obs_prop
 ) {
   array[g] vector[t] exp_lobs;
-  int ft = t + rd_n - 1;
-  for (k in 1:g) {
-    if (rd_n == 1) {
+  if (rd_n == 1) {
+    for (k in 1:g) {
       exp_lobs[k] = exp_llatent[k] + log(w) +
         segment(latent_obs_prop, (k-1) * t + 1, t);
-    } else {
+    }
+  } else {
+    int ft = t + rd_n - 1;
+    for (k in 1:g) {
       vector[ft] exp_obs = csr_matrix_times_vector(
         ft, ft, w, v, u, exp(exp_llatent[k])
       );
       exp_lobs[k] = log(exp_obs[rd_n:ft]) +
         segment(latent_obs_prop, (k-1) * t + 1, t);
     }
-    
   }
   return(exp_lobs);
 }
