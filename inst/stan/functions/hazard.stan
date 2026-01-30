@@ -14,15 +14,11 @@
  */
 vector prob_to_hazard(vector p) {
   int l = num_elements(p);
-  vector[l] h;
-  // Cumulative probabilities shifted by one: [0, cumsum(p[1:(l-2)])]
-  // h[i] = p[i] / (1 - sum(p[1:(i-1)]))
-  h[1:(l-1)] = p[1:(l-1)] .* inv(
-    1 - append_row(0.0, cumulative_sum(p[1:(l-2)]))
+  // h[i] = p[i] / (1 - sum(p[1:(i-1)])), with h[l] = 1 by definition
+  return append_row(
+    p[1:(l-1)] .* inv(1 - append_row(0.0, cumulative_sum(p[1:(l-2)]))),
+    1.0
   );
-  // Final hazard is 1 by definition (must eventually report)
-  h[l] = 1;
-  return(h);
 }
 
 /**
