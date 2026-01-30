@@ -42,20 +42,19 @@ vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh,
                              matrix refp_lh, array[] int dpmfs, int ref_p,
                              int rep_h, int g, int t, int l, vector refnp_lh, int refnp_p, int p) {
   vector[l] lh;
-  // allocate reference date effects
+  // set reference date effects (or zero if none)
   if (ref_p) {
     lh = refp_lh[1:l, dpmfs[i]];
-  }else{
+  } else {
     lh = rep_vector(0, l);
   }
-  // allocate reference non-parametric effects
+  // add non-parametric reference effects
   if (refnp_p) {
-    lh = lh + segment(refnp_lh, p, l);
+    lh += segment(refnp_lh, p, l);
   }
-  // allocate reporting time effects
+  // add reporting time effects
   if (rep_h) {
-    vector[l] rlh = srdlh[rdlurd[g, t:(t + l - 1)]];
-    lh = lh + rlh;
+    lh += srdlh[rdlurd[g, t:(t + l - 1)]];
   }
   return(lh);
 }
