@@ -39,10 +39,11 @@ vector expected_obs_from_index(
   array[,,] int rep_agg_n_selected,
   array[,,,] int rep_agg_selected_idx
 ) {
+  vector[l] lh;
   profile("model_likelihood_hazard_allocations") {
-  vector[l] lh = combine_logit_hazards(
-    i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh, ref_np, p
-  );
+    lh = combine_logit_hazards(
+      i, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, g, t, l, refnp_lh, ref_np, p
+    );
   }
   // Extract precomputed selected indices for this group/time
   array[l] int n_sel;
@@ -51,11 +52,7 @@ vector expected_obs_from_index(
     n_sel = rep_agg_n_selected[g, t, 1:l];
     sel_idx = rep_agg_selected_idx[g, t, 1:l, 1:l];
   }
-  vector[l] log_exp_obs;
-  profile("model_likelihood_expected_obs") {
-  log_exp_obs = expected_obs(imp_obs[g][t], lh, l, ref_as_p, rep_agg_p, n_sel, sel_idx);
-  }
-  return(log_exp_obs);
+  return expected_obs(imp_obs[g][t], lh, l, ref_as_p, rep_agg_p, n_sel, sel_idx);
 }
 
 /**
