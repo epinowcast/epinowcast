@@ -277,15 +277,16 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam">jamesmbaazam</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pitmonticone">pitmonticone</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian">jessalynnsebastian</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=athowes">athowes</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kathsherratt">kathsherratt</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova">barbora-sobolova</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson">kaitejohnson</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse">nikosbosse</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>
+<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot">seabbs-bot</a>
 
 ### Issue Authors
 
