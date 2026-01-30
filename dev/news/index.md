@@ -1,22 +1,30 @@
 # Changelog
 
-## epinowcast 0.4.0.1000
+## epinowcast 0.5.0.1000
+
+### Model
+
+- Optimised Stan code for efficiency by inlining intermediate variables
+  and removing unnecessary loop guards. See
+  [\#695](https://github.com/epinowcast/epinowcast/issues/695) by
+  [@seabbs](https://github.com/seabbs).
+
+## epinowcast 0.5.0
+
+This release includes minor improvements to the package infrastructure
+and documentation.
 
 ### Contributors
 
-[@jessalynnsebastian](https://github.com/jessalynnsebastian) and
-[@seabbs](https://github.com/seabbs) contributed code to this release.
+[@seabbs](https://github.com/seabbs) and
+[@Bisaloo](https://github.com/Bisaloo) contributed code to this release.
 
 [@seabbs](https://github.com/seabbs) reviewed pull requests for this
 release.
 
-[@jessalynnsebastian](https://github.com/jessalynnsebastian) and
-[@seabbs](https://github.com/seabbs) reported bugs, made suggestions, or
-contributed to discussions that led to improvements in this release.
-
-### Breaking changes
-
-### Bugs
+[@seabbs](https://github.com/seabbs) and
+[@Bisaloo](https://github.com/Bisaloo) reported bugs, made suggestions,
+or contributed to discussions that led to improvements in this release.
 
 ### Package
 
@@ -27,6 +35,9 @@ contributed to discussions that led to improvements in this release.
   reporting cycles. See
   [\#528](https://github.com/epinowcast/epinowcast/issues/528) by
   [@seabbs](https://github.com/seabbs) and self-reviewed.
+- Updated minimum R version to 4.4.0 to align with Matrix package.
+- Updated GitHub Actions to use latest versions (checkout v6,
+  upload-artifact v5).
 
 ### Model
 
@@ -37,15 +48,24 @@ contributed to discussions that led to improvements in this release.
   and
   [`enw_dayofweek_structural_reporting()`](https://package.epinowcast.org/dev/reference/enw_dayofweek_structural_reporting.md).
   This enables modelling of non-daily reporting cycles (e.g., weekly)
-  with a daily underlying generative model. Stan optimizations include
+  with a daily underlying generative model. Stan optimisations include
   precomputing sparse index lookups for aggregation operations to
   improve computational efficiency and numerical stability. See
   [\#528](https://github.com/epinowcast/epinowcast/issues/528) by
   [@seabbs](https://github.com/seabbs) and self-reviewed.
 
+### Bugs
+
+- Fixed difftime vs integer comparison in test-subset_obs.R. See
+  [\#692](https://github.com/epinowcast/epinowcast/issues/692).
+- Fixed lintr 3.2.0 violations to ensure code quality standards are
+  maintained. See
+  [\#670](https://github.com/epinowcast/epinowcast/issues/670).
+
 ### Documentation
 
-### Deprecations
+- Updated features vignette to reflect that structural reporting
+  schedules are now supported rather than in development.
 
 ## epinowcast 0.4.0
 
@@ -1299,7 +1319,7 @@ following sections.
   of internal rewrite, introduces
   [`coerce_date()`](https://package.epinowcast.org/dev/reference/coerce_date.md)
   to `R/utils.R`, which wraps
-  [`data.table::as.IDate()`](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html)
+  [`data.table::as.IDate()`](https://rdrr.io/pkg/data.table/man/IDateTime.html)
   with error handling. See
   [\#151](https://github.com/epinowcast/epinowcast/issues/151) by
   [@pearsonca](https://github.com/pearsonca).

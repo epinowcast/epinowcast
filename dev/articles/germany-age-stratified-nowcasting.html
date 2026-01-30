@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.5.0.1000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -450,7 +450,7 @@ plot of chunk ind_nowcast
 <span><span class="op">)</span></span>
 <span><span class="va">summarised_nowcasts</span><span class="op">$</span><span class="va">`Independent by age, Reference: Week, Report: Day of week`</span> <span class="op">&lt;-</span> <span class="va">independent_nowcast_summary</span> <span class="co"># nolint</span></span>
 <span></span>
-<span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span>,</span>
+<span><span class="va">summarised_nowcasts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">summarised_nowcasts</span>, idcol <span class="op">=</span> <span class="st">"model"</span>,</span>
 <span>                                 use.names <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">summarised_nowcasts</span><span class="op">[</span>, <span class="fu">`:=`</span><span class="op">(</span></span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span></span>
@@ -506,7 +506,7 @@ Other performance characteristics are relatively similar across models (with all
 <span>      <span class="op">}</span><span class="op">)</span>,</span>
 <span>      fill <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">within</a></span><span class="op">(</span><span class="op">{</span></span>
 <span>    <span class="va">.group</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span></span>

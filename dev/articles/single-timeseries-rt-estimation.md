@@ -1273,35 +1273,49 @@ real-time performance of the model.
 
 ## References
 
-1\. Fraser, C. (2007). Estimating individual and household reproduction
+1\.
+
+Fraser, C. (2007). Estimating individual and household reproduction
 numbers in an emerging epidemic. *PLoS One*, *2*(8), e758.
 <https://doi.org/10.1371/journal.pone.0000758>
 
-2\. Cori, A., Ferguson, N. M., Fraser, C., & Cauchemez, S. (2013). A new
+2\.
+
+Cori, A., Ferguson, N. M., Fraser, C., & Cauchemez, S. (2013). A new
 framework and software to estimate time-varying reproduction numbers
 during epidemics. *Am. J. Epidemiol.*, *178*(9), 1505–1512.
 <https://doi.org/10.1093/aje/kwt133>
 
-3\. Champredon, D., Dushoff, J., & Earn, D. J. D. (2018). Equivalence of
-the Erlang-Distributed SEIR epidemic model and the renewal equation.
-*SIAM J. Appl. Math.*, *78*(6), 3258–3278.
+3\.
+
+Champredon, D., Dushoff, J., & Earn, D. J. D. (2018). Equivalence of the
+Erlang-Distributed SEIR epidemic model and the renewal equation. *SIAM
+J. Appl. Math.*, *78*(6), 3258–3278.
 <https://doi.org/10.1137/18M1186411>
 
-4\. Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J.,
-Badr, H. S., DeWitt, M., Thompson, R., EpiForecasts, & Funk, S. (2020).
+4\.
+
+Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J., Badr,
+H. S., DeWitt, M., Thompson, R., EpiForecasts, & Funk, S. (2020).
 *EpiNow2: Estimate real-time case counts and time-varying
 epidemiological parameters*. <https://doi.org/10.5281/zenodo.3957489>
 
-5\. Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H.
-P., Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J.
-Y., Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A.
-B., Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID
+5\.
+
+Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H. P.,
+Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J. Y.,
+Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A. B.,
+Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID
 modelling group. (2020). Estimating the time-varying reproduction number
 of SARS-CoV-2 using national and subnational case counts. *Wellcome Open
 Res.*, *5*, 112. <https://doi.org/10.12688/wellcomeopenres.16006.2>
 
-6\. Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., &
-Scott, J. A. (2020). *Semi-Mechanistic bayesian modeling of COVID-19
-with renewal processes*. <https://arxiv.org/abs/2012.00394>
+6\.
 
-7\. Lison, A. (n.d.). *Nowcast-transmission*. Github.
+Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., & Scott, J.
+A. (2020). *Semi-Mechanistic bayesian modeling of COVID-19 with renewal
+processes*. <https://arxiv.org/abs/2012.00394>
+
+7\.
+
+Lison, A. (n.d.). *Nowcast-transmission*. Github.

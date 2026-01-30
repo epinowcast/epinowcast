@@ -471,74 +471,107 @@ and the age-stratified nowcasting vignette
 
 ## References
 
-1\. Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J.,
-Badr, H. S., DeWitt, M., Thompson, R., EpiForecasts, & Funk, S. (2020).
+1\.
+
+Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J., Badr,
+H. S., DeWitt, M., Thompson, R., EpiForecasts, & Funk, S. (2020).
 *EpiNow2: Estimate real-time case counts and time-varying
 epidemiological parameters*. <https://doi.org/10.5281/zenodo.3957489>
 
-2\. Scott, J. A., Gandy, A., Mishra, S., Unwin, J., Flaxman, S., &
-Bhatt, S. (2020). *Epidemia: Modeling of epidemics using hierarchical
-bayesian models*. <https://imperialcollegelondon.github.io/epidemia/>
+2\.
 
-3\. Fraser, C. (2007). Estimating individual and household reproduction
+Scott, J. A., Gandy, A., Mishra, S., Unwin, J., Flaxman, S., & Bhatt, S.
+(2020). *Epidemia: Modeling of epidemics using hierarchical bayesian
+models*. <https://imperialcollegelondon.github.io/epidemia/>
+
+3\.
+
+Fraser, C. (2007). Estimating individual and household reproduction
 numbers in an emerging epidemic. *PLoS One*, *2*(8), e758.
 <https://doi.org/10.1371/journal.pone.0000758>
 
-4\. Cori, A., Ferguson, N. M., Fraser, C., & Cauchemez, S. (2013). A new
+4\.
+
+Cori, A., Ferguson, N. M., Fraser, C., & Cauchemez, S. (2013). A new
 framework and software to estimate time-varying reproduction numbers
 during epidemics. *Am. J. Epidemiol.*, *178*(9), 1505–1512.
 <https://doi.org/10.1093/aje/kwt133>
 
-5\. Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H.
-P., Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J.
-Y., Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A.
-B., Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID
+5\.
+
+Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H. P.,
+Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J. Y.,
+Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A. B.,
+Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID
 modelling group. (2020). Estimating the time-varying reproduction number
 of SARS-CoV-2 using national and subnational case counts. *Wellcome Open
 Res.*, *5*, 112. <https://doi.org/10.12688/wellcomeopenres.16006.2>
 
-6\. Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., &
-Scott, J. A. (2020). *Semi-Mechanistic bayesian modeling of COVID-19
-with renewal processes*. <https://arxiv.org/abs/2012.00394>
+6\.
 
-7\. Champredon, D., Dushoff, J., & Earn, D. J. D. (2018). Equivalence of
-the Erlang-Distributed SEIR epidemic model and the renewal equation.
-*SIAM J. Appl. Math.*, *78*(6), 3258–3278.
+Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., & Scott, J.
+A. (2020). *Semi-Mechanistic bayesian modeling of COVID-19 with renewal
+processes*. <https://arxiv.org/abs/2012.00394>
+
+7\.
+
+Champredon, D., Dushoff, J., & Earn, D. J. D. (2018). Equivalence of the
+Erlang-Distributed SEIR epidemic model and the renewal equation. *SIAM
+J. Appl. Math.*, *78*(6), 3258–3278.
 <https://doi.org/10.1137/18M1186411>
 
-8\. Günther, F., Bender, A., Katz, K., Küchenhoff, H., & Höhle, M.
-(2021). Nowcasting the COVID-19 pandemic in Bavaria. *Biometrical
-Journal*, *63*(3), 490–502. <https://doi.org/10.1002/bimj.202000112>
+8\.
 
-9\. Höhle, M., & Heiden, M. an der. (2014). Bayesian nowcasting during
-the STEC O104:H4 outbreak in Germany, 2011. *Biometrics*, *70*(4),
-993–1002. <https://doi.org/10.1111/biom.12194>
+Günther, F., Bender, A., Katz, K., Küchenhoff, H., & Höhle, M. (2021).
+Nowcasting the COVID-19 pandemic in Bavaria. *Biometrical Journal*,
+*63*(3), 490–502. <https://doi.org/10.1002/bimj.202000112>
 
-10\. Meyer, S., Held, L., & Höhle, M. (2017). Spatio-temporal analysis
-of epidemic phenomena using the R package surveillance. *Journal of
+9\.
+
+Höhle, M., & Heiden, M. an der. (2014). Bayesian nowcasting during the
+STEC O104:H4 outbreak in Germany, 2011. *Biometrics*, *70*(4), 993–1002.
+<https://doi.org/10.1111/biom.12194>
+
+10\.
+
+Meyer, S., Held, L., & Höhle, M. (2017). Spatio-temporal analysis of
+epidemic phenomena using the R package surveillance. *Journal of
 Statistical Software*, *77*(11), 1–55.
 <https://doi.org/10.18637/jss.v077.i11>
 
-11\. Lison, A. (n.d.). *Nowcast-transmission*. Github.
+11\.
 
-12\. Team, S. D. (2021). *Stan modeling language users guide and
-reference manual, 2.28.1*.
+Lison, A. (n.d.). *Nowcast-transmission*. Github.
 
-13\. Gabry, J., & Češnovar, R. (2021). *Cmdstanr: R interface to
-’CmdStan’*.
+12\.
 
-14\. Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M.,
-Coelho, F. C., Cruz, O. G., Stoner, O., Bailey, T., & Codeço, C. T.
-(2019). A modelling approach for correcting reporting delays in disease
+Team, S. D. (2021). *Stan modeling language users guide and reference
+manual, 2.28.1*.
+
+13\.
+
+Gabry, J., & Češnovar, R. (2021). *Cmdstanr: R interface to ’CmdStan’*.
+
+14\.
+
+Bastos, L. S., Economou, T., Gomes, M. F. C., Villela, D. A. M., Coelho,
+F. C., Cruz, O. G., Stoner, O., Bailey, T., & Codeço, C. T. (2019). A
+modelling approach for correcting reporting delays in disease
 surveillance data. *Statistics in Medicine*, *38*(22), 4363–4377.
 <https://doi.org/10.1002/sim.8303>
 
-15\. Team, S. D. (2020). *Prior choice recommendations*.
+15\.
 
-16\. R Core Team. (2019). *R: A language and environment for statistical
+Team, S. D. (2020). *Prior choice recommendations*.
+
+16\.
+
+R Core Team. (2019). *R: A language and environment for statistical
 computing*. R Foundation for Statistical Computing.
 <https://www.R-project.org/>
 
-17\. Bosse, N. (2020). *Scoringutils: A collection of proper scoring
-rules and metrics to assess predictions*.
+17\.
+
+Bosse, N. (2020). *Scoringutils: A collection of proper scoring rules
+and metrics to assess predictions*.
 <https://github.com/epiforecasts/scoringutils>

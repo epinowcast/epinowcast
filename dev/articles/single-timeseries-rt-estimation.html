@@ -39,7 +39,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.4.0.1000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.5.0.1000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -346,9 +346,9 @@
 </h3>
 <p>Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in <code>epinowcast</code> to visualise the data, but we can use the <code>ggplot2</code> package to do this manually as follows,</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
+<code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
-<span>  <span class="va">report_date</span> <span class="op">:=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fcase.html" class="external-link">fcase</a></span><span class="op">(</span></span>
+<span>  <span class="va">report_date</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fcase.html" class="external-link">fcase</a></span><span class="op">(</span></span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-05-15"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-05-15"</span><span class="op">)</span>,</span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span>,</span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-15"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-15"</span><span class="op">)</span>,</span>
@@ -761,18 +761,18 @@
 <span>    <span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>      <span class="va">x</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">draws</span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean"</span>, <span class="st">"refp_sd"</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">draws</span><span class="op">[</span></span>
 <span>    ,</span>
 <span>    <span class="va">cdf</span> <span class="op">:=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span></span>
 <span>      <span class="va">`refp_mean[1]`</span>, <span class="va">`refp_sd[1]`</span>,</span>
-<span>      <span class="op">~</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
+<span>      <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
 <span>        delay <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, cdf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">plnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">plnorm</a></span><span class="op">(</span><span class="fl">30</span>, <span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">]</span></span>
-<span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>, <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>,</span>
 <span>    <span class="fu">.</span><span class="op">(</span></span>
 <span>      mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span>,</span>
@@ -788,7 +788,7 @@
 <span>  <span class="st">"Retrospective"</span> <span class="op">=</span> <span class="va">retro_germany_nowcast</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">extract_epinowcast_cdf</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>idcol <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>idcol <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">nowcast_cdf</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">delay</span>, y <span class="op">=</span> <span class="va">mean</span>, col <span class="op">=</span> <span class="va">Data</span>, fill <span class="op">=</span> <span class="va">Data</span><span class="op">)</span> <span class="op">+</span></span>
@@ -912,27 +912,40 @@ are currently indexed to the date of infection.</li>
 <div class="section level2 unnumbered">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
+<div id="refs" class="references csl-bib-body" entry-spacing="0" line-spacing="2">
 <div id="ref-Fraser2007" class="csl-entry">
-1. Fraser, C. (2007). Estimating individual and household reproduction numbers in an emerging epidemic. <em>PLoS One</em>, <em>2</em>(8), e758. <a href="https://doi.org/10.1371/journal.pone.0000758" class="external-link">https://doi.org/10.1371/journal.pone.0000758</a>
+<div class="csl-left-margin">1. </div>
+<div class="csl-right-inline">Fraser, C. (2007). Estimating individual and household reproduction numbers in an emerging epidemic. <em>PLoS One</em>, <em>2</em>(8), e758. <a href="https://doi.org/10.1371/journal.pone.0000758" class="external-link">https://doi.org/10.1371/journal.pone.0000758</a>
+</div>
 </div>
 <div id="ref-Cori2013" class="csl-entry">
-2. Cori, A., Ferguson, N. M., Fraser, C., &amp; Cauchemez, S. (2013). A new framework and software to estimate time-varying reproduction numbers during epidemics. <em>Am. J. Epidemiol.</em>, <em>178</em>(9), 1505–1512. <a href="https://doi.org/10.1093/aje/kwt133" class="external-link">https://doi.org/10.1093/aje/kwt133</a>
+<div class="csl-left-margin">2. </div>
+<div class="csl-right-inline">Cori, A., Ferguson, N. M., Fraser, C., &amp; Cauchemez, S. (2013). A new framework and software to estimate time-varying reproduction numbers during epidemics. <em>Am. J. Epidemiol.</em>, <em>178</em>(9), 1505–1512. <a href="https://doi.org/10.1093/aje/kwt133" class="external-link">https://doi.org/10.1093/aje/kwt133</a>
+</div>
 </div>
 <div id="ref-champredon" class="csl-entry">
-3. Champredon, D., Dushoff, J., &amp; Earn, D. J. D. (2018). Equivalence of the <span>Erlang-Distributed</span> <span>SEIR</span> epidemic model and the renewal equation. <em>SIAM J. Appl. Math.</em>, <em>78</em>(6), 3258–3278. <a href="https://doi.org/10.1137/18M1186411" class="external-link">https://doi.org/10.1137/18M1186411</a>
+<div class="csl-left-margin">3. </div>
+<div class="csl-right-inline">Champredon, D., Dushoff, J., &amp; Earn, D. J. D. (2018). Equivalence of the <span>Erlang-Distributed</span> <span>SEIR</span> epidemic model and the renewal equation. <em>SIAM J. Appl. Math.</em>, <em>78</em>(6), 3258–3278. <a href="https://doi.org/10.1137/18M1186411" class="external-link">https://doi.org/10.1137/18M1186411</a>
+</div>
 </div>
 <div id="ref-EpiNow2" class="csl-entry">
-4. Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J., Badr, H. S., DeWitt, M., Thompson, R., EpiForecasts, &amp; Funk, S. (2020). <em>EpiNow2: Estimate real-time case counts and time-varying epidemiological parameters</em>. <a href="https://doi.org/10.5281/zenodo.3957489" class="external-link">https://doi.org/10.5281/zenodo.3957489</a>
+<div class="csl-left-margin">4. </div>
+<div class="csl-right-inline">Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J., Badr, H. S., DeWitt, M., Thompson, R., EpiForecasts, &amp; Funk, S. (2020). <em>EpiNow2: Estimate real-time case counts and time-varying epidemiological parameters</em>. <a href="https://doi.org/10.5281/zenodo.3957489" class="external-link">https://doi.org/10.5281/zenodo.3957489</a>
+</div>
 </div>
 <div id="ref-Abbott2020" class="csl-entry">
-5. Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H. P., Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J. Y., Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A. B., Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID modelling group. (2020). Estimating the time-varying reproduction number of <span>SARS-CoV-2</span> using national and subnational case counts. <em>Wellcome Open Res.</em>, <em>5</em>, 112. <a href="https://doi.org/10.12688/wellcomeopenres.16006.2" class="external-link">https://doi.org/10.12688/wellcomeopenres.16006.2</a>
+<div class="csl-left-margin">5. </div>
+<div class="csl-right-inline">Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H. P., Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J. Y., Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A. B., Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID modelling group. (2020). Estimating the time-varying reproduction number of <span>SARS-CoV-2</span> using national and subnational case counts. <em>Wellcome Open Res.</em>, <em>5</em>, 112. <a href="https://doi.org/10.12688/wellcomeopenres.16006.2" class="external-link">https://doi.org/10.12688/wellcomeopenres.16006.2</a>
+</div>
 </div>
 <div id="ref-Bhatt2020" class="csl-entry">
-6. Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., &amp; Scott, J. A. (2020). <em><span>Semi-Mechanistic</span> bayesian modeling of <span>COVID-19</span> with renewal processes</em>. <a href="https://arxiv.org/abs/2012.00394" class="external-link">https://arxiv.org/abs/2012.00394</a>
+<div class="csl-left-margin">6. </div>
+<div class="csl-right-inline">Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., &amp; Scott, J. A. (2020). <em><span>Semi-Mechanistic</span> bayesian modeling of <span>COVID-19</span> with renewal processes</em>. <a href="https://arxiv.org/abs/2012.00394" class="external-link">https://arxiv.org/abs/2012.00394</a>
+</div>
 </div>
 <div id="ref-Lison2022" class="csl-entry">
-7. Lison, A. (n.d.). <em>Nowcast-transmission</em>. Github.
+<div class="csl-left-margin">7. </div>
+<div class="csl-right-inline">Lison, A. (n.d.). <em>Nowcast-transmission</em>. Github.</div>
 </div>
 </div>
 </div>

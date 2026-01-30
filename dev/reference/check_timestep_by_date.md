@@ -16,7 +16,7 @@ check_timestep_by_date(obs, timestep = "day", exact = TRUE)
 - obs:
 
   Any of the types supported by
-  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html).
+  [`data.table::as.data.table()`](https://rdrr.io/pkg/data.table/man/as.data.table.html).
 
 - timestep:
 

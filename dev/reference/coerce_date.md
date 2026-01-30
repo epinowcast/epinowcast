@@ -1,8 +1,8 @@
 # Coerce Dates
 
 Provides consistent coercion of inputs to
-[IDate](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html)
-with error handling
+[IDate](https://rdrr.io/pkg/data.table/man/IDateTime.html) with error
+handling
 
 ## Usage
 
@@ -15,25 +15,23 @@ coerce_date(dates = NULL)
 - dates:
 
   A vector-like input, which the function attempts to coerce via
-  [`data.table::as.IDate()`](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html).
+  [`data.table::as.IDate()`](https://rdrr.io/pkg/data.table/man/IDateTime.html).
   Defaults to NULL.
 
 ## Value
 
-An
-[IDate](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html)
-vector.
+An [IDate](https://rdrr.io/pkg/data.table/man/IDateTime.html) vector.
 
 ## Details
 
 If any of the elements of `dates` cannot be coerced, this function will
 result in an error, indicating all indices which cannot be coerced to
-[IDate](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html).
+[IDate](https://rdrr.io/pkg/data.table/man/IDateTime.html).
 
 Internal methods of
 [epinowcast](https://package.epinowcast.org/dev/reference/epinowcast.md)
 assume dates are represented as
-[IDate](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html).
+[IDate](https://rdrr.io/pkg/data.table/man/IDateTime.html).
 
 ## See also
 

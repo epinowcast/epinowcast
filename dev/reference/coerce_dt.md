@@ -1,8 +1,8 @@
 # Coerce `data.table`s
 
 Provides consistent coercion of inputs to
-[data.table](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
-with error handling, column checking, and optional selection.
+[data.table](https://rdrr.io/pkg/data.table/man/data.table.html) with
+error handling, column checking, and optional selection.
 
 ## Usage
 
@@ -25,7 +25,7 @@ coerce_dt(
 - data:
 
   Any of the types supported by
-  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html)
+  [`data.table::as.data.table()`](https://rdrr.io/pkg/data.table/man/as.data.table.html)
 
 - select:
 
@@ -48,7 +48,7 @@ coerce_dt(
 
   A logical; ensure the presence of `report_date` and `reference_date`?
   If `TRUE` (default), those columns will be coerced with
-  [as.IDate](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html).
+  [as.IDate](https://rdrr.io/pkg/data.table/man/IDateTime.html).
 
 - copy:
 

@@ -459,8 +459,10 @@ with [epinowcast](https://package.epinowcast.org), reach out!
   Analysis](https://avehtari.github.io/BDA_R_demos/demos_rstan/) and
   [case studies](https://users.aalto.fi/~ave/casestudies.html)
 
-1\. Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter,
-B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020,
+1\.
+
+Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B.,
+Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020,
 November 3). *Bayesian Workflow*.
 <https://doi.org/10.48550/arXiv.2011.01808>
 

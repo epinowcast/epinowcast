@@ -20,7 +20,7 @@ enw_add_metaobs_features(
 - metaobs:
 
   Raw data, coercible via
-  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html).
+  [`data.table::as.data.table()`](https://rdrr.io/pkg/data.table/man/as.data.table.html).
   Coerced object must have [Dates](https://rdrr.io/r/base/Dates.html)
   column corresponding to `datecol` name.
 
