@@ -39,6 +39,7 @@ vector expected_obs_from_index(
   array[,,] int rep_agg_n_selected,
   array[,,,] int rep_agg_selected_idx
 ) {
+  // Combine logit hazards from reference and reporting time effects
   vector[l] lh;
   profile("model_likelihood_hazard_allocations") {
     lh = combine_logit_hazards(
@@ -52,6 +53,7 @@ vector expected_obs_from_index(
     n_sel = rep_agg_n_selected[g, t, 1:l];
     sel_idx = rep_agg_selected_idx[g, t, 1:l, 1:l];
   }
+  // Combine expected final obs and time effects to get expected obs
   return expected_obs(imp_obs[g][t], lh, l, ref_as_p, rep_agg_p, n_sel, sel_idx);
 }
 
