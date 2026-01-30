@@ -33,8 +33,10 @@ array[] int obs_rng(vector log_exp_obs, array[] real phi, int model_obs) {
       } else if (model_obs == 1) {
         pp[i] = neg_binomial_2_log_rng(log_exp_obs[i], phi[1]);
       } else {
-        real log_phi_nb1 = log_exp_obs[i] + log(phi[1]);
-        pp[i] = neg_binomial_2_log_rng(log_exp_obs[i], exp(log_phi_nb1));
+        // NB1 parameterisation: variance = mu + phi * mu, so phi_nb2 = mu * phi
+        pp[i] = neg_binomial_2_log_rng(
+          log_exp_obs[i], exp(log_exp_obs[i] + log(phi[1]))
+        );
       }
     }
   }

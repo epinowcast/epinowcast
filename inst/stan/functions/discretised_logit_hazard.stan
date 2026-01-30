@@ -232,12 +232,11 @@ vector lprob_to_uniform_double_censored_log_hazard(vector lprob, vector lcdf,
  */
 vector log_hazard_to_logit_hazard(vector lhaz) {
   int n = num_elements(lhaz);
-  vector[n] logit_haz;
-  // Logit transformation
-  logit_haz[1:(n-1)] = lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]);
-  // Set last logit transformed hazard to Inf (i.e h[n] = 1)
-  logit_haz[n] = positive_infinity();
-  return(logit_haz);
+  // Logit transform all but last, then append Inf (last hazard h[n] = 1)
+  return append_row(
+    lhaz[1:(n-1)] - log1m_exp(lhaz[1:(n-1)]),
+    positive_infinity()
+  );
 }
 
 /**

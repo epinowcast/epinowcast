@@ -42,11 +42,9 @@ real log_dot_product(vector x, vector y) {
  * the efficiency of certain matrix algorithms.
  */
 int num_nonzero(matrix x) {
-  int i = rows(x);
-  int j = cols(x);
   int n = 0;
-  for (k in 1:i) {
-    for (l in 1:j) {
+  for (k in 1:rows(x)) {
+    for (l in 1:cols(x)) {
       if (x[k, l] != 0) {
         n = n + 1;
       }

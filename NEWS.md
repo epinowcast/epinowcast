@@ -1,3 +1,9 @@
+# epinowcast 0.5.0.1000
+
+## Model
+
+- Optimised Stan code for efficiency by inlining intermediate variables and removing unnecessary loop guards. See #695 by @seabbs.
+
 # epinowcast 0.5.0
 
 This release includes minor improvements to the package infrastructure and documentation.
