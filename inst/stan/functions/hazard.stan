@@ -42,14 +42,9 @@ vector prob_to_hazard(vector p) {
  *  where @f[ h_{0} @f] is considered to be 0.
  */
 vector cumulative_converse_log_hazard(vector h, int l) {
-  // Shift hazards by one time unit: h_shifted = [0, h[1], h[2], ..., h[l-1]]
-  vector[l] h_shifted;
-  h_shifted[1] = 0;
-  if (l > 1) {
-    h_shifted[2:l] = h[1:(l-1)];
-  }
-  // Compute cumulative sum of log(1 - h_shifted) for survival probability
-  return cumulative_sum(log1m(h_shifted));
+  // Shift hazards by one time unit: [0, h[1], h[2], ..., h[l-1]]
+  // Then compute cumulative sum of log(1 - h_shifted) for survival probability
+  return cumulative_sum(log1m(append_row(0.0, h[1:(l-1)])));
 }
 
 /**
