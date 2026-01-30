@@ -2,7 +2,7 @@
 
 ## Model
 
-- Optimised Stan code for efficiency by inlining intermediate variables and removing unnecessary loop guards. See #695 by @seabbs.
+- Optimised Stan code for efficiency by inlining intermediate variables, removing unnecessary loop guards, and using unnormalized likelihood functions (`_lupmf`) in the model block. See #695 by @seabbs.
 
 # epinowcast 0.5.0
 

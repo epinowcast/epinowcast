@@ -15,12 +15,12 @@
  *  1. Determines the relevant range of observed data and lookup indexes.
  *  2. Filters the observed data and lookup indexes for the specified range.
  *  3. Computes expected log observations using `expected_obs_from_snaps`.
- *  4. Applies the observation error model using `obs_lpmf`.
+ *  4. Applies the observation error model using `obs_lupmf`.
  *
 * Dependencies:
  * - `filt_obs_indexes`
  * - `expected_obs_from_snaps`
- * - `obs_lpmf`
+ * - `obs_lupmf`
  *
  * This function is similar to `delay_group_lpmf` but operates on snapshot
  * data rather than group data.
@@ -61,7 +61,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
 
     // observation error model (across all reference dates and groups)
     profile("model_likelihood_neg_binomial") {
-    tar = obs_lpmf(
+    tar = obs_lupmf(
       filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
     );
     }
@@ -106,7 +106,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  *  1. Determines the relevant range for observed and missing data.
  *  2. Filters and allocates expected log observations, handling missing data.
  *  3. Computes expected log observations using `expected_obs_from_snaps`.
- *  4. Applies the observation error model using `obs_lpmf`.
+ *  4. Applies the observation error model using `obs_lupmf`.
  *  5. Additionally, handles missing data using
  *    `apply_missing_reference_effects` and `log_expected_by_report`
  *     if `model_miss` is 1.
@@ -114,7 +114,7 @@ real delay_snap_lpmf(array[] int dummy, int start, int end, array[] int obs,
  * Dependencies:
  * - `filt_obs_indexes`
  * - `expected_obs_from_snaps`
- * - `obs_lpmf`
+ * - `obs_lupmf`
  * - `allocate_observed_obs`
  * - `apply_missing_reference_effects`
  * - `log_expected_by_report`.
@@ -199,14 +199,14 @@ real delay_group_lpmf(array[] int groups, int start, int end, array[] int obs,
     }
 
     // Compute likelihood
-    tar = obs_lpmf(
+    tar = obs_lupmf(
       filt_obs | log_exp_obs[filt_obs_lookup_local], phi, model_obs
     );
   }
   if (model_miss && miss_obs) {
     array[3] int l = filt_obs_indexes(start, end, miss_cst, miss_st);
     array[l[3]] int filt_miss_ref = segment(missing_reference, l[1], l[3]);
-    tar += obs_lpmf(filt_miss_ref | log_exp_obs_miss, phi, model_obs);
+    tar += obs_lupmf(filt_miss_ref | log_exp_obs_miss, phi, model_obs);
   }
   }
   return(tar);
