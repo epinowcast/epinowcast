@@ -26,27 +26,32 @@
  * `poisson_log_lpmf` for the Poisson model.
  */
 real obs_lpmf(array[] int obs, vector log_exp_obs, array[] real phi,
-                   int model_obs) {
-  real tar = 0;
+              int model_obs) {
   if (model_obs == 0) {
-    tar = poisson_log_lpmf(obs | log_exp_obs);
-  }else if (model_obs == 1) {
-    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, phi[1]);
-  }else{
-    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, exp(log_exp_obs + log(phi[1])));
+    // Poisson model
+    return poisson_log_lpmf(obs | log_exp_obs);
+  } else if (model_obs == 1) {
+    // NB2 parameterisation: variance = mu + mu^2/phi (constant overdispersion)
+    return neg_binomial_2_log_lpmf(obs | log_exp_obs, phi[1]);
+  } else {
+    // NB1 parameterisation: variance = mu + phi * mu, so phi_nb2 = mu * phi
+    return neg_binomial_2_log_lpmf(
+      obs | log_exp_obs, exp(log_exp_obs + log(phi[1]))
+    );
   }
-  return(tar);
 }
 
-real obs_lpmf(int obs, real log_exp_obs, array[] real phi,
-         int model_obs) {
-  real tar = 0;
+real obs_lpmf(int obs, real log_exp_obs, array[] real phi, int model_obs) {
   if (model_obs == 0) {
-    tar = poisson_log_lpmf(obs | log_exp_obs);
-  }else if (model_obs == 1) {
-    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, phi[1]);
-  }else{
-    tar = neg_binomial_2_log_lpmf(obs | log_exp_obs, exp(log_exp_obs + log(phi[1])));
+    // Poisson model
+    return poisson_log_lpmf(obs | log_exp_obs);
+  } else if (model_obs == 1) {
+    // NB2 parameterisation: variance = mu + mu^2/phi (constant overdispersion)
+    return neg_binomial_2_log_lpmf(obs | log_exp_obs, phi[1]);
+  } else {
+    // NB1 parameterisation: variance = mu + phi * mu, so phi_nb2 = mu * phi
+    return neg_binomial_2_log_lpmf(
+      obs | log_exp_obs, exp(log_exp_obs + log(phi[1]))
+    );
   }
-  return(tar);
 }

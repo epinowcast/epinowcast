@@ -162,7 +162,6 @@ data {
 }
 
 transformed data{
-  real logdmax = 5*log(dmax); // scaled maxmimum delay to log for crude bound
   // if no reporting time effects use native probability for reference date
   // effects, i.e. do not convert to logit hazard
   int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
