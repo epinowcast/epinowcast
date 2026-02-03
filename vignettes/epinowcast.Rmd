@@ -230,16 +230,16 @@ nowcast
 #> 1:      day <data.table[14x6]>
 #>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             fit
 #>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <list>
-#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    config_files: function (include_failed = FALSE) \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    hessian: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    init: function () \n    init_model_methods: function (seed = 1, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    metric_files: function (include_failed = FALSE) \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_config_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_metric_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL, format = getOption("cmdstanr_draws_format", \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1456.8448 -1455.6517 -1453.0445 -1445.7829 -1436.804 -1 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 0\n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 8 8 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
+#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    config_files: function (include_failed = FALSE) \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    hessian: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    init: function () \n    init_model_methods: function (seed = 1, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    metric_files: function (include_failed = FALSE) \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_config_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_metric_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL, format = getOption("cmdstanr_draws_format", \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1446.4501 -1435.6755 -1433.8805 -1437.9611 -1441.7849 - ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 1\n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
 #>           data  fit_args init_method_output samples max_rhat
 #>         <list>    <list>             <list>   <int>    <num>
-#> 1: <list[112]> <list[6]>             [NULL]    1000     1.01
+#> 1: <list[115]> <list[6]>             [NULL]     500     1.02
 #>    divergent_transitions per_divergent_transitions max_treedepth
 #>                    <num>                     <num>         <num>
-#> 1:                     0                         0             8
+#> 1:                     0                         0             7
 #>    no_at_max_treedepth per_at_max_treedepth run_time
 #>                  <int>                <num>    <num>
-#> 1:                  20                 0.02     44.6
+#> 1:                 497                0.994     27.3
 ```
 
 # Summarising and plotting the nowcast
@@ -266,27 +266,27 @@ nowcast |>
 #>     cum_prop_reported delay prop_reported    mean median        sd    mad    q5
 #>                 <num> <num>         <num>   <num>  <num>     <num>  <num> <num>
 #>  1:                 1    39             0  72.000     72 0.0000000 0.0000    72
-#>  2:                 1    38             0  69.054     69 0.2305149 0.0000    69
-#>  3:                 1    37             0  47.109     47 0.3394617 0.0000    47
-#>  4:                 1    36             0  65.236     65 0.5005542 0.0000    65
-#>  5:                 1    35             0  50.300     50 0.5782165 0.0000    50
-#>  6:                 1    34             0  36.250     36 0.5289421 0.0000    36
-#>  7:                 1    33             0  94.563     94 0.7473885 0.0000    94
-#>  8:                 1    32             0  91.872     92 0.9656855 1.4826    91
-#>  9:                 1    31             0 100.226    100 1.1850436 1.4826    99
-#> 10:                 1    30             0  87.436     87 1.2559783 1.4826    86
-#>       q95      rhat  ess_bulk  ess_tail
-#>     <num>     <num>     <num>     <num>
-#>  1:    72        NA        NA        NA
-#>  2:    70 0.9985141 1032.0960 1008.0970
-#>  3:    48 0.9990624  794.8951  837.0237
-#>  4:    66 1.0007253  860.8058  910.5574
-#>  5:    51 0.9991079  974.5339  967.9402
-#>  6:    37 0.9993738 1018.5578 1010.6937
-#>  7:    96 1.0002582  994.3402  933.8959
-#>  8:    94 0.9999147 1119.8280 1024.3509
-#>  9:   102 1.0015045 1066.8986 1026.4201
-#> 10:    90 0.9993389 1003.7220  873.2440
+#>  2:                 1    38             0  69.046     69 0.2280087 0.0000    69
+#>  3:                 1    37             0  47.090     47 0.2933805 0.0000    47
+#>  4:                 1    36             0  65.198     65 0.4372395 0.0000    65
+#>  5:                 1    35             0  50.272     50 0.5537411 0.0000    50
+#>  6:                 1    34             0  36.258     36 0.5253456 0.0000    36
+#>  7:                 1    33             0  94.592     94 0.8215143 0.0000    94
+#>  8:                 1    32             0  91.946     92 1.0436774 1.4826    91
+#>  9:                 1    31             0 100.216    100 1.1815821 1.4826    99
+#> 10:                 1    30             0  87.408     87 1.3240250 1.4826    86
+#>       q95      rhat ess_bulk ess_tail
+#>     <num>     <num>    <num>    <num>
+#>  1:    72        NA       NA       NA
+#>  2:    69 1.0010805 547.9747 547.5880
+#>  3:    48 1.0001569 443.0401 448.2057
+#>  4:    66 0.9980997 471.8794 485.5344
+#>  5:    51 0.9979984 508.5640 485.7610
+#>  6:    37 1.0042599 518.9754 494.2477
+#>  7:    96 0.9980065 478.7209 423.6717
+#>  8:    94 1.0029000 514.0209 430.4882
+#>  9:   102 1.0010121 510.0019 391.1109
+#> 10:    90 0.9993683 607.2915 521.1492
 ```
 
 Similarly, the summarised nowcast can be plotted against the latest observed data using
@@ -338,24 +338,24 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #>     4:     2021-07-20  2021-08-22      1          94       DE       00+     433
 #>     5:     2021-07-20  2021-08-22      1          94       DE       00+     433
 #>    ---                                                                         
-#> 33996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 16999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 17000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
 #>     1:                 1    33             0      1          1     1    435
-#>     2:                 1    33             0      1          2     2    433
+#>     2:                 1    33             0      1          2     2    434
 #>     3:                 1    33             0      1          3     3    434
-#>     4:                 1    33             0      1          4     4    434
+#>     4:                 1    33             0      1          4     4    436
 #>     5:                 1    33             0      1          5     5    433
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   2338
-#> 33997:                 1     0             1      2        497   997   1872
-#> 33998:                 1     0             1      2        498   998   2438
-#> 33999:                 1     0             1      2        499   999   1841
-#> 34000:                 1     0             1      2        500  1000   2229
+#> 16996:                 1     0             1      1        496   496   2070
+#> 16997:                 1     0             1      1        497   497   2190
+#> 16998:                 1     0             1      1        498   498   1923
+#> 16999:                 1     0             1      1        499   499   1972
+#> 17000:                 1     0             1      1        500   500   2294
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
