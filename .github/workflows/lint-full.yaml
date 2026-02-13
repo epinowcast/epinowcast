@@ -13,7 +13,10 @@ name: lint-full
 jobs:
   lint-full:
     runs-on: ubuntu-latest
-    if: "! contains(github.event.head_commit.message, '[ci skip]')"
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      !contains(github.event.head_commit.message, '[ci skip]')
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -28,11 +31,6 @@ jobs:
           extra-packages: |
             any::lintr
           needs: check
-
-      - name: Add lintr options
-        run: |
-          cat('\noptions(lintr.linter_file = ".lintr")\n', file = "~/.Rprofile", append = TRUE)
-        shell: Rscript {0}
 
       - name: Install package
         run: R CMD INSTALL .
