@@ -36,6 +36,7 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_reference_dates_by_report_start}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},

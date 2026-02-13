@@ -7,10 +7,11 @@
 enw_simulate_missing_reference(obs, proportion = 0.2, by = NULL)
 }
 \arguments{
-\item{obs}{A \code{data.frame} containing at least the following variables:
-\verb{reference date} (index date of interest), \code{report_date} (report date for
-observations), and \code{confirm} (cumulative observations by reference and report
-date).}
+\item{obs}{A \code{data.frame} containing at least the
+following variables: \verb{reference date} (index date of
+interest), \code{report_date} (report date for observations),
+and \code{confirm} (cumulative observations by reference and
+report date).}
 
 \item{proportion}{Numeric, the proportion of observations that are missing a
 reference date, indexed by reference date. Currently only a fixed proportion

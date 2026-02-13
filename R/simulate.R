@@ -37,6 +37,9 @@
 #'   proportion = 0.35, by = c("location", "age_group")
 #' )
 enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = NULL) {
+  obs <- enw_filter_reference_dates_by_report_start(
+    obs, by = by, copy = FALSE
+  )
   obs <- enw_add_incidence(obs, by = by)
 
   obs[, missing := purrr::map2_dbl(
@@ -54,5 +57,5 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = NULL) {
 
   obs <- rbind(complete_ref, missing_ref, use.names = TRUE)
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
-  return(obs[])
+  obs[]
 }

@@ -33,7 +33,10 @@ something coercible to a \code{data.table} (such as a \code{data.frame}) and con
 it to a line list where each row represents a case.
 }
 \examples{
-incidence <- enw_add_incidence(germany_covid19_hosp)
+incidence <- enw_filter_reference_dates_by_report_start(
+  germany_covid19_hosp
+)
+incidence <- enw_add_incidence(incidence)
 incidence <- enw_filter_reference_dates(
   incidence[location == "DE"], include_days = 10
 )

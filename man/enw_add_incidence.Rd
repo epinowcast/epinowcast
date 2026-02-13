@@ -7,38 +7,54 @@
 enw_add_incidence(obs, set_negatives_to_zero = TRUE, by = NULL, copy = TRUE)
 }
 \arguments{
-\item{obs}{A \code{data.frame} containing at least the following variables:
-\verb{reference date} (index date of interest), \code{report_date} (report date for
-observations), and \code{confirm} (cumulative observations by reference and report
-date).}
+\item{obs}{A \code{data.frame} containing at least the
+following variables: \verb{reference date} (index date of
+interest), \code{report_date} (report date for observations),
+and \code{confirm} (cumulative observations by reference and
+report date).}
 
-\item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero? Currently
-downstream modelling does not support negative counts and so setting must be
-TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
+\item{set_negatives_to_zero}{Logical, defaults to TRUE.
+Should negative counts (for calculated incidence of
+observations) be set to zero? Currently downstream
+modelling does not support negative counts and so
+setting must be TRUE if intending to use
+\code{\link[=epinowcast]{epinowcast()}}.}
 
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{copy}{Should \code{obs} be copied (default) or modified in place?}
+\item{copy}{Should \code{obs} be copied (default) or modified
+in place?}
 }
 \value{
-The input \code{data.frame} with a new variable \code{new_confirm}. If
-\code{max_confirm} is present in the \code{data.frame}, then the proportion
-reported on each day (\code{prop_reported}) will also be added.
+The input \code{data.frame} with a new variable
+\code{new_confirm}. If \code{max_confirm} is present in the
+\code{data.frame}, then the proportion reported on each day
+(\code{prop_reported}) will also be added.
 }
 \description{
-Calculate incidence of new reports from cumulative reports
+Computes incident counts from cumulative
+reports. Users should typically call
+\code{\link[=enw_filter_reference_dates_by_report_start]{enw_filter_reference_dates_by_report_start()}} before
+this function to remove reference dates that precede the
+earliest report date, which would otherwise produce
+spurious leading entries.
 }
 \examples{
 # Default reconstruct incidence
 dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+dt <- enw_filter_reference_dates_by_report_start(dt)
 enw_add_incidence(dt)
 
-# Make use of maximum reported to calculate empirical daily reporting
+# Make use of maximum reported to calculate empirical
+# daily reporting
+dt <- germany_covid19_hosp[location == "DE"][
+  age_group == "00+"
+]
 dt <- enw_add_max_reported(dt)
+dt <- enw_filter_reference_dates_by_report_start(dt)
 enw_add_incidence(dt)
 }
 \seealso{

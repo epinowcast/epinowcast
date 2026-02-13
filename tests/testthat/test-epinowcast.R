@@ -552,6 +552,9 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   ]
   weekly_obs <- enw_flag_observed_observations(weekly_obs)
   weekly_obs <- enw_impute_na_observations(weekly_obs)
+  weekly_obs <- enw_filter_reference_dates_by_report_start(
+    weekly_obs
+  )
   weekly_obs <- enw_add_incidence(weekly_obs)
 
   # Preprocess

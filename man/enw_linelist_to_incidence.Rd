@@ -44,7 +44,8 @@ then the function will use this value instead and inform the user.}
 \item{completion_beyond_max_report}{Logical, should entries be completed
 beyond the maximum date found in the data? Default: FALSE}
 
-\item{copy}{Should \code{obs} be copied (default) or modified in place?}
+\item{copy}{Should \code{obs} be copied (default) or modified
+in place?}
 }
 \value{
 A \code{data.table} with the following variables: \code{reference_date},
