@@ -182,6 +182,7 @@ For very simple models `threads_per_chain = 1` may lead to models fitting faster
 ### Setting priors {.settingPriors}
 
 Setting sensible priors is important for Bayesian inference.
+See `?epinowcast` for an overview of how to inspect and customise priors across all model modules.
 When pre-processing your data, you can retrieve the prior arguments using the `enw_reference` function.
 As shown below, you can retrieve your current files and manipulate them as needed.
 

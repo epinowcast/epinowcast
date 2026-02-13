@@ -7,6 +7,23 @@
 #' individual model components for additional documentation and see the package
 #' case studies for example model specifications for different tasks.
 #'
+#' @details
+#' ## Priors
+#'
+#' Each model module defines its own default priors.
+#' To inspect them, call the module function and access the
+#' `$priors` element.
+#' See [enw_reference()], [enw_report()],
+#' [enw_expectation()], [enw_missing()], and [enw_obs()] for
+#' the prior variables available in each module.
+#'
+#' To replace specific defaults, pass a `data.frame` to the
+#' `priors` argument.
+#' Vectorised prior names (e.g. `"refp_mean_int[1]"`) are
+#' matched after stripping the index.
+#' See [enw_replace_priors()] for details on the merging
+#' behaviour.
+#'
 #' @param reference The reference date indexed reporting process model
 #' specification as defined using [enw_reference()].
 #'
@@ -34,11 +51,11 @@
 #' @param model The model to use within `fit`. By default this uses
 #' [enw_model()].
 #'
-#' @param priors A `data.frame` with the following variables:
-#' `variable`, `mean`, `sd` describing normal priors. Priors in the
-#' appropriate format are returned by [enw_reference()] as well as by
-#' other similar model specification functions. Priors in this data.frame
-#' replace the default priors specified by each model component.
+#' @param priors A `data.frame` with columns `variable`, `mean`,
+#' and `sd` describing normal priors that replace the module
+#' defaults.
+#' Custom priors are merged with the defaults automatically.
+#' See Details for how to inspect and modify priors.
 #'
 #' @param ... Additional model modules to pass to `model`. User modules may
 #' be used but currently require the supplied `model` to be adapted.
@@ -87,9 +104,13 @@
 #' )
 #' # Preprocess observations (note this maximum delay is likely too short)
 #' pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
-#' # Fit the default nowcast model and produce a nowcast
-#' # Note that we have reduced samples for this example to reduce runtimes
+#'
+#' # Fit with custom priors
+#' my_priors <- data.frame(
+#'   variable = "refp_mean_int", mean = 2, sd = 0.5
+#' )
 #' nowcast <- epinowcast(pobs,
+#'   priors = my_priors,
 #'   fit = enw_fit_opts(
 #'     save_warmup = FALSE, pp = TRUE,
 #'     chains = 2, iter_warmup = 500, iter_sampling = 500
@@ -140,7 +161,7 @@ epinowcast <- function(data,
   modules <- list(
     expectation, reference, report, missing, obs, fit, ...
   )
-  names(modules) <- as.character(seq_len(length(modules)))
+  names(modules) <- as.character(seq_along(modules))
   purrr::walk(modules, check_module)
   check_modules_compatible(modules)
 
@@ -197,5 +218,5 @@ epinowcast <- function(data,
 
   out <- cbind(data, priors = list(priors), fit)
   class(out) <- c("epinowcast", "enw_preprocess_data", class(out))
-  return(out[])
+  out[]
 }

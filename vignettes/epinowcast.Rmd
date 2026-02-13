@@ -131,6 +131,9 @@ The default nowcasting model in `epinowcast` consists of three modules:
 
 In the following sections, we specify simple models for each of these modules. The appropriateness of these specifications will vary depending on your context. See our vignettes for further details on model specification and examples of more complex models.
 
+Each module defines its own default priors which can be inspected and customised.
+See `?epinowcast` for details on inspecting and setting priors.
+
 ## Process model
 
 A commonly used process model in nowcasting is to model the expected counts by date of reference via a geometric random walk as this acts as a minimally informed smoothing prior and thus gives a lot of weight to the observed data. This is the default process model in `epinowcast`. Users may also specify this model for themselves using the enw_expectation() function.

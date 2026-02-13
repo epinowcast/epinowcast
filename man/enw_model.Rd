@@ -64,7 +64,7 @@ A \code{cmdstanr} model.
 Load and compile the nowcasting model
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 mod <- enw_model()
 \dontshow{\}) # examplesIf}
 }
