@@ -80,7 +80,7 @@ Similarly we then find the data that were available on the 20th of October for t
 ``` r
 latest_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-10-20") |>
-  enw_latest_data() |>
+  enw_obs_at_delay(max_delay = 40) |>
   enw_filter_reference_dates(latest_date = "2021-09-01", include_days = 40)
 ```
 

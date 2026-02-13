@@ -180,11 +180,12 @@ retro_germany <- complete_germany_hosp |>
 retro_germany
 ```
 
-Finally we can create a dataset that contains the latest data available for each reference date. We do this using the `enw_latest_data()` function,
+Finally we can create a dataset that contains the latest data available for each reference date at the maximum modelled delay.
+We do this using the `enw_obs_at_delay()` function, which combines `enw_filter_delay()` and `enw_latest_data()`,
 
 ```{r}
 latest_germany_hosp <- retro_germany |>
-  enw_latest_data()
+  enw_obs_at_delay(max_delay = 30)
 head(latest_germany_hosp, n = 10)
 ```
 

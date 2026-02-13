@@ -74,8 +74,7 @@ max_delay <- 30
 
 # Get latest observations for the nowcast period (max_delay days)
 latest_obs <- repcycle_germany_hosp |>
-  enw_filter_delay(max_delay = max_delay) |>
-  enw_latest_data() |>
+  enw_obs_at_delay(max_delay = max_delay) |>
   enw_filter_reference_dates(
     remove_days = 20, include_days = max_delay
   )

@@ -75,7 +75,7 @@ The package also provides a range of tools to convert data from line list, incid
 
 ``` r
 latest_germany_hosp <- nat_germany_hosp |>
-  enw_latest_data() |>
+  enw_obs_at_delay(max_delay = 40) |>
   enw_filter_reference_dates(remove_days = 40, include_days = 40)
 head(latest_germany_hosp, n = 10)
 #>     reference_date location age_group confirm report_date
