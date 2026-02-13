@@ -7,6 +7,23 @@
 #' individual model components for additional documentation and see the package
 #' case studies for example model specifications for different tasks.
 #'
+#' @details
+#' ## Priors
+#'
+#' Each model module defines its own default priors.
+#' To inspect them, call the module function and access the
+#' `$priors` element.
+#' See [enw_reference()], [enw_report()],
+#' [enw_expectation()], [enw_missing()], and [enw_obs()] for
+#' the prior variables available in each module.
+#'
+#' To replace specific defaults, pass a `data.frame` to the
+#' `priors` argument.
+#' Vectorised prior names (e.g. `"refp_mean_int[1]"`) are
+#' matched after stripping the index.
+#' See [enw_replace_priors()] for details on the merging
+#' behaviour.
+#'
 #' @param reference The reference date indexed reporting process model
 #' specification as defined using [enw_reference()].
 #'
@@ -35,51 +52,10 @@
 #' [enw_model()].
 #'
 #' @param priors A `data.frame` with columns `variable`, `mean`,
-#' and `sd`, describing normal priors that replace the defaults
-#' specified by each model component.
-#' The `variable` column must match the prior names used
-#' internally by the model modules.
-#' Vectorised prior names (e.g. `"refp_mean_int[1]"`) are
-#' matched after stripping the index (i.e. treated as
-#' `"refp_mean_int"`).
-#'
-#' To inspect the default priors, call the relevant model
-#' module function and access the `$priors` element.
-#' For example:
-#'
-#' ```
-#' pobs <- enw_preprocess_data(...)
-#' enw_reference(data = pobs)$priors
-#' enw_expectation(data = pobs)$priors
-#' enw_obs(data = pobs)$priors
-#' ```
-#'
-#' Each module documents the available prior variables:
-#' \describe{
-#'   \item{[enw_reference()]}{`refp_mean_int`,
-#'     `refp_sd_int`, `refp_mean_beta_sd`,
-#'     `refp_sd_beta_sd`, `refnp_int`, `refnp_beta_sd`}
-#'   \item{[enw_report()]}{`rep_beta_sd`}
-#'   \item{[enw_expectation()]}{`expr_r_int`,
-#'     `expr_beta_sd`, `expr_lelatent_int`,
-#'     `expl_beta_sd`}
-#'   \item{[enw_missing()]}{`miss_int`, `miss_beta_sd`}
-#'   \item{[enw_obs()]}{`sqrt_phi`}
-#' }
-#'
-#' To modify specific priors use [enw_replace_priors()]:
-#'
-#' ```
-#' default_priors <- enw_reference(data = pobs)$priors
-#' my_priors <- data.frame(
-#'   variable = "refp_mean_int", mean = 2, sd = 0.5
-#' )
-#' enw_replace_priors(default_priors, my_priors)
-#' ```
-#'
-#' Alternatively, pass a `data.frame` of custom priors
-#' directly to this argument and they will be merged with
-#' the module defaults automatically.
+#' and `sd` describing normal priors that replace the module
+#' defaults.
+#' Custom priors are merged with the defaults automatically.
+#' See Details for how to inspect and modify priors.
 #'
 #' @param ... Additional model modules to pass to `model`. User modules may
 #' be used but currently require the supplied `model` to be adapted.
@@ -92,6 +68,19 @@
 #' @importFrom cli cli_warn
 #' @family epinowcast
 #' @export
+#' @examples
+#' # Inspect default priors for a module
+#' pobs <- enw_example("preprocessed")
+#' enw_reference(data = pobs)$priors
+#' enw_expectation(data = pobs)$priors
+#'
+#' # Replace a specific prior
+#' my_priors <- data.frame(
+#'   variable = "refp_mean_int", mean = 2, sd = 0.5
+#' )
+#' enw_replace_priors(
+#'   enw_reference(data = pobs)$priors, my_priors
+#' )
 #' @examplesIf interactive()
 #' # Load data.table and ggplot2
 #' library(data.table)
@@ -128,9 +117,13 @@
 #' )
 #' # Preprocess observations (note this maximum delay is likely too short)
 #' pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 20)
-#' # Fit the default nowcast model and produce a nowcast
-#' # Note that we have reduced samples for this example to reduce runtimes
+#'
+#' # Fit with custom priors
+#' my_priors <- data.frame(
+#'   variable = "refp_mean_int", mean = 2, sd = 0.5
+#' )
 #' nowcast <- epinowcast(pobs,
+#'   priors = my_priors,
 #'   fit = enw_fit_opts(
 #'     save_warmup = FALSE, pp = TRUE,
 #'     chains = 2, iter_warmup = 500, iter_sampling = 500
