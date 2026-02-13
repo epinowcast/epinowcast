@@ -26,7 +26,7 @@ For R version 4.0.0 and above, it's recommended to use the persistent cache
 as shown in the example.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Set to local directory
 my_enw_cache <- enw_set_cache(file.path(tempdir(), "test"))
 enw_get_cache()

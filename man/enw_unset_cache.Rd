@@ -23,7 +23,7 @@ back to using the persistent cache, you can reload the
 \code{.Renviron} file using \code{readRenviron("~/.Renviron")}.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 enw_unset_cache()
 \dontshow{\}) # examplesIf}
 }
