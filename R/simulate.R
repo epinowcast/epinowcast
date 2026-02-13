@@ -57,5 +57,5 @@ enw_simulate_missing_reference <- function(obs, proportion = 0.2, by = NULL) {
 
   obs <- rbind(complete_ref, missing_ref, use.names = TRUE)
   data.table::setkeyv(obs, c(by, "reference_date", "report_date"))
-  return(obs[])
+  obs[]
 }
