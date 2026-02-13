@@ -43,6 +43,7 @@ Preprocessing functions
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
 \code{\link{enw_filter_report_dates}()},
+\code{\link{enw_filter_report_dates_by_min}()},
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_latest_data}()},
 \code{\link{enw_metadata}()},

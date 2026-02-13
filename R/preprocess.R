@@ -356,6 +356,61 @@ enw_add_max_reported <- function(obs, copy = TRUE) {
   obs[]
 }
 
+#' Filter observations where reference date precedes
+#' the earliest report date
+#'
+#' @description Removes observations where the `reference_date`
+#' is earlier than the minimum `report_date` within each group.
+#' Rows with missing `reference_date` are retained.
+#' This is useful for ensuring that observations are only
+#' included from the first available report date onwards.
+#'
+#' @param obs A `data.frame` with `reference_date` and
+#' `report_date` columns.
+#'
+#' @inheritParams enw_preprocess_data
+#'
+#' @param copy Should `obs` be copied (default) or modified
+#' in place?
+#'
+#' @return A `data.table` filtered so that each
+#' `reference_date` is on or after the minimum `report_date`
+#' in its group. Rows with `NA` `reference_date` are kept.
+#'
+#' @family preprocess
+#' @export
+#' @examples
+#' library(data.table)
+#' obs <- data.table(
+#'   reference_date = as.IDate(c(
+#'     "2021-10-01", "2021-10-02", "2021-10-03"
+#'   )),
+#'   report_date = as.IDate(c(
+#'     "2021-10-02", "2021-10-02", "2021-10-03"
+#'   ))
+#' )
+#' # The first row has reference_date before the minimum
+#' # report_date, so it is removed
+#' enw_filter_report_dates_by_min(obs)
+enw_filter_report_dates_by_min <- function(obs, by = NULL,
+                                           copy = TRUE) {
+  reports <- coerce_dt(
+    obs,
+    required_cols = c(
+      by, "reference_date", "report_date"
+    ),
+    copy = copy
+  )
+  reports <- reports[,
+    .SD[
+      reference_date >= min(report_date) |
+        is.na(reference_date)
+    ],
+    by = by
+  ]
+  reports[]
+}
+
 #' Filter by report dates
 #'
 #' @description This is a helper function which allows users to create

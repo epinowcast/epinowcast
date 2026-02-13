@@ -76,10 +76,9 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
   reports[, new_confirm := c(confirm[1], diff(confirm)),
     by = c("reference_date", by)
   ]
-  reports <- reports[,
-    .SD[reference_date >= min(report_date) | is.na(reference_date)],
-    by = by
-  ]
+  reports <- enw_filter_report_dates_by_min(
+    reports, by = by, copy = FALSE
+  )
   reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", by)]
 
   if (!is.null(reports$max_confirm)) {
