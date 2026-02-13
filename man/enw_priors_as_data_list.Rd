@@ -7,10 +7,11 @@
 enw_priors_as_data_list(priors)
 }
 \arguments{
-\item{priors}{A \code{data.frame} with the following variables:
-\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
-appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
-other similar model specification functions.}
+\item{priors}{A \code{data.frame} with columns \code{variable},
+\code{mean}, and \code{sd} describing normal priors.
+Default priors in the appropriate format are returned by
+the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and other model
+module functions.}
 }
 \value{
 A named list with each entry specifying a prior as a length

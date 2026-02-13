@@ -45,7 +45,7 @@ developers and contributors to the \link{epinowcast} package, as well as for
 users interested in exploring and prototyping with model functionalities.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Compile functions in stan/functions/hazard.stan
 stan_functions <- enw_stan_to_r("hazard.stan")
 # These functions can now be used in R

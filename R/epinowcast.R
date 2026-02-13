@@ -34,11 +34,52 @@
 #' @param model The model to use within `fit`. By default this uses
 #' [enw_model()].
 #'
-#' @param priors A `data.frame` with the following variables:
-#' `variable`, `mean`, `sd` describing normal priors. Priors in the
-#' appropriate format are returned by [enw_reference()] as well as by
-#' other similar model specification functions. Priors in this data.frame
-#' replace the default priors specified by each model component.
+#' @param priors A `data.frame` with columns `variable`, `mean`,
+#' and `sd`, describing normal priors that replace the defaults
+#' specified by each model component.
+#' The `variable` column must match the prior names used
+#' internally by the model modules.
+#' Vectorised prior names (e.g. `"refp_mean_int[1]"`) are
+#' matched after stripping the index (i.e. treated as
+#' `"refp_mean_int"`).
+#'
+#' To inspect the default priors, call the relevant model
+#' module function and access the `$priors` element.
+#' For example:
+#'
+#' ```
+#' pobs <- enw_preprocess_data(...)
+#' enw_reference(data = pobs)$priors
+#' enw_expectation(data = pobs)$priors
+#' enw_obs(data = pobs)$priors
+#' ```
+#'
+#' Each module documents the available prior variables:
+#' \describe{
+#'   \item{[enw_reference()]}{`refp_mean_int`,
+#'     `refp_sd_int`, `refp_mean_beta_sd`,
+#'     `refp_sd_beta_sd`, `refnp_int`, `refnp_beta_sd`}
+#'   \item{[enw_report()]}{`rep_beta_sd`}
+#'   \item{[enw_expectation()]}{`expr_r_int`,
+#'     `expr_beta_sd`, `expr_lelatent_int`,
+#'     `expl_beta_sd`}
+#'   \item{[enw_missing()]}{`miss_int`, `miss_beta_sd`}
+#'   \item{[enw_obs()]}{`sqrt_phi`}
+#' }
+#'
+#' To modify specific priors use [enw_replace_priors()]:
+#'
+#' ```
+#' default_priors <- enw_reference(data = pobs)$priors
+#' my_priors <- data.frame(
+#'   variable = "refp_mean_int", mean = 2, sd = 0.5
+#' )
+#' enw_replace_priors(default_priors, my_priors)
+#' ```
+#'
+#' Alternatively, pass a `data.frame` of custom priors
+#' directly to this argument and they will be merged with
+#' the module defaults automatically.
 #'
 #' @param ... Additional model modules to pass to `model`. User modules may
 #' be used but currently require the supplied `model` to be adapted.

@@ -50,11 +50,50 @@ further details.}
 \item{model}{The model to use within \code{fit}. By default this uses
 \code{\link[=enw_model]{enw_model()}}.}
 
-\item{priors}{A \code{data.frame} with the following variables:
-\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
-appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
-other similar model specification functions. Priors in this data.frame
-replace the default priors specified by each model component.}
+\item{priors}{A \code{data.frame} with columns \code{variable}, \code{mean},
+and \code{sd}, describing normal priors that replace the defaults
+specified by each model component.
+The \code{variable} column must match the prior names used
+internally by the model modules.
+Vectorised prior names (e.g. \code{"refp_mean_int[1]"}) are
+matched after stripping the index (i.e. treated as
+\code{"refp_mean_int"}).
+
+To inspect the default priors, call the relevant model
+module function and access the \verb{$priors} element.
+For example:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{pobs <- enw_preprocess_data(...)
+enw_reference(data = pobs)$priors
+enw_expectation(data = pobs)$priors
+enw_obs(data = pobs)$priors
+}\if{html}{\out{</div>}}
+
+Each module documents the available prior variables:
+\describe{
+\item{\code{\link[=enw_reference]{enw_reference()}}}{\code{refp_mean_int},
+\code{refp_sd_int}, \code{refp_mean_beta_sd},
+\code{refp_sd_beta_sd}, \code{refnp_int}, \code{refnp_beta_sd}}
+\item{\code{\link[=enw_report]{enw_report()}}}{\code{rep_beta_sd}}
+\item{\code{\link[=enw_expectation]{enw_expectation()}}}{\code{expr_r_int},
+\code{expr_beta_sd}, \code{expr_lelatent_int},
+\code{expl_beta_sd}}
+\item{\code{\link[=enw_missing]{enw_missing()}}}{\code{miss_int}, \code{miss_beta_sd}}
+\item{\code{\link[=enw_obs]{enw_obs()}}}{\code{sqrt_phi}}
+}
+
+To modify specific priors use \code{\link[=enw_replace_priors]{enw_replace_priors()}}:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{default_priors <- enw_reference(data = pobs)$priors
+my_priors <- data.frame(
+  variable = "refp_mean_int", mean = 2, sd = 0.5
+)
+enw_replace_priors(default_priors, my_priors)
+}\if{html}{\out{</div>}}
+
+Alternatively, pass a \code{data.frame} of custom priors
+directly to this argument and they will be merged with
+the module defaults automatically.}
 
 \item{...}{Additional model modules to pass to \code{model}. User modules may
 be used but currently require the supplied \code{model} to be adapted.}
@@ -73,7 +112,7 @@ individual model components for additional documentation and see the package
 case studies for example model specifications for different tasks.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Load data.table and ggplot2
 library(data.table)
 library(ggplot2)
