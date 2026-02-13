@@ -45,7 +45,7 @@ fitting arguments, and optionally summary diagnostics.
 Fit a CmdStan model using NUTS
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 pobs <- enw_example("preprocessed")
 
 nowcast <- epinowcast(pobs,

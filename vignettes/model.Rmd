@@ -191,6 +191,7 @@ The reference date effect $\delta_{g,t,d}$ is specified via the `non_parametric`
 For example, `enw_reference(non_parametric = ~ 1 + day_of_week)` adds day-of-week effects to the reference date hazard, whilst `enw_report(non_parametric = ~ 1 + day_of_week)` adds day-of-week effects to the report date hazard.
 
 All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.
+See `?epinowcast` for details on inspecting and customising these priors.
 
 # Observation model and nowcast
 
