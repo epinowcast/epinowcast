@@ -2,15 +2,11 @@
 title: Model definition and implementation
 description: "Model formulation and implementation details"
 author: Epinowcast Team
-output: 
-  bookdown::html_vignette2:
-    fig_caption: yes
-    code_folding: show
 pkgdown:
   as_is: true
 bibliography: library.bib
-link-citations: true
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Model definition and implementation}
   %\VignetteEngine{knitr::rmarkdown}

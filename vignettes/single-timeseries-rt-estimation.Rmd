@@ -3,12 +3,8 @@ title: "Estimating the effective reproduction number in real-time for a single t
 description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
 author: Epinowcast Team
 opengraph:
-  image: 
+  image:
     src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
-output: 
-  bookdown::html_vignette2:
-    fig_caption: yes
-    code_folding: show
 pkgdown:
   as_is: true
 bibliography: library.bib

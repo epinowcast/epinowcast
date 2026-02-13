@@ -1,14 +1,8 @@
 ---
 title: Case studies
 description: "A place to document how epinowcast has been used"
-author: 
-output:
-  bookdown::html_vignette2:
-    fig_caption: yes
-    code_folding: show
 pkgdown:
   as_is: true
-
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Package use cases}
