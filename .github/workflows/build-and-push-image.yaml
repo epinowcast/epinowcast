@@ -9,7 +9,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
