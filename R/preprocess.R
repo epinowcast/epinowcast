@@ -573,7 +573,7 @@ enw_obs_at_delay <- function(obs, max_delay, timestep = "day") {
     obs, max_delay = max_delay, timestep = timestep
   )
   obs <- enw_latest_data(obs)
-  obs
+  obs[]
 }
 
 #' Construct the reporting triangle

@@ -85,11 +85,13 @@ test_that("enw_obs_at_delay with different max_delay values are consistent", {
 
 test_that("enw_obs_at_delay handles data with NA reference dates", {
   obs <- enw_example("preprocessed")$obs[[1]]
-  na_rows <- obs[is.na(reference_date)]
-  if (nrow(na_rows) > 0) {
-    result <- enw_obs_at_delay(obs, max_delay = 3)
-    expect_false(anyNA(result$reference_date))
-  }
+  obs_with_na <- data.table::copy(obs)
+  obs_with_na <- rbind(
+    obs_with_na,
+    obs_with_na[1L][, reference_date := NA]
+  )
+  result <- enw_obs_at_delay(obs_with_na, max_delay = 3)
+  expect_false(anyNA(result$reference_date))
 })
 
 test_that("enw_obs_at_delay accepts data.frame input", {
