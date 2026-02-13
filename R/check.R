@@ -360,10 +360,9 @@ check_max_delay <- function(data,
   obs <- enw_filter_delay(obs, max_delay = daily_max_delay, timestep = "day")
 
   # filter by earliest observed report date
-  obs <- obs[,
-    .SD[reference_date >= min(report_date) | is.na(reference_date)],
-    by = .group
-  ]
+  obs <- enw_filter_report_dates_by_min(
+    obs, by = ".group", copy = FALSE
+  )
 
   latest_obs <- enw_latest_data(obs)
   fully_observed_date <- latest_obs[, max(report_date)] - max_delay_obs_q + 1

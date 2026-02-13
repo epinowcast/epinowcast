@@ -358,6 +358,8 @@ enw_aggregate_cumulative <- function(
 
   # Set day of week for reference date and filter
   agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
+  # NA reference dates are already split into agg_obs_na_ref
+  # above, so enw_filter_report_dates_by_min() is not used.
   agg_obs <- agg_obs[reference_date >= min(report_date)]
 
   # If there are missing reference dates, aggregate over the report date
