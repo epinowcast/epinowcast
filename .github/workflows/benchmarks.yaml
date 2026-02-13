@@ -37,9 +37,20 @@ jobs:
               content: 'rocket'
             });
 
+      - name: Get PR head ref
+        if: github.event_name == 'issue_comment'
+        id: pr
+        run: |
+          PR_DATA=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          echo "ref=$(echo $PR_DATA | jq -r '.head.ref')" >> $GITHUB_OUTPUT
+          echo "sha=$(echo $PR_DATA | jq -r '.head.sha')" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
       - name: Checkout repo
         uses: actions/checkout@v6
         with:
+          ref: ${{ steps.pr.outputs.ref || github.ref }}
           fetch-depth: 0
 
       - id: read_touchstone_config
