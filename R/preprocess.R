@@ -551,6 +551,31 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
   obs[]
 }
 
+#' Extract latest observations at a given maximum delay
+#'
+#' @description Filter observations to a maximum delay and then
+#' extract the latest observations. This is useful for model
+#' evaluation where you want to assess performance against the
+#' data as the model would have seen it.
+#'
+#' @return A `data.table` of observations filtered for the
+#' latest available data for each reference date at the
+#' specified maximum delay.
+#'
+#' @inheritParams enw_filter_delay
+#' @family preprocess
+#' @export
+#' @examples
+#' obs <- enw_example("preprocessed")$obs[[1]]
+#' enw_obs_at_delay(obs, max_delay = 2)
+enw_obs_at_delay <- function(obs, max_delay, timestep = "day") {
+  obs <- enw_filter_delay(
+    obs, max_delay = max_delay, timestep = timestep
+  )
+  obs <- enw_latest_data(obs)
+  obs
+}
+
 #' Construct the reporting triangle
 #'
 #' Constructs the reporting triangle with each row representing a reference date

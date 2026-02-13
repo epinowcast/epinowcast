@@ -46,7 +46,7 @@ used in \code{\link[=enw_sample]{enw_sample()}} and as such is recommended for u
 analysis and model development.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 pobs <- enw_example("preprocessed")
 
 nowcast <- epinowcast(pobs,

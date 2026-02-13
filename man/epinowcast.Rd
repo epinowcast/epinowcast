@@ -73,7 +73,7 @@ individual model components for additional documentation and see the package
 case studies for example model specifications for different tasks.
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Load data.table and ggplot2
 library(data.table)
 library(ggplot2)
