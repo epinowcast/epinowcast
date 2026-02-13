@@ -8,10 +8,18 @@ if (length(author)) {
     }, aar)
 }
 
+year <- if (!is.null(meta$Date)) {
+  format(as.Date(meta$Date), "%Y")
+} else {
+  format(Sys.Date(), "%Y")
+}
+
 bibentry(
   bibtype = "Manual",
-  title   = paste0(meta$Package, ": ", gsub("[[:space:]]+", " ", meta$Title)),
+  title   = paste0(
+    meta$Package, ": ", gsub("[[:space:]]+", " ", meta$Title)
+  ),
   author  = author,
-  year    = format(meta$Date, "%Y"),
+  year    = year,
   doi     = "10.5281/zenodo.5637165"
 )

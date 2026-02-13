@@ -1,0 +1,3 @@
+bookdown::html_vignette2:
+  fig_caption: yes
+  code_folding: show

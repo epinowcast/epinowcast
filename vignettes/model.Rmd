@@ -2,15 +2,11 @@
 title: Model definition and implementation
 description: "Model formulation and implementation details"
 author: Epinowcast Team
-output: 
-  bookdown::html_vignette2:
-    fig_caption: yes
-    code_folding: show
 pkgdown:
   as_is: true
 bibliography: library.bib
-link-citations: true
 csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Model definition and implementation}
   %\VignetteEngine{knitr::rmarkdown}
@@ -191,6 +187,7 @@ The reference date effect $\delta_{g,t,d}$ is specified via the `non_parametric`
 For example, `enw_reference(non_parametric = ~ 1 + day_of_week)` adds day-of-week effects to the reference date hazard, whilst `enw_report(non_parametric = ~ 1 + day_of_week)` adds day-of-week effects to the report date hazard.
 
 All fixed ($\beta_{f,i}$) and random ($\beta_{r,i}$) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.
+See `?epinowcast` for details on inspecting and customising these priors.
 
 # Observation model and nowcast
 

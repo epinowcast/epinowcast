@@ -98,23 +98,32 @@ enw_priors_as_data_list <- function(priors) {
 
 #' Replace default priors with user specified priors
 #'
-#' This function is used internally by [epinowcast]() to replace
-#' default model priors with users specified ones (restricted to
-#' normal priors with specified mean and standard deviations). A common
-#' use would be extracting the posterior from a previous [epinowcast()]
-#' run (using `summary(nowcast, type = fit)`) and using this a prior.
+#' Replaces default model priors with user specified ones
+#' (restricted to normal priors with specified mean and standard
+#' deviations).
+#' A common use is extracting the posterior from a previous
+#' [epinowcast()] run (using `summary(nowcast, type = "fit")`)
+#' and using it as a prior for subsequent fits.
 #'
-#' @param priors A `data.frame` with the following variables:
-#'  `variable`, `mean`, `sd` describing normal priors. Priors in the
-#' appropriate format are returned by [enw_reference()] as well as by
-#' other similar model specification functions.
+#' Default priors can be obtained from each model module's
+#' `$priors` element, e.g. `enw_reference(data = pobs)$priors`.
+#' See the `priors` argument of [epinowcast()] for a list of
+#' available prior variable names by module.
 #'
-#' @param custom_priors A `data.frame` with the following variables:
-#'  `variable`, `mean`, `sd` describing normal priors. Priors in the
-#' appropriate format are returned by [enw_reference()] as well as by
-#' other similar model specification functions. Priors in this data.frame
-#' replace the default priors. Note that currently vectorised prior names
-#' (i.e those of the form `variable[n]` will be treated as `variable`).
+#' @param priors A `data.frame` with columns `variable`,
+#'  `mean`, and `sd` describing normal priors.
+#' Default priors in the appropriate format are returned by
+#' the `$priors` element of [enw_reference()] and other model
+#' module functions.
+#'
+#' @param custom_priors A `data.frame` with columns `variable`,
+#'  `mean`, and `sd` describing normal priors to use as
+#' replacements.
+#' Rows in `custom_priors` replace matching rows in `priors`
+#' by the `variable` column.
+#' Vectorised prior names (i.e. those of the form
+#' `variable[n]`) are matched after stripping the index
+#' (treated as `variable`).
 #'
 #' @return A data.table of prior definitions (variable, mean and sd).
 #' @family modeltools
