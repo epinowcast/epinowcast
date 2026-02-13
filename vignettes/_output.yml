@@ -1,0 +1,4 @@
+bookdown::html_vignette2:
+  fig_caption: yes
+  code_folding: show
+  pandoc_args: ["--metadata-file=_common.yml"]

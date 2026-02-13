@@ -1,10 +1,9 @@
 ---
 title: Model Features Summary
 description: "Quick reference to package capabilities"
-author: Epinowcast Team
-output: rmarkdown::html_document
-bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+output:
+  rmarkdown::html_document:
+    pandoc_args: ["--metadata-file=_common.yml"]
 vignette: >
   %\VignetteIndexEntry{Model Features Summary}
   %\VignetteEngine{knitr::rmarkdown}

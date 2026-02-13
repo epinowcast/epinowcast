@@ -1,10 +1,9 @@
 ---
 title: Discretised distributions
 description: "Distributions and their discretisation in epinowcast"
-author: Epinowcast Team
-output: rmarkdown::html_document
-bibliography: library.bib
-csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+output:
+  rmarkdown::html_document:
+    pandoc_args: ["--metadata-file=_common.yml"]
 vignette: >
   %\VignetteIndexEntry{Discretised distributions}
   %\VignetteEngine{knitr::rmarkdown}
