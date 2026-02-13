@@ -19,39 +19,82 @@ This guide provides extensions and exceptions to the `tidyverse` style guide.
 
 Also note that these are conventions, not hard rules.
 
+## Line length
+
+Lines should not exceed 80 characters.
+This applies to all R code, including function calls, assignments, and comments.
+
 ## Function calls
 
-When calling a function with multiple arguments, place the first argument on a new line after the opening bracket.
-Each argument should be on its own line, indented by two spaces.
-The closing bracket should be on its own line, aligned with the start of the function call.
+Short function calls that fit on a single line should stay on one line.
 
 ```r
-# Correct
-result <- some_function(
-  first_arg = value1,
-  second_arg = value2,
-  third_arg = value3
+result <- some_function(value)
+obs <- coerce_dt(obs, required_cols = "confirm", copy = FALSE)
+```
+
+When a function call does not fit on one line, place the first argument on the same line as the function name if it fits within 80 characters.
+Subsequent arguments go on new lines, indented by two spaces relative to the function call.
+The closing bracket goes on its own line, aligned with the start of the function call.
+
+```r
+fixed <- enw_design(form, data,
+  no_contrasts = no_contrasts,
+  sparse = TRUE
 )
 
-# Incorrect: first argument on the same line as the function name
+obs <- coerce_dt(obs,
+  required_cols = c("confirm", "reference_date"),
+  copy = copy
+)
+```
+
+If the function name plus the first argument would exceed 80 characters, place the first argument on a new line instead.
+
+```r
+obs <- coerce_dt(
+  obs,
+  required_cols = c("new_confirm", "reference_date", "delay"),
+  group = TRUE
+)
+
+data.table::setnames(
+  counts,
+  c(reference_date, report_date),
+  c("reference_date", "report_date")
+)
+```
+
+Do not align subsequent arguments with the first argument using extra spaces.
+
+```r
+# Avoid this alignment style
 result <- some_function(first_arg = value1,
                         second_arg = value2,
                         third_arg = value3)
 ```
 
-This convention applies to both external function calls and function definitions.
+This convention applies to both function calls and function definitions.
 
 ```r
-# Correct function definition
-my_function <- function(
-  arg1 = default1,
-  arg2 = default2,
-  arg3 = default3
-) {
+enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE,
+                              by = NULL, copy = TRUE) {
   # function body
 }
 
-# Correct nested function calls
+# Also acceptable when the definition is long
+enw_reference <- function(
+  parametric = ~1,
+  distribution = c("lognormal", "none", "exponential"),
+  non_parametric = ~0, data
+) {
+  # function body
+}
+```
+
+Nested function calls follow the same rules.
+
+```r
 outer_function(
   arg1 = inner_function(
     nested_arg1 = value1,
@@ -59,14 +102,6 @@ outer_function(
   ),
   arg2 = value3
 )
-```
-
-Short function calls with a single argument may be kept on one line.
-
-```r
-# Acceptable for single-argument calls
-result <- some_function(value)
-result <- some_function(arg = value)
 ```
 
 ## Dependencies
