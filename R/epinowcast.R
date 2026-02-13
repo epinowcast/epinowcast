@@ -174,7 +174,7 @@ epinowcast <- function(data,
   modules <- list(
     expectation, reference, report, missing, obs, fit, ...
   )
-  names(modules) <- as.character(seq_len(length(modules)))
+  names(modules) <- as.character(seq_along(modules))
   purrr::walk(modules, check_module)
   check_modules_compatible(modules)
 
@@ -231,5 +231,5 @@ epinowcast <- function(data,
 
   out <- cbind(data, priors = list(priors), fit)
   class(out) <- c("epinowcast", "enw_preprocess_data", class(out))
-  return(out[])
+  out[]
 }
