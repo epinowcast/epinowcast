@@ -91,18 +91,6 @@ behaviour.
 }
 }
 \examples{
-# Inspect default priors for a module
-pobs <- enw_example("preprocessed")
-enw_reference(data = pobs)$priors
-enw_expectation(data = pobs)$priors
-
-# Replace a specific prior
-my_priors <- data.frame(
-  variable = "refp_mean_int", mean = 2, sd = 0.5
-)
-enw_replace_priors(
-  enw_reference(data = pobs)$priors, my_priors
-)
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # Load data.table and ggplot2
 library(data.table)
