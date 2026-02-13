@@ -21,6 +21,7 @@ function-specific details, see `?function_name`.
 | **Latent process models** | Growth rates, renewal processes            | [Latent models](#latent-models)             |
 | **Hierarchical effects**  | Random effects, random walks               | [Hierarchical structure](#hierarchical)     |
 | **Missing data handling** | Missing reference dates                    | [Missing data](#missing-data)               |
+| **Custom priors**         | Inspect and replace default priors         | [Prior specification](#priors)              |
 | **Model comparison**      | LOO-CV, posterior predictive checks        | [Model evaluation](#model-evaluation)       |
 
 ## Different Timesteps and Timespans
@@ -182,6 +183,27 @@ Build hierarchical models using the formula interface.
 study](https://package.epinowcast.org/dev/articles/germany-age-stratified-nowcasting.md)
 uses random effects for age groups. All model modules support the same
 formula interface.
+
+## Prior Specification
+
+Each model module defines default normal priors which can be inspected
+and customised. To set custom priors, pass a `data.frame` with columns
+`variable`, `mean`, and `sd` to the `priors` argument of
+[`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md).
+
+| Task                    | How to do it                              | Details                           |
+|-------------------------|-------------------------------------------|-----------------------------------|
+| Inspect module priors   | `enw_reference(data = pobs)$priors`       | Each module returns its defaults  |
+| Replace specific priors | `enw_replace_priors(priors, custom)`      | Merge custom values into defaults |
+| Pass to model           | `epinowcast(..., priors = custom_priors)` | Overrides matching defaults       |
+
+**Key functions:**
+
+- [`enw_replace_priors()`](https://package.epinowcast.org/dev/reference/enw_replace_priors.md):
+  Merge custom priors with defaults
+- See
+  [`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+  for a worked example
 
 ## Missing Data Handling
 

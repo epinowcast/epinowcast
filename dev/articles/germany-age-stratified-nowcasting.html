@@ -206,7 +206,8 @@ plot of chunk nowcast
 <div class="section level3">
 <h3 id="using-the-inflated-posterior-as-a-prior">Using the inflated posterior as a prior<a class="anchor" aria-label="anchor" href="#using-the-inflated-posterior-as-a-prior"></a>
 </h3>
-<p>To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.</p>
+<p>To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.
+See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for general guidance on inspecting and setting priors.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span></span>
 <span>  <span class="va">nowcast</span>,</span>

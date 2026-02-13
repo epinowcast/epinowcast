@@ -245,7 +245,8 @@ For example, <code>enw_reference(parametric = ~ 1 + (1 | age_group))</code> crea
 \end{align}\]</span></p>
 <p>The reference date effect <span class="math inline">\(\delta_{g,t,d}\)</span> is specified via the <code>non_parametric</code> argument of <code><a href="../reference/enw_reference.html">enw_reference()</a></code> (see <code><a href="../reference/enw_reference.html">?enw_reference</a></code>), whilst the report date effect <span class="math inline">\(\epsilon_{g,t,d}\)</span> is specified via the <code>non_parametric</code> argument of <code><a href="../reference/enw_report.html">enw_report()</a></code> (see <code><a href="../reference/enw_report.html">?enw_report</a></code>).
 For example, <code>enw_reference(non_parametric = ~ 1 + day_of_week)</code> adds day-of-week effects to the reference date hazard, whilst <code>enw_report(non_parametric = ~ 1 + day_of_week)</code> adds day-of-week effects to the report date hazard.</p>
-<p>All fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.</p>
+<p>All fixed (<span class="math inline">\(\beta_{f,i}\)</span>) and random (<span class="math inline">\(\beta_{r,i}\)</span>) coefficients have standard normal priors by default with standard half-normal priors for pooled standard deviations.
+See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for details on inspecting and customising these priors.</p>
 </div>
 </div>
 </div>

@@ -207,7 +207,9 @@ plot of chunk nowcast
 To speed up model fitting we make use of posterior information from the
 previous model (with some inflation) for some parameters. Note that this
 is not a truly Bayesian approach and in some situations may be
-problematic.
+problematic. See
+[`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+for general guidance on inspecting and setting priors.
 
 Code
 

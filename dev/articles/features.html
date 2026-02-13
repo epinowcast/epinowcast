@@ -162,6 +162,11 @@ definition vignette</a>. For function-specific details, see
 <td><a href="#missing-data">Missing data</a></td>
 </tr>
 <tr class="even">
+<td><strong>Custom priors</strong></td>
+<td>Inspect and replace default priors</td>
+<td><a href="#priors">Prior specification</a></td>
+</tr>
+<tr class="odd">
 <td><strong>Model comparison</strong></td>
 <td>LOO-CV, posterior predictive checks</td>
 <td><a href="#model-evaluation">Model evaluation</a></td>
@@ -547,6 +552,51 @@ demonstrates renewal process models with generation times.</p>
 <p><strong>Where to see it:</strong> The <a href="germany-age-stratified-nowcasting.html">Germany case study</a>
 uses random effects for age groups. All model modules support the same
 formula interface.</p>
+</div>
+<div class="section level2">
+<h2 id="priors">Prior Specification<a class="anchor" aria-label="anchor" href="#priors"></a>
+</h2>
+<p>Each model module defines default normal priors which can be
+inspected and customised. To set custom priors, pass a
+<code>data.frame</code> with columns <code>variable</code>,
+<code>mean</code>, and <code>sd</code> to the <code>priors</code>
+argument of <code><a href="../reference/epinowcast.html">epinowcast()</a></code>.</p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="48%">
+<col width="31%">
+</colgroup>
+<thead><tr class="header">
+<th>Task</th>
+<th>How to do it</th>
+<th>Details</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Inspect module priors</td>
+<td><code>enw_reference(data = pobs)$priors</code></td>
+<td>Each module returns its defaults</td>
+</tr>
+<tr class="even">
+<td>Replace specific priors</td>
+<td><code>enw_replace_priors(priors, custom)</code></td>
+<td>Merge custom values into defaults</td>
+</tr>
+<tr class="odd">
+<td>Pass to model</td>
+<td><code>epinowcast(..., priors = custom_priors)</code></td>
+<td>Overrides matching defaults</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_replace_priors.html">enw_replace_priors()</a></code>: Merge custom priors with
+defaults</li>
+<li>See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for a worked example</li>
+</ul>
 </div>
 <div class="section level2">
 <h2 id="missing-data">Missing Data Handling<a class="anchor" aria-label="anchor" href="#missing-data"></a>

@@ -143,11 +143,11 @@ further details.</p></dd>
 
 
 <dt id="arg-priors">priors<a class="anchor" aria-label="anchor" href="#arg-priors"></a></dt>
-<dd><p>A <code>data.frame</code> with the following variables:
-<code>variable</code>, <code>mean</code>, <code>sd</code> describing normal priors. Priors in the
-appropriate format are returned by <code><a href="enw_reference.html">enw_reference()</a></code> as well as by
-other similar model specification functions. Priors in this data.frame
-replace the default priors specified by each model component.</p></dd>
+<dd><p>A <code>data.frame</code> with columns <code>variable</code>, <code>mean</code>,
+and <code>sd</code> describing normal priors that replace the module
+defaults.
+Custom priors are merged with the defaults automatically.
+See Details for how to inspect and modify priors.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -160,6 +160,28 @@ be used but currently require the supplied <code>model</code> to be adapted.</p>
     <p>A object of the class "epinowcast" which inherits from
 <code><a href="enw_preprocess_data.html">enw_preprocess_data()</a></code> and <code>data.table</code>, and combines the input data,
 priors, and output from the sampler specified in <code><a href="enw_fit_opts.html">enw_fit_opts()</a></code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+
+<div class="section">
+<h3 id="priors">Priors<a class="anchor" aria-label="anchor" href="#priors"></a></h3>
+
+
+<p>Each model module defines its own default priors.
+To inspect them, call the module function and access the
+<code>$priors</code> element.
+See <code><a href="enw_reference.html">enw_reference()</a></code>, <code><a href="enw_report.html">enw_report()</a></code>,
+<code><a href="enw_expectation.html">enw_expectation()</a></code>, <code><a href="enw_missing.html">enw_missing()</a></code>, and <code><a href="enw_obs.html">enw_obs()</a></code> for
+the prior variables available in each module.</p>
+<p>To replace specific defaults, pass a <code>data.frame</code> to the
+<code>priors</code> argument.
+Vectorised prior names (e.g. <code>"refp_mean_int[1]"</code>) are
+matched after stripping the index.
+See <code><a href="enw_replace_priors.html">enw_replace_priors()</a></code> for details on the merging
+behaviour.</p>
+</div>
+
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -206,9 +228,13 @@ priors, and output from the sampler specified in <code><a href="enw_fit_opts.htm
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="co"># Preprocess observations (note this maximum delay is likely too short)</span></span></span>
 <span class="r-in"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_nat_germany</span>, max_delay <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="co"># Fit the default nowcast model and produce a nowcast</span></span></span>
-<span class="r-in"><span><span class="co"># Note that we have reduced samples for this example to reduce runtimes</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit with custom priors</span></span></span>
+<span class="r-in"><span><span class="va">my_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  variable <span class="op">=</span> <span class="st">"refp_mean_int"</span>, mean <span class="op">=</span> <span class="fl">2</span>, sd <span class="op">=</span> <span class="fl">0.5</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">nowcast</span> <span class="op">&lt;-</span> <span class="fu">epinowcast</span><span class="op">(</span><span class="va">pobs</span>,</span></span>
+<span class="r-in"><span>  priors <span class="op">=</span> <span class="va">my_priors</span>,</span></span>
 <span class="r-in"><span>  fit <span class="op">=</span> <span class="fu"><a href="enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    save_warmup <span class="op">=</span> <span class="cn">FALSE</span>, pp <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>    chains <span class="op">=</span> <span class="fl">2</span>, iter_warmup <span class="op">=</span> <span class="fl">500</span>, iter_sampling <span class="op">=</span> <span class="fl">500</span></span></span>

@@ -260,10 +260,12 @@ models.
 
 #### Setting priors
 
-Setting sensible priors is important for Bayesian inference. When
-pre-processing your data, you can retrieve the prior arguments using the
-`enw_reference` function. As shown below, you can retrieve your current
-files and manipulate them as needed.
+Setting sensible priors is important for Bayesian inference. See
+[`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+for an overview of how to inspect and customise priors across all model
+modules. When pre-processing your data, you can retrieve the prior
+arguments using the `enw_reference` function. As shown below, you can
+retrieve your current files and manipulate them as needed.
 
 Code
 

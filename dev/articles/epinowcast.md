@@ -169,6 +169,11 @@ modules. The appropriateness of these specifications will vary depending
 on your context. See our vignettes for further details on model
 specification and examples of more complex models.
 
+Each module defines its own default priors which can be inspected and
+customised. See
+[`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+for details on inspecting and setting priors.
+
 ### Process model
 
 A commonly used process model in nowcasting is to model the expected

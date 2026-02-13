@@ -5,15 +5,17 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Replace default priors with user specified priors — enw_replace_priors"><meta name="description" content="This function is used internally by epinowcast to replace
-default model priors with users specified ones (restricted to
-normal priors with specified mean and standard deviations). A common
-use would be extracting the posterior from a previous epinowcast()
-run (using summary(nowcast, type = fit)) and using this a prior."><meta property="og:description" content="This function is used internally by epinowcast to replace
-default model priors with users specified ones (restricted to
-normal priors with specified mean and standard deviations). A common
-use would be extracting the posterior from a previous epinowcast()
-run (using summary(nowcast, type = fit)) and using this a prior."><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Replace default priors with user specified priors — enw_replace_priors"><meta name="description" content='Replaces default model priors with user specified ones
+(restricted to normal priors with specified mean and standard
+deviations).
+A common use is extracting the posterior from a previous
+epinowcast() run (using summary(nowcast, type = "fit"))
+and using it as a prior for subsequent fits.'><meta property="og:description" content='Replaces default model priors with user specified ones
+(restricted to normal priors with specified mean and standard
+deviations).
+A common use is extracting the posterior from a previous
+epinowcast() run (using summary(nowcast, type = "fit"))
+and using it as a prior for subsequent fits.'><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -64,11 +66,12 @@ run (using summary(nowcast, type = fit)) and using this a prior."><meta property
     </div>
 
     <div class="ref-description section level2">
-    <p>This function is used internally by <a href="epinowcast">epinowcast</a> to replace
-default model priors with users specified ones (restricted to
-normal priors with specified mean and standard deviations). A common
-use would be extracting the posterior from a previous <code><a href="epinowcast.html">epinowcast()</a></code>
-run (using <code>summary(nowcast, type = fit)</code>) and using this a prior.</p>
+    <p>Replaces default model priors with user specified ones
+(restricted to normal priors with specified mean and standard
+deviations).
+A common use is extracting the posterior from a previous
+<code><a href="epinowcast.html">epinowcast()</a></code> run (using <code>summary(nowcast, type = "fit")</code>)
+and using it as a prior for subsequent fits.</p>
     </div>
 
     <div class="section level2">
@@ -81,24 +84,34 @@ run (using <code>summary(nowcast, type = fit)</code>) and using this a prior.</p
 
 
 <dl><dt id="arg-priors">priors<a class="anchor" aria-label="anchor" href="#arg-priors"></a></dt>
-<dd><p>A <code>data.frame</code> with the following variables:
-<code>variable</code>, <code>mean</code>, <code>sd</code> describing normal priors. Priors in the
-appropriate format are returned by <code><a href="enw_reference.html">enw_reference()</a></code> as well as by
-other similar model specification functions.</p></dd>
+<dd><p>A <code>data.frame</code> with columns <code>variable</code>,
+<code>mean</code>, and <code>sd</code> describing normal priors.
+Default priors in the appropriate format are returned by
+the <code>$priors</code> element of <code><a href="enw_reference.html">enw_reference()</a></code> and other model
+module functions.</p></dd>
 
 
 <dt id="arg-custom-priors">custom_priors<a class="anchor" aria-label="anchor" href="#arg-custom-priors"></a></dt>
-<dd><p>A <code>data.frame</code> with the following variables:
-<code>variable</code>, <code>mean</code>, <code>sd</code> describing normal priors. Priors in the
-appropriate format are returned by <code><a href="enw_reference.html">enw_reference()</a></code> as well as by
-other similar model specification functions. Priors in this data.frame
-replace the default priors. Note that currently vectorised prior names
-(i.e those of the form <code>variable[n]</code> will be treated as <code>variable</code>).</p></dd>
+<dd><p>A <code>data.frame</code> with columns <code>variable</code>,
+<code>mean</code>, and <code>sd</code> describing normal priors to use as
+replacements.
+Rows in <code>custom_priors</code> replace matching rows in <code>priors</code>
+by the <code>variable</code> column.
+Vectorised prior names (i.e. those of the form
+<code>variable[n]</code>) are matched after stripping the index
+(treated as <code>variable</code>).</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data.table of prior definitions (variable, mean and sd).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Default priors can be obtained from each model module's
+<code>$priors</code> element, e.g. <code>enw_reference(data = pobs)$priors</code>.
+See the <code>priors</code> argument of <code><a href="epinowcast.html">epinowcast()</a></code> for a list of
+available prior variable names by module.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

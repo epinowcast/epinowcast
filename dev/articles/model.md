@@ -358,7 +358,9 @@ effects to the report date hazard.
 
 All fixed (\\\beta\_{f,i}\\) and random (\\\beta\_{r,i}\\) coefficients
 have standard normal priors by default with standard half-normal priors
-for pooled standard deviations.
+for pooled standard deviations. See
+[`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+for details on inspecting and customising these priors.
 
 ## Observation model and nowcast
 

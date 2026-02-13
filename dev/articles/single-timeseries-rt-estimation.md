@@ -662,7 +662,9 @@ Given case counts both by date of reference and by date of report, we
 can estimate the reporting delay distribution directly and jointly with
 the underlying process model, rather than relying on external estimates
 from other sources (though we may want to account for external
-information in our priors).
+information in our priors). See
+[`?epinowcast`](https://package.epinowcast.org/dev/reference/epinowcast.md)
+for details on inspecting and customising priors.
 
 We consider the reporting delay to follow a \\\text{LogNormal}
 \left(\mu^d, \sigma^d \right)\\ distribution, with parameters

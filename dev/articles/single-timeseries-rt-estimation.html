@@ -513,7 +513,8 @@
 <div class="section level4">
 <h4 id="defining-the-delay-distribution">Defining the delay distribution<a class="anchor" aria-label="anchor" href="#defining-the-delay-distribution"></a>
 </h4>
-<p>Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).</p>
+<p>Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).
+See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for details on inspecting and customising priors.</p>
 <p>We consider the reporting delay to follow a <span class="math inline">\(\text{LogNormal} \left(\mu^d, \sigma^d \right)\)</span> distribution, with parameters</p>
 <p><span class="math display">\[\begin{align}
   \mu^d &amp;\sim \text{Normal} \left(0, 1 \right) \\

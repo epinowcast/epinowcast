@@ -15,11 +15,11 @@ enw_priors_as_data_list(priors)
 
 - priors:
 
-  A `data.frame` with the following variables: `variable`, `mean`, `sd`
-  describing normal priors. Priors in the appropriate format are
-  returned by
+  A `data.frame` with columns `variable`, `mean`, and `sd` describing
+  normal priors. Default priors in the appropriate format are returned
+  by the `$priors` element of
   [`enw_reference()`](https://package.epinowcast.org/dev/reference/enw_reference.md)
-  as well as by other similar model specification functions.
+  and other model module functions.
 
 ## Value
 
