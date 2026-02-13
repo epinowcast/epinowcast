@@ -1,8 +1,11 @@
 ---
 title: Resources to help with model fitting using Stan
 description: "How to address issues you may encounter with Stan"
+author: Epinowcast Team
 pkgdown:
   as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
 vignette: >
   %\VignetteIndexEntry{Resources to help with model fitting using Stan}
   %\VignetteEngine{knitr::rmarkdown}

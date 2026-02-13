@@ -1,11 +1,15 @@
 ---
 title: "Estimating the effective reproduction number in real-time for a single timeseries with reporting delays"
 description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
+author: Epinowcast Team
 opengraph:
   image:
     src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
 pkgdown:
   as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Estimating the effective reproduction number in real-time for a single timeseries with reporting delays}
   %\VignetteEngine{knitr::rmarkdown}

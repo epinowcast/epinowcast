@@ -1,8 +1,12 @@
 ---
 title: Model definition and implementation
 description: "Model formulation and implementation details"
+author: Epinowcast Team
 pkgdown:
   as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Model definition and implementation}
   %\VignetteEngine{knitr::rmarkdown}

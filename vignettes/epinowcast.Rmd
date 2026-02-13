@@ -1,11 +1,15 @@
 ---
 title: "Getting Started with Epinowcast: Nowcasting"
 description: "A quick start example demonstrating use of epinowcast to nowcast hospital admissions."
+author: Epinowcast Team
 opengraph:
   image:
     src: figures/getting-started-nowcasting-nowcast-1.png
 pkgdown:
   as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
 vignette: >
   %\VignetteIndexEntry{Getting Started with Epinowcast: Nowcasting}
   %\VignetteEngine{knitr::rmarkdown}
