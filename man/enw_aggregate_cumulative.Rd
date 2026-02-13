@@ -43,7 +43,8 @@ would be the minimum report date in the \code{obs} object + 1 day if reporting
 is already weekly and you wish to ensure that the timestep of the output
 matches the reporting timestep.}
 
-\item{copy}{Should \code{obs} be copied (default) or modified in place?}
+\item{copy}{Should \code{obs} be copied (default) or modified
+in place?}
 }
 \value{
 A data.table with aggregated observations.

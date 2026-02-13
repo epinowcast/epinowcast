@@ -7,10 +7,11 @@
 enw_filter_delay(obs, max_delay, timestep = "day")
 }
 \arguments{
-\item{obs}{A \code{data.frame} containing at least the following variables:
-\verb{reference date} (index date of interest), \code{report_date} (report date for
-observations), and \code{confirm} (cumulative observations by reference and report
-date).}
+\item{obs}{A \code{data.frame} containing at least the
+following variables: \verb{reference date} (index date of
+interest), \code{report_date} (report date for observations),
+and \code{confirm} (cumulative observations by reference and
+report date).}
 
 \item{max_delay}{The maximum delay to model in the delay
 distribution, specified in units of the timestep (e.g., if
@@ -67,8 +68,8 @@ Preprocessing functions
 \code{\link{enw_construct_data}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_reference_dates_by_report_start}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_filter_report_dates_by_min}()},
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},

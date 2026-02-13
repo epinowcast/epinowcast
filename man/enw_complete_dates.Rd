@@ -17,10 +17,11 @@ enw_complete_dates(
 )
 }
 \arguments{
-\item{obs}{A \code{data.frame} containing at least the following variables:
-\verb{reference date} (index date of interest), \code{report_date} (report date for
-observations), and \code{confirm} (cumulative observations by reference and report
-date).}
+\item{obs}{A \code{data.frame} containing at least the
+following variables: \verb{reference date} (index date of
+interest), \code{report_date} (report date for observations),
+and \code{confirm} (cumulative observations by reference and
+report date).}
 
 \item{by}{A character vector describing the stratification of
 observations. This defaults to no grouping. This should be used
@@ -110,8 +111,8 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_reference_dates_by_report_start}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_filter_report_dates_by_min}()},
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},

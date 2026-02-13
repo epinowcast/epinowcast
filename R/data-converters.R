@@ -17,6 +17,7 @@
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+#' dt <- enw_filter_reference_dates_by_report_start(dt)
 #' dt <- enw_add_incidence(dt)
 #' dt <- dt[, confirm := NULL]
 #' enw_add_cumulative(dt)
@@ -37,24 +38,36 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 
 #' Calculate incidence of new reports from cumulative reports
 #'
-#' @param obs A `data.frame` containing at least the following variables:
-#' `reference date` (index date of interest), `report_date` (report date for
-#' observations), and `confirm` (cumulative observations by reference and report
-#' date).
+#' @description Computes incident counts from cumulative
+#' reports. Users should typically call
+#' [enw_filter_reference_dates_by_report_start()] before
+#' this function to remove reference dates that precede the
+#' earliest report date, which would otherwise produce
+#' spurious leading entries.
 #'
-#' @param set_negatives_to_zero Logical, defaults to TRUE. Should negative
-#' counts (for calculated incidence of observations) be set to zero? Currently
-#' downstream modelling does not support negative counts and so setting must be
-#' TRUE if intending to use [epinowcast()].
+#' @param obs A `data.frame` containing at least the
+#' following variables: `reference date` (index date of
+#' interest), `report_date` (report date for observations),
+#' and `confirm` (cumulative observations by reference and
+#' report date).
 #'
-#' @param copy Should `obs` be copied (default) or modified in place?
+#' @param set_negatives_to_zero Logical, defaults to TRUE.
+#' Should negative counts (for calculated incidence of
+#' observations) be set to zero? Currently downstream
+#' modelling does not support negative counts and so
+#' setting must be TRUE if intending to use
+#' [epinowcast()].
+#'
+#' @param copy Should `obs` be copied (default) or modified
+#' in place?
 #'
 #' @inheritParams enw_filter_delay
 #' @inheritParams enw_preprocess_data
 #'
-#' @return The input `data.frame` with a new variable `new_confirm`. If
-#' `max_confirm` is present in the `data.frame`, then the proportion
-#' reported on each day (`prop_reported`) will also be added.
+#' @return The input `data.frame` with a new variable
+#' `new_confirm`. If `max_confirm` is present in the
+#' `data.frame`, then the proportion reported on each day
+#' (`prop_reported`) will also be added.
 #'
 #' @family dataconverters
 #' @export
@@ -62,10 +75,16 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
 #' @examples
 #' # Default reconstruct incidence
 #' dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+#' dt <- enw_filter_reference_dates_by_report_start(dt)
 #' enw_add_incidence(dt)
 #'
-#' # Make use of maximum reported to calculate empirical daily reporting
+#' # Make use of maximum reported to calculate empirical
+#' # daily reporting
+#' dt <- germany_covid19_hosp[location == "DE"][
+#'   age_group == "00+"
+#' ]
 #' dt <- enw_add_max_reported(dt)
+#' dt <- enw_filter_reference_dates_by_report_start(dt)
 #' enw_add_incidence(dt)
 enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
                               copy = TRUE) {
@@ -76,10 +95,10 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
   reports[, new_confirm := c(confirm[1], diff(confirm)),
     by = c("reference_date", by)
   ]
-  reports <- enw_filter_report_dates_by_min(
-    reports, by = by, copy = FALSE
-  )
-  reports <- reports[, delay := 0:(.N - 1), by = c("reference_date", by)]
+  reports <- reports[,
+    delay := 0:(.N - 1),
+    by = c("reference_date", by)
+  ]
 
   if (!is.null(reports$max_confirm)) {
     reports[, prop_reported := new_confirm / max_confirm]
@@ -197,6 +216,9 @@ enw_linelist_to_incidence <- function(linelist,
     completion_beyond_max_report = completion_beyond_max_report,
     timestep = "day"
   )
+  complete_counts <- enw_filter_reference_dates_by_report_start(
+    complete_counts, by = by, copy = FALSE
+  )
   complete_counts <- enw_add_incidence(complete_counts, by = by, copy = FALSE)
   return(complete_counts[])
 }
@@ -227,7 +249,10 @@ enw_linelist_to_incidence <- function(linelist,
 #' @family dataconverters
 #' @importFrom data.table setcolorder setnames
 #' @examples
-#' incidence <- enw_add_incidence(germany_covid19_hosp)
+#' incidence <- enw_filter_reference_dates_by_report_start(
+#'   germany_covid19_hosp
+#' )
+#' incidence <- enw_add_incidence(incidence)
 #' incidence <- enw_filter_reference_dates(
 #'   incidence[location == "DE"], include_days = 10
 #' )
@@ -358,8 +383,6 @@ enw_aggregate_cumulative <- function(
 
   # Set day of week for reference date and filter
   agg_obs <- agg_obs[reference_date_mod == (internal_timestep - 1)]
-  # NA reference dates are already split into agg_obs_na_ref
-  # above, so enw_filter_report_dates_by_min() is not used.
   agg_obs <- agg_obs[reference_date >= min(report_date)]
 
   # If there are missing reference dates, aggregate over the report date
@@ -372,6 +395,9 @@ enw_aggregate_cumulative <- function(
     agg_obs <- rbind(agg_obs_na_ref, agg_obs, fill = TRUE)
   }
   # Add in any missing new confirm counts
+  agg_obs <- enw_filter_reference_dates_by_report_start(
+    agg_obs, by = by, copy = FALSE
+  )
   agg_obs <- enw_add_incidence(agg_obs, by = by, copy = FALSE)
   # Drop internal processing columns
   agg_obs[,

@@ -1,5 +1,5 @@
 test_that(
-  "enw_filter_report_dates_by_min removes early reference dates",
+  "enw_filter_reference_dates_by_report_start removes early reference dates",
   {
     obs <- data.table::data.table(
       reference_date = data.table::as.IDate(c(
@@ -9,7 +9,7 @@ test_that(
         "2021-10-02", "2021-10-02", "2021-10-03"
       ))
     )
-    result <- enw_filter_report_dates_by_min(obs)
+    result <- enw_filter_reference_dates_by_report_start(obs)
     expect_identical(nrow(result), 2L)
     expect_true(
       all(result$reference_date >= min(result$report_date))
@@ -18,7 +18,7 @@ test_that(
 )
 
 test_that(
-  "enw_filter_report_dates_by_min retains NA reference dates",
+  "enw_filter_reference_dates_by_report_start retains NA reference dates",
   {
     obs <- data.table::data.table(
       reference_date = data.table::as.IDate(c(
@@ -28,14 +28,14 @@ test_that(
         "2021-10-02", "2021-10-02", "2021-10-03"
       ))
     )
-    result <- enw_filter_report_dates_by_min(obs)
+    result <- enw_filter_reference_dates_by_report_start(obs)
     expect_identical(nrow(result), 3L)
     expect_true(is.na(result$reference_date[1]))
   }
 )
 
 test_that(
-  "enw_filter_report_dates_by_min works with by argument",
+  "enw_filter_reference_dates_by_report_start works with by argument",
   {
     obs <- data.table::data.table(
       reference_date = data.table::as.IDate(c(
@@ -48,7 +48,7 @@ test_that(
       )),
       group = c("a", "a", "b", "b")
     )
-    result <- enw_filter_report_dates_by_min(
+    result <- enw_filter_reference_dates_by_report_start(
       obs, by = "group"
     )
     # Group "a": min report_date = 2021-10-02,
@@ -66,7 +66,7 @@ test_that(
 )
 
 test_that(
-  "enw_filter_report_dates_by_min keeps all rows when valid",
+  "enw_filter_reference_dates_by_report_start keeps all rows when valid",
   {
     obs <- data.table::data.table(
       reference_date = data.table::as.IDate(c(
@@ -76,13 +76,13 @@ test_that(
         "2021-10-02", "2021-10-03"
       ))
     )
-    result <- enw_filter_report_dates_by_min(obs)
+    result <- enw_filter_reference_dates_by_report_start(obs)
     expect_identical(nrow(result), 2L)
   }
 )
 
 test_that(
-  "enw_filter_report_dates_by_min copies by default",
+  "enw_filter_reference_dates_by_report_start copies by default",
   {
     obs <- data.table::data.table(
       reference_date = data.table::as.IDate(c(
@@ -92,7 +92,7 @@ test_that(
         "2021-10-02", "2021-10-02"
       ))
     )
-    result <- enw_filter_report_dates_by_min(obs)
+    result <- enw_filter_reference_dates_by_report_start(obs)
     expect_identical(nrow(obs), 2L)
     expect_identical(nrow(result), 1L)
   }

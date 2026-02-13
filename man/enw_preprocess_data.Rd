@@ -59,10 +59,12 @@ numeric whole number representing the number of days. If your data does not
 have this timestep then you may wish to make use of
 \code{\link[=enw_aggregate_cumulative]{enw_aggregate_cumulative()}} to aggregate your data to the desired timestep.}
 
-\item{set_negatives_to_zero}{Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero? Currently
-downstream modelling does not support negative counts and so setting must be
-TRUE if intending to use \code{\link[=epinowcast]{epinowcast()}}.}
+\item{set_negatives_to_zero}{Logical, defaults to TRUE.
+Should negative counts (for calculated incidence of
+observations) be set to zero? Currently downstream
+modelling does not support negative counts and so
+setting must be TRUE if intending to use
+\code{\link[=epinowcast]{epinowcast()}}.}
 
 \item{...}{Other arguments to \code{\link[=enw_add_metaobs_features]{enw_add_metaobs_features()}},
 e.g. \code{holidays}, which sets commonly used metadata
@@ -139,8 +141,8 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_reference_dates_by_report_start}()},
 \code{\link{enw_filter_report_dates}()},
-\code{\link{enw_filter_report_dates_by_min}()},
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
 \code{\link{enw_latest_data}()},
