@@ -3,12 +3,8 @@ title: "Estimating the effective reproduction number in real-time for a single t
 description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
 author: Epinowcast Team
 opengraph:
-  image: 
+  image:
     src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
-output: 
-  bookdown::html_vignette2:
-    fig_caption: yes
-    code_folding: show
 pkgdown:
   as_is: true
 bibliography: library.bib
@@ -483,7 +479,8 @@ expectation_module <- partial(
 
 #### Defining the delay distribution
 
-Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors). 
+Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).
+See `?epinowcast` for details on inspecting and customising priors.
 
 We consider the reporting delay to follow a $\text{LogNormal} \left(\mu^d, \sigma^d \right)$ distribution, with parameters
 

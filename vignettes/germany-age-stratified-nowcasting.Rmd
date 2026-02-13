@@ -3,12 +3,8 @@ title: "Hierarchical nowcasting of age stratified COVID-19 hospitalisations in G
 description: "A case study exploring hierarchical models of varying complexity to jointly nowcast age stratified COVID-19 hospitalisations in Germany."
 author: Epinowcast Team
 opengraph:
-  image: 
+  image:
     src: figures/germany-age-stratified-nowcasting-performance-1.png
-output: 
-  bookdown::html_vignette2:
-    fig_caption: yes
-    code_folding: show
 pkgdown:
   as_is: true
 bibliography: library.bib
@@ -152,7 +148,8 @@ plot(nowcast, latest_obs = latest_nat_germany) +
 
 ## Using the inflated posterior as a prior
 
-To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic. 
+To speed up model fitting we make use of posterior information from the previous model (with some inflation) for some parameters. Note that this is not a truly Bayesian approach and in some situations may be problematic.
+See `?epinowcast` for general guidance on inspecting and setting priors.
 
 
 ``` r

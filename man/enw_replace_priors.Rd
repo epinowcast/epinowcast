@@ -7,27 +7,37 @@
 enw_replace_priors(priors, custom_priors)
 }
 \arguments{
-\item{priors}{A \code{data.frame} with the following variables:
-\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
-appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
-other similar model specification functions.}
+\item{priors}{A \code{data.frame} with columns \code{variable},
+\code{mean}, and \code{sd} describing normal priors.
+Default priors in the appropriate format are returned by
+the \verb{$priors} element of \code{\link[=enw_reference]{enw_reference()}} and other model
+module functions.}
 
-\item{custom_priors}{A \code{data.frame} with the following variables:
-\code{variable}, \code{mean}, \code{sd} describing normal priors. Priors in the
-appropriate format are returned by \code{\link[=enw_reference]{enw_reference()}} as well as by
-other similar model specification functions. Priors in this data.frame
-replace the default priors. Note that currently vectorised prior names
-(i.e those of the form \code{variable[n]} will be treated as \code{variable}).}
+\item{custom_priors}{A \code{data.frame} with columns \code{variable},
+\code{mean}, and \code{sd} describing normal priors to use as
+replacements.
+Rows in \code{custom_priors} replace matching rows in \code{priors}
+by the \code{variable} column.
+Vectorised prior names (i.e. those of the form
+\code{variable[n]}) are matched after stripping the index
+(treated as \code{variable}).}
 }
 \value{
 A data.table of prior definitions (variable, mean and sd).
 }
 \description{
-This function is used internally by \url{epinowcast} to replace
-default model priors with users specified ones (restricted to
-normal priors with specified mean and standard deviations). A common
-use would be extracting the posterior from a previous \code{\link[=epinowcast]{epinowcast()}}
-run (using \code{summary(nowcast, type = fit)}) and using this a prior.
+Replaces default model priors with user specified ones
+(restricted to normal priors with specified mean and standard
+deviations).
+A common use is extracting the posterior from a previous
+\code{\link[=epinowcast]{epinowcast()}} run (using \code{summary(nowcast, type = "fit")})
+and using it as a prior for subsequent fits.
+}
+\details{
+Default priors can be obtained from each model module's
+\verb{$priors} element, e.g. \code{enw_reference(data = pobs)$priors}.
+See the \code{priors} argument of \code{\link[=epinowcast]{epinowcast()}} for a list of
+available prior variable names by module.
 }
 \examples{
 # Update priors from a data.frame
