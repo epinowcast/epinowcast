@@ -598,7 +598,6 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
       "{date_var} does not have the specified timestep of {timestep} day(s)"
     )
   }
-  return(invisible(NULL))
 }
 
 #' Check timestep
@@ -639,16 +638,13 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   dates <- dates[!is.na(dates)]
 
   if (length(dates) <= 1 && !check_nrow) {
-    return(invisible(NULL))
-  }
-  if (length(dates) <= 1) {
+    invisible(NULL)
+  } else if (length(dates) <= 1) {
     cli::cli_abort("There must be at least two observations")
+  } else {
+    internal_timestep <- get_internal_timestep(timestep)
+    check_numeric_timestep(dates, date_var, internal_timestep, exact)
   }
-
-  internal_timestep <- get_internal_timestep(timestep)
-  check_numeric_timestep(dates, date_var, internal_timestep, exact)
-
-  return(invisible(NULL))
 }
 
 #' Check timestep by group
@@ -677,8 +673,6 @@ check_timestep_by_group <- function(obs, date_var, timestep = "day",
     ),
     by = ".group"
   ]
-
-  return(invisible(NULL))
 }
 
 #' Check timestep by date
@@ -721,7 +715,6 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
     ),
     by = c("report_date", ".group")
   ]
-  return(invisible(NULL))
 }
 
 #' Check observation indicator
@@ -746,7 +739,6 @@ check_observation_indicator <- function(
     !is.logical(new_confirm[[observation_indicator]])) {
     cli::cli_abort("observation_indicator must be a logical")
   }
-  return(invisible(NULL))
 }
 
 #' Check design matrix sparsity
@@ -770,21 +762,17 @@ check_observation_indicator <- function(
 check_design_matrix_sparsity <- function(matrix, sparsity_threshold = 0.9,
                                          min_matrix_size = 50,
                                          name = "checked") {
-  if (length(matrix) < min_matrix_size) {
-    return(invisible(NULL))
-  }
+  if (length(matrix) >= min_matrix_size) {
+    zero_proportion <- sum(matrix == 0) / length(matrix)
 
-  zero_proportion <- sum(matrix == 0) / length(matrix)
-
-  if (zero_proportion > sparsity_threshold) {
-    cli::cli_alert_info(
-      c(
-        "The {name} design matrix is sparse (>{sparsity_threshold*100}% ",
-        "zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` ",
-        "to potentially reduce memory usage and computation time."
+    if (zero_proportion > sparsity_threshold) {
+      cli::cli_alert_info(
+        c(
+          "The {name} design matrix is sparse (>{sparsity_threshold*100}% ",
+          "zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` ",
+          "to potentially reduce memory usage and computation time."
+        )
       )
-    )
+    }
   }
-
-  return(invisible(NULL))
 }

@@ -32,7 +32,7 @@ enw_add_cumulative <- function(obs, by = NULL, copy = TRUE) {
   data.table::setkeyv(reports, c(by, "reference_date", "report_date"))
 
   reports[, confirm := cumsum(new_confirm), by = c(by, "reference_date")]
-  return(reports[])
+  reports[]
 }
 
 #' Calculate incidence of new reports from cumulative reports
@@ -89,7 +89,7 @@ enw_add_incidence <- function(obs, set_negatives_to_zero = TRUE, by = NULL,
   if (set_negatives_to_zero) {
     reports <- reports[new_confirm < 0, new_confirm := 0]
   }
-  return(reports[])
+  reports[]
 }
 
 
@@ -199,7 +199,7 @@ enw_linelist_to_incidence <- function(linelist,
     timestep = "day"
   )
   complete_counts <- enw_add_incidence(complete_counts, by = by, copy = FALSE)
-  return(complete_counts[])
+  complete_counts[]
 }
 
 
@@ -250,7 +250,7 @@ enw_incidence_to_linelist <- function(obs, reference_date = "reference_date",
     c(reference_date, report_date)
   )
 
-  return(obs[])
+  obs[]
 }
 
 
@@ -376,5 +376,5 @@ enw_aggregate_cumulative <- function(
   agg_obs[,
    c("reference_date_mod", "report_date_mod", ".group") := NULL
   ]
-  return(agg_obs[])
+  agg_obs[]
 }

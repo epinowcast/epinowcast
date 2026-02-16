@@ -734,7 +734,7 @@ enw_unset_cache <- function(type = c("session", "persistent", "all")) {
         cache_in_environ <- check_renviron_for_cache(environ)
         if (any(cache_in_environ)) {
           cli::cli_alert_info(
-            "To revert to the persistent cache, run `readRenviron('~/.Renviron')`" # nolint line_length 
+            "To revert to the persistent cache, run `readRenviron('~/.Renviron')`" # nolint line_length
           )
         }
       }
