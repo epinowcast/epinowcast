@@ -58,11 +58,11 @@ rt_nat_germany <- enw_filter_reference_dates(
 )
 
 # Get latest observations for the same time period
-latest_obs <- enw_latest_data(weekly_germany_hosp)
-latest_obs <- enw_filter_reference_dates(
-  latest_obs,
-  remove_days = 20, include_days = 90
-)
+latest_obs <- weekly_germany_hosp |>
+  enw_obs_at_delay(max_delay = 6, timestep = "week") |>
+  enw_filter_reference_dates(
+    remove_days = 20, include_days = 90
+  )
 
 # Preprocess observations (note this maximum delay is likely too short)
 pobs <- enw_preprocess_data(rt_nat_germany, max_delay = 6, timestep = "week")
