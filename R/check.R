@@ -597,7 +597,6 @@ check_numeric_timestep <- function(dates, date_var, timestep, exact = TRUE) {
       "{date_var} does not have the specified timestep of {timestep} day(s)"
     )
   }
-  invisible(NULL)
 }
 
 #' Check timestep
@@ -637,15 +636,14 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   dates <- sort(dates)
   dates <- dates[!is.na(dates)]
 
-  if (length(dates) <= 1) {
-    if (check_nrow) {
-      cli::cli_abort("There must be at least two observations")
-    }
+  if (length(dates) <= 1 && !check_nrow) {
+    invisible(NULL)
+  } else if (length(dates) <= 1) {
+    cli::cli_abort("There must be at least two observations")
   } else {
     internal_timestep <- get_internal_timestep(timestep)
     check_numeric_timestep(dates, date_var, internal_timestep, exact)
   }
-  invisible(NULL)
 }
 
 #' Check timestep by group
@@ -674,8 +672,6 @@ check_timestep_by_group <- function(obs, date_var, timestep = "day",
     ),
     by = ".group"
   ]
-
-  invisible(NULL)
 }
 
 #' Check timestep by date
@@ -718,7 +714,6 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
     ),
     by = c("report_date", ".group")
   ]
-  invisible(NULL)
 }
 
 #' Check observation indicator
@@ -743,7 +738,6 @@ check_observation_indicator <- function(
     !is.logical(new_confirm[[observation_indicator]])) {
     cli::cli_abort("observation_indicator must be a logical")
   }
-  invisible(NULL)
 }
 
 #' Check design matrix sparsity
@@ -773,14 +767,11 @@ check_design_matrix_sparsity <- function(matrix, sparsity_threshold = 0.9,
     if (zero_proportion > sparsity_threshold) {
       cli::cli_alert_info(
         c(
-          "The {name} design matrix is sparse ",
-          "(>{sparsity_threshold*100}% zeros). Consider ",
-          "using `sparse_design = TRUE` in ",
-          "`enw_fit_opts()` to potentially reduce memory ",
-          "usage and computation time."
+          "The {name} design matrix is sparse (>{sparsity_threshold*100}% ",
+          "zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` ",
+          "to potentially reduce memory usage and computation time."
         )
       )
     }
   }
-  invisible(NULL)
 }
