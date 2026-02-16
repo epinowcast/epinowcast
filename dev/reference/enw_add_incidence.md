@@ -1,6 +1,10 @@
 # Calculate incidence of new reports from cumulative reports
 
-Calculate incidence of new reports from cumulative reports
+Computes incident counts from cumulative reports. Users should typically
+call
+[`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates_by_report_start.md)
+before this function to remove reference dates that precede the earliest
+report date, which would otherwise produce spurious leading entries.
 
 ## Usage
 
@@ -54,6 +58,7 @@ Data converters
 ``` r
 # Default reconstruct incidence
 dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+dt <- enw_filter_reference_dates_by_report_start(dt)
 enw_add_incidence(dt)
 #> Key: <reference_date, report_date>
 #>        reference_date location age_group confirm report_date new_confirm delay
@@ -70,8 +75,13 @@ enw_add_incidence(dt)
 #> 12914:     2021-10-19       DE       00+     387  2021-10-20         164     1
 #> 12915:     2021-10-20       DE       00+     235  2021-10-20         235     0
 
-# Make use of maximum reported to calculate empirical daily reporting
+# Make use of maximum reported to calculate empirical
+# daily reporting
+dt <- germany_covid19_hosp[location == "DE"][
+  age_group == "00+"
+]
 dt <- enw_add_max_reported(dt)
+dt <- enw_filter_reference_dates_by_report_start(dt)
 enw_add_incidence(dt)
 #> Key: <reference_date, report_date>
 #>        reference_date report_date .group max_confirm location age_group confirm

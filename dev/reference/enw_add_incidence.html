@@ -5,7 +5,17 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate incidence of new reports from cumulative reports — enw_add_incidence"><meta name="description" content="Calculate incidence of new reports from cumulative reports"><meta property="og:description" content="Calculate incidence of new reports from cumulative reports"><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
+</script><script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Calculate incidence of new reports from cumulative reports — enw_add_incidence"><meta name="description" content="Computes incident counts from cumulative
+reports. Users should typically call
+enw_filter_reference_dates_by_report_start() before
+this function to remove reference dates that precede the
+earliest report date, which would otherwise produce
+spurious leading entries."><meta property="og:description" content="Computes incident counts from cumulative
+reports. Users should typically call
+enw_filter_reference_dates_by_report_start() before
+this function to remove reference dates that precede the
+earliest report date, which would otherwise produce
+spurious leading entries."><meta property="og:image" content="https://package.epinowcast.org/reference/figures/README-nowcast-1.png"><meta property="og:image:alt" content="An R package for flexible hierarchical nowcasting"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@seabbs"><meta name="twitter:site" content="@seabbs"><meta name="robots" content="noindex"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -56,7 +66,12 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Calculate incidence of new reports from cumulative reports</p>
+    <p>Computes incident counts from cumulative
+reports. Users should typically call
+<code><a href="enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start()</a></code> before
+this function to remove reference dates that precede the
+earliest report date, which would otherwise produce
+spurious leading entries.</p>
     </div>
 
     <div class="section level2">
@@ -69,17 +84,20 @@
 
 
 <dl><dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
-<dd><p>A <code>data.frame</code> containing at least the following variables:
-<code>reference date</code> (index date of interest), <code>report_date</code> (report date for
-observations), and <code>confirm</code> (cumulative observations by reference and report
-date).</p></dd>
+<dd><p>A <code>data.frame</code> containing at least the
+following variables: <code>reference date</code> (index date of
+interest), <code>report_date</code> (report date for observations),
+and <code>confirm</code> (cumulative observations by reference and
+report date).</p></dd>
 
 
 <dt id="arg-set-negatives-to-zero">set_negatives_to_zero<a class="anchor" aria-label="anchor" href="#arg-set-negatives-to-zero"></a></dt>
-<dd><p>Logical, defaults to TRUE. Should negative
-counts (for calculated incidence of observations) be set to zero? Currently
-downstream modelling does not support negative counts and so setting must be
-TRUE if intending to use <code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
+<dd><p>Logical, defaults to TRUE.
+Should negative counts (for calculated incidence of
+observations) be set to zero? Currently downstream
+modelling does not support negative counts and so
+setting must be TRUE if intending to use
+<code><a href="epinowcast.html">epinowcast()</a></code>.</p></dd>
 
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
@@ -90,14 +108,16 @@ downstream modelling</p></dd>
 
 
 <dt id="arg-copy">copy<a class="anchor" aria-label="anchor" href="#arg-copy"></a></dt>
-<dd><p>Should <code>obs</code> be copied (default) or modified in place?</p></dd>
+<dd><p>Should <code>obs</code> be copied (default) or modified
+in place?</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The input <code>data.frame</code> with a new variable <code>new_confirm</code>. If
-<code>max_confirm</code> is present in the <code>data.frame</code>, then the proportion
-reported on each day (<code>prop_reported</code>) will also be added.</p>
+    <p>The input <code>data.frame</code> with a new variable
+<code>new_confirm</code>. If <code>max_confirm</code> is present in the
+<code>data.frame</code>, then the proportion reported on each day
+(<code>prop_reported</code>) will also be added.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -112,6 +132,7 @@ reported on each day (<code>prop_reported</code>) will also be added.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Default reconstruct incidence</span></span></span>
 <span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span><span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_add_incidence</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;reference_date, report_date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date location age_group confirm report_date new_confirm delay</span>
@@ -128,8 +149,13 @@ reported on each day (<code>prop_reported</code>) will also be added.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12914:     2021-10-19       DE       00+     387  2021-10-20         164     1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12915:     2021-10-20       DE       00+     235  2021-10-20         235     0</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Make use of maximum reported to calculate empirical daily reporting</span></span></span>
+<span class="r-in"><span><span class="co"># Make use of maximum reported to calculate empirical</span></span></span>
+<span class="r-in"><span><span class="co"># daily reporting</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span><span class="op">[</span><span class="va">location</span> <span class="op">==</span> <span class="st">"DE"</span><span class="op">]</span><span class="op">[</span></span></span>
+<span class="r-in"><span>  <span class="va">age_group</span> <span class="op">==</span> <span class="st">"00+"</span></span></span>
+<span class="r-in"><span><span class="op">]</span></span></span>
 <span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_add_max_reported.html">enw_add_max_reported</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start</a></span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_add_incidence</span><span class="op">(</span><span class="va">dt</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;reference_date, report_date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        reference_date report_date .group max_confirm location age_group confirm</span>

@@ -7,6 +7,19 @@
 - Solved linting issues (implicit returns) in multiple files. See
   [\#715](https://github.com/epinowcast/epinowcast/issues/715).
 
+### Breaking changes
+
+- [`enw_add_incidence()`](https://package.epinowcast.org/dev/reference/enw_add_incidence.md)
+  no longer filters reference dates that precede the earliest report
+  date. Users should now call
+  [`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates_by_report_start.md)
+  before
+  [`enw_add_incidence()`](https://package.epinowcast.org/dev/reference/enw_add_incidence.md)
+  to reproduce the previous behaviour. All internal call sites have been
+  updated. See
+  [\#305](https://github.com/epinowcast/epinowcast/issues/305) by
+  [@seabbs](https://github.com/seabbs).
+
 ### Model
 
 - Optimised Stan code for efficiency by inlining intermediate variables

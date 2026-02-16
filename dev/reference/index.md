@@ -60,6 +60,9 @@ Functions for preprocessing observations
 - [`enw_filter_reference_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates.md)
   : Filter by reference dates
 
+- [`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates_by_report_start.md)
+  : Filter reference dates that precede the earliest report date
+
 - [`enw_filter_report_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_report_dates.md)
   : Filter by report dates
 

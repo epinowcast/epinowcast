@@ -175,6 +175,7 @@ Code
 
 ``` r
 germany_covid19_hosp_linelist <- germany_covid19_hosp |>
+  enw_filter_reference_dates_by_report_start() |>
   enw_add_incidence() |>
   enw_incidence_to_linelist()
 
@@ -267,6 +268,7 @@ complete_germany_hosp <- germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-08-01") |>
   enw_filter_reference_dates(earliest_date = "2021-05-01") |>
   enw_complete_dates(missing_reference = FALSE) |>
+  enw_filter_reference_dates_by_report_start() |>
   enw_add_incidence()
 ```
 

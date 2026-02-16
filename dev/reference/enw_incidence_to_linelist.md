@@ -50,7 +50,10 @@ Data converters
 ## Examples
 
 ``` r
-incidence <- enw_add_incidence(germany_covid19_hosp)
+incidence <- enw_filter_reference_dates_by_report_start(
+  germany_covid19_hosp
+)
+incidence <- enw_add_incidence(incidence)
 incidence <- enw_filter_reference_dates(
   incidence[location == "DE"], include_days = 10
 )

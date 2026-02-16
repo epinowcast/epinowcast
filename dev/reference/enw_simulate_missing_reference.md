@@ -63,11 +63,11 @@ enw_simulate_missing_reference(
 #> Key: <location, age_group, reference_date, report_date>
 #>       location age_group report_date reference_date confirm
 #>         <fctr>    <fctr>      <IDat>         <IDat>   <num>
-#>    1:       DE       00+  2021-04-06           <NA>      51
-#>    2:       DE       00+  2021-04-07           <NA>     141
-#>    3:       DE       00+  2021-04-08           <NA>     237
-#>    4:       DE       00+  2021-04-09           <NA>     226
-#>    5:       DE       00+  2021-04-10           <NA>     225
+#>    1:       DE       00+  2021-04-06           <NA>      48
+#>    2:       DE       00+  2021-04-07           <NA>     164
+#>    3:       DE       00+  2021-04-08           <NA>     256
+#>    4:       DE       00+  2021-04-09           <NA>     237
+#>    5:       DE       00+  2021-04-10           <NA>     238
 #>   ---                                                      
 #> 7135:       DE       00+  2021-07-31     2021-07-30      37
 #> 7136:       DE       00+  2021-08-01     2021-07-30      37

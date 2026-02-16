@@ -45,6 +45,7 @@ Preprocessing functions
 [`enw_extend_date()`](https://package.epinowcast.org/dev/reference/enw_extend_date.md),
 [`enw_filter_delay()`](https://package.epinowcast.org/dev/reference/enw_filter_delay.md),
 [`enw_filter_reference_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates.md),
+[`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/dev/reference/enw_filter_reference_dates_by_report_start.md),
 [`enw_filter_report_dates()`](https://package.epinowcast.org/dev/reference/enw_filter_report_dates.md),
 [`enw_flag_observed_observations()`](https://package.epinowcast.org/dev/reference/enw_flag_observed_observations.md),
 [`enw_impute_na_observations()`](https://package.epinowcast.org/dev/reference/enw_impute_na_observations.md),
