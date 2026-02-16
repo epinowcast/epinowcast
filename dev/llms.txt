@@ -335,6 +335,9 @@ Functions for preprocessing observations
 - [`enw_missing_reference()`](https://package.epinowcast.org/dev/reference/enw_missing_reference.md)
   : Extract reports with missing reference dates
 
+- [`enw_obs_at_delay()`](https://package.epinowcast.org/dev/reference/enw_obs_at_delay.md)
+  : Extract latest observations at a given maximum delay
+
 - [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md)
   : Preprocess observations
 

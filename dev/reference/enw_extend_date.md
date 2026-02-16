@@ -63,6 +63,7 @@ Preprocessing functions
 [`enw_metadata()`](https://package.epinowcast.org/dev/reference/enw_metadata.md),
 [`enw_metadata_delay()`](https://package.epinowcast.org/dev/reference/enw_metadata_delay.md),
 [`enw_missing_reference()`](https://package.epinowcast.org/dev/reference/enw_missing_reference.md),
+[`enw_obs_at_delay()`](https://package.epinowcast.org/dev/reference/enw_obs_at_delay.md),
 [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md),
 [`enw_reporting_triangle()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle.md),
 [`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.md)

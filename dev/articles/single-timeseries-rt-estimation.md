@@ -339,15 +339,19 @@ retro_germany
 ```
 
 Finally we can create a dataset that contains the latest data available
-for each reference date. We do this using the
-[`enw_latest_data()`](https://package.epinowcast.org/dev/reference/enw_latest_data.md)
-function,
+for each reference date at the maximum modelled delay. We do this using
+the
+[`enw_obs_at_delay()`](https://package.epinowcast.org/dev/reference/enw_obs_at_delay.md)
+function, which combines
+[`enw_filter_delay()`](https://package.epinowcast.org/dev/reference/enw_filter_delay.md)
+and
+[`enw_latest_data()`](https://package.epinowcast.org/dev/reference/enw_latest_data.md),
 
 Code
 
 ``` r
 latest_germany_hosp <- retro_germany |>
-  enw_latest_data()
+  enw_obs_at_delay(max_delay = 30)
 head(latest_germany_hosp, n = 10)
 #>     reference_date report_date confirm new_confirm delay
 #>             <IDat>      <IDat>   <int>       <int> <int>

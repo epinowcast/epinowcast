@@ -151,7 +151,7 @@
 <p>The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see <a href="https://package.epinowcast.org/dev/reference/index.html#data-converters">Data converters</a>).</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">nat_germany_hosp</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/enw_obs_at_delay.html">enw_obs_at_delay</a></span><span class="op">(</span>max_delay <span class="op">=</span> <span class="fl">40</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>remove_days <span class="op">=</span> <span class="fl">40</span>, include_days <span class="op">=</span> <span class="fl">40</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date location age_group confirm report_date</span></span>

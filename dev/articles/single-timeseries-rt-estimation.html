@@ -322,10 +322,11 @@
 <span><span class="co">#&gt; 3873:  2021-07-30     2021-07-01      57           0    29</span></span>
 <span><span class="co">#&gt; 3874:  2021-07-31     2021-07-01      57           0    30</span></span>
 <span><span class="co">#&gt; 3875:  2021-08-01     2021-07-01      57           0    31</span></span></code></pre></div>
-</details><p>Finally we can create a dataset that contains the latest data available for each reference date. We do this using the <code><a href="../reference/enw_latest_data.html">enw_latest_data()</a></code> function,</p>
+</details><p>Finally we can create a dataset that contains the latest data available for each reference date at the maximum modelled delay.
+We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_at_delay()</a></code> function, which combines <code><a href="../reference/enw_filter_delay.html">enw_filter_delay()</a></code> and <code><a href="../reference/enw_latest_data.html">enw_latest_data()</a></code>,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">retro_germany</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/enw_obs_at_delay.html">enw_obs_at_delay</a></span><span class="op">(</span>max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     reference_date report_date confirm new_confirm delay</span></span>
 <span><span class="co">#&gt;             &lt;IDat&gt;      &lt;IDat&gt;   &lt;int&gt;       &lt;int&gt; &lt;int&gt;</span></span>
