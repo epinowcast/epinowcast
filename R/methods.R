@@ -56,7 +56,7 @@ summary.epinowcast <- function(object, type = c(
     cli::cli_abort("unimplemented type: {type}")
   ))
 
-  return(s)
+  s
 }
 
 
@@ -108,5 +108,5 @@ plot.epinowcast <- function(x, latest_obs = NULL, type = c(
     cli::cli_abort("unimplemented type: {type}")
   )
 
-  return(plot)
+  plot
 }

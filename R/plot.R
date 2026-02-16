@@ -131,7 +131,7 @@ enw_plot_quantiles <- function(posterior, latest_obs = NULL, log = FALSE, ...) {
       linetype = guide_legend(order = 2, nrow = 1),
       shape = guide_legend(order = 3, nrow = 1)
     )
-  return(plot)
+  plot
 }
 
 #' Plot nowcast quantiles
@@ -159,7 +159,7 @@ enw_plot_nowcast_quantiles <- function(nowcast, latest_obs = NULL,
     latest_obs = latest_obs, x = reference_date, log = log, ...
   ) +
     labs(y = "Notifications", x = "Reference date")
-  return(plot)
+  plot
 }
 
 #' Plot posterior prediction quantiles
@@ -191,5 +191,5 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
     x = report_date, log = log, ...
   ) +
     labs(y = "Notifications", x = "Report date")
-  return(plot)
+  plot
 }

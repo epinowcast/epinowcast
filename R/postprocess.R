@@ -283,7 +283,7 @@ enw_summarise_samples <- function(samples, probs = c(
     dts <- c(list(obs), dts)
   }
   summary <- purrr::reduce(dts, merge, by = by)
-  return(summary[])
+  summary[]
 }
 
 #' @title Add latest observations to nowcast output
@@ -359,7 +359,7 @@ enw_pp_summary <- function(fit, diff_obs,
   )
   data.table::setorderv(pp, c(".group", "reference_date"))
   pp[, variable := NULL]
-  return(pp[])
+  pp[]
 }
 
 #' Convert summarised quantiles from wide to long format
@@ -421,7 +421,7 @@ build_ord_obs <- function(obs, max_delay, internal_timestep, timestep, nowcast =
     ord_obs <- ord_obs[, rbindlist(obs), by = .draws]
     ord_obs <- ord_obs[order(.group, reference_date)]
   }
-  return(ord_obs)
+  ord_obs
 }
 
 #' Subset observations data table for either modelled dates
