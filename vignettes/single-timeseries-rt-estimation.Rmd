@@ -3,8 +3,12 @@ title: "Estimating the effective reproduction number in real-time for a single t
 description: "A walk through of a simple approach to jointly estimating the effective reproduction number over time and the delay from a positive test to this test being reported."
 author: Epinowcast Team
 opengraph:
-  image:
+  image: 
     src: figures/single-timeseries-rt-estimation-plot-germany-rt-1.png
+output: 
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
 pkgdown:
   as_is: true
 bibliography: library.bib
@@ -276,18 +280,18 @@ We do this using the `enw_obs_at_delay()` function, which combines `enw_filter_d
 latest_germany_hosp <- retro_germany |>
   enw_obs_at_delay(max_delay = 30)
 head(latest_germany_hosp, n = 10)
-#>     reference_date report_date confirm new_confirm delay
-#>             <IDat>      <IDat>   <int>       <int> <int>
-#>  1:     2021-05-01  2021-08-01    1007           0    92
-#>  2:     2021-05-02  2021-08-01     781           0    91
-#>  3:     2021-05-03  2021-08-01     467           0    90
-#>  4:     2021-05-04  2021-08-01     823           0    89
-#>  5:     2021-05-05  2021-08-01    1028           0    88
-#>  6:     2021-05-06  2021-08-01    1016           0    87
-#>  7:     2021-05-07  2021-08-01     892           0    86
-#>  8:     2021-05-08  2021-08-01     822           0    85
-#>  9:     2021-05-09  2021-08-01     561           0    84
-#> 10:     2021-05-10  2021-08-01     364           0    83
+#>     reference_date .group report_date confirm new_confirm delay
+#>             <IDat>  <num>      <IDat>   <int>       <int> <int>
+#>  1:     2021-05-01      1  2021-05-30     868           1    29
+#>  2:     2021-05-02      1  2021-05-31     673           0    29
+#>  3:     2021-05-03      1  2021-06-01     390           1    29
+#>  4:     2021-05-04      1  2021-06-02     735           7    29
+#>  5:     2021-05-05      1  2021-06-03     894           2    29
+#>  6:     2021-05-06      1  2021-06-04     889           2    29
+#>  7:     2021-05-07      1  2021-06-05     803           0    29
+#>  8:     2021-05-08      1  2021-06-06     721           0    29
+#>  9:     2021-05-09      1  2021-06-07     491           0    29
+#> 10:     2021-05-10      1  2021-06-08     308           0    29
 ```
 
 ### Visualising the data
@@ -479,7 +483,7 @@ expectation_module <- partial(
 
 #### Defining the delay distribution
 
-Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).
+Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors). 
 See `?epinowcast` for details on inspecting and customising priors.
 
 We consider the reporting delay to follow a $\text{LogNormal} \left(\mu^d, \sigma^d \right)$ distribution, with parameters
