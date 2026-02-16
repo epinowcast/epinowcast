@@ -638,7 +638,7 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   dates <- dates[!is.na(dates)]
 
   if (length(dates) <= 1 && !check_nrow) {
-    invisible(NULL)
+    return(invisible(NULL))
   }
   if (length(dates) <= 1) {
     cli::cli_abort("There must be at least two observations")
@@ -764,7 +764,7 @@ check_design_matrix_sparsity <- function(matrix, sparsity_threshold = 0.9,
                                          min_matrix_size = 50,
                                          name = "checked") {
   if (length(matrix) < min_matrix_size) {
-    invisible(NULL)
+    return(invisible(NULL))
   }
 
   zero_proportion <- sum(matrix == 0) / length(matrix)
