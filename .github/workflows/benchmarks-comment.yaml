@@ -14,6 +14,7 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: lorenzwalthert/touchstone/actions/comment@main
         with: 
