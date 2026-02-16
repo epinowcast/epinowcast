@@ -144,7 +144,7 @@ enw_fit_opts(iter_sampling = 1000, iter_warmup = 1000)
 #>     }
 #>     out[]
 #> }
-#> <bytecode: 0x564f436a0328>
+#> <bytecode: 0x562adf5bbdb0>
 #> <environment: namespace:epinowcast>
 #> 
 #> $data
