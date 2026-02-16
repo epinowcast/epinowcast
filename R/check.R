@@ -638,14 +638,13 @@ check_timestep <- function(obs, date_var, timestep = "day", exact = TRUE,
   dates <- dates[!is.na(dates)]
 
   if (length(dates) <= 1 && !check_nrow) {
-    return(invisible(NULL))
-  }
-  if (length(dates) <= 1) {
+    invisible(NULL)
+  } else if (length(dates) <= 1) {
     cli::cli_abort("There must be at least two observations")
+  } else {
+    internal_timestep <- get_internal_timestep(timestep)
+    check_numeric_timestep(dates, date_var, internal_timestep, exact)
   }
-
-  internal_timestep <- get_internal_timestep(timestep)
-  check_numeric_timestep(dates, date_var, internal_timestep, exact)
 }
 
 #' Check timestep by group
@@ -763,19 +762,17 @@ check_observation_indicator <- function(
 check_design_matrix_sparsity <- function(matrix, sparsity_threshold = 0.9,
                                          min_matrix_size = 50,
                                          name = "checked") {
-  if (length(matrix) < min_matrix_size) {
-    return(invisible(NULL))
-  }
+  if (length(matrix) >= min_matrix_size) {
+    zero_proportion <- sum(matrix == 0) / length(matrix)
 
-  zero_proportion <- sum(matrix == 0) / length(matrix)
-
-  if (zero_proportion > sparsity_threshold) {
-    cli::cli_alert_info(
-      c(
-        "The {name} design matrix is sparse (>{sparsity_threshold*100}% ",
-        "zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` ",
-        "to potentially reduce memory usage and computation time."
+    if (zero_proportion > sparsity_threshold) {
+      cli::cli_alert_info(
+        c(
+          "The {name} design matrix is sparse (>{sparsity_threshold*100}% ",
+          "zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` ",
+          "to potentially reduce memory usage and computation time."
+        )
       )
-    )
+    }
   }
 }
