@@ -84,8 +84,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
 
   if (length(no_contrasts) == 1 && is.logical(no_contrasts) &&
       !no_contrasts) {
-    design <- mod_matrix(formula, data, sparse = sparse, ...)
-    return(design)
+    mod_matrix(formula, data, sparse = sparse, ...)
   }
   if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
     no_contrasts <- colnames(data)[
@@ -100,8 +99,7 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   no_contrasts <- no_contrasts[no_contrasts %in% in_form]
 
   if (length(no_contrasts) == 0) {
-    design <- mod_matrix(formula, data, sparse = sparse, ...)
-    return(design)
+    mod_matrix(formula, data, sparse = sparse, ...)
   } else {
     # make list of contrast args
     contrast_args <- purrr::map(
@@ -110,11 +108,10 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
     names(contrast_args) <- no_contrasts
 
     # model matrix with contrast options
-    design <- mod_matrix(
+    mod_matrix(
       formula, data,
       sparse = sparse, contrasts.arg = contrast_args, ...
     )
-    return(design)
   }
 }
 
@@ -194,7 +191,7 @@ enw_add_pooling_effect <- function(effects, var_name = "sd",
   effects <- coerce_dt(effects, copy = FALSE)
   effects[, (var_name) := as.numeric(finder_fn(effects, ...))]
   effects[finder_fn(effects, ...), fixed := 0]
-  return(effects[])
+  effects[]
 }
 
 #' One-hot encode a variable and column-bind it to the original data.table
@@ -237,7 +234,7 @@ enw_one_hot_encode_feature <- function(metaobs, feature, contrasts = FALSE) {
   }
 
   metaobs <- cbind(metaobs, hot_encoded)
-  return(metaobs[])
+  metaobs[]
 }
 
 #' @title Add a cumulative membership effect to a `data.frame`
@@ -294,5 +291,5 @@ enw_add_cumulative_membership <- function(metaobs, feature, copy = TRUE) {
       .SDcols = cfeatures, by = ".group"
     ]
   }
-  return(metaobs[])
+  metaobs[]
 }

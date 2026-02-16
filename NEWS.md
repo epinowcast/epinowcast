@@ -1,7 +1,7 @@
 # epinowcast 0.5.0.1000
 ## Package
 
-- Solved linting issues in `R/model-tools.R`. See #715.
+- Solved linting issues (implicit returns) in multiple files. See #715.
 
 
 ## Model
