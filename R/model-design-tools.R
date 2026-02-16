@@ -85,33 +85,34 @@ enw_design <- function(formula, data, no_contrasts = FALSE, sparse = TRUE,
   if (length(no_contrasts) == 1 && is.logical(no_contrasts) &&
       !no_contrasts) {
     mod_matrix(formula, data, sparse = sparse, ...)
-  }
-  if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
-    no_contrasts <- colnames(data)[
-      sapply(data, function(x) is.factor(x) | is.character(x))
-    ]
-  }
-
-  # what is in the formula
-  in_form <- rownames(attr(stats::terms(formula, data = data), "factors"))
-
-  # drop contrasts not in the formula
-  no_contrasts <- no_contrasts[no_contrasts %in% in_form]
-
-  if (length(no_contrasts) == 0) {
-    mod_matrix(formula, data, sparse = sparse, ...)
   } else {
-    # make list of contrast args
-    contrast_args <- purrr::map(
-      no_contrasts, ~ stats::contrasts(data[[.]], contrasts = FALSE)
-    )
-    names(contrast_args) <- no_contrasts
+    if (length(no_contrasts) == 1 && is.logical(no_contrasts)) {
+      no_contrasts <- colnames(data)[
+        sapply(data, function(x) is.factor(x) | is.character(x))
+      ]
+    }
 
-    # model matrix with contrast options
-    mod_matrix(
-      formula, data,
-      sparse = sparse, contrasts.arg = contrast_args, ...
-    )
+    # what is in the formula
+    in_form <- rownames(attr(stats::terms(formula, data = data), "factors"))
+
+    # drop contrasts not in the formula
+    no_contrasts <- no_contrasts[no_contrasts %in% in_form]
+
+    if (length(no_contrasts) == 0) {
+      mod_matrix(formula, data, sparse = sparse, ...)
+    } else {
+      # make list of contrast args
+      contrast_args <- purrr::map(
+        no_contrasts, ~ stats::contrasts(data[[.]], contrasts = FALSE)
+      )
+      names(contrast_args) <- no_contrasts
+
+      # model matrix with contrast options
+      mod_matrix(
+        formula, data,
+        sparse = sparse, contrasts.arg = contrast_args, ...
+      )
+    }
   }
 }
 
