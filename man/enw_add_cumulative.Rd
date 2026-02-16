@@ -17,7 +17,8 @@ observations. This defaults to no grouping. This should be used
 when modelling multiple time series in order to identify them for
 downstream modelling}
 
-\item{copy}{Should \code{obs} be copied (default) or modified in place?}
+\item{copy}{Should \code{obs} be copied (default) or modified
+in place?}
 }
 \value{
 The input \code{data.frame} with a new variable \code{confirm}.
@@ -28,6 +29,7 @@ Calculate cumulative reported cases from incidence of new reports
 \examples{
 # Default reconstruct incidence
 dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+dt <- enw_filter_reference_dates_by_report_start(dt)
 dt <- enw_add_incidence(dt)
 dt <- dt[, confirm := NULL]
 enw_add_cumulative(dt)

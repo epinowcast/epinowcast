@@ -48,6 +48,9 @@ repcycle_germany_hosp[, confirm := fifelse(
 repcycle_germany_hosp <- enw_flag_report_day(repcycle_germany_hosp)
 repcycle_germany_hosp <- enw_flag_observed_observations(repcycle_germany_hosp)
 repcycle_germany_hosp <- enw_impute_na_observations(repcycle_germany_hosp)
+repcycle_germany_hosp <- enw_filter_reference_dates_by_report_start(
+  repcycle_germany_hosp
+)
 repcycle_germany_hosp <- enw_add_incidence(repcycle_germany_hosp)
 
 # Make sure observations are complete (we don't need to do this here as we have

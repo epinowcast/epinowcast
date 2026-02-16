@@ -4,6 +4,13 @@
 - Solved linting issues (implicit returns) in multiple files. See #715.
 
 
+## Breaking changes
+
+- `enw_add_incidence()` no longer filters reference dates that precede the earliest report date.
+  Users should now call `enw_filter_reference_dates_by_report_start()` before `enw_add_incidence()` to reproduce the previous behaviour.
+  All internal call sites have been updated.
+  See #305 by @seabbs.
+
 ## Model
 
 - Optimised Stan code for efficiency by inlining intermediate variables and removing unnecessary loop guards. See #695 by @seabbs.

@@ -30,6 +30,7 @@ obs <- rbind(
 )
 obs <- enw_complete_dates(obs)
 obs <- enw_assign_group(obs)
+obs <- enw_filter_reference_dates_by_report_start(obs)
 obs <- enw_add_incidence(obs)
 enw_missing_reference(obs)
 }
@@ -44,6 +45,7 @@ Preprocessing functions
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},
+\code{\link{enw_filter_reference_dates_by_report_start}()},
 \code{\link{enw_filter_report_dates}()},
 \code{\link{enw_flag_observed_observations}()},
 \code{\link{enw_impute_na_observations}()},
