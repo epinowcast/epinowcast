@@ -35,7 +35,7 @@ R calling a separate program to execute calculations is similar to [`{rjags}`](h
 As described in the `{epinowcast}` project [README](./index.html), if you wish to do model fitting and nowcasting you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/), an optional dependency not installed automatically with `epinowcast`, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
-## Ensuring you have the proper toolchain {.toolchain}
+## Ensuring you have the proper toolchain {#toolchain}
 
 The Stan code that is written in the `{epinowcast}` package is converted[^1] to optimised C++ code and then compiled to machine-readable instructions.
 Because Stan needs several programs to execute this compilation process such as the build tool [make](https://en.wikipedia.org/wiki/Make_(software)) and a C++ compiler, you will need to ensure that your system has the appropriate supporting software, known as a toolchain.
