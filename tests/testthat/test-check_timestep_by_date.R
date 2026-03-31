@@ -70,10 +70,9 @@ test_that("check_timestep_by_date() handles insufficient data correctly", {
     reference_date = as.Date("2020-01-01")
   )
 
-  # Test for insufficient data
-  expect_error(
-    check_timestep_by_date(obs_single_date),
-    "There must be at least two observations"
+  # Single observation per date returns silently (e.g. max_delay = 1)
+  expect_silent(
+    check_timestep_by_date(obs_single_date)
   )
 
   # Create a dataset with two identical dates and group

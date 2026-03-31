@@ -693,12 +693,7 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
-    cli::cli_abort(
-      paste0(
-        "There must be at least two observations by group and date",
-        " combination to establish a timestep"
-      )
-    )
+    return(invisible(NULL))
   }
   obs[,
     check_timestep(

@@ -225,6 +225,11 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   direction <- match.arg(direction)
 
   internal_timestep <- get_internal_timestep(timestep)
+  if (days < internal_timestep) {
+    metaobs <- coerce_dt(metaobs, group = TRUE)
+    metaobs[, observed := TRUE]
+    return(metaobs)
+  }
   new_days <- seq(internal_timestep, days, by = internal_timestep)
   if (direction == "start") {
     new_days <- -new_days

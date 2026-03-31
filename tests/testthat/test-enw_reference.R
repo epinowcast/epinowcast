@@ -16,25 +16,19 @@ pobs_filt <- enw_preprocess_data(
   pobs_intermediate, max_delay = 2
 )
 
-test_that("enw_reference requires at least one of a parametric or a
-          non-parametric model to be specified", {
-  expect_error(
+test_that("enw_reference allows no delay model when both parametric and
+          non-parametric are ~0", {
+  expect_message(
     enw_reference(
       parametric = ~0, distribution = "none", data = pobs
     ),
-    "A non-parametric model must be specified if no parametric model"
+    "No delay distribution model specified"
   )
-  expect_error(
+  expect_message(
     enw_reference(
       parametric = ~0, data = pobs
     ),
-    "A non-parametric model must be specified if no parametric model"
-  )
-  expect_error(
-    enw_reference(
-      parametric = ~0, data = pobs
-    ),
-    "A non-parametric model must be specified if no parametric model"
+    "No delay distribution model specified"
   )
 })
 

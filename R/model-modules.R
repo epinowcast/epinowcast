@@ -68,11 +68,8 @@ enw_reference <- function(
   }
   distribution <- match.arg(distribution)
   if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
-    cli::cli_abort(
-      paste0(
-        "A non-parametric model must be specified if no parametric model ",
-        "is specified"
-      )
+    cli::cli_inform(
+      "No delay distribution model specified (both parametric and non-parametric are ~0)."
     )
   }
   if (as_string_formula(non_parametric) == "~0") {
