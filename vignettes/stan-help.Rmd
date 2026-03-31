@@ -55,7 +55,16 @@ Now you can open a session of R using your favourite IDE like Rstudio or Vscode.
 You'll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
 There is a [very detailed installation guide available for CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which provides the authoritative installation instructions.
 
-The `{cmdstanr}` package is installed as a dependency when you install `epinowcast`.
+The `{cmdstanr}` package is an optional dependency of `epinowcast`, required for model fitting and nowcasting.
+You can install it with:
+
+```r
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+```
+
 To ensure that your toolchain installation occurred successfully, run the following code in your R terminal:
 
 ```r
@@ -71,7 +80,7 @@ This function will report back if the toolchain is available and set up as follo
 
 If you do not get this message, return to [the installation instructions](#toolchain) and ensure that all steps were followed.
 
-Assuming you have the toolchain installed, you can install CmdStanR.
+Assuming you have the toolchain installed, you can install CmdStan.
 
 ```r
 cmdstanr::install_cmdstan(cores = 2)
