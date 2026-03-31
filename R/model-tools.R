@@ -397,7 +397,7 @@ update_inits <- function(data, model, init,
 #'
 #' @export
 #' @family modeltools
-#' #' @importFrom cli cli_abort
+#' @importFrom cli cli_abort
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
 #'
