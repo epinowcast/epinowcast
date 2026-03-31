@@ -143,8 +143,6 @@ Suggests:
     usethis,
     vdiffr,
     withr
-Remotes:
-    epiforecasts/scoringutils
 VignetteBuilder:
     knitr
 Additional_repositories:
