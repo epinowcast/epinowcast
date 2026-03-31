@@ -125,10 +125,10 @@ Imports:
     purrr,
     rlang,
     scales,
-    scoringutils,
     lifecycle
 Suggests:
     bookdown,
+    scoringutils,
     cmdstanr,
     cyclocomp,
     dplyr,

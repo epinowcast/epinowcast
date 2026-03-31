@@ -2,6 +2,7 @@
 ## Package
 
 - Moved `cmdstanr` from `Imports` to `Suggests` and removed `Remotes` entry for `scoringutils` to prepare for CRAN submission. See #207.
+- Moved `scoringutils` from `Imports` to `Suggests` using delayed S3 method registration via `@exportS3Method`. Users now need to load `scoringutils` explicitly to use `as_forecast_sample()`. See #739.
 - Solved linting issues (implicit returns) in multiple files. See #715.
 
 

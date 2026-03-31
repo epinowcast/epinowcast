@@ -1,27 +1,22 @@
 
-#' @importFrom scoringutils as_forecast_sample
-#' @export
-scoringutils::as_forecast_sample
-
 #' Convert an epinowcast object to a forecast_sample object
 #'
 #' This function is used to convert an `epinowcast` as returned by
-#' [epinowcast()] object to a `forecast_sample` object which can be used for
-#' scoring using the `scoringutils` package.
+#' [epinowcast()] object to a `forecast_sample` object which can be
+#' used for scoring using the `scoringutils` package.
 #'
 #' @param data An `epinowcast` nowcast object as returned by
 #' [epinowcast()].
 #'
-#' @param latest_obs Latest observations to use for the true values must
-#' contain `confirm` and `observed` variables.
+#' @param latest_obs Latest observations to use for the true values
+#' must contain `confirm` and `observed` variables.
 #'
 #' @param ... Additional arguments passed to
 #' [scoringutils::as_forecast_sample()]
 #'
 #' @return A `forecast_sample` object as returned by
 #' [scoringutils::as_forecast_sample()]
-#' @export
-#' @method as_forecast_sample epinowcast
+#' @exportS3Method scoringutils::as_forecast_sample
 #' @family modelvalidation
 #' @examplesIf interactive()
 #' library(scoringutils)
@@ -30,6 +25,10 @@ scoringutils::as_forecast_sample
 #' latest_obs <- enw_example("observations")
 #' as_forecast_sample(nowcast, latest_obs)
 as_forecast_sample.epinowcast <- function(data, latest_obs, ...) {
+  rlang::check_installed(
+    "scoringutils",
+    reason = "to convert nowcasts to forecast_sample objects."
+  )
   # Get samples from the nowcast
   samples <- summary(data, type = "nowcast_samples")
   samples[,
