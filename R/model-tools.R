@@ -201,6 +201,7 @@ remove_profiling <- function(s) {
 write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
                                         target_dir = epinowcast::enw_get_cache()
                                         ) {
+  check_cmdstanr()
   # remove profiling from main .stan file
   code_main_model <- paste(readLines(stan_file, warn = FALSE), collapse = "\n")
   code_main_model_no_profile <- remove_profiling(code_main_model)
@@ -276,7 +277,6 @@ write_stan_files_no_profile <- function(stan_file, include_paths = NULL,
 #'
 #' @family modeltools
 #' @export
-#' @importFrom cmdstanr cmdstan_model
 #' @importFrom posterior rhat
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
@@ -397,8 +397,7 @@ update_inits <- function(data, model, init,
 #'
 #' @export
 #' @family modeltools
-#' @importFrom cmdstanr cmdstan_model
-#' @importFrom cli cli_abort
+#' #' @importFrom cli cli_abort
 #' @examplesIf interactive()
 #' pobs <- enw_example("preprocessed")
 #'
@@ -477,7 +476,6 @@ enw_pathfinder <- function(data, model = epinowcast::enw_model(),
 #' @importFrom cli cli_alert_info
 #' @export
 #' @inheritParams write_stan_files_no_profile
-#' @importFrom cmdstanr cmdstan_model
 #' @examplesIf interactive()
 #' mod <- enw_model()
 enw_model <- function(model = system.file(
@@ -489,6 +487,7 @@ enw_model <- function(model = system.file(
                       target_dir = epinowcast::enw_get_cache(),
                       stanc_options = list(),
                       cpp_options = list(), verbose = TRUE, ...) {
+  check_cmdstanr()
   if (verbose) {
     cli::cli_alert_info("Using model {model}.")
     cli::cli_alert_info("Include is {toString(include)}.")
@@ -552,7 +551,6 @@ enw_model <- function(model = system.file(
 #' exposed for use in R.
 #'
 #' @family modeltools
-#' @importFrom cmdstanr write_stan_file
 #' @importFrom cli cli_abort cli_warn
 #' @export
 #' @examplesIf interactive()
@@ -569,6 +567,7 @@ enw_stan_to_r <- function(
   verbose = TRUE,
   ...
 ) {
+  check_cmdstanr()
   overloaded_fns <- c(
     "delay_lpmf.stan", "allocate_observed_obs.stan", "obs_lpmf.stan",
     "effects_priors_lp.stan"
