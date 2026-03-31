@@ -32,7 +32,7 @@ The statistical models used in `{epinowcast}` are primarily written in the [Stan
 `{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
 R calling a separate program to execute calculations is similar to [`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies on the [JAGS library](https://cran.r-project.org/web/packages/rjags/INSTALL) and [R-INLA](https://www.r-inla.org/what-is-inla).
-As described in the `{epinowcast}` project [README](./index.html), you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) an R package which also has the ability to install CmdStan using an R interface. 
+As described in the `{epinowcast}` project [README](./index.html), if you wish to do model fitting and nowcasting you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/), an optional dependency not installed automatically with `epinowcast`, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
 ## Ensuring you have the proper toolchain {.toolchain}
