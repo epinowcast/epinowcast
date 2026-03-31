@@ -272,6 +272,7 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=adrian-lison">adrian-lison</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk">sbfnk</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo">Bisaloo</a>,
+<a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot">seabbs-bot</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca">pearsonca</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah">choi-hannah</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>,
@@ -285,8 +286,7 @@ specification. Contributions of any kind are welcome!
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>,
 <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse">nikosbosse</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>,
-<a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot">seabbs-bot</a>
+<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>
 
 ### Issue Authors
 
@@ -303,12 +303,14 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aghost">ghost</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajhellewell14">jhellewell14</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AGulfa">Gulfa</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3">parksw3</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor">TimTaylor</a>,
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian">WardBrian</a>,
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>,
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Asbfnk-bot">sbfnk-bot</a>
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->

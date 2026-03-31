@@ -149,6 +149,7 @@ If making use of our methodology or the methodology on which ours is based, plea
 
 
 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -162,6 +163,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/commits?author=adrian-lison">adrian-lison</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=sbfnk">sbfnk</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Bisaloo">Bisaloo</a>, 
+<a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot">seabbs-bot</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=pearsonca">pearsonca</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=choi-hannah">choi-hannah</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=medewitt">medewitt</a>, 
@@ -175,8 +177,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/epinowcast/epinowcast/commits?author=Lnrivas">Lnrivas</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=natemcintosh">natemcintosh</a>, 
 <a href="https://github.com/epinowcast/epinowcast/commits?author=nikosbosse">nikosbosse</a>, 
-<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>, 
-<a href="https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot">seabbs-bot</a>
+<a href="https://github.com/epinowcast/epinowcast/commits?author=pratikunterwegs">pratikunterwegs</a>
 
 
 
@@ -199,17 +200,20 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 ### Issue Contributors
 
 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aghost">ghost</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajhellewell14">jhellewell14</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AGulfa">Gulfa</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3">parksw3</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor">TimTaylor</a>, 
 <a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian">WardBrian</a>, 
-<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein">jimrothstein</a>, 
+<a href="https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Asbfnk-bot">sbfnk-bot</a>
 
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
 
 
 
