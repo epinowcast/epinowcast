@@ -15,7 +15,10 @@ check_cmdstanr <- function() {
   if (!requireNamespace("cmdstanr", quietly = TRUE)) {
     cli::cli_abort(c(
       "{.pkg cmdstanr} is required but not installed.",
-      i = '{.code install.packages("cmdstanr", repos = c("https://stan-dev.r-universe.dev", getOption("repos")))}'
+      i = paste0(
+        '{.code install.packages("cmdstanr", ',
+        'repos = c("https://stan-dev.r-universe.dev", getOption("repos")))}'
+      )
     ))
   }
 }
