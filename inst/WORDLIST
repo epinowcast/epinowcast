@@ -7,6 +7,7 @@ CMD
 COVID
 CmdStan
 CmdStanR
+cmdstanr
 Codecov
 Discretisation
 Discretised

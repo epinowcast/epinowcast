@@ -1,6 +1,7 @@
 # epinowcast 0.5.0.1000
 ## Package
 
+- Moved `cmdstanr` from `Imports` to `Suggests` and removed `Remotes` entry for `scoringutils` to prepare for CRAN submission. See #207.
 - Solved linting issues (implicit returns) in multiple files. See #715.
 
 

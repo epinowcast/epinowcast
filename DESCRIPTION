@@ -118,7 +118,6 @@ Depends:
     R (>= 4.4.0)
 Imports:
     cli,
-    cmdstanr,
     data.table,
     reformulas,
     ggplot2,
@@ -130,6 +129,7 @@ Imports:
     lifecycle
 Suggests:
     bookdown,
+    cmdstanr,
     cyclocomp,
     dplyr,
     lme4,
@@ -143,8 +143,6 @@ Suggests:
     usethis,
     vdiffr,
     withr
-Remotes:
-    epiforecasts/scoringutils
 VignetteBuilder:
     knitr
 Additional_repositories:

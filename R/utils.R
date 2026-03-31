@@ -1,8 +1,27 @@
 #' @rawNamespace import(data.table, except = transpose)
-#' @import cmdstanr
 #' @import ggplot2
 #' @importFrom stats median rnorm
 NULL
+
+#' Check that cmdstanr is installed
+#'
+#' @description Checks that the `cmdstanr` package is available and
+#' provides a helpful error message if not.
+#'
+#' @return NULL (called for side effect of raising an error if cmdstanr
+#' is not installed)
+#' @keywords internal
+check_cmdstanr <- function() {
+  if (!requireNamespace("cmdstanr", quietly = TRUE)) {
+    cli::cli_abort(c(
+      "{.pkg cmdstanr} is required but not installed.",
+      i = paste0(
+        '{.code install.packages("cmdstanr", ',
+        'repos = c("https://stan-dev.r-universe.dev", getOption("repos")))}'
+      )
+    ))
+  }
+}
 
 #' @title Check an object is a Date
 #' @description Checks that an object is a date
