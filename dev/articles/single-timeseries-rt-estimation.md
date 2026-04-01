@@ -212,7 +212,7 @@ incidence_from_linelist <- enw_linelist_to_incidence(
 )
 
 incidence_from_linelist
-#> Key: <age_group, location>
+#> Key: <age_group, location, reference_date, report_date>
 #>          age_group location report_date reference_date new_confirm confirm
 #>             <fctr>   <fctr>      <IDat>         <IDat>       <int>   <int>
 #>       1:     00-04    DE-BY  2021-04-06           <NA>           0       0
@@ -355,18 +355,18 @@ Code
 latest_germany_hosp <- retro_germany |>
   enw_obs_at_delay(max_delay = 30)
 head(latest_germany_hosp, n = 10)
-#>     reference_date report_date confirm new_confirm delay
-#>             <IDat>      <IDat>   <int>       <int> <int>
-#>  1:     2021-05-01  2021-08-01    1007           0    92
-#>  2:     2021-05-02  2021-08-01     781           0    91
-#>  3:     2021-05-03  2021-08-01     467           0    90
-#>  4:     2021-05-04  2021-08-01     823           0    89
-#>  5:     2021-05-05  2021-08-01    1028           0    88
-#>  6:     2021-05-06  2021-08-01    1016           0    87
-#>  7:     2021-05-07  2021-08-01     892           0    86
-#>  8:     2021-05-08  2021-08-01     822           0    85
-#>  9:     2021-05-09  2021-08-01     561           0    84
-#> 10:     2021-05-10  2021-08-01     364           0    83
+#>     reference_date .group report_date confirm new_confirm delay
+#>             <IDat>  <num>      <IDat>   <int>       <int> <int>
+#>  1:     2021-05-01      1  2021-05-30     868           1    29
+#>  2:     2021-05-02      1  2021-05-31     673           0    29
+#>  3:     2021-05-03      1  2021-06-01     390           1    29
+#>  4:     2021-05-04      1  2021-06-02     735           7    29
+#>  5:     2021-05-05      1  2021-06-03     894           2    29
+#>  6:     2021-05-06      1  2021-06-04     889           2    29
+#>  7:     2021-05-07      1  2021-06-05     803           0    29
+#>  8:     2021-05-08      1  2021-06-06     721           0    29
+#>  9:     2021-05-09      1  2021-06-07     491           0    29
+#> 10:     2021-05-10      1  2021-06-08     308           0    29
 ```
 
 ### Visualising the data
