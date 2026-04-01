@@ -18,17 +18,15 @@ pobs_filt <- enw_preprocess_data(
 
 test_that("enw_reference allows no delay model when both parametric and
           non-parametric are ~0", {
-  expect_message(
+  expect_no_error(
     enw_reference(
       parametric = ~0, distribution = "none", data = pobs
-    ),
-    "No delay distribution model specified"
+    )
   )
-  expect_message(
+  expect_no_error(
     enw_reference(
       parametric = ~0, data = pobs
-    ),
-    "No delay distribution model specified"
+    )
   )
 })
 

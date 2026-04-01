@@ -67,11 +67,6 @@ enw_reference <- function(
     parametric <- ~1
   }
   distribution <- match.arg(distribution)
-  if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
-    cli::cli_inform(
-      "No delay distribution model specified (both parametric and non-parametric are ~0)."
-    )
-  }
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
     model_refnp <- 0
@@ -388,7 +383,42 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
                             observation = ~1, latent_reporting_delay = 1,
                             data, ...) {
   if (as_string_formula(r) == "~0") {
-    cli::cli_abort("An expectation model formula for r must be specified")
+    out <- list()
+    out$formula$r <- ~0
+    out$formula$observation <- ~0
+    out$data_raw <- list()
+    out$data <- list(
+      model_expr = 0L,
+      expr_r_seed = 0L, expr_gt_n = 0L, expr_t = 0L, expr_ft = 0L,
+      expr_lrgt = numeric(0), expr_obs = 0L,
+      expr_fnindex = 0L, expr_fintercept = 0L, expr_fncol = 0L,
+      expr_rncol = 0L,
+      expr_fdesign = matrix(0, nrow = 0, ncol = 0),
+      expr_rdesign = matrix(0, nrow = 0, ncol = 1),
+      expr_g = rep(0L, data$groups[[1]]),
+      expr_lelatent_int_p = array(0, dim = c(2, 0)),
+      expr_r_int_p = array(c(0, 0.2), dim = c(2, 1)),
+      expr_beta_sd_p = array(c(0, 1), dim = c(2, 1)),
+      expl_lrd_n = 0L,
+      expl_lrd = matrix(0, nrow = 0, ncol = 0),
+      expl_obs = 0L,
+      expl_fnindex = 0L, expl_fncol = 0L, expl_rncol = 0L,
+      expl_fdesign = matrix(0, nrow = 0, ncol = 0),
+      expl_rdesign = matrix(0, nrow = 0, ncol = 1),
+      expl_beta_sd_p = array(c(0, 1), dim = c(2, 1))
+    )
+    out$priors <- data.table::data.table(
+      variable = character(0), dimension = integer(0),
+      description = character(0), distribution = character(0),
+      mean = numeric(0), sd = numeric(0)
+    )
+    out$inits <- function(data, priors) {
+      fn <- function() {
+        list()
+      }
+      fn
+    }
+    return(out)
   }
   if (as_string_formula(observation) == "~0") {
     observation <- ~1
@@ -473,7 +503,7 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
 
   names(r_list) <- paste0("expr_", names(r_list))
   names(obs_list) <- paste0("expl_", names(obs_list))
-  out$data <- c(r_list, r_data, obs_list, obs_data)
+  out$data <- c(list(model_expr = 1L), r_list, r_data, obs_list, obs_data)
 
   out$priors <- data.table::data.table(
     variable = c(

@@ -44,6 +44,7 @@ data {
   array[t, g] int latest_obs; // latest obs by time and group
 
   // Expectation model
+  int model_expr; // should the expectation model be used?
   // ---- Growth rate submodule ----
   int expr_r_seed; // number of time points with seeded/initial latent cases
   int expr_gt_n; // maximum generation time
@@ -174,7 +175,7 @@ transformed data{
 parameters {
   // Expectation model
   // ---- Growth rate submodule ----
-  matrix<offset = to_matrix(expr_lelatent_int_p[1], expr_r_seed, g), multiplier = to_matrix(expr_lelatent_int_p[2], expr_r_seed, g)>[expr_r_seed, g] expr_lelatent_int; // initial observations by group (log)
+  matrix<offset = to_matrix(expr_lelatent_int_p[1], expr_r_seed, model_expr ? g : 0), multiplier = to_matrix(expr_lelatent_int_p[2], expr_r_seed, model_expr ? g : 0)>[expr_r_seed, model_expr ? g : 0] expr_lelatent_int; // initial observations by group (log)
   array[expr_fintercept ? 1 : 0] real<offset = expr_r_int_p[1, 1], multiplier = expr_r_int_p[2, 1]> expr_r_int; // growth rate intercept
   vector[expr_fncol] expr_beta;
   vector<lower=0>[expr_rncol] expr_beta_sd;
@@ -234,6 +235,7 @@ transformed parameters{
 
   // Expectation model
   profile("transformed_expected_final_observations") {
+  if (model_expr) {
   // Get log growth rates and map to expected latent cases
   r = combine_effects(
     expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign, expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design
@@ -253,6 +255,14 @@ transformed parameters{
     );
   } else {
     exp_lobs = exp_llatent; // assume latent cases and obs are identical
+  }
+  } else {
+    // No expectation model: use observed data directly
+    for (k in 1:g) {
+      for (i in 1:t) {
+        exp_lobs[k][i] = log(latest_obs[i, k] + 1e-6);
+      }
+    }
   }
   }
 
@@ -322,6 +332,7 @@ transformed parameters{
 model {
   profile("model_priors") {
   // Expectation model
+  if (model_expr) {
   // ---- Growth rate submodule ----
   // intercept/initial latent cases (log)
   to_vector(expr_lelatent_int) ~ normal(
@@ -329,9 +340,9 @@ model {
   );
   // intercept of growth rate
   if (expr_fintercept) {
-    expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]); 
+    expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]);
   }
-  
+
   // growth rate effect priors
   effect_priors_lp(
     expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
@@ -341,6 +352,7 @@ model {
   effect_priors_lp(
     expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
   );
+  }
   
   // Reference model
   // Parametric reference model
