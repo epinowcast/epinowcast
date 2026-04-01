@@ -63,7 +63,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-5-0-1000">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-5-0-1000"></a></h3>
-<ul><li>
+<ul><li>Moved <code>scoringutils</code> from <code>Imports</code> to <code>Suggests</code> using delayed S3 method registration via <code>@exportS3Method</code>. Users now need to load <code>scoringutils</code> explicitly to use <code><a href="https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html" class="external-link">as_forecast_sample()</a></code>. See <a href="https://github.com/epinowcast/epinowcast/issues/739" class="external-link">#739</a>.</li>
+<li>
 <code><a href="../reference/enw_add_incidence.html">enw_add_incidence()</a></code> no longer filters reference dates that precede the earliest report date. Users should now call <code><a href="../reference/enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start()</a></code> before <code><a href="../reference/enw_add_incidence.html">enw_add_incidence()</a></code> to reproduce the previous behaviour. All internal call sites have been updated. See <a href="https://github.com/epinowcast/epinowcast/issues/305" class="external-link">#305</a> by <a href="https://github.com/seabbs" class="external-link">@seabbs</a>.</li>
 </ul></div>
 <div class="section level3">

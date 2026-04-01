@@ -12,6 +12,11 @@
 
 ### Breaking changes
 
+- Moved `scoringutils` from `Imports` to `Suggests` using delayed S3
+  method registration via `@exportS3Method`. Users now need to load
+  `scoringutils` explicitly to use
+  [`as_forecast_sample()`](https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html).
+  See [\#739](https://github.com/epinowcast/epinowcast/issues/739).
 - [`enw_add_incidence()`](https://package.epinowcast.org/dev/reference/enw_add_incidence.md)
   no longer filters reference dates that precede the earliest report
   date. Users should now call
