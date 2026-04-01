@@ -8,7 +8,7 @@ test_that("Can convert epinowcast object to forecast_sample", {
   # Test basic conversion
   test <- expect_s3_class(
     suppressPackageStartupMessages(
-      as_forecast_sample(nowcast, obs)
+      scoringutils::as_forecast_sample(nowcast, obs)
     ),
     "forecast_sample"
   )
@@ -16,7 +16,7 @@ test_that("Can convert epinowcast object to forecast_sample", {
   # Test with grouping variables
   obs$group <- "test"
   forecast_data <- suppressPackageStartupMessages(
-    as_forecast_sample(nowcast, obs)
+    scoringutils::as_forecast_sample(nowcast, obs)
   )
   expect_true("group" %in% names(forecast_data))
   expect_true(all(forecast_data$group == "test"))

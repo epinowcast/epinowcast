@@ -10,8 +10,8 @@
 \item{data}{An \code{epinowcast} nowcast object as returned by
 \code{\link[=epinowcast]{epinowcast()}}.}
 
-\item{latest_obs}{Latest observations to use for the true values must
-contain \code{confirm} and \code{observed} variables.}
+\item{latest_obs}{Latest observations to use for the true values
+must contain \code{confirm} and \code{observed} variables.}
 
 \item{...}{Additional arguments passed to
 \code{\link[scoringutils:as_forecast_sample]{scoringutils::as_forecast_sample()}}}
@@ -22,8 +22,8 @@ A \code{forecast_sample} object as returned by
 }
 \description{
 This function is used to convert an \code{epinowcast} as returned by
-\code{\link[=epinowcast]{epinowcast()}} object to a \code{forecast_sample} object which can be used for
-scoring using the \code{scoringutils} package.
+\code{\link[=epinowcast]{epinowcast()}} object to a \code{forecast_sample} object which can be
+used for scoring using the \code{scoringutils} package.
 }
 \examples{
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
