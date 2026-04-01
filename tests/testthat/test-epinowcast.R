@@ -593,3 +593,64 @@ test_that("epinowcast() with weekly reporting and structural model converges", {
   expect_lt(nowcast$max_rhat, 1.05)
   expect_lt(nowcast$per_divergent_transitions, 0.1)
 })
+
+test_that("epinowcast() works with max_delay = 1 (no reporting delay)", {
+  skip_on_cran()
+  skip_on_local()
+
+  set.seed(42)
+  obs <- data.frame(
+    reference_date = as.Date("2021-01-01") + 0:19,
+    report_date = as.Date("2021-01-01") + 0:19,
+    confirm = rpois(20, 100)
+  )
+  pobs <- enw_preprocess_data(obs, max_delay = 1)
+
+  nowcast <- suppressMessages(epinowcast(pobs,
+    reference = enw_reference(
+      parametric = ~0, non_parametric = ~0, data = pobs
+    ),
+    expectation = enw_expectation(~1, data = pobs),
+    obs = enw_obs(family = "poisson", data = pobs),
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      save_warmup = FALSE, pp = TRUE,
+      chains = 2, iter_warmup = 250, iter_sampling = 250
+    )
+  ))
+
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(nowcast$data[[1]]$model_refp, 0L)
+  expect_identical(nowcast$data[[1]]$model_refnp, 0L)
+  expect_identical(nowcast$data[[1]]$model_expr, 1L)
+  expect_lt(nowcast$per_divergent_transitions, 0.05)
+  expect_lt(nowcast$max_rhat, 1.05)
+})
+
+test_that("epinowcast() works with r = ~0 (delay-only estimation)", {
+  skip_on_cran()
+  skip_on_local()
+
+  obs <- run_window_filter(
+    germany_covid19_hosp[age_group == "00+"][location == "DE"]
+  )
+  pobs <- enw_preprocess_data(obs, max_delay = 5)
+
+  nowcast <- suppressMessages(epinowcast(pobs,
+    expectation = enw_expectation(r = ~0, data = pobs),
+    obs = enw_obs(family = "poisson", data = pobs),
+    fit = enw_fit_opts(
+      sampler = silent_enw_sample,
+      save_warmup = FALSE, pp = TRUE,
+      chains = 2, iter_warmup = 250, iter_sampling = 250
+    )
+  ))
+
+  expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
+  expect_identical(nowcast$data[[1]]$model_expr, 0L)
+  expect_lt(nowcast$per_divergent_transitions, 0.05)
+  expect_lt(nowcast$max_rhat, 1.05)
+  # No expectation parameters should be sampled
+  expect_error(nowcast$fit[[1]]$summary("expr_lelatent_int"))
+  expect_error(nowcast$fit[[1]]$summary("expr_r_int"))
+})

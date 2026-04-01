@@ -13,9 +13,8 @@
 
 ## New features
 
-- `enw_preprocess_data()` now supports `max_delay = 1` for data without reporting delays, enabling Rt estimation from simple incidence data. See #742.
-- `enw_expectation(r = ~0)` disables the expectation model and uses observed data directly, enabling delay-only estimation without modelling the underlying count process. See #742.
-- `enw_reference()` now allows both `parametric = ~0` and `non_parametric = ~0` to disable the delay model entirely.
+- Count model only (e.g. Rt estimation without reporting delays): `enw_preprocess_data()` now supports `max_delay = 1` and `enw_reference()` allows disabling both parametric and non-parametric delay components (`parametric = ~0, non_parametric = ~0`). See #742.
+- Delay model only (delay estimation without modelling the underlying count process): `enw_expectation(r = ~0)` disables the expectation model and uses observed data directly. See #742.
 
 ## Model
 
