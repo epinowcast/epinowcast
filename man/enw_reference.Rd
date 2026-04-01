@@ -33,7 +33,10 @@ using \code{metareference} and \code{metadelay} as produced by \code{\link[=enw_
 When an effect per delay is specified this approximates the Cox proportional
 hazards model in discrete time with a single strata. Set to \code{~0} to disable
 the non-parametric component (internally converted to \code{~1} and flagged as
-inactive). When used in conjunction with a parametric model it often makes
+inactive). Both \code{parametric} and \code{non_parametric} can be set to \code{~0} to
+disable the delay model entirely, which is useful when \code{max_delay = 1}
+(i.e. no reporting delay). When used in conjunction with a parametric
+model it often makes
 sense to disable the intercept to ensure model identifiability
 (e.g., \code{~ 0 + (1 | delay)}). See \code{\link[=enw_formula]{enw_formula()}} for details on formula
 syntax.}

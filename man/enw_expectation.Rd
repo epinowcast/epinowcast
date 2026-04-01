@@ -22,8 +22,9 @@ by group. This parameterisation is highly flexible and may not be the
 most appropriate choice when data is sparsely reported or reporting delays
 are substantial. In these settings an alternative could be a group-specific
 weekly random walk (specified as \code{rw(week, by = .group)}). Setting to
-\code{~0} will produce an error as an expectation model is required. See
-\code{\link[=enw_formula]{enw_formula()}} for details on formula syntax.}
+\code{~0} disables the expectation model and uses observed data directly,
+which is useful for delay-only estimation without modelling the underlying
+count process. See \code{\link[=enw_formula]{enw_formula()}} for details on formula syntax.}
 
 \item{generation_time}{A numeric vector that sums to 1 and defaults to 1.
 Describes the weighting to apply to previous generations (i.e as part of a

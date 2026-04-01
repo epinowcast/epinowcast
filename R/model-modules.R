@@ -25,7 +25,10 @@
 #' When an effect per delay is specified this approximates the Cox proportional
 #' hazards model in discrete time with a single strata. Set to `~0` to disable
 #' the non-parametric component (internally converted to `~1` and flagged as
-#' inactive). When used in conjunction with a parametric model it often makes
+#' inactive). Both `parametric` and `non_parametric` can be set to `~0` to
+#' disable the delay model entirely, which is useful when `max_delay = 1`
+#' (i.e. no reporting delay). When used in conjunction with a parametric
+#' model it often makes
 #' sense to disable the intercept to ensure model identifiability
 #' (e.g., `~ 0 + (1 | delay)`). See [enw_formula()] for details on formula
 #' syntax.
@@ -343,8 +346,9 @@ enw_report <- function(non_parametric = ~0, structural = NULL, data) {
 #' most appropriate choice when data is sparsely reported or reporting delays
 #' are substantial. In these settings an alternative could be a group-specific
 #' weekly random walk (specified as `rw(week, by = .group)`). Setting to
-#' `~0` will produce an error as an expectation model is required. See
-#' [enw_formula()] for details on formula syntax.
+#' `~0` disables the expectation model and uses observed data directly,
+#' which is useful for delay-only estimation without modelling the underlying
+#' count process. See [enw_formula()] for details on formula syntax.
 #'
 #' @param generation_time A numeric vector that sums to 1 and defaults to 1.
 #' Describes the weighting to apply to previous generations (i.e as part of a

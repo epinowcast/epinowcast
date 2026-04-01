@@ -11,6 +11,12 @@
   All internal call sites have been updated.
   See #305 by @seabbs.
 
+## New features
+
+- `enw_preprocess_data()` now supports `max_delay = 1` for data without reporting delays, enabling Rt estimation from simple incidence data. See #742.
+- `enw_expectation(r = ~0)` disables the expectation model and uses observed data directly, enabling delay-only estimation without modelling the underlying count process. See #742.
+- `enw_reference()` now allows both `parametric = ~0` and `non_parametric = ~0` to disable the delay model entirely.
+
 ## Model
 
 - Optimised Stan code for efficiency by inlining intermediate variables and removing unnecessary loop guards. See #695 by @seabbs.
