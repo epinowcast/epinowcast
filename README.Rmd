@@ -52,15 +52,19 @@ See the [package vignettes](https://package.epinowcast.org/articles) for guidanc
 
 </details>
 
-<details><summary>Installing CmdStan</summary>
+<details><summary>Installing cmdstanr and CmdStan</summary>
 
-If you wish to do model fitting and nowcasting, you will need to install [CmdStan](https://mc-stan.org/users/interfaces/cmdstan), which also entails having a suitable C++ toolchain setup. We recommend using the [`cmdstanr` package](https://mc-stan.org/cmdstanr/). The Stan team provides instructions in the [_Getting started with
-`cmdstanr`_](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) vignette, with other details and support at the [package site](https://mc-stan.org/cmdstanr/) along with some key instructions available in the [Stan resources package vignette](https://package.epinowcast.org/articles/stan-help.html#toolchain), but the brief version is:
+If you wish to do model fitting and nowcasting, you will need to install [`cmdstanr`](https://mc-stan.org/cmdstanr/) and [CmdStan](https://mc-stan.org/users/interfaces/cmdstan), which also entails having a suitable C++ toolchain setup.
+`cmdstanr` is an optional dependency of `epinowcast` and is not installed automatically.
+The Stan team provides instructions in the [_Getting started with `cmdstanr`_](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) vignette, with other details and support at the [package site](https://mc-stan.org/cmdstanr/) along with some key instructions available in the [Stan resources package vignette](https://package.epinowcast.org/articles/stan-help.html#toolchain), but the brief version is:
 
 ```{r, eval = FALSE}
-# if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies
-install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-# once `cmdstanr` is installed:
+# install cmdstanr
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+# once cmdstanr is installed:
 cmdstanr::install_cmdstan()
 ```
 
