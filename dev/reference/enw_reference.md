@@ -1078,8 +1078,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557705c223b8>
-#> <environment: 0x557705c12b98>
+#> <bytecode: 0x560f971b8018>
+#> <environment: 0x560f971c7790>
 #> 
 
 # Non-parametric model with a random effect per delay
@@ -3703,8 +3703,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557705c223b8>
-#> <environment: 0x557708c8cdc0>
+#> <bytecode: 0x560f971b8018>
+#> <environment: 0x560f97611110>
 #> 
 
 # Combined parametric and non-parametric model
@@ -4719,7 +4719,7 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557705c223b8>
-#> <environment: 0x5577070baf00>
+#> <bytecode: 0x560f971b8018>
+#> <environment: 0x560f8f151f70>
 #> 
 ```

@@ -1061,8 +1061,10 @@ this release.
   [@seabbs](https://github.com/seabbs) and
   [@adrian-lison](https://github.com/adrian-lison).
 - Added more non-default linters in `.lintr` configuration file. This
-  file is used when `lintr::lint_package()` is run or in the new
-  `lint-changed-files.yaml` GitHub Actions workflow. See
+  file is used when
+  [`lintr::lint_package()`](https://lintr.r-lib.org/reference/lint.html)
+  is run or in the new `lint-changed-files.yaml` GitHub Actions
+  workflow. See
   [\#220](https://github.com/epinowcast/epinowcast/issues/220) by
   [@Bisaloo](https://github.com/Bisaloo) and reviewed by
   [@pearsonca](https://github.com/pearsonca) and

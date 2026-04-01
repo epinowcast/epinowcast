@@ -344,7 +344,7 @@ enw_obs(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557700fd1ed0>
-#> <environment: 0x557700fceda0>
+#> <bytecode: 0x560f8b12fbd8>
+#> <environment: 0x560f8b1210b0>
 #> 
 ```
