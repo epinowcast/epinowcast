@@ -30,11 +30,13 @@ on the [JAGS
 library](https://cran.r-project.org/web/packages/rjags/INSTALL) and
 [R-INLA](https://www.r-inla.org/what-is-inla). As described in the
 [epinowcast](https://package.epinowcast.org) project
-[README](https://package.epinowcast.org/dev/articles/index.md), you will
-need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) an R
-package which also has the ability to install CmdStan using an R
-interface. Additionally, you will need to make sure that the software
-required by CmdStan is installed and configured on your machine.
+[README](https://package.epinowcast.org/dev/articles/index.md), if you
+wish to do model fitting and nowcasting you will need to install
+[`{cmdstanr}`](https://mc-stan.org/cmdstanr/), an optional dependency
+not installed automatically with `epinowcast`, which also has the
+ability to install CmdStan using an R interface. Additionally, you will
+need to make sure that the software required by CmdStan is installed and
+configured on your machine.
 
 ### Ensuring you have the proper toolchain
 
@@ -66,10 +68,21 @@ detailed installation guide available for
 CmdStanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html) which
 provides the authoritative installation instructions.
 
-The [cmdstanr](https://mc-stan.org/cmdstanr/) package is installed as a
-dependency when you install `epinowcast`. To ensure that your toolchain
-installation occurred successfully, run the following code in your R
-terminal:
+The [cmdstanr](https://mc-stan.org/cmdstanr/) package is an optional
+dependency of `epinowcast`, required for model fitting and nowcasting.
+You can install it with:
+
+Code
+
+``` r
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+```
+
+To ensure that your toolchain installation occurred successfully, run
+the following code in your R terminal:
 
 Code
 
@@ -90,7 +103,7 @@ Code
 If you do not get this message, return to [the installation
 instructions](#toolchain) and ensure that all steps were followed.
 
-Assuming you have the toolchain installed, you can install CmdStanR.
+Assuming you have the toolchain installed, you can install CmdStan.
 
 Code
 
