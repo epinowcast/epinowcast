@@ -24,7 +24,16 @@ test_that("enw_expectation supports custom expectation models", {
     expectation$inits <- NULL
     expectation
   })
-  expect_error(enw_expectation(~0, data = pobs))
+})
+
+test_that("enw_expectation with r = ~0 returns valid module with model_expr = 0", {
+  exp <- enw_expectation(~0, data = pobs)
+  expect_identical(exp$data$model_expr, 0L)
+  expect_identical(exp$data$expr_r_seed, 0L)
+  expect_identical(exp$data$expr_fncol, 0L)
+  expect_identical(exp$data$expr_fintercept, 0L)
+  expect_equal(deparse(exp$formula$r), "~0")
+  expect_identical(nrow(exp$priors), 0L)
 })
 
 test_that(

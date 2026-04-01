@@ -72,3 +72,10 @@ test_that(
     )
   }
 )
+
+test_that("enw_extend_date() returns input unchanged when days = 0", {
+  metaobs <- data.frame(date = as.Date("2021-01-01") + 0:4)
+  result <- enw_extend_date(metaobs, days = 0)
+  expect_identical(nrow(result), 5L)
+  expect_true(all(result$observed))
+})
