@@ -137,7 +137,7 @@
 <div class="section level2">
 <h2 id="getting-setup">Getting setup<a class="anchor" aria-label="anchor" href="#getting-setup"></a>
 </h2>
-<p>See the <a href="https://epiforecasts.io/epinowcast/" class="external-link">package documentation</a> for guidance on installing the package and getting setup with <code>cmdstanr</code> (the backend used here for fitting models).</p>
+<p>See the <a href="https://package.epinowcast.org/">package documentation</a> for guidance on installing the package and getting setup with <code>cmdstanr</code> (the backend used here for fitting models).</p>
 <p>As well as the <code>epinowcast</code> package we will use the following packages in this vignette.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org">epinowcast</a></span><span class="op">)</span></span>
@@ -903,12 +903,12 @@ are currently indexed to the date of infection.</li>
 </h3>
 <ul>
 <li>
-<a href="https://epiforecasts.io/EpiNow2" class="external-link">EpiNow2</a>: A precursor to <code>epinowcast</code> developed by members of the <code>epinowcast</code> community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than <code>epinowcast</code> with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into <code>epinowcast</code>.</li>
+<a href="https://epiforecasts.io/EpiNow2/" class="external-link">EpiNow2</a>: A precursor to <code>epinowcast</code> developed by members of the <code>epinowcast</code> community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than <code>epinowcast</code> with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into <code>epinowcast</code>.</li>
 <li>
 <a href="https://imperialcollegelondon.github.io/epidemia/index.html" class="external-link">epidemia</a>: This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than <code>EpiNow2</code>, in a similar way to <code>epinowcast</code>, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than <code>epinowcast</code>. However, as it is an extension of <code>rstanarm</code> it comes with a number of useful features and a familiar interface for users of <code>rstanarm</code>
 </li>
 <li>
-<a href="https://cran.r-project.org/web/packages/EpiEstim/index.html" class="external-link">EpiEstim</a>: This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.</li>
+<a href="https://CRAN.R-project.org/package=EpiEstim" class="external-link">EpiEstim</a>: This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.</li>
 </ul>
 </div>
 </div>

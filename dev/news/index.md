@@ -1274,7 +1274,7 @@ effective reproduction number), and convolution-based latent reporting
 delays (enabling the modelling of both directly observed and unobserved
 delays as well as partial ascertainment). Much of the methodology used
 in these extensions is based on [work done by Adrian
-Lison](https://github.com/adrian-lison/nowcast-transmission) and is
+Lison](https://github.com/adrian-lison/generative-nowcasting) and is
 currently being evaluated.
 
 On top of model extensions this release also adds a range of quality of
@@ -1292,7 +1292,7 @@ More core development is needed to improve post-processing,
 pre-processing, documentation coverage, and evaluate optimal
 configurations in different settings) please see our [community
 site](https://community.epinowcast.org/), [contributing
-guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md),
+guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md),
 and list of [issues/proposed
 features](https://github.com/epinowcast/epinowcast/issues) if interested
 in being involved (any scale of contribution is warmly welcomed

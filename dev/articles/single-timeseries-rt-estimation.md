@@ -60,7 +60,7 @@ guidelines](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md).
 
 ## Getting setup
 
-See the [package documentation](https://epiforecasts.io/epinowcast/) for
+See the [package documentation](https://package.epinowcast.org/) for
 guidance on installing the package and getting setup with `cmdstanr`
 (the backend used here for fitting models).
 
@@ -1255,7 +1255,7 @@ real-time performance of the model.
 
 ### Alternative packages
 
-- [EpiNow2](https://epiforecasts.io/EpiNow2): A precursor to
+- [EpiNow2](https://epiforecasts.io/EpiNow2/): A precursor to
   `epinowcast` developed by members of the `epinowcast` community. It is
   a flexible toolset for real-time analysis of infectious diseases. It
   is less complex than `epinowcast` with a focus on robust default
@@ -1269,15 +1269,15 @@ real-time performance of the model.
   functionality for dealing with delays than `epinowcast`. However, as
   it is an extension of `rstanarm` it comes with a number of useful
   features and a familiar interface for users of `rstanarm`
-- [EpiEstim](https://cran.r-project.org/web/packages/EpiEstim/index.html):
-  This is a more mature package for estimating the effective
-  reproduction number. It exploits a mathematically relationship to fit
-  the renewal equation with uncertainty very quickly but is not
-  currently able to handle reporting delays or other aspects of
-  real-world data that we have discussed in this case study. It is also
-  not able to perform nowcasts. However, it is a useful package for
-  estimating the effective reproduction number in settings where these
-  aspects are not important or where they can be handled by other means.
+- [EpiEstim](https://CRAN.R-project.org/package=EpiEstim): This is a
+  more mature package for estimating the effective reproduction number.
+  It exploits a mathematically relationship to fit the renewal equation
+  with uncertainty very quickly but is not currently able to handle
+  reporting delays or other aspects of real-world data that we have
+  discussed in this case study. It is also not able to perform nowcasts.
+  However, it is a useful package for estimating the effective
+  reproduction number in settings where these aspects are not important
+  or where they can be handled by other means.
 
 ## References
 

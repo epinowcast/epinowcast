@@ -107,7 +107,7 @@
 The statistical models used in <a href="https://package.epinowcast.org">epinowcast</a> are primarily written in the <a href="https://mc-stan.org/docs/reference-manual/index.html" class="external-link">Stan programming language</a>, a statically typed programming language with syntax similar to C/C++.
 <a href="https://package.epinowcast.org">epinowcast</a> utilises the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a> package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is <strong>distinct</strong> from but interfaced through R.
-R calling a separate program to execute calculations is similar to <a href="https://cran.r-project.org/web/packages/rjags/" class="external-link"><code>{rjags}</code></a> which relies on the <a href="https://cran.r-project.org/web/packages/rjags/INSTALL" class="external-link">JAGS library</a> and <a href="https://www.r-inla.org/what-is-inla" class="external-link">R-INLA</a>.
+R calling a separate program to execute calculations is similar to <a href="https://CRAN.R-project.org/package=rjags" class="external-link"><code>{rjags}</code></a> which relies on the <a href="https://mcmc-jags.sourceforge.io/" class="external-link">JAGS library</a> and <a href="https://www.r-inla.org/what-is-inla" class="external-link">R-INLA</a>.
 As described in the <a href="https://package.epinowcast.org">epinowcast</a> project <a href="./index.html">README</a>, if you wish to do model fitting and nowcasting you will need to install <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a>, an optional dependency not installed automatically with <code>epinowcast</code>, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.</p>
 <div class="section level3">
@@ -315,7 +315,7 @@ Utilise the <code>enw_plot_pp_quantiles</code> to examine the posterior predicti
 <h4 id="my-model-takes-too-long-to-run">My model takes too long to run<a class="anchor" aria-label="anchor" href="#my-model-takes-too-long-to-run"></a>
 </h4>
 <p>One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
-This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the <a href="https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/" class="external-link">Folk Theorem of Statistical Computing</a> “when you have computational problems, often there’s a problem with your model”).
+This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the Folk Theorem of Statistical Computing “when you have computational problems, often there’s a problem with your model”).
 In other words, you may have a mismatch between your data and the model you are trying to fit.
 There a few simple steps to assist with this:</p>
 <ol style="list-style-type: decimal">
@@ -360,9 +360,9 @@ If <code>r_hat</code> is large and <code>ess_bulk</code>/ <code>ess_tail</code> 
 <p>Wide posterior values indicate that there is a high degree of uncertainty given the data and model.
 If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood.</p>
 <p>However, Bayesian model building is often an iterative process<span class="citation"><sup>[1]</sup></span> and, in practice, it’s common to realize that that the model’s prior likelihood doesn’t accurately reflect your prior beliefs.
-Priors that were thought to be non-informative can turn out to <a href="http://www.stat.columbia.edu/~gelman/research/published/entropy-19-00555-v2.pdf" class="external-link">strongly influence the posterior</a>, often in unexpected and undesirable ways.
+Priors that were thought to be non-informative can turn out to <a href="https://sites.stat.columbia.edu/gelman/research/published/entropy-19-00555-v2.pdf" class="external-link">strongly influence the posterior</a>, often in unexpected and undesirable ways.
 If you suspect that this might be the case, it can make sense to revisit your priors, iteratively inspecting the joint prior model through prior predictive simulation and tweaking marginal distributions over individual parameters.
-The (Stan Prior Choice wiki)[<a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" class="external-link uri">https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations</a>] is often a useful guide to this process.</p>
+The <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" class="external-link">Stan Prior Choice wiki</a> is often a useful guide to this process.</p>
 </div>
 </div>
 </div>

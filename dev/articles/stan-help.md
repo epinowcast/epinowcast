@@ -25,9 +25,8 @@ CmdStan, the program which executes the models written in the Stan
 programming language. It is important to understand that CmdStan is a
 program that is **distinct** from but interfaced through R. R calling a
 separate program to execute calculations is similar to
-[`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies
-on the [JAGS
-library](https://cran.r-project.org/web/packages/rjags/INSTALL) and
+[`{rjags}`](https://CRAN.R-project.org/package=rjags) which relies on
+the [JAGS library](https://mcmc-jags.sourceforge.io/) and
 [R-INLA](https://www.r-inla.org/what-is-inla). As described in the
 [epinowcast](https://package.epinowcast.org) project
 [README](https://package.epinowcast.org/dev/articles/index.md), if you
@@ -359,8 +358,7 @@ posterior predictive quantiles from the nowcast fits.
 One of the more common issues with Bayesian inference is that the
 sampler may take a long time to run. This can occur because the sampler
 is having difficulty exploring the posterior parameter space given the
-model and your data (i.e., the [Folk Theorem of Statistical
-Computing](https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/)
+model and your data (i.e., the Folk Theorem of Statistical Computing
 “when you have computational problems, often there’s a problem with your
 model”). In other words, you may have a mismatch between your data and
 the model you are trying to fit. There a few simple steps to assist with
@@ -444,13 +442,13 @@ and, in practice, it’s common to realize that that the model’s prior
 likelihood doesn’t accurately reflect your prior beliefs. Priors that
 were thought to be non-informative can turn out to [strongly influence
 the
-posterior](http://www.stat.columbia.edu/~gelman/research/published/entropy-19-00555-v2.pdf),
+posterior](https://sites.stat.columbia.edu/gelman/research/published/entropy-19-00555-v2.pdf),
 often in unexpected and undesirable ways. If you suspect that this might
 be the case, it can make sense to revisit your priors, iteratively
 inspecting the joint prior model through prior predictive simulation and
-tweaking marginal distributions over individual parameters. The (Stan
+tweaking marginal distributions over individual parameters. The [Stan
 Prior Choice
-wiki)\[<https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations>\]
+wiki](https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations)
 is often a useful guide to this process.
 
 ## Other resources
