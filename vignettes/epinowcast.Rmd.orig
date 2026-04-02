@@ -356,8 +356,12 @@ ggplot(combined) +
   theme(legend.position = "bottom")
 ```
 
-Both models capture the overall trend, but they may differ in their uncertainty for recent dates where the reporting delay is most influential.
-The non-parametric model makes fewer assumptions about the shape of the delay distribution, which can be an advantage when the true delay distribution does not follow a standard parametric form.
+Both models produce similar median estimates and agree closely for older reference dates where the delay distribution is well estimated.
+For recent dates, the non-parametric model shows slightly wider uncertainty, reflecting the additional flexibility of estimating a separate hazard per delay interval rather than assuming a lognormal form.
+
+Both models underestimate the most recent hospitalisations relative to what was ultimately reported (the triangles above the credible intervals).
+This suggests that the geometric random walk process model, while a good default, does not fully capture the strong exponential growth in this period.
+Specifying an explicit growth rate model in `enw_expectation()` or using a renewal process could improve performance in settings with rapid trend changes.
 
 ## Posterior predictions
 
@@ -400,11 +404,16 @@ enw_plot_nowcast_quantiles(
 
 # Next steps
 
-The models fitted here are relatively simple starting points.
-Based on the data and results, there are several extensions you might consider:
+The results above highlight several directions for improving these models.
 
-- Combining parametric and non-parametric reference date models to balance flexibility with parsimony.
-- Allowing the delay distribution to vary over time.
+The underestimation of recent hospitalisations during rapid growth suggests that an explicit growth rate or renewal process model in `enw_expectation()` could better capture strong trends than the geometric random walk used here.
+
+The two reference models produced similar results for this dataset, where the delay distribution is approximately lognormal.
+In settings where the delay distribution is multi-modal or irregular, the non-parametric approach would show a larger advantage.
+You could also combine parametric and non-parametric components in a single reference model to balance flexibility with parsimony, or allow the delay distribution to vary over time if reporting processes change.
+
+Other extensions to consider include:
+
 - Stratifying by age group or location using hierarchical models.
 - Formally comparing models using leave-one-out cross-validation or scoring rules.
 
