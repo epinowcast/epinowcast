@@ -62,7 +62,7 @@ Unfortunately, we can't directly observe infections and the data we do observe s
 :::
 ## Getting setup
 
-See the [package documentation](https://epiforecasts.io/epinowcast/) for guidance on installing the package and getting setup with `cmdstanr` (the backend used here for fitting models). 
+See the [package documentation](https://package.epinowcast.org/) for guidance on installing the package and getting setup with `cmdstanr` (the backend used here for fitting models). 
 
 As well as the `epinowcast` package we will use the following packages in this vignette.
 
@@ -890,9 +890,9 @@ are currently indexed to the date of infection.
 
 ### Alternative packages {-}
 
-- [EpiNow2](https://epiforecasts.io/EpiNow2): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
+- [EpiNow2](https://epiforecasts.io/EpiNow2/): A precursor to `epinowcast` developed by members of the `epinowcast` community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than `epinowcast` with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into `epinowcast`.
 - [epidemia](https://imperialcollegelondon.github.io/epidemia/index.html): This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than `EpiNow2`, in a similar way to `epinowcast`, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than `epinowcast`. However, as it is an extension of `rstanarm` it comes with a number of useful features and a familiar interface for users of `rstanarm`
-- [EpiEstim](https://cran.r-project.org/web/packages/EpiEstim/index.html): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.
+- [EpiEstim](https://CRAN.R-project.org/package=EpiEstim): This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.
 :::
 
 ## References

@@ -31,7 +31,7 @@ Before we start, it is important to know that Bayesian modelling can be complex 
 The statistical models used in `{epinowcast}` are primarily written in the [Stan programming language](https://mc-stan.org/docs/reference-manual/index.html), a statically typed programming language with syntax similar to C/C++.
 `{epinowcast}` utilises the [`{cmdstanr}`](https://mc-stan.org/cmdstanr/) package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is **distinct** from but interfaced through R.
-R calling a separate program to execute calculations is similar to [`{rjags}`](https://cran.r-project.org/web/packages/rjags/) which relies on the [JAGS library](https://cran.r-project.org/web/packages/rjags/INSTALL) and [R-INLA](https://www.r-inla.org/what-is-inla).
+R calling a separate program to execute calculations is similar to [`{rjags}`](https://CRAN.R-project.org/package=rjags) which relies on the [JAGS library](https://mcmc-jags.sourceforge.io/) and [R-INLA](https://www.r-inla.org/what-is-inla).
 As described in the `{epinowcast}` project [README](./index.html), if you wish to do model fitting and nowcasting you will need to install [`{cmdstanr}`](https://mc-stan.org/cmdstanr/), an optional dependency not installed automatically with `epinowcast`, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.
 
@@ -243,7 +243,7 @@ Utilise the `enw_plot_pp_quantiles` to examine the posterior predictive quantile
 ### My model takes too long to run
 
 One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
-This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the [Folk Theorem of Statistical Computing](https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/) "when you have computational problems, often there's a problem with your model").
+This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the Folk Theorem of Statistical Computing "when you have computational problems, often there's a problem with your model").
 In other words, you may have a mismatch between your data and the model you are trying to fit.
 There a few simple steps to assist with this:
 
@@ -287,7 +287,7 @@ Wide posterior values indicate that there is a high degree of uncertainty given 
 If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood. 
 
 However, Bayesian model building is often an iterative process [@gelmanBayesianWorkflow2020] and, in practice, it's common to realize that that the model's prior likelihood doesn't accurately reflect your prior beliefs. 
-Priors that were thought to be non-informative can turn out to [strongly influence the posterior](http://www.stat.columbia.edu/~gelman/research/published/entropy-19-00555-v2.pdf), often in unexpected and undesirable ways.
+Priors that were thought to be non-informative can turn out to [strongly influence the posterior](https://sites.stat.columbia.edu/gelman/research/published/entropy-19-00555-v2.pdf), often in unexpected and undesirable ways.
 If you suspect that this might be the case, it can make sense to revisit your priors, iteratively inspecting the joint prior model through prior predictive simulation and tweaking marginal distributions over individual parameters.
 The (Stan Prior Choice wiki)[https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations] is often a useful guide to this process.
 
