@@ -41,6 +41,18 @@ test_that("print output contains key strings", {
   )
 })
 
+test_that("print shows grouping vars when present", {
+  grouped <- pobs
+  grouped$by <- list(c("age_group", "location"))
+  grouped$groups <- 3L
+  s <- summary(grouped)
+  out <- capture.output(print(s))
+  combined <- paste(out, collapse = "\n")
+  expect_match(combined, "Groups: 3", fixed = TRUE)
+  expect_match(combined, "age_group", fixed = TRUE)
+  expect_match(combined, "location", fixed = TRUE)
+})
+
 test_that("print returns invisibly", {
   s <- summary(pobs)
   out <- withr::with_output_sink(

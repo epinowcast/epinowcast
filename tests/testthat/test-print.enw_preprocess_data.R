@@ -31,3 +31,13 @@ test_that("print.enw_preprocess_data shows dataset names", {
   expect_true(any(grepl("new_confirm", output)))
   expect_true(any(grepl("reporting_triangle", output)))
 })
+
+test_that("print.enw_preprocess_data shows grouping vars", {
+  pobs <- enw_example("preprocessed_observations")
+  pobs$by <- list(c("age_group", "location"))
+  pobs$groups <- 3L
+  output <- capture.output(print(pobs))
+  expect_true(any(grepl("Groups: 3", output)))
+  expect_true(any(grepl("age_group", output)))
+  expect_true(any(grepl("location", output)))
+})
