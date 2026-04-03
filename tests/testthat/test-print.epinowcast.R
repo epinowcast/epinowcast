@@ -39,7 +39,7 @@ test_that("print.epinowcast shows max treedepth", {
   expect_true(any(grepl("at max", output)))
 })
 
-test_that("print.epinowcast handles missing diagnostics", {
+test_that("print.epinowcast shows runtime only when MCMC missing", {
   nowcast <- enw_example("nowcast")
   nowcast[, max_rhat := NULL]
   nowcast[, samples := NULL]
@@ -49,10 +49,26 @@ test_that("print.epinowcast handles missing diagnostics", {
   nowcast[, no_at_max_treedepth := NULL]
   nowcast[, per_at_max_treedepth := NULL]
   output <- capture.output(print(nowcast))
-  expect_true(
-    any(grepl("epinowcast model output", output))
-  )
+  expect_true(any(grepl("Model fit:", output)))
+  expect_true(any(grepl("Run time:", output)))
   expect_false(any(grepl("Max Rhat:", output)))
   expect_false(any(grepl("Samples:", output)))
   expect_false(any(grepl("Max treedepth:", output)))
+})
+
+test_that("print.epinowcast hides fit section when all diag missing", {
+  nowcast <- enw_example("nowcast")
+  nowcast[, max_rhat := NULL]
+  nowcast[, samples := NULL]
+  nowcast[, divergent_transitions := NULL]
+  nowcast[, per_divergent_transitions := NULL]
+  nowcast[, max_treedepth := NULL]
+  nowcast[, no_at_max_treedepth := NULL]
+  nowcast[, per_at_max_treedepth := NULL]
+  nowcast[, run_time := NULL]
+  output <- capture.output(print(nowcast))
+  expect_true(
+    any(grepl("epinowcast model output", output))
+  )
+  expect_false(any(grepl("Model fit:", output)))
 })

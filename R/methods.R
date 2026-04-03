@@ -124,7 +124,10 @@ print.epinowcast <- function(x, ...) {
     }
   }
 
-  has_mcmc <- "max_rhat" %in% names(x)
+  has_mcmc <- all(
+    c("max_rhat", "samples", "divergent_transitions",
+      "per_divergent_transitions") %in% names(x)
+  )
   has_runtime <- "run_time" %in% names(x)
   if (has_mcmc || has_runtime) {
     cat(cli::format_inline(
