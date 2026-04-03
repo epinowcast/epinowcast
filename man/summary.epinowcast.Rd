@@ -58,6 +58,10 @@ summary epinowcast
 
 Other epinowcast: 
 \code{\link{epinowcast}()},
-\code{\link{plot.epinowcast}()}
+\code{\link{plot.epinowcast}()},
+\code{\link{print.enw_preprocess_data}()},
+\code{\link{print.epinowcast}()},
+\code{\link{print.summary.enw_preprocess_data}()},
+\code{\link{summary.enw_preprocess_data}()}
 }
 \concept{epinowcast}

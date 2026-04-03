@@ -28,6 +28,7 @@ Utility functions
 \code{\link{coerce_date}()},
 \code{\link{coerce_dt}()},
 \code{\link{date_to_numeric_modulus}()},
+\code{\link{enw_get_data}()},
 \code{\link{enw_rolling_sum}()},
 \code{\link{get_internal_timestep}()},
 \code{\link{is.Date}()}

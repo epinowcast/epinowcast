@@ -1,3 +1,258 @@
+# Internal helper: print the common header and dataset dimensions
+# shared by print.enw_preprocess_data and print.epinowcast
+#' @importFrom cli format_inline
+.enw_print_header <- function(x, title) {
+  width <- getOption("width", 80)
+  rule <- cli::rule(title, width = width)
+  cat(rule, "\n")
+
+  by_vars <- x$by[[1]]
+  if (length(by_vars) > 0) {
+    cat(cli::format_inline(
+      "Groups: {x$groups} ({toString(by_vars)})",
+      " | Timestep: {x$timestep[[1]]}",
+      " | Max delay: {x$max_delay}"
+    ), "\n")
+  } else {
+    cat(cli::format_inline(
+      "Groups: {x$groups}",
+      " | Timestep: {x$timestep[[1]]}",
+      " | Max delay: {x$max_delay}"
+    ), "\n")
+  }
+  cat(cli::format_inline(
+    "Observations: {x$time} timepoints",
+    " x {x$snapshots} snapshots"
+  ), "\n")
+  cat(cli::format_inline(
+    "Max date: {format(x$max_date)}"
+  ), "\n")
+
+  dt_cols <- c(
+    "obs", "new_confirm", "latest",
+    "missing_reference", "reporting_triangle",
+    "metareference", "metareport", "metadelay"
+  )
+  present <- intersect(dt_cols, names(x))
+  if (length(present) > 0) {
+    cat("\n")
+    cat(cli::format_inline(
+      "Datasets (access with",
+      ' {.code enw_get_data(x, "<name>")}):'
+    ), "\n")
+    max_width <- max(nchar(present))
+    for (col in present) {
+      dt <- x[[col]][[1]]
+      label <- formatC(
+        col, width = -max_width, flag = "-"
+      )
+      cat(
+        " ", label, ":",
+        formatC(
+          nrow(dt), width = 7, format = "d",
+          big.mark = ","
+        ),
+        "x", ncol(dt), "\n"
+      )
+    }
+  }
+}
+
+#' Print method for enw_preprocess_data
+#'
+#' @description `print` method for class
+#'   `"enw_preprocess_data"`.
+#'
+#' @param x A `data.table` output from
+#'   [enw_preprocess_data()] or [enw_construct_data()].
+#'
+#' @param ... Additional arguments (not used).
+#'
+#' @family epinowcast
+#' @method print enw_preprocess_data
+#' @return Invisibly returns `x`.
+#' @export
+#' @importFrom cli format_inline rule
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#' pobs
+print.enw_preprocess_data <- function(x, ...) {
+  .enw_print_header(x, "Preprocessed nowcast data")
+  invisible(x)
+}
+
+#' Print method for epinowcast
+#'
+#' @description `print` method for class `"epinowcast"`.
+#'
+#' @param x A `data.table` output from [epinowcast()].
+#'
+#' @param ... Additional arguments (not used).
+#'
+#' @family epinowcast
+#' @method print epinowcast
+#' @return Invisibly returns `x`.
+#' @export
+#' @importFrom cli format_inline rule
+#' @examples
+#' nowcast <- enw_example("nowcast")
+#' nowcast
+print.epinowcast <- function(x, ...) {
+  .enw_print_header(x, "epinowcast model output")
+
+  if ("priors" %in% names(x)) {
+    priors <- x$priors[[1]]
+    cat(cli::format_inline(
+      "\nPriors: {nrow(priors)} parameters"
+    ), "\n")
+    if (all(c("variable", "distribution", "mean", "sd")
+            %in% names(priors))) {
+      compact <- priors[, c(
+        "variable", "distribution", "mean", "sd"
+      )]
+      print(compact, row.names = FALSE)
+    }
+  }
+
+  has_mcmc <- "max_rhat" %in% names(x)
+  has_runtime <- "run_time" %in% names(x)
+  if (has_mcmc || has_runtime) {
+    cat(cli::format_inline(
+      "Model fit:"
+    ), "\n")
+    if (has_mcmc) {
+      n_samples <- formatC( # nolint
+        x$samples, format = "d", big.mark = ","
+      )
+      pct_div <- round( # nolint
+        x$per_divergent_transitions * 100, 1
+      )
+      cat(cli::format_inline(
+        "
+ Samples: {n_samples}",
+        " | Max Rhat: {x$max_rhat}"
+      ), "\n")
+      cat(cli::format_inline(
+        "
+ Divergent transitions:",
+        " {x$divergent_transitions} ({pct_div}%)"
+      ), "\n")
+    }
+    if (has_runtime) {
+      cat(cli::format_inline(
+        "  Run time: {x$run_time} secs"
+      ), "\n")
+    }
+  }
+
+  invisible(x)
+}
+
+#' Summary method for enw_preprocess_data
+#'
+#' @description `summary` method for class
+#'   `"enw_preprocess_data"`. Returns a structured overview of
+#'   the preprocessed data including a preview of the latest
+#'   observations and a corner of the reporting triangle.
+#'
+#' @param object A `data.table` output from
+#'   [enw_preprocess_data()] or [enw_construct_data()].
+#'
+#' @param n Integer number of rows to show in previews.
+#'   Defaults to 6.
+#'
+#' @param ... Additional arguments (not used).
+#'
+#' @family epinowcast
+#' @method summary enw_preprocess_data
+#' @return A list of class `"summary.enw_preprocess_data"`
+#'   containing the preprocessed data object and preview
+#'   parameters, printed via
+#'   [print.summary.enw_preprocess_data()].
+#' @export
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#' summary(pobs)
+summary.enw_preprocess_data <- function(object, n = 6, ...) {
+  out <- list(object = object, n = n)
+  class(out) <- "summary.enw_preprocess_data"
+  out
+}
+
+#' Print method for summary.enw_preprocess_data
+#'
+#' @description `print` method for the output of
+#'   [summary.enw_preprocess_data()].
+#'
+#' @param x A `summary.enw_preprocess_data` object.
+#'
+#' @param ... Additional arguments (not used).
+#'
+#' @family epinowcast
+#' @method print summary.enw_preprocess_data
+#' @return Invisibly returns `x`.
+#' @export
+#' @importFrom cli format_inline rule
+print.summary.enw_preprocess_data <- function(x, ...) {
+  obj <- x$object
+  n <- x$n
+
+  width <- getOption("width", 80)
+  rule <- cli::rule(
+    "Preprocessed nowcast data summary",
+    width = width
+  )
+  cat(rule, "\n")
+
+  by_vars <- obj$by[[1]]
+  if (length(by_vars) > 0) {
+    cat(cli::format_inline(
+      "Groups: {obj$groups} ({toString(by_vars)})",
+      " | Timestep: {obj$timestep[[1]]}",
+      " | Max delay: {obj$max_delay}"
+    ), "\n")
+  } else {
+    cat(cli::format_inline(
+      "Groups: {obj$groups}",
+      " | Timestep: {obj$timestep[[1]]}",
+      " | Max delay: {obj$max_delay}"
+    ), "\n")
+  }
+
+  latest <- obj$latest[[1]]
+  dates <- latest$reference_date
+  n_days <- as.integer(max(dates) - min(dates)) # nolint
+  cat(cli::format_inline(
+    "Date range: {format(min(dates))}",
+    " to {format(max(dates))} ({n_days} days)"
+  ), "\n")
+  cat(cli::format_inline(
+    "Observations: {obj$time} timepoints",
+    " x {obj$snapshots} snapshots"
+  ), "\n")
+
+  cat(cli::format_inline(
+    "\nLatest observations (first {n} rows):"
+  ), "\n")
+  print(utils::head(latest, n))
+
+  rt <- obj$reporting_triangle[[1]]
+  max_cols <- min(ncol(rt), n + 2)
+  rt_corner <- utils::head(
+    rt[, seq_len(max_cols), with = FALSE], n
+  )
+  cat(cli::format_inline(
+    "\nReporting triangle corner",
+    " (first {n} rows x {max_cols} cols):"
+  ), "\n")
+  print(rt_corner)
+  cat(cli::format_inline(
+    "... ({nrow(rt)} rows x {ncol(rt)} cols total)"
+  ), "\n")
+
+  invisible(x)
+}
+
 #' Summary method for epinowcast
 #'
 #' @description `summary` method for class "epinowcast".

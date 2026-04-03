@@ -90,7 +90,14 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40, by = "age_group")
 pobs
 ```
 
-# Models 
+The print output shows the grouping variables and dimensions of each nested dataset.
+Individual datasets can be extracted with `enw_get_data()`:
+
+```{r}
+enw_get_data(pobs, "latest") |> head()
+```
+
+# Models
 
 Here we explore a range of increasingly complex models using subject area knowledge and posterior predictive checks to motivate modelling choices.
 

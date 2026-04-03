@@ -53,6 +53,10 @@ plot(nowcast, type = "posterior_prediction") +
 \seealso{
 Other epinowcast: 
 \code{\link{epinowcast}()},
+\code{\link{print.enw_preprocess_data}()},
+\code{\link{print.epinowcast}()},
+\code{\link{print.summary.enw_preprocess_data}()},
+\code{\link{summary.enw_preprocess_data}()},
 \code{\link{summary.epinowcast}()}
 
 Plotting functions
