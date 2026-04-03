@@ -51,45 +51,61 @@ Package data sets
 ``` r
 # Load the nowcast
 enw_example(type = "nowcast")
-#>                    obs          new_confirm              latest
-#>                 <list>               <list>              <list>
-#> 1: <data.table[650x9]> <data.table[610x11]> <data.table[40x10]>
-#>     missing_reference  reporting_triangle      metareference
-#>                <list>              <list>             <list>
-#> 1: <data.table[40x6]> <data.table[40x22]> <data.table[40x9]>
-#>             metareport          metadelay max_delay  time snapshots     by
-#>                 <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[59x12]> <data.table[20x5]>        20    40        40 [NULL]
-#>    groups   max_date timestep             priors
-#>     <int>     <IDat>   <char>             <list>
-#> 1:      1 2021-08-22      day <data.table[14x6]>
-#>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             fit
-#>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          <list>
-#> 1: <CmdStanMCMC>\n  Inherits from: <CmdStanFit>\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    config_files: function (include_failed = FALSE) \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    hessian: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    init: function () \n    init_model_methods: function (seed = 1, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    metric_files: function (include_failed = FALSE) \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_config_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_metric_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL, format = getOption("cmdstanr_draws_format", \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1350.196 -1351.1578 -1352.7977 -1347.4477 -1344.1504 -1 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 0\n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL
-#>           data  fit_args init_method_output samples max_rhat
-#>         <list>    <list>             <list>   <int>    <num>
-#> 1: <list[112]> <list[5]>             [NULL]    1000     1.01
-#>    divergent_transitions per_divergent_transitions max_treedepth
-#>                    <num>                     <num>         <num>
-#> 1:                     0                         0             8
-#>    no_at_max_treedepth per_at_max_treedepth run_time
-#>                  <int>                <num>    <num>
-#> 1:                   3                0.003       26
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 20 
+#> Observations: 40 timepoints x 40 snapshots 
+#> Max date: 2021-08-22 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :     650 x 9 
+#>   new_confirm        :     610 x 11 
+#>   latest             :      40 x 10 
+#>   missing_reference  :      40 x 6 
+#>   reporting_triangle :      40 x 22 
+#>   metareference      :      40 x 9 
+#>   metareport         :      59 x 12 
+#>   metadelay          :      20 x 5 
+#> 
+#> Priors: 14 parameters 
+#>           variable          distribution  mean    sd
+#>             <char>                <char> <num> <num>
+#>         expr_r_int                Normal   0.0   0.2
+#>       expr_beta_sd Zero truncated normal   0.0   1.0
+#>  expr_lelatent_int                Normal   4.3   1.0
+#>       expl_beta_sd Zero truncated normal   0.0   1.0
+#>      refp_mean_int                Normal   1.0   1.0
+#>        refp_sd_int Zero truncated normal   0.5   1.0
+#>  refp_mean_beta_sd Zero truncated normal   0.0   1.0
+#>    refp_sd_beta_sd Zero truncated normal   0.0   1.0
+#>          refnp_int                Normal   0.0   1.0
+#>      refnp_beta_sd Zero truncated normal   0.0   1.0
+#>        rep_beta_sd Zero truncated normal   0.0   1.0
+#>           miss_int                Normal   0.0   1.0
+#>       miss_beta_sd Zero truncated normal   0.0   1.0
+#>           sqrt_phi Zero truncated normal   0.0   0.5
+#> Model fit: 
+#> 
+#>  Samples: 1,000 | Max Rhat: 1.01 
+#> 
+#>  Divergent transitions: 0 (0%) 
+#>   Run time: 26 secs 
 
 # Load the preprocessed observations
 enw_example(type = "preprocessed_observations")
-#>                    obs          new_confirm              latest
-#>                 <list>               <list>              <list>
-#> 1: <data.table[650x9]> <data.table[610x11]> <data.table[40x10]>
-#>     missing_reference  reporting_triangle      metareference
-#>                <list>              <list>             <list>
-#> 1: <data.table[40x6]> <data.table[40x22]> <data.table[40x9]>
-#>             metareport          metadelay max_delay  time snapshots     by
-#>                 <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[59x12]> <data.table[20x5]>        20    40        40 [NULL]
-#>    groups   max_date timestep
-#>     <int>     <IDat>   <char>
-#> 1:      1 2021-08-22      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 20 
+#> Observations: 40 timepoints x 40 snapshots 
+#> Max date: 2021-08-22 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :     650 x 9 
+#>   new_confirm        :     610 x 11 
+#>   latest             :      40 x 10 
+#>   missing_reference  :      40 x 6 
+#>   reporting_triangle :      40 x 22 
+#>   metareference      :      40 x 9 
+#>   metareport         :      59 x 12 
+#>   metadelay          :      20 x 5 
 
 # Load the latest observations
 enw_example(type = "observations")

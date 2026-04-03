@@ -268,6 +268,14 @@ Functions for nowcasting.
   : Nowcast using partially observed data
 - [`plot(`*`<epinowcast>`*`)`](https://package.epinowcast.org/dev/reference/plot.epinowcast.md)
   : Plot method for epinowcast
+- [`print(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/dev/reference/print.enw_preprocess_data.md)
+  : Print method for enw_preprocess_data
+- [`print(`*`<epinowcast>`*`)`](https://package.epinowcast.org/dev/reference/print.epinowcast.md)
+  : Print method for epinowcast
+- [`print(`*`<summary.enw_preprocess_data>`*`)`](https://package.epinowcast.org/dev/reference/print.summary.enw_preprocess_data.md)
+  : Print method for summary.enw_preprocess_data
+- [`summary(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/dev/reference/summary.enw_preprocess_data.md)
+  : Summary method for enw_preprocess_data
 - [`summary(`*`<epinowcast>`*`)`](https://package.epinowcast.org/dev/reference/summary.epinowcast.md)
   : Summary method for epinowcast
 
@@ -628,6 +636,9 @@ Utility functions
 - [`date_to_numeric_modulus()`](https://package.epinowcast.org/dev/reference/date_to_numeric_modulus.md)
   : Convert date column to numeric and calculate its modulus with given
   timestep.
+
+- [`enw_get_data()`](https://package.epinowcast.org/dev/reference/enw_get_data.md)
+  : Extract data from preprocessed nowcast objects
 
 - [`enw_rolling_sum()`](https://package.epinowcast.org/dev/reference/enw_rolling_sum.md)
   : Perform rolling sum aggregation

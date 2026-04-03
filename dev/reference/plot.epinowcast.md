@@ -57,6 +57,10 @@ plot(
 
 Other epinowcast:
 [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md),
+[`print.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/print.enw_preprocess_data.md),
+[`print.epinowcast()`](https://package.epinowcast.org/dev/reference/print.epinowcast.md),
+[`print.summary.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/print.summary.enw_preprocess_data.md),
+[`summary.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/summary.enw_preprocess_data.md),
 [`summary.epinowcast()`](https://package.epinowcast.org/dev/reference/summary.epinowcast.md)
 
 Plotting functions

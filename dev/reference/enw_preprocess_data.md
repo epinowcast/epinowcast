@@ -189,16 +189,18 @@ pobs <- enw_preprocess_data(nat_germany_hosp)
 #> (or, in special cases, longer) maximum delay via the `max_delay` argument. See
 #> help(enw_preprocess_data) (`?epinowcast::enw_preprocess_data()`) for details.
 pobs
-#>                      obs            new_confirm               latest
-#>                   <list>                 <list>               <list>
-#> 1: <data.table[12915x9]> <data.table[12915x11]> <data.table[198x10]>
-#>    missing_reference   reporting_triangle       metareference
-#>               <list>               <list>              <list>
-#> 1: <data.table[0x6]> <data.table[198x84]> <data.table[198x9]>
-#>              metareport          metadelay max_delay  time snapshots     by
-#>                  <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[279x12]> <data.table[82x5]>        82   198       198 [NULL]
-#>    groups   max_date timestep
-#>     <int>     <IDat>   <char>
-#> 1:      1 2021-10-20      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 82 
+#> Observations: 198 timepoints x 198 snapshots 
+#> Max date: 2021-10-20 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :  12,915 x 9 
+#>   new_confirm        :  12,915 x 11 
+#>   latest             :     198 x 10 
+#>   missing_reference  :       0 x 6 
+#>   reporting_triangle :     198 x 84 
+#>   metareference      :     198 x 9 
+#>   metareport         :     279 x 12 
+#>   metadelay          :      82 x 5 
 ```

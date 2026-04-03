@@ -192,16 +192,18 @@ enw_construct_data(
   timestep = pobs$timestep[[1]],
   by = c()
 )
-#>                    obs          new_confirm              latest
-#>                 <list>               <list>              <list>
-#> 1: <data.table[650x9]> <data.table[610x11]> <data.table[40x10]>
-#>     missing_reference  reporting_triangle      metareference
-#>                <list>              <list>             <list>
-#> 1: <data.table[40x6]> <data.table[40x22]> <data.table[40x9]>
-#>             metareport          metadelay max_delay  time snapshots     by
-#>                 <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[59x12]> <data.table[20x5]>        20    40        40 [NULL]
-#>    groups   max_date timestep
-#>     <int>     <IDat>   <char>
-#> 1:      1 2021-08-22      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 20 
+#> Observations: 40 timepoints x 40 snapshots 
+#> Max date: 2021-08-22 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :     650 x 9 
+#>   new_confirm        :     610 x 11 
+#>   latest             :      40 x 10 
+#>   missing_reference  :      40 x 6 
+#>   reporting_triangle :      40 x 22 
+#>   metareference      :      40 x 9 
+#>   metareport         :      59 x 12 
+#>   metadelay          :      20 x 5 
 ```

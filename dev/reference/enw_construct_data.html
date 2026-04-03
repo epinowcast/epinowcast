@@ -233,18 +233,20 @@ nowcasting.</p></li>
 <span class="r-in"><span>  timestep <span class="op">=</span> <span class="va">pobs</span><span class="op">$</span><span class="va">timestep</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm              latest</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[650x9]&gt; &lt;data.table[610x11]&gt; &lt;data.table[40x10]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     missing_reference  reporting_triangle      metareference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;list&gt;              &lt;list&gt;             &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[40x6]&gt; &lt;data.table[40x22]&gt; &lt;data.table[40x9]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             metareport          metadelay max_delay  time snapshots     by</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[59x12]&gt; &lt;data.table[20x5]&gt;        20    40        40 [NULL]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    groups   max_date timestep</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1 2021-08-22      day</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── Preprocessed nowcast data ─────────────────────────────────────────────────── </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Groups: 1 | Timestep: day | Max delay: 20 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Observations: 40 timepoints x 40 snapshots </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max date: 2021-08-22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   obs                :     650 x 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   new_confirm        :     610 x 11 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   latest             :      40 x 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   missing_reference  :      40 x 6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   reporting_triangle :      40 x 22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metareference      :      40 x 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metareport         :      59 x 12 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metadelay          :      20 x 5 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
