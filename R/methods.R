@@ -100,21 +100,34 @@ print.enw_preprocess_data <- function(x, ...) {
 print.epinowcast <- function(x, ...) {
   .enw_print_header(x, "epinowcast model output")
 
-  if ("priors" %in% names(x)) {
-    priors <- x$priors[[1]]
+  # Model components
+  model_cols <- c(
+    "priors", "fit", "data", "fit_args",
+    "init_method_output"
+  )
+  present <- intersect(model_cols, names(x))
+  if (length(present) > 0) {
     cat(cli::format_inline(
-      "\nPriors: {nrow(priors)} parameters"
+      "\nModel objects (access with",
+      ' {.code enw_get_data(x, "<name>")}):'
     ), "\n")
-    if (all(c("variable", "distribution", "mean", "sd")
-            %in% names(priors))) {
-      compact <- priors[, c(
-        "variable", "distribution", "mean", "sd"
-      )]
-      print(compact, row.names = FALSE)
+    for (col in present) {
+      obj <- x[[col]][[1]]
+      info <- if (is.data.frame(obj)) {
+        paste0(nrow(obj), " x ", ncol(obj))
+      } else if (is.list(obj)) {
+        paste0("list(", length(obj), ")")
+      } else {
+        class(obj)[1]
+      }
+      cat(" ", col, ":", info, "\n")
     }
   }
 
-  has_mcmc <- "max_rhat" %in% names(x)
+  has_mcmc <- all(
+    c("max_rhat", "samples", "divergent_transitions",
+      "per_divergent_transitions") %in% names(x)
+  )
   has_runtime <- "run_time" %in% names(x)
   if (has_mcmc || has_runtime) {
     cat(cli::format_inline(
@@ -128,15 +141,23 @@ print.epinowcast <- function(x, ...) {
         x$per_divergent_transitions * 100, 1
       )
       cat(cli::format_inline(
-        "
- Samples: {n_samples}",
+        "  Samples: {n_samples}",
         " | Max Rhat: {x$max_rhat}"
       ), "\n")
       cat(cli::format_inline(
-        "
- Divergent transitions:",
+        "  Divergent transitions:",
         " {x$divergent_transitions} ({pct_div}%)"
       ), "\n")
+      if ("max_treedepth" %in% names(x)) {
+        pct_tree <- round( # nolint
+          x$per_at_max_treedepth * 100, 1
+        )
+        cat(cli::format_inline(
+          "  Max treedepth: {x$max_treedepth}",
+          " ({x$no_at_max_treedepth} at max,",
+          " {pct_tree}%)"
+        ), "\n")
+      }
     }
     if (has_runtime) {
       cat(cli::format_inline(
