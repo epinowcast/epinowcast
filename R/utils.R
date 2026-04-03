@@ -101,6 +101,45 @@ enw_example <- function(type = c(
   }
 }
 
+#' Extract data from preprocessed nowcast objects
+#'
+#' @description Extracts a named component from an
+#'   [enw_preprocess_data()] or [epinowcast()] object. List columns
+#'   are unwrapped automatically so you get the underlying
+#'   `data.table` or value directly.
+#'
+#' @param x An `enw_preprocess_data` or `epinowcast` object.
+#'
+#' @param name Character string naming the component to extract.
+#'
+#' @return The extracted component. For list columns this is the
+#'   first element (typically a `data.table`); for scalar columns
+#'   the value is returned as-is.
+#'
+#' @family utils
+#' @export
+#' @importFrom cli cli_abort
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#' enw_get_data(pobs, "obs")
+#' enw_get_data(pobs, "max_delay")
+enw_get_data <- function(x, name) {
+  if (!name %in% names(x)) {
+    cli::cli_abort(
+      c(
+        "{.arg name} {.val {name}} not found in object.",
+        i = "Available names: {.val {names(x)}}"
+      )
+    )
+  }
+  col <- x[[name]]
+  if (is.list(col)) {
+    col[[1]]
+  } else {
+    col
+  }
+}
+
 #' @title Coerce Dates
 #'
 #' @description Provides consistent coercion of inputs to
