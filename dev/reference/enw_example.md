@@ -66,28 +66,16 @@ enw_example(type = "nowcast")
 #>   metareport         :      59 x 12 
 #>   metadelay          :      20 x 5 
 #> 
-#> Priors: 14 parameters 
-#>           variable          distribution  mean    sd
-#>             <char>                <char> <num> <num>
-#>         expr_r_int                Normal   0.0   0.2
-#>       expr_beta_sd Zero truncated normal   0.0   1.0
-#>  expr_lelatent_int                Normal   4.3   1.0
-#>       expl_beta_sd Zero truncated normal   0.0   1.0
-#>      refp_mean_int                Normal   1.0   1.0
-#>        refp_sd_int Zero truncated normal   0.5   1.0
-#>  refp_mean_beta_sd Zero truncated normal   0.0   1.0
-#>    refp_sd_beta_sd Zero truncated normal   0.0   1.0
-#>          refnp_int                Normal   0.0   1.0
-#>      refnp_beta_sd Zero truncated normal   0.0   1.0
-#>        rep_beta_sd Zero truncated normal   0.0   1.0
-#>           miss_int                Normal   0.0   1.0
-#>       miss_beta_sd Zero truncated normal   0.0   1.0
-#>           sqrt_phi Zero truncated normal   0.0   0.5
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 14 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(112) 
+#>   fit_args : list(5) 
+#>   init_method_output : NULL 
 #> Model fit: 
-#> 
-#>  Samples: 1,000 | Max Rhat: 1.01 
-#> 
-#>  Divergent transitions: 0 (0%) 
+#>   Samples: 1,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 8 (3 at max, 0.3%) 
 #>   Run time: 26 secs 
 
 # Load the preprocessed observations
