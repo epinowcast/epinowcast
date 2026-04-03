@@ -4,7 +4,7 @@ description: "A quick start example demonstrating use of epinowcast to nowcast h
 author: Epinowcast Team
 opengraph:
   image:
-    src: figures/getting-started-nowcasting-nowcast-lognormal-1.png
+    src: figures/getting-started-nowcasting-comparison-1.png
 output:
   bookdown::html_vignette2:
     fig_caption: yes
@@ -31,9 +31,9 @@ knitr::opts_chunk$set(
 ```
 # Quick start
 
-In this quick start, you will use `epinowcast` to specify and fit two nowcasting models of COVID-19 hospitalisations in Germany.
-The first uses a parametric (lognormal) delay distribution and the second uses a non-parametric hazard model.
-Comparing these two approaches demonstrates how `epinowcast` serves as a modelling toolkit rather than a single fixed model.
+In this quick start, you will use `epinowcast` to nowcast COVID-19 hospitalisations in Germany.
+You will start with the default model, identify where it falls short, and then build two improved models with different delay assumptions.
+This demonstrates how `epinowcast` serves as a modelling toolkit rather than a single fixed model.
 Examples using more complex models are available in other package vignettes and in the papers referenced in the literature vignette.
 
 # Package
@@ -105,8 +105,8 @@ ggplot(latest_germany_hosp) +
   theme_bw()
 ```
 
-The plot shows a clear day-of-week periodicity in hospitalisations alongside an upward trend.
-You will account for this weekly pattern by including a day-of-week effect in the expectation model.
+The plot shows a clear day-of-week periodicity in hospitalisations alongside a strong upward trend.
+These features will become important when we evaluate model performance below.
 
 ## Preprocessing
 
@@ -137,38 +137,81 @@ summary(pobs)
 
 It can be useful to check this output before specifying the model, just to make sure everything is as expected.
 
-# Model specification
+# The default model
 
 The `epinowcast` package provides you with a modular modelling framework.
 The package comes equipped with several modules that you can combine to construct models, and also allows you to create your own modules.
 This ensures that models can be tailored to your specific data and context.
 
-In the following sections, you will specify a shared process model and report model, then define two different reference (delay) models: one parametric and one non-parametric.
-
 Each module defines its own default priors which can be inspected and customised.
 See `?epinowcast` for details on inspecting and setting priors.
 
+The default model uses a daily geometric random walk for the expected counts, a lognormal delay distribution, and no report-date effects.
+This is a reasonable starting point for many settings but is not tuned for any particular problem.
+
+```{r}
+model <- enw_model(threads = TRUE)
+```
+
+```{r}
+options(mc.cores = 2)
+default_fit_opts <- enw_fit_opts(
+  save_warmup = FALSE,
+  pp = TRUE,
+  chains = 2,
+  threads_per_chain = 2,
+  iter_sampling = 500,
+  iter_warmup = 500,
+  adapt_delta = 0.95,
+  max_depth = 12,
+  show_messages = interactive()
+)
+nowcast_default <- epinowcast(
+  data = pobs,
+  fit = default_fit_opts,
+  model = model
+)
+```
+
+```{r}
+nowcast_default
+```
+
+```{r nowcast-default}
+plot(
+  nowcast_default,
+  latest_obs = latest_germany_hosp
+)
+```
+
+The default model captures the general level of hospitalisations but misses two features visible in the data.
+First, the strong upward trend leads to underestimation of recent dates, where the most recent observations (triangles) fall above the credible intervals.
+Second, the day-of-week periodicity visible in the data is not captured, as the default model has no weekly seasonal component.
+
+# Improving the model
+
+Based on these observations, you can build improved models.
+You will address the trend by replacing the daily geometric random walk with a weekly growth rate model, add day-of-week effects to both the expectation and report modules, and compare two different delay specifications.
+
 ## Process model
 
-A commonly used process model in nowcasting is to model the expected counts by date of reference via a geometric random walk, as this acts as a minimally informed smoothing prior and thus gives a lot of weight to the observed data.
-As you observed in the data plot above, there is also a clear day-of-week pattern in hospitalisations.
-You can capture both features by specifying a random effect for the daily growth rate and a random effect for day of the week.
+The underlying process model is an exponential growth rate model ($C_t = C_{t-1} \exp^{r_t}$).
+To capture the sustained upward trend, you specify a weekly random walk on the growth rate with a baseline intercept.
+You also add a day-of-week random effect to account for the weekly periodicity.
 
 ```{r}
 expectation_module <- enw_expectation(
-  ~ 0 + (1 | day) + (1 | day_of_week),
+  ~ 1 + rw(week) + (1 | day_of_week),
   data = pobs
 )
 ```
 
-Here, `day` refers to the number of days from the start of the data.
-As the underlying process model is an exponential growth rate model ($C_t = C_{t-1} \exp^{r_t}$), specifying a random effect (i.e. `(1 | day)`) on the growth rate is equivalent to a geometric random walk on expected counts by reference date.
-The `(1 | day_of_week)` term adds a weekly seasonal effect to account for the periodicity visible in the data.
+The intercept provides a baseline growth rate, and `rw(week)` allows it to change each week without overfitting to daily noise.
+The `(1 | day_of_week)` term captures the weekly seasonal pattern.
 
 ## Reference model: reporting delays
 
-The reference module models the reporting delay distribution from the date of reference.
-You will define two alternative specifications.
+You will define two alternative delay specifications.
 
 The first assumes that the reporting delay follows a lognormal distribution, static over time.
 
@@ -181,8 +224,7 @@ lognormal_reference <- enw_reference(
 ```
 
 The second makes no distributional assumption.
-Instead, it estimates a separate reporting hazard for each delay interval using random effects.
-This is equivalent to a Cox proportional hazards baseline with partial pooling across delays.
+Instead, it estimates a separate reporting hazard for each delay interval using random effects, with partial pooling across delays.
 
 ```{r}
 np_reference <- enw_reference(
@@ -192,15 +234,10 @@ np_reference <- enw_reference(
 )
 ```
 
-The lognormal model is more parsimonious, requiring only two parameters (mean and standard deviation on the log scale).
-The non-parametric model is more flexible and can capture multi-modal or irregular delay distributions, but estimates more parameters.
-
 ## Reporting effects by report date
 
-Even where the reporting delay is well captured by the reference model, there may be additional effects related to the report date.
-For example, reporting may be lower on weekends, and the overall reporting rate may shift over time.
-You can specify a model for these effects using the `enw_report()` function.
-Here you specify a random effect for the day of the week and a weekly random walk to allow the reporting process to change over time.
+The default model had no report-date effects.
+Here you add a day-of-week random effect and a weekly random walk to allow the reporting process to change over time.
 
 ```{r}
 report_module <- enw_report(
@@ -208,25 +245,12 @@ report_module <- enw_report(
 )
 ```
 
-# Precompiling the model
+## Fitting the improved models
 
-As `epinowcast` uses `cmdstan` to fit its models, you first need to compile the model.
-Here you compile with threading enabled to speed up model fitting.
-Both models share the same compiled Stan code, so you only need to compile once.
-
-```{r}
-model <- enw_model(threads = TRUE)
-```
-
-# Fitting the models
-
-You can now fit both models using the ["No-U-Turn Sampler Markov chain Monte Carlo" method](https://mc-stan.org/docs/reference-manual/hamiltonian-monte-carlo.html).
-You specify fitting options using `enw_fit_opts()` (note that the settings shown here are tuned for speed and may not be appropriate for many real world use cases).
-
-## Parametric (lognormal) model
+You can now fit both improved models.
+Since the Stan model is already compiled, only sampling time is required.
 
 ```{r}
-options(mc.cores = 2)
 fit_opts <- enw_fit_opts(
   save_warmup = FALSE,
   pp = TRUE,
@@ -247,10 +271,6 @@ nowcast_lognormal <- epinowcast(
   model = model
 )
 ```
-
-## Non-parametric (hazard) model
-
-The model is already compiled, so this second fit only requires sampling time.
 
 ```{r}
 nowcast_np <- epinowcast(
@@ -274,12 +294,6 @@ Printing it shows key diagnostics including the number of samples, convergence (
 nowcast_lognormal
 ```
 
-```{r}
-nowcast_lognormal |>
-  summary(probs = c(0.05, 0.95)) |>
-  head(n = 10)
-```
-
 ```{r nowcast-lognormal}
 plot(
   nowcast_lognormal,
@@ -293,19 +307,13 @@ plot(
 nowcast_np
 ```
 
-```{r}
-nowcast_np |>
-  summary(probs = c(0.05, 0.95)) |>
-  head(n = 10)
-```
-
 ```{r nowcast-np}
 plot(nowcast_np, latest_obs = latest_germany_hosp)
 ```
 
-## Comparing the two models
+## Comparing the models
 
-You can compare the two nowcasts by overlaying their posterior summaries.
+You can compare the two improved nowcasts by overlaying their posterior summaries.
 
 ```{r comparison}
 lognormal_summary <- summary(
@@ -356,12 +364,10 @@ ggplot(combined) +
   theme(legend.position = "bottom")
 ```
 
-Both models produce similar median estimates and agree closely for older reference dates where the delay distribution is well estimated.
+Both improved models produce similar estimates and better capture the upward trend than the default model.
 For recent dates, the non-parametric model shows slightly wider uncertainty, reflecting the additional flexibility of estimating a separate hazard per delay interval rather than assuming a lognormal form.
-
-Both models underestimate the most recent hospitalisations relative to what was ultimately reported (the triangles above the credible intervals).
-This suggests that the geometric random walk process model, while a good default, does not fully capture the strong exponential growth in this period.
-Specifying an explicit growth rate model in `enw_expectation()` or using a renewal process could improve performance in settings with rapid trend changes.
+For this dataset, where the delay distribution is approximately lognormal, the two approaches agree closely.
+In settings where the delay distribution is multi-modal or irregular, the non-parametric approach would show a larger advantage.
 
 ## Posterior predictions
 
@@ -404,16 +410,13 @@ enw_plot_nowcast_quantiles(
 
 # Next steps
 
-The results above highlight several directions for improving these models.
+The progression from the default model to the improved specifications illustrates the iterative workflow that `epinowcast` is designed to support.
+Each module can be independently adjusted based on what you observe in the data and results.
 
-The underestimation of recent hospitalisations during rapid growth suggests that an explicit growth rate or renewal process model in `enw_expectation()` could better capture strong trends than the geometric random walk used here.
+Further extensions to consider include:
 
-The two reference models produced similar results for this dataset, where the delay distribution is approximately lognormal.
-In settings where the delay distribution is multi-modal or irregular, the non-parametric approach would show a larger advantage.
-You could also combine parametric and non-parametric components in a single reference model to balance flexibility with parsimony, or allow the delay distribution to vary over time if reporting processes change.
-
-Other extensions to consider include:
-
+- Combining parametric and non-parametric components in a single reference model to balance flexibility with parsimony.
+- Allowing the delay distribution to vary over time if the reporting process changes.
 - Stratifying by age group or location using hierarchical models.
 - Formally comparing models using leave-one-out cross-validation or scoring rules.
 
