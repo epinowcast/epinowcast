@@ -32,6 +32,7 @@ For function-specific details, see `?function_name`.
 | **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
 | **Custom priors** | Inspect and replace default priors | [Prior specification](#priors) |
 | **Model comparison** | LOO-CV, posterior predictive checks | [Model evaluation](#model-evaluation) |
+| **Inference methods** | NUTS, pathfinder, pathfinder-initialised NUTS | [Inference methods vignette](inference-methods.html) |
 
 # Different Timesteps and Timespans {#timesteps}
 
@@ -242,7 +243,7 @@ Control computational efficiency and parallelisation.
 - `enw_fit_opts()`: Specify computational options
 - See `?enw_fit_opts` for details
 
-**Where to see it:** See [Stan help vignette](stan-help.html) for guidance on computational settings.
+**Where to see it:** The [inference methods vignette](inference-methods.html) compares NUTS, pathfinder, and pathfinder-initialised NUTS with runtime and posterior comparisons. See also the [Stan help vignette](stan-help.html) for guidance on computational settings.
 
 # Data Handling
 

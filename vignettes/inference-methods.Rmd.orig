@@ -1,0 +1,380 @@
+---
+title: "Comparing Inference Methods"
+description: "A comparison of NUTS sampling, pathfinder approximate inference, and pathfinder-initialised NUTS across two model specifications."
+author: Epinowcast Team
+opengraph:
+  image:
+    src: figures/inference-methods-nowcast-comparison-1.png
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+bibliography: library.bib
+csl: https://raw.githubusercontent.com/citation-style-language/styles/master/apa-numeric-superscript-brackets.csl
+link-citations: true
+vignette: >
+  %\VignetteIndexEntry{Comparing Inference Methods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  fig.path = "figures/inference-methods-",
+  cache = TRUE, dpi = 330,
+  collapse = TRUE, comment = "#>", out.width = "100%",
+  message = FALSE, warning = FALSE, error = FALSE,
+  eval = TRUE
+)
+```
+
+# Overview
+
+`epinowcast` supports several inference methods through [CmdStan](https://mc-stan.org/cmdstanr/):
+
+- **NUTS sampling** (`enw_sample()`): the default Hamiltonian Monte Carlo sampler.
+  Produces gold-standard posterior samples but is the slowest option.
+- **Pathfinder** (`enw_pathfinder()`): a fast variational approximation.
+  Useful for model development, exploration, and quick iteration.
+- **Pathfinder-initialised NUTS** (`enw_sample(init_method = "pathfinder")`):
+  uses pathfinder to find good starting values for NUTS.
+  Can reduce warmup time and improve convergence for difficult models.
+
+This vignette compares these three approaches across two nowcasting model specifications of different complexity, looking at runtime, diagnostics, and the resulting nowcasts.
+
+# Setup
+
+```{r packages}
+library(epinowcast)
+library(data.table)
+library(ggplot2)
+```
+
+We use the same German COVID-19 hospitalisation data as the [getting started vignette](epinowcast.html).
+
+```{r data}
+nat_germany_hosp <-
+  germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
+  enw_filter_report_dates(latest_date = "2021-10-01")
+
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 40)
+
+latest_germany_hosp <- nat_germany_hosp |>
+  enw_obs_at_delay(max_delay = 40) |>
+  enw_filter_reference_dates(remove_days = 40, include_days = 40)
+
+pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
+```
+
+Compile the model once with threading support enabled.
+
+```{r compile}
+model <- enw_model(threads = TRUE)
+```
+
+# Model specifications
+
+We define two nowcasting specifications that share the same expectation (process) model but differ in delay model complexity and observation family.
+
+**Spec A (simple):** parametric lognormal delays with Poisson observations.
+This is the specification from the getting started vignette.
+
+```{r spec-a}
+spec_a <- list(
+  expectation = enw_expectation(~ 0 + (1 | day), data = pobs),
+  reference = enw_reference(
+    ~1, distribution = "lognormal", data = pobs
+  ),
+  report = enw_report(~ (1 | day_of_week), data = pobs),
+  obs = enw_obs(family = "poisson", data = pobs)
+)
+```
+
+**Spec B (mixed delays):** parametric lognormal baseline with non-parametric adjustments by delay category and negative binomial observations.
+The mixed delay model is more flexible and better suited to complex delay patterns, but adds parameters.
+
+```{r spec-b}
+spec_b <- list(
+  expectation = enw_expectation(~ 0 + (1 | day), data = pobs),
+  reference = enw_reference(
+    parametric = ~1,
+    non_parametric = ~ 0 + (1 | delay_cat),
+    distribution = "lognormal",
+    data = pobs
+  ),
+  report = enw_report(~ (1 | day_of_week), data = pobs),
+  obs = enw_obs(family = "negbin", data = pobs)
+)
+```
+
+# Fitting
+
+We define shared NUTS options (tuned for speed, not production use) and a helper to fit a given specification with a given method.
+
+```{r fit-options}
+nuts_args <- list(
+  save_warmup = FALSE, pp = TRUE,
+  chains = 2, threads_per_chain = 2,
+  iter_sampling = 500, iter_warmup = 500,
+  show_messages = FALSE
+)
+
+fit_spec <- function(spec, fit_opts) {
+  epinowcast(
+    data = pobs,
+    expectation = spec$expectation,
+    reference = spec$reference,
+    report = spec$report,
+    obs = spec$obs,
+    fit = fit_opts,
+    model = model
+  )
+}
+```
+
+## NUTS with prior initialisation (default)
+
+```{r fit-nuts-prior}
+options(mc.cores = 2)
+
+nuts_prior_opts <- do.call(
+  enw_fit_opts,
+  c(list(sampler = enw_sample), nuts_args)
+)
+
+fit_a_nuts <- fit_spec(spec_a, nuts_prior_opts)
+fit_b_nuts <- fit_spec(spec_b, nuts_prior_opts)
+```
+
+## NUTS with pathfinder initialisation
+
+```{r fit-nuts-pf}
+nuts_pf_opts <- do.call(
+  enw_fit_opts,
+  c(
+    list(sampler = enw_sample, init_method = "pathfinder"),
+    nuts_args
+  )
+)
+
+fit_a_nuts_pf <- fit_spec(spec_a, nuts_pf_opts)
+fit_b_nuts_pf <- fit_spec(spec_b, nuts_pf_opts)
+```
+
+## Pathfinder (approximate inference)
+
+```{r fit-pathfinder}
+pf_opts <- enw_fit_opts(
+  sampler = enw_pathfinder, pp = TRUE,
+  threads_per_chain = 2
+)
+
+fit_a_pf <- fit_spec(spec_a, pf_opts)
+fit_b_pf <- fit_spec(spec_b, pf_opts)
+```
+
+# Runtime comparison
+
+```{r runtime-table}
+fits <- list(
+  "A: NUTS (prior init)" = fit_a_nuts,
+  "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
+  "A: Pathfinder" = fit_a_pf,
+  "B: NUTS (prior init)" = fit_b_nuts,
+  "B: NUTS (pathfinder init)" = fit_b_nuts_pf,
+  "B: Pathfinder" = fit_b_pf
+)
+
+runtime_dt <- data.table(
+  label = names(fits),
+  spec = rep(c("A (simple)", "B (mixed delays)"), each = 3),
+  method = rep(
+    c("NUTS\n(prior init)", "NUTS\n(pathfinder init)", "Pathfinder"),
+    2
+  ),
+  runtime = vapply(fits, function(x) x$run_time, numeric(1))
+)
+
+knitr::kable(
+  runtime_dt[, .(Spec = spec, Method = method, `Runtime (s)` = runtime)],
+  digits = 1,
+  caption = "Runtime in seconds for each spec and fitting method."
+)
+```
+
+```{r runtime-plot, fig.width = 7, fig.height = 4}
+ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Inference method", y = "Runtime (seconds)",
+    fill = "Specification"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+# Diagnostics
+
+Standard MCMC diagnostics (Rhat, divergent transitions, tree depth) apply to NUTS fits.
+Pathfinder is a variational method and does not produce these diagnostics.
+
+```{r diagnostics-table}
+nuts_fits <- list(
+  "A: NUTS (prior init)" = fit_a_nuts,
+  "A: NUTS (pathfinder init)" = fit_a_nuts_pf,
+  "B: NUTS (prior init)" = fit_b_nuts,
+  "B: NUTS (pathfinder init)" = fit_b_nuts_pf
+)
+
+diag_dt <- rbindlist(lapply(names(nuts_fits), function(nm) {
+  f <- nuts_fits[[nm]]
+  data.table(
+    Label = nm,
+    Samples = f$samples,
+    `Max Rhat` = f$max_rhat,
+    `Divergent transitions` = f$divergent_transitions,
+    `Max tree depth` = f$max_treedepth
+  )
+}))
+
+knitr::kable(
+  diag_dt, digits = 2,
+  caption = "MCMC diagnostics for NUTS fits."
+)
+```
+
+For production use, check that Rhat values are close to 1 (< 1.05) and that there are no divergent transitions.
+See the [Stan help vignette](stan-help.html) for guidance on diagnosing and resolving fitting issues.
+
+# Nowcast comparison
+
+We compare the nowcasts from each method side by side.
+
+```{r nowcast-summaries}
+nowcast_summaries <- rbindlist(lapply(names(fits), function(nm) {
+  s <- summary(fits[[nm]], probs = c(0.05, 0.2, 0.8, 0.95))
+  s[, label := nm]
+  s[, spec := fifelse(grepl("^A:", nm), "A (simple)", "B (mixed delays)")]
+  s[, method := gsub("^[AB]: ", "", nm)]
+  s
+}))
+```
+
+## Spec A (simple)
+
+```{r nowcast-comparison-a, fig.width = 9, fig.height = 8}
+ggplot(
+  nowcast_summaries[spec == "A (simple)"],
+  aes(x = reference_date)
+) +
+  geom_ribbon(
+    aes(ymin = q5, ymax = q95), alpha = 0.2, fill = "#1b9e77"
+  ) +
+  geom_ribbon(
+    aes(ymin = q20, ymax = q80), alpha = 0.3, fill = "#1b9e77"
+  ) +
+  geom_line(aes(y = median), colour = "#1b9e77") +
+  geom_point(
+    data = latest_germany_hosp,
+    aes(x = reference_date, y = confirm),
+    size = 0.8
+  ) +
+  facet_wrap(~method, ncol = 1) +
+  labs(
+    title = "Spec A: Simple nowcasting model",
+    x = "Reference date", y = "Hospitalisations"
+  ) +
+  theme_bw()
+```
+
+## Spec B (mixed delays)
+
+```{r nowcast-comparison-b, fig.width = 9, fig.height = 8}
+ggplot(
+  nowcast_summaries[spec == "B (mixed delays)"],
+  aes(x = reference_date)
+) +
+  geom_ribbon(
+    aes(ymin = q5, ymax = q95), alpha = 0.2, fill = "#d95f02"
+  ) +
+  geom_ribbon(
+    aes(ymin = q20, ymax = q80), alpha = 0.3, fill = "#d95f02"
+  ) +
+  geom_line(aes(y = median), colour = "#d95f02") +
+  geom_point(
+    data = latest_germany_hosp,
+    aes(x = reference_date, y = confirm),
+    size = 0.8
+  ) +
+  facet_wrap(~method, ncol = 1) +
+  labs(
+    title = "Spec B: Mixed delay model",
+    x = "Reference date", y = "Hospitalisations"
+  ) +
+  theme_bw()
+```
+
+# Posterior parameter comparison
+
+We compare posterior estimates for the delay distribution parameters across methods.
+These are the most directly interpretable parameters to check for agreement between inference approaches.
+
+```{r posterior-comparison}
+param_vars <- c("refp_mean_int", "refp_sd_int")
+
+param_summaries <- rbindlist(lapply(names(fits), function(nm) {
+  s <- summary(
+    fits[[nm]], type = "fit", variables = param_vars
+  )
+  s[, label := nm]
+  s[, spec := fifelse(grepl("^A:", nm), "A (simple)", "B (mixed delays)")]
+  s[, method := gsub("^[AB]: ", "", nm)]
+  s
+}))
+```
+
+```{r posterior-plot, fig.width = 9, fig.height = 5}
+ggplot(
+  param_summaries,
+  aes(x = method, y = mean, colour = spec)
+) +
+  geom_pointrange(
+    aes(ymin = q5, ymax = q95),
+    position = position_dodge(width = 0.5)
+  ) +
+  facet_wrap(~variable, scales = "free_y") +
+  labs(
+    x = "Inference method",
+    y = "Posterior estimate (mean and 90% CrI)",
+    colour = "Specification"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
+```
+
+Where NUTS and pathfinder posteriors agree closely, pathfinder provides a reliable and much faster approximation.
+Substantial disagreement suggests the posterior is complex enough that the variational approximation is insufficient and NUTS should be preferred.
+
+# Summary
+
+| Method | Speed | Posterior quality | Diagnostics | Best for |
+|--------|-------|-------------------|-------------|----------|
+| NUTS (prior init) | Slowest | Gold standard | Full MCMC diagnostics | Final inference, publication |
+| NUTS (pathfinder init) | Moderate | Gold standard | Full MCMC diagnostics | Difficult models with slow convergence |
+| Pathfinder | Fastest | Approximate | Limited | Model development, exploration, quick checks |
+
+**Practical guidance:**
+
+- Start with **pathfinder** during model development to iterate quickly on specification choices.
+- Switch to **NUTS** for final inference when results will be reported or used for decisions.
+- Use **pathfinder-initialised NUTS** when standard NUTS shows convergence issues (high Rhat, many divergent transitions) or slow warmup.
+
+For more on computational options see the [features summary](features.html).
+For help with Stan diagnostics see the [Stan help vignette](stan-help.html).
