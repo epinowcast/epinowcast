@@ -4,7 +4,7 @@ description: "A comparison of NUTS sampling, pathfinder approximate inference, a
 author: Epinowcast Team
 opengraph:
   image:
-    src: figures/inference-methods-nowcast-comparison-1.png
+    src: figures/inference-methods-nowcast-comparison-a-1.png
 output:
   bookdown::html_vignette2:
     fig_caption: yes
