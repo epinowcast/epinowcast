@@ -87,7 +87,21 @@ pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
 pobs
 ```
 
-The returned output is in the form of a `data.table` with metadata stored as variables. It can be useful to check this output before specifying the model, just to make sure everything is as expected.
+The returned output is an `enw_preprocess_data` object.
+Printing it shows the key metadata and dimensions of each nested dataset.
+To extract a specific dataset, use `enw_get_data()`:
+
+```{r}
+enw_get_data(pobs, "latest") |> head()
+```
+
+For a more detailed overview including a preview of the reporting triangle, use `summary()`:
+
+```{r}
+summary(pobs)
+```
+
+It can be useful to check this output before specifying the model, just to make sure everything is as expected.
 
 # Model specification
 
@@ -177,6 +191,7 @@ nowcast <- epinowcast(data = pobs,
 # The `epinowcast` object
 
 The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying [`CmdStanModel` object](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html).
+Printing it shows key diagnostics including the number of samples, convergence (Rhat), and any divergent transitions.
 
 ```{r}
 nowcast

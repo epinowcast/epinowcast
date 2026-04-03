@@ -419,7 +419,13 @@ rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
 rt_germany_pobs
 ```
 
-and do the same for the retrospective data
+Individual datasets can be extracted with `enw_get_data()`, for example the latest observations:
+
+```{r}
+enw_get_data(rt_germany_pobs, "latest") |> head()
+```
+
+We do the same for the retrospective data:
 
 ```{r}
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
