@@ -29,12 +29,12 @@ test_that("print.epinowcast shows diagnostics info", {
   expect_true(any(grepl("Run time:", output)))
 })
 
-test_that("print.epinowcast shows summary hint", {
+test_that("print.epinowcast shows priors table", {
   nowcast <- enw_example("nowcast")
   output <- capture.output(print(nowcast))
-  expect_true(
-    any(grepl("summary\\(\\)", output))
-  )
+  expect_true(any(grepl("variable", output)))
+  expect_true(any(grepl("distribution", output)))
+  expect_true(any(grepl("Normal", output)))
 })
 
 test_that("print.epinowcast handles missing diagnostics", {
