@@ -198,13 +198,13 @@ The non-parametric model is more flexible and can capture multi-modal or irregul
 ## Reporting effects by report date
 
 Even where the reporting delay is well captured by the reference model, there may be additional effects related to the report date.
-For example, reporting may be lower on weekends.
+For example, reporting may be lower on weekends, and the overall reporting rate may shift over time.
 You can specify a model for these effects using the `enw_report()` function.
-Here you specify a random effect for the day of the week.
+Here you specify a random effect for the day of the week and a weekly random walk to allow the reporting process to change over time.
 
 ```{r}
 report_module <- enw_report(
-  ~ (1 | day_of_week), data = pobs
+  ~ (1 | day_of_week) + rw(week), data = pobs
 )
 ```
 
