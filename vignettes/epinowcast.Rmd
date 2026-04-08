@@ -22,14 +22,14 @@ vignette: >
 
 # Quick start
 
-In this quick start, you will use `epinowcast` to nowcast COVID-19 hospitalisations in Germany.
-You will start with the default model, identify where it falls short, and then build two improved models with different delay assumptions.
+In this quick start, we use `epinowcast` to nowcast COVID-19 hospitalisations in Germany.
+We start with the default model, identify where it falls short, and then build two improved models with different delay assumptions.
 This demonstrates how `epinowcast` serves as a modelling toolkit rather than a single fixed model.
 Examples using more complex models are available in other package vignettes and in the papers referenced in the literature vignette.
 
 # Package
 
-In this quick start, you will also use the `data.table` and `ggplot2` packages.
+In this quick start, we also use the `data.table` and `ggplot2` packages.
 These are both installed as dependencies when `epinowcast` is installed.
 Note that all output from `epinowcast` is readily useable with other tools, including `tidyverse` packages (see [here](https://mgimond.github.io/rug_2019_12/Index.html) for a comparison).
 
@@ -43,16 +43,16 @@ library(ggplot2)
 # Data
 
 Nowcasting of right-truncated case counts involves the estimation of reporting delays for recently reported data.
-For this, you need case counts both by when they were diagnosed (e.g. when someone tests positive; often called "reference date") and by when they were reported (i.e. when administratively recorded via public health surveillance; often called "report date").
+For this, we need case counts both by when they were diagnosed (e.g. when someone tests positive; often called "reference date") and by when they were reported (i.e. when administratively recorded via public health surveillance; often called "report date").
 The difference between the reference date and the report date is the reporting delay.
-For this quick start, you will use data from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence).
+For this quick start, we use data from the [Robert Koch Institute via the Germany Nowcasting hub](https://github.com/KITmetricslab/hospitalization-nowcast-hub/wiki/Truth-data#role-an-definition-of-the-seven-day-hospitalization-incidence).
 These data represent hospitalisation counts by date of positive test and date of test report in Germany up to October 1, 2021.
 
 ## Filtering
 
-You first filter to create a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data.
-Then, you create the nowcast target which is the latest available hospitalisations by date of positive test.
-This will allow you to visualise how a nowcast made at the time compares to what was ultimately reported.
+We first filter to create a snapshot of retrospective data available 43 days before October 1, 2021 that contains 43 days of data.
+Then, we create the nowcast target which is the latest available hospitalisations by date of positive test.
+This allows us to visualise how a nowcast made at the time compares to what was ultimately reported.
 
 
 ``` r
@@ -61,22 +61,22 @@ nat_germany_hosp <-
   enw_filter_report_dates(latest_date = "2021-10-01")
 
 retro_nat_germany <- nat_germany_hosp |>
-  enw_filter_report_dates(remove_days = 40) |>
-  enw_filter_reference_dates(include_days = 40)
+  enw_filter_report_dates(remove_days = 43) |>
+  enw_filter_reference_dates(include_days = 43)
 retro_nat_germany
 #>      reference_date location age_group confirm report_date
 #>              <IDat>   <fctr>    <fctr>   <int>      <IDat>
-#>   1:     2021-07-14       DE       00+      22  2021-07-14
-#>   2:     2021-07-15       DE       00+      28  2021-07-15
-#>   3:     2021-07-16       DE       00+      19  2021-07-16
-#>   4:     2021-07-17       DE       00+      20  2021-07-17
-#>   5:     2021-07-18       DE       00+       9  2021-07-18
+#>   1:     2021-07-08       DE       00+      25  2021-07-08
+#>   2:     2021-07-09       DE       00+      10  2021-07-09
+#>   3:     2021-07-10       DE       00+      23  2021-07-10
+#>   4:     2021-07-11       DE       00+      14  2021-07-11
+#>   5:     2021-07-12       DE       00+       3  2021-07-12
 #>  ---                                                      
-#> 816:     2021-07-15       DE       00+      69  2021-08-21
-#> 817:     2021-07-16       DE       00+      47  2021-08-22
-#> 818:     2021-07-14       DE       00+      72  2021-08-21
-#> 819:     2021-07-15       DE       00+      69  2021-08-22
-#> 820:     2021-07-14       DE       00+      72  2021-08-22
+#> 942:     2021-07-09       DE       00+      46  2021-08-18
+#> 943:     2021-07-10       DE       00+      64  2021-08-19
+#> 944:     2021-07-08       DE       00+      53  2021-08-18
+#> 945:     2021-07-09       DE       00+      46  2021-08-19
+#> 946:     2021-07-08       DE       00+      53  2021-08-19
 ```
 
 This data is already in a format that can be used with `epinowcast`, as it contains
@@ -90,23 +90,23 @@ The package also provides a range of tools to convert data from line list, incid
 
 ``` r
 latest_germany_hosp <- nat_germany_hosp |>
-  enw_obs_at_delay(max_delay = 40) |>
+  enw_obs_at_delay(max_delay = 43) |>
   enw_filter_reference_dates(
-    remove_days = 40, include_days = 40
+    remove_days = 43, include_days = 43
   )
 head(latest_germany_hosp, n = 10)
 #>     reference_date .group location age_group confirm report_date
 #>             <IDat>  <num>   <fctr>    <fctr>   <int>      <IDat>
-#>  1:     2021-07-14      1       DE       00+      72  2021-08-22
-#>  2:     2021-07-15      1       DE       00+      69  2021-08-23
-#>  3:     2021-07-16      1       DE       00+      47  2021-08-24
-#>  4:     2021-07-17      1       DE       00+      65  2021-08-25
-#>  5:     2021-07-18      1       DE       00+      50  2021-08-26
-#>  6:     2021-07-19      1       DE       00+      36  2021-08-27
-#>  7:     2021-07-20      1       DE       00+      95  2021-08-28
-#>  8:     2021-07-21      1       DE       00+      94  2021-08-29
-#>  9:     2021-07-22      1       DE       00+      99  2021-08-30
-#> 10:     2021-07-23      1       DE       00+      87  2021-08-31
+#>  1:     2021-07-08      1       DE       00+      53  2021-08-19
+#>  2:     2021-07-09      1       DE       00+      46  2021-08-20
+#>  3:     2021-07-10      1       DE       00+      64  2021-08-21
+#>  4:     2021-07-11      1       DE       00+      48  2021-08-22
+#>  5:     2021-07-12      1       DE       00+      17  2021-08-23
+#>  6:     2021-07-13      1       DE       00+      59  2021-08-24
+#>  7:     2021-07-14      1       DE       00+      72  2021-08-25
+#>  8:     2021-07-15      1       DE       00+      69  2021-08-26
+#>  9:     2021-07-16      1       DE       00+      47  2021-08-27
+#> 10:     2021-07-17      1       DE       00+      65  2021-08-28
 ```
 
 ## Visualising the data
@@ -136,54 +136,54 @@ These features will become important when we evaluate model performance below.
 ## Preprocessing
 
 Before modelling, the input data needs to be converted into the "reporting triangle" format (see [our model description for details](https://package.epinowcast.org/articles/model)).
-You also need to determine metadata to facilitate the model specification.
+We also need to determine metadata to facilitate the model specification.
 This includes the number of days of data to use for the reference and report modules, the maximum delay to consider, and, optionally, a grouping (i.e. age group, location, or both) of observations.
 
 
 ``` r
 pobs <- enw_preprocess_data(
-  retro_nat_germany, max_delay = 40
+  retro_nat_germany, max_delay = 43
 )
 pobs
 #> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 40 
-#> Observations: 40 timepoints x 40 snapshots 
-#> Max date: 2021-08-22 
+#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Observations: 43 timepoints x 43 snapshots 
+#> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     820 x 9 
-#>   new_confirm        :     820 x 11 
-#>   latest             :      40 x 10 
+#>   obs                :     946 x 9 
+#>   new_confirm        :     946 x 11 
+#>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      40 x 42 
-#>   metareference      :      40 x 9 
-#>   metareport         :      79 x 12 
-#>   metadelay          :      40 x 5
+#>   reporting_triangle :      43 x 45 
+#>   metareference      :      43 x 9 
+#>   metareport         :      85 x 12 
+#>   metadelay          :      43 x 5
 ```
 
 The returned output is an `enw_preprocess_data` object.
 Printing it shows the key metadata and dimensions of each nested dataset.
-You can extract a specific dataset using `enw_get_data()`:
+We can extract a specific dataset using `enw_get_data()`:
 
 
 ``` r
 enw_get_data(pobs, "latest") |> head()
 #>    reference_date report_date .group max_confirm location age_group confirm
 #>            <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
-#> 1:     2021-07-14  2021-08-22      1          72       DE       00+      72
-#> 2:     2021-07-15  2021-08-22      1          69       DE       00+      69
-#> 3:     2021-07-16  2021-08-22      1          47       DE       00+      47
-#> 4:     2021-07-17  2021-08-22      1          65       DE       00+      65
-#> 5:     2021-07-18  2021-08-22      1          50       DE       00+      50
-#> 6:     2021-07-19  2021-08-22      1          36       DE       00+      36
+#> 1:     2021-07-08  2021-08-19      1          53       DE       00+      53
+#> 2:     2021-07-09  2021-08-19      1          46       DE       00+      46
+#> 3:     2021-07-10  2021-08-19      1          64       DE       00+      64
+#> 4:     2021-07-11  2021-08-19      1          47       DE       00+      47
+#> 5:     2021-07-12  2021-08-19      1          17       DE       00+      17
+#> 6:     2021-07-13  2021-08-19      1          59       DE       00+      59
 #>    cum_prop_reported delay prop_reported
 #>                <num> <num>         <num>
-#> 1:                 1    39             0
-#> 2:                 1    38             0
-#> 3:                 1    37             0
-#> 4:                 1    36             0
-#> 5:                 1    35             0
-#> 6:                 1    34             0
+#> 1:                 1    42             0
+#> 2:                 1    41             0
+#> 3:                 1    40             0
+#> 4:                 1    39             0
+#> 5:                 1    38             0
+#> 6:                 1    37             0
 ```
 
 For a more detailed overview including a preview of the reporting triangle, use `summary()`:
@@ -192,39 +192,39 @@ For a more detailed overview including a preview of the reporting triangle, use 
 ``` r
 summary(pobs)
 #> ── Preprocessed nowcast data summary ─────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 40 
-#> Date range: 2021-07-14 to 2021-08-22 (39 days) 
-#> Observations: 40 timepoints x 40 snapshots 
+#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Date range: 2021-07-08 to 2021-08-19 (42 days) 
+#> Observations: 43 timepoints x 43 snapshots 
 #> 
 #> Latest observations (first 6 rows): 
 #>    reference_date report_date .group max_confirm location age_group confirm
 #>            <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
-#> 1:     2021-07-14  2021-08-22      1          72       DE       00+      72
-#> 2:     2021-07-15  2021-08-22      1          69       DE       00+      69
-#> 3:     2021-07-16  2021-08-22      1          47       DE       00+      47
-#> 4:     2021-07-17  2021-08-22      1          65       DE       00+      65
-#> 5:     2021-07-18  2021-08-22      1          50       DE       00+      50
-#> 6:     2021-07-19  2021-08-22      1          36       DE       00+      36
+#> 1:     2021-07-08  2021-08-19      1          53       DE       00+      53
+#> 2:     2021-07-09  2021-08-19      1          46       DE       00+      46
+#> 3:     2021-07-10  2021-08-19      1          64       DE       00+      64
+#> 4:     2021-07-11  2021-08-19      1          47       DE       00+      47
+#> 5:     2021-07-12  2021-08-19      1          17       DE       00+      17
+#> 6:     2021-07-13  2021-08-19      1          59       DE       00+      59
 #>    cum_prop_reported delay prop_reported
 #>                <num> <num>         <num>
-#> 1:                 1    39             0
-#> 2:                 1    38             0
-#> 3:                 1    37             0
-#> 4:                 1    36             0
-#> 5:                 1    35             0
-#> 6:                 1    34             0
+#> 1:                 1    42             0
+#> 2:                 1    41             0
+#> 3:                 1    40             0
+#> 4:                 1    39             0
+#> 5:                 1    38             0
+#> 6:                 1    37             0
 #> 
 #> Reporting triangle corner (first 6 rows x 8 cols): 
 #> Key: <.group, reference_date>
 #>    .group reference_date     0     1     2     3     4     5
 #>     <num>         <IDat> <int> <int> <int> <int> <int> <int>
-#> 1:      1     2021-07-14    22    12     4     5     0     1
-#> 2:      1     2021-07-15    28    15     3     3     0     1
-#> 3:      1     2021-07-16    19    13     0     0     0     4
-#> 4:      1     2021-07-17    20     7     1     3    10     3
-#> 5:      1     2021-07-18     9     6     6     0     4     5
-#> 6:      1     2021-07-19     3    16     4     4     1     1
-#> ... (40 rows x 42 cols total)
+#> 1:      1     2021-07-08    25    13     2     1     0     2
+#> 2:      1     2021-07-09    10    13     1     1     1     1
+#> 3:      1     2021-07-10    23    11     2     5     7     1
+#> 4:      1     2021-07-11    14     4     3     0     2     2
+#> 5:      1     2021-07-12     3     3     2     0     0     2
+#> 6:      1     2021-07-13    21    12     3     4     3     0
+#> ... (43 rows x 45 cols total)
 ```
 
 It can be useful to check this output before specifying the model, just to make sure everything is as expected.
@@ -232,9 +232,9 @@ The preprocessed object also supports a `plot()` method for exploring the delay 
 
 # The default model
 
-The `epinowcast` package provides you with a modular modelling framework.
-The package comes equipped with several modules that you can combine to construct models, and also allows you to create your own modules.
-This ensures that models can be tailored to your specific data and context.
+The `epinowcast` package provides a modular modelling framework.
+The package comes equipped with several modules that we can combine to construct models, and also allows us to create our own modules.
+This ensures that models can be tailored to the specific data and context.
 
 Each module defines its own default priors which can be inspected and customised.
 See `?epinowcast` for details on inspecting and setting priors.
@@ -272,26 +272,26 @@ nowcast_default <- epinowcast(
 ``` r
 nowcast_default
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 40 
-#> Observations: 40 timepoints x 40 snapshots 
-#> Max date: 2021-08-22 
+#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Observations: 43 timepoints x 43 snapshots 
+#> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     820 x 9 
-#>   new_confirm        :     820 x 11 
-#>   latest             :      40 x 10 
+#>   obs                :     946 x 9 
+#>   new_confirm        :     946 x 11 
+#>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      40 x 42 
-#>   metareference      :      40 x 9 
-#>   metareport         :      79 x 12 
-#>   metadelay          :      40 x 5 
+#>   reporting_triangle :      43 x 45 
+#>   metareference      :      43 x 9 
+#>   metareport         :      85 x 12 
+#>   metadelay          :      43 x 5 
 #> 
 #> Priors: 14 parameters 
 #>           variable          distribution  mean    sd
 #>             <char>                <char> <num> <num>
 #>         expr_r_int                Normal   0.0   0.2
 #>       expr_beta_sd Zero truncated normal   0.0   1.0
-#>  expr_lelatent_int                Normal   4.3   1.0
+#>  expr_lelatent_int                Normal   4.0   1.0
 #>       expl_beta_sd Zero truncated normal   0.0   1.0
 #>      refp_mean_int                Normal   1.0   1.0
 #>        refp_sd_int Zero truncated normal   0.5   1.0
@@ -308,7 +308,7 @@ nowcast_default
 #>  Samples: 1,000 | Max Rhat: 1.01 
 #> 
 #>  Divergent transitions: 0 (0%) 
-#>   Run time: 12.5 secs
+#>   Run time: 17.8 secs
 ```
 
 
@@ -330,14 +330,14 @@ Second, the day-of-week periodicity visible in the data is not captured, as the 
 
 # Improving the model
 
-Based on these observations, you can build improved models.
-You will address the trend by replacing the daily geometric random walk with a weekly growth rate model, add day-of-week effects to both the expectation and report modules, and compare two different delay specifications.
+Based on these observations, we can build improved models.
+We address the trend by replacing the daily geometric random walk with a weekly growth rate model, add day-of-week effects to both the expectation and report modules, and compare two different delay specifications.
 
 ## Process model
 
 The underlying process model is an exponential growth rate model ($C_t = C_{t-1} \exp^{r_t}$).
-To capture the sustained upward trend, you specify a weekly random walk on the growth rate with a baseline intercept.
-You also add a day-of-week random effect to account for the weekly periodicity.
+To capture the sustained upward trend, we specify a weekly random walk on the growth rate with a baseline intercept.
+We also add a day-of-week random effect to account for the weekly periodicity.
 
 
 ``` r
@@ -352,9 +352,7 @@ The `(1 | day_of_week)` term captures the weekly seasonal pattern.
 
 ## Reference model: reporting delays
 
-You will define two alternative delay specifications.
-
-The first assumes that the reporting delay follows a lognormal distribution, static over time.
+The default model assumes a lognormal delay distribution, which we keep for the first improved model.
 
 
 ``` r
@@ -365,7 +363,7 @@ lognormal_reference <- enw_reference(
 )
 ```
 
-The second makes no distributional assumption.
+For the second improved model, we replace this with a non-parametric specification that makes no distributional assumption.
 Instead, it estimates a separate reporting hazard for each delay interval using random effects, with partial pooling across delays.
 
 
@@ -380,7 +378,7 @@ np_reference <- enw_reference(
 ## Reporting effects by report date
 
 The default model had no report-date effects.
-Here you add a day-of-week random effect and a weekly random walk to allow the reporting process to change over time.
+Here we add a day-of-week random effect and a weekly random walk to allow the reporting process to change over time.
 
 
 ``` r
@@ -389,9 +387,19 @@ report_module <- enw_report(
 )
 ```
 
+## Observation model
+
+The default model uses a Poisson likelihood.
+For the improved models, we switch to a negative binomial likelihood to allow for overdispersion.
+
+
+``` r
+obs_module <- enw_obs(family = "negbin", data = pobs)
+```
+
 ## Fitting the improved models
 
-You can now fit both improved models.
+We can now fit both improved models.
 Since the Stan model is already compiled, only sampling time is required.
 
 
@@ -412,6 +420,7 @@ nowcast_lognormal <- epinowcast(
   expectation = expectation_module,
   reference = lognormal_reference,
   report = report_module,
+  obs = obs_module,
   fit = fit_opts,
   model = model
 )
@@ -424,6 +433,7 @@ nowcast_np <- epinowcast(
   expectation = expectation_module,
   reference = np_reference,
   report = report_module,
+  obs = obs_module,
   fit = fit_opts,
   model = model
 )
@@ -434,32 +444,32 @@ nowcast_np <- epinowcast(
 The `epinowcast()` function returns an `epinowcast` object which includes diagnostic information, the data used for fitting, and the underlying [`CmdStanModel` object](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html).
 Printing it shows key diagnostics including the number of samples, convergence (Rhat), and any divergent transitions.
 
-## Lognormal model
+## Diagnostics
 
 
 ``` r
 nowcast_lognormal
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 40 
-#> Observations: 40 timepoints x 40 snapshots 
-#> Max date: 2021-08-22 
+#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Observations: 43 timepoints x 43 snapshots 
+#> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     820 x 9 
-#>   new_confirm        :     820 x 11 
-#>   latest             :      40 x 10 
+#>   obs                :     946 x 9 
+#>   new_confirm        :     946 x 11 
+#>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      40 x 42 
-#>   metareference      :      40 x 9 
-#>   metareport         :      79 x 12 
-#>   metadelay          :      40 x 5 
+#>   reporting_triangle :      43 x 45 
+#>   metareference      :      43 x 9 
+#>   metareport         :      85 x 12 
+#>   metadelay          :      43 x 5 
 #> 
 #> Priors: 14 parameters 
 #>           variable          distribution  mean    sd
 #>             <char>                <char> <num> <num>
 #>         expr_r_int                Normal   0.0   0.2
 #>       expr_beta_sd Zero truncated normal   0.0   1.0
-#>  expr_lelatent_int                Normal   4.3   1.0
+#>  expr_lelatent_int                Normal   4.0   1.0
 #>       expl_beta_sd Zero truncated normal   0.0   1.0
 #>      refp_mean_int                Normal   1.0   1.0
 #>        refp_sd_int Zero truncated normal   0.5   1.0
@@ -476,48 +486,33 @@ nowcast_lognormal
 #>  Samples: 1,000 | Max Rhat: 1.01 
 #> 
 #>  Divergent transitions: 0 (0%) 
-#>   Run time: 110.3 secs
+#>   Run time: 128.6 secs
 ```
-
-
-``` r
-plot(
-  nowcast_lognormal,
-  latest_obs = latest_germany_hosp
-)
-```
-
-<div class="figure">
-<img src="figures/getting-started-nowcasting-nowcast-lognormal-1.png" alt="plot of chunk nowcast-lognormal" width="100%" />
-<p class="caption">plot of chunk nowcast-lognormal</p>
-</div>
-
-## Non-parametric model
 
 
 ``` r
 nowcast_np
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 40 
-#> Observations: 40 timepoints x 40 snapshots 
-#> Max date: 2021-08-22 
+#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Observations: 43 timepoints x 43 snapshots 
+#> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     820 x 9 
-#>   new_confirm        :     820 x 11 
-#>   latest             :      40 x 10 
+#>   obs                :     946 x 9 
+#>   new_confirm        :     946 x 11 
+#>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      40 x 42 
-#>   metareference      :      40 x 9 
-#>   metareport         :      79 x 12 
-#>   metadelay          :      40 x 5 
+#>   reporting_triangle :      43 x 45 
+#>   metareference      :      43 x 9 
+#>   metareport         :      85 x 12 
+#>   metadelay          :      43 x 5 
 #> 
 #> Priors: 14 parameters 
 #>           variable          distribution  mean    sd
 #>             <char>                <char> <num> <num>
 #>         expr_r_int                Normal   0.0   0.2
 #>       expr_beta_sd Zero truncated normal   0.0   1.0
-#>  expr_lelatent_int                Normal   4.3   1.0
+#>  expr_lelatent_int                Normal   4.0   1.0
 #>       expl_beta_sd Zero truncated normal   0.0   1.0
 #>      refp_mean_int                Normal   1.0   1.0
 #>        refp_sd_int Zero truncated normal   0.5   1.0
@@ -531,28 +526,24 @@ nowcast_np
 #>           sqrt_phi Zero truncated normal   0.0   0.5
 #> Model fit: 
 #> 
-#>  Samples: 1,000 | Max Rhat: 1.01 
+#>  Samples: 1,000 | Max Rhat: 1.03 
 #> 
 #>  Divergent transitions: 0 (0%) 
-#>   Run time: 210.1 secs
+#>   Run time: 241.1 secs
 ```
+
+## Comparing all models
+
+We can compare all three nowcasts by overlaying their posterior summaries.
 
 
 ``` r
-plot(nowcast_np, latest_obs = latest_germany_hosp)
-```
+default_summary <- summary(
+  nowcast_default,
+  probs = c(0.05, 0.2, 0.8, 0.95)
+)
+default_summary[, model := "Default"]
 
-<div class="figure">
-<img src="figures/getting-started-nowcasting-nowcast-np-1.png" alt="plot of chunk nowcast-np" width="100%" />
-<p class="caption">plot of chunk nowcast-np</p>
-</div>
-
-## Comparing the models
-
-You can compare the two improved nowcasts by overlaying their posterior summaries.
-
-
-``` r
 lognormal_summary <- summary(
   nowcast_lognormal,
   probs = c(0.05, 0.2, 0.8, 0.95)
@@ -566,7 +557,7 @@ np_summary <- summary(
 np_summary[, model := "Non-parametric"]
 
 combined <- rbindlist(
-  list(lognormal_summary, np_summary),
+  list(default_summary, lognormal_summary, np_summary),
   use.names = TRUE
 )
 
@@ -606,9 +597,10 @@ ggplot(combined) +
 <p class="caption">plot of chunk comparison</p>
 </div>
 
-Both improved models produce similar estimates and better capture the upward trend than the default model.
-For recent dates, the non-parametric model shows slightly wider uncertainty, reflecting the additional flexibility of estimating a separate hazard per delay interval rather than assuming a lognormal form.
-For this dataset, where the delay distribution is approximately lognormal, the two approaches agree closely.
+The default model captures the general level of hospitalisations but underestimates recent dates and misses the day-of-week pattern.
+Both improved models better capture the upward trend and weekly periodicity.
+The two improved models produce similar estimates for this dataset, where the delay distribution is approximately lognormal.
+The non-parametric model shows slightly wider uncertainty for recent dates, reflecting the additional flexibility of estimating a separate hazard per delay interval.
 In settings where the delay distribution is multi-modal or irregular, the non-parametric approach would show a larger advantage.
 
 ## Posterior predictions
@@ -645,30 +637,30 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 ][!is.na(sample)]
 #>        reference_date report_date .group max_confirm location age_group confirm
 #>                <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
-#>     1:     2021-07-20  2021-08-22      1          94       DE       00+     433
-#>     2:     2021-07-20  2021-08-22      1          94       DE       00+     433
-#>     3:     2021-07-20  2021-08-22      1          94       DE       00+     433
-#>     4:     2021-07-20  2021-08-22      1          94       DE       00+     433
-#>     5:     2021-07-20  2021-08-22      1          94       DE       00+     433
+#>     1:     2021-07-14  2021-08-19      1          72       DE       00+     358
+#>     2:     2021-07-14  2021-08-19      1          72       DE       00+     358
+#>     3:     2021-07-14  2021-08-19      1          72       DE       00+     358
+#>     4:     2021-07-14  2021-08-19      1          72       DE       00+     358
+#>     5:     2021-07-14  2021-08-19      1          72       DE       00+     358
 #>    ---                                                                         
-#> 33996:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33997:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33998:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 33999:     2021-08-22  2021-08-22      1          45       DE       00+    1093
-#> 34000:     2021-08-22  2021-08-22      1          45       DE       00+    1093
+#> 36996:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 36997:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 36998:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 36999:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 37000:     2021-08-19  2021-08-19      1          84       DE       00+    1028
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    33             0      1          1     1    433
-#>     2:                 1    33             0      1          2     2    434
-#>     3:                 1    33             0      1          3     3    433
-#>     4:                 1    33             0      1          4     4    433
-#>     5:                 1    33             0      1          5     5    433
+#>     1:                 1    36             0      1          1     1    358
+#>     2:                 1    36             0      1          2     2    358
+#>     3:                 1    36             0      1          3     3    360
+#>     4:                 1    36             0      1          4     4    358
+#>     5:                 1    36             0      1          5     5    358
 #>    ---                                                                     
-#> 33996:                 1     0             1      2        496   996   1840
-#> 33997:                 1     0             1      2        497   997   1941
-#> 33998:                 1     0             1      2        498   998   1870
-#> 33999:                 1     0             1      2        499   999   1436
-#> 34000:                 1     0             1      2        500  1000   1809
+#> 36996:                 1     0             1      2        496   996   1829
+#> 36997:                 1     0             1      2        497   997   1802
+#> 36998:                 1     0             1      2        498   998   1766
+#> 36999:                 1     0             1      2        499   999   1760
+#> 37000:                 1     0             1      2        500  1000   1838
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
@@ -691,7 +683,7 @@ enw_plot_nowcast_quantiles(
 # Next steps
 
 The progression from the default model to the improved specifications illustrates the iterative workflow that `epinowcast` is designed to support.
-Each module can be independently adjusted based on what you observe in the data and results.
+Each module can be independently adjusted based on what we observe in the data and results.
 
 Further extensions to consider include:
 
