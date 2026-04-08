@@ -336,6 +336,110 @@ summary.epinowcast <- function(object, type = c(
 }
 
 
+#' Plot method for enw_preprocess_data
+#'
+#' @description `plot` method for preprocessed data of class
+#'   `"enw_preprocess_data"`. Creates descriptive plots of the
+#'   empirical reporting delay distribution and notification
+#'   time series.
+#'
+#' @param x A preprocessed data object as produced by
+#'   [enw_preprocess_data()].
+#'
+#' @param type Character string indicating the plot type;
+#'   enforced by [base::match.arg()]. Options:
+#'   * `"obs"` -- latest observations (via [enw_plot_obs()])
+#'   * `"emp_rep_cum"` -- cumulative empirical delay (via
+#'     [enw_plot_emprep_cum()])
+#'   * `"emp_rep_frac"` -- delay heatmap (via
+#'     [enw_plot_emprep_frac()])
+#'   * `"emp_rep_quant"` -- delay quantiles (via
+#'     [enw_plot_emprep_quant()])
+#'   * `"emp_ts_del"` -- notifications by delay group (via
+#'     [enw_plot_emp_ts_del()])
+#'
+#' @param delay_group_thresh A numeric vector of left-closed
+#'   interval thresholds for delay grouping. Required for all
+#'   types except `"obs"` and `"emp_rep_quant"`. Defaults to
+#'   `NULL`, which auto-generates thresholds from
+#'   `max_delay`.
+#'
+#' @param quantiles A numeric vector of probabilities for the
+#'   `"emp_rep_quant"` type. Defaults to `c(0.1, 0.5, 0.9)`.
+#'
+#' @param log Logical, defaults to `FALSE`. Should counts be
+#'   plotted on the log scale (only for `"obs"` type).
+#'
+#' @param ... Additional arguments passed to the underlying
+#'   plot function.
+#'
+#' @family epinowcast
+#' @family plot
+#' @method plot enw_preprocess_data
+#' @return A `ggplot2` object.
+#' @export
+#' @importFrom cli cli_abort
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#'
+#' # Latest observations
+#' plot(pobs, type = "obs")
+#'
+#' # Cumulative reporting delay
+#' plot(pobs, type = "emp_rep_cum")
+#'
+#' # Reporting delay heatmap
+#' plot(pobs, type = "emp_rep_frac")
+#'
+#' # Reporting delay quantiles
+#' plot(pobs, type = "emp_rep_quant")
+#'
+#' # Notifications by delay group
+#' plot(pobs, type = "emp_ts_del")
+plot.enw_preprocess_data <- function(
+  x, type = c(
+    "obs", "emp_rep_cum", "emp_rep_frac",
+    "emp_rep_quant", "emp_ts_del"
+  ),
+  delay_group_thresh = NULL,
+  quantiles = c(0.1, 0.5, 0.9),
+  log = FALSE, ...
+) {
+  type <- match.arg(type)
+
+  if (is.null(delay_group_thresh)) {
+    md <- enw_get_data(x, "max_delay")
+    delay_group_thresh <- unique(c(
+      0,
+      seq(1, md, by = max(1, md %/% 4)),
+      md
+    ))
+  }
+
+  plot <- switch(type,
+    obs = {
+      latest <- enw_get_data(x, "latest")
+      enw_plot_obs(latest, log = log, x = reference_date, ...) +
+        labs(y = "Notifications", x = "Reference date")
+    },
+    emp_rep_cum = enw_plot_emprep_cum(
+      x, delay_group_thresh, ...
+    ),
+    emp_rep_frac = enw_plot_emprep_frac(
+      x, delay_group_thresh, ...
+    ),
+    emp_rep_quant = enw_plot_emprep_quant(
+      x, quantiles, ...
+    ),
+    emp_ts_del = enw_plot_emp_ts_del(
+      x, delay_group_thresh, ...
+    ),
+    cli::cli_abort("unimplemented type: {type}")
+  )
+
+  plot
+}
+
 #' Plot method for epinowcast
 #'
 #' @description `plot` method for class "epinowcast".

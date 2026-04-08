@@ -38,10 +38,15 @@ enw_plot_obs(nowcast$latest[[1]], obs, x = reference_date)
 }
 \seealso{
 Plotting functions
+\code{\link{enw_plot_emp_ts_del}()},
+\code{\link{enw_plot_emprep_cum}()},
+\code{\link{enw_plot_emprep_frac}()},
+\code{\link{enw_plot_emprep_quant}()},
 \code{\link{enw_plot_nowcast_quantiles}()},
 \code{\link{enw_plot_pp_quantiles}()},
 \code{\link{enw_plot_quantiles}()},
 \code{\link{enw_plot_theme}()},
+\code{\link{plot.enw_preprocess_data}()},
 \code{\link{plot.epinowcast}()}
 }
 \concept{plot}
