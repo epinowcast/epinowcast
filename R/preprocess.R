@@ -1370,6 +1370,7 @@ enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
   ]
   nc_group <- merge(grouping_vars, nc_group, by = ".group")
 
+  nc_group <- nc_group[max_confirm > 0]
   nc_group[, prop_reported := new_confirm / max_confirm]
   nc_group[, cum_prop_reported := confirm / max_confirm]
 
@@ -1407,6 +1408,7 @@ enw_emp_quant_by_reference <- function(
     nc[, c(".group", by_vars), with = FALSE]
   )
 
+  nc[, new_confirm := pmax(new_confirm, 0L)]
   nc <- nc[, if (sum(new_confirm) > 0) .SD, # nolint
     by = .(reference_date, .group)
   ]

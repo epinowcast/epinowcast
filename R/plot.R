@@ -205,8 +205,7 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
-#' @param ... Additional arguments passed to
-#'   [enw_cat_new_confirm()].
+#' @param ... Additional arguments (not used).
 #'
 #' @return A `ggplot2` plot.
 #' @family plot
@@ -259,8 +258,7 @@ enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
-#' @param ... Additional arguments passed to
-#'   [enw_cat_new_confirm()].
+#' @param ... Additional arguments (not used).
 #'
 #' @return A `ggplot2` plot.
 #' @family plot
@@ -328,8 +326,7 @@ enw_plot_emprep_quant <- function(
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
-#' @param ... Additional arguments passed to
-#'   [enw_cat_new_confirm()].
+#' @param ... Additional arguments (not used).
 #'
 #' @return A `ggplot2` plot.
 #' @family plot
