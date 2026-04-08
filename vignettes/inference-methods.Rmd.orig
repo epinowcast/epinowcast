@@ -78,36 +78,44 @@ model <- enw_model(threads = TRUE)
 
 # Model specifications
 
-We define two nowcasting specifications that share the same expectation (process) model but differ in delay model complexity and observation family.
+We define two nowcasting specifications that share the same expectation (process) and report models but differ in how they handle reporting delays.
+Both use a weekly random walk growth rate with day-of-week effects for the expected counts, and negative binomial observations.
 
-**Spec A (simple):** parametric lognormal delays with Poisson observations.
-This is the specification from the getting started vignette.
+**Spec A (static delays):** lognormal delays that are constant over time.
+This is a good default when reporting processes are stable.
 
 ```{r spec-a}
+shared_expectation <- enw_expectation(
+  ~ 1 + rw(week) + (1 | day_of_week), data = pobs
+)
+shared_report <- enw_report(
+  ~ (1 | day_of_week) + rw(week), data = pobs
+)
+shared_obs <- enw_obs(family = "negbin", data = pobs)
+
 spec_a <- list(
-  expectation = enw_expectation(~ 0 + (1 | day), data = pobs),
+  expectation = shared_expectation,
   reference = enw_reference(
-    ~1, distribution = "lognormal", data = pobs
+    parametric = ~1, distribution = "lognormal", data = pobs
   ),
-  report = enw_report(~ (1 | day_of_week), data = pobs),
-  obs = enw_obs(family = "poisson", data = pobs)
+  report = shared_report,
+  obs = shared_obs
 )
 ```
 
-**Spec B (mixed delays):** parametric lognormal baseline with non-parametric adjustments by delay category and negative binomial observations.
-The mixed delay model is more flexible and better suited to complex delay patterns, but adds parameters.
+**Spec B (time-varying delays):** lognormal delays with a weekly random walk on the mean parameter, allowing the delay distribution to change over time.
+This is useful when reporting processes are evolving, but adds parameters.
 
 ```{r spec-b}
 spec_b <- list(
-  expectation = enw_expectation(~ 0 + (1 | day), data = pobs),
+  expectation = shared_expectation,
   reference = enw_reference(
-    parametric = ~1,
-    non_parametric = ~ 0 + (1 | delay_cat),
+    parametric = ~ 1 + rw(week),
     distribution = "lognormal",
     data = pobs
   ),
-  report = enw_report(~ (1 | day_of_week), data = pobs),
-  obs = enw_obs(family = "negbin", data = pobs)
+  report = shared_report,
+  obs = shared_obs
 )
 ```
 
@@ -120,6 +128,7 @@ nuts_args <- list(
   save_warmup = FALSE, pp = TRUE,
   chains = 2, threads_per_chain = 2,
   iter_sampling = 500, iter_warmup = 500,
+  adapt_delta = 0.95, max_depth = 12,
   show_messages = FALSE
 )
 
@@ -191,7 +200,7 @@ fits <- list(
 
 runtime_dt <- data.table(
   label = names(fits),
-  spec = rep(c("A (simple)", "B (mixed delays)"), each = 3),
+  spec = rep(c("A (static delays)", "B (time-varying delays)"), each = 3),
   method = rep(
     c("NUTS\n(prior init)", "NUTS\n(pathfinder init)", "Pathfinder"),
     2
@@ -258,17 +267,17 @@ We compare the nowcasts from each method side by side.
 nowcast_summaries <- rbindlist(lapply(names(fits), function(nm) {
   s <- summary(fits[[nm]], probs = c(0.05, 0.2, 0.8, 0.95))
   s[, label := nm]
-  s[, spec := fifelse(grepl("^A:", nm), "A (simple)", "B (mixed delays)")]
+  s[, spec := fifelse(grepl("^A:", nm), "A (static delays)", "B (time-varying delays)")]
   s[, method := gsub("^[AB]: ", "", nm)]
   s
 }))
 ```
 
-## Spec A (simple)
+## Spec A (static delays)
 
 ```{r nowcast-comparison-a, fig.width = 9, fig.height = 8}
 ggplot(
-  nowcast_summaries[spec == "A (simple)"],
+  nowcast_summaries[spec == "A (static delays)"],
   aes(x = reference_date)
 ) +
   geom_ribbon(
@@ -285,17 +294,17 @@ ggplot(
   ) +
   facet_wrap(~method, ncol = 1) +
   labs(
-    title = "Spec A: Simple nowcasting model",
+    title = "Spec A: Static delays",
     x = "Reference date", y = "Hospitalisations"
   ) +
   theme_bw()
 ```
 
-## Spec B (mixed delays)
+## Spec B (time-varying delays)
 
 ```{r nowcast-comparison-b, fig.width = 9, fig.height = 8}
 ggplot(
-  nowcast_summaries[spec == "B (mixed delays)"],
+  nowcast_summaries[spec == "B (time-varying delays)"],
   aes(x = reference_date)
 ) +
   geom_ribbon(
@@ -312,7 +321,7 @@ ggplot(
   ) +
   facet_wrap(~method, ncol = 1) +
   labs(
-    title = "Spec B: Mixed delay model",
+    title = "Spec B: Time-varying delays",
     x = "Reference date", y = "Hospitalisations"
   ) +
   theme_bw()
@@ -331,7 +340,7 @@ param_summaries <- rbindlist(lapply(names(fits), function(nm) {
     fits[[nm]], type = "fit", variables = param_vars
   )
   s[, label := nm]
-  s[, spec := fifelse(grepl("^A:", nm), "A (simple)", "B (mixed delays)")]
+  s[, spec := fifelse(grepl("^A:", nm), "A (static delays)", "B (time-varying delays)")]
   s[, method := gsub("^[AB]: ", "", nm)]
   s
 }))
