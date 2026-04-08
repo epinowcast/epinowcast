@@ -225,8 +225,8 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   direction <- match.arg(direction)
 
   internal_timestep <- get_internal_timestep(timestep)
+  metaobs <- coerce_dt(metaobs, group = TRUE)
   if (days < internal_timestep) {
-    metaobs <- coerce_dt(metaobs, group = TRUE)
     metaobs[, observed := TRUE]
     return(metaobs)
   }
@@ -237,7 +237,6 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   } else {
     filt_fn <- max
   }
-  metaobs <- coerce_dt(metaobs, group = TRUE)
   exts <- metaobs[, .SD[date == filt_fn(date)], by = .group]
   exts <- split(exts, by = ".group")
   exts <- purrr::map(
