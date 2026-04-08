@@ -210,8 +210,8 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emprep_cum(pobs, c(0, 2, 5, 10, 21))
-enw_plot_emprep_cum <- function(pobs, delay_group_thresh) {
+#' enw_plot_rep_cum(pobs, c(0, 2, 5, 10, 21))
+enw_plot_rep_cum <- function(pobs, delay_group_thresh) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(
     delay_group,
@@ -261,8 +261,8 @@ enw_plot_emprep_cum <- function(pobs, delay_group_thresh) {
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emprep_frac(pobs, c(0, 2, 5, 10, 21))
-enw_plot_emprep_frac <- function(pobs, delay_group_thresh) {
+#' enw_plot_rep_frac(pobs, c(0, 2, 5, 10, 21))
+enw_plot_rep_frac <- function(pobs, delay_group_thresh) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   plot <- ggplot(nc_group) +
     geom_tile(aes(
@@ -291,11 +291,11 @@ enw_plot_emprep_frac <- function(pobs, delay_group_thresh) {
 #' @importFrom data.table melt
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emprep_quant(pobs)
-enw_plot_emprep_quant <- function(
+#' enw_plot_rep_quant(pobs)
+enw_plot_rep_quant <- function(
   pobs, quantiles = c(0.1, 0.5, 0.9)
 ) {
-  emp_quant <- enw_emp_quant_by_reference(pobs, quantiles)
+  emp_quant <- enw_delay_quantiles(pobs, quantiles)
   emp_quant <- data.table::melt(
     emp_quant,
     measure.vars = paste0(quantiles)
@@ -325,8 +325,8 @@ enw_plot_emprep_quant <- function(
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emp_ts_del(pobs, c(0, 2, 5, 10, 21))
-enw_plot_emp_ts_del <- function(
+#' enw_plot_ts_delay(pobs, c(0, 2, 5, 10, 21))
+enw_plot_ts_delay <- function(
   pobs, delay_group_thresh
 ) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)

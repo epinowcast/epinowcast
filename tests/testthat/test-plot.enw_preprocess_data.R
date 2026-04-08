@@ -14,8 +14,8 @@ test_that("enw_cat_new_confirm returns expected structure", {
   expect_true(all(nc$cum_prop_reported <= 1))
 })
 
-test_that("enw_emp_quant_by_reference returns expected structure", {
-  eq <- enw_emp_quant_by_reference(pobs)
+test_that("enw_delay_quantiles returns expected structure", {
+  eq <- enw_delay_quantiles(pobs)
   expect_s3_class(eq, "data.table")
   expect_true(all(
     c("reference_date", ".group", "0.1", "0.5", "0.9") %in%
@@ -23,8 +23,8 @@ test_that("enw_emp_quant_by_reference returns expected structure", {
   ))
 })
 
-test_that("enw_emp_quant_by_reference respects custom quantiles", {
-  eq <- enw_emp_quant_by_reference(pobs, quantiles = c(0.25, 0.75))
+test_that("enw_delay_quantiles respects custom quantiles", {
+  eq <- enw_delay_quantiles(pobs, quantiles = c(0.25, 0.75))
   expect_true(all(
     c("0.25", "0.75") %in% names(eq)
   ))
@@ -41,35 +41,35 @@ test_that("plot.enw_preprocess_data obs type works", {
   )
 })
 
-test_that("plot.enw_preprocess_data emp_rep_cum type works", {
+test_that("plot.enw_preprocess_data rep_cum type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot emp_rep_cum",
-    plot(pobs, type = "emp_rep_cum", delay_group_thresh = thresh)
+    "preprocess plot rep_cum",
+    plot(pobs, type = "rep_cum", delay_group_thresh = thresh)
   )
 })
 
-test_that("plot.enw_preprocess_data emp_rep_frac type works", {
+test_that("plot.enw_preprocess_data rep_frac type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot emp_rep_frac",
-    plot(pobs, type = "emp_rep_frac", delay_group_thresh = thresh)
+    "preprocess plot rep_frac",
+    plot(pobs, type = "rep_frac", delay_group_thresh = thresh)
   )
 })
 
-test_that("plot.enw_preprocess_data emp_rep_quant type works", {
+test_that("plot.enw_preprocess_data rep_quant type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot emp_rep_quant",
-    plot(pobs, type = "emp_rep_quant")
+    "preprocess plot rep_quant",
+    plot(pobs, type = "rep_quant")
   )
 })
 
-test_that("plot.enw_preprocess_data emp_ts_del type works", {
+test_that("plot.enw_preprocess_data ts_delay type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot emp_ts_del",
-    plot(pobs, type = "emp_ts_del", delay_group_thresh = thresh)
+    "preprocess plot ts_delay",
+    plot(pobs, type = "ts_delay", delay_group_thresh = thresh)
   )
 })
 
 test_that("plot.enw_preprocess_data auto-generates thresholds", {
-  p <- plot(pobs, type = "emp_rep_cum")
+  p <- plot(pobs, type = "rep_cum")
   expect_s3_class(p, "ggplot")
 })
