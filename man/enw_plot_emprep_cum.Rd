@@ -25,7 +25,7 @@ fraction reported by delay group over reference dates.
 }
 \examples{
 pobs <- enw_example("preprocessed_observations")
-enw_plot_emprep_cum(pobs, c(0, 2, 5, 10, 20))
+enw_plot_emprep_cum(pobs, c(0, 2, 5, 10, 21))
 }
 \seealso{
 Plotting functions

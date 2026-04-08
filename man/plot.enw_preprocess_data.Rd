@@ -32,10 +32,11 @@ enforced by \code{\link[base:match.arg]{base::match.arg()}}. Options:
 }}
 
 \item{delay_group_thresh}{A numeric vector of left-closed
-interval thresholds for delay grouping. Required for all
-types except \code{"obs"} and \code{"emp_rep_quant"}. Defaults to
-\code{NULL}, which auto-generates thresholds from
-\code{max_delay}.}
+interval thresholds for delay grouping (use \code{right = FALSE}
+semantics, so the upper bound should exceed
+\code{max_delay}). Required for all types except \code{"obs"} and
+\code{"emp_rep_quant"}. Defaults to \code{NULL}, which
+auto-generates thresholds from \code{max_delay}.}
 
 \item{quantiles}{A numeric vector of probabilities for the
 \code{"emp_rep_quant"} type. Defaults to \code{c(0.1, 0.5, 0.9)}.}

@@ -1335,7 +1335,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for grouping reporting
 #'   delays. The smallest value should be zero and the largest
-#'   should correspond to `max_delay`.
+#'   should exceed `max_delay` (intervals are left-closed,
+#'   right-open). Delays outside the range are dropped.
 #'
 #' @return A `data.table` of notification incidence by reference
 #'   date and delay group, including columns `prop_reported`
@@ -1346,7 +1347,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 #' @importFrom data.table copy
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_cat_new_confirm(pobs, delay_group_thresh = c(0, 2, 5, 10, 20))
+#' enw_cat_new_confirm(pobs, delay_group_thresh = c(0, 2, 5, 10, 21))
 enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
   nc <- data.table::copy(enw_get_data(pobs, "new_confirm"))
   by_vars <- enw_get_data(pobs, "by")
@@ -1356,6 +1357,7 @@ enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
   nc[, delay_group := cut(
     delay, delay_group_thresh, right = FALSE
   )]
+  nc <- nc[!is.na(delay_group)]
 
   nc_group <- nc[, .(
     confirm = max(confirm, na.rm = TRUE),
@@ -1404,6 +1406,10 @@ enw_emp_quant_by_reference <- function(
   grouping_vars <- unique(
     nc[, c(".group", by_vars), with = FALSE]
   )
+
+  nc <- nc[, if (sum(new_confirm) > 0) .SD, # nolint
+    by = .(reference_date, .group)
+  ]
 
   nc_quant <- nc[, as.list(quantile(
     x = rep(delay, times = new_confirm),

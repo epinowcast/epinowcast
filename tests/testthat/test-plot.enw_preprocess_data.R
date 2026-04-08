@@ -1,5 +1,5 @@
 pobs <- enw_example("preprocessed_observations")
-thresh <- c(0, 2, 5, 10, 20)
+thresh <- c(0, 2, 5, 10, 21)
 
 test_that("enw_cat_new_confirm returns expected structure", {
   nc <- enw_cat_new_confirm(pobs, thresh)

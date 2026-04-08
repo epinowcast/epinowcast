@@ -13,7 +13,8 @@ enw_cat_new_confirm(pobs, delay_group_thresh)
 \item{delay_group_thresh}{A numeric vector defining
 left-closed interval thresholds for grouping reporting
 delays. The smallest value should be zero and the largest
-should correspond to \code{max_delay}.}
+should exceed \code{max_delay} (intervals are left-closed,
+right-open). Delays outside the range are dropped.}
 }
 \value{
 A \code{data.table} of notification incidence by reference
@@ -28,7 +29,7 @@ reporting patterns by delay.
 }
 \examples{
 pobs <- enw_example("preprocessed_observations")
-enw_cat_new_confirm(pobs, delay_group_thresh = c(0, 2, 5, 10, 20))
+enw_cat_new_confirm(pobs, delay_group_thresh = c(0, 2, 5, 10, 21))
 }
 \seealso{
 Preprocessing functions

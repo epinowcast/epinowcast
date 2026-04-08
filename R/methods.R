@@ -359,10 +359,11 @@ summary.epinowcast <- function(object, type = c(
 #'     [enw_plot_emp_ts_del()])
 #'
 #' @param delay_group_thresh A numeric vector of left-closed
-#'   interval thresholds for delay grouping. Required for all
-#'   types except `"obs"` and `"emp_rep_quant"`. Defaults to
-#'   `NULL`, which auto-generates thresholds from
-#'   `max_delay`.
+#'   interval thresholds for delay grouping (use `right = FALSE`
+#'   semantics, so the upper bound should exceed
+#'   `max_delay`). Required for all types except `"obs"` and
+#'   `"emp_rep_quant"`. Defaults to `NULL`, which
+#'   auto-generates thresholds from `max_delay`.
 #'
 #' @param quantiles A numeric vector of probabilities for the
 #'   `"emp_rep_quant"` type. Defaults to `c(0.1, 0.5, 0.9)`.
@@ -412,7 +413,7 @@ plot.enw_preprocess_data <- function(
     delay_group_thresh <- unique(c(
       0,
       seq(1, md, by = max(1, md %/% 4)),
-      md
+      md + 1
     ))
   }
 

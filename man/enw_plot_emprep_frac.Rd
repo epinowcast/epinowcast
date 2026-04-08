@@ -25,7 +25,7 @@ group and reference date.
 }
 \examples{
 pobs <- enw_example("preprocessed_observations")
-enw_plot_emprep_frac(pobs, c(0, 2, 5, 10, 20))
+enw_plot_emprep_frac(pobs, c(0, 2, 5, 10, 21))
 }
 \seealso{
 Plotting functions

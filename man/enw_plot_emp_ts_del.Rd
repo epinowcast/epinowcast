@@ -25,7 +25,7 @@ date, coloured by delay group.
 }
 \examples{
 pobs <- enw_example("preprocessed_observations")
-enw_plot_emp_ts_del(pobs, c(0, 2, 5, 10, 20))
+enw_plot_emp_ts_del(pobs, c(0, 2, 5, 10, 21))
 }
 \seealso{
 Plotting functions

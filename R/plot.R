@@ -213,17 +213,17 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emprep_cum(pobs, c(0, 2, 5, 10, 20))
+#' enw_plot_emprep_cum(pobs, c(0, 2, 5, 10, 21))
 enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(
     delay_group,
     levels = rev(levels(delay_group)),
     labels = gsub(
-      ")", "",
+      ")", "", fixed = TRUE,
       vapply(
         rev(levels(nc_group$delay_group)),
-        function(s) strsplit(s, ",")[[1]][2],
+        function(s) strsplit(s, ",", fixed = TRUE)[[1]][2],
         character(1)
       )
     )
@@ -241,7 +241,7 @@ enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
     guides(fill = guide_legend("d")) +
     labs(
       y = expression(
-        paste("Cumulative fraction reported delay", "" < d)
+        paste("Cumulative fraction reported delay", "" < d) # nolint
       ),
       x = "Reference date"
     )
@@ -267,7 +267,7 @@ enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emprep_frac(pobs, c(0, 2, 5, 10, 20))
+#' enw_plot_emprep_frac(pobs, c(0, 2, 5, 10, 21))
 enw_plot_emprep_frac <- function(pobs, delay_group_thresh, ...) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   plot <- ggplot(nc_group) +
@@ -336,7 +336,7 @@ enw_plot_emprep_quant <- function(
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_emp_ts_del(pobs, c(0, 2, 5, 10, 20))
+#' enw_plot_emp_ts_del(pobs, c(0, 2, 5, 10, 21))
 enw_plot_emp_ts_del <- function(
   pobs, delay_group_thresh, ...
 ) {
