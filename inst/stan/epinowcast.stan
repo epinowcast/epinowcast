@@ -236,26 +236,26 @@ transformed parameters{
   // Expectation model
   profile("transformed_expected_final_observations") {
   if (model_expr) {
-  // Get log growth rates and map to expected latent cases
-  r = combine_effects(
-    expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign, expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design
-  );
-  exp_llatent = log_expected_latent_from_r(
-    expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
-    expr_ft, g
-  );
-  // Get latent-to-obs proportions and map expected latent cases to expected observations
-  if (expl_obs) {
-    expl_prop = combine_effects(
-      {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign, expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design
+    // Get log growth rates and map to expected latent cases
+    r = combine_effects(
+      expr_r_int, expr_beta, expr_fnindex, expr_fncol, expr_fdesign, expr_sparse, expr_beta_sd, expr_rdesign, expr_fintercept, sparse_design
     );
-    exp_lobs = log_expected_obs_from_latent(
-      exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
-      expl_lrd_sparse.3, t, g, expl_prop
+    exp_llatent = log_expected_latent_from_r(
+      expr_lelatent_int, r, expr_g, expr_t, expr_r_seed, expr_gt_n, expr_lrgt,
+      expr_ft, g
     );
-  } else {
-    exp_lobs = exp_llatent; // assume latent cases and obs are identical
-  }
+    // Get latent-to-obs proportions and map expected latent cases to expected observations
+    if (expl_obs) {
+      expl_prop = combine_effects(
+        {0}, expl_beta, expl_fnindex, expl_fncol, expl_fdesign, expl_sparse, expl_beta_sd, expl_rdesign, 1, sparse_design
+      );
+      exp_lobs = log_expected_obs_from_latent(
+        exp_llatent, expl_lrd_n, expl_lrd_sparse.1, expl_lrd_sparse.2,
+        expl_lrd_sparse.3, t, g, expl_prop
+      );
+    } else {
+      exp_lobs = exp_llatent; // assume latent cases and obs are identical
+    }
   } else {
     // No expectation model: use observed data directly
     for (k in 1:g) {
@@ -333,25 +333,25 @@ model {
   profile("model_priors") {
   // Expectation model
   if (model_expr) {
-  // ---- Growth rate submodule ----
-  // intercept/initial latent cases (log)
-  to_vector(expr_lelatent_int) ~ normal(
-    expr_lelatent_int_p[1], expr_lelatent_int_p[2]
-  );
-  // intercept of growth rate
-  if (expr_fintercept) {
-    expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]);
-  }
+    // ---- Growth rate submodule ----
+    // intercept/initial latent cases (log)
+    to_vector(expr_lelatent_int) ~ normal(
+      expr_lelatent_int_p[1], expr_lelatent_int_p[2]
+    );
+    // intercept of growth rate
+    if (expr_fintercept) {
+      expr_r_int[expr_fintercept]  ~ normal(expr_r_int_p[1], expr_r_int_p[2]);
+    }
 
-  // growth rate effect priors
-  effect_priors_lp(
-    expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
-  );
-  // ---- Latent case submodule ----
-  // latent-to-obs proportion
-  effect_priors_lp(
-    expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
-  );
+    // growth rate effect priors
+    effect_priors_lp(
+      expr_beta, expr_beta_sd, expr_beta_sd_p, expr_fncol, expr_rncol
+    );
+    // ---- Latent case submodule ----
+    // latent-to-obs proportion
+    effect_priors_lp(
+      expl_beta, expl_beta_sd, expl_beta_sd_p, expl_fncol, expl_rncol
+    );
   }
   
   // Reference model
