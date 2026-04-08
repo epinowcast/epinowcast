@@ -692,6 +692,17 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   obs <- coerce_dt(obs, copy = TRUE, dates = TRUE, group = TRUE)
   cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
+  if (all(cnt_obs_rep$N <= 1) && all(cnt_obs_ref$N <= 1)) {
+    # Single observation per date pair (e.g. max_delay = 1).
+    # Check date sequences directly within groups instead.
+    check_timestep_by_group(
+      obs, date_var = "reference_date", timestep, exact
+    )
+    check_timestep_by_group(
+      obs, date_var = "report_date", timestep, exact
+    )
+    return(invisible(NULL))
+  }
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
     cli::cli_abort(
       paste0(

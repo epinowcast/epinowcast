@@ -43,6 +43,7 @@ Preprocessing functions
 \code{\link{enw_missing_reference}()},
 \code{\link{enw_obs_at_delay}()},
 \code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle_to_long}()}
+\code{\link{enw_reporting_triangle_to_long}()},
+\code{\link{enw_retrospective}()}
 }
 \concept{preprocess}

@@ -62,12 +62,24 @@ enw_reference <- function(
   distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
   non_parametric = ~0, data
 ) {
+
+  # When max_delay = 1 (no delays), reject non-trivial delay models
+  if (data$max_delay[[1]] == 1 &&
+    (as_string_formula(parametric) != "~0" ||
+      as_string_formula(non_parametric) != "~0")) {
+    cli::cli_abort(paste0(
+      "Reference date models cannot be used with ",
+      "{.arg max_delay} = 1 (no reporting delays to model)"
+    ))
+  }
+
   if (as_string_formula(parametric) == "~0") {
     distribution <- "none"
     parametric <- ~1
   }
   distribution <- match.arg(distribution)
-  if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
+  if ((as_string_formula(non_parametric) == "~0") &&
+    distribution == "none" && data$max_delay[[1]] > 1) {
     cli::cli_abort(
       paste0(
         "A non-parametric model must be specified if no parametric model ",
@@ -258,6 +270,14 @@ enw_reference <- function(
 #' enw_report(structural = structural, data = pobs)
 #' }
 enw_report <- function(non_parametric = ~0, structural = NULL, data) {
+  # When max_delay = 1 (no delays), reject non-trivial report models
+  if (data$max_delay[[1]] == 1 &&
+    as_string_formula(non_parametric) != "~0") {
+    cli::cli_abort(paste0(
+      "Report date models cannot be used with ",
+      "{.arg max_delay} = 1 (no reporting delays to model)"
+    ))
+  }
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
   }
