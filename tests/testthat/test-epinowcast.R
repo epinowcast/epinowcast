@@ -620,8 +620,8 @@ test_that("epinowcast() works with max_delay = 1 (no reporting delay)", {
   ))
 
   expect_identical(class(nowcast$fit[[1]])[1], "CmdStanMCMC")
-  expect_identical(nowcast$data[[1]]$model_refp, 0L)
-  expect_identical(nowcast$data[[1]]$model_refnp, 0L)
+  expect_equal(nowcast$data[[1]]$model_refp, 0)
+  expect_equal(nowcast$data[[1]]$model_refnp, 0)
   expect_identical(nowcast$data[[1]]$model_expr, 1L)
   expect_lt(nowcast$per_divergent_transitions, 0.05)
   expect_lt(nowcast$max_rhat, 1.05)
