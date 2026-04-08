@@ -424,16 +424,16 @@ plot.enw_preprocess_data <- function(
         labs(y = "Notifications", x = "Reference date")
     },
     emp_rep_cum = enw_plot_emprep_cum(
-      x, delay_group_thresh, ...
+      x, delay_group_thresh
     ),
     emp_rep_frac = enw_plot_emprep_frac(
-      x, delay_group_thresh, ...
+      x, delay_group_thresh
     ),
     emp_rep_quant = enw_plot_emprep_quant(
-      x, quantiles, ...
+      x, quantiles
     ),
     emp_ts_del = enw_plot_emp_ts_del(
-      x, delay_group_thresh, ...
+      x, delay_group_thresh
     ),
     cli::cli_abort("unimplemented type: {type}")
   )

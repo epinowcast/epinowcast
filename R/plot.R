@@ -205,15 +205,13 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
-#' @param ... Additional arguments (not used).
-#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_emprep_cum(pobs, c(0, 2, 5, 10, 21))
-enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
+enw_plot_emprep_cum <- function(pobs, delay_group_thresh) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(
     delay_group,
@@ -258,15 +256,13 @@ enw_plot_emprep_cum <- function(pobs, delay_group_thresh, ...) {
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
-#' @param ... Additional arguments (not used).
-#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_emprep_frac(pobs, c(0, 2, 5, 10, 21))
-enw_plot_emprep_frac <- function(pobs, delay_group_thresh, ...) {
+enw_plot_emprep_frac <- function(pobs, delay_group_thresh) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   plot <- ggplot(nc_group) +
     geom_tile(aes(
@@ -289,8 +285,6 @@ enw_plot_emprep_frac <- function(pobs, delay_group_thresh, ...) {
 #' @param quantiles A numeric vector of probabilities.
 #'   Defaults to `c(0.1, 0.5, 0.9)`.
 #'
-#' @param ... Additional arguments (not used).
-#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
@@ -299,7 +293,7 @@ enw_plot_emprep_frac <- function(pobs, delay_group_thresh, ...) {
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_emprep_quant(pobs)
 enw_plot_emprep_quant <- function(
-  pobs, quantiles = c(0.1, 0.5, 0.9), ...
+  pobs, quantiles = c(0.1, 0.5, 0.9)
 ) {
   emp_quant <- enw_emp_quant_by_reference(pobs, quantiles)
   emp_quant <- data.table::melt(
@@ -326,8 +320,6 @@ enw_plot_emprep_quant <- function(
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
-#' @param ... Additional arguments (not used).
-#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
@@ -335,7 +327,7 @@ enw_plot_emprep_quant <- function(
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_emp_ts_del(pobs, c(0, 2, 5, 10, 21))
 enw_plot_emp_ts_del <- function(
-  pobs, delay_group_thresh, ...
+  pobs, delay_group_thresh
 ) {
   nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(

@@ -4,7 +4,7 @@
 \alias{enw_plot_emprep_frac}
 \title{Plot empirical reporting delay heatmap}
 \usage{
-enw_plot_emprep_frac(pobs, delay_group_thresh, ...)
+enw_plot_emprep_frac(pobs, delay_group_thresh)
 }
 \arguments{
 \item{pobs}{A preprocessed data object as produced by
@@ -12,8 +12,6 @@ enw_plot_emprep_frac(pobs, delay_group_thresh, ...)
 
 \item{delay_group_thresh}{A numeric vector defining
 left-closed interval thresholds for delay groups.}
-
-\item{...}{Additional arguments (not used).}
 }
 \value{
 A \code{ggplot2} plot.
