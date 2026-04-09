@@ -28,7 +28,9 @@ test_that("enw_retrospective respects max_delay parameter", {
 
 test_that("enw_retrospective preserves grouping", {
   obs <- germany_covid19_hosp[location == "DE"]
-  pobs <- enw_preprocess_data(obs, by = "age_group", max_delay = 10)
+  pobs <- suppressWarnings(
+    enw_preprocess_data(obs, by = "age_group", max_delay = 10)
+  )
   retro <- enw_retrospective(pobs)
 
   expect_equal(retro$max_delay, 1)

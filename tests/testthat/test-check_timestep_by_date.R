@@ -124,5 +124,21 @@ test_that(
       check_timestep_by_date(obs_irregular),
       "does not have the specified timestep"
     )
+
+    # Asymmetric case: report dates unique but reference dates
+    # have duplicates — should error
+    obs_asym <- data.table::data.table(
+      report_date = as.Date(c(
+        "2021-01-01", "2021-01-02", "2021-01-03"
+      )),
+      reference_date = as.Date(c(
+        "2021-01-01", "2021-01-01", "2021-01-03"
+      )),
+      .group = 1L
+    )
+    expect_error(
+      check_timestep_by_date(obs_asym),
+      "at least two observations"
+    )
   }
 )
