@@ -32,28 +32,18 @@ pobs <- enw_example("preprocessed_observations")
 enw_delay_categories(pobs, delay_group_thresh = c(0, 2, 5, 10, 21))
 }
 \seealso{
-Preprocessing functions
-\code{\link{enw_add_delay}()},
-\code{\link{enw_add_max_reported}()},
-\code{\link{enw_add_metaobs_features}()},
-\code{\link{enw_assign_group}()},
-\code{\link{enw_complete_dates}()},
-\code{\link{enw_construct_data}()},
+Plotting functions
 \code{\link{enw_delay_quantiles}()},
-\code{\link{enw_extend_date}()},
-\code{\link{enw_filter_delay}()},
-\code{\link{enw_filter_reference_dates}()},
-\code{\link{enw_filter_reference_dates_by_report_start}()},
-\code{\link{enw_filter_report_dates}()},
-\code{\link{enw_flag_observed_observations}()},
-\code{\link{enw_impute_na_observations}()},
-\code{\link{enw_latest_data}()},
-\code{\link{enw_metadata}()},
-\code{\link{enw_metadata_delay}()},
-\code{\link{enw_missing_reference}()},
-\code{\link{enw_obs_at_delay}()},
-\code{\link{enw_preprocess_data}()},
-\code{\link{enw_reporting_triangle}()},
-\code{\link{enw_reporting_triangle_to_long}()}
+\code{\link{enw_plot_delay_counts}()},
+\code{\link{enw_plot_delay_cumulative}()},
+\code{\link{enw_plot_delay_fraction}()},
+\code{\link{enw_plot_delay_quantiles}()},
+\code{\link{enw_plot_nowcast_quantiles}()},
+\code{\link{enw_plot_obs}()},
+\code{\link{enw_plot_pp_quantiles}()},
+\code{\link{enw_plot_quantiles}()},
+\code{\link{enw_plot_theme}()},
+\code{\link{plot.enw_preprocess_data}()},
+\code{\link{plot.epinowcast}()}
 }
-\concept{preprocess}
+\concept{plot}

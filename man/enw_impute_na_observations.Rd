@@ -39,8 +39,6 @@ Preprocessing functions
 \code{\link{enw_assign_group}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
-\code{\link{enw_delay_categories}()},
-\code{\link{enw_delay_quantiles}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},

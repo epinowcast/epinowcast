@@ -38,6 +38,8 @@ enw_plot_obs(nowcast$latest[[1]], obs, x = reference_date)
 }
 \seealso{
 Plotting functions
+\code{\link{enw_delay_categories}()},
+\code{\link{enw_delay_quantiles}()},
 \code{\link{enw_plot_delay_counts}()},
 \code{\link{enw_plot_delay_cumulative}()},
 \code{\link{enw_plot_delay_fraction}()},

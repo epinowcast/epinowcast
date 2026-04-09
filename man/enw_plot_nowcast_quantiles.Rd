@@ -33,6 +33,8 @@ enw_plot_nowcast_quantiles(nowcast)
 }
 \seealso{
 Plotting functions
+\code{\link{enw_delay_categories}()},
+\code{\link{enw_delay_quantiles}()},
 \code{\link{enw_plot_delay_counts}()},
 \code{\link{enw_plot_delay_cumulative}()},
 \code{\link{enw_plot_delay_fraction}()},

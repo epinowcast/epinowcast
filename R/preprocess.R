@@ -1342,7 +1342,7 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 #'   date and delay group, including columns `prop_reported`
 #'   and `cum_prop_reported`.
 #'
-#' @family preprocess
+#' @family plot
 #' @export
 #' @importFrom data.table copy
 #' @examples
@@ -1393,7 +1393,7 @@ enw_delay_categories <- function(pobs, delay_group_thresh) {
 #' @return A `data.table` with columns for each quantile by
 #'   reference date.
 #'
-#' @family preprocess
+#' @family plot
 #' @export
 #' @importFrom data.table copy
 #' @examples
