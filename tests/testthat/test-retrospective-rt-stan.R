@@ -61,16 +61,16 @@ test_that(
     expect_lt(nowcast$per_divergent_transitions, 0.05)
 
     # Stan data should have delay models off
-    expect_identical(nowcast$data[[1]]$model_refp, 0L)
-    expect_identical(nowcast$data[[1]]$model_refnp, 0L)
-    expect_identical(nowcast$data[[1]]$model_rep, 0L)
+    expect_equal(nowcast$data[[1]]$model_refp, 0)
+    expect_equal(nowcast$data[[1]]$model_refnp, 0)
+    expect_equal(nowcast$data[[1]]$model_rep, 0)
 
     # Expected obs should be close to actual counts
     # (no delay adjustment, just latent process)
-    posterior <- as.data.table(
-      nowcast$fit[[1]]$summary("pp_inf_obs")
+    posterior <- enw_posterior(
+      nowcast$fit[[1]], variables = "pp_inf_obs"
     )
-    expect_identical(nrow(posterior), as.integer(n))
+    expect_equal(nrow(posterior), n)
 
     # Median posterior predictions should be within 50% of
     # true lambda on average
