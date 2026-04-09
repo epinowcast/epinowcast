@@ -4,7 +4,8 @@ if (not_on_cran() && on_ci()) {
 }
 
 test_that(
-  "epinowcast() fits retrospective Rt model with max_delay = 1", {
+  "epinowcast() fits retrospective Rt model with max_delay = 1",
+  {
     skip_on_cran()
     skip_on_local()
 
@@ -79,7 +80,8 @@ test_that(
 )
 
 test_that(
-  "epinowcast() retrospective Rt via enw_retrospective()", {
+  "epinowcast() retrospective Rt via enw_retrospective()",
+  {
     skip_on_cran()
     skip_on_local()
 

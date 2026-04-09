@@ -27,7 +27,7 @@ test_that("enw_report errors on report model with max_delay = 1", {
   pobs_retro <- enw_preprocess_data(obs, max_delay = 1)
 
   expect_error(
-    enw_report(non_parametric = ~1 + day_of_week, data = pobs_retro),
+    enw_report(non_parametric = ~ 1 + day_of_week, data = pobs_retro),
     "Report date models cannot be used"
   )
   # ~0 should work (no report model)

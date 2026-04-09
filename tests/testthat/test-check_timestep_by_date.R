@@ -90,7 +90,8 @@ test_that("check_timestep_by_date() handles insufficient data correctly", {
 })
 
 test_that(
-  "check_timestep_by_date() handles max_delay=1 data correctly", {
+  "check_timestep_by_date() handles max_delay=1 data correctly",
+  {
     # Multiple dates with ref == report (typical max_delay=1 case)
     obs_no_delay <- data.table::data.table(
       report_date = as.Date("2021-01-01") + 0:9,

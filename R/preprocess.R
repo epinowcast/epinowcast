@@ -544,7 +544,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
     # validate include_days
     if (
       !is.numeric(include_days) || is.na(include_days) ||
-      include_days < 0 || round(include_days) != include_days
+        include_days < 0 || round(include_days) != include_days
     ) {
       cli::cli_abort("`include_days` must be a non-negative integer")
     }
@@ -623,7 +623,8 @@ enw_retrospective <- function(data, max_delay = NULL) {
 
   if (!is.null(max_delay)) {
     latest <- enw_obs_at_delay(
-      obs, max_delay = max_delay, timestep = timestep
+      obs,
+      max_delay = max_delay, timestep = timestep
     )
   } else {
     latest <- enw_latest_data(obs)
@@ -696,7 +697,8 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' enw_obs_at_delay(obs, max_delay = 2)
 enw_obs_at_delay <- function(obs, max_delay, timestep = "day") {
   obs <- enw_filter_delay(
-    obs, max_delay = max_delay, timestep = timestep
+    obs,
+    max_delay = max_delay, timestep = timestep
   )
   obs <- enw_latest_data(obs)
   obs[]
@@ -1301,7 +1303,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
   )
 
   filtered_obs <- enw_filter_reference_dates_by_report_start(
-    obs, by = by, copy = TRUE
+    obs,
+    by = by, copy = TRUE
   )
   diff_obs <- enw_add_incidence(
     filtered_obs,

@@ -13,7 +13,8 @@ pobs_intermediate <- enw_filter_report_dates(
 )
 
 pobs_filt <- enw_preprocess_data(
-  pobs_intermediate, max_delay = 2
+  pobs_intermediate,
+  max_delay = 2
 )
 
 test_that("enw_reference requires at least one of a parametric or a
@@ -155,7 +156,8 @@ test_that("Parametric and non-parametric models can be jointly specified", {
 })
 
 test_that(
-  "enw_reference allows both ~0 when max_delay = 1", {
+  "enw_reference allows both ~0 when max_delay = 1",
+  {
     obs <- data.table::data.table(
       reference_date = as.Date("2021-01-01") + 0:9,
       report_date = as.Date("2021-01-01") + 0:9,
@@ -172,7 +174,8 @@ test_that(
 )
 
 test_that(
-  "enw_reference errors on delay model with max_delay = 1", {
+  "enw_reference errors on delay model with max_delay = 1",
+  {
     obs <- data.table::data.table(
       reference_date = as.Date("2021-01-01") + 0:9,
       report_date = as.Date("2021-01-01") + 0:9,
