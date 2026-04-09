@@ -153,3 +153,42 @@ test_that("Parametric and non-parametric models can be jointly specified", {
   )
   expect_zero_length_or_not(zero_length, inits)
 })
+
+test_that(
+  "enw_reference allows both ~0 when max_delay = 1", {
+    obs <- data.table::data.table(
+      reference_date = as.Date("2021-01-01") + 0:9,
+      report_date = as.Date("2021-01-01") + 0:9,
+      confirm = rpois(10, 50)
+    )
+    pobs_retro <- enw_preprocess_data(obs, max_delay = 1)
+
+    ref <- enw_reference(
+      parametric = ~0, non_parametric = ~0, data = pobs_retro
+    )
+    expect_identical(ref$data$model_refp, 0)
+    expect_identical(ref$data$model_refnp, 0)
+  }
+)
+
+test_that(
+  "enw_reference errors on delay model with max_delay = 1", {
+    obs <- data.table::data.table(
+      reference_date = as.Date("2021-01-01") + 0:9,
+      report_date = as.Date("2021-01-01") + 0:9,
+      confirm = rpois(10, 50)
+    )
+    pobs_retro <- enw_preprocess_data(obs, max_delay = 1)
+
+    expect_error(
+      enw_reference(parametric = ~1, data = pobs_retro),
+      "Reference date models cannot be used"
+    )
+    expect_error(
+      enw_reference(
+        parametric = ~0, non_parametric = ~1, data = pobs_retro
+      ),
+      "Reference date models cannot be used"
+    )
+  }
+)

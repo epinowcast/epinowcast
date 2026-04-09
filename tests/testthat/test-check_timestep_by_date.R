@@ -70,10 +70,9 @@ test_that("check_timestep_by_date() handles insufficient data correctly", {
     reference_date = as.Date("2020-01-01")
   )
 
-  # Test for insufficient data
-  expect_error(
-    check_timestep_by_date(obs_single_date),
-    "There must be at least two observations"
+  # Single observation per date returns silently (e.g. max_delay = 1)
+  expect_silent(
+    check_timestep_by_date(obs_single_date)
   )
 
   # Create a dataset with two identical dates and group
@@ -89,3 +88,40 @@ test_that("check_timestep_by_date() handles insufficient data correctly", {
     "report_date has a duplicate date. Please remove duplicate dates."
   )
 })
+
+test_that(
+  "check_timestep_by_date() handles max_delay=1 data correctly", {
+    # Multiple dates with ref == report (typical max_delay=1 case)
+    obs_no_delay <- data.table::data.table(
+      report_date = as.Date("2021-01-01") + 0:9,
+      reference_date = as.Date("2021-01-01") + 0:9,
+      .group = 1L
+    )
+    expect_silent(check_timestep_by_date(obs_no_delay))
+
+    # Weekly data with ref == report
+    obs_weekly <- data.table::data.table(
+      report_date = as.Date("2021-01-04") + 7 * 0:4,
+      reference_date = as.Date("2021-01-04") + 7 * 0:4,
+      .group = 1L
+    )
+    expect_silent(
+      check_timestep_by_date(obs_weekly, timestep = "week")
+    )
+
+    # Irregular dates still detected
+    obs_irregular <- data.table::data.table(
+      report_date = as.Date(c(
+        "2021-01-01", "2021-01-02", "2021-01-04"
+      )),
+      reference_date = as.Date(c(
+        "2021-01-01", "2021-01-02", "2021-01-04"
+      )),
+      .group = 1L
+    )
+    expect_error(
+      check_timestep_by_date(obs_irregular),
+      "does not have the specified timestep"
+    )
+  }
+)

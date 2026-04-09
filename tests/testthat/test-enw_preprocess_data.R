@@ -224,3 +224,34 @@ test_that(
     )
   }
 )
+
+test_that(
+  "enw_preprocess_data() works with max_delay = 1 (no reporting delay)", {
+    obs <- data.table::data.table(
+      reference_date = as.Date("2021-01-01") + 0:19,
+      report_date = as.Date("2021-01-01") + 0:19,
+      confirm = rpois(20, 100)
+    )
+    pobs <- enw_preprocess_data(obs, max_delay = 1)
+
+    expect_s3_class(pobs, "enw_preprocess_data")
+    expect_equal(pobs$max_delay, 1)
+    expect_equal(pobs$time, 20)
+    expect_equal(pobs$snapshots, 20)
+    expect_equal(pobs$groups, 1)
+
+    # Reporting triangle should have one delay column
+    rt <- pobs$reporting_triangle[[1]]
+    delay_cols <- setdiff(names(rt), c(".group", "reference_date"))
+    expect_identical(delay_cols, "0")
+
+    # Metadelay should have one row (delay = 0)
+    md <- pobs$metadelay[[1]]
+    expect_identical(nrow(md), 1L)
+    expect_identical(md$delay, 0L)
+
+    # Metareport should not be extended beyond observed dates
+    mr <- pobs$metareport[[1]]
+    expect_true(all(mr$observed))
+  }
+)
