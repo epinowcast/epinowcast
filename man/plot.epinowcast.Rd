@@ -61,15 +61,15 @@ Other epinowcast:
 \code{\link{summary.epinowcast}()}
 
 Plotting functions
+\code{\link{enw_plot_delay_counts}()},
+\code{\link{enw_plot_delay_cumulative}()},
+\code{\link{enw_plot_delay_fraction}()},
+\code{\link{enw_plot_delay_quantiles}()},
 \code{\link{enw_plot_nowcast_quantiles}()},
 \code{\link{enw_plot_obs}()},
 \code{\link{enw_plot_pp_quantiles}()},
 \code{\link{enw_plot_quantiles}()},
-\code{\link{enw_plot_rep_cum}()},
-\code{\link{enw_plot_rep_frac}()},
-\code{\link{enw_plot_rep_quant}()},
 \code{\link{enw_plot_theme}()},
-\code{\link{enw_plot_ts_delay}()},
 \code{\link{plot.enw_preprocess_data}()}
 }
 \concept{epinowcast}

@@ -72,12 +72,12 @@ plot(pobs, type = "obs")
 
 # Cumulative reporting delay
 
-The `"rep_cum"` type shows the cumulative fraction of cases reported by each delay group over time.
+The `"delay_cumulative"` type shows the cumulative fraction of cases reported by each delay group over time.
 Reference dates where a large fraction is reported quickly appear as ribbons that reach the top of the plot early.
 Dates where reporting is slow show wider gaps between ribbons.
 
 ```{r emp-rep-cum, fig.cap = "Cumulative fraction reported by delay group."}
-plot(pobs, type = "rep_cum")
+plot(pobs, type = "delay_cumulative")
 ```
 
 When no `delay_group_thresh` is supplied the thresholds are generated automatically from `max_delay`.
@@ -85,43 +85,43 @@ Custom thresholds can highlight specific delay windows of interest.
 
 ```{r emp-rep-cum-custom, fig.cap = "Cumulative reporting with custom delay thresholds."}
 plot(
-  pobs, type = "rep_cum",
+  pobs, type = "delay_cumulative",
   delay_group_thresh = c(0, 1, 3, 7, 14, 41)
 )
 ```
 
 # Reporting delay heatmap
 
-The `"rep_frac"` type shows the fraction of cases reported in each delay group as a tile plot.
+The `"delay_fraction"` type shows the fraction of cases reported in each delay group as a tile plot.
 This is useful for spotting systematic shifts in reporting speed over time and day-of-the-week effects.
 
 ```{r emp-rep-frac, fig.cap = "Fraction of cases reported by delay group and reference date."}
-plot(pobs, type = "rep_frac")
+plot(pobs, type = "delay_fraction")
 ```
 
 # Reporting delay quantiles
 
-The `"rep_quant"` type plots empirical quantiles of the reporting delay distribution for each reference date.
+The `"delay_quantiles"` type plots empirical quantiles of the reporting delay distribution for each reference date.
 By default the 10th, 50th, and 90th percentiles are shown.
 Stable lines indicate a stationary delay distribution; trends suggest the delay structure is changing.
 
 ```{r emp-rep-quant, fig.cap = "Empirical delay quantiles over time."}
-plot(pobs, type = "rep_quant")
+plot(pobs, type = "delay_quantiles")
 ```
 
 Custom quantiles can be specified.
 
 ```{r emp-rep-quant-custom, fig.cap = "Median and interquartile range of reporting delays."}
-plot(pobs, type = "rep_quant", quantiles = c(0.25, 0.5, 0.75))
+plot(pobs, type = "delay_quantiles", quantiles = c(0.25, 0.5, 0.75))
 ```
 
 # Notifications by delay group
 
-The `"ts_delay"` type produces a stacked bar plot showing the number of notifications by reference date, coloured by how long they took to be reported.
+The `"delay_counts"` type produces a stacked bar plot showing the number of notifications by reference date, coloured by how long they took to be reported.
 This gives a combined view of the volume of reports and their timeliness.
 
 ```{r emp-ts-del, fig.cap = "Notifications by reference date coloured by reporting delay."}
-plot(pobs, type = "ts_delay")
+plot(pobs, type = "delay_counts")
 ```
 
 # Using the individual plot functions
@@ -131,15 +131,15 @@ Each plot type corresponds to an exported function that can be called directly f
 | Plot type        | Function                     |
 |:-----------------|:-----------------------------|
 | `"obs"`          | `enw_plot_obs()`             |
-| `"rep_cum"`  | `enw_plot_rep_cum()`      |
-| `"rep_frac"` | `enw_plot_rep_frac()`     |
-| `"rep_quant"`| `enw_plot_rep_quant()`    |
-| `"ts_delay"`   | `enw_plot_ts_delay()`      |
+| `"delay_cumulative"`  | `enw_plot_delay_cumulative()`  |
+| `"delay_fraction"`    | `enw_plot_delay_fraction()`    |
+| `"delay_quantiles"`   | `enw_plot_delay_quantiles()`   |
+| `"delay_counts"`      | `enw_plot_delay_counts()`      |
 
 These return standard `ggplot2` objects so layers, facets, and themes can be added freely.
 
 ```{r custom-plot}
-enw_plot_rep_frac(
+enw_plot_delay_fraction(
   pobs, delay_group_thresh = c(0, 1, 3, 7, 14, 41)
 ) +
   scale_fill_viridis_c() +
@@ -150,10 +150,10 @@ enw_plot_rep_frac(
 
 Two helper functions underpin the delay-based plots and can be used independently for custom analyses.
 
-`enw_cat_new_confirm()` categorises notifications into delay groups and computes empirical reporting proportions.
+`enw_delay_categories()` categorises notifications into delay groups and computes empirical reporting proportions.
 
 ```{r cat-new-confirm}
-nc <- enw_cat_new_confirm(
+nc <- enw_delay_categories(
   pobs, delay_group_thresh = c(0, 1, 3, 7, 14, 41)
 )
 head(nc)

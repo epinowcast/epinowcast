@@ -1,8 +1,8 @@
 pobs <- enw_example("preprocessed_observations")
 thresh <- c(0, 2, 5, 10, 21)
 
-test_that("enw_cat_new_confirm returns expected structure", {
-  nc <- enw_cat_new_confirm(pobs, thresh)
+test_that("enw_delay_categories returns expected structure", {
+  nc <- enw_delay_categories(pobs, thresh)
   expect_s3_class(nc, "data.table")
   expect_true(all(
     c(
@@ -41,35 +41,35 @@ test_that("plot.enw_preprocess_data obs type works", {
   )
 })
 
-test_that("plot.enw_preprocess_data rep_cum type works", {
+test_that("plot.enw_preprocess_data delay_cumulative type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot rep_cum",
-    plot(pobs, type = "rep_cum", delay_group_thresh = thresh)
+    "preprocess plot delay_cumulative",
+    plot(pobs, type = "delay_cumulative", delay_group_thresh = thresh)
   )
 })
 
-test_that("plot.enw_preprocess_data rep_frac type works", {
+test_that("plot.enw_preprocess_data delay_fraction type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot rep_frac",
-    plot(pobs, type = "rep_frac", delay_group_thresh = thresh)
+    "preprocess plot delay_fraction",
+    plot(pobs, type = "delay_fraction", delay_group_thresh = thresh)
   )
 })
 
-test_that("plot.enw_preprocess_data rep_quant type works", {
+test_that("plot.enw_preprocess_data delay_quantiles type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot rep_quant",
-    plot(pobs, type = "rep_quant")
+    "preprocess plot delay_quantiles",
+    plot(pobs, type = "delay_quantiles")
   )
 })
 
-test_that("plot.enw_preprocess_data ts_delay type works", {
+test_that("plot.enw_preprocess_data delay_counts type works", {
   vdiffr::expect_doppelganger(
-    "preprocess plot ts_delay",
-    plot(pobs, type = "ts_delay", delay_group_thresh = thresh)
+    "preprocess plot delay_counts",
+    plot(pobs, type = "delay_counts", delay_group_thresh = thresh)
   )
 })
 
 test_that("plot.enw_preprocess_data auto-generates thresholds", {
-  p <- plot(pobs, type = "rep_cum")
+  p <- plot(pobs, type = "delay_cumulative")
   expect_s3_class(p, "ggplot")
 })

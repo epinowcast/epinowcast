@@ -20,7 +20,7 @@ reference date.
 \description{
 Computes empirical quantiles of the reporting
 delay distribution for each reference date. Intended for
-use with the \code{"rep_quant"} plot type in
+use with the \code{"delay_quantiles"} plot type in
 \code{\link[=plot.enw_preprocess_data]{plot.enw_preprocess_data()}}.
 }
 \examples{
@@ -33,9 +33,9 @@ Preprocessing functions
 \code{\link{enw_add_max_reported}()},
 \code{\link{enw_add_metaobs_features}()},
 \code{\link{enw_assign_group}()},
-\code{\link{enw_cat_new_confirm}()},
 \code{\link{enw_complete_dates}()},
 \code{\link{enw_construct_data}()},
+\code{\link{enw_delay_categories}()},
 \code{\link{enw_extend_date}()},
 \code{\link{enw_filter_delay}()},
 \code{\link{enw_filter_reference_dates}()},

@@ -6,7 +6,8 @@
 \usage{
 \method{plot}{enw_preprocess_data}(
   x,
-  type = c("obs", "rep_cum", "rep_frac", "rep_quant", "ts_delay"),
+  type = c("obs", "delay_cumulative", "delay_fraction", "delay_quantiles",
+    "delay_counts"),
   delay_group_thresh = NULL,
   quantiles = c(0.1, 0.5, 0.9),
   log = FALSE,
@@ -21,25 +22,25 @@
 enforced by \code{\link[base:match.arg]{base::match.arg()}}. Options:
 \itemize{
 \item \code{"obs"} -- latest observations (via \code{\link[=enw_plot_obs]{enw_plot_obs()}})
-\item \code{"rep_cum"} -- cumulative empirical delay (via
-\code{\link[=enw_plot_rep_cum]{enw_plot_rep_cum()}})
-\item \code{"rep_frac"} -- delay heatmap (via
-\code{\link[=enw_plot_rep_frac]{enw_plot_rep_frac()}})
-\item \code{"rep_quant"} -- delay quantiles (via
-\code{\link[=enw_plot_rep_quant]{enw_plot_rep_quant()}})
-\item \code{"ts_delay"} -- notifications by delay group (via
-\code{\link[=enw_plot_ts_delay]{enw_plot_ts_delay()}})
+\item \code{"delay_cumulative"} -- cumulative empirical delay (via
+\code{\link[=enw_plot_delay_cumulative]{enw_plot_delay_cumulative()}})
+\item \code{"delay_fraction"} -- delay heatmap (via
+\code{\link[=enw_plot_delay_fraction]{enw_plot_delay_fraction()}})
+\item \code{"delay_quantiles"} -- delay quantiles (via
+\code{\link[=enw_plot_delay_quantiles]{enw_plot_delay_quantiles()}})
+\item \code{"delay_counts"} -- notifications by delay group (via
+\code{\link[=enw_plot_delay_counts]{enw_plot_delay_counts()}})
 }}
 
 \item{delay_group_thresh}{A numeric vector of left-closed
 interval thresholds for delay grouping (use \code{right = FALSE}
 semantics, so the upper bound should exceed
 \code{max_delay}). Required for all types except \code{"obs"} and
-\code{"rep_quant"}. Defaults to \code{NULL}, which
+\code{"delay_quantiles"}. Defaults to \code{NULL}, which
 auto-generates thresholds from \code{max_delay}.}
 
 \item{quantiles}{A numeric vector of probabilities for the
-\code{"rep_quant"} type. Defaults to \code{c(0.1, 0.5, 0.9)}.}
+\code{"delay_quantiles"} type. Defaults to \code{c(0.1, 0.5, 0.9)}.}
 
 \item{log}{Logical, defaults to \code{FALSE}. Should counts be
 plotted on the log scale (only for \code{"obs"} type).}
@@ -63,16 +64,16 @@ pobs <- enw_example("preprocessed_observations")
 plot(pobs, type = "obs")
 
 # Cumulative reporting delay
-plot(pobs, type = "rep_cum")
+plot(pobs, type = "delay_cumulative")
 
 # Reporting delay heatmap
-plot(pobs, type = "rep_frac")
+plot(pobs, type = "delay_fraction")
 
 # Reporting delay quantiles
-plot(pobs, type = "rep_quant")
+plot(pobs, type = "delay_quantiles")
 
 # Notifications by delay group
-plot(pobs, type = "ts_delay")
+plot(pobs, type = "delay_counts")
 }
 \seealso{
 Other epinowcast: 
@@ -85,15 +86,15 @@ Other epinowcast:
 \code{\link{summary.epinowcast}()}
 
 Plotting functions
+\code{\link{enw_plot_delay_counts}()},
+\code{\link{enw_plot_delay_cumulative}()},
+\code{\link{enw_plot_delay_fraction}()},
+\code{\link{enw_plot_delay_quantiles}()},
 \code{\link{enw_plot_nowcast_quantiles}()},
 \code{\link{enw_plot_obs}()},
 \code{\link{enw_plot_pp_quantiles}()},
 \code{\link{enw_plot_quantiles}()},
-\code{\link{enw_plot_rep_cum}()},
-\code{\link{enw_plot_rep_frac}()},
-\code{\link{enw_plot_rep_quant}()},
 \code{\link{enw_plot_theme}()},
-\code{\link{enw_plot_ts_delay}()},
 \code{\link{plot.epinowcast}()}
 }
 \concept{epinowcast}

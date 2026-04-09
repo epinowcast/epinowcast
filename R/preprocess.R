@@ -1347,8 +1347,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 #' @importFrom data.table copy
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_cat_new_confirm(pobs, delay_group_thresh = c(0, 2, 5, 10, 21))
-enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
+#' enw_delay_categories(pobs, delay_group_thresh = c(0, 2, 5, 10, 21))
+enw_delay_categories <- function(pobs, delay_group_thresh) {
   nc <- data.table::copy(enw_get_data(pobs, "new_confirm"))
   by_vars <- enw_get_data(pobs, "by")
   grouping_vars <- unique(
@@ -1381,7 +1381,7 @@ enw_cat_new_confirm <- function(pobs, delay_group_thresh) {
 #'
 #' @description Computes empirical quantiles of the reporting
 #'   delay distribution for each reference date. Intended for
-#'   use with the `"rep_quant"` plot type in
+#'   use with the `"delay_quantiles"` plot type in
 #'   [plot.enw_preprocess_data()].
 #'
 #' @param pobs A preprocessed data object as produced by

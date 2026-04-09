@@ -349,24 +349,24 @@ summary.epinowcast <- function(object, type = c(
 #' @param type Character string indicating the plot type;
 #'   enforced by [base::match.arg()]. Options:
 #'   * `"obs"` -- latest observations (via [enw_plot_obs()])
-#'   * `"rep_cum"` -- cumulative empirical delay (via
-#'     [enw_plot_rep_cum()])
-#'   * `"rep_frac"` -- delay heatmap (via
-#'     [enw_plot_rep_frac()])
-#'   * `"rep_quant"` -- delay quantiles (via
-#'     [enw_plot_rep_quant()])
-#'   * `"ts_delay"` -- notifications by delay group (via
-#'     [enw_plot_ts_delay()])
+#'   * `"delay_cumulative"` -- cumulative empirical delay (via
+#'     [enw_plot_delay_cumulative()])
+#'   * `"delay_fraction"` -- delay heatmap (via
+#'     [enw_plot_delay_fraction()])
+#'   * `"delay_quantiles"` -- delay quantiles (via
+#'     [enw_plot_delay_quantiles()])
+#'   * `"delay_counts"` -- notifications by delay group (via
+#'     [enw_plot_delay_counts()])
 #'
 #' @param delay_group_thresh A numeric vector of left-closed
 #'   interval thresholds for delay grouping (use `right = FALSE`
 #'   semantics, so the upper bound should exceed
 #'   `max_delay`). Required for all types except `"obs"` and
-#'   `"rep_quant"`. Defaults to `NULL`, which
+#'   `"delay_quantiles"`. Defaults to `NULL`, which
 #'   auto-generates thresholds from `max_delay`.
 #'
 #' @param quantiles A numeric vector of probabilities for the
-#'   `"rep_quant"` type. Defaults to `c(0.1, 0.5, 0.9)`.
+#'   `"delay_quantiles"` type. Defaults to `c(0.1, 0.5, 0.9)`.
 #'
 #' @param log Logical, defaults to `FALSE`. Should counts be
 #'   plotted on the log scale (only for `"obs"` type).
@@ -387,20 +387,20 @@ summary.epinowcast <- function(object, type = c(
 #' plot(pobs, type = "obs")
 #'
 #' # Cumulative reporting delay
-#' plot(pobs, type = "rep_cum")
+#' plot(pobs, type = "delay_cumulative")
 #'
 #' # Reporting delay heatmap
-#' plot(pobs, type = "rep_frac")
+#' plot(pobs, type = "delay_fraction")
 #'
 #' # Reporting delay quantiles
-#' plot(pobs, type = "rep_quant")
+#' plot(pobs, type = "delay_quantiles")
 #'
 #' # Notifications by delay group
-#' plot(pobs, type = "ts_delay")
+#' plot(pobs, type = "delay_counts")
 plot.enw_preprocess_data <- function(
   x, type = c(
-    "obs", "rep_cum", "rep_frac",
-    "rep_quant", "ts_delay"
+    "obs", "delay_cumulative", "delay_fraction",
+    "delay_quantiles", "delay_counts"
   ),
   delay_group_thresh = NULL,
   quantiles = c(0.1, 0.5, 0.9),
@@ -423,16 +423,16 @@ plot.enw_preprocess_data <- function(
       enw_plot_obs(latest, log = log, x = reference_date, ...) +
         labs(y = "Notifications", x = "Reference date")
     },
-    rep_cum = enw_plot_rep_cum(
+    delay_cumulative = enw_plot_delay_cumulative(
       x, delay_group_thresh
     ),
-    rep_frac = enw_plot_rep_frac(
+    delay_fraction = enw_plot_delay_fraction(
       x, delay_group_thresh
     ),
-    rep_quant = enw_plot_rep_quant(
+    delay_quantiles = enw_plot_delay_quantiles(
       x, quantiles
     ),
-    ts_delay = enw_plot_ts_delay(
+    delay_counts = enw_plot_delay_counts(
       x, delay_group_thresh
     ),
     cli::cli_abort("unimplemented type: {type}")

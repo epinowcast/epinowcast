@@ -210,9 +210,9 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_rep_cum(pobs, c(0, 2, 5, 10, 21))
-enw_plot_rep_cum <- function(pobs, delay_group_thresh) {
-  nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
+#' enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
+enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
+  nc_group <- enw_delay_categories(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(
     delay_group,
     levels = rev(levels(delay_group)),
@@ -261,9 +261,9 @@ enw_plot_rep_cum <- function(pobs, delay_group_thresh) {
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_rep_frac(pobs, c(0, 2, 5, 10, 21))
-enw_plot_rep_frac <- function(pobs, delay_group_thresh) {
-  nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
+#' enw_plot_delay_fraction(pobs, c(0, 2, 5, 10, 21))
+enw_plot_delay_fraction <- function(pobs, delay_group_thresh) {
+  nc_group <- enw_delay_categories(pobs, delay_group_thresh)
   plot <- ggplot(nc_group) +
     geom_tile(aes(
       reference_date, delay_group,
@@ -291,8 +291,8 @@ enw_plot_rep_frac <- function(pobs, delay_group_thresh) {
 #' @importFrom data.table melt
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_rep_quant(pobs)
-enw_plot_rep_quant <- function(
+#' enw_plot_delay_quantiles(pobs)
+enw_plot_delay_quantiles <- function(
   pobs, quantiles = c(0.1, 0.5, 0.9)
 ) {
   emp_quant <- enw_delay_quantiles(pobs, quantiles)
@@ -325,11 +325,11 @@ enw_plot_rep_quant <- function(
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
-#' enw_plot_ts_delay(pobs, c(0, 2, 5, 10, 21))
-enw_plot_ts_delay <- function(
+#' enw_plot_delay_counts(pobs, c(0, 2, 5, 10, 21))
+enw_plot_delay_counts <- function(
   pobs, delay_group_thresh
 ) {
-  nc_group <- enw_cat_new_confirm(pobs, delay_group_thresh)
+  nc_group <- enw_delay_categories(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(
     delay_group,
     levels = rev(levels(delay_group))

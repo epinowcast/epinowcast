@@ -232,6 +232,6 @@
 <text x='405.07' y='563.21' text-anchor='middle' style='font-size: 8.80px; font-family: sans;' textLength='17.13px' lengthAdjust='spacingAndGlyphs'>0.50</text>
 <text x='426.60' y='563.21' text-anchor='middle' style='font-size: 8.80px; font-family: sans;' textLength='17.13px' lengthAdjust='spacingAndGlyphs'>0.75</text>
 <text x='448.13' y='563.21' text-anchor='middle' style='font-size: 8.80px; font-family: sans;' textLength='17.13px' lengthAdjust='spacingAndGlyphs'>1.00</text>
-<text x='50.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='142.36px' lengthAdjust='spacingAndGlyphs'>preprocess plot rep_frac</text>
+<text x='50.40' y='14.56' style='font-size: 13.20px; font-family: sans;' textLength='176.12px' lengthAdjust='spacingAndGlyphs'>preprocess plot delay_fraction</text>
 </g>
 </svg>
