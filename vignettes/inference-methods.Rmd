@@ -43,6 +43,7 @@ This vignette compares these three approaches across two nowcasting model specif
 library(epinowcast)
 library(data.table)
 library(ggplot2)
+library(purrr)
 ```
 
 We use German COVID-19 hospitalisation data from the package, filtering to a period (up to 1 July 2021) where reporting patterns are well behaved for demonstrating model fit.
@@ -64,83 +65,77 @@ latest_germany_hosp <- nat_germany_hosp |>
 pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 30)
 ```
 
-Compile the model once with threading support enabled.
+Compile the model once.
+We disable threading here as the single-group models in this vignette do not benefit from within-chain parallelisation.
 
 
 ``` r
-model <- enw_model(threads = TRUE)
+model <- enw_model(threads = FALSE)
 ```
 
 # Model specifications
 
-We define two nowcasting specifications that share the same expectation (process) and report models but differ in how they handle reporting delays.
-Both use a weekly random walk growth rate with day-of-week effects for the expected counts, and negative binomial observations.
-
-**Spec A (static delays):** lognormal delays that are constant over time.
-This is a good default when reporting processes are stable.
+We define two nowcasting specifications that share the same expectation (process), report, and observation models but differ in how they handle reporting delays.
+Both use a weekly random walk growth rate with day-of-week effects for the expected counts, day-of-week report effects, and negative binomial observations.
 
 
 ``` r
 shared_expectation <- enw_expectation(
   ~ 1 + rw(week) + (1 | day_of_week), data = pobs
 )
-shared_report <- enw_report(
-  ~ (1 | day_of_week) + rw(week), data = pobs
-)
+shared_report <- enw_report(~ (1 | day_of_week), data = pobs)
 shared_obs <- enw_obs(family = "negbin", data = pobs)
+```
 
-spec_a <- list(
-  expectation = shared_expectation,
-  reference = enw_reference(
-    parametric = ~1, distribution = "lognormal", data = pobs
-  ),
-  report = shared_report,
-  obs = shared_obs
+**Spec A (static delays):** lognormal delays that are constant over time.
+This is a good default when reporting processes are stable.
+
+
+``` r
+ref_a <- enw_reference(
+  parametric = ~1, distribution = "lognormal", data = pobs
 )
 ```
 
-**Spec B (time-varying delays):** lognormal delays with a weekly random walk on the mean parameter, allowing the delay distribution to change over time.
+**Spec B (time-varying delays):** lognormal delays with a weekly random walk on the mean parameter and day-of-week effects, allowing the delay distribution to change over time and by day of week.
 This is useful when reporting processes are evolving, but adds parameters.
 
 
 ``` r
-spec_b <- list(
+ref_b <- enw_reference(
+  parametric = ~ 1 + rw(week) + (1 | day_of_week),
+  distribution = "lognormal",
+  data = pobs
+)
+```
+
+We use `purrr::partial()` to create a function factory that fixes the shared settings, so we only need to vary the reference model and fitting options for each run.
+
+
+``` r
+fit_nowcast <- partial(
+  epinowcast,
+  data = pobs,
   expectation = shared_expectation,
-  reference = enw_reference(
-    parametric = ~ 1 + rw(week),
-    distribution = "lognormal",
-    data = pobs
-  ),
   report = shared_report,
-  obs = shared_obs
+  obs = shared_obs,
+  model = model
 )
 ```
 
 # Fitting
 
-We define shared NUTS options (tuned for speed, not production use) and a helper to fit a given specification with a given method.
+We define shared NUTS options tuned for speed rather than production use.
 
 
 ``` r
 nuts_args <- list(
   save_warmup = FALSE, pp = TRUE,
-  chains = 2, threads_per_chain = 2,
+  chains = 2,
   iter_sampling = 500, iter_warmup = 500,
   adapt_delta = 0.95, max_depth = 12,
-  show_messages = FALSE
+  show_messages = FALSE, refresh = 0
 )
-
-fit_spec <- function(spec, fit_opts) {
-  epinowcast(
-    data = pobs,
-    expectation = spec$expectation,
-    reference = spec$reference,
-    report = spec$report,
-    obs = spec$obs,
-    fit = fit_opts,
-    model = model
-  )
-}
 ```
 
 ## NUTS with prior initialisation (default)
@@ -154,8 +149,8 @@ nuts_prior_opts <- do.call(
   c(list(sampler = enw_sample), nuts_args)
 )
 
-fit_a_nuts <- fit_spec(spec_a, nuts_prior_opts)
-fit_b_nuts <- fit_spec(spec_b, nuts_prior_opts)
+fit_a_nuts <- fit_nowcast(reference = ref_a, fit = nuts_prior_opts)
+fit_b_nuts <- fit_nowcast(reference = ref_b, fit = nuts_prior_opts)
 ```
 
 ## NUTS with pathfinder initialisation
@@ -170,437 +165,18 @@ nuts_pf_opts <- do.call(
   )
 )
 
-fit_a_nuts_pf <- fit_spec(spec_a, nuts_pf_opts)
-#> Path [1] :Initial log joint density = -33135.397491 
-#> Path [3] :Initial log joint density = -33135.397491
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.930e+03      2.978e-02   8.001e+01    5.126e-01  5.126e-01      9005 -2.050e+03 -2.073e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.930e+03      2.978e-02   8.001e+01    5.126e-01  5.126e-01      9005 -2.051e+03 -2.078e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.909e+03      5.640e-02   2.500e+01    1.000e+00  1.000e+00     29822 -2.043e+03 -2.066e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.909e+03      5.640e-02   2.500e+01    1.000e+00  1.000e+00     29822 -2.042e+03 -2.079e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.546e+03      5.038e-02   4.193e+02    9.020e-02  5.519e-01     62947 -1.697e+03 -1.789e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.546e+03      5.038e-02   4.193e+02    9.020e-02  5.519e-01     62947 -1.698e+03 -1.808e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.515e+03      1.942e-01   2.115e+01    1.000e+00  1.000e+00    108822 -1.657e+03 -1.883e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.515e+03      1.942e-01   2.115e+01    1.000e+00  1.000e+00    108822 -1.679e+03 -1.909e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.498e+03      3.008e-02   5.825e+01    1.000e+00  1.000e+00    166288 -1.621e+03 -1.692e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.498e+03      3.008e-02   5.825e+01    1.000e+00  1.000e+00    166288 -1.622e+03 -1.713e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.495e+03      6.054e-02   4.228e+01    1.000e+00  1.000e+00    235491 -1.612e+03 -1.687e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.495e+03      6.054e-02   4.228e+01    1.000e+00  1.000e+00    235491 -1.616e+03 -1.657e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.417e-02   2.004e+01    4.226e-01  1.000e+00    316646 -1.612e+03 -1.715e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.417e-02   2.004e+01    4.226e-01  1.000e+00    316646 -1.616e+03 -1.807e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.980e-03   5.140e+00    1.000e+00  1.000e+00    409447 -1.612e+03 -1.706e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.980e-03   5.140e+00    1.000e+00  1.000e+00    409447 -1.616e+03 -1.702e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             899      -1.494e+03      1.377e-03   7.291e+00    1.006e-01  1.000e+00    513829 -1.612e+03 -1.745e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             899      -1.494e+03      1.377e-03   7.291e+00    1.006e-01  1.000e+00    513829 -1.616e+03 -1.701e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             999      -1.494e+03      1.717e-04   1.620e+00    5.966e-01  5.966e-01    630300 -1.612e+03 -1.684e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>            1000      -1.494e+03      2.222e-04   6.447e-01    1.000e+00  1.000e+00    631521 -1.612e+03 -1.666e+03                   
-#> Path [1] :Best Iter: [535] ELBO (-1611.797483) evaluations: (631521) 
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             999      -1.494e+03      1.717e-04   1.620e+00    5.966e-01  5.966e-01    630300 -1.616e+03 -1.671e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>            1000      -1.494e+03      2.222e-04   6.447e-01    1.000e+00  1.000e+00    631521 -1.616e+03 -1.678e+03                   
-#> Path [3] :Best Iter: [535] ELBO (-1615.745205) evaluations: (631521) 
-#> Path [2] :Initial log joint density = -33135.397491 
-#> Path [4] :Initial log joint density = -33135.397491 
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.930e+03      2.978e-02   8.001e+01    5.126e-01  5.126e-01      9005 -2.051e+03 -2.075e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.930e+03      2.978e-02   8.001e+01    5.126e-01  5.126e-01      9005 -2.051e+03 -2.089e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.909e+03      5.640e-02   2.500e+01    1.000e+00  1.000e+00     29822 -2.043e+03 -2.064e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.909e+03      5.640e-02   2.500e+01    1.000e+00  1.000e+00     29822 -2.040e+03 -2.075e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.546e+03      5.038e-02   4.193e+02    9.020e-02  5.519e-01     62947 -1.688e+03 -1.777e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.546e+03      5.038e-02   4.193e+02    9.020e-02  5.519e-01     62947 -1.688e+03 -1.791e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.515e+03      1.942e-01   2.115e+01    1.000e+00  1.000e+00    108822 -1.676e+03 -1.796e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.515e+03      1.942e-01   2.115e+01    1.000e+00  1.000e+00    108822 -1.663e+03 -1.885e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.498e+03      3.008e-02   5.825e+01    1.000e+00  1.000e+00    166288 -1.625e+03 -1.731e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.498e+03      3.008e-02   5.825e+01    1.000e+00  1.000e+00    166288 -1.624e+03 -1.701e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.495e+03      6.054e-02   4.228e+01    1.000e+00  1.000e+00    235491 -1.616e+03 -1.668e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.495e+03      6.054e-02   4.228e+01    1.000e+00  1.000e+00    235491 -1.616e+03 -1.659e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.417e-02   2.004e+01    4.226e-01  1.000e+00    316646 -1.616e+03 -1.749e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.417e-02   2.004e+01    4.226e-01  1.000e+00    316646 -1.616e+03 -1.916e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.980e-03   5.140e+00    1.000e+00  1.000e+00    409447 -1.616e+03 -1.695e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.980e-03   5.140e+00    1.000e+00  1.000e+00    409447 -1.616e+03 -1.714e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             899      -1.494e+03      1.377e-03   7.291e+00    1.006e-01  1.000e+00    513829 -1.616e+03 -1.763e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             899      -1.494e+03      1.377e-03   7.291e+00    1.006e-01  1.000e+00    513829 -1.616e+03 -1.763e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             999      -1.494e+03      1.717e-04   1.620e+00    5.966e-01  5.966e-01    630300 -1.616e+03 -1.668e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>            1000      -1.494e+03      2.222e-04   6.447e-01    1.000e+00  1.000e+00    631521 -1.616e+03 -1.676e+03                   
-#> Path [2] :Best Iter: [519] ELBO (-1616.240622) evaluations: (631521) 
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             999      -1.494e+03      1.717e-04   1.620e+00    5.966e-01  5.966e-01    630300 -1.616e+03 -1.687e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>            1000      -1.494e+03      2.222e-04   6.447e-01    1.000e+00  1.000e+00    631521 -1.616e+03 -1.668e+03                   
-#> Path [4] :Best Iter: [519] ELBO (-1615.625617) evaluations: (631521) 
-#> Pareto k value (1.9) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
-#> Finished in  5.2 seconds.
-fit_b_nuts_pf <- fit_spec(spec_b, nuts_pf_opts)
-#> Path [1] :Initial log joint density = -34397.619666 
-#> Path [3] :Initial log joint density = -34397.619666
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.509e+03      2.261e-02   1.831e+01    1.000e+00  1.000e+00      8426 -1.648e+03 -1.678e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.509e+03      2.261e-02   1.831e+01    1.000e+00  1.000e+00      8426 -1.642e+03 -1.672e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      4.667e-02   1.171e+01    1.000e+00  1.000e+00     29164 -1.646e+03 -1.722e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      4.667e-02   1.171e+01    1.000e+00  1.000e+00     29164 -1.642e+03 -1.753e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.488e+03      2.432e-02   2.896e+01    1.156e-01  1.000e+00     62944 -1.640e+03 -1.723e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.488e+03      2.432e-02   2.896e+01    1.156e-01  1.000e+00     62944 -1.642e+03 -1.725e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.484e+03      5.420e-02   6.236e+01    1.000e+00  1.000e+00    109285 -1.640e+03 -1.683e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.484e+03      5.420e-02   6.236e+01    1.000e+00  1.000e+00    109285 -1.642e+03 -1.725e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.483e+03      1.764e-02   4.187e+00    1.000e+00  1.000e+00    167576 -1.640e+03 -1.727e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.483e+03      1.764e-02   4.187e+00    1.000e+00  1.000e+00    167576 -1.642e+03 -1.705e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      8.876e-04   4.045e+00    5.502e-01  5.502e-01    237904 -1.640e+03 -1.708e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      8.876e-04   4.045e+00    5.502e-01  5.502e-01    237904 -1.642e+03 -1.725e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.127e-04   4.355e+00    1.943e-01  1.943e-01    320072 -1.640e+03 -1.713e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.127e-04   4.355e+00    1.943e-01  1.943e-01    320072 -1.642e+03 -1.758e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      4.935e-03   7.245e-01    1.000e+00  1.000e+00    414048 -1.640e+03 -1.720e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      4.935e-03   7.245e-01    1.000e+00  1.000e+00    414048 -1.642e+03 -1.710e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             819      -1.483e+03      1.911e-04   6.878e-01    2.018e-01  1.000e+00    434536 -1.640e+03 -1.749e+03                   
-#> Path [1] :Best Iter: [308] ELBO (-1639.609323) evaluations: (434536) 
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             819      -1.483e+03      1.911e-04   6.878e-01    2.018e-01  1.000e+00    434536 -1.642e+03 -1.726e+03                   
-#> Path [3] :Best Iter: [95] ELBO (-1641.982990) evaluations: (434536) 
-#> Path [2] :Initial log joint density = -34397.619666 
-#> Path [4] :Initial log joint density = -34397.619666 
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.509e+03      2.261e-02   1.831e+01    1.000e+00  1.000e+00      8426 -1.641e+03 -1.690e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.509e+03      2.261e-02   1.831e+01    1.000e+00  1.000e+00      8426 -1.647e+03 -1.683e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      4.667e-02   1.171e+01    1.000e+00  1.000e+00     29164 -1.641e+03 -1.733e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      4.667e-02   1.171e+01    1.000e+00  1.000e+00     29164 -1.647e+03 -1.734e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.488e+03      2.432e-02   2.896e+01    1.156e-01  1.000e+00     62944 -1.641e+03 -1.716e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.488e+03      2.432e-02   2.896e+01    1.156e-01  1.000e+00     62944 -1.643e+03 -1.753e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.484e+03      5.420e-02   6.236e+01    1.000e+00  1.000e+00    109285 -1.641e+03 -1.699e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.484e+03      5.420e-02   6.236e+01    1.000e+00  1.000e+00    109285 -1.639e+03 -1.773e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.483e+03      1.764e-02   4.187e+00    1.000e+00  1.000e+00    167576 -1.641e+03 -1.700e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.483e+03      1.764e-02   4.187e+00    1.000e+00  1.000e+00    167576 -1.639e+03 -1.693e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      8.876e-04   4.045e+00    5.502e-01  5.502e-01    237904 -1.641e+03 -1.703e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      8.876e-04   4.045e+00    5.502e-01  5.502e-01    237904 -1.639e+03 -1.722e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.127e-04   4.355e+00    1.943e-01  1.943e-01    320072 -1.641e+03 -1.734e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.127e-04   4.355e+00    1.943e-01  1.943e-01    320072 -1.639e+03 -1.732e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      4.935e-03   7.245e-01    1.000e+00  1.000e+00    414048 -1.641e+03 -1.715e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      4.935e-03   7.245e-01    1.000e+00  1.000e+00    414048 -1.639e+03 -1.870e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             819      -1.483e+03      1.911e-04   6.878e-01    2.018e-01  1.000e+00    434536 -1.641e+03 -1.732e+03                   
-#> Path [2] :Best Iter: [95] ELBO (-1641.137921) evaluations: (434536) 
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             819      -1.483e+03      1.911e-04   6.878e-01    2.018e-01  1.000e+00    434536 -1.639e+03 -1.719e+03                   
-#> Path [4] :Best Iter: [377] ELBO (-1639.326811) evaluations: (434536) 
-#> Pareto k value (2.1) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
-#> Finished in  4.9 seconds.
+fit_a_nuts_pf <- fit_nowcast(reference = ref_a, fit = nuts_pf_opts)
+fit_b_nuts_pf <- fit_nowcast(reference = ref_b, fit = nuts_pf_opts)
 ```
 
 ## Pathfinder (approximate inference)
 
 
 ``` r
-pf_opts <- enw_fit_opts(
-  sampler = enw_pathfinder, pp = TRUE,
-  threads_per_chain = 2
-)
+pf_opts <- enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
 
-fit_a_pf <- fit_spec(spec_a, pf_opts)
-#> Path [1] :Initial log joint density = -12598.759510 
-#> Path [3] :Initial log joint density = -12598.759510
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.505e+03      2.142e-02   2.056e+01    1.000e+00  1.000e+00      8613 -1.602e+03 -1.719e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.505e+03      2.142e-02   2.056e+01    1.000e+00  1.000e+00      8613 -1.601e+03 -1.821e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.501e+03      1.690e-02   1.666e+01    1.000e+00  1.000e+00     29372 -1.602e+03 -1.825e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.501e+03      1.690e-02   1.666e+01    1.000e+00  1.000e+00     29372 -1.601e+03 -1.869e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.498e+03      2.383e-02   7.448e+00    1.000e+00  1.000e+00     61961 -1.602e+03 -1.653e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.498e+03      2.383e-02   7.448e+00    1.000e+00  1.000e+00     61961 -1.601e+03 -1.665e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.496e+03      1.231e-02   7.989e+00    3.283e+00  3.283e-01    106685 -1.602e+03 -1.699e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.496e+03      1.231e-02   7.989e+00    3.283e+00  3.283e-01    106685 -1.601e+03 -1.774e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.495e+03      3.348e-02   2.111e+01    1.650e-01  1.000e+00    163293 -1.602e+03 -1.727e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.495e+03      3.348e-02   2.111e+01    1.650e-01  1.000e+00    163293 -1.601e+03 -1.691e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.494e+03      1.080e-02   1.067e+01    1.000e+00  1.000e+00    231981 -1.602e+03 -1.667e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.494e+03      1.080e-02   1.067e+01    1.000e+00  1.000e+00    231981 -1.601e+03 -1.685e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.167e-04   2.376e+00    1.000e+00  1.000e+00    312432 -1.602e+03 -1.669e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.167e-04   2.376e+00    1.000e+00  1.000e+00    312432 -1.601e+03 -1.675e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.099e-03   1.907e+00    1.000e+00  1.000e+00    405633 -1.602e+03 -1.776e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.099e-03   1.907e+00    1.000e+00  1.000e+00    405633 -1.601e+03 -1.710e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             852      -1.494e+03      3.439e-05   1.226e-01    2.589e-01  1.000e+00    460363 -1.602e+03 -1.653e+03                   
-#> Path [1] :Best Iter: [42] ELBO (-1601.518877) evaluations: (460363) 
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             852      -1.494e+03      3.439e-05   1.226e-01    2.589e-01  1.000e+00    460363 -1.601e+03 -1.646e+03                   
-#> Path [3] :Best Iter: [53] ELBO (-1600.918813) evaluations: (460363) 
-#> Path [2] :Initial log joint density = -12598.759510 
-#> Path [4] :Initial log joint density = -12598.759510 
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.505e+03      2.142e-02   2.056e+01    1.000e+00  1.000e+00      8613 -1.600e+03 -1.806e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.505e+03      2.142e-02   2.056e+01    1.000e+00  1.000e+00      8613 -1.600e+03 -1.799e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.501e+03      1.690e-02   1.666e+01    1.000e+00  1.000e+00     29372 -1.600e+03 -1.869e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.501e+03      1.690e-02   1.666e+01    1.000e+00  1.000e+00     29372 -1.600e+03 -1.845e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.498e+03      2.383e-02   7.448e+00    1.000e+00  1.000e+00     61961 -1.600e+03 -1.670e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.498e+03      2.383e-02   7.448e+00    1.000e+00  1.000e+00     61961 -1.600e+03 -1.671e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.496e+03      1.231e-02   7.989e+00    3.283e+00  3.283e-01    106685 -1.600e+03 -1.757e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.496e+03      1.231e-02   7.989e+00    3.283e+00  3.283e-01    106685 -1.600e+03 -1.738e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.495e+03      3.348e-02   2.111e+01    1.650e-01  1.000e+00    163293 -1.600e+03 -1.720e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.495e+03      3.348e-02   2.111e+01    1.650e-01  1.000e+00    163293 -1.600e+03 -1.695e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.494e+03      1.080e-02   1.067e+01    1.000e+00  1.000e+00    231981 -1.600e+03 -1.666e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.494e+03      1.080e-02   1.067e+01    1.000e+00  1.000e+00    231981 -1.600e+03 -1.658e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.167e-04   2.376e+00    1.000e+00  1.000e+00    312432 -1.600e+03 -1.670e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.494e+03      1.167e-04   2.376e+00    1.000e+00  1.000e+00    312432 -1.600e+03 -1.682e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.099e-03   1.907e+00    1.000e+00  1.000e+00    405633 -1.600e+03 -1.874e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.494e+03      3.099e-03   1.907e+00    1.000e+00  1.000e+00    405633 -1.600e+03 -1.818e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             852      -1.494e+03      3.439e-05   1.226e-01    2.589e-01  1.000e+00    460363 -1.600e+03 -1.658e+03                   
-#> Path [2] :Best Iter: [42] ELBO (-1599.815757) evaluations: (460363) 
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             852      -1.494e+03      3.439e-05   1.226e-01    2.589e-01  1.000e+00    460363 -1.600e+03 -1.653e+03                   
-#> Path [4] :Best Iter: [53] ELBO (-1599.953730) evaluations: (460363) 
-#> Pareto k value (1.8) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
-#> Finished in  4.9 seconds.
-fit_b_pf <- fit_spec(spec_b, pf_opts)
-#> Path [1] :Initial log joint density = -16013.848211 
-#> Path [3] :Initial log joint density = -16013.848211 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.507e+03      1.002e-02   2.260e+01    4.388e-01  4.388e-01     10459 -1.632e+03 -1.909e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.507e+03      1.002e-02   2.260e+01    4.388e-01  4.388e-01     10459 -1.631e+03 -1.880e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      3.472e-03   1.374e+01    2.539e-01  9.896e-01     32706 -1.632e+03 -1.875e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      3.472e-03   1.374e+01    2.539e-01  9.896e-01     32706 -1.631e+03 -1.809e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.494e+03      5.213e-03   1.693e+01    7.086e-01  7.086e-01     68005 -1.632e+03 -1.703e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.494e+03      5.213e-03   1.693e+01    7.086e-01  7.086e-01     68005 -1.631e+03 -1.694e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.486e+03      3.004e-02   6.726e+01    3.271e-01  1.000e+00    115833 -1.632e+03 -1.785e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.486e+03      3.004e-02   6.726e+01    3.271e-01  1.000e+00    115833 -1.631e+03 -1.796e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.484e+03      5.551e-03   1.585e+01    1.000e+00  1.000e+00    176249 -1.632e+03 -1.664e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.484e+03      5.551e-03   1.585e+01    1.000e+00  1.000e+00    176249 -1.631e+03 -1.671e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      2.988e-03   3.685e+01    2.208e-01  1.000e+00    248428 -1.632e+03 -1.778e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      2.988e-03   3.685e+01    2.208e-01  1.000e+00    248428 -1.631e+03 -1.735e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.176e-04   3.902e+00    2.860e-01  2.860e-01    332772 -1.632e+03 -1.667e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.176e-04   3.902e+00    2.860e-01  2.860e-01    332772 -1.631e+03 -1.671e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      1.677e-03   1.018e+01    2.694e-01  1.000e+00    429258 -1.632e+03 -1.702e+03                   
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      1.677e-03   1.018e+01    2.694e-01  1.000e+00    429258 -1.631e+03 -1.678e+03                   
-#> Path [1] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             893      -1.483e+03      2.641e-04   2.975e-01    1.000e+00  1.000e+00    531163 -1.632e+03 -1.698e+03                   
-#> Path [1] :Best Iter: [84] ELBO (-1632.242365) evaluations: (531163) 
-#> Path [3] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             893      -1.483e+03      2.641e-04   2.975e-01    1.000e+00  1.000e+00    531163 -1.631e+03 -1.688e+03                   
-#> Path [3] :Best Iter: [84] ELBO (-1631.386632) evaluations: (531163) 
-#> Path [2] :Initial log joint density = -16013.848211 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Path [4] :Initial log joint density = -16013.848211 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[1] is -inf, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Exception: Exception: Exception: neg_binomial_2_log_lpmf: Log location parameter[18] is nan, but must be finite! (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/obs_lpmf.stan', line 35, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 13, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/include_1/stan/functions/delay_lpmf.stan', line 64, column 4, included from 
-#> '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 18, column 0) (in '/var/folders/cg/c1zk6s7n061cj176r8lp7_900000gn/T/RtmpXz7M7Z/model-12fbb5987127a.stan', line 406, column 8 to line 412, column 10) 
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.507e+03      1.002e-02   2.260e+01    4.388e-01  4.388e-01     10459 -1.633e+03 -1.855e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>              99      -1.507e+03      1.002e-02   2.260e+01    4.388e-01  4.388e-01     10459 -1.640e+03 -1.771e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      3.472e-03   1.374e+01    2.539e-01  9.896e-01     32706 -1.633e+03 -1.831e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             199      -1.497e+03      3.472e-03   1.374e+01    2.539e-01  9.896e-01     32706 -1.640e+03 -1.888e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.494e+03      5.213e-03   1.693e+01    7.086e-01  7.086e-01     68005 -1.633e+03 -1.694e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             299      -1.494e+03      5.213e-03   1.693e+01    7.086e-01  7.086e-01     68005 -1.635e+03 -1.689e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.486e+03      3.004e-02   6.726e+01    3.271e-01  1.000e+00    115833 -1.633e+03 -1.751e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             399      -1.486e+03      3.004e-02   6.726e+01    3.271e-01  1.000e+00    115833 -1.635e+03 -1.723e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.484e+03      5.551e-03   1.585e+01    1.000e+00  1.000e+00    176249 -1.633e+03 -1.669e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             499      -1.484e+03      5.551e-03   1.585e+01    1.000e+00  1.000e+00    176249 -1.635e+03 -1.680e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      2.988e-03   3.685e+01    2.208e-01  1.000e+00    248428 -1.633e+03 -1.740e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             599      -1.483e+03      2.988e-03   3.685e+01    2.208e-01  1.000e+00    248428 -1.635e+03 -1.762e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.176e-04   3.902e+00    2.860e-01  2.860e-01    332772 -1.633e+03 -1.668e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             699      -1.483e+03      3.176e-04   3.902e+00    2.860e-01  2.860e-01    332772 -1.635e+03 -1.670e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      1.677e-03   1.018e+01    2.694e-01  1.000e+00    429258 -1.633e+03 -1.684e+03                   
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             799      -1.483e+03      1.677e-03   1.018e+01    2.694e-01  1.000e+00    429258 -1.635e+03 -1.685e+03                   
-#> Path [2] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             893      -1.483e+03      2.641e-04   2.975e-01    1.000e+00  1.000e+00    531163 -1.633e+03 -1.699e+03                   
-#> Path [2] :Best Iter: [84] ELBO (-1633.307150) evaluations: (531163) 
-#> Path [4] : Iter      log prob        ||dx||      ||grad||     alpha      alpha0      # evals       ELBO    Best ELBO        Notes  
-#>             893      -1.483e+03      2.641e-04   2.975e-01    1.000e+00  1.000e+00    531163 -1.635e+03 -1.689e+03                   
-#> Path [4] :Best Iter: [229] ELBO (-1634.686435) evaluations: (531163) 
-#> Pareto k value (2.2) is greater than 0.7. Importance resampling was not able to improve the approximation, which may indicate that the approximation itself is poor. 
-#> Finished in  5.3 seconds.
+fit_a_pf <- fit_nowcast(reference = ref_a, fit = pf_opts)
+fit_b_pf <- fit_nowcast(reference = ref_b, fit = pf_opts)
 ```
 
 # Runtime comparison
@@ -640,17 +216,19 @@ Table: Runtime in seconds for each spec and fitting method.
 |Spec                    |Method                | Runtime (s)|
 |:-----------------------|:---------------------|-----------:|
 |A (static delays)       |NUTS
-(prior init)      |        46.1|
+(prior init)      |        56.2|
 |A (static delays)       |NUTS
-(pathfinder init) |        50.8|
-|A (static delays)       |Pathfinder            |         4.9|
+(pathfinder init) |        65.9|
+|A (static delays)       |Pathfinder            |         4.7|
 |B (time-varying delays) |NUTS
-(prior init)      |        61.8|
+(prior init)      |       119.3|
 |B (time-varying delays) |NUTS
-(pathfinder init) |        72.2|
-|B (time-varying delays) |Pathfinder            |         5.3|
+(pathfinder init) |       123.7|
+|B (time-varying delays) |Pathfinder            |        11.0|
 
 
+
+Note that the runtime for pathfinder-initialised NUTS includes both the pathfinder approximation step and the subsequent NUTS sampling.
 
 
 ``` r
@@ -669,10 +247,15 @@ ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
 <p class="caption">plot of chunk runtime-plot</p>
 </div>
 
+Pathfinder is substantially faster than NUTS, completing in a fraction of the time.
+The pathfinder initialisation adds overhead to the NUTS run, so pathfinder-initialised NUTS is slower than standard NUTS for these models.
+In models where NUTS struggles to converge (e.g. due to complex posteriors or poor default initialisation), the pathfinder initialisation can reduce warmup iterations and overall runtime.
+
 # Diagnostics
 
+## NUTS diagnostics
+
 Standard MCMC diagnostics (Rhat, divergent transitions, tree depth) apply to NUTS fits.
-Pathfinder is a variational method and does not produce these diagnostics.
 
 
 ``` r
@@ -706,61 +289,50 @@ Table: MCMC diagnostics for NUTS fits.
 
 |Label                     | Samples| Max Rhat| Divergent transitions| Max tree depth|
 |:-------------------------|-------:|--------:|---------------------:|--------------:|
-|A: NUTS (prior init)      |    1000|     1.01|                     1|              9|
-|A: NUTS (pathfinder init) |    1000|     1.02|                     1|              9|
-|B: NUTS (prior init)      |    1000|     1.02|                     0|              9|
-|B: NUTS (pathfinder init) |    1000|     1.01|                     1|              9|
+|A: NUTS (prior init)      |    1000|     1.01|                     1|             10|
+|A: NUTS (pathfinder init) |    1000|     1.03|                     0|             10|
+|B: NUTS (prior init)      |    1000|     1.02|                     1|              9|
+|B: NUTS (pathfinder init) |    1000|     1.03|                     3|             10|
 
 
 
-For production use, check that Rhat values are close to 1 (< 1.05) and that there are no divergent transitions.
+All four NUTS fits converge well: Rhat values are close to 1 (well below the 1.05 threshold), divergent transitions are minimal, and tree depths are within the configured maximum.
+Both initialisation methods (prior and pathfinder) produce comparable convergence behaviour for these models.
+
+For production use, aim for Rhat < 1.01, zero divergent transitions, and tree depths well below the maximum.
 See the [Stan help vignette](stan-help.html) for guidance on diagnosing and resolving fitting issues.
+
+## Pathfinder diagnostics
+
+Pathfinder is a variational method and does not produce standard MCMC diagnostics.
+Instead, it reports Pareto k values from importance resampling.
+High Pareto k values (> 0.7) indicate that the importance resampling was unable to correct the variational approximation, suggesting the approximation quality may be poor.
+This is common for complex hierarchical models and reinforces the guidance that pathfinder results should be validated against NUTS for final inference.
 
 # Nowcast comparison
 
-We compare the nowcasts from each method side by side.
-
-
-``` r
-nowcast_summaries <- rbindlist(lapply(names(fits), function(nm) {
-  s <- summary(fits[[nm]], probs = c(0.05, 0.2, 0.8, 0.95))
-  s[, label := nm]
-  s[, spec := fifelse(grepl("^A:", nm), "A (static delays)", "B (time-varying delays)")]
-  s[, method := gsub("^[AB]: ", "", nm)]
-  s
-}))
-```
+We compare the nowcasts from each method using the package's built-in plotting.
 
 ## Spec A (static delays)
 
 
 ``` r
-ggplot(
-  nowcast_summaries[spec == "A (static delays)"],
-  aes(x = reference_date)
-) +
-  geom_ribbon(
-    aes(ymin = q5, ymax = q95), alpha = 0.2, fill = "#1b9e77"
-  ) +
-  geom_ribbon(
-    aes(ymin = q20, ymax = q80), alpha = 0.3, fill = "#1b9e77"
-  ) +
-  geom_line(aes(y = median), colour = "#1b9e77") +
-  geom_point(
-    data = latest_germany_hosp,
-    aes(x = reference_date, y = confirm),
-    size = 0.8
-  ) +
-  facet_wrap(~method, ncol = 1) +
-  labs(
-    title = "Spec A: Static delays",
-    x = "Reference date", y = "Hospitalisations"
-  ) +
-  theme_bw()
+spec_a_fits <- fits[grepl("^A:", names(fits))]
+for (nm in names(spec_a_fits)) {
+  p <- plot(spec_a_fits[[nm]], latest_obs = latest_germany_hosp) +
+    ggtitle(gsub("^[AB]: ", "", nm))
+  print(p)
+}
 ```
 
 <div class="figure">
 <img src="figures/inference-methods-nowcast-comparison-a-1.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
+<p class="caption">plot of chunk nowcast-comparison-a</p>
+</div><div class="figure">
+<img src="figures/inference-methods-nowcast-comparison-a-2.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
+<p class="caption">plot of chunk nowcast-comparison-a</p>
+</div><div class="figure">
+<img src="figures/inference-methods-nowcast-comparison-a-3.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
 <p class="caption">plot of chunk nowcast-comparison-a</p>
 </div>
 
@@ -768,50 +340,48 @@ ggplot(
 
 
 ``` r
-ggplot(
-  nowcast_summaries[spec == "B (time-varying delays)"],
-  aes(x = reference_date)
-) +
-  geom_ribbon(
-    aes(ymin = q5, ymax = q95), alpha = 0.2, fill = "#d95f02"
-  ) +
-  geom_ribbon(
-    aes(ymin = q20, ymax = q80), alpha = 0.3, fill = "#d95f02"
-  ) +
-  geom_line(aes(y = median), colour = "#d95f02") +
-  geom_point(
-    data = latest_germany_hosp,
-    aes(x = reference_date, y = confirm),
-    size = 0.8
-  ) +
-  facet_wrap(~method, ncol = 1) +
-  labs(
-    title = "Spec B: Time-varying delays",
-    x = "Reference date", y = "Hospitalisations"
-  ) +
-  theme_bw()
+spec_b_fits <- fits[grepl("^B:", names(fits))]
+for (nm in names(spec_b_fits)) {
+  p <- plot(spec_b_fits[[nm]], latest_obs = latest_germany_hosp) +
+    ggtitle(gsub("^[AB]: ", "", nm))
+  print(p)
+}
 ```
 
 <div class="figure">
 <img src="figures/inference-methods-nowcast-comparison-b-1.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
 <p class="caption">plot of chunk nowcast-comparison-b</p>
+</div><div class="figure">
+<img src="figures/inference-methods-nowcast-comparison-b-2.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
+<p class="caption">plot of chunk nowcast-comparison-b</p>
+</div><div class="figure">
+<img src="figures/inference-methods-nowcast-comparison-b-3.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
+<p class="caption">plot of chunk nowcast-comparison-b</p>
 </div>
+
+For spec A, all three methods produce broadly similar nowcasts with good coverage of the observed data.
+For spec B, the additional parameters in the time-varying delay model may lead to greater divergence between pathfinder and NUTS, reflecting the increased difficulty of the approximation.
+These results are specific to this model configuration and data; always check agreement between methods for your particular setup.
 
 # Posterior parameter comparison
 
-We compare posterior estimates for the delay distribution parameters across methods.
-These are the most directly interpretable parameters to check for agreement between inference approaches.
+We compare posterior estimates for key model parameters across methods.
+These include the delay distribution intercepts (`refp_mean_int` and `refp_sd_int`) and the negative binomial overdispersion parameter (`sqrt_phi`).
 
 
 ``` r
-param_vars <- c("refp_mean_int", "refp_sd_int")
+param_vars <- c("refp_mean_int", "refp_sd_int", "sqrt_phi")
 
 param_summaries <- rbindlist(lapply(names(fits), function(nm) {
   s <- summary(
     fits[[nm]], type = "fit", variables = param_vars
   )
   s[, label := nm]
-  s[, spec := fifelse(grepl("^A:", nm), "A (static delays)", "B (time-varying delays)")]
+  s[, spec := fifelse(
+    grepl("^A:", nm),
+    "A (static delays)",
+    "B (time-varying delays)"
+  )]
   s[, method := gsub("^[AB]: ", "", nm)]
   s
 }))
@@ -847,6 +417,9 @@ ggplot(
 
 Where NUTS and pathfinder posteriors agree closely, pathfinder provides a reliable and much faster approximation.
 Substantial disagreement suggests the posterior is complex enough that the variational approximation is insufficient and NUTS should be preferred.
+The delay distribution parameters are the most directly interpretable check for agreement, as they are well-identified in the likelihood.
+The overdispersion parameter (`sqrt_phi`) provides a complementary check on the observation model.
+Results may differ for other model configurations, so it is worth checking agreement for your particular setup.
 
 # Summary
 
@@ -854,13 +427,21 @@ Substantial disagreement suggests the posterior is complex enough that the varia
 |--------|-------|-------------------|-------------|----------|
 | NUTS (prior init) | Slowest | Gold standard | Full MCMC diagnostics | Final inference, publication |
 | NUTS (pathfinder init) | Moderate | Gold standard | Full MCMC diagnostics | Difficult models with slow convergence |
-| Pathfinder | Fastest | Approximate | Limited | Model development, exploration, quick checks |
+| Pathfinder | Fastest | Approximate | Pareto k only | Model development, exploration, quick checks |
 
 **Practical guidance:**
 
 - Start with **pathfinder** during model development to iterate quickly on specification choices.
 - Switch to **NUTS** for final inference when results will be reported or used for decisions.
 - Use **pathfinder-initialised NUTS** when standard NUTS shows convergence issues (high Rhat, many divergent transitions) or slow warmup.
+  When using pathfinder initialisation, you may also be able to reduce `adapt_delta` (e.g. from 0.95 to 0.90) since the sampler starts closer to the typical set, potentially reducing warmup time further.
+- Check Pareto k values from pathfinder fits: high values (> 0.7) warn that the approximation may be unreliable.
+
+**Updating workflows:**
+A related use case is to fit once with NUTS (for production-quality posteriors) and then use pathfinder with the previous posterior as informative priors for subsequent daily updates.
+This can reduce computational cost in real-time surveillance settings where the model is refitted frequently.
+Periodic full NUTS refits ensure the posteriors remain well-calibrated.
+See `?enw_replace_priors` for how to set custom priors based on previous results.
 
 For more on computational options see the [features summary](features.html).
 For help with Stan diagnostics see the [Stan help vignette](stan-help.html).
