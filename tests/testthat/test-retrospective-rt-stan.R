@@ -1,4 +1,5 @@
-if (not_on_cran() && on_ci()) {
+if (not_on_cran() && (on_ci() ||
+  Sys.getenv("LOCAL_OVERRIDE") == "true")) {
   model <- enw_model()
   options(mc.cores = 2)
 }
@@ -68,13 +69,13 @@ test_that(
     # Expected obs should be close to actual counts
     # (no delay adjustment, just latent process)
     posterior <- enw_posterior(
-      nowcast$fit[[1]], variables = "pp_inf_obs"
+      nowcast$fit[[1]], variables = "exp_lobs"
     )
     expect_equal(nrow(posterior), n)
 
     # Median posterior predictions should be within 50% of
-    # true lambda on average
-    rel_error <- abs(posterior$median - lambda) / lambda
+    # true lambda on average (exp_lobs is on log scale)
+    rel_error <- abs(exp(posterior$median) - lambda) / lambda
     expect_lt(mean(rel_error), 0.5)
   }
 )
