@@ -213,6 +213,14 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
 enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
   nc_group <- enw_delay_categories(pobs, delay_group_thresh)
+
+  data.table::setorder(
+    nc_group, reference_date, .group, delay_group
+  )
+  nc_group[, ymin := c(0, head(cum_prop_reported, -1)),
+    by = .(reference_date, .group)
+  ]
+
   nc_group[, delay_group := factor(
     delay_group,
     levels = rev(levels(delay_group)),
@@ -228,7 +236,7 @@ enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
   plot <- ggplot(nc_group) +
     geom_ribbon(aes(
       reference_date,
-      ymin = 0, ymax = cum_prop_reported,
+      ymin = ymin, ymax = cum_prop_reported,
       fill = delay_group
     )) +
     geom_line(aes(
@@ -242,6 +250,10 @@ enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
       ),
       x = "Reference date"
     )
+  if (data.table::uniqueN(nc_group$.group) > 1) {
+    plot <- plot +
+      ggplot2::facet_wrap(ggplot2::vars(.group))
+  }
   enw_plot_theme(plot)
 }
 
@@ -271,6 +283,10 @@ enw_plot_delay_fraction <- function(pobs, delay_group_thresh) {
     )) +
     guides(fill = guide_colorbar("Fraction")) +
     labs(y = "Delay", x = "Reference date")
+  if (data.table::uniqueN(nc_group$.group) > 1) {
+    plot <- plot +
+      ggplot2::facet_wrap(ggplot2::vars(.group))
+  }
   enw_plot_theme(plot)
 }
 
@@ -306,6 +322,10 @@ enw_plot_delay_quantiles <- function(
     )) +
     guides(lty = guide_legend("Quantile")) +
     labs(y = "Delay", x = "Reference date")
+  if (data.table::uniqueN(emp_quant$.group) > 1) {
+    plot <- plot +
+      ggplot2::facet_wrap(ggplot2::vars(.group))
+  }
   enw_plot_theme(plot)
 }
 
@@ -341,5 +361,9 @@ enw_plot_delay_counts <- function(
     ), colour = "black") +
     guides(fill = guide_legend("Delay")) +
     labs(y = "Notifications", x = "Reference date")
+  if (data.table::uniqueN(nc_group$.group) > 1) {
+    plot <- plot +
+      ggplot2::facet_wrap(ggplot2::vars(.group))
+  }
   enw_plot_theme(plot)
 }

@@ -1413,6 +1413,17 @@ enw_delay_quantiles <- function(
     by = .(reference_date, .group)
   ]
 
+  if (nrow(nc) == 0) {
+    result <- data.table::data.table(
+      reference_date = as.IDate(character(0)),
+      .group = integer(0)
+    )
+    for (q in quantiles) {
+      result[, (paste0(q)) := numeric(0)]
+    }
+    return(result[])
+  }
+
   nc_quant <- nc[, as.list(quantile(
     x = rep(delay, times = new_confirm),
     probs = quantiles,

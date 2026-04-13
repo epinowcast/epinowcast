@@ -39,7 +39,9 @@ library(ggplot2)
 # Data
 
 We use the COVID-19 hospitalisation data included in the package, filtered to national-level counts in Germany.
-We create a retrospective snapshot as if we were standing on 22 August 2021 with 40 days of data and a maximum reporting delay of 40 days.
+We create a retrospective snapshot as if we were standing on 1 October 2021.
+Using a longer time series with 80 days of reference dates and a maximum reporting delay of 40 days means that most reference dates will have had enough time for their reports to arrive.
+This gives a clearer picture of the delay structure before right truncation begins to dominate the most recent dates.
 
 ```{r data}
 nat_germany_hosp <-
@@ -48,7 +50,7 @@ nat_germany_hosp <-
 
 retro_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(remove_days = 40) |>
-  enw_filter_reference_dates(include_days = 40)
+  enw_filter_reference_dates(include_days = 80)
 ```
 
 # Preprocessing
@@ -61,6 +63,9 @@ pobs
 The preprocessed object bundles several data tables together.
 We can now visualise these data using the `plot` method, which dispatches to specialised plot functions depending on the `type` argument.
 
+All delay-based plots below are affected by right truncation: the most recent reference dates have not yet had enough time for all reports to arrive, so their delay distributions will appear to be shorter than the true distribution.
+Keep this in mind when interpreting the rightmost portion of each plot.
+
 # Latest observations
 
 The default plot type (`"obs"`) shows the latest cumulative case counts by reference date.
@@ -69,6 +74,9 @@ This is the data the model will attempt to nowcast.
 ```{r obs, fig.cap = "Latest reported hospitalisations by date of positive test."}
 plot(pobs, type = "obs")
 ```
+
+The apparent drop in counts at the right edge of the series is a hallmark of right truncation: reports for recent reference dates have simply not had enough time to arrive.
+This is precisely the signal that nowcasting aims to correct.
 
 # Cumulative reporting delay
 
@@ -90,6 +98,9 @@ plot(
 )
 ```
 
+The ribbons at the right edge may not reach 1.0 because the latest reference dates have not yet had time to accumulate all their reports.
+If the ribbons are stable across earlier dates this suggests the delay distribution is roughly stationary, which may support using a simpler model without time-varying delay components.
+
 # Reporting delay heatmap
 
 The `"delay_fraction"` type shows the fraction of cases reported in each delay group as a tile plot.
@@ -98,6 +109,9 @@ This is useful for spotting systematic shifts in reporting speed over time and d
 ```{r emp-rep-frac, fig.cap = "Fraction of cases reported by delay group and reference date."}
 plot(pobs, type = "delay_fraction")
 ```
+
+A stable horizontal banding pattern suggests the delay structure is constant over time.
+Shifts in colour across columns can indicate changes in reporting behaviour that may need to be modelled.
 
 # Reporting delay quantiles
 
@@ -108,6 +122,10 @@ Stable lines indicate a stationary delay distribution; trends suggest the delay 
 ```{r emp-rep-quant, fig.cap = "Empirical delay quantiles over time."}
 plot(pobs, type = "delay_quantiles")
 ```
+
+Lower quantiles (e.g. the 10th percentile) are less affected by right truncation because early reports have had time to arrive.
+Higher quantiles (e.g. the 90th percentile) are more heavily truncated because they depend on late-arriving reports that may not yet have been observed for recent reference dates.
+A sudden drop in the higher quantiles at the right edge is therefore expected and does not necessarily indicate a real change in reporting speed.
 
 Custom quantiles can be specified.
 
