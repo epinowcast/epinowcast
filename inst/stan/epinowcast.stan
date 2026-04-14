@@ -163,8 +163,15 @@ data {
 
 transformed data{
   // if no reporting time effects use native probability for reference date
-  // effects, i.e. do not convert to logit hazard
-  int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
+  // effects, i.e. do not convert to logit hazard.
+  // When all delay models are off with dmax = 1 (retrospective mode),
+  // treat baseline zeros as log(1) = 0 so no delay scaling is applied.
+  int ref_as_p;
+  if (model_refp == 0 && model_refnp == 0 && model_rep == 0 && dmax == 1) {
+    ref_as_p = 1;
+  } else {
+    ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1;
+  }
   // Type of likelihood aggregation to use
   int ll_aggregation = likelihood_aggregation + model_miss;
   // Construct sparse matrix components

@@ -225,6 +225,7 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   direction <- match.arg(direction)
 
   internal_timestep <- get_internal_timestep(timestep)
+  # When max_delay = 1, days = max_delay - 1 = 0 so no extension needed
   if (days < internal_timestep) {
     metaobs <- coerce_dt(metaobs, group = TRUE)
     metaobs[, observed := TRUE]
@@ -600,7 +601,10 @@ enw_latest_data <- function(obs) {
 #' preprocessed dataset with `max_delay = 1`, suitable for
 #' retrospective Rt estimation without delay modelling.
 #' Observations are taken at the specified delay (or the latest
-#' available) and treated as final counts.
+#' available) and treated as final counts. In the returned data,
+#' `report_date` is set equal to `reference_date` for all rows
+#' (i.e. all observations appear to be reported on the same day
+#' they occurred).
 #'
 #' @param data Output of [enw_preprocess_data()].
 #'
@@ -617,6 +621,11 @@ enw_latest_data <- function(obs) {
 #' pobs <- enw_example("preprocessed")
 #' enw_retrospective(pobs)
 enw_retrospective <- function(data, max_delay = NULL) {
+  if (!inherits(data, "enw_preprocess_data")) {
+    cli::cli_abort(
+      "{.arg data} must be the output of {.fun enw_preprocess_data}."
+    )
+  }
   obs <- data.table::copy(data$obs[[1]])
   by <- data$by[[1]]
   timestep <- data$timestep[[1]]

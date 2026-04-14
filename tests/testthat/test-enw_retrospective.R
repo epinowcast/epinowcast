@@ -26,6 +26,13 @@ test_that("enw_retrospective respects max_delay parameter", {
   expect_true(retro$time <= pobs$time)
 })
 
+test_that("enw_retrospective validates input", {
+  expect_error(
+    enw_retrospective(data.frame(x = 1)),
+    "must be the output of"
+  )
+})
+
 test_that("enw_retrospective preserves grouping", {
   obs <- germany_covid19_hosp[location == "DE"]
   pobs <- suppressWarnings(

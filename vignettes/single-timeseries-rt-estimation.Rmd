@@ -534,26 +534,65 @@ Before fitting the model we have just defined we need to preprocess the data in 
 ``` r
 rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
 rt_germany_pobs
-#>                     obs          new_confirm             latest
-#>                  <list>               <list>             <list>
-#> 1: <data.table[1425x8]> <data.table[1425x9]> <data.table[62x8]>
-#>    missing_reference  reporting_triangle      metareference          metareport
-#>               <list>              <list>             <list>              <list>
-#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]> <data.table[91x10]>
-#>             metadelay max_delay  time snapshots     by groups   max_date
-#>                <list>     <num> <int>     <int> <list>  <int>     <IDat>
-#> 1: <data.table[30x5]>        30    62        62 [NULL]      1 2021-07-01
-#>    timestep
-#>      <char>
-#> 1:      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,425 x 8 
+#>   new_confirm        :   1,425 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :      91 x 10 
+#>   metadelay          :      30 x 5
 ```
 
-and do the same for the retrospective data
+Individual datasets can be extracted with `enw_get_data()`, for example the latest observations:
+
+
+``` r
+enw_get_data(rt_germany_pobs, "latest") |> head()
+#>    reference_date report_date .group max_confirm confirm delay
+#>            <IDat>      <IDat>  <num>       <int>   <int> <num>
+#> 1:     2021-05-01  2021-05-30      1         941     868    29
+#> 2:     2021-05-02  2021-05-31      1         724     673    29
+#> 3:     2021-05-03  2021-06-01      1         413     390    29
+#> 4:     2021-05-04  2021-06-02      1         773     735    29
+#> 5:     2021-05-05  2021-06-03      1         969     894    29
+#> 6:     2021-05-06  2021-06-04      1         966     889    29
+#>    cum_prop_reported prop_reported
+#>                <num>         <num>
+#> 1:         0.9224230   0.001062699
+#> 2:         0.9295580   0.000000000
+#> 3:         0.9443099   0.002421308
+#> 4:         0.9508409   0.009055627
+#> 5:         0.9226006   0.002063983
+#> 6:         0.9202899   0.002070393
+```
+
+We do the same for the retrospective data:
 
 
 ``` r
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
 retro_germany_pobs
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-30 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,860 x 8 
+#>   new_confirm        :   1,860 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :     120 x 10 
+#>   metadelay          :      30 x 5
 ```
 
 We also create a retrospective dataset without reporting delays using `enw_retrospective()`.
@@ -564,6 +603,20 @@ This is useful when we want to estimate Rt from data that is already (approximat
 ``` r
 retro_nodelay_pobs <- enw_retrospective(retro_germany_pobs)
 retro_nodelay_pobs
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 1 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :      62 x 7 
+#>   new_confirm        :      62 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 3 
+#>   metareference      :      62 x 7 
+#>   metareport         :      62 x 10 
+#>   metadelay          :       1 x 5
 ```
 
 ### Fitting the `epinowcast` model
@@ -874,7 +927,8 @@ exp_cases <- rbind(
   get_expected_infections(retro_germany_nowcast)[, Data := "Retrospective"],
   get_expected_infections(
     retro_nodelay_nowcast
-  )[, Data := "Retrospective (no delay)"]
+  )[, Data := "Retrospective (no delay)"],
+  fill = TRUE
 )
 
 exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][

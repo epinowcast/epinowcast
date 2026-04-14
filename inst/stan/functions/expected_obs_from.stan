@@ -39,11 +39,6 @@ vector expected_obs_from_index(
   array[,,] int rep_agg_n_selected,
   array[,,,] int rep_agg_selected_idx
 ) {
-  // No delay model active and single delay slot: skip convolution.
-  // Observation is the expected latent count directly.
-  if (ref_p == 0 && ref_np == 0 && rep_h == 0 && l == 1) {
-    return rep_vector(imp_obs[g][t], 1);
-  }
   // Combine logit hazards from reference and reporting time effects
   vector[l] lh;
   profile("model_likelihood_hazard_allocations") {

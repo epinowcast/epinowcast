@@ -22,7 +22,10 @@ Takes output of \code{\link[=enw_preprocess_data]{enw_preprocess_data()}} and re
 preprocessed dataset with \code{max_delay = 1}, suitable for
 retrospective Rt estimation without delay modelling.
 Observations are taken at the specified delay (or the latest
-available) and treated as final counts.
+available) and treated as final counts. In the returned data,
+\code{report_date} is set equal to \code{reference_date} for all rows
+(i.e. all observations appear to be reported on the same day
+they occurred).
 }
 \examples{
 pobs <- enw_example("preprocessed")

@@ -734,7 +734,8 @@ exp_cases <- rbind(
   get_expected_infections(retro_germany_nowcast)[, Data := "Retrospective"],
   get_expected_infections(
     retro_nodelay_nowcast
-  )[, Data := "Retrospective (no delay)"]
+  )[, Data := "Retrospective (no delay)"],
+  fill = TRUE
 )
 
 exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][

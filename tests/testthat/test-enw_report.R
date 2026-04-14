@@ -28,7 +28,16 @@ test_that("enw_report errors on report model with max_delay = 1", {
 
   expect_error(
     enw_report(non_parametric = ~ 1 + day_of_week, data = pobs_retro),
-    "Report date models cannot be used"
+    "Report date models"
+  )
+  # Structural reporting also rejected
+  expect_error(
+    enw_report(
+      non_parametric = ~0,
+      structural = data.table::data.table(dummy = 1),
+      data = pobs_retro
+    ),
+    "Report date models"
   )
   # ~0 should work (no report model)
   expect_no_error(

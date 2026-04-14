@@ -275,9 +275,11 @@ enw_reference <- function(
 enw_report <- function(non_parametric = ~0, structural = NULL, data) {
   # When max_delay = 1 (no delays), reject non-trivial report models
   if (data$max_delay[[1]] == 1 &&
-    as_string_formula(non_parametric) != "~0") {
+    (as_string_formula(non_parametric) != "~0" ||
+      !is.null(structural))) {
     cli::cli_abort(paste0(
-      "Report date models cannot be used with ",
+      "Report date models, including structural reporting, ",
+      "cannot be used with ",
       "{.arg max_delay} = 1 (no reporting delays to model)"
     ))
   }
