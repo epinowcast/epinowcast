@@ -4,7 +4,7 @@
 \alias{enw_plot_delay_fraction}
 \title{Plot empirical reporting delay heatmap}
 \usage{
-enw_plot_delay_fraction(pobs, delay_group_thresh)
+enw_plot_delay_fraction(pobs, delay_group_thresh, facet = TRUE)
 }
 \arguments{
 \item{pobs}{A preprocessed data object as produced by
@@ -12,6 +12,10 @@ enw_plot_delay_fraction(pobs, delay_group_thresh)
 
 \item{delay_group_thresh}{A numeric vector defining
 left-closed interval thresholds for delay groups.}
+
+\item{facet}{Logical. When \code{TRUE} (the default), plots with
+more than one \code{.group} are automatically wrapped by group.
+Set to \code{FALSE} to disable and add a custom facet layer.}
 }
 \value{
 A \code{ggplot2} plot.

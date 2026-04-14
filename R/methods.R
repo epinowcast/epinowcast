@@ -371,6 +371,11 @@ summary.epinowcast <- function(object, type = c(
 #' @param log Logical, defaults to `FALSE`. Should counts be
 #'   plotted on the log scale (only for `"obs"` type).
 #'
+#' @param facet Logical. When `TRUE` (the default), delay-based
+#'   plots with more than one `.group` are automatically wrapped
+#'   by group. Set to `FALSE` to disable and add a custom facet
+#'   layer.
+#'
 #' @param ... Additional arguments passed to the underlying
 #'   plot function.
 #'
@@ -404,7 +409,7 @@ plot.enw_preprocess_data <- function(
   ),
   delay_group_thresh = NULL,
   quantiles = c(0.1, 0.5, 0.9),
-  log = FALSE, ...
+  log = FALSE, facet = TRUE, ...
 ) {
   type <- match.arg(type)
 
@@ -427,16 +432,16 @@ plot.enw_preprocess_data <- function(
         labs(y = "Notifications", x = "Reference date")
     },
     delay_cumulative = enw_plot_delay_cumulative(
-      x, delay_group_thresh
+      x, delay_group_thresh, facet = facet
     ),
     delay_fraction = enw_plot_delay_fraction(
-      x, delay_group_thresh
+      x, delay_group_thresh, facet = facet
     ),
     delay_quantiles = enw_plot_delay_quantiles(
-      x, quantiles
+      x, quantiles, facet = facet
     ),
     delay_counts = enw_plot_delay_counts(
-      x, delay_group_thresh
+      x, delay_group_thresh, facet = facet
     ),
     cli::cli_abort("unimplemented type: {type}")
   )

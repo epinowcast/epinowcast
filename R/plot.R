@@ -205,13 +205,19 @@ enw_plot_pp_quantiles <- function(pp, log = FALSE, ...) {
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
+#' @param facet Logical. When `TRUE` (the default), plots with
+#'   more than one `.group` are automatically wrapped by group.
+#'   Set to `FALSE` to disable and add a custom facet layer.
+#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
-enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
+enw_plot_delay_cumulative <- function(
+  pobs, delay_group_thresh, facet = TRUE
+) {
   nc_group <- enw_delay_categories(pobs, delay_group_thresh)
 
   data.table::setorder(
@@ -250,7 +256,7 @@ enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
       ),
       x = "Reference date"
     )
-  if (data.table::uniqueN(nc_group$.group) > 1) {
+  if (facet && data.table::uniqueN(nc_group$.group) > 1) {
     plot <- plot +
       ggplot2::facet_wrap(ggplot2::vars(.group))
   }
@@ -268,13 +274,19 @@ enw_plot_delay_cumulative <- function(pobs, delay_group_thresh) {
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
+#' @param facet Logical. When `TRUE` (the default), plots with
+#'   more than one `.group` are automatically wrapped by group.
+#'   Set to `FALSE` to disable and add a custom facet layer.
+#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
 #' @examples
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_delay_fraction(pobs, c(0, 2, 5, 10, 21))
-enw_plot_delay_fraction <- function(pobs, delay_group_thresh) {
+enw_plot_delay_fraction <- function(
+  pobs, delay_group_thresh, facet = TRUE
+) {
   nc_group <- enw_delay_categories(pobs, delay_group_thresh)
   plot <- ggplot(nc_group) +
     geom_tile(aes(
@@ -283,7 +295,7 @@ enw_plot_delay_fraction <- function(pobs, delay_group_thresh) {
     )) +
     guides(fill = guide_colorbar("Fraction")) +
     labs(y = "Delay", x = "Reference date")
-  if (data.table::uniqueN(nc_group$.group) > 1) {
+  if (facet && data.table::uniqueN(nc_group$.group) > 1) {
     plot <- plot +
       ggplot2::facet_wrap(ggplot2::vars(.group))
   }
@@ -301,6 +313,10 @@ enw_plot_delay_fraction <- function(pobs, delay_group_thresh) {
 #' @param quantiles A numeric vector of probabilities.
 #'   Defaults to `c(0.1, 0.5, 0.9)`.
 #'
+#' @param facet Logical. When `TRUE` (the default), plots with
+#'   more than one `.group` are automatically wrapped by group.
+#'   Set to `FALSE` to disable and add a custom facet layer.
+#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
@@ -309,7 +325,7 @@ enw_plot_delay_fraction <- function(pobs, delay_group_thresh) {
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_delay_quantiles(pobs)
 enw_plot_delay_quantiles <- function(
-  pobs, quantiles = c(0.1, 0.5, 0.9)
+  pobs, quantiles = c(0.1, 0.5, 0.9), facet = TRUE
 ) {
   emp_quant <- enw_delay_quantiles(pobs, quantiles)
   emp_quant <- data.table::melt(
@@ -322,7 +338,7 @@ enw_plot_delay_quantiles <- function(
     )) +
     guides(lty = guide_legend("Quantile")) +
     labs(y = "Delay", x = "Reference date")
-  if (data.table::uniqueN(emp_quant$.group) > 1) {
+  if (facet && data.table::uniqueN(emp_quant$.group) > 1) {
     plot <- plot +
       ggplot2::facet_wrap(ggplot2::vars(.group))
   }
@@ -340,6 +356,10 @@ enw_plot_delay_quantiles <- function(
 #' @param delay_group_thresh A numeric vector defining
 #'   left-closed interval thresholds for delay groups.
 #'
+#' @param facet Logical. When `TRUE` (the default), plots with
+#'   more than one `.group` are automatically wrapped by group.
+#'   Set to `FALSE` to disable and add a custom facet layer.
+#'
 #' @return A `ggplot2` plot.
 #' @family plot
 #' @export
@@ -347,7 +367,7 @@ enw_plot_delay_quantiles <- function(
 #' pobs <- enw_example("preprocessed_observations")
 #' enw_plot_delay_counts(pobs, c(0, 2, 5, 10, 21))
 enw_plot_delay_counts <- function(
-  pobs, delay_group_thresh
+  pobs, delay_group_thresh, facet = TRUE
 ) {
   nc_group <- enw_delay_categories(pobs, delay_group_thresh)
   nc_group[, delay_group := factor(
@@ -361,7 +381,7 @@ enw_plot_delay_counts <- function(
     ), colour = "black") +
     guides(fill = guide_legend("Delay")) +
     labs(y = "Notifications", x = "Reference date")
-  if (data.table::uniqueN(nc_group$.group) > 1) {
+  if (facet && data.table::uniqueN(nc_group$.group) > 1) {
     plot <- plot +
       ggplot2::facet_wrap(ggplot2::vars(.group))
   }

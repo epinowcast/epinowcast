@@ -39,9 +39,7 @@ library(ggplot2)
 # Data
 
 We use the COVID-19 hospitalisation data included in the package, filtered to national-level counts in Germany.
-We create a retrospective snapshot as if we were standing on 1 October 2021.
-Using a longer time series with 80 days of reference dates and a maximum reporting delay of 40 days means that most reference dates will have had enough time for their reports to arrive.
-This gives a clearer picture of the delay structure before right truncation begins to dominate the most recent dates.
+We create a retrospective snapshot as if we were standing on 1 October 2021 with 80 days of reference dates and a maximum reporting delay of 40 days.
 
 ```{r data}
 nat_germany_hosp <-
@@ -98,26 +96,26 @@ plot(
 )
 ```
 
-The ribbons at the right edge may not reach 1.0 because the latest reference dates have not yet had time to accumulate all their reports.
-If the ribbons are stable across earlier dates this suggests the delay distribution is roughly stationary, which may support using a simpler model without time-varying delay components.
+If the ribbons are stable across reference dates the delay distribution is roughly stationary, which may justify a simpler model without time-varying delay components.
+Drift or shifts in the ribbons indicate the delay structure is changing and should be modelled.
 
 # Reporting delay heatmap
 
 The `"delay_fraction"` type shows the fraction of cases reported in each delay group as a tile plot.
-This is useful for spotting systematic shifts in reporting speed over time and day-of-the-week effects.
 
 ```{r emp-rep-frac, fig.cap = "Fraction of cases reported by delay group and reference date."}
 plot(pobs, type = "delay_fraction")
 ```
 
-A stable horizontal banding pattern suggests the delay structure is constant over time.
-Shifts in colour across columns can indicate changes in reporting behaviour that may need to be modelled.
+Here we can see changes in colour across columns that line up with day of the week, which indicates the delay distribution depends on the reference weekday.
+The cumulative plot shows how fast reports accumulate overall, while the heatmap isolates where within the delay distribution a change is happening.
+If the cumulative plot is stable but the heatmap shows shifting bands, reports are arriving at the same aggregate pace but being redistributed across delays.
+Conversely, stable heatmap bands combined with a changing cumulative plot point to a shift in total reporting speed rather than in the shape of the delay distribution.
 
 # Reporting delay quantiles
 
 The `"delay_quantiles"` type plots empirical quantiles of the reporting delay distribution for each reference date.
 By default the 10th, 50th, and 90th percentiles are shown.
-Stable lines indicate a stationary delay distribution; trends suggest the delay structure is changing.
 
 ```{r emp-rep-quant, fig.cap = "Empirical delay quantiles over time."}
 plot(pobs, type = "delay_quantiles")
@@ -126,6 +124,9 @@ plot(pobs, type = "delay_quantiles")
 Lower quantiles (e.g. the 10th percentile) are less affected by right truncation because early reports have had time to arrive.
 Higher quantiles (e.g. the 90th percentile) are more heavily truncated because they depend on late-arriving reports that may not yet have been observed for recent reference dates.
 A sudden drop in the higher quantiles at the right edge is therefore expected and does not necessarily indicate a real change in reporting speed.
+
+Quantile lines summarise the delay distribution as a single number per reference date, which makes small temporal trends easier to read than from the heatmap but hides the full shape.
+Use the quantile plot to check whether the median and tails drift over time; fall back to the heatmap when you need to see which delays are responsible for a change.
 
 Custom quantiles can be specified.
 
@@ -136,25 +137,29 @@ plot(pobs, type = "delay_quantiles", quantiles = c(0.25, 0.5, 0.75))
 # Notifications by delay group
 
 The `"delay_counts"` type produces a stacked bar plot showing the number of notifications by reference date, coloured by how long they took to be reported.
-This gives a combined view of the volume of reports and their timeliness.
+This combines the volume of reports with their timeliness in a single view.
 
 ```{r emp-ts-del, fig.cap = "Notifications by reference date coloured by reporting delay."}
 plot(pobs, type = "delay_counts")
 ```
 
+Compared to the cumulative and heatmap plots, which show proportions, this plot puts absolute counts on the y-axis.
+Use it when you care about the size of each delay group in context with the overall reporting volume, for example when deciding whether a noisy-looking right edge is supported by many notifications or by only a handful.
+
 # Using the individual plot functions
 
 Each plot type corresponds to an exported function that can be called directly for more control.
 
-| Plot type        | Function                     |
-|:-----------------|:-----------------------------|
-| `"obs"`          | `enw_plot_obs()`             |
-| `"delay_cumulative"`  | `enw_plot_delay_cumulative()`  |
-| `"delay_fraction"`    | `enw_plot_delay_fraction()`    |
-| `"delay_quantiles"`   | `enw_plot_delay_quantiles()`   |
-| `"delay_counts"`      | `enw_plot_delay_counts()`      |
+| Plot type             | Function                        |
+|:----------------------|:--------------------------------|
+| `"obs"`               | `enw_plot_obs()`                |
+| `"delay_cumulative"`  | `enw_plot_delay_cumulative()`   |
+| `"delay_fraction"`    | `enw_plot_delay_fraction()`     |
+| `"delay_quantiles"`   | `enw_plot_delay_quantiles()`    |
+| `"delay_counts"`      | `enw_plot_delay_counts()`       |
 
 These return standard `ggplot2` objects so layers, facets, and themes can be added freely.
+Grouped data are auto-faceted by `.group`; pass `facet = FALSE` to disable and supply your own layout.
 
 ```{r custom-plot}
 enw_plot_delay_fraction(

@@ -1,34 +1,3 @@
-# Simulated preprocess object for testing
-make_test_pobs <- function(
-  delays = 0:4, new_confirms = c(10, 5, 3, 1, 1),
-  n_dates = 3, max_delay = 4
-) {
-  dates <- as.IDate(
-    seq.Date(as.Date("2021-01-01"), by = 1, length.out = n_dates)
-  )
-  nc <- data.table::CJ(
-    reference_date = dates, delay = delays
-  )
-  nc[, `:=`(
-    .group = 1L,
-    new_confirm = rep(new_confirms, n_dates),
-    report_date = reference_date + delay
-  )]
-  nc[, confirm := cumsum(new_confirm), by = reference_date]
-  nc[, max_confirm := max(confirm), by = reference_date]
-  nc[, cum_prop_reported := confirm / max_confirm]
-  nc[, prop_reported := new_confirm / max_confirm]
-  data.table::setkey(nc, reference_date, report_date)
-
-  pobs <- list(
-    new_confirm = list(nc),
-    by = list(character(0)),
-    max_delay = max_delay
-  )
-  class(pobs) <- c("enw_preprocess_data", class(pobs))
-  pobs
-}
-
 test_that("enw_delay_categories computes correct proportions", {
   pobs <- make_test_pobs()
   nc <- enw_delay_categories(pobs, c(0, 2, 5))

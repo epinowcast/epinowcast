@@ -11,6 +11,7 @@
   delay_group_thresh = NULL,
   quantiles = c(0.1, 0.5, 0.9),
   log = FALSE,
+  facet = TRUE,
   ...
 )
 }
@@ -44,6 +45,11 @@ thresholds from \code{max_delay}.}
 
 \item{log}{Logical, defaults to \code{FALSE}. Should counts be
 plotted on the log scale (only for \code{"obs"} type).}
+
+\item{facet}{Logical. When \code{TRUE} (the default), delay-based
+plots with more than one \code{.group} are automatically wrapped
+by group. Set to \code{FALSE} to disable and add a custom facet
+layer.}
 
 \item{...}{Additional arguments passed to the underlying
 plot function.}

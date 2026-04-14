@@ -4,7 +4,7 @@
 \alias{enw_plot_delay_quantiles}
 \title{Plot empirical reporting delay quantiles}
 \usage{
-enw_plot_delay_quantiles(pobs, quantiles = c(0.1, 0.5, 0.9))
+enw_plot_delay_quantiles(pobs, quantiles = c(0.1, 0.5, 0.9), facet = TRUE)
 }
 \arguments{
 \item{pobs}{A preprocessed data object as produced by
@@ -12,6 +12,10 @@ enw_plot_delay_quantiles(pobs, quantiles = c(0.1, 0.5, 0.9))
 
 \item{quantiles}{A numeric vector of probabilities.
 Defaults to \code{c(0.1, 0.5, 0.9)}.}
+
+\item{facet}{Logical. When \code{TRUE} (the default), plots with
+more than one \code{.group} are automatically wrapped by group.
+Set to \code{FALSE} to disable and add a custom facet layer.}
 }
 \value{
 A \code{ggplot2} plot.
