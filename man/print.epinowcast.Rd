@@ -24,6 +24,7 @@ nowcast
 \seealso{
 Other epinowcast: 
 \code{\link{epinowcast}()},
+\code{\link{plot.enw_preprocess_data}()},
 \code{\link{plot.epinowcast}()},
 \code{\link{print.enw_preprocess_data}()},
 \code{\link{print.summary.enw_preprocess_data}()},
