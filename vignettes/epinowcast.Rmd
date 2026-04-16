@@ -261,8 +261,6 @@ fit_opts <- enw_fit_opts(
   chains = 2,
   iter_sampling = 500,
   iter_warmup = 500,
-  adapt_delta = 0.95,
-  max_depth = 12,
   show_messages = interactive()
 )
 nowcast_default <- epinowcast(
@@ -294,13 +292,13 @@ nowcast_default
 #>   priors : 14 x 6 
 #>   fit : CmdStanMCMC 
 #>   data : list(115) 
-#>   fit_args : list(8) 
+#>   fit_args : list(6) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 1,000 | Max Rhat: 1.01 
 #>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 8 (275 at max, 27.5%) 
-#>   Run time: 21.3 secs
+#>   Max treedepth: 7 (985 at max, 98.5%) 
+#>   Run time: 13.5 secs
 ```
 
 
@@ -372,13 +370,13 @@ lognormal_reference <- enw_reference(
 ```
 
 For the second alternative model, we replace this with a non-parametric specification that makes no distributional assumption.
-Instead, it estimates a baseline reporting hazard with a random walk over delay weeks, allowing the hazard to vary smoothly across delays.
+Instead, it estimates a baseline reporting hazard with a daily random walk over delays, allowing the hazard to vary smoothly without assuming a parametric form.
 
 
 ``` r
 np_reference <- enw_reference(
   parametric = ~0,
-  non_parametric = ~ 1 + rw(delay_week),
+  non_parametric = ~ 1 + rw(delay),
   data = pobs
 )
 ```
@@ -466,13 +464,13 @@ nowcast_lognormal
 #>   priors : 14 x 6 
 #>   fit : CmdStanMCMC 
 #>   data : list(115) 
-#>   fit_args : list(8) 
+#>   fit_args : list(6) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.02 
-#>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 11 (2 at max, 0.2%) 
-#>   Run time: 197.4 secs
+#>   Samples: 500 | Max Rhat: 1.03 
+#>   Divergent transitions: 1 (0.2%) 
+#>   Max treedepth: 10 (168 at max, 33.6%) 
+#>   Run time: 136.7 secs
 ```
 
 
@@ -497,13 +495,13 @@ nowcast_np
 #>   priors : 14 x 6 
 #>   fit : CmdStanMCMC 
 #>   data : list(115) 
-#>   fit_args : list(8) 
+#>   fit_args : list(6) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 11 (1 at max, 0.1%) 
-#>   Run time: 170.8 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 26 (2.6%) 
+#>   Max treedepth: 10 (694 at max, 69.4%) 
+#>   Run time: 148.9 secs
 ```
 
 ## Comparing all models
@@ -574,7 +572,7 @@ ggplot(combined) +
 The default model captures the general level of hospitalisations but underestimates recent dates and misses the day-of-week pattern.
 Both alternative models better capture the upward trend and weekly periodicity.
 The two alternative models produce similar estimates for this dataset, where the delay distribution is approximately lognormal.
-The non-parametric model shows slightly wider uncertainty for recent dates, reflecting the additional flexibility of the delay-week random walk.
+The non-parametric model shows slightly wider uncertainty for recent dates, reflecting the additional flexibility of the daily delay random walk.
 In settings where the delay distribution is multi-modal or irregular, the non-parametric approach would show a larger advantage.
 
 Further extensions to consider include:
@@ -609,24 +607,24 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 #>     4:     2021-07-14  2021-08-19      1          72       DE       00+     358
 #>     5:     2021-07-14  2021-08-19      1          72       DE       00+     358
 #>    ---                                                                         
-#> 36996:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 36997:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 36998:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 36999:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 37000:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 18496:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 18497:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 18498:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 18499:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 18500:     2021-08-19  2021-08-19      1          84       DE       00+    1028
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    36             0      1          1     1    360
+#>     1:                 1    36             0      1          1     1    358
 #>     2:                 1    36             0      1          2     2    359
-#>     3:                 1    36             0      1          3     3    358
-#>     4:                 1    36             0      1          4     4    360
-#>     5:                 1    36             0      1          5     5    359
+#>     3:                 1    36             0      1          3     3    360
+#>     4:                 1    36             0      1          4     4    358
+#>     5:                 1    36             0      1          5     5    360
 #>    ---                                                                     
-#> 36996:                 1     0             1      2        496   996   1858
-#> 36997:                 1     0             1      2        497   997   1701
-#> 36998:                 1     0             1      2        498   998   1810
-#> 36999:                 1     0             1      2        499   999   1641
-#> 37000:                 1     0             1      2        500  1000   1849
+#> 18496:                 1     0             1      1        496   496   1850
+#> 18497:                 1     0             1      1        497   497   1724
+#> 18498:                 1     0             1      1        498   498   1727
+#> 18499:                 1     0             1      1        499   499   1779
+#> 18500:                 1     0             1      1        500   500   1706
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)

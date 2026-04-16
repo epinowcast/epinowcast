@@ -166,8 +166,7 @@ fit_opts <- enw_fit_opts(
   chains = 2,
   iter_sampling = 500,
   iter_warmup = 500,
-  adapt_delta = 0.95,
-  max_depth = 12,
+  adapt_delta = 0.9,
   show_messages = interactive()
 )
 nowcast_default <- epinowcast(
@@ -236,12 +235,12 @@ lognormal_reference <- enw_reference(
 ```
 
 For the second alternative model, we replace this with a non-parametric specification that makes no distributional assumption.
-Instead, it estimates a baseline reporting hazard with a random walk over delay weeks, allowing the hazard to vary smoothly across delays.
+Instead, it estimates a baseline reporting hazard with a daily random walk over delays, allowing the hazard to vary smoothly without assuming a parametric form.
 
 ```{r}
 np_reference <- enw_reference(
   parametric = ~0,
-  non_parametric = ~ 1 + rw(delay_week),
+  non_parametric = ~ 1 + rw(delay),
   data = pobs
 )
 ```
@@ -373,7 +372,7 @@ ggplot(combined) +
 The default model captures the general level of hospitalisations but underestimates recent dates and misses the day-of-week pattern.
 Both alternative models better capture the upward trend and weekly periodicity.
 The two alternative models produce similar estimates for this dataset, where the delay distribution is approximately lognormal.
-The non-parametric model shows slightly wider uncertainty for recent dates, reflecting the additional flexibility of the delay-week random walk.
+The non-parametric model shows slightly wider uncertainty for recent dates, reflecting the additional flexibility of the daily delay random walk.
 In settings where the delay distribution is multi-modal or irregular, the non-parametric approach would show a larger advantage.
 
 Further extensions to consider include:
