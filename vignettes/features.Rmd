@@ -33,6 +33,7 @@ For function-specific details, see `?function_name`.
 | **Custom priors** | Inspect and replace default priors | [Prior specification](#priors) |
 | **Model comparison** | LOO-CV, posterior predictive checks | [Model evaluation](#model-evaluation) |
 | **Inference methods** | NUTS, pathfinder, pathfinder-initialised NUTS | [Inference methods vignette](inference-methods.html) |
+| **Data visualisation** | Inspect preprocessing and nowcast output | [Visualisation](#visualisation) |
 
 # Different Timesteps and Timespans {#timesteps}
 
@@ -225,6 +226,24 @@ Assess model fit and compare models.
 
 **Where to see it:** The [Rt estimation vignette](single-timeseries-rt-estimation.html) shows model scoring and evaluation.
 
+# Visualisation {#visualisation}
+
+`plot()` methods are available for both preprocessed data and nowcast output.
+
+| Object | Plot types | What it shows |
+|--------|-----------|---------------|
+| `enw_preprocess_data` | `"obs"`, `"delay_cumulative"`, `"delay_fraction"`, `"delay_quantiles"`, `"delay_counts"` | Reporting patterns and delay structure |
+| `epinowcast` | `"nowcast"`, `"posterior_prediction"` | Nowcast estimates and posterior predictive checks |
+
+**Key functions:**
+
+- `plot()`: S3 methods for both object types
+- `enw_plot_delay_cumulative()`, `enw_plot_delay_fraction()`, `enw_plot_delay_quantiles()`, `enw_plot_delay_counts()`: Individual plot functions for preprocessed data
+- `enw_plot_nowcast_quantiles()`, `enw_plot_pp_quantiles()`: Individual plot functions for model output
+- `enw_delay_categories()`, `enw_delay_quantiles()`: Helper functions for computing delay summaries
+
+**Where to see it:** The [visualising preprocessed data vignette](preprocess-visualisation.html) demonstrates all preprocessing plot types.
+
 # Computational Options
 
 Control computational efficiency and parallelisation.
@@ -283,6 +302,7 @@ See our [community forum](https://community.epinowcast.org/) for ongoing discuss
 - [Model definition vignette](model.html): Mathematical details
 - [Germany case study](germany-age-stratified-nowcasting.html): Age-stratified nowcasting
 - [Rt estimation vignette](single-timeseries-rt-estimation.html): Renewal process models
+- [Visualising preprocessed data](preprocess-visualisation.html): Explore delay structure before fitting
 - [Distributions vignette](distributions.html): Parametric distributions
 - Function documentation: `?function_name` for detailed API
 - Package website: https://package.epinowcast.org

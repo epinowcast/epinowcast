@@ -336,6 +336,119 @@ summary.epinowcast <- function(object, type = c(
 }
 
 
+#' Plot method for enw_preprocess_data
+#'
+#' @description `plot` method for preprocessed data of class
+#'   `"enw_preprocess_data"`. Creates descriptive plots of the
+#'   empirical reporting delay distribution and notification
+#'   time series.
+#'
+#' @param x A preprocessed data object as produced by
+#'   [enw_preprocess_data()].
+#'
+#' @param type Character string indicating the plot type;
+#'   enforced by [base::match.arg()]. Options:
+#'   * `"obs"` -- latest observations (via [enw_plot_obs()])
+#'   * `"delay_cumulative"` -- cumulative empirical delay (via
+#'     [enw_plot_delay_cumulative()])
+#'   * `"delay_fraction"` -- delay heatmap (via
+#'     [enw_plot_delay_fraction()])
+#'   * `"delay_quantiles"` -- delay quantiles (via
+#'     [enw_plot_delay_quantiles()])
+#'   * `"delay_counts"` -- notifications by delay group (via
+#'     [enw_plot_delay_counts()])
+#'
+#' @param delay_group_thresh A numeric vector of left-closed
+#'   interval thresholds for delay grouping (use `right = FALSE`
+#'   semantics, so the upper bound should exceed `max_delay`).
+#'   Used by `"delay_cumulative"`, `"delay_fraction"`, and
+#'   `"delay_counts"`. Defaults to `NULL`, which auto-generates
+#'   thresholds from `max_delay`.
+#'
+#' @param quantiles A numeric vector of probabilities for the
+#'   `"delay_quantiles"` type. Defaults to `c(0.1, 0.5, 0.9)`.
+#'
+#' @param log Logical, defaults to `FALSE`. Should counts be
+#'   plotted on the log scale (only for `"obs"` type).
+#'
+#' @param facet Logical. When `TRUE` (the default), delay-based
+#'   plots with more than one `.group` are automatically wrapped
+#'   by group. Set to `FALSE` to disable and add a custom facet
+#'   layer.
+#'
+#' @param ... Additional arguments passed to the underlying
+#'   plot function.
+#'
+#' @family epinowcast
+#' @family plot
+#' @method plot enw_preprocess_data
+#' @return A `ggplot2` object.
+#' @export
+#' @importFrom cli cli_abort
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#'
+#' # Latest observations
+#' plot(pobs, type = "obs")
+#'
+#' # Cumulative reporting delay
+#' plot(pobs, type = "delay_cumulative")
+#'
+#' # Reporting delay heatmap
+#' plot(pobs, type = "delay_fraction")
+#'
+#' # Reporting delay quantiles
+#' plot(pobs, type = "delay_quantiles")
+#'
+#' # Notifications by delay group
+#' plot(pobs, type = "delay_counts")
+plot.enw_preprocess_data <- function(
+  x, type = c(
+    "obs", "delay_cumulative", "delay_fraction",
+    "delay_quantiles", "delay_counts"
+  ),
+  delay_group_thresh = NULL,
+  quantiles = c(0.1, 0.5, 0.9),
+  log = FALSE, facet = TRUE, ...
+) {
+  type <- match.arg(type)
+
+  delay_types <- c(
+    "delay_cumulative", "delay_fraction", "delay_counts"
+  )
+  if (is.null(delay_group_thresh) && type %in% delay_types) {
+    md <- enw_get_data(x, "max_delay")
+    delay_group_thresh <- unique(c(
+      0,
+      seq(1, md, by = max(1, md %/% 4)),
+      md + 1
+    ))
+  }
+
+  plot <- switch(type,
+    obs = {
+      latest <- enw_get_data(x, "latest")
+      enw_plot_obs(latest, log = log, x = reference_date, ...) +
+        labs(y = "Notifications", x = "Reference date")
+    },
+    delay_cumulative = enw_plot_delay_cumulative(
+      x, delay_group_thresh, facet = facet
+    ),
+    delay_fraction = enw_plot_delay_fraction(
+      x, delay_group_thresh, facet = facet
+    ),
+    delay_quantiles = enw_plot_delay_quantiles(
+      x, quantiles, facet = facet
+    ),
+    delay_counts = enw_plot_delay_counts(
+      x, delay_group_thresh, facet = facet
+    ),
+    cli::cli_abort("unimplemented type: {type}")
+  )
+
+  plot
+}
+
 #' Plot method for epinowcast
 #'
 #' @description `plot` method for class "epinowcast".
