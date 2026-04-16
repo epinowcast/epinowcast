@@ -109,8 +109,6 @@ plot(pobs, type = "delay_fraction")
 
 Here we can see changes in colour across columns that line up with day of the week, which indicates the delay distribution depends on the reference weekday.
 The cumulative plot shows how fast reports accumulate overall, while the heatmap isolates where within the delay distribution a change is happening.
-If the cumulative plot is stable but the heatmap shows shifting bands, reports are arriving at the same aggregate pace but being redistributed across delays.
-Conversely, stable heatmap bands combined with a changing cumulative plot point to a shift in total reporting speed rather than in the shape of the delay distribution.
 
 # Reporting delay quantiles
 
