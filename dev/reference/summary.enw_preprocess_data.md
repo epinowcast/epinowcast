@@ -38,6 +38,7 @@ preprocessed data object and preview parameters, printed via
 
 Other epinowcast:
 [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md),
+[`plot.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.md),
 [`plot.epinowcast()`](https://package.epinowcast.org/dev/reference/plot.epinowcast.md),
 [`print.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/print.enw_preprocess_data.md),
 [`print.epinowcast()`](https://package.epinowcast.org/dev/reference/print.epinowcast.md),

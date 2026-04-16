@@ -35,6 +35,11 @@
 
   A place to document how epinowcast has been used
 
+- [Visualising Preprocessed
+  Data](https://package.epinowcast.org/dev/articles/preprocess-visualisation.md):
+
+  Understanding reporting patterns before model fitting.
+
 - [Estimating the effective reproduction number in real-time for a
   single timeseries with reporting
   delays](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md):

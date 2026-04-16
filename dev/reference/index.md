@@ -6,6 +6,8 @@ Functions for nowcasting.
 
 - [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md)
   : Nowcast using partially observed data
+- [`plot(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.md)
+  : Plot method for enw_preprocess_data
 - [`plot(`*`<epinowcast>`*`)`](https://package.epinowcast.org/dev/reference/plot.epinowcast.md)
   : Plot method for epinowcast
 - [`print(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/dev/reference/print.enw_preprocess_data.md)
@@ -230,8 +232,20 @@ Functions for postprocessing model output
 
 ## Plot
 
-Functions for plotting postprocessed nowcast model output
+Functions for plotting preprocessed data and nowcast model output
 
+- [`enw_delay_categories()`](https://package.epinowcast.org/dev/reference/enw_delay_categories.md)
+  : Categorise new confirmations by delay group
+- [`enw_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_delay_quantiles.md)
+  : Empirical delay quantiles by reference date
+- [`enw_plot_delay_counts()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_counts.md)
+  : Plot notifications by delay group
+- [`enw_plot_delay_cumulative()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_cumulative.md)
+  : Plot cumulative empirical reporting delay
+- [`enw_plot_delay_fraction()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_fraction.md)
+  : Plot empirical reporting delay heatmap
+- [`enw_plot_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_quantiles.md)
+  : Plot empirical reporting delay quantiles
 - [`enw_plot_nowcast_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_nowcast_quantiles.md)
   : Plot nowcast quantiles
 - [`enw_plot_obs()`](https://package.epinowcast.org/dev/reference/enw_plot_obs.md)
@@ -242,6 +256,8 @@ Functions for plotting postprocessed nowcast model output
   : Generic quantile plot
 - [`enw_plot_theme()`](https://package.epinowcast.org/dev/reference/enw_plot_theme.md)
   : Package plot theme
+- [`plot(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.md)
+  : Plot method for enw_preprocess_data
 - [`plot(`*`<epinowcast>`*`)`](https://package.epinowcast.org/dev/reference/plot.epinowcast.md)
   : Plot method for epinowcast
 

@@ -23,6 +23,7 @@ function-specific details, see `?function_name`.
 | **Missing data handling** | Missing reference dates                    | [Missing data](#missing-data)               |
 | **Custom priors**         | Inspect and replace default priors         | [Prior specification](#priors)              |
 | **Model comparison**      | LOO-CV, posterior predictive checks        | [Model evaluation](#model-evaluation)       |
+| **Data visualisation**    | Inspect preprocessing and nowcast output   | [Visualisation](#visualisation)             |
 
 ## Different Timesteps and Timespans
 
@@ -275,6 +276,36 @@ Assess model fit and compare models.
 vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md)
 shows model scoring and evaluation.
 
+## Visualisation
+
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods are
+available for both preprocessed data and nowcast output.
+
+| Object                | Plot types                                                                               | What it shows                                     |
+|-----------------------|------------------------------------------------------------------------------------------|---------------------------------------------------|
+| `enw_preprocess_data` | `"obs"`, `"delay_cumulative"`, `"delay_fraction"`, `"delay_quantiles"`, `"delay_counts"` | Reporting patterns and delay structure            |
+| `epinowcast`          | `"nowcast"`, `"posterior_prediction"`                                                    | Nowcast estimates and posterior predictive checks |
+
+**Key functions:**
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html): S3 methods
+  for both object types
+- [`enw_plot_delay_cumulative()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_cumulative.md),
+  [`enw_plot_delay_fraction()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_fraction.md),
+  [`enw_plot_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_quantiles.md),
+  [`enw_plot_delay_counts()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_counts.md):
+  Individual plot functions for preprocessed data
+- [`enw_plot_nowcast_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_nowcast_quantiles.md),
+  [`enw_plot_pp_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_pp_quantiles.md):
+  Individual plot functions for model output
+- [`enw_delay_categories()`](https://package.epinowcast.org/dev/reference/enw_delay_categories.md),
+  [`enw_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_delay_quantiles.md):
+  Helper functions for computing delay summaries
+
+**Where to see it:** The [visualising preprocessed data
+vignette](https://package.epinowcast.org/dev/articles/preprocess-visualisation.md)
+demonstrates all preprocessing plot types.
+
 ## Computational Options
 
 Control computational efficiency and parallelisation.
@@ -351,6 +382,9 @@ forum](https://community.epinowcast.org/) for ongoing discussions.
 - [Rt estimation
   vignette](https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.md):
   Renewal process models
+- [Visualising preprocessed
+  data](https://package.epinowcast.org/dev/articles/preprocess-visualisation.md):
+  Explore delay structure before fitting
 - [Distributions
   vignette](https://package.epinowcast.org/dev/articles/distributions.md):
   Parametric distributions

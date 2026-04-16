@@ -142,7 +142,13 @@ pobs
 
 The returned output is in the form of a `data.table` with metadata
 stored as variables. It can be useful to check this output before
-specifying the model, just to make sure everything is as expected.
+specifying the model, just to make sure everything is as expected. The
+preprocessed object also supports a
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) method for
+exploring the delay structure visually; see the [visualising
+preprocessed
+data](https://package.epinowcast.org/dev/articles/preprocess-visualisation.md)
+vignette for details.
 
 ## Model specification
 

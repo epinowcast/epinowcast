@@ -67,6 +67,7 @@
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
 </li>
@@ -188,7 +189,8 @@ We process reported data into the format required for <code>epinowcast</code> an
 <span><span class="co">#&gt;    timestep</span></span>
 <span><span class="co">#&gt;      &lt;char&gt;</span></span>
 <span><span class="co">#&gt; 1:      day</span></span></code></pre></div>
-</details><p>The returned output is in the form of a <code>data.table</code> with metadata stored as variables. It can be useful to check this output before specifying the model, just to make sure everything is as expected.</p>
+</details><p>The returned output is in the form of a <code>data.table</code> with metadata stored as variables. It can be useful to check this output before specifying the model, just to make sure everything is as expected.
+The preprocessed object also supports a <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method for exploring the delay structure visually; see the <a href="preprocess-visualisation.html">visualising preprocessed data</a> vignette for details.</p>
 </div>
 </div>
 <div class="section level2">

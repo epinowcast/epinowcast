@@ -67,6 +67,7 @@
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
 </li>
@@ -170,6 +171,11 @@ definition vignette</a>. For function-specific details, see
 <td><strong>Model comparison</strong></td>
 <td>LOO-CV, posterior predictive checks</td>
 <td><a href="#model-evaluation">Model evaluation</a></td>
+</tr>
+<tr class="even">
+<td><strong>Data visualisation</strong></td>
+<td>Inspect preprocessing and nowcast output</td>
+<td><a href="#visualisation">Visualisation</a></td>
 </tr>
 </tbody>
 </table>
@@ -763,6 +769,63 @@ hierarchical vignette</a></td>
 shows model scoring and evaluation.</p>
 </div>
 <div class="section level2">
+<h2 id="visualisation">Visualisation<a class="anchor" aria-label="anchor" href="#visualisation"></a>
+</h2>
+<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods are available for both preprocessed data
+and nowcast output.</p>
+<table class="table">
+<colgroup>
+<col width="23%">
+<col width="32%">
+<col width="44%">
+</colgroup>
+<thead><tr class="header">
+<th>Object</th>
+<th>Plot types</th>
+<th>What it shows</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>enw_preprocess_data</code></td>
+<td>
+<code>"obs"</code>, <code>"delay_cumulative"</code>,
+<code>"delay_fraction"</code>, <code>"delay_quantiles"</code>,
+<code>"delay_counts"</code>
+</td>
+<td>Reporting patterns and delay structure</td>
+</tr>
+<tr class="even">
+<td><code>epinowcast</code></td>
+<td>
+<code>"nowcast"</code>, <code>"posterior_prediction"</code>
+</td>
+<td>Nowcast estimates and posterior predictive checks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: S3 methods for both object types</li>
+<li>
+<code><a href="../reference/enw_plot_delay_cumulative.html">enw_plot_delay_cumulative()</a></code>,
+<code><a href="../reference/enw_plot_delay_fraction.html">enw_plot_delay_fraction()</a></code>,
+<code><a href="../reference/enw_plot_delay_quantiles.html">enw_plot_delay_quantiles()</a></code>,
+<code><a href="../reference/enw_plot_delay_counts.html">enw_plot_delay_counts()</a></code>: Individual plot functions for
+preprocessed data</li>
+<li>
+<code><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles()</a></code>,
+<code><a href="../reference/enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code>: Individual plot functions for
+model output</li>
+<li>
+<code><a href="../reference/enw_delay_categories.html">enw_delay_categories()</a></code>,
+<code><a href="../reference/enw_delay_quantiles.html">enw_delay_quantiles()</a></code>: Helper functions for computing delay
+summaries</li>
+</ul>
+<p><strong>Where to see it:</strong> The <a href="preprocess-visualisation.html">visualising preprocessed data
+vignette</a> demonstrates all preprocessing plot types.</p>
+</div>
+<div class="section level2">
 <h2 id="computational-options">Computational Options<a class="anchor" aria-label="anchor" href="#computational-options"></a>
 </h2>
 <p>Control computational efficiency and parallelisation.</p>
@@ -959,6 +1022,9 @@ study</a>: Age-stratified nowcasting</li>
 <li>
 <a href="single-timeseries-rt-estimation.html">Rt estimation
 vignette</a>: Renewal process models</li>
+<li>
+<a href="preprocess-visualisation.html">Visualising preprocessed
+data</a>: Explore delay structure before fitting</li>
 <li>
 <a href="distributions.html">Distributions vignette</a>: Parametric
 distributions</li>

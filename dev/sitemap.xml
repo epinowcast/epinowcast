@@ -8,6 +8,7 @@
 <url><loc>https://package.epinowcast.org/dev/articles/index.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/model.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/package-use-cases.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/articles/preprocess-visualisation.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/single-timeseries-rt-estimation.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/articles/stan-help.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/authors.html</loc></url>
@@ -67,6 +68,8 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_complete_dates.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_construct_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_dayofweek_structural_reporting.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_delay_categories.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_delay_quantiles.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_design.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_effects_metadata.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_example.html</loc></url>
@@ -98,6 +101,10 @@
 <url><loc>https://package.epinowcast.org/dev/reference/enw_obs_at_delay.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_one_hot_encode_feature.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_pathfinder.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_delay_counts.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_delay_cumulative.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_delay_fraction.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/enw_plot_delay_quantiles.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_plot_nowcast_quantiles.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_plot_obs.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/enw_plot_pp_quantiles.html</loc></url>
@@ -134,6 +141,7 @@
 <url><loc>https://package.epinowcast.org/dev/reference/is.Date.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/latest_obs_as_matrix.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/parse_formula.html</loc></url>
+<url><loc>https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/plot.epinowcast.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/print.enw_preprocess_data.html</loc></url>
 <url><loc>https://package.epinowcast.org/dev/reference/print.epinowcast.html</loc></url>

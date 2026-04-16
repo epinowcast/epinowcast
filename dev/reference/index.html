@@ -37,6 +37,7 @@
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -69,6 +70,13 @@
 
         </dt>
         <dd>Nowcast using partially observed data</dd>
+
+        <dt>
+
+          <code><a href="plot.enw_preprocess_data.html">plot(<i>&lt;enw_preprocess_data&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Plot method for enw_preprocess_data</dd>
 
         <dt>
 
@@ -609,7 +617,7 @@
       </dl></div><div class="section level2">
       <h2 id="plot">Plot<a class="anchor" aria-label="anchor" href="#plot"></a></h2>
 
-      <div class="section-desc"><p>Functions for plotting postprocessed nowcast model output</p></div>
+      <div class="section-desc"><p>Functions for plotting preprocessed data and nowcast model output</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -617,6 +625,48 @@
 
 
       <dl><dt>
+
+          <code><a href="enw_delay_categories.html">enw_delay_categories()</a></code>
+
+        </dt>
+        <dd>Categorise new confirmations by delay group</dd>
+
+        <dt>
+
+          <code><a href="enw_delay_quantiles.html">enw_delay_quantiles()</a></code>
+
+        </dt>
+        <dd>Empirical delay quantiles by reference date</dd>
+
+        <dt>
+
+          <code><a href="enw_plot_delay_counts.html">enw_plot_delay_counts()</a></code>
+
+        </dt>
+        <dd>Plot notifications by delay group</dd>
+
+        <dt>
+
+          <code><a href="enw_plot_delay_cumulative.html">enw_plot_delay_cumulative()</a></code>
+
+        </dt>
+        <dd>Plot cumulative empirical reporting delay</dd>
+
+        <dt>
+
+          <code><a href="enw_plot_delay_fraction.html">enw_plot_delay_fraction()</a></code>
+
+        </dt>
+        <dd>Plot empirical reporting delay heatmap</dd>
+
+        <dt>
+
+          <code><a href="enw_plot_delay_quantiles.html">enw_plot_delay_quantiles()</a></code>
+
+        </dt>
+        <dd>Plot empirical reporting delay quantiles</dd>
+
+        <dt>
 
           <code><a href="enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles()</a></code>
 
@@ -650,6 +700,13 @@
 
         </dt>
         <dd>Package plot theme</dd>
+
+        <dt>
+
+          <code><a href="plot.enw_preprocess_data.html">plot(<i>&lt;enw_preprocess_data&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Plot method for enw_preprocess_data</dd>
 
         <dt>
 

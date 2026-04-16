@@ -57,6 +57,7 @@ plot(
 
 Other epinowcast:
 [`epinowcast()`](https://package.epinowcast.org/dev/reference/epinowcast.md),
+[`plot.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.md),
 [`print.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/print.enw_preprocess_data.md),
 [`print.epinowcast()`](https://package.epinowcast.org/dev/reference/print.epinowcast.md),
 [`print.summary.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/print.summary.enw_preprocess_data.md),
@@ -64,11 +65,18 @@ Other epinowcast:
 [`summary.epinowcast()`](https://package.epinowcast.org/dev/reference/summary.epinowcast.md)
 
 Plotting functions
+[`enw_delay_categories()`](https://package.epinowcast.org/dev/reference/enw_delay_categories.md),
+[`enw_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_delay_quantiles.md),
+[`enw_plot_delay_counts()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_counts.md),
+[`enw_plot_delay_cumulative()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_cumulative.md),
+[`enw_plot_delay_fraction()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_fraction.md),
+[`enw_plot_delay_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_delay_quantiles.md),
 [`enw_plot_nowcast_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_nowcast_quantiles.md),
 [`enw_plot_obs()`](https://package.epinowcast.org/dev/reference/enw_plot_obs.md),
 [`enw_plot_pp_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_pp_quantiles.md),
 [`enw_plot_quantiles()`](https://package.epinowcast.org/dev/reference/enw_plot_quantiles.md),
-[`enw_plot_theme()`](https://package.epinowcast.org/dev/reference/enw_plot_theme.md)
+[`enw_plot_theme()`](https://package.epinowcast.org/dev/reference/enw_plot_theme.md),
+[`plot.enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/plot.enw_preprocess_data.md)
 
 ## Examples
 
