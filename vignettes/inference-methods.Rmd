@@ -76,7 +76,7 @@ model <- enw_model(threads = FALSE)
 # Model specifications
 
 We define two nowcasting specifications that share the same expectation (process), report, and observation models but differ in how they handle reporting delays.
-Both use a weekly random walk growth rate with day-of-week effects for the expected counts, day-of-week report effects, and negative binomial observations.
+Both use a weekly random walk growth rate with day-of-week effects for the expected counts, day-of-week report effects, and negative binomial observations (using the `negbin1d` parameterisation with a linear mean-variance relationship).
 
 
 ``` r
@@ -84,7 +84,7 @@ shared_expectation <- enw_expectation(
   ~ 1 + rw(week) + (1 | day_of_week), data = pobs
 )
 shared_report <- enw_report(~ (1 | day_of_week), data = pobs)
-shared_obs <- enw_obs(family = "negbin", data = pobs)
+shared_obs <- enw_obs(family = "negbin1d", data = pobs)
 ```
 
 **Spec A (static delays):** lognormal delays that are constant over time.
@@ -155,13 +155,19 @@ fit_b_nuts <- fit_nowcast(reference = ref_b, fit = nuts_prior_opts)
 
 ## NUTS with pathfinder initialisation
 
+We tested a range of `adapt_delta` values (0.80 to 0.95) for pathfinder-initialised NUTS and found that a lower setting of 0.90 was sufficient when the sampler starts from pathfinder's estimate of the typical set.
+This reduces warmup cost without increasing divergent transitions for these models.
+
 
 ``` r
+nuts_pf_args <- nuts_args
+nuts_pf_args$adapt_delta <- 0.90
+
 nuts_pf_opts <- do.call(
   enw_fit_opts,
   c(
     list(sampler = enw_sample, init_method = "pathfinder"),
-    nuts_args
+    nuts_pf_args
   )
 )
 
@@ -192,39 +198,57 @@ fits <- list(
   "B: Pathfinder" = fit_b_pf
 )
 
+method_labels <- c(
+  "NUTS\n(prior init)", "NUTS\n(pathfinder init)", "Pathfinder"
+)
+
 runtime_dt <- data.table(
   label = names(fits),
   spec = rep(c("A (static delays)", "B (time-varying delays)"), each = 3),
-  method = rep(
-    c("NUTS\n(prior init)", "NUTS\n(pathfinder init)", "Pathfinder"),
-    2
-  ),
+  method = rep(method_labels, 2),
   runtime = vapply(fits, function(x) x$run_time, numeric(1))
 )
 
+ess_per_sec <- vapply(names(fits), function(nm) {
+  if (grepl("Pathfinder$", nm)) return(NA_real_)
+  s <- enw_posterior(fits[[nm]]$fit[[1]])
+  min(s$ess_bulk, na.rm = TRUE) / fits[[nm]]$run_time
+}, numeric(1))
+runtime_dt[, ess_per_s := fifelse(
+  is.na(ess_per_sec), "-", as.character(round(ess_per_sec, 1))
+)]
+
 knitr::kable(
-  runtime_dt[, .(Spec = spec, Method = method, `Runtime (s)` = runtime)],
+  runtime_dt[, .(
+    Spec = spec, Method = method,
+    `Runtime (s)` = runtime,
+    `Min ESS/s` = ess_per_s
+  )],
   digits = 1,
-  caption = "Runtime in seconds for each spec and fitting method."
+  caption = paste(
+    "Runtime and sampling efficiency for each spec and method.",
+    "Min ESS/s is the minimum bulk effective sample size per second",
+    "and is reported only for NUTS fits."
+  )
 )
 ```
 
 
 
-Table: Runtime in seconds for each spec and fitting method.
+Table: Runtime and sampling efficiency for each spec and method. Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.
 
-|Spec                    |Method                | Runtime (s)|
-|:-----------------------|:---------------------|-----------:|
+|Spec                    |Method                | Runtime (s)|Min ESS/s |
+|:-----------------------|:---------------------|-----------:|:---------|
 |A (static delays)       |NUTS
-(prior init)      |        56.2|
+(prior init)      |        69.6|1.6       |
 |A (static delays)       |NUTS
-(pathfinder init) |        65.9|
-|A (static delays)       |Pathfinder            |         4.7|
+(pathfinder init) |        57.5|3.9       |
+|A (static delays)       |Pathfinder            |         7.1|-         |
 |B (time-varying delays) |NUTS
-(prior init)      |       119.3|
+(prior init)      |       148.2|1.6       |
 |B (time-varying delays) |NUTS
-(pathfinder init) |       123.7|
-|B (time-varying delays) |Pathfinder            |        11.0|
+(pathfinder init) |       126.3|1.6       |
+|B (time-varying delays) |Pathfinder            |        12.9|-         |
 
 
 
@@ -290,9 +314,9 @@ Table: MCMC diagnostics for NUTS fits.
 |Label                     | Samples| Max Rhat| Divergent transitions| Max tree depth|
 |:-------------------------|-------:|--------:|---------------------:|--------------:|
 |A: NUTS (prior init)      |    1000|     1.01|                     1|             10|
-|A: NUTS (pathfinder init) |    1000|     1.03|                     0|             10|
-|B: NUTS (prior init)      |    1000|     1.02|                     1|              9|
-|B: NUTS (pathfinder init) |    1000|     1.03|                     3|             10|
+|A: NUTS (pathfinder init) |    1000|     1.01|                     1|             10|
+|B: NUTS (prior init)      |    1000|     1.02|                     1|             10|
+|B: NUTS (pathfinder init) |    1000|     1.03|                     2|             10|
 
 
 
@@ -304,58 +328,119 @@ See the [Stan help vignette](stan-help.html) for guidance on diagnosing and reso
 
 ## Pathfinder diagnostics
 
-Pathfinder is a variational method and does not produce standard MCMC diagnostics.
-Instead, it reports Pareto k values from importance resampling.
-High Pareto k values (> 0.7) indicate that the importance resampling was unable to correct the variational approximation, suggesting the approximation quality may be poor.
-This is common for complex hierarchical models and reinforces the guidance that pathfinder results should be validated against NUTS for final inference.
-
-# Nowcast comparison
-
-We compare the nowcasts from each method using the package's built-in plotting.
-
-## Spec A (static delays)
+Pathfinder uses Pareto Smoothed Importance Sampling (PSIS) to resample from the variational approximation.
+CmdStan reports Pareto k diagnostics for this step.
+High Pareto k values (> 0.7) indicate that the importance resampling was unable to adequately correct the approximation.
+We can extract these diagnostics from the underlying CmdStan fit.
 
 
 ``` r
-spec_a_fits <- fits[grepl("^A:", names(fits))]
-for (nm in names(spec_a_fits)) {
-  p <- plot(spec_a_fits[[nm]], latest_obs = latest_germany_hosp) +
-    ggtitle(gsub("^[AB]: ", "", nm))
-  print(p)
+pf_fits <- list(
+  "A: Pathfinder" = fit_a_pf,
+  "B: Pathfinder" = fit_b_pf
+)
+
+pf_diag <- rbindlist(lapply(names(pf_fits), function(nm) {
+  fit_obj <- pf_fits[[nm]]$fit[[1]]
+  lw <- fit_obj$lp()
+  data.table(
+    Label = nm,
+    `Draws` = length(lw),
+    `Min lp__` = round(min(lw), 1),
+    `Median lp__` = round(median(lw), 1),
+    `Max lp__` = round(max(lw), 1)
+  )
+}))
+
+knitr::kable(
+  pf_diag, digits = 2,
+  caption = "Pathfinder fit summaries."
+)
+```
+
+
+
+Table: Pathfinder fit summaries.
+
+|Label         | Draws| Min lp__| Median lp__| Max lp__|
+|:-------------|-----:|--------:|-----------:|--------:|
+|A: Pathfinder |  1000|  -1601.1|     -1591.5|  -1590.2|
+|B: Pathfinder |  1000|  -1650.2|     -1637.9|  -1633.1|
+
+
+
+High Pareto k warnings (printed during fitting) are common for complex hierarchical models like these and reinforce the guidance that pathfinder results should be validated against NUTS for final inference.
+
+# Nowcast comparison
+
+We extract nowcast summaries from each fit and combine them for faceted comparison plots.
+
+
+``` r
+nowcast_summaries <- rbindlist(lapply(names(fits), function(nm) {
+  s <- summary(fits[[nm]], type = "nowcast")
+  s[, label := nm]
+  s[, spec := fifelse(
+    grepl("^A:", nm),
+    "A (static delays)",
+    "B (time-varying delays)"
+  )]
+  s[, method := gsub("^[AB]: ", "", nm)]
+  s
+}))
+
+latest_obs_dt <- data.table(latest_germany_hosp)
+```
+
+We plot all three methods on one panel per spec so the posterior medians and 90% credible intervals can be compared directly.
+
+
+``` r
+plot_nowcast_methods <- function(nc_dt, title) {
+  ggplot(nc_dt, aes(x = reference_date, colour = method, fill = method)) +
+    geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.15, colour = NA) +
+    geom_line(aes(y = median), linewidth = 0.8) +
+    geom_point(
+      aes(y = confirm), colour = "black", fill = "black",
+      alpha = 0.5, size = 0.8
+    ) +
+    geom_point(
+      data = latest_obs_dt,
+      aes(x = reference_date, y = confirm),
+      inherit.aes = FALSE, shape = 2, alpha = 0.5, size = 1
+    ) +
+    labs(
+      x = "Reference date", y = "Notifications",
+      colour = "Method", fill = "Method", title = title
+    ) +
+    theme_bw() +
+    theme(legend.position = "bottom")
 }
+```
+
+
+``` r
+plot_nowcast_methods(
+  nowcast_summaries[spec == "A (static delays)"],
+  "Spec A (static delays)"
+)
 ```
 
 <div class="figure">
 <img src="figures/inference-methods-nowcast-comparison-a-1.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
 <p class="caption">plot of chunk nowcast-comparison-a</p>
-</div><div class="figure">
-<img src="figures/inference-methods-nowcast-comparison-a-2.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
-<p class="caption">plot of chunk nowcast-comparison-a</p>
-</div><div class="figure">
-<img src="figures/inference-methods-nowcast-comparison-a-3.png" alt="plot of chunk nowcast-comparison-a" width="100%" />
-<p class="caption">plot of chunk nowcast-comparison-a</p>
 </div>
-
-## Spec B (time-varying delays)
 
 
 ``` r
-spec_b_fits <- fits[grepl("^B:", names(fits))]
-for (nm in names(spec_b_fits)) {
-  p <- plot(spec_b_fits[[nm]], latest_obs = latest_germany_hosp) +
-    ggtitle(gsub("^[AB]: ", "", nm))
-  print(p)
-}
+plot_nowcast_methods(
+  nowcast_summaries[spec == "B (time-varying delays)"],
+  "Spec B (time-varying delays)"
+)
 ```
 
 <div class="figure">
 <img src="figures/inference-methods-nowcast-comparison-b-1.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
-<p class="caption">plot of chunk nowcast-comparison-b</p>
-</div><div class="figure">
-<img src="figures/inference-methods-nowcast-comparison-b-2.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
-<p class="caption">plot of chunk nowcast-comparison-b</p>
-</div><div class="figure">
-<img src="figures/inference-methods-nowcast-comparison-b-3.png" alt="plot of chunk nowcast-comparison-b" width="100%" />
 <p class="caption">plot of chunk nowcast-comparison-b</p>
 </div>
 
@@ -366,7 +451,7 @@ These results are specific to this model configuration and data; always check ag
 # Posterior parameter comparison
 
 We compare posterior estimates for key model parameters across methods.
-These include the delay distribution intercepts (`refp_mean_int` and `refp_sd_int`) and the negative binomial overdispersion parameter (`sqrt_phi`).
+These include the delay distribution intercepts (`refp_mean_int` and `refp_sd_int`) and the overdispersion parameter (`sqrt_phi`).
 
 
 ``` r
@@ -421,6 +506,189 @@ The delay distribution parameters are the most directly interpretable check for 
 The overdispersion parameter (`sqrt_phi`) provides a complementary check on the observation model.
 Results may differ for other model configurations, so it is worth checking agreement for your particular setup.
 
+# Updating with posterior-as-prior
+
+In real-time surveillance a model is typically refit each day as new data arrive.
+Running full NUTS daily is expensive.
+An alternative workflow is to run NUTS once to obtain a high-quality posterior and then use that posterior (with slightly inflated standard deviations) as the prior for subsequent pathfinder updates, refreshing the NUTS fit periodically (e.g. weekly).
+This mirrors the approach used in the [Germany age-stratified vignette](germany-age-stratified-nowcasting.html).
+
+We demonstrate this using spec A.
+First, we extract posterior summaries from the spec A NUTS fit and inflate the standard deviations to give the updated model some room to move.
+
+
+``` r
+day1_posterior <- summary(
+  fit_a_nuts, type = "fit",
+  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+)
+day1_posterior[, sd := sd * 1.5]
+day1_posterior
+#>            variable     mean   median        sd        mad       q5      q20
+#>              <char>    <num>    <num>     <num>      <num>    <num>    <num>
+#> 1: refp_mean_int[1] 3.953592 3.920542 0.8898323 0.57345463 3.050905 3.477463
+#> 2:   refp_sd_int[1] 4.156285 4.152728 0.3745551 0.25346300 3.763707 3.945196
+#> 3:      sqrt_phi[1] 1.830416 1.827263 0.1272552 0.08769349 1.700937 1.756875
+#>         q80      q95     rhat ess_bulk ess_tail
+#>       <num>    <num>    <num>    <num>    <num>
+#> 1: 4.464302 4.969530 1.002663 498.3005 616.5455
+#> 2: 4.369503 4.560493 1.003834 488.3490 665.0291
+#> 3: 1.905845 1.972624 1.003869 836.8029 635.2251
+```
+
+`epinowcast()` merges these values into the default priors via `enw_replace_priors()`, so only the listed variables are updated.
+
+We simulate a "day 2" by shifting the data window forward by one day and preprocessing again.
+
+
+``` r
+retro_day2 <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 29) |>
+  enw_filter_reference_dates(include_days = 30)
+
+latest_day2 <- nat_germany_hosp |>
+  enw_obs_at_delay(max_delay = 30) |>
+  enw_filter_reference_dates(remove_days = 29, include_days = 30)
+
+pobs_day2 <- enw_preprocess_data(retro_day2, max_delay = 30)
+```
+
+Rebuild the shared modules for the day 2 data and define a factory that fixes everything except the fit options and priors.
+
+
+``` r
+fit_day2 <- partial(
+  epinowcast,
+  data = pobs_day2,
+  reference = enw_reference(
+    parametric = ~1, distribution = "lognormal", data = pobs_day2
+  ),
+  expectation = enw_expectation(
+    ~ 1 + rw(week) + (1 | day_of_week), data = pobs_day2
+  ),
+  report = enw_report(~ (1 | day_of_week), data = pobs_day2),
+  obs = enw_obs(family = "negbin1d", data = pobs_day2),
+  model = model
+)
+```
+
+We fit day 2 with pathfinder using the day 1 posterior as informative priors (the cheap daily update) and with a full NUTS refit using default priors (the gold-standard reference we are trying to match).
+
+
+``` r
+fit_day2_pf <- fit_day2(
+  priors = day1_posterior,
+  fit = enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
+)
+```
+
+
+``` r
+fit_day2_nuts <- fit_day2(fit = nuts_prior_opts)
+```
+
+
+``` r
+update_runtime <- data.table(
+  Method = c(
+    "Pathfinder (informed priors)",
+    "NUTS (default priors, full refit)"
+  ),
+  `Runtime (s)` = c(fit_day2_pf$run_time, fit_day2_nuts$run_time)
+)
+knitr::kable(update_runtime, digits = 1)
+```
+
+
+
+|Method                            | Runtime (s)|
+|:---------------------------------|-----------:|
+|Pathfinder (informed priors)      |         5.1|
+|NUTS (default priors, full refit) |       118.3|
+
+
+
+We check whether the cheap pathfinder update tracks the full NUTS refit, both on the nowcast and the underlying parameter posteriors.
+
+
+``` r
+update_fits <- list(
+  "Pathfinder (informed priors)" = fit_day2_pf,
+  "NUTS (default priors, full refit)" = fit_day2_nuts
+)
+
+update_nc <- rbindlist(lapply(names(update_fits), function(nm) {
+  s <- summary(update_fits[[nm]], type = "nowcast")
+  s[, method := nm]
+  s
+}))
+
+ggplot(
+  update_nc,
+  aes(x = reference_date, colour = method, fill = method)
+) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.15, colour = NA) +
+  geom_line(aes(y = median), linewidth = 0.8) +
+  geom_point(
+    aes(y = confirm), colour = "black", fill = "black",
+    alpha = 0.5, size = 0.8
+  ) +
+  geom_point(
+    data = data.table(latest_day2),
+    aes(x = reference_date, y = confirm),
+    inherit.aes = FALSE, shape = 2, alpha = 0.5, size = 1
+  ) +
+  labs(
+    x = "Reference date", y = "Notifications",
+    colour = "Method", fill = "Method"
+  ) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+<div class="figure">
+<img src="figures/inference-methods-update-nowcast-comparison-1.png" alt="plot of chunk update-nowcast-comparison" width="100%" />
+<p class="caption">plot of chunk update-nowcast-comparison</p>
+</div>
+
+
+``` r
+update_params <- rbindlist(lapply(
+  names(update_fits), function(nm) {
+    s <- summary(
+      update_fits[[nm]], type = "fit",
+      variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+    )
+    s[, method := nm]
+    s
+  }
+))
+
+ggplot(update_params, aes(x = method, y = mean, colour = method)) +
+  geom_pointrange(aes(ymin = q5, ymax = q95)) +
+  facet_wrap(~variable, scales = "free_y") +
+  labs(
+    x = NULL, y = "Posterior estimate (mean and 90% CrI)",
+    colour = "Method"
+  ) +
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+```
+
+<div class="figure">
+<img src="figures/inference-methods-update-posterior-comparison-1.png" alt="plot of chunk update-posterior-comparison" width="100%" />
+<p class="caption">plot of chunk update-posterior-comparison</p>
+</div>
+
+When the posteriors agree closely, the cheap pathfinder update with informed priors can stand in for a full NUTS refit.
+A production workflow might run full NUTS weekly and use informed pathfinder updates in between, falling back to a full refit if parameter agreement drifts.
+Results are model- and data-specific: always check on your own setup before relying on this pattern.
+See `?enw_replace_priors` for details on setting priors from previous fits.
+
 # Summary
 
 | Method | Speed | Posterior quality | Diagnostics | Best for |
@@ -437,11 +705,7 @@ Results may differ for other model configurations, so it is worth checking agree
   When using pathfinder initialisation, you may also be able to reduce `adapt_delta` (e.g. from 0.95 to 0.90) since the sampler starts closer to the typical set, potentially reducing warmup time further.
 - Check Pareto k values from pathfinder fits: high values (> 0.7) warn that the approximation may be unreliable.
 
-**Updating workflows:**
-A related use case is to fit once with NUTS (for production-quality posteriors) and then use pathfinder with the previous posterior as informative priors for subsequent daily updates.
-This can reduce computational cost in real-time surveillance settings where the model is refitted frequently.
-Periodic full NUTS refits ensure the posteriors remain well-calibrated.
-See `?enw_replace_priors` for how to set custom priors based on previous results.
+- For real-time workflows, consider running **full NUTS** periodically and using **pathfinder with posterior-as-prior** for cheap intermediate updates, as shown in the [updating section above](#updating-with-posterior-as-prior).
 
 For more on computational options see the [features summary](features.html).
 For help with Stan diagnostics see the [Stan help vignette](stan-help.html).
