@@ -95,19 +95,21 @@ head(latest_germany_hosp, n = 10)
 ## Visualising the data
 
 Before fitting any model, it is useful to plot the data to identify patterns that should inform model specification.
+We use `enw_plot_obs()` to compare the counts available in the retrospective snapshot (solid points) against the eventual totals reported later (triangles).
 
 ```{r data-plot}
-ggplot(latest_germany_hosp) +
-  aes(x = reference_date, y = confirm) +
-  geom_col(alpha = 0.7) +
-  labs(
-    x = "Reference date",
-    y = "Hospitalisations"
-  ) +
-  theme_bw()
+retro_latest <- enw_latest_data(retro_nat_germany)
+
+enw_plot_obs(
+  retro_latest,
+  latest_obs = latest_germany_hosp,
+  x = reference_date
+) +
+  labs(y = "Hospitalisations", x = "Reference date")
 ```
 
-The plot shows a clear day-of-week periodicity in hospitalisations alongside a strong upward trend.
+The eventual totals show a clear day-of-week periodicity alongside a strong upward trend.
+The retrospective snapshot systematically underestimates recent reference dates, which is the right-truncation that the nowcast needs to correct.
 These features will become important when we evaluate model performance below.
 
 ## Preprocessing
@@ -138,6 +140,16 @@ summary(pobs)
 ```
 
 It can be useful to check this output before specifying the model, just to make sure everything is as expected.
+
+The preprocessed object supports a range of empirical delay visualisations that are useful for motivating model choices; see the [visualising preprocessed data](preprocess-visualisation.html) vignette for details.
+Here we use `enw_plot_delay_cumulative()` to show the cumulative fraction of each reference date's eventual reports that have arrived by a given delay.
+
+```{r delay-cumulative}
+enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
+```
+
+The ribbon shifts substantially across reference dates, indicating that the empirical delay distribution is not stable.
+This motivates the alternative models explored below, which relax the default lognormal delay with either day-of-week effects or a fully non-parametric specification.
 
 # The default model
 
@@ -315,58 +327,23 @@ nowcast_np
 We can compare all three nowcasts by overlaying their posterior summaries.
 
 ```{r comparison}
-default_summary <- summary(
-  nowcast_default,
-  probs = c(0.05, 0.2, 0.8, 0.95)
+summaries <- list(
+  Default = nowcast_default,
+  Lognormal = nowcast_lognormal,
+  `Non-parametric` = nowcast_np
 )
-default_summary[, model := "Default"]
-
-lognormal_summary <- summary(
-  nowcast_lognormal,
-  probs = c(0.05, 0.2, 0.8, 0.95)
-)
-lognormal_summary[, model := "Lognormal"]
-
-np_summary <- summary(
-  nowcast_np,
-  probs = c(0.05, 0.2, 0.8, 0.95)
-)
-np_summary[, model := "Non-parametric"]
-
 combined <- rbindlist(
-  list(default_summary, lognormal_summary, np_summary),
+  lapply(names(summaries), function(name) {
+    out <- summary(summaries[[name]], probs = c(0.05, 0.2, 0.8, 0.95))
+    out[, model := name][]
+  }),
   use.names = TRUE
 )
 
-ggplot(combined) +
-  aes(x = reference_date) +
-  geom_ribbon(
-    aes(ymin = q5, ymax = q95, fill = model),
-    alpha = 0.2
-  ) +
-  geom_ribbon(
-    aes(ymin = q20, ymax = q80, fill = model),
-    alpha = 0.3
-  ) +
-  geom_line(
-    aes(y = median, colour = model),
-    linewidth = 0.8
-  ) +
-  geom_point(
-    data = latest_germany_hosp,
-    aes(y = confirm),
-    shape = 2,
-    size = 1.1,
-    alpha = 0.7
-  ) +
-  labs(
-    x = "Reference date",
-    y = "Hospitalisations",
-    fill = "Model",
-    colour = "Model"
-  ) +
-  theme_bw() +
-  theme(legend.position = "bottom")
+enw_plot_nowcast_quantiles(
+  combined, latest_obs = latest_germany_hosp
+) +
+  facet_wrap(vars(model))
 ```
 
 The default model captures the general level of hospitalisations but underestimates recent dates and misses the day-of-week pattern.
