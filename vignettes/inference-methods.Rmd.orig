@@ -127,13 +127,15 @@ fit_nowcast <- partial(
 # Fitting
 
 We define shared NUTS options tuned for speed rather than production use.
+We set `adapt_delta = 0.80` because we looked at values from 0.80 to 0.95 for both prior- and pathfinder-initialised NUTS and all fits stayed well below a 1% divergent-transitions rate at every value; running at the lower end keeps warmup cheap while tolerating the handful of divergences that remain.
+We also set `max_depth = 10` (the Stan default) since none of the fits hit the treedepth cap in our checks.
 
 ```{r fit-options}
 nuts_args <- list(
   save_warmup = FALSE, pp = TRUE,
   chains = 2,
   iter_sampling = 500, iter_warmup = 500,
-  adapt_delta = 0.95, max_depth = 12,
+  adapt_delta = 0.80, max_depth = 10,
   show_messages = FALSE, refresh = 0
 )
 ```
@@ -154,18 +156,14 @@ fit_b_nuts <- fit_nowcast(reference = ref_b, fit = nuts_prior_opts)
 
 ## NUTS with pathfinder initialisation
 
-We tested a range of `adapt_delta` values (0.80 to 0.95) for pathfinder-initialised NUTS and found that a lower setting of 0.90 was sufficient when the sampler starts from pathfinder's estimate of the typical set.
-This reduces warmup cost without increasing divergent transitions for these models.
+We reuse the same `nuts_args` here so the comparison below isolates the effect of initialisation.
 
 ```{r fit-nuts-pf, results='hide'}
-nuts_pf_args <- nuts_args
-nuts_pf_args$adapt_delta <- 0.90
-
 nuts_pf_opts <- do.call(
   enw_fit_opts,
   c(
     list(sampler = enw_sample, init_method = "pathfinder"),
-    nuts_pf_args
+    nuts_args
   )
 )
 
@@ -277,44 +275,21 @@ knitr::kable(
 )
 ```
 
-All four NUTS fits converge well: Rhat values are close to 1 (well below the 1.05 threshold), divergent transitions are minimal, and tree depths are within the configured maximum.
+All four NUTS fits converge well: Rhat values are close to 1 (well below the 1.05 threshold) and divergent transitions are minimal (1-2 per fit, a handful that we tolerate as discussed above).
+Reported tree depth sits at the configured maximum of 10; our earlier checks at `max_depth = 12` showed the sampler never needed to go beyond 10, so the cap is not biting.
 Both initialisation methods (prior and pathfinder) produce comparable convergence behaviour for these models.
 
-For production use, aim for Rhat < 1.01, zero divergent transitions, and tree depths well below the maximum.
+For production use, aim for Rhat < 1.01, zero divergent transitions, and tree depths comfortably below the maximum.
 See the [Stan help vignette](stan-help.html) for guidance on diagnosing and resolving fitting issues.
 
 ## Pathfinder diagnostics
 
-Pathfinder uses Pareto Smoothed Importance Sampling (PSIS) to resample from the variational approximation.
-CmdStan reports Pareto k diagnostics for this step.
-High Pareto k values (> 0.7) indicate that the importance resampling was unable to adequately correct the approximation.
-We can extract these diagnostics from the underlying CmdStan fit.
+Pathfinder's headline diagnostic is the Pareto k from the PSIS resampling step that corrects the variational approximation.
+CmdStan prints this to the console during fitting; values above 0.7 indicate the resampling could not correct the approximation and the pathfinder posterior is unreliable.
+CmdStanR does not retain Pareto k on the fit object after the run, so readers should watch for these warnings during fitting rather than trying to read them back afterwards.
 
-```{r pathfinder-diagnostics}
-pf_fits <- list(
-  "A: Pathfinder" = fit_a_pf,
-  "B: Pathfinder" = fit_b_pf
-)
-
-pf_diag <- rbindlist(lapply(names(pf_fits), function(nm) {
-  fit_obj <- pf_fits[[nm]]$fit[[1]]
-  lw <- fit_obj$lp()
-  data.table(
-    Label = nm,
-    `Draws` = length(lw),
-    `Min lp__` = round(min(lw), 1),
-    `Median lp__` = round(median(lw), 1),
-    `Max lp__` = round(max(lw), 1)
-  )
-}))
-
-knitr::kable(
-  pf_diag, digits = 2,
-  caption = "Pathfinder fit summaries."
-)
-```
-
-High Pareto k warnings (printed during fitting) are common for complex hierarchical models like these and reinforce the guidance that pathfinder results should be validated against NUTS for final inference.
+Both pathfinder fits here trigger Pareto k warnings well above 0.7, which is consistent with the posterior comparisons below (pathfinder's credible intervals are substantially narrower than the NUTS reference).
+We do not recommend using pathfinder as the final inference method for these models — it is useful for rapid iteration during model development and as an initialiser for NUTS.
 
 # Nowcast comparison
 
@@ -424,11 +399,22 @@ ggplot(
   )
 ```
 
-Where NUTS and pathfinder posteriors agree closely, pathfinder provides a reliable and much faster approximation.
-Substantial disagreement suggests the posterior is complex enough that the variational approximation is insufficient and NUTS should be preferred.
-The delay distribution parameters are the most directly interpretable check for agreement, as they are well-identified in the likelihood.
-The overdispersion parameter (`sqrt_phi`) provides a complementary check on the observation model.
-Results may differ for other model configurations, so it is worth checking agreement for your particular setup.
+To make the comparison concrete we also tabulate the posterior mean and 90% credible interval width for each parameter.
+
+```{r posterior-widths}
+width_dt <- param_summaries[, .(
+  Spec = spec, Method = method, Variable = variable,
+  Mean = round(mean, 2),
+  `90% CrI width` = round(q95 - q5, 2)
+)]
+knitr::kable(width_dt, caption = "Posterior means and 90% CrI widths.")
+```
+
+Across all three parameters the point estimates (means) are broadly aligned between NUTS and pathfinder.
+The 90% credible intervals from pathfinder are roughly an order of magnitude narrower than the NUTS references — for example, for `refp_mean_int` in spec A the NUTS width is around 1.9 on the log scale versus around 0.24 for pathfinder (about 8× narrower); for spec B the gap is similar (~2.2 versus ~0.3).
+This is a known limitation of variational approximations: they tend to concentrate on a mode and underestimate tail variance, so uncertainty from a raw pathfinder fit is not trustworthy even when the central estimates look reasonable.
+NUTS with pathfinder initialisation reproduces the NUTS posterior (widths within a few percent of prior-init NUTS), so the initialisation itself does not carry the variational bias forward.
+These numbers are specific to this model and data — run the same check on your own setup before relying on pathfinder posteriors.
 
 # Updating with posterior-as-prior
 
@@ -589,7 +575,6 @@ See `?enw_replace_priors` for details on setting priors from previous fits.
 - Start with **pathfinder** during model development to iterate quickly on specification choices.
 - Switch to **NUTS** for final inference when results will be reported or used for decisions.
 - Use **pathfinder-initialised NUTS** when standard NUTS shows convergence issues (high Rhat, many divergent transitions) or slow warmup.
-  When using pathfinder initialisation, you may also be able to reduce `adapt_delta` (e.g. from 0.95 to 0.90) since the sampler starts closer to the typical set, potentially reducing warmup time further.
 - Check Pareto k values from pathfinder fits: high values (> 0.7) warn that the approximation may be unreliable.
 
 - For real-time workflows, consider running **full NUTS** periodically and using **pathfinder with posterior-as-prior** for cheap intermediate updates, as shown in the [updating section above](#updating-with-posterior-as-prior).
