@@ -42,7 +42,9 @@ knitr::opts_chunk$set(
   uses pathfinder to find good starting values for NUTS.
   Can reduce warmup time and improve convergence for difficult models.
 
-This vignette compares these three approaches across two nowcasting model specifications of different complexity, looking at runtime, diagnostics, and the resulting nowcasts.
+This vignette compares these three approaches across two nowcasting model specifications of different complexity.
+We look at runtime and sampling efficiency, MCMC and pathfinder diagnostics, the resulting nowcasts, and the posterior distributions of key delay and overdispersion parameters.
+We then demonstrate a real-time workflow that uses a previous NUTS posterior as the prior for a fast pathfinder update, and compare it against pathfinder with default priors and a full NUTS refit to show whether the informed priors close the gap to the gold-standard reference at a fraction of the cost.
 
 # Setup
 
@@ -462,51 +464,38 @@ latest_day2 <- nat_germany_hosp |>
   enw_filter_reference_dates(remove_days = 29, include_days = 30)
 
 pobs_day2 <- enw_preprocess_data(retro_day2, max_delay = 30)
+```
 
-# Capture shared model spec using formulas
-fit_day2 <- function(data, fit_opts, priors = NULL) {
-  args <- list(
-    data = data,
-    reference = enw_reference(
-      parametric = ~1, distribution = "lognormal", data = data
-    ),
-    expectation = enw_expectation(
-      ~ 1 + rw(week) + (1 | day_of_week), data = data
-    ),
-    report = enw_report(~ (1 | day_of_week), data = data),
-    obs = enw_obs(family = "negbin1d", data = data),
-    model = model,
-    fit = fit_opts
-  )
-  if (!is.null(priors)) {
-    args$priors <- priors
-  }
-  do.call(epinowcast, args)
-}
+We build the shared day-2 modules against `pobs_day2` and capture them in a `partial()`-based factory mirroring `fit_nowcast` above.
+
+```{r update-factory}
+fit_day2 <- partial(
+  epinowcast,
+  data = pobs_day2,
+  reference = enw_reference(
+    parametric = ~1, distribution = "lognormal", data = pobs_day2
+  ),
+  expectation = enw_expectation(
+    ~ 1 + rw(week) + (1 | day_of_week), data = pobs_day2
+  ),
+  report = enw_report(~ (1 | day_of_week), data = pobs_day2),
+  obs = enw_obs(family = "negbin1d", data = pobs_day2),
+  model = model
+)
+
+pf_opts_pp <- enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
 ```
 
 We fit day 2 using three approaches:
-1.  **Pathfinder with informed priors**: the cheap daily update.
-2.  **Pathfinder with default priors**: to see if informed priors improve the approximation.
-3.  **NUTS with default priors**: the gold-standard reference we are trying to match.
+
+1. **Pathfinder with informed priors**: the cheap daily update.
+2. **Pathfinder with default priors**: to see if informed priors improve the approximation.
+3. **NUTS with default priors**: the gold-standard reference we are trying to match.
 
 ```{r update-fit, results='hide'}
-# Pathfinder with informed priors
-fit_day2_pf_informed <- fit_day2(
-  pobs_day2, priors = day1_posterior,
-  fit_opts = enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
-)
-
-# Pathfinder with default priors
-fit_day2_pf_default <- fit_day2(
-  pobs_day2,
-  fit_opts = enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
-)
-
-# NUTS with default priors (full refit)
-fit_day2_nuts <- fit_day2(
-  pobs_day2, fit_opts = nuts_prior_opts
-)
+fit_day2_pf_informed <- fit_day2(fit = pf_opts_pp, priors = day1_posterior)
+fit_day2_pf_default <- fit_day2(fit = pf_opts_pp)
+fit_day2_nuts <- fit_day2(fit = nuts_prior_opts)
 ```
 
 ```{r update-runtime}
@@ -529,8 +518,8 @@ We check whether the cheap pathfinder update tracks the full NUTS refit, and whe
 
 ```{r update-nowcast-comparison, fig.width = 9, fig.height = 5}
 update_fits <- list(
-  "Pathfinder (informed)" = fit_day2_pf_informed,
-  "Pathfinder (default)" = fit_day2_pf_default,
+  "Pathfinder (informed priors)" = fit_day2_pf_informed,
+  "Pathfinder (default priors)" = fit_day2_pf_default,
   "NUTS (full refit)" = fit_day2_nuts
 )
 

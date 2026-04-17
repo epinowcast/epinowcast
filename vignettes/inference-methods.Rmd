@@ -34,7 +34,9 @@ vignette: >
   uses pathfinder to find good starting values for NUTS.
   Can reduce warmup time and improve convergence for difficult models.
 
-This vignette compares these three approaches across two nowcasting model specifications of different complexity, looking at runtime, diagnostics, and the resulting nowcasts.
+This vignette compares these three approaches across two nowcasting model specifications of different complexity.
+We look at runtime and sampling efficiency, MCMC and pathfinder diagnostics, the resulting nowcasts, and the posterior distributions of key delay and overdispersion parameters.
+We then demonstrate a real-time workflow that uses a previous NUTS posterior as the prior for a fast pathfinder update, and compare it against pathfinder with default priors and a full NUTS refit to show whether the informed priors close the gap to the gold-standard reference at a fraction of the cost.
 
 # Setup
 
@@ -240,15 +242,15 @@ Table: Runtime and sampling efficiency for each spec and method. Min ESS/s is th
 |Spec                    |Method                | Runtime (s)|Min ESS/s |
 |:-----------------------|:---------------------|-----------:|:---------|
 |A (static delays)       |NUTS
-(prior init)      |        46.3|5.1       |
+(prior init)      |        51.5|3.4       |
 |A (static delays)       |NUTS
-(pathfinder init) |        43.1|4.4       |
-|A (static delays)       |Pathfinder            |         6.7|-         |
+(pathfinder init) |        45.2|3.6       |
+|A (static delays)       |Pathfinder            |         6.6|-         |
 |B (time-varying delays) |NUTS
-(prior init)      |       100.2|2.3       |
+(prior init)      |       120.9|1.5       |
 |B (time-varying delays) |NUTS
-(pathfinder init) |       103.6|1.7       |
-|B (time-varying delays) |Pathfinder            |        12.5|-         |
+(pathfinder init) |       112.8|1.7       |
+|B (time-varying delays) |Pathfinder            |        13.0|-         |
 
 
 
@@ -313,10 +315,10 @@ Table: MCMC diagnostics for NUTS fits.
 
 |Label                     | Samples| Max Rhat| Divergent transitions| Max tree depth|
 |:-------------------------|-------:|--------:|---------------------:|--------------:|
-|A: NUTS (prior init)      |    1000|     1.02|                     1|             10|
-|A: NUTS (pathfinder init) |    1000|     1.02|                     3|             10|
-|B: NUTS (prior init)      |    1000|     1.01|                     4|              9|
-|B: NUTS (pathfinder init) |    1000|     1.01|                     4|              9|
+|A: NUTS (prior init)      |    1000|     1.02|                     2|             10|
+|A: NUTS (pathfinder init) |    1000|     1.02|                     1|              9|
+|B: NUTS (prior init)      |    1000|     1.01|                     2|              9|
+|B: NUTS (pathfinder init) |    1000|     1.01|                     6|             10|
 
 
 
@@ -483,24 +485,24 @@ Table: Posterior means and 90% CrI widths.
 
 |Spec                    |Method                 |Variable         | Mean| 90% CrI width|
 |:-----------------------|:----------------------|:----------------|----:|-------------:|
-|A (static delays)       |NUTS (prior init)      |refp_mean_int[1] | 3.99|          1.91|
-|A (static delays)       |NUTS (prior init)      |refp_sd_int[1]   | 4.18|          0.83|
-|A (static delays)       |NUTS (prior init)      |sqrt_phi[1]      | 1.83|          0.26|
-|A (static delays)       |NUTS (pathfinder init) |refp_mean_int[1] | 3.94|          1.93|
-|A (static delays)       |NUTS (pathfinder init) |refp_sd_int[1]   | 4.16|          0.82|
+|A (static delays)       |NUTS (prior init)      |refp_mean_int[1] | 3.91|          1.89|
+|A (static delays)       |NUTS (prior init)      |refp_sd_int[1]   | 4.14|          0.83|
+|A (static delays)       |NUTS (prior init)      |sqrt_phi[1]      | 1.83|          0.27|
+|A (static delays)       |NUTS (pathfinder init) |refp_mean_int[1] | 3.96|          1.94|
+|A (static delays)       |NUTS (pathfinder init) |refp_sd_int[1]   | 4.17|          0.83|
 |A (static delays)       |NUTS (pathfinder init) |sqrt_phi[1]      | 1.83|          0.27|
-|A (static delays)       |Pathfinder             |refp_mean_int[1] | 5.10|          0.16|
-|A (static delays)       |Pathfinder             |refp_sd_int[1]   | 4.49|          0.23|
-|A (static delays)       |Pathfinder             |sqrt_phi[1]      | 1.84|          0.17|
-|B (time-varying delays) |NUTS (prior init)      |refp_mean_int[1] | 3.66|          2.08|
-|B (time-varying delays) |NUTS (prior init)      |refp_sd_int[1]   | 3.89|          1.21|
-|B (time-varying delays) |NUTS (prior init)      |sqrt_phi[1]      | 1.74|          0.27|
-|B (time-varying delays) |NUTS (pathfinder init) |refp_mean_int[1] | 3.67|          2.34|
-|B (time-varying delays) |NUTS (pathfinder init) |refp_sd_int[1]   | 3.92|          1.21|
-|B (time-varying delays) |NUTS (pathfinder init) |sqrt_phi[1]      | 1.74|          0.26|
-|B (time-varying delays) |Pathfinder             |refp_mean_int[1] | 4.18|          0.05|
-|B (time-varying delays) |Pathfinder             |refp_sd_int[1]   | 4.03|          0.11|
-|B (time-varying delays) |Pathfinder             |sqrt_phi[1]      | 1.69|          0.10|
+|A (static delays)       |Pathfinder             |refp_mean_int[1] | 3.84|          0.43|
+|A (static delays)       |Pathfinder             |refp_sd_int[1]   | 4.20|          0.13|
+|A (static delays)       |Pathfinder             |sqrt_phi[1]      | 1.88|          0.18|
+|B (time-varying delays) |NUTS (prior init)      |refp_mean_int[1] | 3.66|          2.12|
+|B (time-varying delays) |NUTS (prior init)      |refp_sd_int[1]   | 3.91|          1.12|
+|B (time-varying delays) |NUTS (prior init)      |sqrt_phi[1]      | 1.74|          0.28|
+|B (time-varying delays) |NUTS (pathfinder init) |refp_mean_int[1] | 3.67|          2.20|
+|B (time-varying delays) |NUTS (pathfinder init) |refp_sd_int[1]   | 3.91|          1.19|
+|B (time-varying delays) |NUTS (pathfinder init) |sqrt_phi[1]      | 1.74|          0.28|
+|B (time-varying delays) |Pathfinder             |refp_mean_int[1] | 2.94|          0.36|
+|B (time-varying delays) |Pathfinder             |refp_sd_int[1]   | 2.04|          0.17|
+|B (time-varying delays) |Pathfinder             |sqrt_phi[1]      | 1.62|          0.09|
 
 
 
@@ -540,12 +542,12 @@ day1_posterior <- day1_posterior[, .(mean = mean(mean), sd = mean(sd)), by = var
 day1_posterior
 #>         variable        mean         sd
 #>           <char>       <num>      <num>
-#> 1:    expr_r_int -0.01983269 0.11839419
-#> 2:  expr_beta_sd  0.23877226 0.09575963
-#> 3: refp_mean_int  3.98715066 0.59298997
-#> 4:   refp_sd_int  4.17938269 0.24989501
-#> 5:   rep_beta_sd  0.42932293 0.13743612
-#> 6:      sqrt_phi  1.82694723 0.07933930
+#> 1:    expr_r_int -0.01803102 0.11953956
+#> 2:  expr_beta_sd  0.22981341 0.09128661
+#> 3: refp_mean_int  3.91101934 0.57955965
+#> 4:   refp_sd_int  4.14053770 0.24707924
+#> 5:   rep_beta_sd  0.41978786 0.13747114
+#> 6:      sqrt_phi  1.83300673 0.08172812
 ```
 
 `epinowcast()` merges these values into the default priors via `enw_replace_priors()`, so only the listed variables are updated.
@@ -564,52 +566,40 @@ latest_day2 <- nat_germany_hosp |>
   enw_filter_reference_dates(remove_days = 29, include_days = 30)
 
 pobs_day2 <- enw_preprocess_data(retro_day2, max_delay = 30)
-
-# Capture shared model spec using formulas
-fit_day2 <- function(data, fit_opts, priors = NULL) {
-  args <- list(
-    data = data,
-    reference = enw_reference(
-      parametric = ~1, distribution = "lognormal", data = data
-    ),
-    expectation = enw_expectation(
-      ~ 1 + rw(week) + (1 | day_of_week), data = data
-    ),
-    report = enw_report(~ (1 | day_of_week), data = data),
-    obs = enw_obs(family = "negbin1d", data = data),
-    model = model,
-    fit = fit_opts
-  )
-  if (!is.null(priors)) {
-    args$priors <- priors
-  }
-  do.call(epinowcast, args)
-}
 ```
 
-We fit day 2 using three approaches:
-1.  **Pathfinder with informed priors**: the cheap daily update.
-2.  **Pathfinder with default priors**: to see if informed priors improve the approximation.
-3.  **NUTS with default priors**: the gold-standard reference we are trying to match.
+We build the shared day-2 modules against `pobs_day2` and capture them in a `partial()`-based factory mirroring `fit_nowcast` above.
 
 
 ``` r
-# Pathfinder with informed priors
-fit_day2_pf_informed <- fit_day2(
-  pobs_day2, priors = day1_posterior,
-  fit_opts = enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
+fit_day2 <- partial(
+  epinowcast,
+  data = pobs_day2,
+  reference = enw_reference(
+    parametric = ~1, distribution = "lognormal", data = pobs_day2
+  ),
+  expectation = enw_expectation(
+    ~ 1 + rw(week) + (1 | day_of_week), data = pobs_day2
+  ),
+  report = enw_report(~ (1 | day_of_week), data = pobs_day2),
+  obs = enw_obs(family = "negbin1d", data = pobs_day2),
+  model = model
 )
 
-# Pathfinder with default priors
-fit_day2_pf_default <- fit_day2(
-  pobs_day2,
-  fit_opts = enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
-)
+pf_opts_pp <- enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
+```
 
-# NUTS with default priors (full refit)
-fit_day2_nuts <- fit_day2(
-  pobs_day2, fit_opts = nuts_prior_opts
-)
+We fit day 2 using three approaches:
+
+1. **Pathfinder with informed priors**: the cheap daily update.
+2. **Pathfinder with default priors**: to see if informed priors improve the approximation.
+3. **NUTS with default priors**: the gold-standard reference we are trying to match.
+
+
+``` r
+fit_day2_pf_informed <- fit_day2(fit = pf_opts_pp, priors = day1_posterior)
+fit_day2_pf_default <- fit_day2(fit = pf_opts_pp)
+fit_day2_nuts <- fit_day2(fit = nuts_prior_opts)
 ```
 
 
@@ -633,9 +623,9 @@ knitr::kable(update_runtime, digits = 1)
 
 |Method                            | Runtime (s)|
 |:---------------------------------|-----------:|
-|Pathfinder (informed priors)      |         2.0|
-|Pathfinder (default priors)       |         5.4|
-|NUTS (default priors, full refit) |        46.6|
+|Pathfinder (informed priors)      |         2.4|
+|Pathfinder (default priors)       |         5.5|
+|NUTS (default priors, full refit) |        44.9|
 
 
 
@@ -644,8 +634,8 @@ We check whether the cheap pathfinder update tracks the full NUTS refit, and whe
 
 ``` r
 update_fits <- list(
-  "Pathfinder (informed)" = fit_day2_pf_informed,
-  "Pathfinder (default)" = fit_day2_pf_default,
+  "Pathfinder (informed priors)" = fit_day2_pf_informed,
+  "Pathfinder (default priors)" = fit_day2_pf_default,
   "NUTS (full refit)" = fit_day2_nuts
 )
 
