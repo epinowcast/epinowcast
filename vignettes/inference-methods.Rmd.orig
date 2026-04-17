@@ -116,6 +116,7 @@ ref_b <- enw_reference(
 ```
 
 We use `purrr::partial()` to create a function factory that fixes the shared settings, so we only need to vary the reference model and fitting options for each run.
+We also define a small helper to collect `summary()` output across a named list of fits, which we reuse in each comparison section.
 
 ```{r fit-factory}
 fit_nowcast <- partial(
@@ -126,6 +127,17 @@ fit_nowcast <- partial(
   obs = shared_obs,
   model = model
 )
+
+collect_summaries <- function(fits, type, variables = NULL,
+                              label_col = "method") {
+  rbindlist(lapply(names(fits), function(nm) {
+    args <- list(fits[[nm]], type = type)
+    if (!is.null(variables)) args$variables <- variables
+    s <- do.call(summary, args)
+    s[, (label_col) := nm]
+    s
+  }))
+}
 ```
 
 # Fitting
@@ -428,7 +440,7 @@ An alternative workflow is to run NUTS once to obtain a high-quality posterior a
 This builds on the "posterior-as-prior" approach used in the [Germany age-stratified vignette](germany-age-stratified-nowcasting.html), which uses the previous day's posterior to inform the next day's NUTS fit.
 Here we take it a step further by using that posterior to inform a much faster pathfinder update.
 
-**Note:** A more refined way to handle this would be an `update()` method for `enw_preprocess_data` objects, which is tracked as a future improvement.
+**Note:** A more refined way to handle this would be an `update()` method for `enw_preprocess_data` objects ([#429](https://github.com/epinowcast/epinowcast/issues/429)).
 
 We demonstrate this using spec A.
 First, we extract posterior summaries from the spec A NUTS fit for a wide range of model parameters.
@@ -523,11 +535,7 @@ update_fits <- list(
   "NUTS (full refit)" = fit_day2_nuts
 )
 
-update_nc <- rbindlist(lapply(names(update_fits), function(nm) {
-  s <- summary(update_fits[[nm]], type = "nowcast")
-  s[, method := nm]
-  s
-}))
+update_nc <- collect_summaries(update_fits, type = "nowcast")
 
 ggplot(
   update_nc,
@@ -553,16 +561,10 @@ ggplot(
 ```
 
 ```{r update-posterior-comparison, fig.width = 9, fig.height = 5}
-update_params <- rbindlist(lapply(
-  names(update_fits), function(nm) {
-    s <- summary(
-      update_fits[[nm]], type = "fit",
-      variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
-    )
-    s[, method := nm]
-    s
-  }
-))
+update_params <- collect_summaries(
+  update_fits, type = "fit",
+  variables = c("refp_mean_int", "refp_sd_int", "sqrt_phi")
+)
 
 ggplot(update_params, aes(x = method, y = mean, colour = method)) +
   geom_pointrange(aes(ymin = q5, ymax = q95)) +
@@ -588,9 +590,9 @@ See `?enw_replace_priors` for details on setting priors from previous fits.
 
 | Method | Speed | Posterior quality | Diagnostics | Best for |
 |--------|-------|-------------------|-------------|----------|
-| NUTS (prior init) | Slowest | Gold standard | Full MCMC diagnostics | Final inference, publication |
-| NUTS (pathfinder init) | Moderate | Gold standard | Full MCMC diagnostics | Difficult models with slow convergence |
-| Pathfinder | Fastest | Approximate | Pareto k only | Model development, exploration, quick checks |
+| NUTS (prior init) | Slow | Gold standard | Full MCMC diagnostics | Final inference, publication |
+| NUTS (pathfinder init) | Similar to prior-init NUTS on these models | Gold standard | Full MCMC diagnostics | Difficult models where standard NUTS shows convergence issues |
+| Pathfinder | ~7-15x faster than NUTS here | Approximate; narrow posteriors with high Pareto k on these models | Pareto k only | Model development, exploration, quick checks |
 
 **Practical guidance:**
 
