@@ -94,22 +94,18 @@ head(latest_germany_hosp, n = 10)
 
 ## Visualising the data
 
-Before fitting any model, it is useful to plot the data to identify patterns that should inform model specification.
-We use `enw_plot_obs()` to compare the counts available in the retrospective snapshot (solid points) against the eventual totals reported later (triangles).
+Before fitting any model, it is useful to plot the data as a real-time analyst would see it at the nowcast date.
+We use `enw_plot_obs()` on the retrospective snapshot, showing the count available for each reference date.
 
 ```{r data-plot}
 retro_latest <- enw_latest_data(retro_nat_germany)
 
-enw_plot_obs(
-  retro_latest,
-  latest_obs = latest_germany_hosp,
-  x = reference_date
-) +
+enw_plot_obs(retro_latest, x = reference_date) +
   labs(y = "Hospitalisations", x = "Reference date")
 ```
 
-The eventual totals show a clear day-of-week periodicity alongside a strong upward trend.
-The retrospective snapshot systematically underestimates recent reference dates, which is the right-truncation that the nowcast needs to correct.
+A clear day-of-week periodicity is visible alongside a broad upward trend.
+Recent reference dates are systematically low because their reports are still arriving — this is the right-truncation that the nowcast needs to correct.
 These features will become important when we evaluate model performance below.
 
 ## Preprocessing
@@ -120,7 +116,7 @@ This includes the number of days of data to use for the reference and report mod
 
 ```{r}
 pobs <- enw_preprocess_data(
-  retro_nat_germany, max_delay = 43
+  retro_nat_germany, max_delay = 28
 )
 pobs
 ```
@@ -130,7 +126,7 @@ Printing it shows the key metadata and dimensions of each nested dataset.
 We can extract a specific dataset using `enw_get_data()`:
 
 ```{r}
-enw_get_data(pobs, "latest") |> head()
+enw_get_data(pobs, "latest")
 ```
 
 For a more detailed overview including a preview of the reporting triangle, use `summary()`:
@@ -148,7 +144,9 @@ Here we use `enw_plot_delay_cumulative()` to show the cumulative fraction of eac
 enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
 ```
 
-The ribbon shifts substantially across reference dates, indicating that the empirical delay distribution is not stable.
+Across reference dates the median cumulative reporting reaches roughly 94% by delay 14 and 100% by delay 21, with even the slowest-reporting reference dates (10th percentile) at ~97% by delay 28.
+This justifies setting `max_delay = 28`: extending further adds delay bins that contribute almost no additional reports, while 28 days still captures nearly all eventual reports even for the worst-reporting reference dates.
+The ribbon also shifts substantially across reference dates, indicating that the empirical delay distribution is not stable.
 This motivates the alternative models explored below, which relax the default lognormal delay with either day-of-week effects or a fully non-parametric specification.
 
 # The default model
@@ -272,15 +270,16 @@ report_module <- enw_report(
 ## Observation model
 
 The default model uses a Poisson likelihood.
-For the alternative models, we switch to a negative binomial likelihood to allow for overdispersion.
+For the alternative models, we switch to `family = "negbin1d"`, a negative binomial with a linear mean-variance relationship.
+This adds overdispersion relative to Poisson while retaining additivity under aggregation, which matters when nowcasts are summed (e.g. to 7-day rolling totals).
 
 ```{r}
-obs_module <- enw_obs(family = "negbin", data = pobs)
+obs_module <- enw_obs(family = "negbin1d", data = pobs)
 ```
 
 ## Fitting the alternative models
 
-We can now fit both alternative models using the same fitting options as the default.
+We reuse the shared `fit_opts` for both alternative models.
 Since the Stan model is already compiled, only sampling time is required.
 
 ```{r}

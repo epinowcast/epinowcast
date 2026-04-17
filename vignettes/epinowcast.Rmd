@@ -113,18 +113,15 @@ head(latest_germany_hosp, n = 10)
 
 ## Visualising the data
 
-Before fitting any model, it is useful to plot the data to identify patterns that should inform model specification.
+Before fitting any model, it is useful to plot the data as a real-time analyst would see it at the nowcast date.
+We use `enw_plot_obs()` on the retrospective snapshot, showing the count available for each reference date.
 
 
 ``` r
-ggplot(latest_germany_hosp) +
-  aes(x = reference_date, y = confirm) +
-  geom_col(alpha = 0.7) +
-  labs(
-    x = "Reference date",
-    y = "Hospitalisations"
-  ) +
-  theme_bw()
+retro_latest <- enw_latest_data(retro_nat_germany)
+
+enw_plot_obs(retro_latest, x = reference_date) +
+  labs(y = "Hospitalisations", x = "Reference date")
 ```
 
 <div class="figure">
@@ -132,7 +129,8 @@ ggplot(latest_germany_hosp) +
 <p class="caption">plot of chunk data-plot</p>
 </div>
 
-The plot shows a clear day-of-week periodicity in hospitalisations alongside a strong upward trend.
+A clear day-of-week periodicity is visible alongside a broad upward trend.
+Recent reference dates are systematically low because their reports are still arriving — this is the right-truncation that the nowcast needs to correct.
 These features will become important when we evaluate model performance below.
 
 ## Preprocessing
@@ -144,23 +142,23 @@ This includes the number of days of data to use for the reference and report mod
 
 ``` r
 pobs <- enw_preprocess_data(
-  retro_nat_germany, max_delay = 43
+  retro_nat_germany, max_delay = 28
 )
 pobs
 #> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Groups: 1 | Timestep: day | Max delay: 28 
 #> Observations: 43 timepoints x 43 snapshots 
 #> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     946 x 9 
-#>   new_confirm        :     946 x 11 
+#>   obs                :     826 x 9 
+#>   new_confirm        :     826 x 11 
 #>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      43 x 45 
+#>   reporting_triangle :      43 x 30 
 #>   metareference      :      43 x 9 
-#>   metareport         :      85 x 12 
-#>   metadelay          :      43 x 5
+#>   metareport         :      70 x 12 
+#>   metadelay          :      28 x 5
 ```
 
 The returned output is an `enw_preprocess_data` object.
@@ -169,23 +167,102 @@ We can extract a specific dataset using `enw_get_data()`:
 
 
 ``` r
-enw_get_data(pobs, "latest") |> head()
-#>    reference_date report_date .group max_confirm location age_group confirm
-#>            <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
-#> 1:     2021-07-08  2021-08-19      1          53       DE       00+      53
-#> 2:     2021-07-09  2021-08-19      1          46       DE       00+      46
-#> 3:     2021-07-10  2021-08-19      1          64       DE       00+      64
-#> 4:     2021-07-11  2021-08-19      1          47       DE       00+      47
-#> 5:     2021-07-12  2021-08-19      1          17       DE       00+      17
-#> 6:     2021-07-13  2021-08-19      1          59       DE       00+      59
-#>    cum_prop_reported delay prop_reported
-#>                <num> <num>         <num>
-#> 1:                 1    42             0
-#> 2:                 1    41             0
-#> 3:                 1    40             0
-#> 4:                 1    39             0
-#> 5:                 1    38             0
-#> 6:                 1    37             0
+enw_get_data(pobs, "latest")
+#> Index: <.group>
+#>     reference_date report_date .group max_confirm location age_group confirm
+#>             <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
+#>  1:     2021-07-08  2021-08-04      1          53       DE       00+      53
+#>  2:     2021-07-09  2021-08-05      1          46       DE       00+      46
+#>  3:     2021-07-10  2021-08-06      1          64       DE       00+      62
+#>  4:     2021-07-11  2021-08-07      1          47       DE       00+      45
+#>  5:     2021-07-12  2021-08-08      1          17       DE       00+      17
+#>  6:     2021-07-13  2021-08-09      1          59       DE       00+      59
+#>  7:     2021-07-14  2021-08-10      1          72       DE       00+      72
+#>  8:     2021-07-15  2021-08-11      1          69       DE       00+      69
+#>  9:     2021-07-16  2021-08-12      1          47       DE       00+      47
+#> 10:     2021-07-17  2021-08-13      1          65       DE       00+      63
+#> 11:     2021-07-18  2021-08-14      1          49       DE       00+      49
+#> 12:     2021-07-19  2021-08-15      1          36       DE       00+      36
+#> 13:     2021-07-20  2021-08-16      1          94       DE       00+      93
+#> 14:     2021-07-21  2021-08-17      1          91       DE       00+      91
+#> 15:     2021-07-22  2021-08-18      1          99       DE       00+      99
+#> 16:     2021-07-23  2021-08-19      1          86       DE       00+      86
+#> 17:     2021-07-24  2021-08-19      1          92       DE       00+      92
+#> 18:     2021-07-25  2021-08-19      1          74       DE       00+      74
+#> 19:     2021-07-26  2021-08-19      1          28       DE       00+      28
+#> 20:     2021-07-27  2021-08-19      1          76       DE       00+      76
+#> 21:     2021-07-28  2021-08-19      1         155       DE       00+     155
+#> 22:     2021-07-29  2021-08-19      1         135       DE       00+     135
+#> 23:     2021-07-30  2021-08-19      1         114       DE       00+     114
+#> 24:     2021-07-31  2021-08-19      1         124       DE       00+     124
+#> 25:     2021-08-01  2021-08-19      1          77       DE       00+      77
+#> 26:     2021-08-02  2021-08-19      1          58       DE       00+      58
+#> 27:     2021-08-03  2021-08-19      1         147       DE       00+     147
+#> 28:     2021-08-04  2021-08-19      1         163       DE       00+     163
+#> 29:     2021-08-05  2021-08-19      1         129       DE       00+     129
+#> 30:     2021-08-06  2021-08-19      1         135       DE       00+     135
+#> 31:     2021-08-07  2021-08-19      1         137       DE       00+     137
+#> 32:     2021-08-08  2021-08-19      1          94       DE       00+      94
+#> 33:     2021-08-09  2021-08-19      1          54       DE       00+      54
+#> 34:     2021-08-10  2021-08-19      1         170       DE       00+     170
+#> 35:     2021-08-11  2021-08-19      1         214       DE       00+     214
+#> 36:     2021-08-12  2021-08-19      1         214       DE       00+     214
+#> 37:     2021-08-13  2021-08-19      1         189       DE       00+     189
+#> 38:     2021-08-14  2021-08-19      1         170       DE       00+     170
+#> 39:     2021-08-15  2021-08-19      1         109       DE       00+     109
+#> 40:     2021-08-16  2021-08-19      1          87       DE       00+      87
+#> 41:     2021-08-17  2021-08-19      1         211       DE       00+     211
+#> 42:     2021-08-18  2021-08-19      1         178       DE       00+     178
+#> 43:     2021-08-19  2021-08-19      1          84       DE       00+      84
+#>     reference_date report_date .group max_confirm location age_group confirm
+#>             <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
+#>     cum_prop_reported delay prop_reported
+#>                 <num> <num>         <num>
+#>  1:         1.0000000    27   0.000000000
+#>  2:         1.0000000    27   0.000000000
+#>  3:         0.9687500    27   0.000000000
+#>  4:         0.9574468    27   0.021276596
+#>  5:         1.0000000    27   0.000000000
+#>  6:         1.0000000    27   0.000000000
+#>  7:         1.0000000    27   0.000000000
+#>  8:         1.0000000    27   0.000000000
+#>  9:         1.0000000    27   0.000000000
+#> 10:         0.9692308    27   0.000000000
+#> 11:         1.0000000    27   0.000000000
+#> 12:         1.0000000    27   0.000000000
+#> 13:         0.9893617    27   0.000000000
+#> 14:         1.0000000    27   0.000000000
+#> 15:         1.0000000    27   0.000000000
+#> 16:         1.0000000    27   0.023255814
+#> 17:         1.0000000    26   0.000000000
+#> 18:         1.0000000    25   0.027027027
+#> 19:         1.0000000    24   0.000000000
+#> 20:         1.0000000    23   0.013157895
+#> 21:         1.0000000    22   0.012903226
+#> 22:         1.0000000    21   0.007407407
+#> 23:         1.0000000    20   0.000000000
+#> 24:         1.0000000    19   0.000000000
+#> 25:         1.0000000    18   0.025974026
+#> 26:         1.0000000    17   0.000000000
+#> 27:         1.0000000    16   0.013605442
+#> 28:         1.0000000    15   0.006134969
+#> 29:         1.0000000    14   0.000000000
+#> 30:         1.0000000    13   0.037037037
+#> 31:         1.0000000    12   0.014598540
+#> 32:         1.0000000    11   0.042553191
+#> 33:         1.0000000    10   0.000000000
+#> 34:         1.0000000     9   0.011764706
+#> 35:         1.0000000     8   0.060747664
+#> 36:         1.0000000     7   0.060747664
+#> 37:         1.0000000     6   0.037037037
+#> 38:         1.0000000     5   0.076470588
+#> 39:         1.0000000     4   0.091743119
+#> 40:         1.0000000     3   0.114942529
+#> 41:         1.0000000     2   0.142180095
+#> 42:         1.0000000     1   0.483146067
+#> 43:         1.0000000     0   1.000000000
+#>     cum_prop_reported delay prop_reported
+#>                 <num> <num>         <num>
 ```
 
 For a more detailed overview including a preview of the reporting triangle, use `summary()`:
@@ -194,27 +271,27 @@ For a more detailed overview including a preview of the reporting triangle, use 
 ``` r
 summary(pobs)
 #> ── Preprocessed nowcast data summary ─────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Groups: 1 | Timestep: day | Max delay: 28 
 #> Date range: 2021-07-08 to 2021-08-19 (42 days) 
 #> Observations: 43 timepoints x 43 snapshots 
 #> 
 #> Latest observations (first 6 rows): 
 #>    reference_date report_date .group max_confirm location age_group confirm
 #>            <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
-#> 1:     2021-07-08  2021-08-19      1          53       DE       00+      53
-#> 2:     2021-07-09  2021-08-19      1          46       DE       00+      46
-#> 3:     2021-07-10  2021-08-19      1          64       DE       00+      64
-#> 4:     2021-07-11  2021-08-19      1          47       DE       00+      47
-#> 5:     2021-07-12  2021-08-19      1          17       DE       00+      17
-#> 6:     2021-07-13  2021-08-19      1          59       DE       00+      59
+#> 1:     2021-07-08  2021-08-04      1          53       DE       00+      53
+#> 2:     2021-07-09  2021-08-05      1          46       DE       00+      46
+#> 3:     2021-07-10  2021-08-06      1          64       DE       00+      62
+#> 4:     2021-07-11  2021-08-07      1          47       DE       00+      45
+#> 5:     2021-07-12  2021-08-08      1          17       DE       00+      17
+#> 6:     2021-07-13  2021-08-09      1          59       DE       00+      59
 #>    cum_prop_reported delay prop_reported
 #>                <num> <num>         <num>
-#> 1:                 1    42             0
-#> 2:                 1    41             0
-#> 3:                 1    40             0
-#> 4:                 1    39             0
-#> 5:                 1    38             0
-#> 6:                 1    37             0
+#> 1:         1.0000000    27     0.0000000
+#> 2:         1.0000000    27     0.0000000
+#> 3:         0.9687500    27     0.0000000
+#> 4:         0.9574468    27     0.0212766
+#> 5:         1.0000000    27     0.0000000
+#> 6:         1.0000000    27     0.0000000
 #> 
 #> Reporting triangle corner (first 6 rows x 8 cols): 
 #> Key: <.group, reference_date>
@@ -226,11 +303,28 @@ summary(pobs)
 #> 4:      1     2021-07-11    14     4     3     0     2     2
 #> 5:      1     2021-07-12     3     3     2     0     0     2
 #> 6:      1     2021-07-13    21    12     3     4     3     0
-#> ... (43 rows x 45 cols total)
+#> ... (43 rows x 30 cols total)
 ```
 
 It can be useful to check this output before specifying the model, just to make sure everything is as expected.
-The preprocessed object also supports a `plot()` method for exploring the delay structure visually; see the [visualising preprocessed data](preprocess-visualisation.html) vignette for details.
+
+The preprocessed object supports a range of empirical delay visualisations that are useful for motivating model choices; see the [visualising preprocessed data](preprocess-visualisation.html) vignette for details.
+Here we use `enw_plot_delay_cumulative()` to show the cumulative fraction of each reference date's eventual reports that have arrived by a given delay.
+
+
+``` r
+enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
+```
+
+<div class="figure">
+<img src="figures/getting-started-nowcasting-delay-cumulative-1.png" alt="plot of chunk delay-cumulative" width="100%" />
+<p class="caption">plot of chunk delay-cumulative</p>
+</div>
+
+Across reference dates the median cumulative reporting reaches roughly 94% by delay 14 and 100% by delay 21, with even the slowest-reporting reference dates (10th percentile) at ~97% by delay 28.
+This justifies setting `max_delay = 28`: extending further adds delay bins that contribute almost no additional reports, while 28 days still captures nearly all eventual reports even for the worst-reporting reference dates.
+The ribbon also shifts substantially across reference dates, indicating that the empirical delay distribution is not stable.
+This motivates the alternative models explored below, which relax the default lognormal delay with either day-of-week effects or a fully non-parametric specification.
 
 # The default model
 
@@ -261,6 +355,7 @@ fit_opts <- enw_fit_opts(
   chains = 2,
   iter_sampling = 500,
   iter_warmup = 500,
+  adapt_delta = 0.9,
   show_messages = interactive()
 )
 nowcast_default <- epinowcast(
@@ -274,31 +369,31 @@ nowcast_default <- epinowcast(
 ``` r
 nowcast_default
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Groups: 1 | Timestep: day | Max delay: 28 
 #> Observations: 43 timepoints x 43 snapshots 
 #> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     946 x 9 
-#>   new_confirm        :     946 x 11 
+#>   obs                :     826 x 9 
+#>   new_confirm        :     826 x 11 
 #>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      43 x 45 
+#>   reporting_triangle :      43 x 30 
 #>   metareference      :      43 x 9 
-#>   metareport         :      85 x 12 
-#>   metadelay          :      43 x 5 
+#>   metareport         :      70 x 12 
+#>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
 #>   priors : 14 x 6 
 #>   fit : CmdStanMCMC 
 #>   data : list(115) 
-#>   fit_args : list(6) 
+#>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 1,000 | Max Rhat: 1.01 
-#>   Divergent transitions: 0 (0%) 
-#>   Max treedepth: 7 (985 at max, 98.5%) 
-#>   Run time: 13.5 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 1 (0.1%) 
+#>   Max treedepth: 8 (3 at max, 0.3%) 
+#>   Run time: 14 secs
 ```
 
 
@@ -397,16 +492,17 @@ report_module <- enw_report(
 ## Observation model
 
 The default model uses a Poisson likelihood.
-For the alternative models, we switch to a negative binomial likelihood to allow for overdispersion.
+For the alternative models, we switch to `family = "negbin1d"`, a negative binomial with a linear mean-variance relationship.
+This adds overdispersion relative to Poisson while retaining additivity under aggregation, which matters when nowcasts are summed (e.g. to 7-day rolling totals).
 
 
 ``` r
-obs_module <- enw_obs(family = "negbin", data = pobs)
+obs_module <- enw_obs(family = "negbin1d", data = pobs)
 ```
 
 ## Fitting the alternative models
 
-We can now fit both alternative models using the same fitting options as the default.
+We reuse the shared `fit_opts` for both alternative models.
 Since the Stan model is already compiled, only sampling time is required.
 
 
@@ -446,62 +542,62 @@ Printing it shows key diagnostics including the number of samples, convergence (
 ``` r
 nowcast_lognormal
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Groups: 1 | Timestep: day | Max delay: 28 
 #> Observations: 43 timepoints x 43 snapshots 
 #> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     946 x 9 
-#>   new_confirm        :     946 x 11 
+#>   obs                :     826 x 9 
+#>   new_confirm        :     826 x 11 
 #>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      43 x 45 
+#>   reporting_triangle :      43 x 30 
 #>   metareference      :      43 x 9 
-#>   metareport         :      85 x 12 
-#>   metadelay          :      43 x 5 
+#>   metareport         :      70 x 12 
+#>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
 #>   priors : 14 x 6 
 #>   fit : CmdStanMCMC 
 #>   data : list(115) 
-#>   fit_args : list(6) 
+#>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
-#>   Samples: 500 | Max Rhat: 1.03 
-#>   Divergent transitions: 1 (0.2%) 
-#>   Max treedepth: 10 (168 at max, 33.6%) 
-#>   Run time: 136.7 secs
+#>   Samples: 1,000 | Max Rhat: 1.02 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (960 at max, 96%) 
+#>   Run time: 196.3 secs
 ```
 
 
 ``` r
 nowcast_np
 #> ── epinowcast model output ───────────────────────────────────────────────────── 
-#> Groups: 1 | Timestep: day | Max delay: 43 
+#> Groups: 1 | Timestep: day | Max delay: 28 
 #> Observations: 43 timepoints x 43 snapshots 
 #> Max date: 2021-08-19 
 #> 
 #> Datasets (access with `enw_get_data(x, "<name>")`): 
-#>   obs                :     946 x 9 
-#>   new_confirm        :     946 x 11 
+#>   obs                :     826 x 9 
+#>   new_confirm        :     826 x 11 
 #>   latest             :      43 x 10 
 #>   missing_reference  :       0 x 6 
-#>   reporting_triangle :      43 x 45 
+#>   reporting_triangle :      43 x 30 
 #>   metareference      :      43 x 9 
-#>   metareport         :      85 x 12 
-#>   metadelay          :      43 x 5 
+#>   metareport         :      70 x 12 
+#>   metadelay          :      28 x 5 
 #> 
 #> Model objects (access with `enw_get_data(x, "<name>")`): 
 #>   priors : 14 x 6 
 #>   fit : CmdStanMCMC 
 #>   data : list(115) 
-#>   fit_args : list(6) 
+#>   fit_args : list(7) 
 #>   init_method_output : NULL 
 #> Model fit: 
 #>   Samples: 1,000 | Max Rhat: 1.02 
-#>   Divergent transitions: 26 (2.6%) 
-#>   Max treedepth: 10 (694 at max, 69.4%) 
-#>   Run time: 148.9 secs
+#>   Divergent transitions: 2 (0.2%) 
+#>   Max treedepth: 10 (959 at max, 95.9%) 
+#>   Run time: 178.2 secs
 ```
 
 ## Comparing all models
@@ -510,58 +606,23 @@ We can compare all three nowcasts by overlaying their posterior summaries.
 
 
 ``` r
-default_summary <- summary(
-  nowcast_default,
-  probs = c(0.05, 0.2, 0.8, 0.95)
+summaries <- list(
+  Default = nowcast_default,
+  Lognormal = nowcast_lognormal,
+  `Non-parametric` = nowcast_np
 )
-default_summary[, model := "Default"]
-
-lognormal_summary <- summary(
-  nowcast_lognormal,
-  probs = c(0.05, 0.2, 0.8, 0.95)
-)
-lognormal_summary[, model := "Lognormal"]
-
-np_summary <- summary(
-  nowcast_np,
-  probs = c(0.05, 0.2, 0.8, 0.95)
-)
-np_summary[, model := "Non-parametric"]
-
 combined <- rbindlist(
-  list(default_summary, lognormal_summary, np_summary),
+  lapply(names(summaries), function(name) {
+    out <- summary(summaries[[name]], probs = c(0.05, 0.2, 0.8, 0.95))
+    out[, model := name][]
+  }),
   use.names = TRUE
 )
 
-ggplot(combined) +
-  aes(x = reference_date) +
-  geom_ribbon(
-    aes(ymin = q5, ymax = q95, fill = model),
-    alpha = 0.2
-  ) +
-  geom_ribbon(
-    aes(ymin = q20, ymax = q80, fill = model),
-    alpha = 0.3
-  ) +
-  geom_line(
-    aes(y = median, colour = model),
-    linewidth = 0.8
-  ) +
-  geom_point(
-    data = latest_germany_hosp,
-    aes(y = confirm),
-    shape = 2,
-    size = 1.1,
-    alpha = 0.7
-  ) +
-  labs(
-    x = "Reference date",
-    y = "Hospitalisations",
-    fill = "Model",
-    colour = "Model"
-  ) +
-  theme_bw() +
-  theme(legend.position = "bottom")
+enw_plot_nowcast_quantiles(
+  combined, latest_obs = latest_germany_hosp
+) +
+  facet_wrap(vars(model))
 ```
 
 <div class="figure">
@@ -601,30 +662,30 @@ samples[, (cols) := lapply(.SD, frollsum, n = 7),
 ][!is.na(sample)]
 #>        reference_date report_date .group max_confirm location age_group confirm
 #>                <IDat>      <IDat>  <num>       <int>   <fctr>    <fctr>   <int>
-#>     1:     2021-07-14  2021-08-19      1          72       DE       00+     358
-#>     2:     2021-07-14  2021-08-19      1          72       DE       00+     358
-#>     3:     2021-07-14  2021-08-19      1          72       DE       00+     358
-#>     4:     2021-07-14  2021-08-19      1          72       DE       00+     358
-#>     5:     2021-07-14  2021-08-19      1          72       DE       00+     358
+#>     1:     2021-07-29  2021-08-19      1         135       DE       00+     646
+#>     2:     2021-07-29  2021-08-19      1         135       DE       00+     646
+#>     3:     2021-07-29  2021-08-19      1         135       DE       00+     646
+#>     4:     2021-07-29  2021-08-19      1         135       DE       00+     646
+#>     5:     2021-07-29  2021-08-19      1         135       DE       00+     646
 #>    ---                                                                         
-#> 18496:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 18497:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 18498:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 18499:     2021-08-19  2021-08-19      1          84       DE       00+    1028
-#> 18500:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 21996:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 21997:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 21998:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 21999:     2021-08-19  2021-08-19      1          84       DE       00+    1028
+#> 22000:     2021-08-19  2021-08-19      1          84       DE       00+    1028
 #>        cum_prop_reported delay prop_reported .chain .iteration .draw sample
 #>                    <num> <num>         <num>  <int>      <int> <int>  <num>
-#>     1:                 1    36             0      1          1     1    358
-#>     2:                 1    36             0      1          2     2    359
-#>     3:                 1    36             0      1          3     3    360
-#>     4:                 1    36             0      1          4     4    358
-#>     5:                 1    36             0      1          5     5    360
+#>     1:                 1    21   0.007407407      1          1     1    652
+#>     2:                 1    21   0.007407407      1          2     2    649
+#>     3:                 1    21   0.007407407      1          3     3    651
+#>     4:                 1    21   0.007407407      1          4     4    655
+#>     5:                 1    21   0.007407407      1          5     5    660
 #>    ---                                                                     
-#> 18496:                 1     0             1      1        496   496   1850
-#> 18497:                 1     0             1      1        497   497   1724
-#> 18498:                 1     0             1      1        498   498   1727
-#> 18499:                 1     0             1      1        499   499   1779
-#> 18500:                 1     0             1      1        500   500   1706
+#> 21996:                 1     0   1.000000000      2        496   996   1723
+#> 21997:                 1     0   1.000000000      2        497   997   1682
+#> 21998:                 1     0   1.000000000      2        498   998   1698
+#> 21999:                 1     0   1.000000000      2        499   999   1703
+#> 22000:                 1     0   1.000000000      2        500  1000   1833
 latest_germany_hosp_7day <- copy(latest_germany_hosp)[
   ,
   confirm := frollsum(confirm, n = 7)
