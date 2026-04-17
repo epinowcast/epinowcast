@@ -9,6 +9,7 @@ CmdStan
 CmdStanR
 cmdstanr
 Codecov
+CrI
 Discretisation
 Discretised
 EpiEstim
@@ -83,6 +84,7 @@ geq
 github
 gt
 hannah
+int
 iter
 iters
 jamesmbaazam
@@ -151,6 +153,7 @@ precomputes
 precomputing
 predictives
 readibility
+refp
 rumackaaron
 runtimes
 rw
