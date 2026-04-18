@@ -58,7 +58,7 @@ These data represent hospitalisation counts by date of positive test and date of
 
 ## Filtering
 
-We first filter to create a snapshot of retrospective data available 43 days before October 1, 2021 that contains 43 days of data.
+We first filter to create a snapshot of retrospective data available 40 days before October 1, 2021 that contains 40 days of data.
 This retrospective approach allows us to evaluate nowcast performance by comparing against what was ultimately reported [@placeholder].
 
 ```{r}
@@ -67,8 +67,8 @@ nat_germany_hosp <-
   enw_filter_report_dates(latest_date = "2021-10-01")
 
 retro_nat_germany <- nat_germany_hosp |>
-  enw_filter_report_dates(remove_days = 43) |>
-  enw_filter_reference_dates(include_days = 43)
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 40)
 retro_nat_germany
 ```
 
@@ -80,27 +80,35 @@ This data is already in a format that can be used with `epinowcast`, as it conta
 
 The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see [Data converters](https://package.epinowcast.org/dev/reference/index.html#data-converters)).
 
-We then create the nowcast target: the latest available hospitalisations by date of positive test.
-This represents what was ultimately reported and serves as our comparison baseline.
+## Preprocessing
+
+Before modelling, the input data needs to be converted into the "reporting triangle" format (see [our model description for details](https://package.epinowcast.org/articles/model)).
+We also need to determine metadata to facilitate the model specification.
+This includes the number of days of data to use for the reference and report modules, the maximum delay to consider, and, optionally, a grouping (i.e. age group, location, or both) of observations.
+
+We start with a generous `max_delay = 40` to retain the full reporting history of each reference date for inspection before choosing a tighter nowcast horizon.
 
 ```{r}
-latest_germany_hosp <- nat_germany_hosp |>
-  enw_obs_at_delay(max_delay = 43) |>
-  enw_filter_reference_dates(
-    remove_days = 43, include_days = 43
-  )
-head(latest_germany_hosp, n = 10)
+pobs_full <- enw_preprocess_data(
+  retro_nat_germany, max_delay = 40
+)
+pobs_full
+```
+
+The returned `enw_preprocess_data` object prints the key metadata and dimensions of each nested dataset.
+For a more detailed overview, including a preview of the reporting triangle, use `summary()`:
+
+```{r}
+summary(pobs_full)
 ```
 
 ## Visualising the data
 
-Before fitting any model, it is useful to plot the data as a real-time analyst would see it at the nowcast date.
-We use `enw_plot_obs()` on the retrospective snapshot, showing the count available for each reference date.
+The preprocessed object supports `plot()` directly, with `type` selecting between the latest observations and several empirical delay views; see the [visualising preprocessed data](preprocess-visualisation.html) vignette for details.
+We first plot the observations as a real-time analyst would see them at the nowcast date.
 
 ```{r data-plot}
-retro_latest <- enw_latest_data(retro_nat_germany)
-
-enw_plot_obs(retro_latest, x = reference_date) +
+plot(pobs_full, type = "obs") +
   labs(y = "Hospitalisations", x = "Reference date")
 ```
 
@@ -108,11 +116,20 @@ A clear day-of-week periodicity is visible alongside a broad upward trend.
 Recent reference dates are systematically low because their reports are still arriving — this is the right-truncation that the nowcast needs to correct.
 These features will become important when we evaluate model performance below.
 
-## Preprocessing
+## Choosing a nowcast horizon
 
-Before modelling, the input data needs to be converted into the "reporting triangle" format (see [our model description for details](https://package.epinowcast.org/articles/model)).
-We also need to determine metadata to facilitate the model specification.
-This includes the number of days of data to use for the reference and report modules, the maximum delay to consider, and, optionally, a grouping (i.e. age group, location, or both) of observations.
+Next we plot the cumulative fraction of each reference date's eventual reports that have arrived by a given delay, which motivates the maximum delay used for the nowcast.
+
+```{r delay-cumulative}
+plot(pobs_full, type = "delay_cumulative")
+```
+
+Across reference dates the median cumulative reporting reaches roughly 94% by delay 14 and 100% by delay 21, with even the slowest-reporting reference dates (10th percentile) at ~97% by delay 28.
+This justifies setting `max_delay = 28`: extending further adds delay bins that contribute almost no additional reports, while 28 days still captures nearly all eventual reports even for the worst-reporting reference dates.
+The ribbon also shifts substantially across reference dates, indicating that the empirical delay distribution is not stable.
+This motivates the alternative models explored below, which relax the default lognormal delay with either day-of-week effects or a fully non-parametric specification.
+
+We now re-run the preprocessing at the chosen horizon to use for modelling.
 
 ```{r}
 pobs <- enw_preprocess_data(
@@ -121,33 +138,19 @@ pobs <- enw_preprocess_data(
 pobs
 ```
 
-The returned output is an `enw_preprocess_data` object.
-Printing it shows the key metadata and dimensions of each nested dataset.
-We can extract a specific dataset using `enw_get_data()`:
+## Nowcast target
+
+Having fixed the horizon, we create the nowcast target: the count at each reference date once 28 days of reports have accumulated.
+This represents what the model is trying to predict and serves as our comparison baseline.
 
 ```{r}
-enw_get_data(pobs, "latest")
+latest_germany_hosp <- nat_germany_hosp |>
+  enw_obs_at_delay(max_delay = 28) |>
+  enw_filter_reference_dates(
+    remove_days = 40, include_days = 40
+  )
+head(latest_germany_hosp, n = 10)
 ```
-
-For a more detailed overview including a preview of the reporting triangle, use `summary()`:
-
-```{r}
-summary(pobs)
-```
-
-It can be useful to check this output before specifying the model, just to make sure everything is as expected.
-
-The preprocessed object supports a range of empirical delay visualisations that are useful for motivating model choices; see the [visualising preprocessed data](preprocess-visualisation.html) vignette for details.
-Here we use `enw_plot_delay_cumulative()` to show the cumulative fraction of each reference date's eventual reports that have arrived by a given delay.
-
-```{r delay-cumulative}
-enw_plot_delay_cumulative(pobs, c(0, 2, 5, 10, 21))
-```
-
-Across reference dates the median cumulative reporting reaches roughly 94% by delay 14 and 100% by delay 21, with even the slowest-reporting reference dates (10th percentile) at ~97% by delay 28.
-This justifies setting `max_delay = 28`: extending further adds delay bins that contribute almost no additional reports, while 28 days still captures nearly all eventual reports even for the worst-reporting reference dates.
-The ribbon also shifts substantially across reference dates, indicating that the empirical delay distribution is not stable.
-This motivates the alternative models explored below, which relax the default lognormal delay with either day-of-week effects or a fully non-parametric specification.
 
 # The default model
 
@@ -213,7 +216,7 @@ The day-of-week periodicity visible in the data plot is not captured in either t
 # Alternative models
 
 Based on these observations, we can build alternative models.
-We address the trend by replacing the daily geometric random walk with a weekly growth rate model, add day-of-week effects to both the expectation and report modules, and compare two different delay specifications.
+We address the trend by replacing the daily geometric random walk with a weekly growth rate model, add a day-of-week effect to the expected counts, and compare two different delay specifications.
 
 ## Process model
 
@@ -245,25 +248,13 @@ lognormal_reference <- enw_reference(
 ```
 
 For the second alternative model, we replace this with a non-parametric specification that makes no distributional assumption.
-Instead, it estimates a baseline reporting hazard with a daily random walk over delays, allowing the hazard to vary smoothly without assuming a parametric form.
+Instead, it estimates a baseline reporting hazard with a daily random walk over delays and a day-of-week random effect on the reference date, allowing the hazard to vary smoothly over delays and by the weekday a case was tested.
 
 ```{r}
 np_reference <- enw_reference(
   parametric = ~0,
-  non_parametric = ~ 1 + rw(delay),
+  non_parametric = ~ 1 + rw(delay) + (1 | day_of_week),
   data = pobs
-)
-```
-
-## Reporting effects by report date
-
-The default model had no report-date effects.
-Here we add a day-of-week random effect to capture weekly patterns in the reporting process.
-Report effects can also be modelled as time-varying; see the [features](https://package.epinowcast.org/articles/features) vignette and the [age-stratified nowcasting](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting) vignette for examples.
-
-```{r}
-report_module <- enw_report(
-  ~ (1 | day_of_week), data = pobs
 )
 ```
 
@@ -287,7 +278,6 @@ nowcast_lognormal <- epinowcast(
   data = pobs,
   expectation = expectation_module,
   reference = lognormal_reference,
-  report = report_module,
   obs = obs_module,
   fit = fit_opts,
   model = model
@@ -299,7 +289,6 @@ nowcast_np <- epinowcast(
   data = pobs,
   expectation = expectation_module,
   reference = np_reference,
-  report = report_module,
   obs = obs_module,
   fit = fit_opts,
   model = model
