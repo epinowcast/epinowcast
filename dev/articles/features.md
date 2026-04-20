@@ -12,18 +12,19 @@ function-specific details, see `?function_name`.
 
 ## Core Capabilities
 
-| Capability                | What it enables                            | Where to learn more                         |
-|---------------------------|--------------------------------------------|---------------------------------------------|
-| **Flexible timesteps**    | Daily, weekly, or custom aggregation       | [Different timesteps](#timesteps)           |
-| **Multi-stratification**  | Age groups, regions, pathogens             | [Stratification](#stratification)           |
-| **Mixed delay models**    | Parametric + non-parametric delays         | [Delay modelling](#delay-modelling)         |
-| **Report date effects**   | Day-of-week patterns, structural reporting | [Report date effects](#report-date-effects) |
-| **Latent process models** | Growth rates, renewal processes            | [Latent models](#latent-models)             |
-| **Hierarchical effects**  | Random effects, random walks               | [Hierarchical structure](#hierarchical)     |
-| **Missing data handling** | Missing reference dates                    | [Missing data](#missing-data)               |
-| **Custom priors**         | Inspect and replace default priors         | [Prior specification](#priors)              |
-| **Model comparison**      | LOO-CV, posterior predictive checks        | [Model evaluation](#model-evaluation)       |
-| **Data visualisation**    | Inspect preprocessing and nowcast output   | [Visualisation](#visualisation)             |
+| Capability                | What it enables                               | Where to learn more                                                                            |
+|---------------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------|
+| **Flexible timesteps**    | Daily, weekly, or custom aggregation          | [Different timesteps](#timesteps)                                                              |
+| **Multi-stratification**  | Age groups, regions, pathogens                | [Stratification](#stratification)                                                              |
+| **Mixed delay models**    | Parametric + non-parametric delays            | [Delay modelling](#delay-modelling)                                                            |
+| **Report date effects**   | Day-of-week patterns, structural reporting    | [Report date effects](#report-date-effects)                                                    |
+| **Latent process models** | Growth rates, renewal processes               | [Latent models](#latent-models)                                                                |
+| **Hierarchical effects**  | Random effects, random walks                  | [Hierarchical structure](#hierarchical)                                                        |
+| **Missing data handling** | Missing reference dates                       | [Missing data](#missing-data)                                                                  |
+| **Custom priors**         | Inspect and replace default priors            | [Prior specification](#priors)                                                                 |
+| **Model comparison**      | LOO-CV, posterior predictive checks           | [Model evaluation](#model-evaluation)                                                          |
+| **Inference methods**     | NUTS, pathfinder, pathfinder-initialised NUTS | [Inference methods vignette](https://package.epinowcast.org/dev/articles/inference-methods.md) |
+| **Data visualisation**    | Inspect preprocessing and nowcast output      | [Visualisation](#visualisation)                                                                |
 
 ## Different Timesteps and Timespans
 
@@ -327,7 +328,10 @@ Control computational efficiency and parallelisation.
   [`?enw_fit_opts`](https://package.epinowcast.org/dev/reference/enw_fit_opts.md)
   for details
 
-**Where to see it:** See [Stan help
+**Where to see it:** The [inference methods
+vignette](https://package.epinowcast.org/dev/articles/inference-methods.md)
+compares NUTS, pathfinder, and pathfinder-initialised NUTS with runtime
+and posterior comparisons. See also the [Stan help
 vignette](https://package.epinowcast.org/dev/articles/stan-help.md) for
 guidance on computational settings.
 
