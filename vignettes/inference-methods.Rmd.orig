@@ -242,7 +242,7 @@ knitr::kable(
 )
 ```
 
-Note that the runtime for pathfinder-initialised NUTS includes both the pathfinder approximation step and the subsequent NUTS sampling.
+Note that the runtime for pathfinder-initialised NUTS reported here only includes the NUTS sampling step. The pathfinder initialisation itself is an additional overhead (though often small compared to sampling).
 
 ```{r runtime-plot, fig.width = 7, fig.height = 4}
 ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
@@ -304,7 +304,8 @@ CmdStan prints this to the console during fitting; values above 0.7 indicate the
 CmdStanR does not retain Pareto k on the fit object after the run, so readers should watch for these warnings during fitting rather than trying to read them back afterwards.
 
 Both pathfinder fits here trigger Pareto k warnings well above 0.7, which is consistent with the posterior comparisons below (pathfinder's credible intervals are substantially narrower than the NUTS reference).
-We do not recommend using pathfinder as the final inference method for these models — it is useful for rapid iteration during model development and as an initialiser for NUTS.
+However, as shown in the next section, the resulting nowcast can still provide a useful approximation for simpler models like spec A.
+We recommend using pathfinder for rapid iteration during model development and as an initialiser for NUTS, while relying on NUTS for final inference.
 
 # Nowcast comparison
 
@@ -365,8 +366,8 @@ plot_nowcast_methods(
 )
 ```
 
-For spec A, all three methods produce broadly similar nowcasts with good coverage of the observed data.
-For spec B, the additional parameters in the time-varying delay model may lead to greater divergence between pathfinder and NUTS, reflecting the increased difficulty of the approximation.
+For spec A, all three methods produce similar nowcasts with good coverage of the observed data, suggesting that pathfinder can be an acceptable approximation for simpler models despite high Pareto k values.
+For spec B, the additional parameters in the time-varying delay model lead to greater divergence between pathfinder and NUTS, reflecting the increased difficulty of the approximation and resulting in less reliable coverage.
 These results are specific to this model configuration and data; always check agreement between methods for your particular setup.
 
 # Posterior parameter comparison
@@ -579,6 +580,8 @@ ggplot(update_params, aes(x = method, y = mean, colour = method)) +
 ```
 
 When the posteriors agree closely, the cheap pathfinder update with informed priors can stand in for a full NUTS refit.
+Using NUTS-informed priors helps center the pathfinder fit on the posterior mode.
+While it may still underestimate the tails of individual parameters, the resulting nowcast is often a relatively good approximation of the NUTS gold standard.
 A production workflow might run full NUTS weekly and use informed pathfinder updates in between, falling back to a full refit if parameter agreement drifts.
 Results are model- and data-specific: always check on your own setup before relying on this pattern.
 See `?enw_replace_priors` for details on setting priors from previous fits.
