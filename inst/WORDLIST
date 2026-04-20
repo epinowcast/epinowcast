@@ -7,7 +7,6 @@ CMD
 COVID
 CmdStan
 CmdStanR
-cmdstanr
 Codecov
 CrI
 Discretisation
@@ -62,8 +61,10 @@ athowes
 barbora
 beansrowning
 brms
+center
 choi
 christinesangphet
+cmdstanr
 com
 crps
 cyclomatic
