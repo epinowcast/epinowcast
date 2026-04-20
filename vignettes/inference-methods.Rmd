@@ -92,7 +92,6 @@ shared_obs <- enw_obs(family = "negbin1d", data = pobs)
 ```
 
 **Spec A (static delays):** lognormal delays that are constant over time.
-This is a good default when reporting processes are stable.
 
 
 ``` r
@@ -519,7 +518,7 @@ Table: Posterior means and 90% CrI widths.
 
 
 Across all three parameters the point estimates (means) are broadly aligned between NUTS and pathfinder.
-The 90% credible intervals from pathfinder are roughly an order of magnitude narrower than the NUTS references — for example, for `refp_mean_int` in spec A the NUTS width is around 1.9 on the log scale versus around 0.24 for pathfinder (about 8× narrower); for spec B the gap is similar (~2.2 versus ~0.3).
+The 90% credible intervals from pathfinder are roughly an order of magnitude narrower than the NUTS references — for example, for `refp_mean_int` the pathfinder width is roughly 10% to 15% of the NUTS width.
 This is a known limitation of variational approximations: they tend to concentrate on a mode and underestimate tail variance, so uncertainty from a raw pathfinder fit is not trustworthy even when the central estimates look reasonable.
 NUTS with pathfinder initialisation reproduces the NUTS posterior (widths within a few percent of prior-init NUTS), so the initialisation itself does not carry the variational bias forward.
 These numbers are specific to this model and data — run the same check on your own setup before relying on pathfinder posteriors.
@@ -531,8 +530,6 @@ Running full NUTS daily is expensive.
 An alternative workflow is to run NUTS once to obtain a high-quality posterior and then use that posterior as the prior for subsequent pathfinder updates, refreshing the NUTS fit periodically (e.g. weekly).
 This builds on the "posterior-as-prior" approach used in the [Germany age-stratified vignette](germany-age-stratified-nowcasting.html), which uses the previous day's posterior to inform the next day's NUTS fit.
 Here we take it a step further by using that posterior to inform a much faster pathfinder update.
-
-**Note:** A more refined way to handle this would be an `update()` method for `enw_preprocess_data` objects ([#429](https://github.com/epinowcast/epinowcast/issues/429)).
 
 We demonstrate this using spec A.
 First, we extract posterior summaries from the spec A NUTS fit for a wide range of model parameters.
