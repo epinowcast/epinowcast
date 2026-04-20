@@ -190,9 +190,14 @@ fit_b_nuts_pf <- fit_nowcast(reference = ref_b, fit = nuts_pf_opts)
 
 ## Pathfinder (approximate inference)
 
+We use `num_paths = 10` (up from the default of 4) to improve the quality of the variational approximation and the subsequent PSIS resampling.
+Increasing the number of paths is a standard way to improve pathfinder performance at the cost of some additional runtime.
+
 
 ``` r
-pf_opts <- enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
+pf_opts <- enw_fit_opts(
+  sampler = enw_pathfinder, pp = TRUE, num_paths = 10
+)
 
 fit_a_pf <- fit_nowcast(reference = ref_a, fit = pf_opts)
 fit_b_pf <- fit_nowcast(reference = ref_b, fit = pf_opts)
@@ -596,7 +601,9 @@ fit_day2 <- partial(
   model = model
 )
 
-pf_opts_pp <- enw_fit_opts(sampler = enw_pathfinder, pp = TRUE)
+pf_opts_pp <- enw_fit_opts(
+  sampler = enw_pathfinder, pp = TRUE, num_paths = 10
+)
 ```
 
 We fit day 2 using three approaches:
@@ -727,6 +734,7 @@ See `?enw_replace_priors` for details on setting priors from previous fits.
 - Switch to **NUTS** for final inference when results will be reported or used for decisions.
 - Use **pathfinder-initialised NUTS** when standard NUTS shows convergence issues (high Rhat, many divergent transitions) or slow warmup.
 - Check Pareto k values from pathfinder fits: high values (> 0.7) warn that the approximation may be unreliable.
+- If Pareto k values are high, try increasing `num_paths` (e.g., to 10 or 20) to improve the variational approximation.
 
 - For real-time workflows, consider running **full NUTS** periodically and using **pathfinder with posterior-as-prior** for cheap intermediate updates, as shown in the [updating section above](#updating-with-posterior-as-prior).
 
