@@ -7,7 +7,6 @@ CMD
 COVID
 CmdStan
 CmdStanR
-cmdstanr
 Codecov
 CrI
 Discretisation
@@ -40,7 +39,6 @@ PMF
 PMFs
 PSIS
 Poisson
-Precompiling
 Precompute
 Renviron
 Rhat
@@ -62,8 +60,10 @@ athowes
 barbora
 beansrowning
 brms
+center
 choi
 christinesangphet
+cmdstanr
 com
 crps
 cyclomatic
