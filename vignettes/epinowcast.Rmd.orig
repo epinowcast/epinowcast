@@ -258,17 +258,10 @@ np_reference <- enw_reference(
 )
 ```
 
-## Observation model
-
-The default model uses a Poisson likelihood.
-For the alternative models, we switch to `family = "negbin1d"`, a negative binomial with a linear mean-variance relationship.
-This adds overdispersion relative to Poisson while retaining additivity under aggregation, which matters when nowcasts are summed (e.g. to 7-day rolling totals).
-
-```{r}
-obs_module <- enw_obs(family = "negbin1d", data = pobs)
-```
-
 ## Fitting the alternative models
+
+We keep the default negative binomial observation model (`family = "negbin"`, a quadratic mean-variance relationship).
+`enw_obs()` also provides `"negbin1d"` (linear mean-variance), which can be preferable when the noise scales linearly with the mean or when nowcasts are summed to coarser time units, since NB1 is additive under aggregation while NB2 is not.
 
 We reuse the shared `fit_opts` for both alternative models.
 Since the Stan model is already compiled, only sampling time is required.
@@ -278,7 +271,6 @@ nowcast_lognormal <- epinowcast(
   data = pobs,
   expectation = expectation_module,
   reference = lognormal_reference,
-  obs = obs_module,
   fit = fit_opts,
   model = model
 )
@@ -289,7 +281,6 @@ nowcast_np <- epinowcast(
   data = pobs,
   expectation = expectation_module,
   reference = np_reference,
-  obs = obs_module,
   fit = fit_opts,
   model = model
 )
