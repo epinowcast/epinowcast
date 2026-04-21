@@ -164,7 +164,7 @@ data {
 transformed data{
   // if no reporting time effects use native probability for reference date
   // effects, i.e. do not convert to logit hazard
-  int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1; 
+  int ref_as_p = (model_rep > 0 || model_refp == 0) ? 0 : 1;
   // Type of likelihood aggregation to use
   int ll_aggregation = likelihood_aggregation + model_miss;
   // Construct sparse matrix components

@@ -45,7 +45,8 @@ enw_report(data = enw_example("preprocessed"))
 # With Wednesday-only reporting structure
 pobs <- enw_example("preprocessed")
 structural <- enw_dayofweek_structural_reporting(
-  pobs, day_of_week = "Wednesday"
+  pobs,
+  day_of_week = "Wednesday"
 )
 enw_report(structural = structural, data = pobs)
 }

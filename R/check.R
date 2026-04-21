@@ -177,11 +177,12 @@ check_modules_compatible <- function(modules) {
 #' @importFrom cli cli_abort
 #' @family utils
 coerce_dt <- function(
-    data, select = NULL, required_cols = select,
-    forbidden_cols = NULL, group = FALSE,
-    dates = FALSE, copy = TRUE,
-    msg_required = "The following columns are required: ",
-    msg_forbidden = "The following columns are forbidden: ") {
+  data, select = NULL, required_cols = select,
+  forbidden_cols = NULL, group = FALSE,
+  dates = FALSE, copy = TRUE,
+  msg_required = "The following columns are required: ",
+  msg_forbidden = "The following columns are forbidden: "
+) {
   if (copy) {
     dt <- data.table::as.data.table(data)
   } else {
@@ -361,7 +362,8 @@ check_max_delay <- function(data,
 
   # filter by earliest observed report date
   obs <- enw_filter_reference_dates_by_report_start(
-    obs, by = ".group", copy = FALSE
+    obs,
+    by = ".group", copy = FALSE
   )
 
   latest_obs <- enw_latest_data(obs)
@@ -692,6 +694,19 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
   obs <- coerce_dt(obs, copy = TRUE, dates = TRUE, group = TRUE)
   cnt_obs_rep <- obs[, .(.N), by = c("report_date", ".group")]
   cnt_obs_ref <- obs[, .(.N), by = c("reference_date", ".group")]
+  if (all(cnt_obs_rep$N <= 1) && all(cnt_obs_ref$N <= 1)) {
+    # Single observation per date pair (e.g. max_delay = 1).
+    # Check date sequences directly within groups instead.
+    check_timestep_by_group(
+      obs,
+      date_var = "reference_date", timestep, exact
+    )
+    check_timestep_by_group(
+      obs,
+      date_var = "report_date", timestep, exact
+    )
+    return(invisible(NULL))
+  }
   if (all(cnt_obs_rep$N <= 1) || all(cnt_obs_ref$N <= 1)) {
     cli::cli_abort(
       paste0(
@@ -733,7 +748,8 @@ check_timestep_by_date <- function(obs, timestep = "day", exact = TRUE) {
 #' @importFrom cli cli_abort
 #' @family check
 check_observation_indicator <- function(
-    new_confirm, observation_indicator = NULL) {
+  new_confirm, observation_indicator = NULL
+) {
   if (!is.null(observation_indicator) &&
     !is.logical(new_confirm[[observation_indicator]])) {
     cli::cli_abort("observation_indicator must be a logical")

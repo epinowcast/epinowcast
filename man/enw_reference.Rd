@@ -53,20 +53,20 @@ and/or non-parametric hazard formulations.
 \examples{
 # Parametric model with a lognormal distribution
 enw_reference(
- parametric = ~1, distribution = "lognormal",
- data = enw_example("preprocessed")
+  parametric = ~1, distribution = "lognormal",
+  data = enw_example("preprocessed")
 )
 
 # Non-parametric model with a random effect per delay
 enw_reference(
- parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
- data = enw_example("preprocessed")
+  parametric = ~0, non_parametric = ~ 1 + (1 | delay),
+  data = enw_example("preprocessed")
 )
 
 # Combined parametric and non-parametric model
 enw_reference(
- parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
- data = enw_example("preprocessed")
+  parametric = ~1, non_parametric = ~ 0 + (1 | delay_cat),
+  data = enw_example("preprocessed")
 )
 }
 \seealso{

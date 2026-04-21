@@ -225,6 +225,13 @@ enw_extend_date <- function(metaobs, days = 20, direction = c("end", "start"),
   direction <- match.arg(direction)
 
   internal_timestep <- get_internal_timestep(timestep)
+  # When max_delay = 1, days = max_delay - 1 = 0 so no extension needed
+  if (days < internal_timestep) {
+    metaobs <- coerce_dt(metaobs, group = TRUE)
+    metaobs[, observed := TRUE]
+    data.table::setkeyv(metaobs, c(".group", "date"))
+    return(metaobs[])
+  }
   new_days <- seq(internal_timestep, days, by = internal_timestep)
   if (direction == "start") {
     new_days <- -new_days
@@ -538,7 +545,7 @@ enw_filter_reference_dates <- function(obs, earliest_date, include_days,
     # validate include_days
     if (
       !is.numeric(include_days) || is.na(include_days) ||
-      include_days < 0 || round(include_days) != include_days
+        include_days < 0 || round(include_days) != include_days
     ) {
       cli::cli_abort("`include_days` must be a non-negative integer")
     }
@@ -585,6 +592,70 @@ enw_latest_data <- function(obs) {
     by = "reference_date"
   ]
   latest_data[]
+}
+
+
+#' Convert preprocessed data to retrospective format
+#'
+#' Takes output of [enw_preprocess_data()] and returns a new
+#' preprocessed dataset with `max_delay = 1`, suitable for
+#' retrospective Rt estimation without delay modelling.
+#' Observations are taken at the specified delay (or the latest
+#' available) and treated as final counts. In the returned data,
+#' `report_date` is set equal to `reference_date` for all rows
+#' (i.e. all observations appear to be reported on the same day
+#' they occurred).
+#'
+#' @param data Output of [enw_preprocess_data()].
+#'
+#' @param max_delay Integer delay at which to freeze observations.
+#'   If `NULL` (default), the latest available observation for each
+#'   reference date is used.
+#'
+#' @return A preprocessed data object (as from
+#'   [enw_preprocess_data()]) with `max_delay = 1`.
+#'
+#' @family preprocess
+#' @export
+#' @examples
+#' pobs <- enw_example("preprocessed")
+#' enw_retrospective(pobs)
+enw_retrospective <- function(data, max_delay = NULL) {
+  if (!inherits(data, "enw_preprocess_data")) {
+    cli::cli_abort(
+      "{.arg data} must be the output of {.fun enw_preprocess_data}."
+    )
+  }
+  obs <- data.table::copy(data$obs[[1]])
+  by <- data$by[[1]]
+  timestep <- data$timestep[[1]]
+
+  if (!is.null(max_delay)) {
+    latest <- enw_obs_at_delay(
+      obs,
+      max_delay = max_delay, timestep = timestep
+    )
+  } else {
+    latest <- enw_latest_data(obs)
+  }
+
+  # Set report_date = reference_date for no-delay format
+  latest[, report_date := reference_date]
+
+  # Keep only columns needed for re-preprocessing
+  keep_cols <- c("reference_date", "report_date", "confirm")
+  if (!is.null(by)) {
+    keep_cols <- c(keep_cols, by)
+  }
+  keep_cols <- intersect(keep_cols, names(latest))
+  retro_obs <- latest[, .SD, .SDcols = keep_cols]
+
+  enw_preprocess_data(
+    retro_obs,
+    by = by,
+    max_delay = 1,
+    timestep = timestep
+  )
 }
 
 
@@ -635,7 +706,8 @@ enw_filter_delay <- function(obs, max_delay, timestep = "day") {
 #' enw_obs_at_delay(obs, max_delay = 2)
 enw_obs_at_delay <- function(obs, max_delay, timestep = "day") {
   obs <- enw_filter_delay(
-    obs, max_delay = max_delay, timestep = timestep
+    obs,
+    max_delay = max_delay, timestep = timestep
   )
   obs <- enw_latest_data(obs)
   obs[]
@@ -1240,7 +1312,8 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
   )
 
   filtered_obs <- enw_filter_reference_dates_by_report_start(
-    obs, by = by, copy = TRUE
+    obs,
+    by = by, copy = TRUE
   )
   diff_obs <- enw_add_incidence(
     filtered_obs,

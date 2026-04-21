@@ -42,32 +42,43 @@
 #' @examples
 #' # Parametric model with a lognormal distribution
 #' enw_reference(
-#'  parametric = ~1, distribution = "lognormal",
-#'  data = enw_example("preprocessed")
+#'   parametric = ~1, distribution = "lognormal",
+#'   data = enw_example("preprocessed")
 #' )
 #'
 #' # Non-parametric model with a random effect per delay
 #' enw_reference(
-#'  parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
-#'  data = enw_example("preprocessed")
+#'   parametric = ~0, non_parametric = ~ 1 + (1 | delay),
+#'   data = enw_example("preprocessed")
 #' )
 #'
 #' # Combined parametric and non-parametric model
 #' enw_reference(
-#'  parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
-#'  data = enw_example("preprocessed")
+#'   parametric = ~1, non_parametric = ~ 0 + (1 | delay_cat),
+#'   data = enw_example("preprocessed")
 #' )
 enw_reference <- function(
   parametric = ~1,
   distribution = c("lognormal", "none", "exponential", "gamma", "loglogistic"),
   non_parametric = ~0, data
 ) {
+  # When max_delay = 1 (no delays), reject non-trivial delay models
+  if (data$max_delay[[1]] == 1 &&
+    (as_string_formula(parametric) != "~0" ||
+      as_string_formula(non_parametric) != "~0")) {
+    cli::cli_abort(paste0(
+      "Reference date models cannot be used with ",
+      "{.arg max_delay} = 1 (no reporting delays to model)"
+    ))
+  }
+
   if (as_string_formula(parametric) == "~0") {
     distribution <- "none"
     parametric <- ~1
   }
   distribution <- match.arg(distribution)
-  if ((as_string_formula(non_parametric) == "~0") && distribution == "none") {
+  if ((as_string_formula(non_parametric) == "~0") &&
+    distribution == "none" && data$max_delay[[1]] > 1) {
     cli::cli_abort(
       paste0(
         "A non-parametric model must be specified if no parametric model ",
@@ -78,7 +89,7 @@ enw_reference <- function(
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
     model_refnp <- 0
-  }else {
+  } else {
     model_refnp <- 1
   }
 
@@ -92,7 +103,8 @@ enw_reference <- function(
   # Define parametric model
   pform <- enw_formula(parametric, data$metareference[[1]], sparse = TRUE)
   check_design_matrix_sparsity(
-    pform$fixed$design, name = "parametric reference date effects"
+    pform$fixed$design,
+    name = "parametric reference date effects"
   )
 
   pdata <- enw_formula_as_data_list(
@@ -110,10 +122,12 @@ enw_reference <- function(
   )[, id := NULL]
 
   npform <- enw_formula(
-    non_parametric, metanp, sparse = FALSE
+    non_parametric, metanp,
+    sparse = FALSE
   )
   check_design_matrix_sparsity(
-    npform$fixed$design, name = "non-parametric reference date effects"
+    npform$fixed$design,
+    name = "non-parametric reference date effects"
   )
 
   npdata <- enw_formula_as_data_list(
@@ -253,18 +267,30 @@ enw_reference <- function(
 #' # With Wednesday-only reporting structure
 #' pobs <- enw_example("preprocessed")
 #' structural <- enw_dayofweek_structural_reporting(
-#'   pobs, day_of_week = "Wednesday"
+#'   pobs,
+#'   day_of_week = "Wednesday"
 #' )
 #' enw_report(structural = structural, data = pobs)
 #' }
 enw_report <- function(non_parametric = ~0, structural = NULL, data) {
+  # When max_delay = 1 (no delays), reject non-trivial report models
+  if (data$max_delay[[1]] == 1 &&
+    (as_string_formula(non_parametric) != "~0" ||
+      !is.null(structural))) {
+    cli::cli_abort(paste0(
+      "Report date models, including structural reporting, ",
+      "cannot be used with ",
+      "{.arg max_delay} = 1 (no reporting delays to model)"
+    ))
+  }
   if (as_string_formula(non_parametric) == "~0") {
     non_parametric <- ~1
   }
 
   form <- enw_formula(non_parametric, data$metareport[[1]], sparse = TRUE)
   check_design_matrix_sparsity(
-    form$fixed$design, name = "report date effects"
+    form$fixed$design,
+    name = "report date effects"
   )
 
   data_list <- enw_formula_as_data_list(
@@ -460,7 +486,8 @@ enw_expectation <- function(r = ~ 0 + (1 | day:.group), generation_time = 1,
   # Observation formula
   obs_form <- enw_formula(observation, data$metareference[[1]], sparse = FALSE)
   check_design_matrix_sparsity(
-    obs_form$fixed$design, name = "observation"
+    obs_form$fixed$design,
+    name = "observation"
   )
 
   obs_data <- enw_formula_as_data_list(
@@ -604,7 +631,8 @@ enw_missing <- function(formula = ~1, data) {
     # Make formula for effects
     form <- enw_formula(formula, data$metareference[[1]], sparse = FALSE)
     check_design_matrix_sparsity(
-      form$fixed$design, name = "missing"
+      form$fixed$design,
+      name = "missing"
     )
     data_list <- enw_formula_as_data_list(
       form,
@@ -719,7 +747,7 @@ enw_missing <- function(formula = ~1, data) {
 #' @examples
 #' enw_obs(data = enw_example("preprocessed"))
 enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
-                   observation_indicator = NULL, data) {
+                    observation_indicator = NULL, data) {
   family <- match.arg(family)
 
   # copy new confirm for processing
@@ -758,7 +786,8 @@ enw_obs <- function(family = c("negbin", "negbin1d", "poisson"),
   proc_data <- c(
     proc_data,
     extract_obs_metadata(
-      new_confirm, observation_indicator = observation_indicator
+      new_confirm,
+      observation_indicator = observation_indicator
     )
   )
 

@@ -30,6 +30,7 @@ For function-specific details, see `?function_name`.
 | **Latent process models** | Growth rates, renewal processes | [Latent models](#latent-models) |
 | **Hierarchical effects** | Random effects, random walks | [Hierarchical structure](#hierarchical) |
 | **Missing data handling** | Missing reference dates | [Missing data](#missing-data) |
+| **Retrospective Rt** | Rt estimation from finalised counts without delay modelling | [Rt estimation vignette](single-timeseries-rt-estimation.html) |
 | **Custom priors** | Inspect and replace default priors | [Prior specification](#priors) |
 | **Model comparison** | LOO-CV, posterior predictive checks | [Model evaluation](#model-evaluation) |
 | **Inference methods** | NUTS, pathfinder, pathfinder-initialised NUTS | [Inference methods vignette](inference-methods.html) |
@@ -288,7 +289,8 @@ If you need any of these capabilities, please reach out via our [community forum
 |---------|--------|-------|
 | Non-count data | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods |
 | Negative updates | Not supported | Cannot handle reporting corrections that reduce previously reported counts |
-| Delay-only or count-only models | Not supported | Currently requires joint modelling of delay and counts |
+| Delay-only models | Not supported | Currently requires count data alongside delay modelling |
+| **Retrospective Rt estimation** | Supported | Use `max_delay = 1` or `enw_retrospective()` to skip delay modelling and estimate Rt from finalised counts. See the [Rt estimation vignette](single-timeseries-rt-estimation.html) |
 | Susceptibility depletion | Not supported | Renewal process assumes constant susceptibility |
 | Uncertain generation time | Not supported | Generation time distribution treated as fixed and known |
 | Forecasting examples | Missing | Functionality exists but lacks worked examples in vignettes |

@@ -73,13 +73,16 @@ test_that("enw_preprocess_data() handles groups as expected", {
 })
 
 test_that(
-  "enw_preprocess_data() can handle a non-default timestep as expected", {
+  "enw_preprocess_data() can handle a non-default timestep as expected",
+  {
     weekly_nat_germany_hosp <- enw_aggregate_cumulative(
-      nat_germany_hosp, timestep = "week"
+      nat_germany_hosp,
+      timestep = "week"
     )
 
     weekly_nat_germany_hosp <- enw_filter_reference_dates(
-      weekly_nat_germany_hosp, earliest_date = "2021-05-10"
+      weekly_nat_germany_hosp,
+      earliest_date = "2021-05-10"
     )
 
     weekly_pobs <- enw_preprocess_data(
@@ -125,8 +128,7 @@ test_that("enw_preprocess_data() throws error when using months", {
     ),
     regexp = "Calendar months are not currently supported"
   )
-}
-)
+})
 
 test_that(
   "enw_preprocess_data() hasn't changed compared to saved example data",
@@ -164,8 +166,9 @@ test_that("enw_preprocess_data passes arguments to enw_add_metaobs_features", {
     "2021-05-24"
   )
   pobs <- enw_preprocess_data(
-    nat_germany_hosp, max_delay = 20, holidays = holidays
-    )
+    nat_germany_hosp,
+    max_delay = 20, holidays = holidays
+  )
   expect_identical(
     as.character(
       pobs$metareference[[1]][date %in% as.Date(holidays), unique(day_of_week)]
@@ -222,5 +225,37 @@ test_that(
       enw_preprocess_data(germany_covid19_hosp, by = "age_group"),
       "The input data seems to be stratified by more variables"
     )
+  }
+)
+
+test_that(
+  "enw_preprocess_data() works with max_delay = 1 (no reporting delay)",
+  {
+    obs <- data.table::data.table(
+      reference_date = as.Date("2021-01-01") + 0:19,
+      report_date = as.Date("2021-01-01") + 0:19,
+      confirm = rpois(20, 100)
+    )
+    pobs <- enw_preprocess_data(obs, max_delay = 1)
+
+    expect_s3_class(pobs, "enw_preprocess_data")
+    expect_equal(pobs$max_delay, 1)
+    expect_equal(pobs$time, 20)
+    expect_equal(pobs$snapshots, 20)
+    expect_equal(pobs$groups, 1)
+
+    # Reporting triangle should have one delay column
+    rt <- pobs$reporting_triangle[[1]]
+    delay_cols <- setdiff(names(rt), c(".group", "reference_date"))
+    expect_identical(delay_cols, "0")
+
+    # Metadelay should have one row (delay = 0)
+    md <- pobs$metadelay[[1]]
+    expect_identical(nrow(md), 1L)
+    expect_identical(md$delay, 0L)
+
+    # Metareport should not be extended beyond observed dates
+    mr <- pobs$metareport[[1]]
+    expect_true(all(mr$observed))
   }
 )
