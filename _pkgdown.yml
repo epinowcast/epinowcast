@@ -44,6 +44,8 @@ navbar:
       - text: Estimating the effective reproduction number in real-time for a single timeseries with reporting delays
         href: articles/single-timeseries-rt-estimation.html
       - text: Working with epinowcast
+      - text: Comparing inference methods
+        href: articles/inference-methods.html
       - text: Visualising preprocessed data
         href: articles/preprocess-visualisation.html
       - text: Resources to help with model fitting using Stan
