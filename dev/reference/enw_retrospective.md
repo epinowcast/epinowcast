@@ -1,35 +1,37 @@
-# Assign a group to each row of a data.table
+# Convert preprocessed data to retrospective format
 
-Assign a group to each row of a data.table. If `by` is specified, then
-each unique combination of the columns in `by` will be assigned a unique
-group. If `by` is not specified, then all rows will be assigned to the
-same group.
+Takes output of
+[`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md)
+and returns a new preprocessed dataset with `max_delay = 1`, suitable
+for retrospective Rt estimation without delay modelling. Observations
+are taken at the specified delay (or the latest available) and treated
+as final counts. In the returned data, `report_date` is set equal to
+`reference_date` for all rows (i.e. all observations appear to be
+reported on the same day they occurred).
 
 ## Usage
 
 ``` r
-enw_assign_group(obs, by = NULL, copy = TRUE)
+enw_retrospective(data, max_delay = NULL)
 ```
 
 ## Arguments
 
-- obs:
+- data:
 
-  A `data.table` or `data.frame` without a `.group` column.
+  Output of
+  [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md).
 
-- by:
+- max_delay:
 
-  A character vector of column names to group by. Defaults to an empty
-  vector.
-
-- copy:
-
-  A logical; make a copy (default) of `obs` or modify it in place?
+  Integer delay at which to freeze observations. If `NULL` (default),
+  the latest available observation for each reference date is used.
 
 ## Value
 
-A `data.table` with a `.group` column added ordered by `.group` and the
-existing key of `obs`.
+A preprocessed data object (as from
+[`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md))
+with `max_delay = 1`.
 
 ## See also
 
@@ -37,6 +39,7 @@ Preprocessing functions
 [`enw_add_delay()`](https://package.epinowcast.org/dev/reference/enw_add_delay.md),
 [`enw_add_max_reported()`](https://package.epinowcast.org/dev/reference/enw_add_max_reported.md),
 [`enw_add_metaobs_features()`](https://package.epinowcast.org/dev/reference/enw_add_metaobs_features.md),
+[`enw_assign_group()`](https://package.epinowcast.org/dev/reference/enw_assign_group.md),
 [`enw_complete_dates()`](https://package.epinowcast.org/dev/reference/enw_complete_dates.md),
 [`enw_construct_data()`](https://package.epinowcast.org/dev/reference/enw_construct_data.md),
 [`enw_extend_date()`](https://package.epinowcast.org/dev/reference/enw_extend_date.md),
@@ -53,25 +56,25 @@ Preprocessing functions
 [`enw_obs_at_delay()`](https://package.epinowcast.org/dev/reference/enw_obs_at_delay.md),
 [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md),
 [`enw_reporting_triangle()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle.md),
-[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.md),
-[`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md)
+[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.md)
 
 ## Examples
 
 ``` r
-obs <- data.frame(x = 1:3, y = 1:3)
-enw_assign_group(obs)
-#> Key: <.group>
-#>        x     y .group
-#>    <int> <int>  <num>
-#> 1:     1     1      1
-#> 2:     2     2      1
-#> 3:     3     3      1
-enw_assign_group(obs, by = "x")
-#> Key: <.group>
-#>        x     y .group
-#>    <int> <int>  <int>
-#> 1:     1     1      1
-#> 2:     2     2      2
-#> 3:     3     3      3
+pobs <- enw_example("preprocessed")
+enw_retrospective(pobs)
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 1 
+#> Observations: 40 timepoints x 40 snapshots 
+#> Max date: 2021-08-22 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :      40 x 7 
+#>   new_confirm        :      40 x 9 
+#>   latest             :      40 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      40 x 3 
+#>   metareference      :      40 x 7 
+#>   metareport         :      40 x 10 
+#>   metadelay          :       1 x 5 
 ```

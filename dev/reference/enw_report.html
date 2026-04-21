@@ -203,15 +203,16 @@ can be used to sample from a tightened version of the prior distribution.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     }</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     fn</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> }</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x557c59dfc7c0&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x557c59e01128&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x561019dde7e0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5610177f7488&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># With Wednesday-only reporting structure</span></span></span>
 <span class="r-in"><span><span class="va">pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">structural</span> <span class="op">&lt;-</span> <span class="fu"><a href="enw_dayofweek_structural_reporting.html">enw_dayofweek_structural_reporting</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">pobs</span>, day_of_week <span class="op">=</span> <span class="st">"Wednesday"</span></span></span>
+<span class="r-in"><span>  <span class="va">pobs</span>,</span></span>
+<span class="r-in"><span>  day_of_week <span class="op">=</span> <span class="st">"Wednesday"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">enw_report</span><span class="op">(</span>structural <span class="op">=</span> <span class="va">structural</span>, data <span class="op">=</span> <span class="va">pobs</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>

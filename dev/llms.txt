@@ -366,6 +366,9 @@ Functions for preprocessing observations
 - [`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.md)
   : Recast the reporting triangle from wide to long format
 
+- [`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md)
+  : Convert preprocessed data to retrospective format
+
 ## Model modules
 
 Modular model components

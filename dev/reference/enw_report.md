@@ -154,15 +154,16 @@ enw_report(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557c59dfc7c0>
-#> <environment: 0x557c59e01128>
+#> <bytecode: 0x561019dde7e0>
+#> <environment: 0x5610177f7488>
 #> 
 
 if (FALSE) { # \dontrun{
 # With Wednesday-only reporting structure
 pobs <- enw_example("preprocessed")
 structural <- enw_dayofweek_structural_reporting(
-  pobs, day_of_week = "Wednesday"
+  pobs,
+  day_of_week = "Wednesday"
 )
 enw_report(structural = structural, data = pobs)
 } # }

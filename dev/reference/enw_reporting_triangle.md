@@ -45,7 +45,8 @@ Preprocessing functions
 [`enw_missing_reference()`](https://package.epinowcast.org/dev/reference/enw_missing_reference.md),
 [`enw_obs_at_delay()`](https://package.epinowcast.org/dev/reference/enw_obs_at_delay.md),
 [`enw_preprocess_data()`](https://package.epinowcast.org/dev/reference/enw_preprocess_data.md),
-[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.md)
+[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/dev/reference/enw_reporting_triangle_to_long.md),
+[`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md)
 
 ## Examples
 

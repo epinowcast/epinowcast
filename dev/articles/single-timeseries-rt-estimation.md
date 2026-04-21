@@ -42,12 +42,12 @@ observe suffers from reporting delays.
 2.  Specify a joint model of the effective reproduction number, the
     delay from infection to hospitalisation and the delay from
     hospitalisation to report;
-3.  Fit this model to both the data that would have been available in
-    real-time, and retrospectively;
+3.  Fit this model to the data available in real-time, retrospectively
+    with delay estimation, and retrospectively without delay estimation;
 4.  Visualise the nowcast from the real-time data in comparison to the
     data that was ultimately observed;
-5.  Compare real-time and retrospective reproduction number estimates
-    and delay distribution estimates;
+5.  Compare real-time, retrospective, and retrospective (no delay)
+    reproduction number estimates and delay distribution estimates;
 6.  Outline the limitations and strengths of this approach and highlight
     areas where it can be extended.
 
@@ -742,39 +742,98 @@ Code
 ``` r
 rt_germany_pobs <- enw_preprocess_data(rt_germany, max_delay = 30)
 rt_germany_pobs
-#>                     obs          new_confirm             latest
-#>                  <list>               <list>             <list>
-#> 1: <data.table[1425x8]> <data.table[1425x9]> <data.table[62x8]>
-#>    missing_reference  reporting_triangle      metareference          metareport
-#>               <list>              <list>             <list>              <list>
-#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]> <data.table[91x10]>
-#>             metadelay max_delay  time snapshots     by groups   max_date
-#>                <list>     <num> <int>     <int> <list>  <int>     <IDat>
-#> 1: <data.table[30x5]>        30    62        62 [NULL]      1 2021-07-01
-#>    timestep
-#>      <char>
-#> 1:      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,425 x 8 
+#>   new_confirm        :   1,425 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :      91 x 10 
+#>   metadelay          :      30 x 5
 ```
 
-and do the same for the retrospective data
+Individual datasets can be extracted with
+[`enw_get_data()`](https://package.epinowcast.org/dev/reference/enw_get_data.md),
+for example the latest observations:
+
+Code
+
+``` r
+enw_get_data(rt_germany_pobs, "latest") |> head()
+#>    reference_date report_date .group max_confirm confirm delay
+#>            <IDat>      <IDat>  <num>       <int>   <int> <num>
+#> 1:     2021-05-01  2021-05-30      1         941     868    29
+#> 2:     2021-05-02  2021-05-31      1         724     673    29
+#> 3:     2021-05-03  2021-06-01      1         413     390    29
+#> 4:     2021-05-04  2021-06-02      1         773     735    29
+#> 5:     2021-05-05  2021-06-03      1         969     894    29
+#> 6:     2021-05-06  2021-06-04      1         966     889    29
+#>    cum_prop_reported prop_reported
+#>                <num>         <num>
+#> 1:         0.9224230   0.001062699
+#> 2:         0.9295580   0.000000000
+#> 3:         0.9443099   0.002421308
+#> 4:         0.9508409   0.009055627
+#> 5:         0.9226006   0.002063983
+#> 6:         0.9202899   0.002070393
+```
+
+We do the same for the retrospective data:
 
 Code
 
 ``` r
 retro_germany_pobs <- enw_preprocess_data(retro_germany, max_delay = 30)
 retro_germany_pobs
-#>                     obs          new_confirm             latest
-#>                  <list>               <list>             <list>
-#> 1: <data.table[1860x8]> <data.table[1860x9]> <data.table[62x8]>
-#>    missing_reference  reporting_triangle      metareference
-#>               <list>              <list>             <list>
-#> 1: <data.table[0x4]> <data.table[62x32]> <data.table[62x8]>
-#>              metareport          metadelay max_delay  time snapshots     by
-#>                  <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[120x10]> <data.table[30x5]>        30    62        62 [NULL]
-#>    groups   max_date timestep
-#>     <int>     <IDat>   <char>
-#> 1:      1 2021-07-30      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-30 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,860 x 8 
+#>   new_confirm        :   1,860 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :     120 x 10 
+#>   metadelay          :      30 x 5
+```
+
+We also create a retrospective dataset without reporting delays using
+[`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md).
+This converts the preprocessed data to `max_delay = 1` by taking the
+latest observation for each reference date and treating it as the final
+count with no delay. This is useful when we want to estimate Rt from
+data that is already (approximately) complete and do not need to model
+reporting delays.
+
+Code
+
+``` r
+retro_nodelay_pobs <- enw_retrospective(retro_germany_pobs)
+retro_nodelay_pobs
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 1 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :      62 x 7 
+#>   new_confirm        :      62 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 3 
+#>   metareference      :      62 x 7 
+#>   metareport         :      62 x 10 
+#>   metadelay          :       1 x 5
 ```
 
 ### Fitting the `epinowcast` model
@@ -847,6 +906,33 @@ germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+germany_nowcast
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,425 x 8 
+#>   new_confirm        :   1,425 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :      91 x 10 
+#>   metadelay          :      30 x 5 
+#> 
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 28 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(115) 
+#>   fit_args : list(9) 
+#>   init_method_output : NULL 
+#> Model fit: 
+#>   Samples: 2,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (12 at max, 0.6%) 
+#>   Run time: 159.3 secs
 ```
 
 Fitting this model with the default options will take around 5 minutes
@@ -868,6 +954,33 @@ retro_germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+retro_germany_nowcast
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-30 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,860 x 8 
+#>   new_confirm        :   1,860 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :     120 x 10 
+#>   metadelay          :      30 x 5 
+#> 
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 28 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(115) 
+#>   fit_args : list(9) 
+#>   init_method_output : NULL 
+#> Model fit: 
+#>   Samples: 2,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (27 at max, 1.4%) 
+#>   Run time: 185.1 secs
 ```
 
 You may see a number of warning messages from `cmdstanr` when fitting
@@ -876,6 +989,59 @@ are due to this process not currently being optimised in `epinowcast`.
 The model should still fit correctly unless these warnings continue into
 the fitting process (outside of the warmup phase). This is something we
 are actively working on improving in future versions of `epinowcast`.
+
+Finally, we fit the model to the retrospective data without delay
+estimation. Here we set `parametric = ~0` and `non_parametric = ~0` for
+both the reference and report date models, disabling the delay model
+entirely. The model only estimates the expectation (Rt and latent
+process) from the final observation counts.
+
+Code
+
+``` r
+retro_nodelay_nowcast <- epinowcast(
+  data = retro_nodelay_pobs,
+  expectation = expectation_module(data = retro_nodelay_pobs),
+  reference = enw_reference(
+    parametric = ~0, non_parametric = ~0,
+    data = retro_nodelay_pobs
+  ),
+  report = enw_report(non_parametric = ~0, data = retro_nodelay_pobs),
+  obs = obs_module(data = retro_nodelay_pobs),
+  fit = fit_module(),
+  model = epinowcast_model
+)
+retro_nodelay_nowcast
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 1 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :      62 x 7 
+#>   new_confirm        :      62 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 3 
+#>   metareference      :      62 x 7 
+#>   metareport         :      62 x 10 
+#>   metadelay          :       1 x 5 
+#> 
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 28 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(115) 
+#>   fit_args : list(9) 
+#>   init_method_output : NULL 
+#> Model fit: 
+#>   Samples: 2,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (51 at max, 2.5%) 
+#>   Run time: 24.1 secs
+```
+
+This model fits much faster than the models with delay estimation as it
+has far fewer parameters and no delay convolution.
 
 ### Visualising the Nowcast
 
@@ -1013,7 +1179,8 @@ get_rt_posterior <- function(nowcast, expectation = expectation_module) {
 
 rt <- rbind(
   get_rt_posterior(germany_nowcast)[, Data := "Real-time"],
-  get_rt_posterior(retro_germany_nowcast)[, Data := "Retrospective"]
+  get_rt_posterior(retro_germany_nowcast)[, Data := "Retrospective"],
+  get_rt_posterior(retro_nodelay_nowcast)[, Data := "Retrospective (no delay)"]
 )
 
 ggplot(rt) +
@@ -1050,6 +1217,15 @@ the reporting delay over time, by the model not being able to account
 for the day of the week reporting periodicity, or by the model not being
 able to account for the change in the underlying process over time.
 
+The retrospective model without delay estimation (“Retrospective (no
+delay)”) provides a useful baseline. It uses the same expectation model
+but treats the latest available counts as final, skipping delay
+estimation entirely. This is faster to fit and can be useful when data
+is already complete or when the primary interest is Rt estimation rather
+than nowcasting. The agreement between this and the full retrospective
+model indicates that the delay model is not substantially biasing the Rt
+estimates in this example.
+
 ### Estimates of the delay from testing positive to hospitalisation both in real-time and retrospectively
 
 We can also plot the posterior distribution of the delay from testing
@@ -1061,7 +1237,9 @@ change as more data becomes available. Ideally, we would hope that the
 real-time estimates would overlap with the retrospective estimates. This
 would indicate that our model is able to accurately estimate
 hospitalisations that will be ultimately reported based on those that
-have already been reported.
+have already been reported. Note that the retrospective model without
+delay estimation is not included here as it does not estimate a
+reporting delay.
 
 Code
 
@@ -1172,10 +1350,14 @@ get_expected_infections <- function(nowcast, expectation = expectation_module) {
 
 exp_cases <- rbind(
   get_expected_infections(germany_nowcast)[, Data := "Real-time"],
-  get_expected_infections(retro_germany_nowcast)[, Data := "Retrospective"]
+  get_expected_infections(retro_germany_nowcast)[, Data := "Retrospective"],
+  get_expected_infections(
+    retro_nodelay_nowcast
+  )[, Data := "Retrospective (no delay)"],
+  fill = TRUE
 )
 
-exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][
+exp_cases <- latest_germany_hosp[, date := reference_date][
   exp_cases,
   on = "date"
 ]
@@ -1203,6 +1385,15 @@ Germany](figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.p
 Real-time and retrospective estimates of the number of expected
 hospitalisations in Germany
 
+The black points here are the counts at the maximum modelled delay
+(`latest_germany_hosp`, the rolling “obs at max delay” set) — the same
+data the retrospective models see, which is what
+[`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md)
+also uses internally. The ribbons show posterior uncertainty on the
+*expected* observations (`exp_lobs`), not posterior predictive draws, so
+they do not include Poisson observation noise and individual points will
+scatter around the fitted mean even for a well-specified model.
+
 As expected the retrospective estimates fit very well to the data. The
 real-time estimates are slightly less good, but still capture the recent
 change in trend in the data which would not be possible without a
@@ -1219,7 +1410,10 @@ reported cases from right truncated data.
 
 We have also shown how to use the package to perform retrospective and
 real-time nowcasts which can be a useful way of understanding the
-real-time performance of the model.
+real-time performance of the model. In addition, we demonstrated
+retrospective Rt estimation without delay modelling using
+[`enw_retrospective()`](https://package.epinowcast.org/dev/reference/enw_retrospective.md),
+which provides a faster alternative when data is already complete.
 
 ### Strengths
 
