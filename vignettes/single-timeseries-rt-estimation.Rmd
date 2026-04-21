@@ -669,6 +669,33 @@ germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+germany_nowcast
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,425 x 8 
+#>   new_confirm        :   1,425 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :      91 x 10 
+#>   metadelay          :      30 x 5 
+#> 
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 28 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(115) 
+#>   fit_args : list(9) 
+#>   init_method_output : NULL 
+#> Model fit: 
+#>   Samples: 2,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (12 at max, 0.6%) 
+#>   Run time: 159.3 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -687,6 +714,33 @@ retro_germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+retro_germany_nowcast
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 30 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-30 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :   1,860 x 8 
+#>   new_confirm        :   1,860 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 32 
+#>   metareference      :      62 x 8 
+#>   metareport         :     120 x 10 
+#>   metadelay          :      30 x 5 
+#> 
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 28 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(115) 
+#>   fit_args : list(9) 
+#>   init_method_output : NULL 
+#> Model fit: 
+#>   Samples: 2,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (27 at max, 1.4%) 
+#>   Run time: 185.1 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -711,6 +765,33 @@ retro_nodelay_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+retro_nodelay_nowcast
+#> ── epinowcast model output ───────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 1 
+#> Observations: 62 timepoints x 62 snapshots 
+#> Max date: 2021-07-01 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :      62 x 7 
+#>   new_confirm        :      62 x 9 
+#>   latest             :      62 x 8 
+#>   missing_reference  :       0 x 4 
+#>   reporting_triangle :      62 x 3 
+#>   metareference      :      62 x 7 
+#>   metareport         :      62 x 10 
+#>   metadelay          :       1 x 5 
+#> 
+#> Model objects (access with `enw_get_data(x, "<name>")`): 
+#>   priors : 28 x 6 
+#>   fit : CmdStanMCMC 
+#>   data : list(115) 
+#>   fit_args : list(9) 
+#>   init_method_output : NULL 
+#> Model fit: 
+#>   Samples: 2,000 | Max Rhat: 1.01 
+#>   Divergent transitions: 0 (0%) 
+#>   Max treedepth: 10 (51 at max, 2.5%) 
+#>   Run time: 24.1 secs
 ```
 
 ::: {.alert .alert-warning}
@@ -931,7 +1012,7 @@ exp_cases <- rbind(
   fill = TRUE
 )
 
-exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][
+exp_cases <- latest_germany_hosp[, date := reference_date][
   exp_cases,
   on = "date"
 ]
@@ -953,6 +1034,9 @@ ggplot(exp_cases) +
 ```
 
 ![Real-time and retrospective estimates of the number of expected hospitalisations in Germany](figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png)
+
+The black points here are the counts at the maximum modelled delay (`latest_germany_hosp`, the rolling "obs at max delay" set) — the same data the retrospective models see, which is what `enw_retrospective()` also uses internally.
+The ribbons show posterior uncertainty on the *expected* observations (`exp_lobs`), not posterior predictive draws, so they do not include Poisson observation noise and individual points will scatter around the fitted mean even for a well-specified model.
 
 As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).
 
