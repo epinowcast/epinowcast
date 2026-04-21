@@ -101,6 +101,22 @@ vector expected_obs_from_snaps(
   int esnap = 0;
   int l;
 
+  // Retrospective mode: no delay or report effects. The delay distribution
+  // is a point mass on slot 0, so expected observations equal the latent
+  // count directly. R-side guards ensure this path is only reachable with
+  // max_delay = 1 (l == 1).
+  if (ref_p == 0 && ref_np == 0 && rep_h == 0) {
+    for (i in start:end) {
+      l = sl[i];
+      if (l) {
+        esnap += l;
+        log_exp_obs[ssnap] = imp_obs[sg[i]][st[i]];
+        ssnap += l;
+      }
+    }
+    return(log_exp_obs);
+  }
+
   for (i in start:end) {
     l = sl[i];
     profile("expected_obs_from_index") {
