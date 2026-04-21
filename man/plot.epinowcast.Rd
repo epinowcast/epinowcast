@@ -53,6 +53,7 @@ plot(nowcast, type = "posterior_prediction") +
 \seealso{
 Other epinowcast: 
 \code{\link{epinowcast}()},
+\code{\link{plot.enw_preprocess_data}()},
 \code{\link{print.enw_preprocess_data}()},
 \code{\link{print.epinowcast}()},
 \code{\link{print.summary.enw_preprocess_data}()},
@@ -60,11 +61,18 @@ Other epinowcast:
 \code{\link{summary.epinowcast}()}
 
 Plotting functions
+\code{\link{enw_delay_categories}()},
+\code{\link{enw_delay_quantiles}()},
+\code{\link{enw_plot_delay_counts}()},
+\code{\link{enw_plot_delay_cumulative}()},
+\code{\link{enw_plot_delay_fraction}()},
+\code{\link{enw_plot_delay_quantiles}()},
 \code{\link{enw_plot_nowcast_quantiles}()},
 \code{\link{enw_plot_obs}()},
 \code{\link{enw_plot_pp_quantiles}()},
 \code{\link{enw_plot_quantiles}()},
-\code{\link{enw_plot_theme}()}
+\code{\link{enw_plot_theme}()},
+\code{\link{plot.enw_preprocess_data}()}
 }
 \concept{epinowcast}
 \concept{plot}

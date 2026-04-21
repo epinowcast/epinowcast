@@ -1394,3 +1394,121 @@ enw_preprocess_data <- function(obs, by = NULL, max_delay,
 
   out[]
 }
+
+#' Categorise new confirmations by delay group
+#'
+#' @description Categorises incidence by delay group with empirical
+#'   reporting proportions. Intended for use with the
+#'   [plot.enw_preprocess_data()] visualisation types that show
+#'   reporting patterns by delay.
+#'
+#' @param pobs A preprocessed data object as produced by
+#'   [enw_preprocess_data()].
+#'
+#' @param delay_group_thresh A numeric vector defining
+#'   left-closed interval thresholds for grouping reporting
+#'   delays. The smallest value should be zero and the largest
+#'   should exceed `max_delay` (intervals are left-closed,
+#'   right-open). Delays outside the range are dropped.
+#'
+#' @return A `data.table` of notification incidence by reference
+#'   date and delay group, including columns `prop_reported`
+#'   and `cum_prop_reported`.
+#'
+#' @family plot
+#' @export
+#' @importFrom data.table copy
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#' enw_delay_categories(pobs, delay_group_thresh = c(0, 2, 5, 10, 21))
+enw_delay_categories <- function(pobs, delay_group_thresh) {
+  nc <- data.table::copy(enw_get_data(pobs, "new_confirm"))
+  by_vars <- enw_get_data(pobs, "by")
+  grouping_vars <- unique(
+    nc[, c(".group", by_vars), with = FALSE]
+  )
+  nc[, delay_group := cut(
+    delay, delay_group_thresh, right = FALSE
+  )]
+  nc <- nc[!is.na(delay_group)]
+
+  nc_group <- nc[, .(
+    confirm = max(confirm, na.rm = TRUE),
+    new_confirm = sum(new_confirm, na.rm = TRUE)
+  ), by = .(reference_date, .group, delay_group)]
+
+  nc_group[,
+    max_confirm := max(confirm),
+    by = .(reference_date, .group)
+  ]
+  nc_group <- merge(grouping_vars, nc_group, by = ".group")
+
+  nc_group <- nc_group[max_confirm > 0]
+  nc_group[, prop_reported := new_confirm / max_confirm]
+  nc_group[, cum_prop_reported := confirm / max_confirm]
+
+  nc_group[]
+}
+
+#' Empirical delay quantiles by reference date
+#'
+#' @description Computes empirical quantiles of the reporting
+#'   delay distribution for each reference date. Intended for
+#'   use with the `"delay_quantiles"` plot type in
+#'   [plot.enw_preprocess_data()].
+#'
+#' @param pobs A preprocessed data object as produced by
+#'   [enw_preprocess_data()].
+#'
+#' @param quantiles A numeric vector of probabilities for which
+#'   quantiles are computed. Defaults to `c(0.1, 0.5, 0.9)`.
+#'
+#' @return A `data.table` with columns for each quantile by
+#'   reference date.
+#'
+#' @family plot
+#' @export
+#' @importFrom data.table copy
+#' @examples
+#' pobs <- enw_example("preprocessed_observations")
+#' enw_delay_quantiles(pobs)
+enw_delay_quantiles <- function(
+  pobs, quantiles = c(0.1, 0.5, 0.9)
+) {
+  nc <- data.table::copy(enw_get_data(pobs, "new_confirm"))
+  by_vars <- enw_get_data(pobs, "by")
+  grouping_vars <- unique(
+    nc[, c(".group", by_vars), with = FALSE]
+  )
+
+  nc[, new_confirm := pmax(new_confirm, 0L)]
+  nc <- nc[, if (sum(new_confirm) > 0) .SD, # nolint
+    by = .(reference_date, .group)
+  ]
+
+  if (nrow(nc) == 0) {
+    result <- data.table::data.table(
+      reference_date = as.IDate(character(0)),
+      .group = integer(0)
+    )
+    for (q in quantiles) {
+      result[, (paste0(q)) := numeric(0)]
+    }
+    return(result[])
+  }
+
+  nc_quant <- nc[, as.list(quantile(
+    x = rep(delay, times = new_confirm),
+    probs = quantiles,
+    type = 1, names = FALSE
+  )), by = .(reference_date, .group)]
+
+  colnames(nc_quant)[
+    3:(3 + length(quantiles) - 1)
+  ] <- paste0(quantiles)
+
+  nc_quant <- merge(
+    grouping_vars, nc_quant, by = ".group"
+  )
+  nc_quant[]
+}

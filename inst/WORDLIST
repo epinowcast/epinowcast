@@ -7,8 +7,8 @@ CMD
 COVID
 CmdStan
 CmdStanR
-cmdstanr
 Codecov
+CrI
 Discretisation
 Discretised
 EpiEstim
@@ -37,10 +37,11 @@ ORCID
 Ocaml
 PMF
 PMFs
+PSIS
 Poisson
-Precompiling
 Precompute
 Renviron
+Rhat
 Rstudio
 SEIR
 TimTaylor
@@ -59,8 +60,10 @@ athowes
 barbora
 beansrowning
 brms
+center
 choi
 christinesangphet
+cmdstanr
 com
 crps
 cyclomatic
@@ -81,6 +84,7 @@ geq
 github
 gt
 hannah
+int
 iter
 iters
 jamesmbaazam
@@ -149,6 +153,7 @@ precomputes
 precomputing
 predictives
 readibility
+refp
 rumackaaron
 runtimes
 rw

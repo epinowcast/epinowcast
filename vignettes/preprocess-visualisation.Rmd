@@ -1,0 +1,188 @@
+---
+title: "Visualising Preprocessed Data"
+description: "Understanding reporting patterns before model fitting."
+author: Epinowcast Team
+output:
+  bookdown::html_vignette2:
+    fig_caption: yes
+    code_folding: show
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Visualising Preprocessed Data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Before fitting a nowcasting model it is useful to explore the reporting data to understand the delay structure, identify anomalies, and check that preprocessing has worked as expected.
+This vignette walks through the plot types available for `enw_preprocess_data` objects.
+
+# Setup
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  fig.width = 9,
+  fig.height = 6,
+  fig.align = "center",
+  dpi = 120,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r packages, message = FALSE}
+library(epinowcast)
+library(data.table)
+library(ggplot2)
+```
+
+# Data
+
+We use the COVID-19 hospitalisation data included in the package, filtered to national-level counts in Germany.
+We create a retrospective snapshot as if we were standing on 1 October 2021 with 80 days of reference dates and a maximum reporting delay of 40 days.
+
+```{r data}
+nat_germany_hosp <-
+  germany_covid19_hosp[location == "DE"][age_group == "00+"] |>
+  enw_filter_report_dates(latest_date = "2021-10-01")
+
+retro_nat_germany <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = 40) |>
+  enw_filter_reference_dates(include_days = 80)
+```
+
+# Preprocessing
+
+```{r preprocess}
+pobs <- enw_preprocess_data(retro_nat_germany, max_delay = 40)
+pobs
+```
+
+The preprocessed object bundles several data tables together.
+We can now visualise these data using the `plot` method, which dispatches to specialised plot functions depending on the `type` argument.
+
+All delay-based plots below are affected by right truncation: the most recent reference dates have not yet had enough time for all reports to arrive, so their delay distributions will appear to be shorter than the true distribution.
+Keep this in mind when interpreting the rightmost portion of each plot.
+
+# Latest observations
+
+The default plot type (`"obs"`) shows the latest cumulative case counts by reference date.
+This is the data the model will attempt to nowcast.
+
+```{r obs, fig.cap = "Latest reported hospitalisations by date of positive test."}
+plot(pobs, type = "obs")
+```
+
+The apparent drop in counts at the right edge of the series is a hallmark of right truncation: reports for recent reference dates have simply not had enough time to arrive.
+This is precisely the signal that nowcasting aims to correct.
+
+# Cumulative reporting delay
+
+The `"delay_cumulative"` type shows the cumulative fraction of cases reported by each delay group over time.
+Reference dates where a large fraction is reported quickly appear as ribbons that reach the top of the plot early.
+Dates where reporting is slow show wider gaps between ribbons.
+
+```{r emp-rep-cum, fig.cap = "Cumulative fraction reported by delay group."}
+plot(pobs, type = "delay_cumulative")
+```
+
+When no `delay_group_thresh` is supplied the thresholds are generated automatically from `max_delay`.
+Custom thresholds can highlight specific delay windows of interest.
+
+```{r emp-rep-cum-custom, fig.cap = "Cumulative reporting with custom delay thresholds."}
+plot(
+  pobs, type = "delay_cumulative",
+  delay_group_thresh = c(0, 1, 3, 7, 14, 41)
+)
+```
+
+If the ribbons are stable across reference dates the delay distribution is roughly stationary, which may justify a simpler model without time-varying delay components.
+Drift or shifts in the ribbons indicate the delay structure is changing and should be modelled.
+
+# Reporting delay heatmap
+
+The `"delay_fraction"` type shows the fraction of cases reported in each delay group as a tile plot.
+
+```{r emp-rep-frac, fig.cap = "Fraction of cases reported by delay group and reference date."}
+plot(pobs, type = "delay_fraction")
+```
+
+Here we can see changes in colour across columns that line up with day of the week, which indicates the delay distribution depends on the reference weekday.
+The cumulative plot shows how fast reports accumulate overall, while the heatmap isolates where within the delay distribution a change is happening.
+
+# Reporting delay quantiles
+
+The `"delay_quantiles"` type plots empirical quantiles of the reporting delay distribution for each reference date.
+By default the 10th, 50th, and 90th percentiles are shown.
+
+```{r emp-rep-quant, fig.cap = "Empirical delay quantiles over time."}
+plot(pobs, type = "delay_quantiles")
+```
+
+Lower quantiles (e.g. the 10th percentile) are less affected by right truncation because early reports have had time to arrive.
+Higher quantiles (e.g. the 90th percentile) are more heavily truncated because they depend on late-arriving reports that may not yet have been observed for recent reference dates.
+A sudden drop in the higher quantiles at the right edge is therefore expected and does not necessarily indicate a real change in reporting speed.
+
+Quantile lines summarise the delay distribution as a single number per reference date, which makes small temporal trends easier to read than from the heatmap but hides the full shape.
+Use the quantile plot to check whether the median and tails drift over time; fall back to the heatmap when you need to see which delays are responsible for a change.
+
+Custom quantiles can be specified.
+
+```{r emp-rep-quant-custom, fig.cap = "Median and interquartile range of reporting delays."}
+plot(pobs, type = "delay_quantiles", quantiles = c(0.25, 0.5, 0.75))
+```
+
+# Notifications by delay group
+
+The `"delay_counts"` type produces a stacked bar plot showing the number of notifications by reference date, coloured by how long they took to be reported.
+This combines the volume of reports with their timeliness in a single view.
+
+```{r emp-ts-del, fig.cap = "Notifications by reference date coloured by reporting delay."}
+plot(pobs, type = "delay_counts")
+```
+
+Compared to the cumulative and heatmap plots, which show proportions, this plot puts absolute counts on the y-axis.
+Use it when you care about the size of each delay group in context with the overall reporting volume, for example when deciding whether a noisy-looking right edge is supported by many notifications or by only a handful.
+
+# Using the individual plot functions
+
+Each plot type corresponds to an exported function that can be called directly for more control.
+
+| Plot type             | Function                        |
+|:----------------------|:--------------------------------|
+| `"obs"`               | `enw_plot_obs()`                |
+| `"delay_cumulative"`  | `enw_plot_delay_cumulative()`   |
+| `"delay_fraction"`    | `enw_plot_delay_fraction()`     |
+| `"delay_quantiles"`   | `enw_plot_delay_quantiles()`    |
+| `"delay_counts"`      | `enw_plot_delay_counts()`       |
+
+These return standard `ggplot2` objects so layers, facets, and themes can be added freely.
+Grouped data are auto-faceted by `.group`; pass `facet = FALSE` to disable and supply your own layout.
+
+```{r custom-plot}
+enw_plot_delay_fraction(
+  pobs, delay_group_thresh = c(0, 1, 3, 7, 14, 41)
+) +
+  scale_fill_viridis_c() +
+  ggtitle("Reporting delay heatmap with viridis scale")
+```
+
+# Helper functions
+
+Two helper functions underpin the delay-based plots and can be used independently for custom analyses.
+
+`enw_delay_categories()` categorises notifications into delay groups and computes empirical reporting proportions.
+
+```{r cat-new-confirm}
+nc <- enw_delay_categories(
+  pobs, delay_group_thresh = c(0, 1, 3, 7, 14, 41)
+)
+head(nc)
+```
+
+`enw_delay_quantiles()` computes empirical delay quantiles by reference date.
+
+```{r emp-quant}
+eq <- enw_delay_quantiles(pobs)
+head(eq)
+```
