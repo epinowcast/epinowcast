@@ -156,22 +156,34 @@ $(function(){initNavTree('expected__obs__from_8stan_source.html',''); initResiza
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <span class="keywordtype">int</span> esnap = 0;</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>  <span class="keywordtype">int</span> l;</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="keywordflow">for</span> (i in start:end) {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    l = sl[i];</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    profile(<span class="stringliteral">&quot;expected_obs_from_index&quot;</span>) {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">if</span> (l) {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>      esnap += l;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>      log_exp_obs[ssnap:esnap] = <a class="code hl_function" href="expected__obs__from_8stan.html#a89e18a0813cdae5895b1621e48267d40">expected_obs_from_index</a>(</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p,</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        sg[i], st[i], l, refnp_lh, ref_np, csdmax[i] - sdmax[i] + 1,</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>      );</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>      ssnap += l;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>  }</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>  <span class="keywordflow">return</span>(log_exp_obs);</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>  <span class="comment">// Retrospective mode: no delay or report effects. The delay distribution</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>  <span class="comment">// is a point mass on slot 0, so expected observations equal the latent</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>  <span class="comment">// count directly. R-side guards ensure this path is only reachable with</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>  <span class="comment">// max_delay = 1, so sl[i] == 1 for every snapshot and log_exp_obs has</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>  <span class="comment">// length end - start + 1.</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>  <span class="keywordflow">if</span> (ref_p == 0 &amp;&amp; ref_np == 0 &amp;&amp; rep_h == 0) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">for</span> (i in start:end) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>      log_exp_obs[i - start + 1] = imp_obs[sg[i], st[i]];</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">return</span>(log_exp_obs);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>  }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>  <span class="keywordflow">for</span> (i in start:end) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    l = sl[i];</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    profile(<span class="stringliteral">&quot;expected_obs_from_index&quot;</span>) {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">if</span> (l) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>      esnap += l;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>      log_exp_obs[ssnap:esnap] = <a class="code hl_function" href="expected__obs__from_8stan.html#a89e18a0813cdae5895b1621e48267d40">expected_obs_from_index</a>(</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        i, imp_obs, rdlurd, srdlh, refp_lh, dpmfs, ref_p, rep_h, ref_as_p,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        sg[i], st[i], l, refnp_lh, ref_np, csdmax[i] - sdmax[i] + 1,</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        rep_agg_p, rep_agg_n_selected, rep_agg_selected_idx</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>      );</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>      ssnap += l;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>  }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>  <span class="keywordflow">return</span>(log_exp_obs);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
 </div>
 <div class="ttc" id="acombine__logit__hazards_8stan_html_a9a6061dd1cadd700fa8ec3d38adcb2cf"><div class="ttname"><a href="combine__logit__hazards_8stan.html#a9a6061dd1cadd700fa8ec3d38adcb2cf">combine_logit_hazards</a></div><div class="ttdeci">vector combine_logit_hazards(int i, array[,] int rdlurd, vector srdlh, matrix refp_lh, array[] int dpmfs, int ref_p, int rep_h, int g, int t, int l, vector refnp_lh, int refnp_p, int p)</div><div class="ttdef"><b>Definition</b> <a href="combine__logit__hazards_8stan_source.html#l00041">combine_logit_hazards.stan:41</a></div></div>
 <div class="ttc" id="aexpected__obs_8stan_html_a7fb0101b75e4b1c4170850cc856f94cf"><div class="ttname"><a href="expected__obs_8stan.html#a7fb0101b75e4b1c4170850cc856f94cf">expected_obs</a></div><div class="ttdeci">vector expected_obs(real tar_obs, vector lh, int l, int ref_as_p, int rep_agg_p, array[] int n_selected, array[,] int selected_idx)</div><div class="ttdef"><b>Definition</b> <a href="expected__obs_8stan_source.html#l00101">expected_obs.stan:101</a></div></div>
