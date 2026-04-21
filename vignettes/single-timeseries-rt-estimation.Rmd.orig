@@ -488,6 +488,7 @@ germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+germany_nowcast
 ```
 
 ::: {.alert .alert-warning}
@@ -505,6 +506,7 @@ retro_germany_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+retro_germany_nowcast
 ```
 
 ::: {.alert .alert-warning}
@@ -528,6 +530,7 @@ retro_nodelay_nowcast <- epinowcast(
   fit = fit_module(),
   model = epinowcast_model
 )
+retro_nodelay_nowcast
 ```
 
 ::: {.alert .alert-warning}
@@ -738,7 +741,7 @@ exp_cases <- rbind(
   fill = TRUE
 )
 
-exp_cases <- enw_latest_data(germany_hosp)[, date := reference_date][
+exp_cases <- latest_germany_hosp[, date := reference_date][
   exp_cases,
   on = "date"
 ]
@@ -758,6 +761,9 @@ ggplot(exp_cases) +
   scale_fill_brewer(palette = "Dark2", aesthetics = c("color", "fill")) +
   theme(legend.position = "bottom")
 ```
+
+The black points here are the counts at the maximum modelled delay (`latest_germany_hosp`, the rolling "obs at max delay" set) — the same data the retrospective models see, which is what `enw_retrospective()` also uses internally.
+The ribbons show posterior uncertainty on the *expected* observations (`exp_lobs`), not posterior predictive draws, so they do not include Poisson observation noise and individual points will scatter around the fitted mean even for a well-specified model.
 
 As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).
 
