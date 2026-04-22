@@ -1,8 +1,9 @@
 # epinowcast 0.6.0
 
 This release prepares the package for CRAN submission and introduces new methods for inspecting `epinowcast` and preprocessed data objects, including `print()`, `summary()`, `plot()` and an `enw_get_data()` accessor.
-It also adds a vignette comparing inference methods (HMC, pathfinder, Laplace) and restructures the getting started vignette around a default-first flow.
-Several long-standing issues around reference-date filtering and retrospective Rt estimation with `max_delay = 1` are fixed.
+The getting started vignette has been restructured around a default-first flow that fits and compares three models — the default Poisson model and two alternatives with weekly growth rate, day-of-week effects, negative binomial observations, and contrasting parametric versus non-parametric delay specifications — to show that `epinowcast` is a modelling toolkit rather than a single model.
+A new inference methods vignette compares NUTS sampling, standalone pathfinder, and pathfinder used to initialise NUTS (seeding HMC from a pathfinder fit to speed up warmup), and a new data visualisation vignette demonstrates the `plot.enw_preprocess_data()` method.
+Several long-standing issues around reference-date filtering and retrospective Rt estimation with `max_delay = 1` are also fixed.
 
 Full details on changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.6.0).
 
@@ -50,10 +51,13 @@ Full details on changes in this release can be found in the following sections o
 
 ## Documentation
 
-- Restructured the getting started vignette around a default-first flow with model comparison.
+- Restructured the getting started vignette around a default-first flow that fits and overlays three models: the default Poisson model with all defaults, and two alternatives with a weekly growth rate expectation, day-of-week report effects and negative binomial observations that differ in their delay specification (parametric lognormal with day-of-week effects versus a non-parametric intercept plus random walk over delay weeks).
+  A new data visualisation section precedes the modelling to motivate model choices.
   See #749.
-- Added an inference methods comparison vignette covering HMC, pathfinder and Laplace approximations, and added it to the pkgdown navigation.
+- Added an inference methods comparison vignette covering NUTS sampling, standalone pathfinder, and pathfinder used to initialise NUTS (a warmup-speedup pattern where the pathfinder fit seeds HMC), with runtime, diagnostic, and posterior parameter comparisons across two model specifications; linked from the features table and pkgdown navigation.
   See #751 and #777.
+- Added a data visualisation vignette demonstrating the new `plot.enw_preprocess_data()` method and its five plot types (observations, cumulative empirical reporting delay, delay fraction heatmap, delay quantiles, and stacked delay timeseries).
+  See #757.
 - Updated the single-timeseries Rt estimation and main `epinowcast` vignettes.
   See #723 and #744.
 - Clarified how to specify custom priors and updated vignette source files to include prior specification guidance.
