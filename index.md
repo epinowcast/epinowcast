@@ -66,13 +66,14 @@ remotes::install_github(
 if needed, e.g. if you want to try out a specific unreleased feature,
 but not the absolute latest developmental version.*
 
-Installing CmdStan
+Installing cmdstanr and CmdStan
 
 If you wish to do model fitting and nowcasting, you will need to install
+[`cmdstanr`](https://mc-stan.org/cmdstanr/) and
 [CmdStan](https://mc-stan.org/users/interfaces/cmdstan), which also
-entails having a suitable C++ toolchain setup. We recommend using the
-[`cmdstanr` package](https://mc-stan.org/cmdstanr/). The Stan team
-provides instructions in the [*Getting started with
+entails having a suitable C++ toolchain setup. `cmdstanr` is an optional
+dependency of `epinowcast` and is not installed automatically. The Stan
+team provides instructions in the [*Getting started with
 `cmdstanr`*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
 vignette, with other details and support at the [package
 site](https://mc-stan.org/cmdstanr/) along with some key instructions
@@ -81,9 +82,12 @@ vignette](https://package.epinowcast.org/articles/stan-help.html#toolchain),
 but the brief version is:
 
 ``` r
-# if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies
-install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-# once `cmdstanr` is installed:
+# install cmdstanr
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+# once cmdstanr is installed:
 cmdstanr::install_cmdstan()
 ```
 
@@ -214,13 +218,14 @@ specification. Contributions of any kind are welcome!
 [adrian-lison](https://github.com/epinowcast/epinowcast/commits?author=adrian-lison),
 [sbfnk](https://github.com/epinowcast/epinowcast/commits?author=sbfnk),
 [Bisaloo](https://github.com/epinowcast/epinowcast/commits?author=Bisaloo),
+[seabbs-bot](https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot),
 [pearsonca](https://github.com/epinowcast/epinowcast/commits?author=pearsonca),
 [choi-hannah](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah),
 [medewitt](https://github.com/epinowcast/epinowcast/commits?author=medewitt),
 [jamesmbaazam](https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam),
 [pitmonticone](https://github.com/epinowcast/epinowcast/commits?author=pitmonticone),
-[athowes](https://github.com/epinowcast/epinowcast/commits?author=athowes),
 [jessalynnsebastian](https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian),
+[athowes](https://github.com/epinowcast/epinowcast/commits?author=athowes),
 [kathsherratt](https://github.com/epinowcast/epinowcast/commits?author=kathsherratt),
 [barbora-sobolova](https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova),
 [kaitejohnson](https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson),
@@ -244,9 +249,11 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
+[ghost](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aghost),
 [jhellewell14](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajhellewell14),
 [Gulfa](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AGulfa),
 [parksw3](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3),
 [TimTaylor](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor),
 [WardBrian](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian),
-[jimrothstein](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein)
+[jimrothstein](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein),
+[sbfnk-bot](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Asbfnk-bot)

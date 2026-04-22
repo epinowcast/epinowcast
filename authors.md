@@ -57,13 +57,13 @@ Source:
 [`inst/CITATION`](https://github.com/epinowcast/epinowcast/blob/main/inst/CITATION)
 
 Sam Abbott, Lison A, Funk S, Pearson C, Gruson H, Guenther F, DeWitt M,
-Azam J, Sebastian J (NULL). *epinowcast: A Bayesian Framework for
+Azam J, Sebastian J (2026). *epinowcast: A Bayesian Framework for
 Real-time Infectious Disease Surveillance*.
 [doi:10.5281/zenodo.5637165](https://doi.org/10.5281/zenodo.5637165).
 
     @Manual{,
       title = {epinowcast: A Bayesian Framework for Real-time Infectious Disease Surveillance},
       author = {{Sam Abbott} and Adrian Lison and Sebastian Funk and Carl Pearson and Hugo Gruson and Felix Guenther and Michael DeWitt and James Mba Azam and Jessalyn Sebastian},
-      year = {NULL},
+      year = {2026},
       doi = {10.5281/zenodo.5637165},
     }

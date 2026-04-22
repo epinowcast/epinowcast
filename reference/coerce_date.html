@@ -15,7 +15,7 @@ IDate with error handling"><meta property="og:image" content="https://package.ep
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,8 @@ IDate with error handling"><meta property="og:image" content="https://package.ep
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -59,7 +61,7 @@ IDate with error handling"><meta property="og:image" content="https://package.ep
 
     <div class="ref-description section level2">
     <p>Provides consistent coercion of inputs to
-<a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a> with error handling</p>
+<a href="https://rdrr.io/pkg/data.table/man/IDateTime.html" class="external-link">IDate</a> with error handling</p>
     </div>
 
     <div class="section level2">
@@ -73,26 +75,27 @@ IDate with error handling"><meta property="og:image" content="https://package.ep
 
 <dl><dt id="arg-dates">dates<a class="anchor" aria-label="anchor" href="#arg-dates"></a></dt>
 <dd><p>A vector-like input, which the function attempts
-to coerce via <code><a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>. Defaults to NULL.</p></dd>
+to coerce via <code><a href="https://rdrr.io/pkg/data.table/man/IDateTime.html" class="external-link">data.table::as.IDate()</a></code>. Defaults to NULL.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a> vector.</p>
+    <p>An <a href="https://rdrr.io/pkg/data.table/man/IDateTime.html" class="external-link">IDate</a> vector.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>If any of the elements of <code>dates</code> cannot be coerced,
 this function will result in an error, indicating all indices
-which cannot be coerced to <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>.</p>
+which cannot be coerced to <a href="https://rdrr.io/pkg/data.table/man/IDateTime.html" class="external-link">IDate</a>.</p>
 <p>Internal methods of <a href="epinowcast.html">epinowcast</a> assume dates are represented
-as <a href="https://rdatatable.gitlab.io/data.table/reference/IDateTime.html" class="external-link">IDate</a>.</p>
+as <a href="https://rdrr.io/pkg/data.table/man/IDateTime.html" class="external-link">IDate</a>.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Utility functions
 <code><a href="coerce_dt.html">coerce_dt()</a></code>,
 <code><a href="date_to_numeric_modulus.html">date_to_numeric_modulus()</a></code>,
+<code><a href="enw_get_data.html">enw_get_data()</a></code>,
 <code><a href="enw_rolling_sum.html">enw_rolling_sum()</a></code>,
 <code><a href="get_internal_timestep.html">get_internal_timestep()</a></code>,
 <code><a href="is.Date.html">is.Date()</a></code>,

@@ -62,7 +62,12 @@ summary epinowcast
 
 Other epinowcast:
 [`epinowcast()`](https://package.epinowcast.org/reference/epinowcast.md),
-[`plot.epinowcast()`](https://package.epinowcast.org/reference/plot.epinowcast.md)
+[`plot.enw_preprocess_data()`](https://package.epinowcast.org/reference/plot.enw_preprocess_data.md),
+[`plot.epinowcast()`](https://package.epinowcast.org/reference/plot.epinowcast.md),
+[`print.enw_preprocess_data()`](https://package.epinowcast.org/reference/print.enw_preprocess_data.md),
+[`print.epinowcast()`](https://package.epinowcast.org/reference/print.epinowcast.md),
+[`print.summary.enw_preprocess_data()`](https://package.epinowcast.org/reference/print.summary.enw_preprocess_data.md),
+[`summary.enw_preprocess_data()`](https://package.epinowcast.org/reference/summary.enw_preprocess_data.md)
 
 ## Examples
 

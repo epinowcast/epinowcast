@@ -19,7 +19,7 @@ implications of missing data for your use case."><meta property="og:image" conte
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,8 @@ implications of missing data for your use case."><meta property="og:image" conte
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -78,10 +80,11 @@ implications of missing data for your use case.</p>
 
 
 <dl><dt id="arg-obs">obs<a class="anchor" aria-label="anchor" href="#arg-obs"></a></dt>
-<dd><p>A <code>data.frame</code> containing at least the following variables:
-<code>reference date</code> (index date of interest), <code>report_date</code> (report date for
-observations), and <code>confirm</code> (cumulative observations by reference and report
-date).</p></dd>
+<dd><p>A <code>data.frame</code> containing at least the
+following variables: <code>reference date</code> (index date of
+interest), <code>report_date</code> (report date for observations),
+and <code>confirm</code> (cumulative observations by reference and
+report date).</p></dd>
 
 
 <dt id="arg-proportion">proportion<a class="anchor" aria-label="anchor" href="#arg-proportion"></a></dt>
@@ -128,17 +131,17 @@ proportion of observations now having a missing reference date.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Key: &lt;location, age_group, reference_date, report_date&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       location age_group report_date reference_date confirm</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;fctr&gt;    &lt;fctr&gt;      &lt;IDat&gt;         &lt;IDat&gt;   &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       DE       00+  2021-04-06           &lt;NA&gt;      51</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       DE       00+  2021-04-07           &lt;NA&gt;     151</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       DE       00+  2021-04-08           &lt;NA&gt;     231</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       DE       00+  2021-04-09           &lt;NA&gt;     230</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       DE       00+  2021-04-10           &lt;NA&gt;     226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    1:       DE       00+  2021-04-06           &lt;NA&gt;      50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    2:       DE       00+  2021-04-07           &lt;NA&gt;     159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    3:       DE       00+  2021-04-08           &lt;NA&gt;     247</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    4:       DE       00+  2021-04-09           &lt;NA&gt;     233</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    5:       DE       00+  2021-04-10           &lt;NA&gt;     241</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   ---                                                      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7135:       DE       00+  2021-07-31     2021-07-30      37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7136:       DE       00+  2021-08-01     2021-07-30      37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7137:       DE       00+  2021-07-31     2021-07-31      19</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7138:       DE       00+  2021-08-01     2021-07-31      26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7139:       DE       00+  2021-08-01     2021-08-01       4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7135:       DE       00+  2021-07-31     2021-07-30      33</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7136:       DE       00+  2021-08-01     2021-07-30      34</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7137:       DE       00+  2021-07-31     2021-07-31      25</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7138:       DE       00+  2021-08-01     2021-07-31      38</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7139:       DE       00+  2021-08-01     2021-08-01       6</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -162,6 +162,7 @@ Preprocessing functions
 [`enw_extend_date()`](https://package.epinowcast.org/reference/enw_extend_date.md),
 [`enw_filter_delay()`](https://package.epinowcast.org/reference/enw_filter_delay.md),
 [`enw_filter_reference_dates()`](https://package.epinowcast.org/reference/enw_filter_reference_dates.md),
+[`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/reference/enw_filter_reference_dates_by_report_start.md),
 [`enw_filter_report_dates()`](https://package.epinowcast.org/reference/enw_filter_report_dates.md),
 [`enw_flag_observed_observations()`](https://package.epinowcast.org/reference/enw_flag_observed_observations.md),
 [`enw_impute_na_observations()`](https://package.epinowcast.org/reference/enw_impute_na_observations.md),
@@ -169,8 +170,10 @@ Preprocessing functions
 [`enw_metadata()`](https://package.epinowcast.org/reference/enw_metadata.md),
 [`enw_metadata_delay()`](https://package.epinowcast.org/reference/enw_metadata_delay.md),
 [`enw_missing_reference()`](https://package.epinowcast.org/reference/enw_missing_reference.md),
+[`enw_obs_at_delay()`](https://package.epinowcast.org/reference/enw_obs_at_delay.md),
 [`enw_reporting_triangle()`](https://package.epinowcast.org/reference/enw_reporting_triangle.md),
-[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/reference/enw_reporting_triangle_to_long.md)
+[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/reference/enw_reporting_triangle_to_long.md),
+[`enw_retrospective()`](https://package.epinowcast.org/reference/enw_retrospective.md)
 
 ## Examples
 
@@ -187,16 +190,18 @@ pobs <- enw_preprocess_data(nat_germany_hosp)
 #> (or, in special cases, longer) maximum delay via the `max_delay` argument. See
 #> help(enw_preprocess_data) (`?epinowcast::enw_preprocess_data()`) for details.
 pobs
-#>                      obs            new_confirm               latest
-#>                   <list>                 <list>               <list>
-#> 1: <data.table[12915x9]> <data.table[12915x11]> <data.table[198x10]>
-#>    missing_reference   reporting_triangle       metareference
-#>               <list>               <list>              <list>
-#> 1: <data.table[0x6]> <data.table[198x84]> <data.table[198x9]>
-#>              metareport          metadelay max_delay  time snapshots     by
-#>                  <list>             <list>     <num> <int>     <int> <list>
-#> 1: <data.table[279x12]> <data.table[82x5]>        82   198       198 [NULL]
-#>    groups   max_date timestep
-#>     <int>     <IDat>   <char>
-#> 1:      1 2021-10-20      day
+#> ── Preprocessed nowcast data ─────────────────────────────────────────────────── 
+#> Groups: 1 | Timestep: day | Max delay: 82 
+#> Observations: 198 timepoints x 198 snapshots 
+#> Max date: 2021-10-20 
+#> 
+#> Datasets (access with `enw_get_data(x, "<name>")`): 
+#>   obs                :  12,915 x 9 
+#>   new_confirm        :  12,915 x 11 
+#>   latest             :     198 x 10 
+#>   missing_reference  :       0 x 6 
+#>   reporting_triangle :     198 x 84 
+#>   metareference      :     198 x 9 
+#>   metareport         :     279 x 12 
+#>   metadelay          :      82 x 5 
 ```

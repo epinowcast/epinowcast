@@ -98,7 +98,7 @@ Code
 ``` r
 latest_nat_germany <- nat_germany_hosp |>
   enw_filter_report_dates(latest_date = "2021-10-20") |>
-  enw_latest_data() |>
+  enw_obs_at_delay(max_delay = 40) |>
   enw_filter_reference_dates(latest_date = "2021-09-01", include_days = 40)
 ```
 
@@ -207,7 +207,9 @@ plot of chunk nowcast
 To speed up model fitting we make use of posterior information from the
 previous model (with some inflation) for some parameters. Note that this
 is not a truly Bayesian approach and in some situations may be
-problematic.
+problematic. See
+[`?epinowcast`](https://package.epinowcast.org/reference/epinowcast.md)
+for general guidance on inspecting and setting priors.
 
 Code
 

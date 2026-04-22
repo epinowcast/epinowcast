@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,8 @@
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
 </li>
@@ -106,11 +108,11 @@
 The statistical models used in <a href="https://package.epinowcast.org">epinowcast</a> are primarily written in the <a href="https://mc-stan.org/docs/reference-manual/index.html" class="external-link">Stan programming language</a>, a statically typed programming language with syntax similar to C/C++.
 <a href="https://package.epinowcast.org">epinowcast</a> utilises the <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a> package to interface with CmdStan, the program which executes the models written in the Stan programming language.
 It is important to understand that CmdStan is a program that is <strong>distinct</strong> from but interfaced through R.
-R calling a separate program to execute calculations is similar to <a href="https://cran.r-project.org/web/packages/rjags/" class="external-link"><code>{rjags}</code></a> which relies on the <a href="https://cran.r-project.org/web/packages/rjags/INSTALL" class="external-link">JAGS library</a> and <a href="https://www.r-inla.org/what-is-inla" class="external-link">R-INLA</a>.
-As described in the <a href="https://package.epinowcast.org">epinowcast</a> project <a href="./index.html">README</a>, you will need to install <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a> an R package which also has the ability to install CmdStan using an R interface.
+R calling a separate program to execute calculations is similar to <a href="https://CRAN.R-project.org/package=rjags" class="external-link"><code>{rjags}</code></a> which relies on the <a href="https://mcmc-jags.sourceforge.io/" class="external-link">JAGS library</a> and <a href="https://www.r-inla.org/what-is-inla" class="external-link">R-INLA</a>.
+As described in the <a href="https://package.epinowcast.org">epinowcast</a> project <a href="./index.html">README</a>, if you wish to do model fitting and nowcasting you will need to install <a href="https://mc-stan.org/cmdstanr/" class="external-link"><code>{cmdstanr}</code></a>, an optional dependency not installed automatically with <code>epinowcast</code>, which also has the ability to install CmdStan using an R interface.
 Additionally, you will need to make sure that the software required by CmdStan is installed and configured on your machine.</p>
 <div class="section level3">
-<h3 id="ensuring-you-have-the-proper-toolchain">Ensuring you have the proper toolchain<a class="anchor" aria-label="anchor" href="#ensuring-you-have-the-proper-toolchain"></a>
+<h3 id="toolchain">Ensuring you have the proper toolchain<a class="anchor" aria-label="anchor" href="#toolchain"></a>
 </h3>
 <p>The Stan code that is written in the <a href="https://package.epinowcast.org">epinowcast</a> package is converted<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;The Stan code is first passed to a Stan-specific compiled written in Ocaml called &lt;a href="https://github.com/stan-dev/stanc3" class="external-link"&gt;stanc3&lt;/a&gt;.
 The optimised C++ code generated from this first step is then passed to the C++ compiler.&lt;/p&gt;'><sup>1</sup></a> to optimised C++ code and then compiled to machine-readable instructions.
@@ -131,17 +133,23 @@ The Stan team has assembled very detailed instructions for each platform:</p>
 <p>Now you can open a session of R using your favourite IDE like Rstudio or Vscode.
 You’ll need to install the CmdStanR package, the R package which allows you to interface with CmdStan through R code.
 There is a <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html" class="external-link">very detailed installation guide available for CmdStanR</a> which provides the authoritative installation instructions.</p>
-<p>The <a href="https://mc-stan.org/cmdstanr/" class="external-link">cmdstanr</a> package is installed as a dependency when you install <code>epinowcast</code>.
-To ensure that your toolchain installation occurred successfully, run the following code in your R terminal:</p>
+<p>The <a href="https://mc-stan.org/cmdstanr/" class="external-link">cmdstanr</a> package is an optional dependency of <code>epinowcast</code>, required for model fitting and nowcasting.
+You can install it with:</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span></span>
+<span>  <span class="st">"cmdstanr"</span>,</span>
+<span>  repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://stan-dev.r-universe.dev"</span>, <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"repos"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</details><p>To ensure that your toolchain installation occurred successfully, run the following code in your R terminal:</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://mc-stan.org/cmdstanr/" class="external-link">cmdstanr</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">check_cmdstan_toolchain</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details><p>This function will report back if the toolchain is available and set up as follows:</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt; The C++ toolchain required for CmdStan is set up properly!</span></span></code></pre></div>
 </details><p>If you do not get this message, return to <a href="#toolchain">the installation instructions</a> and ensure that all steps were followed.</p>
-<p>Assuming you have the toolchain installed, you can install CmdStanR.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>Assuming you have the toolchain installed, you can install CmdStan.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html" class="external-link">install_cmdstan</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
@@ -236,7 +244,7 @@ The default value is 0.8, but this will likely need to be set slightly higher li
 <h4 id="some-decent-defaults">Some decent defaults<a class="anchor" aria-label="anchor" href="#some-decent-defaults"></a>
 </h4>
 <p>For a computer with 8 cores, a reasonable configuration would be the following:</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_fit_opts.html">enw_fit_opts</a></span><span class="op">(</span></span>
 <span>    save_warmup <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    pp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -260,18 +268,19 @@ The default value is 0.8, but this will likely need to be set slightly higher li
 <h4 id="setting-priors">Setting priors<a class="anchor" aria-label="anchor" href="#setting-priors"></a>
 </h4>
 <p>Setting sensible priors is important for Bayesian inference.
+See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for an overview of how to inspect and customise priors across all model modules.
 When pre-processing your data, you can retrieve the prior arguments using the <code>enw_reference</code> function.
 As shown below, you can retrieve your current files and manipulate them as needed.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">default_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="../reference/enw_example.html">enw_example</a></span><span class="op">(</span><span class="st">"preprocessed"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">default_priors</span></span></code></pre></div>
 </details><p>In the above example, if you have some reason to believe that the standard deviation of the means used could we smaller, you could reduce them by half to 0.5.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">new_priors</span> <span class="op">&lt;-</span> <span class="va">default_priors</span><span class="op">$</span><span class="va">priors</span></span>
 <span></span>
 <span><span class="va">new_priors</span><span class="op">[</span> ,<span class="va">sd</span> <span class="op">:=</span> <span class="fl">0.5</span><span class="op">]</span></span></code></pre></div>
 </details><p>You could then pass these new priors to the <code>epinowcast</code> function.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span><span class="va">pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="va">expectation_module</span>,</span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
@@ -307,7 +316,7 @@ Utilise the <code>enw_plot_pp_quantiles</code> to examine the posterior predicti
 <h4 id="my-model-takes-too-long-to-run">My model takes too long to run<a class="anchor" aria-label="anchor" href="#my-model-takes-too-long-to-run"></a>
 </h4>
 <p>One of the more common issues with Bayesian inference is that the sampler may take a long time to run.
-This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the <a href="https://statmodeling.stat.columbia.edu/2021/03/25/the-folk-theorem-revisited/" class="external-link">Folk Theorem of Statistical Computing</a> “when you have computational problems, often there’s a problem with your model”).
+This can occur because the sampler is having difficulty exploring the posterior parameter space given the model and your data (i.e., the Folk Theorem of Statistical Computing “when you have computational problems, often there’s a problem with your model”).
 In other words, you may have a mismatch between your data and the model you are trying to fit.
 There a few simple steps to assist with this:</p>
 <ol style="list-style-type: decimal">
@@ -322,7 +331,7 @@ There a few simple steps to assist with this:</p>
 <h4 id="divergent-transitions">Divergent transitions<a class="anchor" aria-label="anchor" href="#divergent-transitions"></a>
 </h4>
 <p>CmdStan may alert you that you have <a href="https://mc-stan.org/docs/reference-manual/divergent-transitions.html" class="external-link">“divergent transitions”</a> detected during your model fit.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#&gt;1: There were 32 divergent transitions after warmup.</span></span></code></pre></div>
 </details><p>A higher number of divergent transitions indicates that the model outputs are not to be trusted.
 The first step in addressing this is to increase the <a href="#adaptDelta"><code>adapt_delta</code></a> argument to a numeric near one (e.g., 0.99 or 0.99).
@@ -352,9 +361,9 @@ If <code>r_hat</code> is large and <code>ess_bulk</code>/ <code>ess_tail</code> 
 <p>Wide posterior values indicate that there is a high degree of uncertainty given the data and model.
 If no other warnings are shown (e.g., divergent transitions, low ESS), then this result is simply the inference given the available data and prior likelihood.</p>
 <p>However, Bayesian model building is often an iterative process<span class="citation"><sup>[1]</sup></span> and, in practice, it’s common to realize that that the model’s prior likelihood doesn’t accurately reflect your prior beliefs.
-Priors that were thought to be non-informative can turn out to <a href="http://www.stat.columbia.edu/~gelman/research/published/entropy-19-00555-v2.pdf" class="external-link">strongly influence the posterior</a>, often in unexpected and undesirable ways.
+Priors that were thought to be non-informative can turn out to <a href="https://sites.stat.columbia.edu/gelman/research/published/entropy-19-00555-v2.pdf" class="external-link">strongly influence the posterior</a>, often in unexpected and undesirable ways.
 If you suspect that this might be the case, it can make sense to revisit your priors, iteratively inspecting the joint prior model through prior predictive simulation and tweaking marginal distributions over individual parameters.
-The (Stan Prior Choice wiki)[<a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" class="external-link uri">https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations</a>] is often a useful guide to this process.</p>
+The <a href="https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations" class="external-link">Stan Prior Choice wiki</a> is often a useful guide to this process.</p>
 </div>
 </div>
 </div>
@@ -381,9 +390,11 @@ If you find yourself having issues with <a href="https://package.epinowcast.org"
 <li>Aki Vehtari <a href="https://avehtari.github.io/BDA_R_demos/demos_rstan/" class="external-link">Bayesian Data Analysis</a> and <a href="https://users.aalto.fi/~ave/casestudies.html" class="external-link">case studies</a>
 </li>
 </ul>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
+<div id="refs" class="references csl-bib-body" entry-spacing="0" line-spacing="2">
 <div id="ref-gelmanBayesianWorkflow2020" class="csl-entry">
-1. Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., &amp; Modrák, M. (2020, November 3). <em>Bayesian <span>Workflow</span></em>. <a href="https://doi.org/10.48550/arXiv.2011.01808" class="external-link">https://doi.org/10.48550/arXiv.2011.01808</a>
+<div class="csl-left-margin">1. </div>
+<div class="csl-right-inline">Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., &amp; Modrák, M. (2020, November 3). <em>Bayesian <span>Workflow</span></em>. <a href="https://doi.org/10.48550/arXiv.2011.01808" class="external-link">https://doi.org/10.48550/arXiv.2011.01808</a>
+</div>
 </div>
 </div>
 </div>

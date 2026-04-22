@@ -44,6 +44,7 @@ Data converters
 ``` r
 # Default reconstruct incidence
 dt <- germany_covid19_hosp[location == "DE"][age_group == "00+"]
+dt <- enw_filter_reference_dates_by_report_start(dt)
 dt <- enw_add_incidence(dt)
 dt <- dt[, confirm := NULL]
 enw_add_cumulative(dt)

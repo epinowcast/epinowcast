@@ -66,13 +66,14 @@ remotes::install_github(
 if needed, e.g. if you want to try out a specific unreleased feature,
 but not the absolute latest developmental version.*
 
-Installing CmdStan
+Installing cmdstanr and CmdStan
 
 If you wish to do model fitting and nowcasting, you will need to install
+[`cmdstanr`](https://mc-stan.org/cmdstanr/) and
 [CmdStan](https://mc-stan.org/users/interfaces/cmdstan), which also
-entails having a suitable C++ toolchain setup. We recommend using the
-[`cmdstanr` package](https://mc-stan.org/cmdstanr/). The Stan team
-provides instructions in the [*Getting started with
+entails having a suitable C++ toolchain setup. `cmdstanr` is an optional
+dependency of `epinowcast` and is not installed automatically. The Stan
+team provides instructions in the [*Getting started with
 `cmdstanr`*](https://mc-stan.org/cmdstanr/articles/cmdstanr.html)
 vignette, with other details and support at the [package
 site](https://mc-stan.org/cmdstanr/) along with some key instructions
@@ -81,9 +82,12 @@ vignette](https://package.epinowcast.org/articles/stan-help.html#toolchain),
 but the brief version is:
 
 ``` r
-# if you not yet installed `epinowcast`, or you installed it without `Suggests` dependencies
-install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-# once `cmdstanr` is installed:
+# install cmdstanr
+install.packages(
+  "cmdstanr",
+  repos = c("https://stan-dev.r-universe.dev", getOption("repos"))
+)
+# once cmdstanr is installed:
 cmdstanr::install_cmdstan()
 ```
 
@@ -214,13 +218,14 @@ specification. Contributions of any kind are welcome!
 [adrian-lison](https://github.com/epinowcast/epinowcast/commits?author=adrian-lison),
 [sbfnk](https://github.com/epinowcast/epinowcast/commits?author=sbfnk),
 [Bisaloo](https://github.com/epinowcast/epinowcast/commits?author=Bisaloo),
+[seabbs-bot](https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot),
 [pearsonca](https://github.com/epinowcast/epinowcast/commits?author=pearsonca),
 [choi-hannah](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah),
 [medewitt](https://github.com/epinowcast/epinowcast/commits?author=medewitt),
 [jamesmbaazam](https://github.com/epinowcast/epinowcast/commits?author=jamesmbaazam),
 [pitmonticone](https://github.com/epinowcast/epinowcast/commits?author=pitmonticone),
-[athowes](https://github.com/epinowcast/epinowcast/commits?author=athowes),
 [jessalynnsebastian](https://github.com/epinowcast/epinowcast/commits?author=jessalynnsebastian),
+[athowes](https://github.com/epinowcast/epinowcast/commits?author=athowes),
 [kathsherratt](https://github.com/epinowcast/epinowcast/commits?author=kathsherratt),
 [barbora-sobolova](https://github.com/epinowcast/epinowcast/commits?author=barbora-sobolova),
 [kaitejohnson](https://github.com/epinowcast/epinowcast/commits?author=kaitejohnson),
@@ -244,12 +249,14 @@ specification. Contributions of any kind are welcome!
 
 ### Issue Contributors
 
+[ghost](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aghost),
 [jhellewell14](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajhellewell14),
 [Gulfa](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AGulfa),
 [parksw3](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3),
 [TimTaylor](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor),
 [WardBrian](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian),
-[jimrothstein](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein)
+[jimrothstein](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein),
+[sbfnk-bot](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Asbfnk-bot)
 
 # Package index
 
@@ -259,8 +266,18 @@ Functions for nowcasting.
 
 - [`epinowcast()`](https://package.epinowcast.org/reference/epinowcast.md)
   : Nowcast using partially observed data
+- [`plot(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/reference/plot.enw_preprocess_data.md)
+  : Plot method for enw_preprocess_data
 - [`plot(`*`<epinowcast>`*`)`](https://package.epinowcast.org/reference/plot.epinowcast.md)
   : Plot method for epinowcast
+- [`print(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/reference/print.enw_preprocess_data.md)
+  : Print method for enw_preprocess_data
+- [`print(`*`<epinowcast>`*`)`](https://package.epinowcast.org/reference/print.epinowcast.md)
+  : Print method for epinowcast
+- [`print(`*`<summary.enw_preprocess_data>`*`)`](https://package.epinowcast.org/reference/print.summary.enw_preprocess_data.md)
+  : Print method for summary.enw_preprocess_data
+- [`summary(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/reference/summary.enw_preprocess_data.md)
+  : Summary method for enw_preprocess_data
 - [`summary(`*`<epinowcast>`*`)`](https://package.epinowcast.org/reference/summary.epinowcast.md)
   : Summary method for epinowcast
 
@@ -313,6 +330,9 @@ Functions for preprocessing observations
 - [`enw_filter_reference_dates()`](https://package.epinowcast.org/reference/enw_filter_reference_dates.md)
   : Filter by reference dates
 
+- [`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/reference/enw_filter_reference_dates_by_report_start.md)
+  : Filter reference dates that precede the earliest report date
+
 - [`enw_filter_report_dates()`](https://package.epinowcast.org/reference/enw_filter_report_dates.md)
   : Filter by report dates
 
@@ -334,6 +354,9 @@ Functions for preprocessing observations
 - [`enw_missing_reference()`](https://package.epinowcast.org/reference/enw_missing_reference.md)
   : Extract reports with missing reference dates
 
+- [`enw_obs_at_delay()`](https://package.epinowcast.org/reference/enw_obs_at_delay.md)
+  : Extract latest observations at a given maximum delay
+
 - [`enw_preprocess_data()`](https://package.epinowcast.org/reference/enw_preprocess_data.md)
   : Preprocess observations
 
@@ -342,6 +365,9 @@ Functions for preprocessing observations
 
 - [`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/reference/enw_reporting_triangle_to_long.md)
   : Recast the reporting triangle from wide to long format
+
+- [`enw_retrospective()`](https://package.epinowcast.org/reference/enw_retrospective.md)
+  : Convert preprocessed data to retrospective format
 
 ## Model modules
 
@@ -469,8 +495,20 @@ Functions for postprocessing model output
 
 ## Plot
 
-Functions for plotting postprocessed nowcast model output
+Functions for plotting preprocessed data and nowcast model output
 
+- [`enw_delay_categories()`](https://package.epinowcast.org/reference/enw_delay_categories.md)
+  : Categorise new confirmations by delay group
+- [`enw_delay_quantiles()`](https://package.epinowcast.org/reference/enw_delay_quantiles.md)
+  : Empirical delay quantiles by reference date
+- [`enw_plot_delay_counts()`](https://package.epinowcast.org/reference/enw_plot_delay_counts.md)
+  : Plot notifications by delay group
+- [`enw_plot_delay_cumulative()`](https://package.epinowcast.org/reference/enw_plot_delay_cumulative.md)
+  : Plot cumulative empirical reporting delay
+- [`enw_plot_delay_fraction()`](https://package.epinowcast.org/reference/enw_plot_delay_fraction.md)
+  : Plot empirical reporting delay heatmap
+- [`enw_plot_delay_quantiles()`](https://package.epinowcast.org/reference/enw_plot_delay_quantiles.md)
+  : Plot empirical reporting delay quantiles
 - [`enw_plot_nowcast_quantiles()`](https://package.epinowcast.org/reference/enw_plot_nowcast_quantiles.md)
   : Plot nowcast quantiles
 - [`enw_plot_obs()`](https://package.epinowcast.org/reference/enw_plot_obs.md)
@@ -481,6 +519,8 @@ Functions for plotting postprocessed nowcast model output
   : Generic quantile plot
 - [`enw_plot_theme()`](https://package.epinowcast.org/reference/enw_plot_theme.md)
   : Package plot theme
+- [`plot(`*`<enw_preprocess_data>`*`)`](https://package.epinowcast.org/reference/plot.enw_preprocess_data.md)
+  : Plot method for enw_preprocess_data
 - [`plot(`*`<epinowcast>`*`)`](https://package.epinowcast.org/reference/plot.epinowcast.md)
   : Plot method for epinowcast
 
@@ -616,6 +656,9 @@ Utility functions
   : Convert date column to numeric and calculate its modulus with given
   timestep.
 
+- [`enw_get_data()`](https://package.epinowcast.org/reference/enw_get_data.md)
+  : Extract data from preprocessed nowcast objects
+
 - [`enw_rolling_sum()`](https://package.epinowcast.org/reference/enw_rolling_sum.md)
   : Perform rolling sum aggregation
 
@@ -655,6 +698,12 @@ Utility functions
   A case study exploring hierarchical models of varying complexity to
   jointly nowcast age stratified COVID-19 hospitalisations in Germany.
 
+- [Comparing Inference
+  Methods](https://package.epinowcast.org/articles/inference-methods.md):
+
+  A comparison of NUTS sampling, pathfinder approximate inference, and
+  pathfinder-initialised NUTS across two model specifications.
+
 - [Model definition and
   implementation](https://package.epinowcast.org/articles/model.md):
 
@@ -664,6 +713,11 @@ Utility functions
   studies](https://package.epinowcast.org/articles/package-use-cases.md):
 
   A place to document how epinowcast has been used
+
+- [Visualising Preprocessed
+  Data](https://package.epinowcast.org/articles/preprocess-visualisation.md):
+
+  Understanding reporting patterns before model fitting.
 
 - [Estimating the effective reproduction number in real-time for a
   single timeseries with reporting

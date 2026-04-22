@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,8 @@
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
 </li>
@@ -161,9 +163,30 @@ definition vignette</a>. For function-specific details, see
 <td><a href="#missing-data">Missing data</a></td>
 </tr>
 <tr class="even">
+<td><strong>Retrospective Rt</strong></td>
+<td>Rt estimation from finalised counts without delay modelling</td>
+<td><a href="single-timeseries-rt-estimation.html">Rt estimation
+vignette</a></td>
+</tr>
+<tr class="odd">
+<td><strong>Custom priors</strong></td>
+<td>Inspect and replace default priors</td>
+<td><a href="#priors">Prior specification</a></td>
+</tr>
+<tr class="even">
 <td><strong>Model comparison</strong></td>
 <td>LOO-CV, posterior predictive checks</td>
 <td><a href="#model-evaluation">Model evaluation</a></td>
+</tr>
+<tr class="odd">
+<td><strong>Inference methods</strong></td>
+<td>NUTS, pathfinder, pathfinder-initialised NUTS</td>
+<td><a href="inference-methods.html">Inference methods vignette</a></td>
+</tr>
+<tr class="even">
+<td><strong>Data visualisation</strong></td>
+<td>Inspect preprocessing and nowcast output</td>
+<td><a href="#visualisation">Visualisation</a></td>
 </tr>
 </tbody>
 </table>
@@ -548,6 +571,51 @@ uses random effects for age groups. All model modules support the same
 formula interface.</p>
 </div>
 <div class="section level2">
+<h2 id="priors">Prior Specification<a class="anchor" aria-label="anchor" href="#priors"></a>
+</h2>
+<p>Each model module defines default normal priors which can be
+inspected and customised. To set custom priors, pass a
+<code>data.frame</code> with columns <code>variable</code>,
+<code>mean</code>, and <code>sd</code> to the <code>priors</code>
+argument of <code><a href="../reference/epinowcast.html">epinowcast()</a></code>.</p>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="48%">
+<col width="31%">
+</colgroup>
+<thead><tr class="header">
+<th>Task</th>
+<th>How to do it</th>
+<th>Details</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Inspect module priors</td>
+<td><code>enw_reference(data = pobs)$priors</code></td>
+<td>Each module returns its defaults</td>
+</tr>
+<tr class="even">
+<td>Replace specific priors</td>
+<td><code>enw_replace_priors(priors, custom)</code></td>
+<td>Merge custom values into defaults</td>
+</tr>
+<tr class="odd">
+<td>Pass to model</td>
+<td><code>epinowcast(..., priors = custom_priors)</code></td>
+<td>Overrides matching defaults</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="../reference/enw_replace_priors.html">enw_replace_priors()</a></code>: Merge custom priors with
+defaults</li>
+<li>See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for a worked example</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="missing-data">Missing Data Handling<a class="anchor" aria-label="anchor" href="#missing-data"></a>
 </h2>
 <p>Handle two types of missing data: missing reference dates and missing
@@ -712,6 +780,63 @@ hierarchical vignette</a></td>
 shows model scoring and evaluation.</p>
 </div>
 <div class="section level2">
+<h2 id="visualisation">Visualisation<a class="anchor" aria-label="anchor" href="#visualisation"></a>
+</h2>
+<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> methods are available for both preprocessed data
+and nowcast output.</p>
+<table class="table">
+<colgroup>
+<col width="23%">
+<col width="32%">
+<col width="44%">
+</colgroup>
+<thead><tr class="header">
+<th>Object</th>
+<th>Plot types</th>
+<th>What it shows</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>enw_preprocess_data</code></td>
+<td>
+<code>"obs"</code>, <code>"delay_cumulative"</code>,
+<code>"delay_fraction"</code>, <code>"delay_quantiles"</code>,
+<code>"delay_counts"</code>
+</td>
+<td>Reporting patterns and delay structure</td>
+</tr>
+<tr class="even">
+<td><code>epinowcast</code></td>
+<td>
+<code>"nowcast"</code>, <code>"posterior_prediction"</code>
+</td>
+<td>Nowcast estimates and posterior predictive checks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Key functions:</strong></p>
+<ul>
+<li>
+<code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: S3 methods for both object types</li>
+<li>
+<code><a href="../reference/enw_plot_delay_cumulative.html">enw_plot_delay_cumulative()</a></code>,
+<code><a href="../reference/enw_plot_delay_fraction.html">enw_plot_delay_fraction()</a></code>,
+<code><a href="../reference/enw_plot_delay_quantiles.html">enw_plot_delay_quantiles()</a></code>,
+<code><a href="../reference/enw_plot_delay_counts.html">enw_plot_delay_counts()</a></code>: Individual plot functions for
+preprocessed data</li>
+<li>
+<code><a href="../reference/enw_plot_nowcast_quantiles.html">enw_plot_nowcast_quantiles()</a></code>,
+<code><a href="../reference/enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code>: Individual plot functions for
+model output</li>
+<li>
+<code><a href="../reference/enw_delay_categories.html">enw_delay_categories()</a></code>,
+<code><a href="../reference/enw_delay_quantiles.html">enw_delay_quantiles()</a></code>: Helper functions for computing delay
+summaries</li>
+</ul>
+<p><strong>Where to see it:</strong> The <a href="preprocess-visualisation.html">visualising preprocessed data
+vignette</a> demonstrates all preprocessing plot types.</p>
+</div>
+<div class="section level2">
 <h2 id="computational-options">Computational Options<a class="anchor" aria-label="anchor" href="#computational-options"></a>
 </h2>
 <p>Control computational efficiency and parallelisation.</p>
@@ -776,8 +901,10 @@ shows model scoring and evaluation.</p>
 <code><a href="../reference/enw_fit_opts.html">enw_fit_opts()</a></code>: Specify computational options</li>
 <li>See <code><a href="../reference/enw_fit_opts.html">?enw_fit_opts</a></code> for details</li>
 </ul>
-<p><strong>Where to see it:</strong> See <a href="stan-help.html">Stan
-help vignette</a> for guidance on computational settings.</p>
+<p><strong>Where to see it:</strong> The <a href="inference-methods.html">inference methods vignette</a> compares
+NUTS, pathfinder, and pathfinder-initialised NUTS with runtime and
+posterior comparisons. See also the <a href="stan-help.html">Stan help
+vignette</a> for guidance on computational settings.</p>
 </div>
 <div class="section level2">
 <h2 id="data-handling">Data Handling<a class="anchor" aria-label="anchor" href="#data-handling"></a>
@@ -866,21 +993,30 @@ likelihoods</td>
 counts</td>
 </tr>
 <tr class="odd">
-<td>Delay-only or count-only models</td>
+<td>Delay-only models</td>
 <td>Not supported</td>
-<td>Currently requires joint modelling of delay and counts</td>
+<td>Currently requires count data alongside delay modelling</td>
 </tr>
 <tr class="even">
+<td><strong>Retrospective Rt estimation</strong></td>
+<td>Supported</td>
+<td>Use <code>max_delay = 1</code> or <code><a href="../reference/enw_retrospective.html">enw_retrospective()</a></code>
+to skip delay modelling and estimate Rt from finalised counts. See the
+<a href="single-timeseries-rt-estimation.html">Rt estimation
+vignette</a>
+</td>
+</tr>
+<tr class="odd">
 <td>Susceptibility depletion</td>
 <td>Not supported</td>
 <td>Renewal process assumes constant susceptibility</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Uncertain generation time</td>
 <td>Not supported</td>
 <td>Generation time distribution treated as fixed and known</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Forecasting examples</td>
 <td>Missing</td>
 <td>Functionality exists but lacks worked examples in vignettes</td>
@@ -908,6 +1044,9 @@ study</a>: Age-stratified nowcasting</li>
 <li>
 <a href="single-timeseries-rt-estimation.html">Rt estimation
 vignette</a>: Renewal process models</li>
+<li>
+<a href="preprocess-visualisation.html">Visualising preprocessed
+data</a>: Explore delay structure before fitting</li>
 <li>
 <a href="distributions.html">Distributions vignette</a>: Parametric
 distributions</li>

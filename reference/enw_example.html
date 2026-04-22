@@ -17,7 +17,7 @@ functionality without needing to install cmdstanr."><meta property="og:image" co
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +41,8 @@ functionality without needing to install cmdstanr."><meta property="og:image" co
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -101,45 +103,49 @@ the file name(s) to generate these outputs (<code>type</code> = "script")</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Load the nowcast</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"nowcast"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm              latest</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[650x9]&gt; &lt;data.table[610x11]&gt; &lt;data.table[40x10]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     missing_reference  reporting_triangle      metareference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;list&gt;              &lt;list&gt;             &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[40x6]&gt; &lt;data.table[40x22]&gt; &lt;data.table[40x9]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             metareport          metadelay max_delay  time snapshots     by</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[59x12]&gt; &lt;data.table[20x5]&gt;        20    40        40 [NULL]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    groups   max_date timestep             priors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;             &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1 2021-08-22      day &lt;data.table[14x6]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             fit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;CmdStanMCMC&gt;\n  Inherits from: &lt;CmdStanFit&gt;\n  Public:\n    clone: function (deep = FALSE) \n    cmdstan_diagnose: function () \n    cmdstan_summary: function (flags = NULL) \n    code: function () \n    config_files: function (include_failed = FALSE) \n    constrain_variables: function (unconstrained_variables, transformed_parameters = TRUE, \n    data_file: function () \n    diagnostic_summary: function (diagnostics = c("divergences", "treedepth", "ebfmi"), \n    draws: function (variables = NULL, inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    expose_functions: function (global = FALSE, verbose = FALSE) \n    functions: environment\n    grad_log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    hessian: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    init: function () \n    init_model_methods: function (seed = 1, verbose = FALSE, hessian = FALSE) \n    initialize: function (runset) \n    inv_metric: function (matrix = TRUE) \n    latent_dynamics_files: function (include_failed = FALSE) \n    log_prob: function (unconstrained_variables, jacobian = TRUE, jacobian_adjustment = NULL) \n    loo: function (variables = "log_lik", r_eff = TRUE, moment_match = FALSE, \n    lp: function () \n    metadata: function () \n    metric_files: function (include_failed = FALSE) \n    num_chains: function () \n    num_procs: function () \n    output: function (id = NULL) \n    output_files: function (include_failed = FALSE) \n    print: function (variables = NULL, ..., digits = 2, max_rows = getOption("cmdstanr_max_rows", \n    profile_files: function (include_failed = FALSE) \n    profiles: function () \n    return_codes: function () \n    runset: CmdStanRun, R6\n    sampler_diagnostics: function (inc_warmup = FALSE, format = getOption("cmdstanr_draws_format", \n    save_config_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_data_file: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_latent_dynamics_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_metric_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_object: function (file, ...) \n    save_output_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    save_profile_files: function (dir = ".", basename = NULL, timestamp = TRUE, random = TRUE) \n    summary: function (variables = NULL, ...) \n    time: function () \n    unconstrain_draws: function (files = NULL, draws = NULL, format = getOption("cmdstanr_draws_format", \n    unconstrain_variables: function (variables) \n    variable_skeleton: function (transformed_parameters = TRUE, generated_quantities = TRUE) \n  Private:\n    draws_: -1350.196 -1351.1578 -1352.7977 -1347.4477 -1344.1504 -1 ...\n    init_: NULL\n    inv_metric_: list\n    metadata_: list\n    model_methods_env_: environment\n    profiles_: NULL\n    read_csv_: function (variables = NULL, sampler_diagnostics = NULL, format = getOption("cmdstanr_draws_format", \n    return_codes_: 0 0\n    sampler_diagnostics_: 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7  ...\n    warmup_draws_: NULL\n    warmup_sampler_diagnostics_: NULL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           data  fit_args init_method_output samples max_rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         &lt;list&gt;    &lt;list&gt;             &lt;list&gt;   &lt;int&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;list[112]&gt; &lt;list[5]&gt;             [NULL]    1000     1.01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    divergent_transitions per_divergent_transitions max_treedepth</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    &lt;num&gt;                     &lt;num&gt;         &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                     0                         0             8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    no_at_max_treedepth per_at_max_treedepth run_time</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                  &lt;int&gt;                &lt;num&gt;    &lt;num&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:                   3                0.003       26</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── epinowcast model output ───────────────────────────────────────────────────── </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Groups: 1 | Timestep: day | Max delay: 20 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Observations: 40 timepoints x 40 snapshots </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max date: 2021-08-22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   obs                :     650 x 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   new_confirm        :     610 x 11 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   latest             :      40 x 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   missing_reference  :      40 x 6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   reporting_triangle :      40 x 22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metareference      :      40 x 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metareport         :      59 x 12 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metadelay          :      20 x 5 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   priors : 14 x 6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fit : CmdStanMCMC </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   data : list(112) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   fit_args : list(5) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   init_method_output : NULL </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Model fit: </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Samples: 1,000 | Max Rhat: 1.01 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Divergent transitions: 0 (0%) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Max treedepth: 8 (3 at max, 0.3%) </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Run time: 26 secs </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the preprocessed observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"preprocessed_observations"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                    obs          new_confirm              latest</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;list&gt;               &lt;list&gt;              &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[650x9]&gt; &lt;data.table[610x11]&gt; &lt;data.table[40x10]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     missing_reference  reporting_triangle      metareference</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                &lt;list&gt;              &lt;list&gt;             &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[40x6]&gt; &lt;data.table[40x22]&gt; &lt;data.table[40x9]&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             metareport          metadelay max_delay  time snapshots     by</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                 &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: &lt;data.table[59x12]&gt; &lt;data.table[20x5]&gt;        20    40        40 [NULL]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    groups   max_date timestep</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1:      1 2021-08-22      day</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ── Preprocessed nowcast data ─────────────────────────────────────────────────── </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Groups: 1 | Timestep: day | Max delay: 20 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Observations: 40 timepoints x 40 snapshots </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Max date: 2021-08-22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   obs                :     650 x 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   new_confirm        :     610 x 11 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   latest             :      40 x 10 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   missing_reference  :      40 x 6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   reporting_triangle :      40 x 22 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metareference      :      40 x 9 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metareport         :      59 x 12 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   metadelay          :      20 x 5 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Load the latest observations</span></span></span>
 <span class="r-in"><span><span class="fu">enw_example</span><span class="op">(</span>type <span class="op">=</span> <span class="st">"observations"</span><span class="op">)</span></span></span>
@@ -195,31 +201,32 @@ the file name(s) to generate these outputs (<code>type</code> = "script")</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [22] ")"                                                                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [23] ""                                                                                  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [24] "# Get latest observations for the same time period"                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "latest_obs &lt;- enw_latest_data(nat_germany_hosp)"                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "latest_obs &lt;- enw_filter_reference_dates("                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "  latest_obs, remove_days = 40, include_days = 20"                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [28] ")"                                                                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [29] ""                                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "# Preprocess observations"                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [32] ""                                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "# Reference date model"                                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [34] "reference_module &lt;- enw_reference(~1, data = pobs)"                                </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [35] ""                                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "# Report date model"                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "report_module &lt;- enw_report(~ (1 | day_of_week), data = pobs)"                     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [38] ""                                                                                  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [39] "# Fit nowcast model and produce a nowcast"                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [40] "# Note that we have reduced samples for this example to reduce runtimes"           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "nowcast &lt;- epinowcast(pobs,"                                                       </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "  reference = reference_module,"                                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "  report = report_module,"                                                         </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "  fit = enw_fit_opts("                                                             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "    save_warmup = FALSE, pp = TRUE,"                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "    chains = 2, threads_per_chain = 2,"                                            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "    iter_warmup = 500, iter_sampling = 500"                                        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "  )"                                                                               </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [49] ")"                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "latest_obs &lt;- nat_germany_hosp |&gt;"                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "  enw_obs_at_delay(max_delay = 20) |&gt;"                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "  enw_filter_reference_dates("                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "    remove_days = 40, include_days = 20"                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "  )"                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "# Preprocess observations"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "pobs &lt;- enw_preprocess_data(retro_nat_germany, max_delay = 20)"                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34] "# Reference date model"                                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "reference_module &lt;- enw_reference(~1, data = pobs)"                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [37] "# Report date model"                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [38] "report_module &lt;- enw_report(~ (1 | day_of_week), data = pobs)"                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [39] ""                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [40] "# Fit nowcast model and produce a nowcast"                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [41] "# Note that we have reduced samples for this example to reduce runtimes"           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [42] "nowcast &lt;- epinowcast(pobs,"                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [43] "  reference = reference_module,"                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [44] "  report = report_module,"                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [45] "  fit = enw_fit_opts("                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [46] "    save_warmup = FALSE, pp = TRUE,"                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [47] "    chains = 2, threads_per_chain = 2,"                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [48] "    iter_warmup = 500, iter_sampling = 500"                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [49] "  )"                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [50] ")"                                                                                 </span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

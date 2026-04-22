@@ -35,6 +35,7 @@ modulus with the timestep.
 Utility functions
 [`coerce_date()`](https://package.epinowcast.org/reference/coerce_date.md),
 [`coerce_dt()`](https://package.epinowcast.org/reference/coerce_dt.md),
+[`enw_get_data()`](https://package.epinowcast.org/reference/enw_get_data.md),
 [`enw_rolling_sum()`](https://package.epinowcast.org/reference/enw_rolling_sum.md),
 [`get_internal_timestep()`](https://package.epinowcast.org/reference/get_internal_timestep.md),
 [`is.Date()`](https://package.epinowcast.org/reference/is.Date.md),

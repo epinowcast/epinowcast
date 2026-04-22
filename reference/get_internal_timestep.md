@@ -32,6 +32,7 @@ Utility functions
 [`coerce_date()`](https://package.epinowcast.org/reference/coerce_date.md),
 [`coerce_dt()`](https://package.epinowcast.org/reference/coerce_dt.md),
 [`date_to_numeric_modulus()`](https://package.epinowcast.org/reference/date_to_numeric_modulus.md),
+[`enw_get_data()`](https://package.epinowcast.org/reference/enw_get_data.md),
 [`enw_rolling_sum()`](https://package.epinowcast.org/reference/enw_rolling_sum.md),
 [`is.Date()`](https://package.epinowcast.org/reference/is.Date.md),
 [`stan_fns_as_string()`](https://package.epinowcast.org/reference/stan_fns_as_string.md)

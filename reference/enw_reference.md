@@ -82,8 +82,8 @@ Model modules
 ``` r
 # Parametric model with a lognormal distribution
 enw_reference(
- parametric = ~1, distribution = "lognormal",
- data = enw_example("preprocessed")
+  parametric = ~1, distribution = "lognormal",
+  data = enw_example("preprocessed")
 )
 #> $formula
 #> $formula$parametric
@@ -1078,14 +1078,14 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x558ab3dded48>
-#> <environment: 0x558ab3dcd100>
+#> <bytecode: 0x56497657d658>
+#> <environment: 0x56497658af20>
 #> 
 
 # Non-parametric model with a random effect per delay
 enw_reference(
- parametric = ~ 0, non_parametric = ~ 1 + (1 | delay),
- data = enw_example("preprocessed")
+  parametric = ~0, non_parametric = ~ 1 + (1 | delay),
+  data = enw_example("preprocessed")
 )
 #> ℹ The non-parametric reference date effects design matrix is sparse (>90% zeros). Consider using `sparse_design = TRUE` in `enw_fit_opts()` to potentially reduce memory usage and computation time.
 #> $formula
@@ -3703,14 +3703,14 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x558ab3dded48>
-#> <environment: 0x558ab08a0ac0>
+#> <bytecode: 0x56497657d658>
+#> <environment: 0x564976a71f58>
 #> 
 
 # Combined parametric and non-parametric model
 enw_reference(
- parametric = ~ 1, non_parametric = ~ 0 + (1 | delay_cat),
- data = enw_example("preprocessed")
+  parametric = ~1, non_parametric = ~ 0 + (1 | delay_cat),
+  data = enw_example("preprocessed")
 )
 #> $formula
 #> $formula$parametric
@@ -4719,7 +4719,7 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x558ab3dded48>
-#> <environment: 0x558abaac3298>
+#> <bytecode: 0x56497657d658>
+#> <environment: 0x56497e26d720>
 #> 
 ```

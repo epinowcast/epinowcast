@@ -20,7 +20,7 @@ enw_add_metaobs_features(
 - metaobs:
 
   Raw data, coercible via
-  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html).
+  [`data.table::as.data.table()`](https://rdrr.io/pkg/data.table/man/as.data.table.html).
   Coerced object must have [Dates](https://rdrr.io/r/base/Dates.html)
   column corresponding to `datecol` name.
 
@@ -77,6 +77,7 @@ Preprocessing functions
 [`enw_extend_date()`](https://package.epinowcast.org/reference/enw_extend_date.md),
 [`enw_filter_delay()`](https://package.epinowcast.org/reference/enw_filter_delay.md),
 [`enw_filter_reference_dates()`](https://package.epinowcast.org/reference/enw_filter_reference_dates.md),
+[`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/reference/enw_filter_reference_dates_by_report_start.md),
 [`enw_filter_report_dates()`](https://package.epinowcast.org/reference/enw_filter_report_dates.md),
 [`enw_flag_observed_observations()`](https://package.epinowcast.org/reference/enw_flag_observed_observations.md),
 [`enw_impute_na_observations()`](https://package.epinowcast.org/reference/enw_impute_na_observations.md),
@@ -84,9 +85,11 @@ Preprocessing functions
 [`enw_metadata()`](https://package.epinowcast.org/reference/enw_metadata.md),
 [`enw_metadata_delay()`](https://package.epinowcast.org/reference/enw_metadata_delay.md),
 [`enw_missing_reference()`](https://package.epinowcast.org/reference/enw_missing_reference.md),
+[`enw_obs_at_delay()`](https://package.epinowcast.org/reference/enw_obs_at_delay.md),
 [`enw_preprocess_data()`](https://package.epinowcast.org/reference/enw_preprocess_data.md),
 [`enw_reporting_triangle()`](https://package.epinowcast.org/reference/enw_reporting_triangle.md),
-[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/reference/enw_reporting_triangle_to_long.md)
+[`enw_reporting_triangle_to_long()`](https://package.epinowcast.org/reference/enw_reporting_triangle_to_long.md),
+[`enw_retrospective()`](https://package.epinowcast.org/reference/enw_retrospective.md)
 
 ## Examples
 

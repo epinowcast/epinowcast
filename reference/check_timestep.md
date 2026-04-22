@@ -24,7 +24,7 @@ check_timestep(
 - obs:
 
   Any of the types supported by
-  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html).
+  [`data.table::as.data.table()`](https://rdrr.io/pkg/data.table/man/as.data.table.html).
 
 - date_var:
 

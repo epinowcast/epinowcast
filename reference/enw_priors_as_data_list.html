@@ -19,7 +19,7 @@ their standard usage within modelling code.'><meta property="og:image" content="
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,6 +43,8 @@ their standard usage within modelling code.'><meta property="og:image" content="
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -78,10 +80,11 @@ their standard usage within modelling code.</p>
 
 
 <dl><dt id="arg-priors">priors<a class="anchor" aria-label="anchor" href="#arg-priors"></a></dt>
-<dd><p>A <code>data.frame</code> with the following variables:
-<code>variable</code>, <code>mean</code>, <code>sd</code> describing normal priors. Priors in the
-appropriate format are returned by <code><a href="enw_reference.html">enw_reference()</a></code> as well as by
-other similar model specification functions.</p></dd>
+<dd><p>A <code>data.frame</code> with columns <code>variable</code>,
+<code>mean</code>, and <code>sd</code> describing normal priors.
+Default priors in the appropriate format are returned by
+the <code>$priors</code> element of <code><a href="enw_reference.html">enw_reference()</a></code> and other model
+module functions.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -1,5 +1,168 @@
 # Changelog
 
+## epinowcast 0.6.0
+
+This release prepares the package for CRAN submission and introduces new
+methods for inspecting `epinowcast` and preprocessed data objects,
+including [`print()`](https://rdrr.io/r/base/print.html),
+[`summary()`](https://rdrr.io/r/base/summary.html),
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) and an
+[`enw_get_data()`](https://package.epinowcast.org/reference/enw_get_data.md)
+accessor. The getting started vignette has been restructured around a
+default-first flow that fits and compares three models — the default
+Poisson model and two alternatives with weekly growth rate, day-of-week
+effects, negative binomial observations, and contrasting parametric
+versus non-parametric delay specifications — to show that `epinowcast`
+is a modelling toolkit rather than a single model. A new inference
+methods vignette compares NUTS sampling, standalone pathfinder, and
+pathfinder used to initialise NUTS (seeding HMC from a pathfinder fit to
+speed up warmup), and a new data visualisation vignette demonstrates the
+[`plot.enw_preprocess_data()`](https://package.epinowcast.org/reference/plot.enw_preprocess_data.md)
+method. Support for `max_delay = 1` means `epinowcast` can now be used
+for purely retrospective fitting of count data (e.g., Rt estimation from
+fully reported counts) without any nowcasting, alongside fixes to
+reference-date filtering.
+
+Full details on changes in this release can be found in the following
+sections or in the [GitHub release
+notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.6.0).
+
+### Contributors
+
+[@seabbs](https://github.com/seabbs) and
+[@sbfnk](https://github.com/sbfnk) contributed code to this release.
+
+[@seabbs](https://github.com/seabbs) reviewed pull requests for this
+release.
+
+[@seabbs](https://github.com/seabbs), [@sbfnk](https://github.com/sbfnk)
+and [@Bisaloo](https://github.com/Bisaloo) reported bugs, made
+suggestions, or contributed to discussions that led to improvements in
+this release.
+
+### Breaking changes
+
+- Moved `scoringutils` from `Imports` to `Suggests` using delayed S3
+  method registration via `@exportS3Method`. Users now need to load
+  `scoringutils` explicitly to use
+  [`as_forecast_sample()`](https://epiforecasts.io/scoringutils/reference/as_forecast_sample.html).
+  See [\#741](https://github.com/epinowcast/epinowcast/issues/741).
+- [`enw_add_incidence()`](https://package.epinowcast.org/reference/enw_add_incidence.md)
+  no longer filters reference dates that precede the earliest report
+  date. Users should now call
+  [`enw_filter_reference_dates_by_report_start()`](https://package.epinowcast.org/reference/enw_filter_reference_dates_by_report_start.md)
+  before
+  [`enw_add_incidence()`](https://package.epinowcast.org/reference/enw_add_incidence.md)
+  to reproduce the previous behaviour. All internal call sites have been
+  updated. See
+  [\#709](https://github.com/epinowcast/epinowcast/issues/709) by
+  [@seabbs](https://github.com/seabbs).
+
+### Package
+
+- Prepared the package for CRAN submission, including moving `cmdstanr`
+  from `Imports` to `Suggests`, removing the `Remotes` entry for
+  `scoringutils`, fixing URLs and removing the CmdStan
+  `SystemRequirements`. See
+  [\#736](https://github.com/epinowcast/epinowcast/issues/736) and
+  [\#747](https://github.com/epinowcast/epinowcast/issues/747).
+- Updated install instructions to treat `cmdstanr` as an optional
+  dependency. See
+  [\#740](https://github.com/epinowcast/epinowcast/issues/740).
+- Added
+  [`enw_get_data()`](https://package.epinowcast.org/reference/enw_get_data.md)
+  accessor along with [`print()`](https://rdrr.io/r/base/print.html) and
+  [`summary()`](https://rdrr.io/r/base/summary.html) methods for
+  `epinowcast` objects. See
+  [\#750](https://github.com/epinowcast/epinowcast/issues/750).
+- Improved the `epinowcast`
+  [`print()`](https://rdrr.io/r/base/print.html) method to show model
+  objects and the maximum tree depth reached during sampling. See
+  [\#755](https://github.com/epinowcast/epinowcast/issues/755).
+- Added a
+  [`plot.enw_preprocess_data()`](https://package.epinowcast.org/reference/plot.enw_preprocess_data.md)
+  method for quickly visualising preprocessed data. See
+  [\#757](https://github.com/epinowcast/epinowcast/issues/757).
+- Added
+  [`enw_obs_at_delay()`](https://package.epinowcast.org/reference/enw_obs_at_delay.md)
+  helper function for extracting observations at a given delay. See
+  [\#707](https://github.com/epinowcast/epinowcast/issues/707).
+- Solved linting issues (implicit returns) in multiple files and fixed
+  remaining violations in `R/model-tools.R`. See
+  [\#715](https://github.com/epinowcast/epinowcast/issues/715) and
+  [\#717](https://github.com/epinowcast/epinowcast/issues/717).
+
+### Model
+
+- Optimised Stan code for efficiency by inlining intermediate variables
+  and removing unnecessary loop guards. See
+  [\#696](https://github.com/epinowcast/epinowcast/issues/696) by
+  [@seabbs](https://github.com/seabbs).
+- Added support for `max_delay = 1` so that `epinowcast` can be used for
+  retrospective Rt estimation without nowcasting. See
+  [\#759](https://github.com/epinowcast/epinowcast/issues/759) closing
+  [\#742](https://github.com/epinowcast/epinowcast/issues/742).
+
+### Documentation
+
+- Restructured the getting started vignette around a default-first flow
+  that fits and overlays three models: the default Poisson model with
+  all defaults, and two alternatives with a weekly growth rate
+  expectation, day-of-week report effects and negative binomial
+  observations that differ in their delay specification (parametric
+  lognormal with day-of-week effects versus a non-parametric intercept
+  plus random walk over delay weeks). A new data visualisation section
+  precedes the modelling to motivate model choices. See
+  [\#749](https://github.com/epinowcast/epinowcast/issues/749).
+- Added an inference methods comparison vignette covering NUTS sampling,
+  standalone pathfinder, and pathfinder used to initialise NUTS (a
+  warmup-speedup pattern where the pathfinder fit seeds HMC), with
+  runtime, diagnostic, and posterior parameter comparisons across two
+  model specifications; linked from the features table and pkgdown
+  navigation. See
+  [\#751](https://github.com/epinowcast/epinowcast/issues/751) and
+  [\#777](https://github.com/epinowcast/epinowcast/issues/777).
+- Added a data visualisation vignette demonstrating the new
+  [`plot.enw_preprocess_data()`](https://package.epinowcast.org/reference/plot.enw_preprocess_data.md)
+  method and its five plot types (observations, cumulative empirical
+  reporting delay, delay fraction heatmap, delay quantiles, and stacked
+  delay timeseries). See
+  [\#757](https://github.com/epinowcast/epinowcast/issues/757).
+- Updated the single-timeseries Rt estimation and main `epinowcast`
+  vignettes. See
+  [\#723](https://github.com/epinowcast/epinowcast/issues/723) and
+  [\#744](https://github.com/epinowcast/epinowcast/issues/744).
+- Clarified how to specify custom priors and updated vignette source
+  files to include prior specification guidance. See
+  [\#710](https://github.com/epinowcast/epinowcast/issues/710) and
+  [\#721](https://github.com/epinowcast/epinowcast/issues/721).
+- Refactored vignette headers to use a shared YAML configuration. See
+  [\#711](https://github.com/epinowcast/epinowcast/issues/711).
+- Fixed a citation formatting error. See
+  [\#705](https://github.com/epinowcast/epinowcast/issues/705).
+- Updated the README. See
+  [\#738](https://github.com/epinowcast/epinowcast/issues/738),
+  [\#746](https://github.com/epinowcast/epinowcast/issues/746) and
+  [\#771](https://github.com/epinowcast/epinowcast/issues/771).
+
+### Infrastructure
+
+- Added a full package linting GitHub Action. See
+  [\#704](https://github.com/epinowcast/epinowcast/issues/704).
+- Changed benchmarking to be comment-triggered and fixed the benchmarks
+  comment workflow skipping correctly. See
+  [\#708](https://github.com/epinowcast/epinowcast/issues/708) and
+  [\#720](https://github.com/epinowcast/epinowcast/issues/720).
+- Fixed merge queue concurrency groups cancelling each other. See
+  [\#713](https://github.com/epinowcast/epinowcast/issues/713).
+- Bumped GitHub Actions and Docker action dependencies. See
+  [\#714](https://github.com/epinowcast/epinowcast/issues/714),
+  [\#730](https://github.com/epinowcast/epinowcast/issues/730),
+  [\#731](https://github.com/epinowcast/epinowcast/issues/731),
+  [\#732](https://github.com/epinowcast/epinowcast/issues/732),
+  [\#733](https://github.com/epinowcast/epinowcast/issues/733) and
+  [\#760](https://github.com/epinowcast/epinowcast/issues/760).
+
 ## epinowcast 0.5.0
 
 This release includes minor improvements to the package infrastructure
@@ -1026,8 +1189,10 @@ this release.
   [@seabbs](https://github.com/seabbs) and
   [@adrian-lison](https://github.com/adrian-lison).
 - Added more non-default linters in `.lintr` configuration file. This
-  file is used when `lintr::lint_package()` is run or in the new
-  `lint-changed-files.yaml` GitHub Actions workflow. See
+  file is used when
+  [`lintr::lint_package()`](https://lintr.r-lib.org/reference/lint.html)
+  is run or in the new `lint-changed-files.yaml` GitHub Actions
+  workflow. See
   [\#220](https://github.com/epinowcast/epinowcast/issues/220) by
   [@Bisaloo](https://github.com/Bisaloo) and reviewed by
   [@pearsonca](https://github.com/pearsonca) and
@@ -1237,7 +1402,7 @@ effective reproduction number), and convolution-based latent reporting
 delays (enabling the modelling of both directly observed and unobserved
 delays as well as partial ascertainment). Much of the methodology used
 in these extensions is based on [work done by Adrian
-Lison](https://github.com/adrian-lison/nowcast-transmission) and is
+Lison](https://github.com/adrian-lison/generative-nowcasting) and is
 currently being evaluated.
 
 On top of model extensions this release also adds a range of quality of
@@ -1255,7 +1420,7 @@ More core development is needed to improve post-processing,
 pre-processing, documentation coverage, and evaluate optimal
 configurations in different settings) please see our [community
 site](https://community.epinowcast.org/), [contributing
-guide](https://github.com/epinowcast/epinowcast/blob/main/CONTRIBUTING.md),
+guide](https://github.com/epinowcast/.github/blob/main/CONTRIBUTING.md),
 and list of [issues/proposed
 features](https://github.com/epinowcast/epinowcast/issues) if interested
 in being involved (any scale of contribution is warmly welcomed
@@ -1310,7 +1475,7 @@ following sections.
   of internal rewrite, introduces
   [`coerce_date()`](https://package.epinowcast.org/reference/coerce_date.md)
   to `R/utils.R`, which wraps
-  [`data.table::as.IDate()`](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html)
+  [`data.table::as.IDate()`](https://rdrr.io/pkg/data.table/man/IDateTime.html)
   with error handling. See
   [\#151](https://github.com/epinowcast/epinowcast/issues/151) by
   [@pearsonca](https://github.com/pearsonca).

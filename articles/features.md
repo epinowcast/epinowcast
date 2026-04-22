@@ -12,16 +12,20 @@ function-specific details, see `?function_name`.
 
 ## Core Capabilities
 
-| Capability                | What it enables                            | Where to learn more                         |
-|---------------------------|--------------------------------------------|---------------------------------------------|
-| **Flexible timesteps**    | Daily, weekly, or custom aggregation       | [Different timesteps](#timesteps)           |
-| **Multi-stratification**  | Age groups, regions, pathogens             | [Stratification](#stratification)           |
-| **Mixed delay models**    | Parametric + non-parametric delays         | [Delay modelling](#delay-modelling)         |
-| **Report date effects**   | Day-of-week patterns, structural reporting | [Report date effects](#report-date-effects) |
-| **Latent process models** | Growth rates, renewal processes            | [Latent models](#latent-models)             |
-| **Hierarchical effects**  | Random effects, random walks               | [Hierarchical structure](#hierarchical)     |
-| **Missing data handling** | Missing reference dates                    | [Missing data](#missing-data)               |
-| **Model comparison**      | LOO-CV, posterior predictive checks        | [Model evaluation](#model-evaluation)       |
+| Capability                | What it enables                                             | Where to learn more                                                                                  |
+|---------------------------|-------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| **Flexible timesteps**    | Daily, weekly, or custom aggregation                        | [Different timesteps](#timesteps)                                                                    |
+| **Multi-stratification**  | Age groups, regions, pathogens                              | [Stratification](#stratification)                                                                    |
+| **Mixed delay models**    | Parametric + non-parametric delays                          | [Delay modelling](#delay-modelling)                                                                  |
+| **Report date effects**   | Day-of-week patterns, structural reporting                  | [Report date effects](#report-date-effects)                                                          |
+| **Latent process models** | Growth rates, renewal processes                             | [Latent models](#latent-models)                                                                      |
+| **Hierarchical effects**  | Random effects, random walks                                | [Hierarchical structure](#hierarchical)                                                              |
+| **Missing data handling** | Missing reference dates                                     | [Missing data](#missing-data)                                                                        |
+| **Retrospective Rt**      | Rt estimation from finalised counts without delay modelling | [Rt estimation vignette](https://package.epinowcast.org/articles/single-timeseries-rt-estimation.md) |
+| **Custom priors**         | Inspect and replace default priors                          | [Prior specification](#priors)                                                                       |
+| **Model comparison**      | LOO-CV, posterior predictive checks                         | [Model evaluation](#model-evaluation)                                                                |
+| **Inference methods**     | NUTS, pathfinder, pathfinder-initialised NUTS               | [Inference methods vignette](https://package.epinowcast.org/articles/inference-methods.md)           |
+| **Data visualisation**    | Inspect preprocessing and nowcast output                    | [Visualisation](#visualisation)                                                                      |
 
 ## Different Timesteps and Timespans
 
@@ -183,6 +187,27 @@ study](https://package.epinowcast.org/articles/germany-age-stratified-nowcasting
 uses random effects for age groups. All model modules support the same
 formula interface.
 
+## Prior Specification
+
+Each model module defines default normal priors which can be inspected
+and customised. To set custom priors, pass a `data.frame` with columns
+`variable`, `mean`, and `sd` to the `priors` argument of
+[`epinowcast()`](https://package.epinowcast.org/reference/epinowcast.md).
+
+| Task                    | How to do it                              | Details                           |
+|-------------------------|-------------------------------------------|-----------------------------------|
+| Inspect module priors   | `enw_reference(data = pobs)$priors`       | Each module returns its defaults  |
+| Replace specific priors | `enw_replace_priors(priors, custom)`      | Merge custom values into defaults |
+| Pass to model           | `epinowcast(..., priors = custom_priors)` | Overrides matching defaults       |
+
+**Key functions:**
+
+- [`enw_replace_priors()`](https://package.epinowcast.org/reference/enw_replace_priors.md):
+  Merge custom priors with defaults
+- See
+  [`?epinowcast`](https://package.epinowcast.org/reference/epinowcast.md)
+  for a worked example
+
 ## Missing Data Handling
 
 Handle two types of missing data: missing reference dates and missing
@@ -252,6 +277,36 @@ Assess model fit and compare models.
 vignette](https://package.epinowcast.org/articles/single-timeseries-rt-estimation.md)
 shows model scoring and evaluation.
 
+## Visualisation
+
+[`plot()`](https://rdrr.io/r/graphics/plot.default.html) methods are
+available for both preprocessed data and nowcast output.
+
+| Object                | Plot types                                                                               | What it shows                                     |
+|-----------------------|------------------------------------------------------------------------------------------|---------------------------------------------------|
+| `enw_preprocess_data` | `"obs"`, `"delay_cumulative"`, `"delay_fraction"`, `"delay_quantiles"`, `"delay_counts"` | Reporting patterns and delay structure            |
+| `epinowcast`          | `"nowcast"`, `"posterior_prediction"`                                                    | Nowcast estimates and posterior predictive checks |
+
+**Key functions:**
+
+- [`plot()`](https://rdrr.io/r/graphics/plot.default.html): S3 methods
+  for both object types
+- [`enw_plot_delay_cumulative()`](https://package.epinowcast.org/reference/enw_plot_delay_cumulative.md),
+  [`enw_plot_delay_fraction()`](https://package.epinowcast.org/reference/enw_plot_delay_fraction.md),
+  [`enw_plot_delay_quantiles()`](https://package.epinowcast.org/reference/enw_plot_delay_quantiles.md),
+  [`enw_plot_delay_counts()`](https://package.epinowcast.org/reference/enw_plot_delay_counts.md):
+  Individual plot functions for preprocessed data
+- [`enw_plot_nowcast_quantiles()`](https://package.epinowcast.org/reference/enw_plot_nowcast_quantiles.md),
+  [`enw_plot_pp_quantiles()`](https://package.epinowcast.org/reference/enw_plot_pp_quantiles.md):
+  Individual plot functions for model output
+- [`enw_delay_categories()`](https://package.epinowcast.org/reference/enw_delay_categories.md),
+  [`enw_delay_quantiles()`](https://package.epinowcast.org/reference/enw_delay_quantiles.md):
+  Helper functions for computing delay summaries
+
+**Where to see it:** The [visualising preprocessed data
+vignette](https://package.epinowcast.org/articles/preprocess-visualisation.md)
+demonstrates all preprocessing plot types.
+
 ## Computational Options
 
 Control computational efficiency and parallelisation.
@@ -273,7 +328,10 @@ Control computational efficiency and parallelisation.
   [`?enw_fit_opts`](https://package.epinowcast.org/reference/enw_fit_opts.md)
   for details
 
-**Where to see it:** See [Stan help
+**Where to see it:** The [inference methods
+vignette](https://package.epinowcast.org/articles/inference-methods.md)
+compares NUTS, pathfinder, and pathfinder-initialised NUTS with runtime
+and posterior comparisons. See also the [Stan help
 vignette](https://package.epinowcast.org/articles/stan-help.md) for
 guidance on computational settings.
 
@@ -301,14 +359,15 @@ interest. If you need any of these capabilities, please reach out via
 our [community forum](https://community.epinowcast.org/) or [GitHub
 discussions](https://github.com/epinowcast/epinowcast/discussions).
 
-| Feature                         | Status        | Notes                                                                      |
-|---------------------------------|---------------|----------------------------------------------------------------------------|
-| Non-count data                  | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods |
-| Negative updates                | Not supported | Cannot handle reporting corrections that reduce previously reported counts |
-| Delay-only or count-only models | Not supported | Currently requires joint modelling of delay and counts                     |
-| Susceptibility depletion        | Not supported | Renewal process assumes constant susceptibility                            |
-| Uncertain generation time       | Not supported | Generation time distribution treated as fixed and known                    |
-| Forecasting examples            | Missing       | Functionality exists but lacks worked examples in vignettes                |
+| Feature                         | Status        | Notes                                                                                                                                                                                                                                                                                     |
+|---------------------------------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Non-count data                  | Not supported | Currently limited to count data with Poisson/negative binomial likelihoods                                                                                                                                                                                                                |
+| Negative updates                | Not supported | Cannot handle reporting corrections that reduce previously reported counts                                                                                                                                                                                                                |
+| Delay-only models               | Not supported | Currently requires count data alongside delay modelling                                                                                                                                                                                                                                   |
+| **Retrospective Rt estimation** | Supported     | Use `max_delay = 1` or [`enw_retrospective()`](https://package.epinowcast.org/reference/enw_retrospective.md) to skip delay modelling and estimate Rt from finalised counts. See the [Rt estimation vignette](https://package.epinowcast.org/articles/single-timeseries-rt-estimation.md) |
+| Susceptibility depletion        | Not supported | Renewal process assumes constant susceptibility                                                                                                                                                                                                                                           |
+| Uncertain generation time       | Not supported | Generation time distribution treated as fixed and known                                                                                                                                                                                                                                   |
+| Forecasting examples            | Missing       | Functionality exists but lacks worked examples in vignettes                                                                                                                                                                                                                               |
 
 **Get involved:** We welcome contributions and discussions about
 extending the package to support these features. See our [community
@@ -328,6 +387,9 @@ forum](https://community.epinowcast.org/) for ongoing discussions.
 - [Rt estimation
   vignette](https://package.epinowcast.org/articles/single-timeseries-rt-estimation.md):
   Renewal process models
+- [Visualising preprocessed
+  data](https://package.epinowcast.org/articles/preprocess-visualisation.md):
+  Explore delay structure before fitting
 - [Distributions
   vignette](https://package.epinowcast.org/articles/distributions.md):
   Parametric distributions

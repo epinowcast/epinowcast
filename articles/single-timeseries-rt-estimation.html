@@ -38,7 +38,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">epinowcast</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Released version">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -66,6 +66,8 @@
     <li><a class="dropdown-item" href="../articles/germany-age-stratified-nowcasting.html">Hierarchical nowcasting of age stratified COVID-19 hospitalisations in Germany</a></li>
     <li><a class="dropdown-item" href="../articles/single-timeseries-rt-estimation.html">Estimating the effective reproduction number in real-time for a single timeseries with reporting delays</a></li>
     <li><h6 class="dropdown-header" data-toc-skip>Working with epinowcast</h6></li>
+    <li><a class="dropdown-item" href="../articles/inference-methods.html">Comparing inference methods</a></li>
+    <li><a class="dropdown-item" href="../articles/preprocess-visualisation.html">Visualising preprocessed data</a></li>
     <li><a class="dropdown-item" href="../articles/stan-help.html">Resources to help with model fitting using Stan</a></li>
   </ul>
 </li>
@@ -123,9 +125,9 @@
 <ol style="list-style-type: decimal">
 <li>Visualise and contextualise the data this case study uses (COVID-19 hospitalisations in Germany);</li>
 <li>Specify a joint model of the effective reproduction number, the delay from infection to hospitalisation and the delay from hospitalisation to report;</li>
-<li>Fit this model to both the data that would have been available in real-time, and retrospectively;</li>
+<li>Fit this model to the data available in real-time, retrospectively with delay estimation, and retrospectively without delay estimation;</li>
 <li>Visualise the nowcast from the real-time data in comparison to the data that was ultimately observed;</li>
-<li>Compare real-time and retrospective reproduction number estimates and delay distribution estimates;</li>
+<li>Compare real-time, retrospective, and retrospective (no delay) reproduction number estimates and delay distribution estimates;</li>
 <li>Outline the limitations and strengths of this approach and highlight areas where it can be extended.</li>
 </ol>
 </div>
@@ -136,7 +138,7 @@
 <div class="section level2">
 <h2 id="getting-setup">Getting setup<a class="anchor" aria-label="anchor" href="#getting-setup"></a>
 </h2>
-<p>See the <a href="https://epiforecasts.io/epinowcast/" class="external-link">package documentation</a> for guidance on installing the package and getting setup with <code>cmdstanr</code> (the backend used here for fitting models).</p>
+<p>See the <a href="https://package.epinowcast.org/">package documentation</a> for guidance on installing the package and getting setup with <code>cmdstanr</code> (the backend used here for fitting models).</p>
 <p>As well as the <code>epinowcast</code> package we will use the following packages in this vignette.</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://package.epinowcast.org">epinowcast</a></span><span class="op">)</span></span>
@@ -210,6 +212,7 @@
 <p>The package also provides a range of tools to convert data from line list, incidence, or other common formats into the required format (see <a href="https://package.epinowcast.org/dev/reference/index.html#data-converters">Data converters</a>). For example we could convert the data to a individual case linelist,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">germany_covid19_hosp_linelist</span> <span class="op">&lt;-</span> <span class="va">germany_covid19_hosp</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_add_incidence.html">enw_add_incidence</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_incidence_to_linelist.html">enw_incidence_to_linelist</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
@@ -238,7 +241,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">incidence_from_linelist</span></span>
-<span><span class="co">#&gt; Key: &lt;age_group, location&gt;</span></span>
+<span><span class="co">#&gt; Key: &lt;age_group, location, reference_date, report_date&gt;</span></span>
 <span><span class="co">#&gt;          age_group location report_date reference_date new_confirm confirm</span></span>
 <span><span class="co">#&gt;             &lt;fctr&gt;   &lt;fctr&gt;      &lt;IDat&gt;         &lt;IDat&gt;       &lt;int&gt;   &lt;int&gt;</span></span>
 <span><span class="co">#&gt;       1:     00-04    DE-BY  2021-04-06           &lt;NA&gt;           0       0</span></span>
@@ -278,6 +281,7 @@
 <span>  <span class="fu"><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates</a></span><span class="op">(</span>latest_date <span class="op">=</span> <span class="st">"2021-08-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates</a></span><span class="op">(</span>earliest_date <span class="op">=</span> <span class="st">"2021-05-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_complete_dates.html">enw_complete_dates</a></span><span class="op">(</span>missing_reference <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/enw_filter_reference_dates_by_report_start.html">enw_filter_reference_dates_by_report_start</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/enw_add_incidence.html">enw_add_incidence</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details><p>Here we have also used <code><a href="../reference/enw_complete_dates.html">enw_complete_dates()</a></code> to make sure that we have complete data for all dates between the earliest and latest dates. We have also used <code><a href="../reference/enw_add_incidence.html">enw_add_incidence()</a></code> to add the incidence column to the data.</p>
 <p>Next we split the data into two parts, the data that was available at the time and that will be used to fit the model (<code>rt_nat_germany</code>) and the data that was available retrospectively about the same time period will be used to evaluate the model (<code>retro_nat_germany</code>). We again do this using the <code><a href="../reference/enw_filter_report_dates.html">enw_filter_report_dates()</a></code> and <code><a href="../reference/enw_filter_reference_dates.html">enw_filter_reference_dates()</a></code> functions as follows:</p>
@@ -321,23 +325,24 @@
 <span><span class="co">#&gt; 3873:  2021-07-30     2021-07-01      57           0    29</span></span>
 <span><span class="co">#&gt; 3874:  2021-07-31     2021-07-01      57           0    30</span></span>
 <span><span class="co">#&gt; 3875:  2021-08-01     2021-07-01      57           0    31</span></span></code></pre></div>
-</details><p>Finally we can create a dataset that contains the latest data available for each reference date. We do this using the <code><a href="../reference/enw_latest_data.html">enw_latest_data()</a></code> function,</p>
+</details><p>Finally we can create a dataset that contains the latest data available for each reference date at the maximum modelled delay.
+We do this using the <code><a href="../reference/enw_obs_at_delay.html">enw_obs_at_delay()</a></code> function, which combines <code><a href="../reference/enw_filter_delay.html">enw_filter_delay()</a></code> and <code><a href="../reference/enw_latest_data.html">enw_latest_data()</a></code>,</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">latest_germany_hosp</span> <span class="op">&lt;-</span> <span class="va">retro_germany</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="../reference/enw_obs_at_delay.html">enw_obs_at_delay</a></span><span class="op">(</span>max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">latest_germany_hosp</span>, n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="co">#&gt;     reference_date report_date confirm new_confirm delay</span></span>
-<span><span class="co">#&gt;             &lt;IDat&gt;      &lt;IDat&gt;   &lt;int&gt;       &lt;int&gt; &lt;int&gt;</span></span>
-<span><span class="co">#&gt;  1:     2021-05-01  2021-08-01    1007           0    92</span></span>
-<span><span class="co">#&gt;  2:     2021-05-02  2021-08-01     781           0    91</span></span>
-<span><span class="co">#&gt;  3:     2021-05-03  2021-08-01     467           0    90</span></span>
-<span><span class="co">#&gt;  4:     2021-05-04  2021-08-01     823           0    89</span></span>
-<span><span class="co">#&gt;  5:     2021-05-05  2021-08-01    1028           0    88</span></span>
-<span><span class="co">#&gt;  6:     2021-05-06  2021-08-01    1016           0    87</span></span>
-<span><span class="co">#&gt;  7:     2021-05-07  2021-08-01     892           0    86</span></span>
-<span><span class="co">#&gt;  8:     2021-05-08  2021-08-01     822           0    85</span></span>
-<span><span class="co">#&gt;  9:     2021-05-09  2021-08-01     561           0    84</span></span>
-<span><span class="co">#&gt; 10:     2021-05-10  2021-08-01     364           0    83</span></span></code></pre></div>
+<span><span class="co">#&gt;     reference_date .group report_date confirm new_confirm delay</span></span>
+<span><span class="co">#&gt;             &lt;IDat&gt;  &lt;num&gt;      &lt;IDat&gt;   &lt;int&gt;       &lt;int&gt; &lt;int&gt;</span></span>
+<span><span class="co">#&gt;  1:     2021-05-01      1  2021-05-30     868           1    29</span></span>
+<span><span class="co">#&gt;  2:     2021-05-02      1  2021-05-31     673           0    29</span></span>
+<span><span class="co">#&gt;  3:     2021-05-03      1  2021-06-01     390           1    29</span></span>
+<span><span class="co">#&gt;  4:     2021-05-04      1  2021-06-02     735           7    29</span></span>
+<span><span class="co">#&gt;  5:     2021-05-05      1  2021-06-03     894           2    29</span></span>
+<span><span class="co">#&gt;  6:     2021-05-06      1  2021-06-04     889           2    29</span></span>
+<span><span class="co">#&gt;  7:     2021-05-07      1  2021-06-05     803           0    29</span></span>
+<span><span class="co">#&gt;  8:     2021-05-08      1  2021-06-06     721           0    29</span></span>
+<span><span class="co">#&gt;  9:     2021-05-09      1  2021-06-07     491           0    29</span></span>
+<span><span class="co">#&gt; 10:     2021-05-10      1  2021-06-08     308           0    29</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -345,9 +350,9 @@
 </h3>
 <p>Before we define, or fit, a model we should visualise the data to get an idea of the trends in the data and its reporting structure. There is currently no function in <code>epinowcast</code> to visualise the data, but we can use the <code>ggplot2</code> package to do this manually as follows,</p>
 <details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
+<code class="sourceCode R"><span><span class="va">gh_vis_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/copy.html" class="external-link">copy</a></span><span class="op">(</span><span class="va">retro_germany</span><span class="op">)</span><span class="op">[</span></span>
 <span>  ,</span>
-<span>  <span class="va">report_date</span> <span class="op">:=</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fcase.html" class="external-link">fcase</a></span><span class="op">(</span></span>
+<span>  <span class="va">report_date</span> <span class="op">:=</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fcase.html" class="external-link">fcase</a></span><span class="op">(</span></span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-05-15"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-05-15"</span><span class="op">)</span>,</span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span>,</span>
 <span>    <span class="va">report_date</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-15"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-15"</span><span class="op">)</span>,</span>
@@ -512,7 +517,8 @@
 <div class="section level4">
 <h4 id="defining-the-delay-distribution">Defining the delay distribution<a class="anchor" aria-label="anchor" href="#defining-the-delay-distribution"></a>
 </h4>
-<p>Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).</p>
+<p>Given case counts both by date of reference and by date of report, we can estimate the reporting delay distribution directly and jointly with the underlying process model, rather than relying on external estimates from other sources (though we may want to account for external information in our priors).
+See <code><a href="../reference/epinowcast.html">?epinowcast</a></code> for details on inspecting and customising priors.</p>
 <p>We consider the reporting delay to follow a <span class="math inline">\(\text{LogNormal} \left(\mu^d, \sigma^d \right)\)</span> distribution, with parameters</p>
 <p><span class="math display">\[\begin{align}
   \mu^d &amp;\sim \text{Normal} \left(0, 1 \right) \\
@@ -560,34 +566,77 @@
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rt_germany_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">rt_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">rt_germany_pobs</span></span>
-<span><span class="co">#&gt;                     obs          new_confirm             latest</span></span>
-<span><span class="co">#&gt;                  &lt;list&gt;               &lt;list&gt;             &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[1425x8]&gt; &lt;data.table[1425x9]&gt; &lt;data.table[62x8]&gt;</span></span>
-<span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference          metareport</span></span>
-<span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;              &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[0x4]&gt; &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt; &lt;data.table[91x10]&gt;</span></span>
-<span><span class="co">#&gt;             metadelay max_delay  time snapshots     by groups   max_date</span></span>
-<span><span class="co">#&gt;                &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;  &lt;int&gt;     &lt;IDat&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[30x5]&gt;        30    62        62 [NULL]      1 2021-07-01</span></span>
-<span><span class="co">#&gt;    timestep</span></span>
-<span><span class="co">#&gt;      &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:      day</span></span></code></pre></div>
-</details><p>and do the same for the retrospective data</p>
+<span><span class="co">#&gt; ── Preprocessed nowcast data ─────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt; Groups: 1 | Timestep: day | Max delay: 30 </span></span>
+<span><span class="co">#&gt; Observations: 62 timepoints x 62 snapshots </span></span>
+<span><span class="co">#&gt; Max date: 2021-07-01 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   obs                :   1,425 x 8 </span></span>
+<span><span class="co">#&gt;   new_confirm        :   1,425 x 9 </span></span>
+<span><span class="co">#&gt;   latest             :      62 x 8 </span></span>
+<span><span class="co">#&gt;   missing_reference  :       0 x 4 </span></span>
+<span><span class="co">#&gt;   reporting_triangle :      62 x 32 </span></span>
+<span><span class="co">#&gt;   metareference      :      62 x 8 </span></span>
+<span><span class="co">#&gt;   metareport         :      91 x 10 </span></span>
+<span><span class="co">#&gt;   metadelay          :      30 x 5</span></span></code></pre></div>
+</details><p>Individual datasets can be extracted with <code><a href="../reference/enw_get_data.html">enw_get_data()</a></code>, for example the latest observations:</p>
 <details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/enw_get_data.html">enw_get_data</a></span><span class="op">(</span><span class="va">rt_germany_pobs</span>, <span class="st">"latest"</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    reference_date report_date .group max_confirm confirm delay</span></span>
+<span><span class="co">#&gt;            &lt;IDat&gt;      &lt;IDat&gt;  &lt;num&gt;       &lt;int&gt;   &lt;int&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:     2021-05-01  2021-05-30      1         941     868    29</span></span>
+<span><span class="co">#&gt; 2:     2021-05-02  2021-05-31      1         724     673    29</span></span>
+<span><span class="co">#&gt; 3:     2021-05-03  2021-06-01      1         413     390    29</span></span>
+<span><span class="co">#&gt; 4:     2021-05-04  2021-06-02      1         773     735    29</span></span>
+<span><span class="co">#&gt; 5:     2021-05-05  2021-06-03      1         969     894    29</span></span>
+<span><span class="co">#&gt; 6:     2021-05-06  2021-06-04      1         966     889    29</span></span>
+<span><span class="co">#&gt;    cum_prop_reported prop_reported</span></span>
+<span><span class="co">#&gt;                &lt;num&gt;         &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:         0.9224230   0.001062699</span></span>
+<span><span class="co">#&gt; 2:         0.9295580   0.000000000</span></span>
+<span><span class="co">#&gt; 3:         0.9443099   0.002421308</span></span>
+<span><span class="co">#&gt; 4:         0.9508409   0.009055627</span></span>
+<span><span class="co">#&gt; 5:         0.9226006   0.002063983</span></span>
+<span><span class="co">#&gt; 6:         0.9202899   0.002070393</span></span></code></pre></div>
+</details><p>We do the same for the retrospective data:</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_germany_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_preprocess_data.html">enw_preprocess_data</a></span><span class="op">(</span><span class="va">retro_germany</span>, max_delay <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="va">retro_germany_pobs</span></span>
-<span><span class="co">#&gt;                     obs          new_confirm             latest</span></span>
-<span><span class="co">#&gt;                  &lt;list&gt;               &lt;list&gt;             &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[1860x8]&gt; &lt;data.table[1860x9]&gt; &lt;data.table[62x8]&gt;</span></span>
-<span><span class="co">#&gt;    missing_reference  reporting_triangle      metareference</span></span>
-<span><span class="co">#&gt;               &lt;list&gt;              &lt;list&gt;             &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[0x4]&gt; &lt;data.table[62x32]&gt; &lt;data.table[62x8]&gt;</span></span>
-<span><span class="co">#&gt;              metareport          metadelay max_delay  time snapshots     by</span></span>
-<span><span class="co">#&gt;                  &lt;list&gt;             &lt;list&gt;     &lt;num&gt; &lt;int&gt;     &lt;int&gt; &lt;list&gt;</span></span>
-<span><span class="co">#&gt; 1: &lt;data.table[120x10]&gt; &lt;data.table[30x5]&gt;        30    62        62 [NULL]</span></span>
-<span><span class="co">#&gt;    groups   max_date timestep</span></span>
-<span><span class="co">#&gt;     &lt;int&gt;     &lt;IDat&gt;   &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:      1 2021-07-30      day</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Preprocessed nowcast data ─────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt; Groups: 1 | Timestep: day | Max delay: 30 </span></span>
+<span><span class="co">#&gt; Observations: 62 timepoints x 62 snapshots </span></span>
+<span><span class="co">#&gt; Max date: 2021-07-30 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   obs                :   1,860 x 8 </span></span>
+<span><span class="co">#&gt;   new_confirm        :   1,860 x 9 </span></span>
+<span><span class="co">#&gt;   latest             :      62 x 8 </span></span>
+<span><span class="co">#&gt;   missing_reference  :       0 x 4 </span></span>
+<span><span class="co">#&gt;   reporting_triangle :      62 x 32 </span></span>
+<span><span class="co">#&gt;   metareference      :      62 x 8 </span></span>
+<span><span class="co">#&gt;   metareport         :     120 x 10 </span></span>
+<span><span class="co">#&gt;   metadelay          :      30 x 5</span></span></code></pre></div>
+</details><p>We also create a retrospective dataset without reporting delays using <code><a href="../reference/enw_retrospective.html">enw_retrospective()</a></code>.
+This converts the preprocessed data to <code>max_delay = 1</code> by taking the latest observation for each reference date and treating it as the final count with no delay.
+This is useful when we want to estimate Rt from data that is already (approximately) complete and do not need to model reporting delays.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">retro_nodelay_pobs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_retrospective.html">enw_retrospective</a></span><span class="op">(</span><span class="va">retro_germany_pobs</span><span class="op">)</span></span>
+<span><span class="va">retro_nodelay_pobs</span></span>
+<span><span class="co">#&gt; ── Preprocessed nowcast data ─────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt; Groups: 1 | Timestep: day | Max delay: 1 </span></span>
+<span><span class="co">#&gt; Observations: 62 timepoints x 62 snapshots </span></span>
+<span><span class="co">#&gt; Max date: 2021-07-01 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   obs                :      62 x 7 </span></span>
+<span><span class="co">#&gt;   new_confirm        :      62 x 9 </span></span>
+<span><span class="co">#&gt;   latest             :      62 x 8 </span></span>
+<span><span class="co">#&gt;   missing_reference  :       0 x 4 </span></span>
+<span><span class="co">#&gt;   reporting_triangle :      62 x 3 </span></span>
+<span><span class="co">#&gt;   metareference      :      62 x 7 </span></span>
+<span><span class="co">#&gt;   metareport         :      62 x 10 </span></span>
+<span><span class="co">#&gt;   metadelay          :       1 x 5</span></span></code></pre></div>
 </details>
 </div>
 <div class="section level3">
@@ -597,7 +646,7 @@
 <h4 id="specifying-the-fitting-options">Specifying the fitting options<a class="anchor" aria-label="anchor" href="#specifying-the-fitting-options"></a>
 </h4>
 <p>Before we are ready to fit the model we need to first specify some fitting options for using <code>cmdstanr</code> (more information on these options can be found in the <code>cmdstanr</code> documentation). We use 2 chains with 2 threads per chain (so using 4 CPU cores in total) 500 warmup samples and 1000 iterations per chain. As this is a complex model we set <code>adapt_delta</code> to 0.98 (the default is 0.8) so that the Hamiltonian Monte Carlo sampler can explore the posterior distribution more efficiently. For the same reason, we have also set the <code>max_treedepth</code> to 15 (the default is 10). Finally, we set <code>save_warmup</code> to <code>FALSE</code> to save space (we don’t need the warmup samples for this analysis), and <code>pp</code> to <code>TRUE</code> so that we can use posterior predictive checks to assess the model fit.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_module</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/partial.html" class="external-link">partial</a></span><span class="op">(</span><span class="va">enw_fit_opts</span>,</span>
 <span>  chains <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  parallel_chains <span class="op">=</span> <span class="fl">2</span>,</span>
@@ -618,7 +667,7 @@
 <h4 id="compiling-the-model">Compiling the model<a class="anchor" aria-label="anchor" href="#compiling-the-model"></a>
 </h4>
 <p>We also need to compile the model using <code>cmdstanr</code> before fitting it (we only have to do this once after installing the package). In order for this line to work you should have followed the installation guide in the <a href="https://package.epinowcast.org">README</a>. This will take around a minute to run when called for the first time.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">epinowcast_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_model.html">enw_model</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </details>
 </div>
@@ -626,7 +675,7 @@
 <h4 id="fitting-the-model">Fitting the model<a class="anchor" aria-label="anchor" href="#fitting-the-model"></a>
 </h4>
 <p>Now we are ready to bring together all the modules we have specified, combine them with the model we have just compiled, and fit our synthetic data. We first fit to the data that would have been available in real-time,</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">germany_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">rt_germany_pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="fu">expectation_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">rt_germany_pobs</span><span class="op">)</span>,</span>
@@ -634,12 +683,39 @@
 <span>  obs <span class="op">=</span> <span class="fu">obs_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">rt_germany_pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="fu">fit_module</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">epinowcast_model</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="va">germany_nowcast</span></span>
+<span><span class="co">#&gt; ── epinowcast model output ───────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt; Groups: 1 | Timestep: day | Max delay: 30 </span></span>
+<span><span class="co">#&gt; Observations: 62 timepoints x 62 snapshots </span></span>
+<span><span class="co">#&gt; Max date: 2021-07-01 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   obs                :   1,425 x 8 </span></span>
+<span><span class="co">#&gt;   new_confirm        :   1,425 x 9 </span></span>
+<span><span class="co">#&gt;   latest             :      62 x 8 </span></span>
+<span><span class="co">#&gt;   missing_reference  :       0 x 4 </span></span>
+<span><span class="co">#&gt;   reporting_triangle :      62 x 32 </span></span>
+<span><span class="co">#&gt;   metareference      :      62 x 8 </span></span>
+<span><span class="co">#&gt;   metareport         :      91 x 10 </span></span>
+<span><span class="co">#&gt;   metadelay          :      30 x 5 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   priors : 28 x 6 </span></span>
+<span><span class="co">#&gt;   fit : CmdStanMCMC </span></span>
+<span><span class="co">#&gt;   data : list(115) </span></span>
+<span><span class="co">#&gt;   fit_args : list(9) </span></span>
+<span><span class="co">#&gt;   init_method_output : NULL </span></span>
+<span><span class="co">#&gt; Model fit: </span></span>
+<span><span class="co">#&gt;   Samples: 2,000 | Max Rhat: 1.01 </span></span>
+<span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
+<span><span class="co">#&gt;   Max treedepth: 10 (12 at max, 0.6%) </span></span>
+<span><span class="co">#&gt;   Run time: 159.3 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>Fitting this model with the default options will take around 5 minutes to run on a laptop with 4 CPU cores. If you have more CPU cores available you can reduce the time it takes to fit the model by increasing the number of threads per chain (see the <a href="#fitting-the-epinowcast-model">fitting options</a> section above).</p>
 </div>
 <p>and then on the retrospectively observed data.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">retro_germany_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">retro_germany_pobs</span>,</span>
 <span>  expectation <span class="op">=</span> <span class="fu">expectation_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">retro_germany_pobs</span><span class="op">)</span>,</span>
@@ -647,9 +723,82 @@
 <span>  obs <span class="op">=</span> <span class="fu">obs_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">retro_germany_pobs</span><span class="op">)</span>,</span>
 <span>  fit <span class="op">=</span> <span class="fu">fit_module</span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  model <span class="op">=</span> <span class="va">epinowcast_model</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="va">retro_germany_nowcast</span></span>
+<span><span class="co">#&gt; ── epinowcast model output ───────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt; Groups: 1 | Timestep: day | Max delay: 30 </span></span>
+<span><span class="co">#&gt; Observations: 62 timepoints x 62 snapshots </span></span>
+<span><span class="co">#&gt; Max date: 2021-07-30 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   obs                :   1,860 x 8 </span></span>
+<span><span class="co">#&gt;   new_confirm        :   1,860 x 9 </span></span>
+<span><span class="co">#&gt;   latest             :      62 x 8 </span></span>
+<span><span class="co">#&gt;   missing_reference  :       0 x 4 </span></span>
+<span><span class="co">#&gt;   reporting_triangle :      62 x 32 </span></span>
+<span><span class="co">#&gt;   metareference      :      62 x 8 </span></span>
+<span><span class="co">#&gt;   metareport         :     120 x 10 </span></span>
+<span><span class="co">#&gt;   metadelay          :      30 x 5 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   priors : 28 x 6 </span></span>
+<span><span class="co">#&gt;   fit : CmdStanMCMC </span></span>
+<span><span class="co">#&gt;   data : list(115) </span></span>
+<span><span class="co">#&gt;   fit_args : list(9) </span></span>
+<span><span class="co">#&gt;   init_method_output : NULL </span></span>
+<span><span class="co">#&gt; Model fit: </span></span>
+<span><span class="co">#&gt;   Samples: 2,000 | Max Rhat: 1.01 </span></span>
+<span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
+<span><span class="co">#&gt;   Max treedepth: 10 (27 at max, 1.4%) </span></span>
+<span><span class="co">#&gt;   Run time: 185.1 secs</span></span></code></pre></div>
 </details><div class="alert alert-warning">
 <p>You may see a number of warning messages from <code>cmdstanr</code> when fitting the model. These generally occur when the model is being initialised and are due to this process not currently being optimised in <code>epinowcast</code>. The model should still fit correctly unless these warnings continue into the fitting process (outside of the warmup phase). This is something we are actively working on improving in future versions of <code>epinowcast</code>.</p>
+</div>
+<p>Finally, we fit the model to the retrospective data without delay estimation.
+Here we set <code>parametric = ~0</code> and <code>non_parametric = ~0</code> for both the reference and report date models, disabling the delay model entirely.
+The model only estimates the expectation (Rt and latent process) from the final observation counts.</p>
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">retro_nodelay_nowcast</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/epinowcast.html">epinowcast</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">retro_nodelay_pobs</span>,</span>
+<span>  expectation <span class="op">=</span> <span class="fu">expectation_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">retro_nodelay_pobs</span><span class="op">)</span>,</span>
+<span>  reference <span class="op">=</span> <span class="fu"><a href="../reference/enw_reference.html">enw_reference</a></span><span class="op">(</span></span>
+<span>    parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">retro_nodelay_pobs</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  report <span class="op">=</span> <span class="fu"><a href="../reference/enw_report.html">enw_report</a></span><span class="op">(</span>non_parametric <span class="op">=</span> <span class="op">~</span><span class="fl">0</span>, data <span class="op">=</span> <span class="va">retro_nodelay_pobs</span><span class="op">)</span>,</span>
+<span>  obs <span class="op">=</span> <span class="fu">obs_module</span><span class="op">(</span>data <span class="op">=</span> <span class="va">retro_nodelay_pobs</span><span class="op">)</span>,</span>
+<span>  fit <span class="op">=</span> <span class="fu">fit_module</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="va">epinowcast_model</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">retro_nodelay_nowcast</span></span>
+<span><span class="co">#&gt; ── epinowcast model output ───────────────────────────────────────────────────── </span></span>
+<span><span class="co">#&gt; Groups: 1 | Timestep: day | Max delay: 1 </span></span>
+<span><span class="co">#&gt; Observations: 62 timepoints x 62 snapshots </span></span>
+<span><span class="co">#&gt; Max date: 2021-07-01 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Datasets (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   obs                :      62 x 7 </span></span>
+<span><span class="co">#&gt;   new_confirm        :      62 x 9 </span></span>
+<span><span class="co">#&gt;   latest             :      62 x 8 </span></span>
+<span><span class="co">#&gt;   missing_reference  :       0 x 4 </span></span>
+<span><span class="co">#&gt;   reporting_triangle :      62 x 3 </span></span>
+<span><span class="co">#&gt;   metareference      :      62 x 7 </span></span>
+<span><span class="co">#&gt;   metareport         :      62 x 10 </span></span>
+<span><span class="co">#&gt;   metadelay          :       1 x 5 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Model objects (access with `enw_get_data(x, "&lt;name&gt;")`): </span></span>
+<span><span class="co">#&gt;   priors : 28 x 6 </span></span>
+<span><span class="co">#&gt;   fit : CmdStanMCMC </span></span>
+<span><span class="co">#&gt;   data : list(115) </span></span>
+<span><span class="co">#&gt;   fit_args : list(9) </span></span>
+<span><span class="co">#&gt;   init_method_output : NULL </span></span>
+<span><span class="co">#&gt; Model fit: </span></span>
+<span><span class="co">#&gt;   Samples: 2,000 | Max Rhat: 1.01 </span></span>
+<span><span class="co">#&gt;   Divergent transitions: 0 (0%) </span></span>
+<span><span class="co">#&gt;   Max treedepth: 10 (51 at max, 2.5%) </span></span>
+<span><span class="co">#&gt;   Run time: 24.1 secs</span></span></code></pre></div>
+</details><div class="alert alert-warning">
+<p>This model fits much faster than the models with delay estimation as it has far fewer parameters and no delay convolution.</p>
 </div>
 </div>
 </div>
@@ -660,7 +809,7 @@
 <h4 id="plotting-the-nowcast-based-on-real-time-data">Plotting the nowcast based on real-time data<a class="anchor" aria-label="anchor" href="#plotting-the-nowcast-based-on-real-time-data"></a>
 </h4>
 <p>We first plot the nowcast based on real-time data. Effectively here we are trying to use our model to estimate the hospitalisations that will ultimately be reported based on the data that is currently available. We can compare this to the most recent observations to see how well the model is doing.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">germany_nowcast</span>, <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -677,7 +826,7 @@
 <h4 id="plotting-the-nowcast-based-on-retrospective-data">Plotting the nowcast based on retrospective data<a class="anchor" aria-label="anchor" href="#plotting-the-nowcast-based-on-retrospective-data"></a>
 </h4>
 <p>We can also plot the nowcast based on the retrospective data. As this plot uses observed data where available this is effectively plotting observed data after a 30 day delay (as this was the maximum we specified) compared to data that will ultimately be observed. This can be used to get a feel for how well specified our maximum delay is. Here we see that a small number of hospitalisations will be reported after 30 days. This will impact the performance of even an ideal model as it will not be able to predict these hospitalisations and so should be accounted for in the model evaluation.</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">retro_germany_nowcast</span>,</span>
 <span>  <span class="va">latest_germany_hosp</span><span class="op">[</span><span class="va">reference_date</span> <span class="op">&gt;</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2021-06-01"</span><span class="op">)</span><span class="op">]</span></span>
@@ -691,7 +840,7 @@
 <h3 id="posterior-predictions-for-cases-by-date-of-positive-test-and-report">Posterior predictions for cases by date of positive test and report<a class="anchor" aria-label="anchor" href="#posterior-predictions-for-cases-by-date-of-positive-test-and-report"></a>
 </h3>
 <p>To better understand the fit of the model to data we can instead plot the posterior predictions for the observed data. This is effectively the same as the plot above but instead of plotting the posterior predictions for the unobserved data we plot the posterior predictions for the observed data. This can be used to get a feel for how well the model is able to predict the observed data. Rather than using the build in plot function (by changing <code>type = "posterior_prediction"</code>) we instead use <code><a href="../reference/enw_plot_pp_quantiles.html">enw_plot_pp_quantiles()</a></code> so we can control the number of references dates we plot (as otherwise the plot will be quite overwhelming!).</p>
-<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<details class="chunk-details" open><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">plot_select_pp_dates</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">dates</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">nowcast</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"posterior_prediction"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -714,7 +863,7 @@
 <h3 id="real-time-and-retrospective-estimates-of-the-effective-reproduction-number">Real-time and retrospective estimates of the effective reproduction number<a class="anchor" aria-label="anchor" href="#real-time-and-retrospective-estimates-of-the-effective-reproduction-number"></a>
 </h3>
 <p>A key output of the model is the posterior distribution of the effective reproduction number. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.</p>
-<details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">get_rt_posterior</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">expectation</span> <span class="op">=</span> <span class="va">expectation_module</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">rt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_posterior.html">enw_posterior</a></span><span class="op">(</span><span class="va">nowcast</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, variables <span class="op">=</span> <span class="st">"r"</span><span class="op">)</span></span>
 <span>  <span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"q5"</span>, <span class="st">"q20"</span>, <span class="st">"q80"</span>, <span class="st">"q95"</span><span class="op">)</span></span>
@@ -727,7 +876,8 @@
 <span></span>
 <span><span class="va">rt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  <span class="fu">get_rt_posterior</span><span class="op">(</span><span class="va">germany_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Real-time"</span><span class="op">]</span>,</span>
-<span>  <span class="fu">get_rt_posterior</span><span class="op">(</span><span class="va">retro_germany_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Retrospective"</span><span class="op">]</span></span>
+<span>  <span class="fu">get_rt_posterior</span><span class="op">(</span><span class="va">retro_germany_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Retrospective"</span><span class="op">]</span>,</span>
+<span>  <span class="fu">get_rt_posterior</span><span class="op">(</span><span class="va">retro_nodelay_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Retrospective (no delay)"</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">rt</span><span class="op">)</span> <span class="op">+</span></span>
@@ -748,30 +898,41 @@
 </details><div class="float">
 <img src="figures/single-timeseries-rt-estimation-plot-germany-rt-1.png" alt="Real-time and retrospective estimates of the effective reproduction number in Germany"><div class="figcaption">Real-time and retrospective estimates of the effective reproduction number in Germany</div>
 </div>
-<p>Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models. Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict. This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.</p>
+<p>Here we see good agreement between the real-time and retrospective estimates of the effective reproduction number for dates earlier in time as we would expect given that this data should be near complete in both models.
+Closer to the date of estimation we see that the real-time model does a good job estimating the trend shown by the retrospective model but has a tendency to overpredict.
+This could be caused by changes in the reporting delay over time, by the model not being able to account for the day of the week reporting periodicity, or by the model not being able to account for the change in the underlying process over time.</p>
+<p>The retrospective model without delay estimation (“Retrospective (no delay)”) provides a useful baseline.
+It uses the same expectation model but treats the latest available counts as final, skipping delay estimation entirely.
+This is faster to fit and can be useful when data is already complete or when the primary interest is Rt estimation rather than nowcasting.
+The agreement between this and the full retrospective model indicates that the delay model is not substantially biasing the Rt estimates in this example.</p>
 </div>
 <div class="section level3">
 <h3 id="estimates-of-the-delay-from-testing-positive-to-hospitalisation-both-in-real-time-and-retrospectively">Estimates of the delay from testing positive to hospitalisation both in real-time and retrospectively<a class="anchor" aria-label="anchor" href="#estimates-of-the-delay-from-testing-positive-to-hospitalisation-both-in-real-time-and-retrospectively"></a>
 </h3>
-<p>We can also plot the posterior distribution of the delay from testing positive to hospitalisation. This is the delay that is used to estimate the number of hospitalisations that will ultimately be reported based on the number of positive tests that have been reported. We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available. Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates. This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.</p>
-<details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<p>We can also plot the posterior distribution of the delay from testing positive to hospitalisation.
+This is the delay that is used to estimate the number of hospitalisations that will ultimately be reported based on the number of positive tests that have been reported.
+We can plot this for both the real-time and retrospective data to see how the estimates change as more data becomes available.
+Ideally, we would hope that the real-time estimates would overlap with the retrospective estimates.
+This would indicate that our model is able to accurately estimate hospitalisations that will be ultimately reported based on those that have already been reported.
+Note that the retrospective model without delay estimation is not included here as it does not estimate a reporting delay.</p>
+<details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">extract_epinowcast_cdf</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">nowcast</span> <span class="op">|&gt;</span></span>
 <span>    <span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span>      <span class="va">x</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="fu">draws</span><span class="op">(</span>variables <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"refp_mean"</span>, <span class="st">"refp_sd"</span><span class="op">)</span>, format <span class="op">=</span> <span class="st">"df"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/as.data.table.html" class="external-link">as.data.table</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">draws</span><span class="op">[</span></span>
 <span>    ,</span>
 <span>    <span class="va">cdf</span> <span class="op">:=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html" class="external-link">map2</a></span><span class="op">(</span></span>
 <span>      <span class="va">`refp_mean[1]`</span>, <span class="va">`refp_sd[1]`</span>,</span>
-<span>      <span class="op">~</span> <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
+<span>      <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
 <span>        delay <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, cdf <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">plnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">plnorm</a></span><span class="op">(</span><span class="fl">30</span>, <span class="va">.x</span>, <span class="va">.y</span><span class="op">)</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">]</span></span>
-<span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>, <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span><span class="op">]</span></span>
 <span>  <span class="va">draws</span> <span class="op">&lt;-</span> <span class="va">draws</span><span class="op">[</span>,</span>
 <span>    <span class="fu">.</span><span class="op">(</span></span>
 <span>      mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">cdf</span><span class="op">)</span>,</span>
@@ -787,7 +948,7 @@
 <span>  <span class="st">"Retrospective"</span> <span class="op">=</span> <span class="va">retro_germany_nowcast</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">extract_epinowcast_cdf</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>idcol <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/rbindlist.html" class="external-link">rbindlist</a></span><span class="op">(</span>idcol <span class="op">=</span> <span class="st">"Data"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">nowcast_cdf</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">delay</span>, y <span class="op">=</span> <span class="va">mean</span>, col <span class="op">=</span> <span class="va">Data</span>, fill <span class="op">=</span> <span class="va">Data</span><span class="op">)</span> <span class="op">+</span></span>
@@ -818,7 +979,7 @@
 <p>We can also plot the posterior predictions for the number of expected hospitalisations. This is the number of hospitalisations that would be reported if there was no observation error. We can compare this to the number of hospitalisations that are ultimately reported to see how well the model is doing.</p>
 <p>Retrospectively, we would expect the model to fit very well to this data with any differences being due to the observation error. If this is not the case it indicates we may need to revisit our expected hospitalisation model specification to make it closer to the generative process of the data we have.</p>
 <p>In real-time, we would expect the model to fit less well to this data as it is trying to estimate the number of hospitalisations that will ultimately be reported based on the data that is currently available (i.e. it also has to account for the reporting delay which is now partially unobserved).</p>
-<details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<details class="chunk-details"><summary class="chunk-summary"><span class="chunk-summary-text">Code</span></summary><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">get_expected_infections</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">nowcast</span>, <span class="va">expectation</span> <span class="op">=</span> <span class="va">expectation_module</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">exp_cases</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_posterior.html">enw_posterior</a></span><span class="op">(</span></span>
 <span>    <span class="va">nowcast</span><span class="op">$</span><span class="va">fit</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>,</span>
@@ -835,10 +996,14 @@
 <span></span>
 <span><span class="va">exp_cases</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  <span class="fu">get_expected_infections</span><span class="op">(</span><span class="va">germany_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Real-time"</span><span class="op">]</span>,</span>
-<span>  <span class="fu">get_expected_infections</span><span class="op">(</span><span class="va">retro_germany_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Retrospective"</span><span class="op">]</span></span>
+<span>  <span class="fu">get_expected_infections</span><span class="op">(</span><span class="va">retro_germany_nowcast</span><span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Retrospective"</span><span class="op">]</span>,</span>
+<span>  <span class="fu">get_expected_infections</span><span class="op">(</span></span>
+<span>    <span class="va">retro_nodelay_nowcast</span></span>
+<span>  <span class="op">)</span><span class="op">[</span>, <span class="va">Data</span> <span class="op">:=</span> <span class="st">"Retrospective (no delay)"</span><span class="op">]</span>,</span>
+<span>  fill <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">exp_cases</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/enw_latest_data.html">enw_latest_data</a></span><span class="op">(</span><span class="va">germany_hosp</span><span class="op">)</span><span class="op">[</span>, <span class="va">date</span> <span class="op">:=</span> <span class="va">reference_date</span><span class="op">]</span><span class="op">[</span></span>
+<span><span class="va">exp_cases</span> <span class="op">&lt;-</span> <span class="va">latest_germany_hosp</span><span class="op">[</span>, <span class="va">date</span> <span class="op">:=</span> <span class="va">reference_date</span><span class="op">]</span><span class="op">[</span></span>
 <span>  <span class="va">exp_cases</span>,</span>
 <span>  on <span class="op">=</span> <span class="st">"date"</span></span>
 <span><span class="op">]</span></span>
@@ -860,6 +1025,8 @@
 </details><div class="float">
 <img src="figures/single-timeseries-rt-estimation-plot-germany-reported-cases-1.png" alt="Real-time and retrospective estimates of the number of expected hospitalisations in Germany"><div class="figcaption">Real-time and retrospective estimates of the number of expected hospitalisations in Germany</div>
 </div>
+<p>The black points here are the counts at the maximum modelled delay (<code>latest_germany_hosp</code>, the rolling “obs at max delay” set) — the same data the retrospective models see, which is what <code><a href="../reference/enw_retrospective.html">enw_retrospective()</a></code> also uses internally.
+The ribbons show posterior uncertainty on the <em>expected</em> observations (<code>exp_lobs</code>), not posterior predictive draws, so they do not include Poisson observation noise and individual points will scatter around the fitted mean even for a well-specified model.</p>
 <p>As expected the retrospective estimates fit very well to the data. The real-time estimates are slightly less good, but still capture the recent change in trend in the data which would not be possible without a nowcast (as estimates would be biased towards underpredicting due to the delay in reporting leading to right truncation).</p>
 </div>
 </div>
@@ -870,8 +1037,8 @@
 <h3 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
 </h3>
 <p>In this case study we have shown how to use <code>epinowcast</code> to estimate the effective reproduction number and the expected number of latent and reported cases from right truncated data.</p>
-<p>We have also shown how to use the package to perform retrospective and real-time nowcasts which can be a useful way of understanding the real-time
-performance of the model.</p>
+<p>We have also shown how to use the package to perform retrospective and real-time nowcasts which can be a useful way of understanding the real-time performance of the model.
+In addition, we demonstrated retrospective Rt estimation without delay modelling using <code><a href="../reference/enw_retrospective.html">enw_retrospective()</a></code>, which provides a faster alternative when data is already complete.</p>
 </div>
 <div class="alert alert-secondary">
 <div class="section level3 unnumbered">
@@ -898,12 +1065,12 @@ are currently indexed to the date of infection.</li>
 </h3>
 <ul>
 <li>
-<a href="https://epiforecasts.io/EpiNow2" class="external-link">EpiNow2</a>: A precursor to <code>epinowcast</code> developed by members of the <code>epinowcast</code> community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than <code>epinowcast</code> with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into <code>epinowcast</code>.</li>
+<a href="https://epiforecasts.io/EpiNow2/" class="external-link">EpiNow2</a>: A precursor to <code>epinowcast</code> developed by members of the <code>epinowcast</code> community. It is a flexible toolset for real-time analysis of infectious diseases. It is less complex than <code>epinowcast</code> with a focus on robust default settings but is also less flexible. Over time its functionality will be incorporated into <code>epinowcast</code>.</li>
 <li>
 <a href="https://imperialcollegelondon.github.io/epidemia/index.html" class="external-link">epidemia</a>: This is another flexible package for estimating the effective reproduction number and forecasting. It is designed to be more flexible than <code>EpiNow2</code>, in a similar way to <code>epinowcast</code>, but is potentially more difficult to use. It also generally has less functionality for dealing with delays than <code>epinowcast</code>. However, as it is an extension of <code>rstanarm</code> it comes with a number of useful features and a familiar interface for users of <code>rstanarm</code>
 </li>
 <li>
-<a href="https://cran.r-project.org/web/packages/EpiEstim/index.html" class="external-link">EpiEstim</a>: This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.</li>
+<a href="https://CRAN.R-project.org/package=EpiEstim" class="external-link">EpiEstim</a>: This is a more mature package for estimating the effective reproduction number. It exploits a mathematically relationship to fit the renewal equation with uncertainty very quickly but is not currently able to handle reporting delays or other aspects of real-world data that we have discussed in this case study. It is also not able to perform nowcasts. However, it is a useful package for estimating the effective reproduction number in settings where these aspects are not important or where they can be handled by other means.</li>
 </ul>
 </div>
 </div>
@@ -911,27 +1078,40 @@ are currently indexed to the date of infection.</li>
 <div class="section level2 unnumbered">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0" line-spacing="2">
+<div id="refs" class="references csl-bib-body" entry-spacing="0" line-spacing="2">
 <div id="ref-Fraser2007" class="csl-entry">
-1. Fraser, C. (2007). Estimating individual and household reproduction numbers in an emerging epidemic. <em>PLoS One</em>, <em>2</em>(8), e758. <a href="https://doi.org/10.1371/journal.pone.0000758" class="external-link">https://doi.org/10.1371/journal.pone.0000758</a>
+<div class="csl-left-margin">1. </div>
+<div class="csl-right-inline">Fraser, C. (2007). Estimating individual and household reproduction numbers in an emerging epidemic. <em>PLoS One</em>, <em>2</em>(8), e758. <a href="https://doi.org/10.1371/journal.pone.0000758" class="external-link">https://doi.org/10.1371/journal.pone.0000758</a>
+</div>
 </div>
 <div id="ref-Cori2013" class="csl-entry">
-2. Cori, A., Ferguson, N. M., Fraser, C., &amp; Cauchemez, S. (2013). A new framework and software to estimate time-varying reproduction numbers during epidemics. <em>Am. J. Epidemiol.</em>, <em>178</em>(9), 1505–1512. <a href="https://doi.org/10.1093/aje/kwt133" class="external-link">https://doi.org/10.1093/aje/kwt133</a>
+<div class="csl-left-margin">2. </div>
+<div class="csl-right-inline">Cori, A., Ferguson, N. M., Fraser, C., &amp; Cauchemez, S. (2013). A new framework and software to estimate time-varying reproduction numbers during epidemics. <em>Am. J. Epidemiol.</em>, <em>178</em>(9), 1505–1512. <a href="https://doi.org/10.1093/aje/kwt133" class="external-link">https://doi.org/10.1093/aje/kwt133</a>
+</div>
 </div>
 <div id="ref-champredon" class="csl-entry">
-3. Champredon, D., Dushoff, J., &amp; Earn, D. J. D. (2018). Equivalence of the <span>Erlang-Distributed</span> <span>SEIR</span> epidemic model and the renewal equation. <em>SIAM J. Appl. Math.</em>, <em>78</em>(6), 3258–3278. <a href="https://doi.org/10.1137/18M1186411" class="external-link">https://doi.org/10.1137/18M1186411</a>
+<div class="csl-left-margin">3. </div>
+<div class="csl-right-inline">Champredon, D., Dushoff, J., &amp; Earn, D. J. D. (2018). Equivalence of the <span>Erlang-Distributed</span> <span>SEIR</span> epidemic model and the renewal equation. <em>SIAM J. Appl. Math.</em>, <em>78</em>(6), 3258–3278. <a href="https://doi.org/10.1137/18M1186411" class="external-link">https://doi.org/10.1137/18M1186411</a>
+</div>
 </div>
 <div id="ref-EpiNow2" class="csl-entry">
-4. Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J., Badr, H. S., DeWitt, M., Thompson, R., EpiForecasts, &amp; Funk, S. (2020). <em>EpiNow2: Estimate real-time case counts and time-varying epidemiological parameters</em>. <a href="https://doi.org/10.5281/zenodo.3957489" class="external-link">https://doi.org/10.5281/zenodo.3957489</a>
+<div class="csl-left-margin">4. </div>
+<div class="csl-right-inline">Abbott, S., Hellewell, J., Sherratt, K., Gostic, K., Hickson, J., Badr, H. S., DeWitt, M., Thompson, R., EpiForecasts, &amp; Funk, S. (2020). <em>EpiNow2: Estimate real-time case counts and time-varying epidemiological parameters</em>. <a href="https://doi.org/10.5281/zenodo.3957489" class="external-link">https://doi.org/10.5281/zenodo.3957489</a>
+</div>
 </div>
 <div id="ref-Abbott2020" class="csl-entry">
-5. Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H. P., Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J. Y., Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A. B., Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID modelling group. (2020). Estimating the time-varying reproduction number of <span>SARS-CoV-2</span> using national and subnational case counts. <em>Wellcome Open Res.</em>, <em>5</em>, 112. <a href="https://doi.org/10.12688/wellcomeopenres.16006.2" class="external-link">https://doi.org/10.12688/wellcomeopenres.16006.2</a>
+<div class="csl-left-margin">5. </div>
+<div class="csl-right-inline">Abbott, S., Hellewell, J., Thompson, R. N., Sherratt, K., Gibbs, H. P., Bosse, N. I., Munday, J. D., Meakin, S., Doughty, E. L., Chun, J. Y., Chan, Y.-W. D., Finger, F., Campbell, P., Endo, A., Pearson, C. A. B., Gimma, A., Russell, T., Flasche, S., Kucharski, A. J., … CMMID COVID modelling group. (2020). Estimating the time-varying reproduction number of <span>SARS-CoV-2</span> using national and subnational case counts. <em>Wellcome Open Res.</em>, <em>5</em>, 112. <a href="https://doi.org/10.12688/wellcomeopenres.16006.2" class="external-link">https://doi.org/10.12688/wellcomeopenres.16006.2</a>
+</div>
 </div>
 <div id="ref-Bhatt2020" class="csl-entry">
-6. Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., &amp; Scott, J. A. (2020). <em><span>Semi-Mechanistic</span> bayesian modeling of <span>COVID-19</span> with renewal processes</em>. <a href="https://arxiv.org/abs/2012.00394" class="external-link">https://arxiv.org/abs/2012.00394</a>
+<div class="csl-left-margin">6. </div>
+<div class="csl-right-inline">Bhatt, S., Ferguson, N., Flaxman, S., Gandy, A., Mishra, S., &amp; Scott, J. A. (2020). <em><span>Semi-Mechanistic</span> bayesian modeling of <span>COVID-19</span> with renewal processes</em>. <a href="https://arxiv.org/abs/2012.00394" class="external-link">https://arxiv.org/abs/2012.00394</a>
+</div>
 </div>
 <div id="ref-Lison2022" class="csl-entry">
-7. Lison, A. (n.d.). <em>Nowcast-transmission</em>. Github.
+<div class="csl-left-margin">7. </div>
+<div class="csl-right-inline">Lison, A. (n.d.). <em>Nowcast-transmission</em>. Github.</div>
 </div>
 </div>
 </div>

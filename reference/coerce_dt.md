@@ -1,8 +1,8 @@
 # Coerce `data.table`s
 
 Provides consistent coercion of inputs to
-[data.table](https://rdatatable.gitlab.io/data.table/reference/data.table.html)
-with error handling, column checking, and optional selection.
+[data.table](https://rdrr.io/pkg/data.table/man/data.table.html) with
+error handling, column checking, and optional selection.
 
 ## Usage
 
@@ -25,7 +25,7 @@ coerce_dt(
 - data:
 
   Any of the types supported by
-  [`data.table::as.data.table()`](https://rdatatable.gitlab.io/data.table/reference/as.data.table.html)
+  [`data.table::as.data.table()`](https://rdrr.io/pkg/data.table/man/as.data.table.html)
 
 - select:
 
@@ -48,7 +48,7 @@ coerce_dt(
 
   A logical; ensure the presence of `report_date` and `reference_date`?
   If `TRUE` (default), those columns will be coerced with
-  [as.IDate](https://rdatatable.gitlab.io/data.table/reference/IDateTime.html).
+  [as.IDate](https://rdrr.io/pkg/data.table/man/IDateTime.html).
 
 - copy:
 
@@ -92,6 +92,7 @@ subsequent date arithmetic operations.
 Utility functions
 [`coerce_date()`](https://package.epinowcast.org/reference/coerce_date.md),
 [`date_to_numeric_modulus()`](https://package.epinowcast.org/reference/date_to_numeric_modulus.md),
+[`enw_get_data()`](https://package.epinowcast.org/reference/enw_get_data.md),
 [`enw_rolling_sum()`](https://package.epinowcast.org/reference/enw_rolling_sum.md),
 [`get_internal_timestep()`](https://package.epinowcast.org/reference/get_internal_timestep.md),
 [`is.Date()`](https://package.epinowcast.org/reference/is.Date.md),

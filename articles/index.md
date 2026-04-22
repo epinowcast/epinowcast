@@ -25,6 +25,12 @@
   A case study exploring hierarchical models of varying complexity to
   jointly nowcast age stratified COVID-19 hospitalisations in Germany.
 
+- [Comparing Inference
+  Methods](https://package.epinowcast.org/articles/inference-methods.md):
+
+  A comparison of NUTS sampling, pathfinder approximate inference, and
+  pathfinder-initialised NUTS across two model specifications.
+
 - [Model definition and
   implementation](https://package.epinowcast.org/articles/model.md):
 
@@ -34,6 +40,11 @@
   studies](https://package.epinowcast.org/articles/package-use-cases.md):
 
   A place to document how epinowcast has been used
+
+- [Visualising Preprocessed
+  Data](https://package.epinowcast.org/articles/preprocess-visualisation.md):
+
+  Understanding reporting patterns before model fitting.
 
 - [Estimating the effective reproduction number in real-time for a
   single timeseries with reporting
