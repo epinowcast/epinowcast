@@ -273,7 +273,7 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">method_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  <span class="st">"NUTS\n(prior init)"</span>, <span class="st">"NUTS\n(pathfinder init)"</span>, <span class="st">"Pathfinder"</span></span>
+<span>  <span class="st">"NUTS (prior init)"</span>, <span class="st">"NUTS (pathfinder init)"</span>, <span class="st">"Pathfinder"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">runtime_dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/data.table.html" class="external-link">data.table</a></span><span class="op">(</span></span>
@@ -322,27 +322,15 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 <tbody>
 <tr class="odd">
 <td align="left">A (static delays)</td>
-<td align="left">NUTS</td>
-<td align="right"></td>
-<td align="left"></td>
+<td align="left">NUTS (prior init)</td>
+<td align="right">51.5</td>
+<td align="left">3.4</td>
 </tr>
 <tr class="even">
-<td align="left">(prior init)</td>
-<td align="left">51.5</td>
-<td align="right">3.4</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
 <td align="left">A (static delays)</td>
-<td align="left">NUTS</td>
-<td align="right"></td>
-<td align="left"></td>
-</tr>
-<tr class="even">
-<td align="left">(pathfinder init)</td>
-<td align="left">45.2</td>
-<td align="right">3.6</td>
-<td align="left"></td>
+<td align="left">NUTS (pathfinder init)</td>
+<td align="right">45.2</td>
+<td align="left">3.6</td>
 </tr>
 <tr class="odd">
 <td align="left">A (static delays)</td>
@@ -352,27 +340,15 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
-<td align="left">NUTS</td>
-<td align="right"></td>
-<td align="left"></td>
+<td align="left">NUTS (prior init)</td>
+<td align="right">120.9</td>
+<td align="left">1.5</td>
 </tr>
 <tr class="odd">
-<td align="left">(prior init)</td>
-<td align="left">120.9</td>
-<td align="right">1.5</td>
-<td align="left"></td>
-</tr>
-<tr class="even">
 <td align="left">B (time-varying delays)</td>
-<td align="left">NUTS</td>
-<td align="right"></td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">(pathfinder init)</td>
-<td align="left">112.8</td>
-<td align="right">1.7</td>
-<td align="left"></td>
+<td align="left">NUTS (pathfinder init)</td>
+<td align="right">112.8</td>
+<td align="left">1.7</td>
 </tr>
 <tr class="even">
 <td align="left">B (time-varying delays)</td>
@@ -391,7 +367,10 @@ Increasing the number of paths is a standard way to improve pathfinder performan
 <span>    fill <span class="op">=</span> <span class="st">"Specification"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
+<span>    legend.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>    axis.text.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>angle <span class="op">=</span> <span class="fl">30</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 </details><div class="figure">
 <img src="figures/inference-methods-runtime-plot-1.png" alt="plot of chunk runtime-plot" width="100%"><p class="caption">
 plot of chunk runtime-plot

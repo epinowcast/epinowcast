@@ -241,7 +241,7 @@ fits <- list(
 )
 
 method_labels <- c(
-  "NUTS\n(prior init)", "NUTS\n(pathfinder init)", "Pathfinder"
+  "NUTS (prior init)", "NUTS (pathfinder init)", "Pathfinder"
 )
 
 runtime_dt <- data.table(
@@ -275,18 +275,14 @@ knitr::kable(
 )
 ```
 
-| Spec                    | Method     | Runtime (s) | Min ESS/s |
-|:------------------------|:-----------|------------:|:----------|
-| A (static delays)       | NUTS       |             |           |
-| (prior init)            | 51.5       |         3.4 |           |
-| A (static delays)       | NUTS       |             |           |
-| (pathfinder init)       | 45.2       |         3.6 |           |
-| A (static delays)       | Pathfinder |         6.6 | \-        |
-| B (time-varying delays) | NUTS       |             |           |
-| (prior init)            | 120.9      |         1.5 |           |
-| B (time-varying delays) | NUTS       |             |           |
-| (pathfinder init)       | 112.8      |         1.7 |           |
-| B (time-varying delays) | Pathfinder |        13.0 | \-        |
+| Spec                    | Method                 | Runtime (s) | Min ESS/s |
+|:------------------------|:-----------------------|------------:|:----------|
+| A (static delays)       | NUTS (prior init)      |        51.5 | 3.4       |
+| A (static delays)       | NUTS (pathfinder init) |        45.2 | 3.6       |
+| A (static delays)       | Pathfinder             |         6.6 | \-        |
+| B (time-varying delays) | NUTS (prior init)      |       120.9 | 1.5       |
+| B (time-varying delays) | NUTS (pathfinder init) |       112.8 | 1.7       |
+| B (time-varying delays) | Pathfinder             |        13.0 | \-        |
 
 Runtime and sampling efficiency for each spec and method. Min ESS/s is
 the minimum bulk effective sample size per second and is reported only
@@ -306,7 +302,10 @@ ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
     fill = "Specification"
   ) +
   theme_bw() +
-  theme(legend.position = "bottom")
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
 ```
 
 ![plot of chunk
