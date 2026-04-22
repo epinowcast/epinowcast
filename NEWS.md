@@ -3,7 +3,7 @@
 This release prepares the package for CRAN submission and introduces new methods for inspecting `epinowcast` and preprocessed data objects, including `print()`, `summary()`, `plot()` and an `enw_get_data()` accessor.
 The getting started vignette has been restructured around a default-first flow that fits and compares three models — the default Poisson model and two alternatives with weekly growth rate, day-of-week effects, negative binomial observations, and contrasting parametric versus non-parametric delay specifications — to show that `epinowcast` is a modelling toolkit rather than a single model.
 A new inference methods vignette compares NUTS sampling, standalone pathfinder, and pathfinder used to initialise NUTS (seeding HMC from a pathfinder fit to speed up warmup), and a new data visualisation vignette demonstrates the `plot.enw_preprocess_data()` method.
-Several long-standing issues around reference-date filtering and retrospective Rt estimation with `max_delay = 1` are also fixed.
+Support for `max_delay = 1` means `epinowcast` can now be used for purely retrospective fitting of count data (e.g., Rt estimation from fully reported counts) without any nowcasting, alongside fixes to reference-date filtering.
 
 Full details on changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.6.0).
 
