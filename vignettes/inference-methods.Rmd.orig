@@ -213,7 +213,7 @@ fits <- list(
 )
 
 method_labels <- c(
-  "NUTS\n(prior init)", "NUTS\n(pathfinder init)", "Pathfinder"
+  "NUTS (prior init)", "NUTS (pathfinder init)", "Pathfinder"
 )
 
 runtime_dt <- data.table(
@@ -257,7 +257,10 @@ ggplot(runtime_dt, aes(x = method, y = runtime, fill = spec)) +
     fill = "Specification"
   ) +
   theme_bw() +
-  theme(legend.position = "bottom")
+  theme(
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
 ```
 
 Pathfinder is substantially faster than NUTS, completing in a fraction of the time.
