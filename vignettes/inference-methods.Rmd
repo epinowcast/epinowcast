@@ -255,14 +255,14 @@ knitr::kable(
 
 Table: Runtime and sampling efficiency for each spec and method. Min ESS/s is the minimum bulk effective sample size per second and is reported only for NUTS fits.
 
-|Spec                    |Method                | Runtime (s)|Min ESS/s |
-|:-----------------------|:---------------------|-----------:|:---------|
-|A (static delays)       |NUTS (prior init)      |        51.5|3.4       |
-|A (static delays)       |NUTS (pathfinder init) |        45.2|3.6       |
-|A (static delays)       |Pathfinder            |         6.6|-         |
-|B (time-varying delays) |NUTS (prior init)      |       120.9|1.5       |
-|B (time-varying delays) |NUTS (pathfinder init) |       112.8|1.7       |
-|B (time-varying delays) |Pathfinder            |        13.0|-         |
+|Spec                    |Method                 | Runtime (s)|Min ESS/s |
+|:-----------------------|:----------------------|-----------:|:---------|
+|A (static delays)       |NUTS (prior init)      |        74.0|3.4       |
+|A (static delays)       |NUTS (pathfinder init) |        72.0|2.9       |
+|A (static delays)       |Pathfinder             |        28.1|-         |
+|B (time-varying delays) |NUTS (prior init)      |       193.0|1.5       |
+|B (time-varying delays) |NUTS (pathfinder init) |       206.9|0.9       |
+|B (time-varying delays) |Pathfinder             |        59.2|-         |
 
 
 
@@ -330,10 +330,10 @@ Table: MCMC diagnostics for NUTS fits.
 
 |Label                     | Samples| Max Rhat| Divergent transitions| Max tree depth|
 |:-------------------------|-------:|--------:|---------------------:|--------------:|
-|A: NUTS (prior init)      |    1000|     1.02|                     2|             10|
-|A: NUTS (pathfinder init) |    1000|     1.02|                     1|              9|
-|B: NUTS (prior init)      |    1000|     1.01|                     2|              9|
-|B: NUTS (pathfinder init) |    1000|     1.01|                     6|             10|
+|A: NUTS (prior init)      |    1000|     1.01|                     1|             10|
+|A: NUTS (pathfinder init) |    1000|     1.01|                     1|             10|
+|B: NUTS (prior init)      |    1000|     1.01|                     6|              9|
+|B: NUTS (pathfinder init) |    1000|     1.02|                     0|             10|
 
 
 
@@ -501,24 +501,24 @@ Table: Posterior means and 90% CrI widths.
 
 |Spec                    |Method                 |Variable         | Mean| 90% CrI width|
 |:-----------------------|:----------------------|:----------------|----:|-------------:|
-|A (static delays)       |NUTS (prior init)      |refp_mean_int[1] | 3.91|          1.89|
-|A (static delays)       |NUTS (prior init)      |refp_sd_int[1]   | 4.14|          0.83|
+|A (static delays)       |NUTS (prior init)      |refp_mean_int[1] | 3.96|          2.02|
+|A (static delays)       |NUTS (prior init)      |refp_sd_int[1]   | 4.16|          0.84|
 |A (static delays)       |NUTS (prior init)      |sqrt_phi[1]      | 1.83|          0.27|
-|A (static delays)       |NUTS (pathfinder init) |refp_mean_int[1] | 3.96|          1.94|
-|A (static delays)       |NUTS (pathfinder init) |refp_sd_int[1]   | 4.17|          0.83|
+|A (static delays)       |NUTS (pathfinder init) |refp_mean_int[1] | 3.96|          2.01|
+|A (static delays)       |NUTS (pathfinder init) |refp_sd_int[1]   | 4.16|          0.85|
 |A (static delays)       |NUTS (pathfinder init) |sqrt_phi[1]      | 1.83|          0.27|
-|A (static delays)       |Pathfinder             |refp_mean_int[1] | 3.84|          0.43|
-|A (static delays)       |Pathfinder             |refp_sd_int[1]   | 4.20|          0.13|
-|A (static delays)       |Pathfinder             |sqrt_phi[1]      | 1.88|          0.18|
-|B (time-varying delays) |NUTS (prior init)      |refp_mean_int[1] | 3.66|          2.12|
-|B (time-varying delays) |NUTS (prior init)      |refp_sd_int[1]   | 3.91|          1.12|
-|B (time-varying delays) |NUTS (prior init)      |sqrt_phi[1]      | 1.74|          0.28|
-|B (time-varying delays) |NUTS (pathfinder init) |refp_mean_int[1] | 3.67|          2.20|
-|B (time-varying delays) |NUTS (pathfinder init) |refp_sd_int[1]   | 3.91|          1.19|
-|B (time-varying delays) |NUTS (pathfinder init) |sqrt_phi[1]      | 1.74|          0.28|
-|B (time-varying delays) |Pathfinder             |refp_mean_int[1] | 2.94|          0.36|
-|B (time-varying delays) |Pathfinder             |refp_sd_int[1]   | 2.04|          0.17|
-|B (time-varying delays) |Pathfinder             |sqrt_phi[1]      | 1.62|          0.09|
+|A (static delays)       |Pathfinder             |refp_mean_int[1] | 3.98|          0.41|
+|A (static delays)       |Pathfinder             |refp_sd_int[1]   | 4.20|          0.16|
+|A (static delays)       |Pathfinder             |sqrt_phi[1]      | 1.77|          0.16|
+|B (time-varying delays) |NUTS (prior init)      |refp_mean_int[1] | 3.66|          2.32|
+|B (time-varying delays) |NUTS (prior init)      |refp_sd_int[1]   | 3.93|          1.12|
+|B (time-varying delays) |NUTS (prior init)      |sqrt_phi[1]      | 1.73|          0.28|
+|B (time-varying delays) |NUTS (pathfinder init) |refp_mean_int[1] | 3.67|          2.14|
+|B (time-varying delays) |NUTS (pathfinder init) |refp_sd_int[1]   | 3.90|          1.14|
+|B (time-varying delays) |NUTS (pathfinder init) |sqrt_phi[1]      | 1.74|          0.27|
+|B (time-varying delays) |Pathfinder             |refp_mean_int[1] | 4.94|          0.28|
+|B (time-varying delays) |Pathfinder             |refp_sd_int[1]   | 4.31|          0.17|
+|B (time-varying delays) |Pathfinder             |sqrt_phi[1]      | 1.69|          0.08|
 
 
 
@@ -554,14 +554,14 @@ day1_posterior <- day1_posterior[
 day1_posterior[, variable := gsub("\\[.*\\]", "", variable)]
 day1_posterior <- day1_posterior[, .(mean = mean(mean), sd = mean(sd)), by = variable]
 day1_posterior
-#>         variable        mean         sd
-#>           <char>       <num>      <num>
-#> 1:    expr_r_int -0.01803102 0.11953956
-#> 2:  expr_beta_sd  0.22981341 0.09128661
-#> 3: refp_mean_int  3.91101934 0.57955965
-#> 4:   refp_sd_int  4.14053770 0.24707924
-#> 5:   rep_beta_sd  0.41978786 0.13747114
-#> 6:      sqrt_phi  1.83300673 0.08172812
+#>         variable         mean        sd
+#>           <char>        <num>     <num>
+#> 1:    expr_r_int -0.007612415 0.1164540
+#> 2:  expr_beta_sd  0.242207767 0.1015083
+#> 3: refp_mean_int  3.956114972 0.6262763
+#> 4:   refp_sd_int  4.156000679 0.2608413
+#> 5:   rep_beta_sd  0.429202417 0.1344537
+#> 6:      sqrt_phi  1.829628515 0.0810334
 ```
 
 `epinowcast()` merges these values into the default priors via `enw_replace_priors()`, so only the listed variables are updated.
@@ -639,9 +639,9 @@ knitr::kable(update_runtime, digits = 1)
 
 |Method                            | Runtime (s)|
 |:---------------------------------|-----------:|
-|Pathfinder (informed priors)      |         2.2|
-|Pathfinder (default priors)       |         5.2|
-|NUTS (default priors, full refit) |        84.5|
+|Pathfinder (informed priors)      |         8.1|
+|Pathfinder (default priors)       |        26.4|
+|NUTS (default priors, full refit) |        72.8|
 
 
 
