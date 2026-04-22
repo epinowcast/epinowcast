@@ -1,21 +1,84 @@
-# epinowcast 0.5.0.1000
-## Package
+# epinowcast 0.6.0
 
-- Moved `cmdstanr` from `Imports` to `Suggests` and removed `Remotes` entry for `scoringutils` to prepare for CRAN submission. See #207.
-- Solved linting issues (implicit returns) in multiple files. See #715.
+This release prepares the package for CRAN submission and introduces new methods for inspecting `epinowcast` and preprocessed data objects, including `print()`, `summary()`, `plot()` and an `enw_get_data()` accessor.
+The getting started vignette has been restructured around a default-first flow that fits and compares three models — the default Poisson model and two alternatives with weekly growth rate, day-of-week effects, negative binomial observations, and contrasting parametric versus non-parametric delay specifications — to show that `epinowcast` is a modelling toolkit rather than a single model.
+A new inference methods vignette compares NUTS sampling, standalone pathfinder, and pathfinder used to initialise NUTS (seeding HMC from a pathfinder fit to speed up warmup), and a new data visualisation vignette demonstrates the `plot.enw_preprocess_data()` method.
+Support for `max_delay = 1` means `epinowcast` can now be used for purely retrospective fitting of count data (e.g., Rt estimation from fully reported counts) without any nowcasting, alongside fixes to reference-date filtering.
 
+Full details on changes in this release can be found in the following sections or in the [GitHub release notes](https://github.com/epinowcast/epinowcast/releases/tag/v0.6.0).
+
+## Contributors
+
+@seabbs and @sbfnk contributed code to this release.
+
+@seabbs reviewed pull requests for this release.
+
+@seabbs, @sbfnk and @Bisaloo reported bugs, made suggestions, or contributed to discussions that led to improvements in this release.
 
 ## Breaking changes
 
-- Moved `scoringutils` from `Imports` to `Suggests` using delayed S3 method registration via `@exportS3Method`. Users now need to load `scoringutils` explicitly to use `as_forecast_sample()`. See #739.
+- Moved `scoringutils` from `Imports` to `Suggests` using delayed S3 method registration via `@exportS3Method`.
+  Users now need to load `scoringutils` explicitly to use `as_forecast_sample()`.
+  See #741.
 - `enw_add_incidence()` no longer filters reference dates that precede the earliest report date.
   Users should now call `enw_filter_reference_dates_by_report_start()` before `enw_add_incidence()` to reproduce the previous behaviour.
   All internal call sites have been updated.
-  See #305 by @seabbs.
+  See #709 by @seabbs.
+
+## Package
+
+- Prepared the package for CRAN submission, including moving `cmdstanr` from `Imports` to `Suggests`, removing the `Remotes` entry for `scoringutils`, fixing URLs and removing the CmdStan `SystemRequirements`.
+  See #736 and #747.
+- Updated install instructions to treat `cmdstanr` as an optional dependency.
+  See #740.
+- Added `enw_get_data()` accessor along with `print()` and `summary()` methods for `epinowcast` objects.
+  See #750.
+- Improved the `epinowcast` `print()` method to show model objects and the maximum tree depth reached during sampling.
+  See #755.
+- Added a `plot.enw_preprocess_data()` method for quickly visualising preprocessed data.
+  See #757.
+- Added `enw_obs_at_delay()` helper function for extracting observations at a given delay.
+  See #707.
+- Solved linting issues (implicit returns) in multiple files and fixed remaining violations in `R/model-tools.R`.
+  See #715 and #717.
 
 ## Model
 
-- Optimised Stan code for efficiency by inlining intermediate variables and removing unnecessary loop guards. See #695 by @seabbs.
+- Optimised Stan code for efficiency by inlining intermediate variables and removing unnecessary loop guards.
+  See #696 by @seabbs.
+- Added support for `max_delay = 1` so that `epinowcast` can be used for retrospective Rt estimation without nowcasting.
+  See #759 closing #742.
+
+## Documentation
+
+- Restructured the getting started vignette around a default-first flow that fits and overlays three models: the default Poisson model with all defaults, and two alternatives with a weekly growth rate expectation, day-of-week report effects and negative binomial observations that differ in their delay specification (parametric lognormal with day-of-week effects versus a non-parametric intercept plus random walk over delay weeks).
+  A new data visualisation section precedes the modelling to motivate model choices.
+  See #749.
+- Added an inference methods comparison vignette covering NUTS sampling, standalone pathfinder, and pathfinder used to initialise NUTS (a warmup-speedup pattern where the pathfinder fit seeds HMC), with runtime, diagnostic, and posterior parameter comparisons across two model specifications; linked from the features table and pkgdown navigation.
+  See #751 and #777.
+- Added a data visualisation vignette demonstrating the new `plot.enw_preprocess_data()` method and its five plot types (observations, cumulative empirical reporting delay, delay fraction heatmap, delay quantiles, and stacked delay timeseries).
+  See #757.
+- Updated the single-timeseries Rt estimation and main `epinowcast` vignettes.
+  See #723 and #744.
+- Clarified how to specify custom priors and updated vignette source files to include prior specification guidance.
+  See #710 and #721.
+- Refactored vignette headers to use a shared YAML configuration.
+  See #711.
+- Fixed a citation formatting error.
+  See #705.
+- Updated the README.
+  See #738, #746 and #771.
+
+## Infrastructure
+
+- Added a full package linting GitHub Action.
+  See #704.
+- Changed benchmarking to be comment-triggered and fixed the benchmarks comment workflow skipping correctly.
+  See #708 and #720.
+- Fixed merge queue concurrency groups cancelling each other.
+  See #713.
+- Bumped GitHub Actions and Docker action dependencies.
+  See #714, #730, #731, #732, #733 and #760.
 
 # epinowcast 0.5.0
 
