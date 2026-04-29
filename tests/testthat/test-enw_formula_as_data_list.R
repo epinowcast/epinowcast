@@ -46,6 +46,19 @@ test_that("enw_formula_as_data_list produces expected output using a more comple
   )
 })
 
+test_that(
+  "enw_formula_as_data_list keeps fdesign as a matrix when dropping the intercept leaves a single column", # nolint: line_length_linter.
+  {
+    out <- enw_formula_as_data_list(
+      enw_formula(~ 1 + disp, test_cars),
+      prefix = "single", drop_intercept = TRUE
+    )
+    expect_true(is.matrix(out$single_fdesign))
+    expect_identical(dim(out$single_fdesign), c(5L, 1L))
+    expect_identical(out$single_fncol, 1)
+  }
+)
+
 test_that("enw_formula_as_data_list produces expected default output", {
   expect_identical(
     enw_formula_as_data_list(

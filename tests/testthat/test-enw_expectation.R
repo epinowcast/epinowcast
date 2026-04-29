@@ -18,6 +18,38 @@ test_that("enw_expectation produces the expected default model", {
   )
 })
 
+test_that(
+  "enw_expectation passes a 2D fdesign to Stan for a weekly timestep with a single numeric covariate (#783)", # nolint: line_length_linter.
+  {
+    df <- data.frame(
+      reference_date = as.Date(rep(
+        c("1990-01-01", "1990-01-08", "1990-01-15"), c(7L, 6L, 7L)
+      )),
+      report_date = as.Date(c(
+        "1990-01-01", "1990-01-08", "1990-01-15", "1990-01-22", "1990-01-29",
+        "1990-02-12", "1990-03-05", "1990-01-08", "1990-01-15", "1990-01-22",
+        "1990-01-29", "1990-02-05", "1990-02-12", "1990-01-15", "1990-01-22",
+        "1990-01-29", "1990-02-05", "1990-02-12", "1990-02-19", "1990-03-05"
+      )),
+      confirm = c(
+        3L, 27L, 50L, 58L, 59L, 60L, 61L, 2L, 35L, 41L, 45L, 48L, 50L,
+        6L, 25L, 36L, 38L, 42L, 43L, 44L
+      )
+    )
+    weekly_pobs <- enw_preprocess_data(
+      enw_complete_dates(df, max_delay = 5, timestep = "week"),
+      max_delay = 5, timestep = "week"
+    )
+    rep_module <- enw_expectation(r = ~ 1 + week, data = weekly_pobs)
+    expect_true(is.matrix(rep_module$data$expr_fdesign))
+    expect_identical(
+      dim(rep_module$data$expr_fdesign),
+      c(rep_module$data$expr_fnrow, rep_module$data$expr_fncol)
+    )
+    expect_identical(rep_module$data$expr_fncol, 1)
+  }
+)
+
 test_that("enw_expectation supports custom expectation models", {
   expect_snapshot({
     expectation <- enw_expectation(~ 1 + (1 | day_of_week), data = pobs)
