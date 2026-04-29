@@ -43,16 +43,18 @@ For function-specific details, see `?function_name`.
 | Timestep | Use case | How to specify | Example |
 |----------|----------|----------------|---------|
 | Daily | High resolution surveillance | `timestep = "day"` (default) | [Getting started vignette](epinowcast.html) |
-| Weekly | Reduced computational cost | `timestep = "week"` | `enw_preprocess_data(..., timestep = "week")` |
+| Weekly | Reduced computational cost | `timestep = "week"` | [Temporal aggregation guide](temporal-aggregation.html) |
+| Daily process, weekly reporting | Daily inference from once-a-week reporting | `timestep = "day"` with weekly observation scaffold | [Temporal aggregation guide](temporal-aggregation.html) |
 | Custom | Any integer multiple of days | `timestep = 7` | `enw_preprocess_data(..., timestep = 7)` |
 
 **Key functions:**
 
 - `enw_preprocess_data()`: Set timestep during preprocessing
 - `enw_aggregate_cumulative()`: Convert between timesteps
+- `enw_rolling_sum()` and `enw_dayofweek_structural_reporting()`: Build the daily-process / weekly-reporting scaffold
 
 **Where to see it:** The [getting started vignette](epinowcast.html) uses daily data.
-For weekly or custom timesteps, simply change the `timestep` argument in `enw_preprocess_data()`.
+For weekly data, weekly reporting on a daily process, and a side-by-side comparison with the daily benchmark see the [temporal aggregation guide](temporal-aggregation.html).
 
 # Stratified and Multi-Group Nowcasting {#stratification}
 
@@ -114,7 +116,7 @@ Model report date effects and known reporting structures.
 - `enw_rolling_sum()`: Aggregate observations over timesteps
 - See `?enw_report` for details
 
-**Where to see it:** See `inst/examples/germany_weekly_reporting_daily_process_model.R` for an example with weekly reporting and a daily process model.
+**Where to see it:** See the [temporal aggregation guide](temporal-aggregation.html) for worked examples of weekly reporting on a daily process model, with both fitted and structural day-of-week reporting.
 
 # Latent Process Models {#latent-models}
 

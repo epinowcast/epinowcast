@@ -46,6 +46,8 @@ navbar:
       - text: Working with epinowcast
       - text: Comparing inference methods
         href: articles/inference-methods.html
+      - text: Temporal aggregation guide
+        href: articles/temporal-aggregation.html
       - text: Visualising preprocessed data
         href: articles/preprocess-visualisation.html
       - text: Resources to help with model fitting using Stan

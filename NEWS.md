@@ -1,3 +1,11 @@
+# epinowcast 0.6.0.1000
+
+## Documentation
+
+- Added a temporal aggregation guide vignette covering the weekly timestep, daily-process / weekly-reporting (fitted and structural variants), and a daily benchmark, with weekly-scale CRPS comparison via `scoringutils`.
+  Replaces the standalone scripts at `inst/examples/germany_weekly_process_model.R` and `inst/examples/germany_weekly_reporting_daily_process_model.R`.
+  See #668 by @seabbs.
+
 # epinowcast 0.6.0
 
 This release prepares the package for CRAN submission and introduces new methods for inspecting `epinowcast` and preprocessed data objects, including `print()`, `summary()`, `plot()` and an `enw_get_data()` accessor.
