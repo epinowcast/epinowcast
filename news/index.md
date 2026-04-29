@@ -1,5 +1,18 @@
 # Changelog
 
+## epinowcast 0.6.1 (development)
+
+### Bug fixes
+
+- Fixed a Stan dimension mismatch when the expectation, reference,
+  report, or missing data formula has an intercept and a single numeric
+  covariate (e.g., `r = ~ 1 + week`). The fixed-effects design matrix
+  was collapsing to a vector after the intercept was dropped, causing
+  Stan to error with
+  `mismatch in number dimensions declared and found in context`. See
+  [\#783](https://github.com/epinowcast/epinowcast/issues/783) by
+  [@seabbs](https://github.com/seabbs).
+
 ## epinowcast 0.6.0
 
 This release prepares the package for CRAN submission and introduces new
@@ -1189,10 +1202,8 @@ this release.
   [@seabbs](https://github.com/seabbs) and
   [@adrian-lison](https://github.com/adrian-lison).
 - Added more non-default linters in `.lintr` configuration file. This
-  file is used when
-  [`lintr::lint_package()`](https://lintr.r-lib.org/reference/lint.html)
-  is run or in the new `lint-changed-files.yaml` GitHub Actions
-  workflow. See
+  file is used when `lintr::lint_package()` is run or in the new
+  `lint-changed-files.yaml` GitHub Actions workflow. See
   [\#220](https://github.com/epinowcast/epinowcast/issues/220) by
   [@Bisaloo](https://github.com/Bisaloo) and reviewed by
   [@pearsonca](https://github.com/pearsonca) and

@@ -102,7 +102,8 @@ enw_report(data = enw_example("preprocessed"))
 #> [1] 0
 #> 
 #> $data$rep_fdesign
-#> numeric(0)
+#>  
+#> 1
 #> 
 #> $data$rep_rdesign
 #>      (Intercept)
@@ -154,8 +155,8 @@ enw_report(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557be15c2748>
-#> <environment: 0x557be15bdef8>
+#> <bytecode: 0x562d7eef3bc0>
+#> <environment: 0x562d7eef30f8>
 #> 
 
 if (FALSE) { # \dontrun{

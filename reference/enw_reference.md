@@ -114,7 +114,8 @@ enw_reference(
 #> [1] 0
 #> 
 #> $data$refp_fdesign
-#> numeric(0)
+#>  
+#> 1
 #> 
 #> $data$refp_rdesign
 #>      (Intercept)
@@ -1078,8 +1079,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557be6a64c10>
-#> <environment: 0x557be6a724d8>
+#> <bytecode: 0x562d7f8d6320>
+#> <environment: 0x562d7fada730>
 #> 
 
 # Non-parametric model with a random effect per delay
@@ -1117,7 +1118,8 @@ enw_reference(
 #> [1] 0
 #> 
 #> $data$refp_fdesign
-#> numeric(0)
+#>  
+#> 1
 #> 
 #> $data$refp_rdesign
 #>      (Intercept)
@@ -3703,8 +3705,8 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557be6a64c10>
-#> <environment: 0x557be6f59510>
+#> <bytecode: 0x562d7f8d6320>
+#> <environment: 0x562d7bb405e0>
 #> 
 
 # Combined parametric and non-parametric model
@@ -3741,7 +3743,8 @@ enw_reference(
 #> [1] 0
 #> 
 #> $data$refp_fdesign
-#> numeric(0)
+#>  
+#> 1
 #> 
 #> $data$refp_rdesign
 #>      (Intercept)
@@ -4719,7 +4722,7 @@ enw_reference(
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x557be6a64c10>
-#> <environment: 0x557bee6fa498>
+#> <bytecode: 0x562d7f8d6320>
+#> <environment: 0x562d7eccb348>
 #> 
 ```
