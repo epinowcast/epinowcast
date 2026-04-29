@@ -1,3 +1,11 @@
+# epinowcast 0.6.1 (development)
+
+## Bug fixes
+
+- Fixed a Stan dimension mismatch when the expectation, reference, report, or missing data formula has an intercept and a single numeric covariate (e.g., `r = ~ 1 + week`).
+  The fixed-effects design matrix was collapsing to a vector after the intercept was dropped, causing Stan to error with `mismatch in number dimensions declared and found in context`.
+  See #783 by @seabbs.
+
 # epinowcast 0.6.0
 
 This release prepares the package for CRAN submission and introduces new methods for inspecting `epinowcast` and preprocessed data objects, including `print()`, `summary()`, `plot()` and an `enw_get_data()` accessor.

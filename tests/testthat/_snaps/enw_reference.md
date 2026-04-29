@@ -1112,7 +1112,8 @@
       [1] 0
       
       $data$refp_fdesign
-      numeric(0)
+       
+      1
       
       $data$refp_rdesign
            (Intercept)
@@ -3684,7 +3685,8 @@
       [1] 0
       
       $data$refp_fdesign
-      numeric(0)
+       
+      1
       
       $data$refp_rdesign
            (Intercept)
