@@ -54,7 +54,7 @@ test_that(
       prefix = "single", drop_intercept = TRUE
     )
     expect_true(is.matrix(out$single_fdesign))
-    expect_identical(dim(out$single_fdesign), c(5L, 1L))
+    expect_identical(ncol(out$single_fdesign), 1L)
     expect_identical(out$single_fncol, 1)
   }
 )

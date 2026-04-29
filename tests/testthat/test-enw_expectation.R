@@ -43,8 +43,12 @@ test_that(
     rep_module <- enw_expectation(r = ~ 1 + week, data = weekly_pobs)
     expect_true(is.matrix(rep_module$data$expr_fdesign))
     expect_identical(
-      dim(rep_module$data$expr_fdesign),
-      c(rep_module$data$expr_fnrow, rep_module$data$expr_fncol)
+      nrow(rep_module$data$expr_fdesign),
+      as.integer(rep_module$data$expr_fnrow)
+    )
+    expect_identical(
+      ncol(rep_module$data$expr_fdesign),
+      as.integer(rep_module$data$expr_fncol)
     )
     expect_identical(rep_module$data$expr_fncol, 1)
   }
