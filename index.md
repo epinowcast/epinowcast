@@ -209,7 +209,7 @@ outline](https://package.epinowcast.org/articles/model.html). If you use
 
 All contributions to this project are gratefully acknowledged using the
 [`allcontributors` package](https://github.com/ropensci/allcontributors)
-following the [all-contributors](https://allcontributors.org)
+following the [allcontributors](https://allcontributors.org)
 specification. Contributions of any kind are welcome!
 
 ### Code
@@ -218,7 +218,6 @@ specification. Contributions of any kind are welcome!
 [adrian-lison](https://github.com/epinowcast/epinowcast/commits?author=adrian-lison),
 [sbfnk](https://github.com/epinowcast/epinowcast/commits?author=sbfnk),
 [Bisaloo](https://github.com/epinowcast/epinowcast/commits?author=Bisaloo),
-[seabbs-bot](https://github.com/epinowcast/epinowcast/commits?author=seabbs-bot),
 [pearsonca](https://github.com/epinowcast/epinowcast/commits?author=pearsonca),
 [choi-hannah](https://github.com/epinowcast/epinowcast/commits?author=choi-hannah),
 [medewitt](https://github.com/epinowcast/epinowcast/commits?author=medewitt),
@@ -245,15 +244,14 @@ specification. Contributions of any kind are welcome!
 [rumackaaron](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Arumackaaron),
 [micahwiesner67](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amicahwiesner67),
 [kylieainslie](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Akylieainslie),
-[maria-tang](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amaria-tang)
+[maria-tang](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3Amaria-tang),
+[RodrigoZepeda](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+author%3ARodrigoZepeda)
 
 ### Issue Contributors
 
-[ghost](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aghost),
 [jhellewell14](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajhellewell14),
 [Gulfa](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AGulfa),
 [parksw3](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Aparksw3),
 [TimTaylor](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3ATimTaylor),
 [WardBrian](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3AWardBrian),
-[jimrothstein](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein),
-[sbfnk-bot](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Asbfnk-bot)
+[jimrothstein](https://github.com/epinowcast/epinowcast/issues?q=is%3Aissue+commenter%3Ajimrothstein)

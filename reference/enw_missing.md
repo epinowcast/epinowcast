@@ -221,8 +221,8 @@ enw_missing(data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x562d643d92d0>
-#> <environment: 0x562d643ce930>
+#> <bytecode: 0x5604792445c8>
+#> <environment: 0x560479240ef8>
 #> 
 
 # No missingness model specified
@@ -311,7 +311,7 @@ enw_missing(~0, data = enw_example("preprocessed"))
 #>     }
 #>     fn
 #> }
-#> <bytecode: 0x562d643d92d0>
-#> <environment: 0x562d706a4470>
+#> <bytecode: 0x5604792445c8>
+#> <environment: 0x56047600e270>
 #> 
 ```
