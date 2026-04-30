@@ -270,7 +270,7 @@ plot(nowcast_daily, latest_obs = latest_obs_daily)
 
 We score all four models at the weekly scale, the only resolution at which the pure weekly model is defined.
 Approaches 2, 3, and 4 produce daily nowcasts that we summarise to weekly counts by summing daily samples into the same weekly bins that `enw_aggregate_cumulative()` produces.
-We then restrict scoring to the weeks every model has predictions for so the comparison is on a common set of reference weeks.
+By construction every model covers the same nowcast horizon so the comparison is on a common set of reference weeks.
 
 
 ``` r
@@ -297,24 +297,16 @@ weekly_truth <- latest_obs_weekly[, .(
   reference_week = as.Date(reference_date), observed = confirm
 )]
 
-samples_list <- list(
-  "Weekly timestep" = samples_to_weekly(nowcast_weekly, daily = FALSE),
-  "Daily process, weekly reporting (fitted)" =
-    samples_to_weekly(nowcast_weekly_rep),
-  "Daily process, weekly reporting (structural)" =
-    samples_to_weekly(nowcast_weekly_rep_structural),
-  "Daily benchmark" = samples_to_weekly(nowcast_daily)
-)
-common_weeks <- Reduce(
-  intersect, lapply(samples_list, function(s) unique(s$reference_week))
-)
-common_weeks <- intersect(common_weeks, weekly_truth$reference_week)
-common_weeks <- as.Date(common_weeks)
-
 scored <- map_dfr(
-  samples_list,
-  ~ merge(.x[reference_week %in% common_weeks], weekly_truth,
-          by = "reference_week"),
+  list(
+    "Weekly timestep" = samples_to_weekly(nowcast_weekly, daily = FALSE),
+    "Daily process, weekly reporting (fitted)" =
+      samples_to_weekly(nowcast_weekly_rep),
+    "Daily process, weekly reporting (structural)" =
+      samples_to_weekly(nowcast_weekly_rep_structural),
+    "Daily benchmark" = samples_to_weekly(nowcast_daily)
+  ),
+  ~ merge(.x, weekly_truth, by = "reference_week"),
   .id = "model"
 ) |>
   as_forecast_sample(
