@@ -31,15 +31,15 @@ knitr::opts_chunk$set(
 ```
 
 Real-time surveillance data are often reported at a coarser timestep than the process being modelled.
-This vignette walks through the three patterns `epinowcast` supports for handling this and compares them on the same series so you can see what is gained or lost at each level of aggregation.
+This vignette walks through the patterns `epinowcast` supports for handling this and compares them on the same series so you can see what is gained or lost at each level of aggregation.
 
 The patterns covered are:
 
 - **Weekly timestep.** Both observations and the underlying process are modelled at a weekly resolution.
-- **Daily process with weekly reporting.** Observations only arrive on one day per week but the latent process is daily.
+- **Daily process with weekly reporting.** Observations only arrive on one day per week (here Wednesday) but the latent process is daily. We show two variants: one with a fitted day-of-week reporting effect and one with a structural reporting assumption.
 - **Daily timestep.** Both observations and the underlying process are daily.
 
-We fit four models in total, including two variants of the weekly-reporting case (one that fits day-of-week reporting, one that fixes it via a structural assumption), and compare them visually and using the continuous ranked probability score (CRPS) from `scoringutils`.
+We fit four models on the same retrospective slice of the German COVID-19 hospitalisation data and compare them visually and using the continuous ranked probability score (CRPS) from `scoringutils`.
 
 # Packages
 
@@ -59,59 +59,68 @@ options(mc.cores = 2)
 # Data
 
 We use the German COVID-19 hospitalisation data shipped with `epinowcast`, restricted to all-age national counts.
-Reference dates are limited to a three-month window so the four models all run in a few minutes each.
+The retrospective slice is built once with `enw_filter_report_dates()` and `enw_filter_reference_dates()` so all four models nowcast the same reference dates.
+We use a six-week window of reference dates ending 28 days before the latest available reports, mirroring the pattern in the [getting started vignette](epinowcast.html).
 
 ```{r}
+daily_max_delay <- 28
+weekly_max_delay <- 4
+
 nat_germany_hosp <- germany_covid19_hosp[
   location == "DE" & age_group == "00+"
 ][, c("location", "age_group") := NULL]
 
-nat_germany_hosp <- enw_filter_report_dates(
-  nat_germany_hosp, latest_date = "2021-10-01"
-)
-nat_germany_hosp <- enw_filter_reference_dates(
-  nat_germany_hosp, earliest_date = "2021-07-01"
-)
+retro_daily <- nat_germany_hosp |>
+  enw_filter_report_dates(remove_days = daily_max_delay) |>
+  enw_filter_reference_dates(include_days = 42)
+
+retro_weekly <- nat_germany_hosp |>
+  enw_aggregate_cumulative(timestep = "week") |>
+  enw_filter_report_dates(remove_days = daily_max_delay) |>
+  enw_filter_reference_dates(include_days = 42)
 ```
 
-We keep two views of the same series.
-The daily view is used directly by approaches 2 and 3 (daily process, weekly reporting) and approach 4 (daily benchmark).
-The weekly view, produced by `enw_aggregate_cumulative()`, is used by approach 1.
+We use `enw_obs_at_delay()` on the full data to construct the evaluation target at each scale, then apply the same reference-date filter as the retrospective data so the nowcast and target cover the same reference dates.
 
 ```{r}
-daily_data <- enw_complete_dates(nat_germany_hosp, timestep = "day")
-weekly_data <- enw_aggregate_cumulative(nat_germany_hosp, timestep = "week")
+latest_obs_daily <- nat_germany_hosp |>
+  enw_obs_at_delay(max_delay = daily_max_delay) |>
+  enw_filter_reference_dates(
+    remove_days = daily_max_delay, include_days = 42
+  )
+latest_obs_weekly <- nat_germany_hosp |>
+  enw_aggregate_cumulative(timestep = "week") |>
+  enw_obs_at_delay(max_delay = weekly_max_delay, timestep = "week") |>
+  enw_filter_reference_dates(
+    remove_days = daily_max_delay, include_days = 42
+  )
 ```
 
-Latest observations for each scale are extracted to act as the evaluation target.
+A common fit configuration is reused across the models, with a slightly lower `adapt_delta` for the daily-process / weekly-reporting variants where sparse Wednesday-only observations make the posterior easier to traverse with larger steps.
 
 ```{r}
-latest_obs_daily <- enw_latest_data(daily_data)
-latest_obs_weekly <- enw_latest_data(weekly_data)
-```
 
-A common fit configuration is reused across the four models.
-
-```{r}
-fit <- enw_fit_opts(
-  save_warmup = FALSE, pp = TRUE,
-  chains = 2, iter_warmup = 250, iter_sampling = 500,
-  max_treedepth = 12, init_method = "prior",
-  show_messages = interactive(), refresh = 0
-)
+fit_opts_factory <- function(adapt_delta) {
+  enw_fit_opts(
+    save_warmup = FALSE, pp = TRUE,
+    chains = 2, iter_warmup = 500, iter_sampling = 500,
+    max_treedepth = 12, adapt_delta = adapt_delta,
+    show_messages = interactive(), refresh = 0
+  )
+}
+fit <- fit_opts_factory(0.9)
+fit_weekly_rep <- fit_opts_factory(0.8)
 ```
 
 # Approach 1: Weekly timestep
 
-When data are only available aggregated to weeks and a daily process is not required, the simplest approach is to model both observations and process at a weekly resolution.
-A maximum delay of five weeks is used and the expected count is given a random walk on the week index.
+When data are only available aggregated to weeks and daily resolution is not required, the simplest approach is to model both observations and process at a weekly resolution.
+The expected count is given a random walk on the week index and the maximum delay is five weeks.
 
 ```{r weekly-pobs}
-pobs_weekly <- weekly_data |>
+pobs_weekly <- retro_weekly |>
   enw_complete_dates(timestep = "week") |>
-  enw_filter_report_dates(remove_days = 20) |>
-  enw_filter_reference_dates(include_days = 90) |>
-  enw_preprocess_data(max_delay = 5, timestep = "week")
+  enw_preprocess_data(max_delay = weekly_max_delay, timestep = "week")
 ```
 
 ```{r weekly-fit, results = "hide"}
@@ -130,16 +139,18 @@ plot(nowcast_weekly, latest_obs = latest_obs_weekly)
 # Approach 2: Daily process, weekly reporting (fitted day-of-week)
 
 A common situation is data that are only updated once per week but where decisions are made at a daily resolution.
-Here the underlying process is modelled daily, weekly reporting is encoded by setting all non-Monday confirmed counts to `NA`, and the day of the week is included as a random effect in the report model so reporting can still be learned from the data.
+Here the underlying process is modelled daily and reports arrive on Wednesdays for current and past reference dates.
+The day of the week is included as a random effect in the report model so the reporting cycle can be learned from the data.
 
-We first build the reporting scaffold.
-The cumulative count `confirm` is kept on Mondays and set to `NA` elsewhere, `.observed` is flagged so the likelihood ignores rows without observations, and `enw_impute_na_observations()` carries forward the most recent Monday value so the data has a complete daily grid.
+We build the reporting scaffold by keeping the cumulative count `confirm` on Wednesdays and setting it to `NA` elsewhere.
+`.observed` flags which rows the likelihood should use and `enw_impute_na_observations()` carries forward the most recent Wednesday value so the daily grid is complete.
 
 ```{r weekly-rep-scaffold}
-weekly_rep_data <- copy(daily_data)
+weekly_rep_data <- retro_daily |>
+  enw_complete_dates(timestep = "day")
 weekly_rep_data[, day_of_week := weekdays(report_date)]
 weekly_rep_data[
-  , confirm := fifelse(day_of_week == "Monday", confirm, NA_real_)
+  , confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)
 ]
 weekly_rep_data <- weekly_rep_data |>
   enw_flag_observed_observations() |>
@@ -151,9 +162,7 @@ weekly_rep_data <- weekly_rep_data |>
 ```{r weekly-rep-pobs}
 pobs_weekly_rep <- weekly_rep_data |>
   enw_complete_dates(timestep = "day") |>
-  enw_filter_report_dates(remove_days = 20) |>
-  enw_filter_reference_dates(include_days = 90) |>
-  enw_preprocess_data(max_delay = 30, timestep = "day")
+  enw_preprocess_data(max_delay = daily_max_delay, timestep = "day")
 ```
 
 ```{r weekly-rep-fit, results = "hide"}
@@ -168,23 +177,23 @@ nowcast_weekly_rep <- epinowcast(
     family = "negbin", observation_indicator = ".observed",
     data = pobs_weekly_rep
   ),
-  fit = fit
+  fit = fit_weekly_rep
 )
 ```
 
-```{r weekly-rep-nowcast, fig.cap = "Daily-scale nowcast with weekly reporting where day-of-week reporting is fitted."}
+```{r weekly-rep-nowcast, fig.cap = "Daily-scale nowcast with fitted day-of-week reporting."}
 plot(nowcast_weekly_rep, latest_obs = latest_obs_daily)
 ```
 
 # Approach 3: Daily process, weekly reporting (structural)
 
-The same scaffold can be combined with a structural assumption that all reporting is concentrated on a known day of the week.
-This is appropriate when reporting is genuinely deterministic and removes the need to fit a day-of-week effect.
-`enw_dayofweek_structural_reporting()` constructs the relevant matrix and `enw_report()` is supplied with `structural` instead of a formula.
+The same scaffold can be combined with a structural assumption that all reporting happens on a known weekday.
+This removes the need to fit a day-of-week effect and is appropriate when the reporting cycle is genuinely deterministic.
+`enw_dayofweek_structural_reporting()` constructs the reporting matrix and `enw_report()` is supplied with `structural` instead of a formula.
 
 ```{r weekly-rep-structural-fit, results = "hide"}
 structural <- enw_dayofweek_structural_reporting(
-  pobs_weekly_rep, day_of_week = "Monday"
+  pobs_weekly_rep, day_of_week = "Wednesday"
 )
 nowcast_weekly_rep_structural <- epinowcast(
   pobs_weekly_rep,
@@ -194,24 +203,22 @@ nowcast_weekly_rep_structural <- epinowcast(
     family = "negbin", observation_indicator = ".observed",
     data = pobs_weekly_rep
   ),
-  fit = fit
+  fit = fit_weekly_rep
 )
 ```
 
-```{r weekly-rep-structural-nowcast, fig.cap = "Daily-scale nowcast with weekly reporting where reporting is fixed to Mondays."}
+```{r weekly-rep-structural-nowcast, fig.cap = "Daily-scale nowcast with structural Wednesday-only reporting."}
 plot(nowcast_weekly_rep_structural, latest_obs = latest_obs_daily)
 ```
 
 # Approach 4: Daily timestep
 
-For comparison we fit the same process model to the un-aggregated daily data.
-Reporting can vary across all seven days of the week and the model is otherwise specified identically to approaches 2 and 3.
+For comparison we fit the same process model to the un-aggregated daily data with a fitted day-of-week reporting effect.
 
 ```{r daily-pobs}
-pobs_daily <- daily_data |>
-  enw_filter_report_dates(remove_days = 20) |>
-  enw_filter_reference_dates(include_days = 90) |>
-  enw_preprocess_data(max_delay = 30, timestep = "day")
+pobs_daily <- retro_daily |>
+  enw_complete_dates(timestep = "day") |>
+  enw_preprocess_data(max_delay = daily_max_delay, timestep = "day")
 ```
 
 ```{r daily-fit, results = "hide"}
@@ -232,33 +239,41 @@ plot(nowcast_daily, latest_obs = latest_obs_daily)
 
 # Comparison
 
-We score the models in two pairs to keep the comparison apples-to-apples.
-The weekly model and the daily benchmark predict at different temporal resolutions but can both be summarised to the Wednesday-ending weekly bins produced by `enw_aggregate_cumulative()`.
-The two daily-process / weekly-reporting variants share an identical scaffold and likelihood, so we compare them directly on the Monday observations they fit.
+We score all four models at the weekly scale, the only resolution at which the pure weekly model is defined.
+Approaches 2, 3, and 4 produce daily nowcasts that we summarise to weekly counts by summing daily samples into Wednesday-ending bins to match the weeks produced by `enw_aggregate_cumulative()`.
 
 ```{r weekly-scores}
+weekly_anchor_dow <- as.integer(format(
+  as.Date(latest_obs_weekly$reference_date[1]), "%u"
+))
 ceiling_to_weekly_bin <- function(x) {
   x <- as.Date(x)
   weekday <- as.integer(format(x, "%u"))
-  x + ((3L - weekday) %% 7L)
+  x + ((weekly_anchor_dow - weekday) %% 7L)
 }
 
-daily_samples_to_weekly <- function(nowcast) {
+samples_to_weekly <- function(nowcast, daily = TRUE) {
   samples <- as.data.table(summary(nowcast, type = "nowcast_samples"))
-  samples[, reference_week := ceiling_to_weekly_bin(reference_date)]
-  samples[, .(sample = sum(sample)), by = c("reference_week", ".draw")]
+  if (daily) {
+    samples[, reference_week := ceiling_to_weekly_bin(reference_date)]
+    samples[, .(sample = sum(sample)), by = c("reference_week", ".draw")]
+  } else {
+    samples[, .(reference_week = as.Date(reference_date), .draw, sample)]
+  }
 }
 
 weekly_truth <- latest_obs_weekly[, .(
   reference_week = as.Date(reference_date), observed = confirm
 )]
 
-scored_weekly <- map_dfr(
+scored <- map_dfr(
   list(
-    "Weekly timestep" = as.data.table(
-      summary(nowcast_weekly, type = "nowcast_samples")
-    )[, .(reference_week = as.Date(reference_date), .draw, sample)],
-    "Daily benchmark" = daily_samples_to_weekly(nowcast_daily)
+    "Weekly timestep" = samples_to_weekly(nowcast_weekly, daily = FALSE),
+    "Daily process, weekly reporting (fitted)" =
+      samples_to_weekly(nowcast_weekly_rep),
+    "Daily process, weekly reporting (structural)" =
+      samples_to_weekly(nowcast_weekly_rep_structural),
+    "Daily benchmark" = samples_to_weekly(nowcast_daily)
   ),
   ~ merge(.x, weekly_truth, by = "reference_week"),
   .id = "model"
@@ -270,55 +285,15 @@ scored_weekly <- map_dfr(
 ```
 
 ```{r weekly-scores-table}
-scored_weekly |>
-  summarise_scores(by = "model") |>
-  summarise_scores(fun = signif, digits = 2, by = "model") |>
-  kable()
-```
-
-For the daily-process / weekly-reporting variants we score the Monday observations they fit against the latest available daily counts.
-
-```{r monday-scores}
-monday_truth <- latest_obs_daily[
-  weekdays(reference_date) == "Monday",
-  .(reference_date = as.Date(reference_date), observed = confirm)
-]
-
-monday_samples <- function(nowcast) {
-  samples <- as.data.table(summary(nowcast, type = "nowcast_samples"))
-  samples[, reference_date := as.Date(reference_date)]
-  samples[
-    weekdays(reference_date) == "Monday",
-    .(reference_date, .draw, sample)
-  ]
-}
-
-scored_monday <- map_dfr(
-  list(
-    "Daily process, weekly reporting (fitted)" =
-      monday_samples(nowcast_weekly_rep),
-    "Daily process, weekly reporting (structural)" =
-      monday_samples(nowcast_weekly_rep_structural)
-  ),
-  ~ merge(.x, monday_truth, by = "reference_date"),
-  .id = "model"
-) |>
-  as_forecast_sample(
-    observed = "observed", predicted = "sample", sample_id = ".draw"
-  ) |>
-  score()
-```
-
-```{r monday-scores-table}
-scored_monday |>
+scored |>
   summarise_scores(by = "model") |>
   summarise_scores(fun = signif, digits = 2, by = "model") |>
   kable()
 ```
 
 The pure weekly model trades resolution for speed and is competitive when only weekly counts matter.
+The two daily-process / weekly-reporting variants recover daily structure on the same scale as the daily benchmark; the structural variant adds prior information about the reporting cycle while the fitted variant lets the data speak.
 The daily benchmark provides the upper bound on what the data can support when daily data are available.
-Among the daily-process / weekly-reporting variants the structural variant is well-calibrated and tracks the Monday observations closely, while the fitted variant struggles to identify a free day-of-week reporting effect from Monday-only observations and ends up much wider and more biased.
 
 # Choosing an approach
 
