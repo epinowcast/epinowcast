@@ -356,12 +356,12 @@ kable(scored_weekly)
 
 
 
-|model                                        |   bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
-|:--------------------------------------------|------:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|--------------------:|--------------------:|
-|Weekly timestep                              | 0.4000| 12.0|  280|            190|          0.0033|       85.0|       6.6| 340|       380|  540000|                 0.67|                 0.67|
-|Daily process, weekly reporting (fitted)     | 0.0057|  8.3|   30|             20|          2.9000|        7.4|       5.1|  31|        40|    3900|                 0.33|                 0.67|
-|Daily process, weekly reporting (structural) | 0.6200|  8.3|   22|             11|          0.0000|       11.0|       5.0|  47|        33|    1400|                 0.33|                 1.00|
-|Daily benchmark                              | 0.8900| 11.0|   36|             28|          0.0000|        7.9|       6.1|  34|        51|    2900|                 0.00|                 0.33|
+|model                                        |  bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
+|:--------------------------------------------|-----:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|--------------------:|--------------------:|
+|Weekly timestep                              | 0.400| 12.0|  290|            200|             0.0|       86.0|       6.6| 360|       410|  540000|                 0.67|                 0.67|
+|Daily process, weekly reporting (fitted)     | 0.002|  8.5|   32|             21|             3.1|        7.6|       5.2|  32|        42|    4200|                 0.33|                 0.33|
+|Daily process, weekly reporting (structural) | 0.610|  8.3|   21|             10|             0.0|       11.0|       5.0|  46|        33|    1300|                 0.33|                 1.00|
+|Daily benchmark                              | 0.900| 11.0|   36|             28|             0.0|        7.9|       6.3|  34|        50|    2900|                 0.00|                 0.33|
 
 
 
@@ -393,10 +393,11 @@ ggplot(weekly_plot_data) +
 <p class="caption">Weekly-scale nowcasts from all four models on shared axes.</p>
 </div>
 
-All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at 280 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
+All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at around 290 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
 Bias and coverage tell a more nuanced story than CRPS alone.
-All daily-process models over-predict at this aggregation (positive bias) because slight over-prediction in each daily sample compounds when seven of them are summed.
-Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and under-covers severely (90 percent coverage of 33 percent), the fitted variant is closer to nominal, and the structural variant over-covers (its 90 percent interval contains every common week, indicating it is too wide given its mean prediction).
+The daily-process models have small or near-zero bias on the daily scale but pick up a positive bias once their seven daily samples are summed: summing right-skewed posterior draws shifts the posterior mass upward and the weekly truth itself uses a slightly shorter reporting horizon than the daily samples (`enw_obs_at_delay(max_delay = 4, "week")` evaluates at three weeks while the daily samples are at twenty-seven days), so the same draws score well against daily truth but over-predict against weekly truth.
+Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and under-covers severely on these three weeks, the fitted variant is closer to nominal but still under-covers, and the structural variant is wider than warranted (its 90 percent interval contains every common week).
+With only three common weeks scored, the coverage estimates have very limited resolution (each week shifts coverage by 33 percentage points) so they should be read as indicative rather than definitive.
 On a flatter or more slowly varying series the gap between the weekly model and the daily-process models will be smaller; the gap can be larger near turning points like this one.
 
 ## Daily scale
@@ -450,9 +451,9 @@ kable(scored_daily)
 
 |model                                        |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
 |:--------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|--------------------:|--------------------:|
-|Daily process, weekly reporting (fitted)     | -0.360| NaN|  7.3|            1.5|             3.5|        2.3|      -Inf|  10|       9.7|     180|                 0.43|                 0.68|
-|Daily process, weekly reporting (structural) | -0.140| NaN|  8.6|            2.3|             2.5|        3.8|       NaN|  16|      12.0|     600|                 0.50|                 0.79|
-|Daily benchmark                              | -0.024| NaN|  5.7|            1.6|             1.6|        2.5|      -Inf|  11|       7.9|     120|                 0.46|                 0.86|
+|Daily process, weekly reporting (fitted)     | -0.350| NaN|  7.3|            1.5|             3.4|        2.4|      -Inf|  10|       9.5|     170|                 0.46|                 0.68|
+|Daily process, weekly reporting (structural) | -0.150| NaN|  8.5|            2.2|             2.5|        3.8|       NaN|  16|      11.0|     560|                 0.54|                 0.79|
+|Daily benchmark                              | -0.028| NaN|  5.7|            1.6|             1.6|        2.5|      -Inf|  11|       7.9|     120|                 0.46|                 0.89|
 
 
 
@@ -528,10 +529,10 @@ kable(runtimes)
 
 |Model                                        | Run time (s)|
 |:--------------------------------------------|------------:|
-|Weekly timestep                              |          0.7|
-|Daily process, weekly reporting (fitted)     |        240.0|
-|Daily process, weekly reporting (structural) |         94.0|
-|Daily benchmark                              |        160.0|
+|Weekly timestep                              |          0.8|
+|Daily process, weekly reporting (fitted)     |        130.0|
+|Daily process, weekly reporting (structural) |         76.0|
+|Daily benchmark                              |        180.0|
 
 
 

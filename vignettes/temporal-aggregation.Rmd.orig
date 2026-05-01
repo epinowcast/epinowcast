@@ -345,10 +345,11 @@ ggplot(weekly_plot_data) +
   theme(legend.position = "bottom")
 ```
 
-All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at 280 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
+All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at around 290 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
 Bias and coverage tell a more nuanced story than CRPS alone.
-All daily-process models over-predict at this aggregation (positive bias) because slight over-prediction in each daily sample compounds when seven of them are summed.
-Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and under-covers severely (90 percent coverage of 33 percent), the fitted variant is closer to nominal, and the structural variant over-covers (its 90 percent interval contains every common week, indicating it is too wide given its mean prediction).
+The daily-process models have small or near-zero bias on the daily scale but pick up a positive bias once their seven daily samples are summed: summing right-skewed posterior draws shifts the posterior mass upward and the weekly truth itself uses a slightly shorter reporting horizon than the daily samples (`enw_obs_at_delay(max_delay = 4, "week")` evaluates at three weeks while the daily samples are at twenty-seven days), so the same draws score well against daily truth but over-predict against weekly truth.
+Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and under-covers severely on these three weeks, the fitted variant is closer to nominal but still under-covers, and the structural variant is wider than warranted (its 90 percent interval contains every common week).
+With only three common weeks scored, the coverage estimates have very limited resolution (each week shifts coverage by 33 percentage points) so they should be read as indicative rather than definitive.
 On a flatter or more slowly varying series the gap between the weekly model and the daily-process models will be smaller; the gap can be larger near turning points like this one.
 
 ## Daily scale
