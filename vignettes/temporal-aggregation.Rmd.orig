@@ -47,7 +47,7 @@ We fit four models on the same retrospective slice of the German COVID-19 hospit
 library(epinowcast)
 library(data.table)
 library(purrr)
-library(ggplot2)
+library(ggplot2) # nolint: unused_import_linter. Required by plot.epinowcast().
 library(scoringutils)
 library(knitr)
 ```
@@ -139,15 +139,14 @@ plot(nowcast_weekly, latest_obs = latest_obs_weekly)
 # Approach 2: Daily process, weekly reporting (fitted day-of-week)
 
 A common situation is data that are only updated once per week but where decisions are made at a daily resolution.
-Here the underlying process is modelled daily, reports arrive on Wednesdays for current and past reference dates, and the day of the week is included as a random effect in the report model.
-This is the natural starting point if the reporting cycle is unknown but it is poorly identified when reporting is concentrated on a single weekday because only one day-of-week level enters the likelihood; the structural variant in the next section pins the cycle and is generally preferable for genuinely once-a-week reporting.
+Here the underlying process is modelled daily, reports arrive on Wednesdays for current and past reference dates, and the day of the week is included as a random effect in the report model so the reporting cycle can be learned from the data.
 
-We build the reporting scaffold by keeping the cumulative count `confirm` on Wednesdays and setting it to `NA` elsewhere.
-`.observed` flags which rows the likelihood should use and `enw_impute_na_observations()` carries forward the most recent Wednesday value so the daily grid is complete.
+We build the reporting scaffold by keeping the cumulative count `confirm` on Wednesdays and setting it to `NA` elsewhere, then `enw_impute_na_observations()` carries forward the most recent Wednesday value.
+The resulting daily grid is a step function in cumulative reports — flat between Wednesdays and stepping up on each one — and the fitted model uses the full grid so the day-of-week random effect can learn the spike pattern.
+`.observed` is recorded for the structural variant in the next section but is not needed here.
 
 ```{r weekly-rep-scaffold}
-weekly_rep_data <- retro_daily |>
-  enw_complete_dates(timestep = "day")
+weekly_rep_data <- enw_complete_dates(retro_daily, timestep = "day")
 weekly_rep_data[, day_of_week := weekdays(report_date)]
 weekly_rep_data[
   , confirm := fifelse(day_of_week == "Wednesday", confirm, NA_real_)
@@ -173,16 +172,13 @@ nowcast_weekly_rep <- epinowcast(
   pobs_weekly_rep,
   expectation = exp_weekly_rep,
   report = enw_report(~ (1 | day_of_week), data = pobs_weekly_rep),
-  obs = enw_obs(
-    family = "negbin", observation_indicator = ".observed",
-    data = pobs_weekly_rep
-  ),
+  obs = enw_obs(family = "negbin", data = pobs_weekly_rep),
   fit = fit_weekly_rep
 )
 ```
 
 ```{r weekly-rep-nowcast, fig.cap = "Daily-scale nowcast with fitted day-of-week reporting."}
-plot(nowcast_weekly_rep, latest_obs = latest_obs_weekly)
+plot(nowcast_weekly_rep, latest_obs = latest_obs_daily)
 ```
 
 # Approach 3: Daily process, weekly reporting (structural)
@@ -293,17 +289,15 @@ scored |>
 ```
 
 The pure weekly model has the best weekly CRPS — it is fit directly at this resolution and avoids any reporting-cycle complication.
-The structural variant of the daily-process model matches the daily benchmark on weekly CRPS, showing that a daily latent process with a known weekly reporting cycle can recover the same predictive performance as a fully daily fit.
-The fitted variant scores much worse: with `observation_indicator = ".observed"` only Wednesday rows enter the likelihood so the day-of-week random effect on the report side has data only for one of seven levels.
-The remaining six levels stay close to their priors and the model's predicted cumulative on non-Wednesday days is dominated by that prior, inflating the daily-scale nowcast samples and the weekly sum derived from them.
+Both daily-process / weekly-reporting variants recover daily structure on the same scale as the daily benchmark; the structural variant pins the reporting cycle in advance while the fitted variant learns it from the data.
+The daily benchmark provides the upper bound on what the data can support when daily data are available.
 
 # Choosing an approach
 
 - Use the **weekly timestep** when only weekly counts are available or required.
   It is the cheapest option and avoids encoding reporting structure.
 - Use a **daily process with weekly reporting** when daily inference is the goal but reporting only happens once a week.
-  Prefer the structural variant when reporting is genuinely concentrated on a known weekday: it pins the reporting cycle and keeps the daily-scale predictions on the right scale.
-  A fitted day-of-week reporting effect is only useful if reporting is genuinely spread across multiple days; with single-weekday reporting it is poorly identified.
+  Pick the structural variant when you can commit to a known reporting day, and the fitted variant otherwise.
 - Use the **daily timestep** when daily data are available and daily resolution is required for downstream decisions.
 
 See `vignette("epinowcast")` for the default daily walk-through and `vignette("inference-methods")` for the inference options that apply equally to all four approaches.
