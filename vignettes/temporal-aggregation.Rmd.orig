@@ -235,9 +235,11 @@ plot(nowcast_daily, latest_obs = latest_obs_daily)
 
 # Comparison
 
-We score all four models at the weekly scale, the only resolution at which the pure weekly model is defined.
-Approaches 2, 3, and 4 produce daily nowcasts that we summarise to weekly counts by summing daily samples into the same weekly bins that `enw_aggregate_cumulative()` produces.
-By construction every model covers the same nowcast horizon so the comparison is on a common set of reference weeks.
+## Weekly scale
+
+We start at the weekly scale, the only resolution at which the pure weekly model is defined.
+Approaches 2, 3, and 4 produce daily nowcasts that we summarise to weekly counts by summing seven daily samples into the weekly bins that `enw_aggregate_cumulative()` produces.
+We restrict scoring to weeks where every model contributes a full seven days of daily reference dates (or the corresponding weekly bin), so all four models are scored on the same set of reference weeks.
 
 ```{r weekly-scores}
 weekly_anchor_dow <- as.integer(format(
@@ -253,26 +255,40 @@ samples_to_weekly <- function(nowcast, daily = TRUE) {
   samples <- as.data.table(summary(nowcast, type = "nowcast_samples"))
   if (daily) {
     samples[, reference_week := ceiling_to_weekly_bin(reference_date)]
-    samples[, .(sample = sum(sample)), by = c("reference_week", ".draw")]
+    samples <- samples[
+      , .(sample = sum(sample), n_days = .N),
+      by = c("reference_week", ".draw")
+    ]
+    samples <- samples[n_days == 7L][, n_days := NULL]
   } else {
-    samples[, .(reference_week = as.Date(reference_date), .draw, sample)]
+    samples <- samples[, .(reference_week = as.Date(reference_date),
+                           .draw, sample)]
   }
+  samples
 }
 
 weekly_truth <- latest_obs_weekly[, .(
   reference_week = as.Date(reference_date), observed = confirm
 )]
 
-scored <- map_dfr(
-  list(
-    "Weekly timestep" = samples_to_weekly(nowcast_weekly, daily = FALSE),
-    "Daily process, weekly reporting (fitted)" =
-      samples_to_weekly(nowcast_weekly_rep),
-    "Daily process, weekly reporting (structural)" =
-      samples_to_weekly(nowcast_weekly_rep_structural),
-    "Daily benchmark" = samples_to_weekly(nowcast_daily)
-  ),
-  ~ merge(.x, weekly_truth, by = "reference_week"),
+weekly_samples <- list(
+  "Weekly timestep" = samples_to_weekly(nowcast_weekly, daily = FALSE),
+  "Daily process, weekly reporting (fitted)" =
+    samples_to_weekly(nowcast_weekly_rep),
+  "Daily process, weekly reporting (structural)" =
+    samples_to_weekly(nowcast_weekly_rep_structural),
+  "Daily benchmark" = samples_to_weekly(nowcast_daily)
+)
+common_weeks <- as.Date(Reduce(
+  intersect,
+  c(lapply(weekly_samples, function(s) unique(s$reference_week)),
+    list(weekly_truth$reference_week))
+))
+
+scored_weekly <- map_dfr(
+  weekly_samples,
+  ~ merge(.x[reference_week %in% common_weeks], weekly_truth,
+          by = "reference_week"),
   .id = "model"
 ) |>
   as_forecast_sample(
@@ -282,15 +298,96 @@ scored <- map_dfr(
 ```
 
 ```{r weekly-scores-table}
-scored |>
+scored_weekly |>
   summarise_scores(by = "model") |>
   summarise_scores(fun = signif, digits = 2, by = "model") |>
   kable()
 ```
 
-The pure weekly model has the best weekly CRPS — it is fit directly at this resolution and avoids any reporting-cycle complication.
-Both daily-process / weekly-reporting variants recover daily structure on the same scale as the daily benchmark; the structural variant pins the reporting cycle in advance while the fitted variant learns it from the data.
-The daily benchmark provides the upper bound on what the data can support when daily data are available.
+All three daily-process models score similarly at the weekly resolution — the weekly observation scaffold tracks the full daily fit closely.
+The pure weekly model is more conservative on the most recent weeks: with only four weekly observations in its nowcast horizon and a single weekly random walk to smooth them, it gives more weight to the prior and ends up wider than the daily models on the common scored weeks.
+
+## Daily scale
+
+We then compare approaches 2, 3, and 4 at the daily scale to check that the weekly-reporting variants recover daily structure rather than merely producing the right weekly totals.
+The pure weekly model is excluded because it has no daily output.
+Daily samples are scored against `latest_obs_daily` over the daily reference dates the three models share.
+
+```{r daily-scores}
+samples_at_daily <- function(nowcast) {
+  samples <- as.data.table(summary(nowcast, type = "nowcast_samples"))
+  samples[, .(reference_date = as.Date(reference_date), .draw, sample)]
+}
+
+daily_truth <- latest_obs_daily[, .(
+  reference_date = as.Date(reference_date), observed = confirm
+)]
+
+daily_samples <- list(
+  "Daily process, weekly reporting (fitted)" =
+    samples_at_daily(nowcast_weekly_rep),
+  "Daily process, weekly reporting (structural)" =
+    samples_at_daily(nowcast_weekly_rep_structural),
+  "Daily benchmark" = samples_at_daily(nowcast_daily)
+)
+common_days <- as.Date(Reduce(
+  intersect,
+  c(lapply(daily_samples, function(s) unique(s$reference_date)),
+    list(daily_truth$reference_date))
+))
+
+scored_daily <- map_dfr(
+  daily_samples,
+  ~ merge(.x[reference_date %in% common_days], daily_truth,
+          by = "reference_date"),
+  .id = "model"
+) |>
+  as_forecast_sample(
+    observed = "observed", predicted = "sample", sample_id = ".draw"
+  ) |>
+  score()
+```
+
+```{r daily-scores-table}
+scored_daily |>
+  summarise_scores(by = "model") |>
+  summarise_scores(fun = signif, digits = 2, by = "model") |>
+  kable()
+```
+
+```{r daily-comparison-plot, fig.cap = "Daily-scale nowcasts from the three daily-process models on shared axes."}
+nowcast_summary_for <- function(nowcast) {
+  as.data.table(summary(nowcast, type = "nowcast"))[
+    , .(reference_date = as.Date(reference_date), median, q5, q95)
+  ]
+}
+daily_plot_data <- map_dfr(
+  list(
+    "Weekly reporting (fitted)" =
+      nowcast_summary_for(nowcast_weekly_rep),
+    "Weekly reporting (structural)" =
+      nowcast_summary_for(nowcast_weekly_rep_structural),
+    "Daily benchmark" = nowcast_summary_for(nowcast_daily)
+  ),
+  identity, .id = "model"
+)
+ggplot(daily_plot_data) +
+  aes(x = reference_date, colour = model, fill = model) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, colour = NA) +
+  geom_line(aes(y = median)) +
+  geom_point(
+    data = latest_obs_daily,
+    aes(x = as.Date(reference_date), y = confirm),
+    inherit.aes = FALSE, size = 1
+  ) +
+  labs(x = "Reference date", y = "Notifications") +
+  theme(legend.position = "bottom")
+```
+
+The structural and fitted weekly-reporting models track the daily benchmark closely, both visually and on daily CRPS.
+This is the pay-off for using a daily latent process with a known reporting cycle: even when reporting only happens once a week, the daily-scale nowcasts barely degrade compared with a fully daily fit.
+
+Together with the weekly-scale results above, this means the weekly-reporting scaffold gives up very little in either direction: it stays competitive at weekly aggregation and recovers the daily structure that a pure weekly model cannot represent at all.
 
 # Choosing an approach
 
