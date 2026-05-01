@@ -304,8 +304,31 @@ scored_weekly |>
   kable()
 ```
 
-All three daily-process models score similarly at the weekly resolution — the weekly observation scaffold tracks the full daily fit closely.
-The pure weekly model is more conservative on the most recent weeks: with only four weekly observations in its nowcast horizon and a single weekly random walk to smooth them, it gives more weight to the prior and ends up wider than the daily models on the common scored weeks.
+```{r weekly-comparison-plot, fig.cap = "Weekly-scale nowcasts from all four models on shared axes."}
+weekly_summary <- function(samples) {
+  samples[
+    , .(median = median(sample),
+        q5 = quantile(sample, 0.05),
+        q95 = quantile(sample, 0.95)),
+    by = "reference_week"
+  ]
+}
+weekly_plot_data <- map_dfr(weekly_samples, weekly_summary, .id = "model")
+ggplot(weekly_plot_data) +
+  aes(x = reference_week, colour = model, fill = model) +
+  geom_ribbon(aes(ymin = q5, ymax = q95), alpha = 0.2, colour = NA) +
+  geom_line(aes(y = median)) +
+  geom_point(
+    data = weekly_truth, aes(x = reference_week, y = observed),
+    inherit.aes = FALSE, size = 1.5
+  ) +
+  labs(x = "Reference week", y = "Notifications") +
+  theme(legend.position = "bottom")
+```
+
+All three daily-process models score similarly at the weekly resolution and track the truth tightly on the common weeks.
+The pure weekly model is wider and more biased: its `rw(week)` random walk has only four weekly observations to learn from, so when the underlying series turns over at the end of the window the model lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
+This particular slice of data makes the gap look large; the cost of working purely at the weekly scale will be smaller on flatter or more slowly varying series and larger near turning points.
 
 ## Daily scale
 
