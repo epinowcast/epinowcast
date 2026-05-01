@@ -23,7 +23,7 @@ vignette: >
 
 
 Real-time surveillance data are often reported at a coarser timestep than the process being modelled.
-This vignette walks through the patterns `epinowcast` supports for handling this and compares them on the same series so you can see what is gained or lost at each level of aggregation.
+This vignette walks through some of the patterns `epinowcast` supports for handling this and compares them on the same series so you can see what is gained or lost at each level of aggregation.
 
 The patterns covered are:
 
@@ -105,7 +105,7 @@ fit_opts_factory <- function(adapt_delta) {
     show_messages = interactive(), refresh = 0
   )
 }
-fit <- fit_opts_factory(0.9)
+fit <- fit_opts_factory(0.95)
 fit_weekly_rep <- fit_opts_factory(0.8)
 ```
 
@@ -143,7 +143,7 @@ plot(nowcast_weekly, latest_obs = latest_obs_weekly)
 
 # Approach 2: Daily process, weekly reporting (fitted day-of-week)
 
-A common situation is data that are only updated once per week but where decisions are made at a daily resolution.
+A common situation is data that are only updated once per week but are then reported with a daily resolution.
 Here the underlying process is modelled daily, reports arrive on Wednesdays for current and past reference dates, and the day of the week is included as a random effect in the report model so the reporting cycle can be learned from the data.
 
 We build the reporting scaffold by keeping the cumulative count `confirm` on Wednesdays and setting it to `NA` elsewhere, then `enw_impute_na_observations()` carries forward the most recent Wednesday value.
@@ -200,6 +200,8 @@ plot(nowcast_weekly_rep, latest_obs = latest_obs_daily)
 The same scaffold can be combined with a structural assumption that all reporting happens on a known weekday.
 This removes the need to fit a day-of-week effect and is appropriate when the reporting cycle is genuinely deterministic.
 `enw_dayofweek_structural_reporting()` constructs the reporting matrix and `enw_report()` is supplied with `structural` instead of a formula.
+Note that here we also pass the `.observed` column to `enw_report()` so the model knows which daily observations are real and which are imputed from the last Wednesday.
+We have to use an indicator variable for this vs. just having `NA` reports as our internal Stan model doesn't support `NA` values.
 
 
 ``` r
@@ -476,7 +478,48 @@ ggplot(daily_plot_data) +
 The structural and fitted weekly-reporting models track the daily benchmark closely, both visually and on daily CRPS.
 This is the pay-off for using a daily latent process with a known reporting cycle: even when reporting only happens once a week, the daily-scale nowcasts barely degrade compared with a fully daily fit.
 
+All three daily models slightly under-cover the most recent reference dates, where the latest data points sit a little above the upper credible band.
+This is most likely a misspecification of the reporting delay rather than a problem with the temporal scaffold: we are using the default lognormal delay with no temporal variation, and a non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail.
+The [getting started vignette](epinowcast.html) and `?enw_reference` cover the available options.
+
 Together with the weekly-scale results above, this means the weekly-reporting scaffold gives up very little in either direction: it stays competitive at weekly aggregation and recovers the daily structure that a pure weekly model cannot represent at all.
+
+## Runtime
+
+Comparable runtimes show how much computation each approach buys you.
+
+
+``` r
+runtimes <- data.table(
+  Model = c(
+    "Weekly timestep",
+    "Daily process, weekly reporting (fitted)",
+    "Daily process, weekly reporting (structural)",
+    "Daily benchmark"
+  ),
+  `Run time (s)` = signif(c(
+    nowcast_weekly$run_time,
+    nowcast_weekly_rep$run_time,
+    nowcast_weekly_rep_structural$run_time,
+    nowcast_daily$run_time
+  ), 2)
+)
+kable(runtimes)
+```
+
+
+
+|Model                                        | Run time (s)|
+|:--------------------------------------------|------------:|
+|Weekly timestep                              |          0.7|
+|Daily process, weekly reporting (fitted)     |        240.0|
+|Daily process, weekly reporting (structural) |         94.0|
+|Daily benchmark                              |        160.0|
+
+
+
+The pure weekly model is the cheapest by a wide margin — five weekly delay bins is a much smaller reporting triangle than 28 daily bins, and the model has correspondingly fewer parameters.
+Among the daily models the structural variant is fastest because pinning the reporting cycle removes the day-of-week random effect on the report side; the fitted variant is the slowest as it has to learn that effect under sparse Wednesday-only observations and uses a lower `adapt_delta`; the daily benchmark sits between them.
 
 # Choosing an approach
 
