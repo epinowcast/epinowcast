@@ -287,19 +287,15 @@ common_weeks <- as.Date(Reduce(
     list(weekly_truth$reference_week))
 ))
 
-interval_coverage <- function(samples_truth, by) {
-  samples_truth[
-    , .(q5 = quantile(sample, 0.05),
-        q25 = quantile(sample, 0.25),
-        q75 = quantile(sample, 0.75),
-        q95 = quantile(sample, 0.95),
-        observed = unique(observed)),
-    by = by
-  ][
-    , .(coverage_50 = mean(observed >= q25 & observed <= q75),
-        coverage_90 = mean(observed >= q5 & observed <= q95)),
-    by = "model"
-  ]
+coverage_table <- function(forecast_sample) {
+  forecast_sample |>
+    as_forecast_quantile(probs = c(0.05, 0.25, 0.5, 0.75, 0.95)) |>
+    get_coverage(by = "model") |>
+    as.data.table() |>
+    (\(dt) dt[interval_range %in% c(50, 90)])() |>
+    unique(by = c("model", "interval_range")) |>
+    dcast(model ~ interval_range, value.var = "interval_coverage") |>
+    setnames(c("50", "90"), c("coverage_50", "coverage_90"))
 }
 
 scored_weekly_input <- map_dfr(
@@ -307,15 +303,12 @@ scored_weekly_input <- map_dfr(
   ~ merge(.x[reference_week %in% common_weeks], weekly_truth,
           by = "reference_week"),
   .id = "model"
-)
-scored_weekly <- scored_weekly_input |>
+) |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
-  ) |>
-  score()
-coverage_weekly <- interval_coverage(
-  as.data.table(scored_weekly_input), by = c("model", "reference_week")
-)
+  )
+scored_weekly <- score(scored_weekly_input)
+coverage_weekly <- coverage_table(scored_weekly_input)
 ```
 
 ```{r weekly-scores-table}
@@ -351,8 +344,7 @@ ggplot(weekly_plot_data) +
 All three daily-process models have CRPS in the tens at the weekly resolution while the pure weekly model sits at 280 — an order-of-magnitude gap driven by its `rw(week)` random walk having only four weekly observations to learn from, so when the series turns over at the end of the window it lacks the within-week structure needed to catch the reversal and instead extrapolates the recent rising trend.
 Bias and coverage tell a more nuanced story than CRPS alone.
 All daily-process models over-predict at this aggregation (positive bias) because slight over-prediction in each daily sample compounds when seven of them are summed.
-The structural variant is the most reliable on coverage — its 90 percent interval contains every common week — while the daily benchmark has the tightest intervals and consequently the worst coverage despite a similar CRPS, because its weekly sums sit consistently above the truth.
-The fitted variant is the least biased of the three on bias but covers roughly as well as the weekly model.
+Coverage should ideally match the nominal level, with both under- and over-coverage indicating miscalibration: the daily benchmark has the tightest intervals and under-covers severely (90 percent coverage of 33 percent), the fitted variant is closer to nominal, and the structural variant over-covers (its 90 percent interval contains every common week, indicating it is too wide given its mean prediction).
 On a flatter or more slowly varying series the gap between the weekly model and the daily-process models will be smaller; the gap can be larger near turning points like this one.
 
 ## Daily scale
@@ -389,15 +381,12 @@ scored_daily_input <- map_dfr(
   ~ merge(.x[reference_date %in% common_days], daily_truth,
           by = "reference_date"),
   .id = "model"
-)
-scored_daily <- scored_daily_input |>
+) |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
-  ) |>
-  score()
-coverage_daily <- interval_coverage(
-  as.data.table(scored_daily_input), by = c("model", "reference_date")
-)
+  )
+scored_daily <- score(scored_daily_input)
+coverage_daily <- coverage_table(scored_daily_input)
 ```
 
 ```{r daily-scores-table}
@@ -441,8 +430,8 @@ The daily benchmark has the lowest daily CRPS, the smallest bias, and the best 9
 The two weekly-reporting variants are close behind on CRPS, slightly more negatively biased, and only modestly worse on coverage.
 This is the pay-off for using a daily latent process with a known reporting cycle: even when reporting only happens once a week, the daily-scale nowcasts barely degrade compared with a fully daily fit.
 
-All three daily models under-cover at the 90 percent level (around 70-85 percent rather than the nominal 90 percent), with the latest data points sitting a little above their upper credible bands.
-This is most likely a misspecification of the reporting delay rather than a problem with the temporal scaffold: we are using the default lognormal delay with no temporal variation, and a non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail.
+All three daily models under-cover at the 90 percent level — around 70-85 percent rather than the nominal 90 — with the latest data points sitting a little above their upper credible bands.
+Both under- and over-coverage signal miscalibration; here the issue is intervals that are slightly too tight, most likely a misspecification of the reporting delay rather than a problem with the temporal scaffold: we are using the default lognormal delay with no temporal variation, and a non-parametric or time-varying delay (or an explicit day-of-week effect on the reporting hazard) would give the model the flexibility to track the lengthening tail.
 The [getting started vignette](epinowcast.html) and `?enw_reference` cover the available options.
 
 Together with the weekly-scale results above, this means the weekly-reporting scaffold gives up very little in either direction: it stays competitive at weekly aggregation and recovers the daily structure that a pure weekly model cannot represent at all.
