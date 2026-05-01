@@ -317,18 +317,27 @@ common_weeks <- as.Date(Reduce(
     list(weekly_truth$reference_week))
 ))
 
-coverage_table <- function(forecast_sample) {
-  forecast_sample |>
+score_with_coverage <- function(forecast_sample) {
+  sample_scores <- forecast_sample |>
+    score() |>
+    summarise_scores(by = "model") |>
+    summarise_scores(fun = signif, digits = 2, by = "model")
+  quantile_scores <- forecast_sample |>
     as_forecast_quantile(probs = c(0.05, 0.25, 0.5, 0.75, 0.95)) |>
-    get_coverage(by = "model") |>
-    as.data.table() |>
-    (\(dt) dt[interval_range %in% c(50, 90)])() |>
-    unique(by = c("model", "interval_range")) |>
-    dcast(model ~ interval_range, value.var = "interval_coverage") |>
-    setnames(c("50", "90"), c("coverage_50", "coverage_90"))
+    score(metrics = list(
+      interval_coverage_50 = purrr::partial(
+        interval_coverage, interval_range = 50
+      ),
+      interval_coverage_90 = purrr::partial(
+        interval_coverage, interval_range = 90
+      )
+    )) |>
+    summarise_scores(by = "model") |>
+    summarise_scores(fun = signif, digits = 2, by = "model")
+  merge(sample_scores, quantile_scores, by = "model", sort = FALSE)
 }
 
-scored_weekly_input <- map_dfr(
+scored_weekly <- map_dfr(
   weekly_samples,
   ~ merge(.x[reference_week %in% common_weeks], weekly_truth,
           by = "reference_week"),
@@ -336,28 +345,23 @@ scored_weekly_input <- map_dfr(
 ) |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
-  )
-scored_weekly <- score(scored_weekly_input)
-coverage_weekly <- coverage_table(scored_weekly_input)
+  ) |>
+  score_with_coverage()
 ```
 
 
 ``` r
-scored_weekly |>
-  summarise_scores(by = "model") |>
-  summarise_scores(fun = signif, digits = 2, by = "model") |>
-  merge(coverage_weekly, by = "model", sort = FALSE) |>
-  kable()
+kable(scored_weekly)
 ```
 
 
 
-|model                                        |   bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| coverage_50| coverage_90|
-|:--------------------------------------------|------:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|-----------:|-----------:|
-|Weekly timestep                              | 0.4000| 12.0|  280|            190|          0.0033|       85.0|       6.6| 340|       380|  540000|   0.6666667|   0.6666667|
-|Daily process, weekly reporting (fitted)     | 0.0057|  8.3|   30|             20|          2.9000|        7.4|       5.1|  31|        40|    3900|   0.3333333|   0.6666667|
-|Daily process, weekly reporting (structural) | 0.6200|  8.3|   22|             11|          0.0000|       11.0|       5.0|  47|        33|    1400|   0.3333333|   1.0000000|
-|Daily benchmark                              | 0.8900| 11.0|   36|             28|          0.0000|        7.9|       6.1|  34|        51|    2900|   0.0000000|   0.3333333|
+|model                                        |   bias|  dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
+|:--------------------------------------------|------:|----:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|--------------------:|--------------------:|
+|Weekly timestep                              | 0.4000| 12.0|  280|            190|          0.0033|       85.0|       6.6| 340|       380|  540000|                 0.67|                 0.67|
+|Daily process, weekly reporting (fitted)     | 0.0057|  8.3|   30|             20|          2.9000|        7.4|       5.1|  31|        40|    3900|                 0.33|                 0.67|
+|Daily process, weekly reporting (structural) | 0.6200|  8.3|   22|             11|          0.0000|       11.0|       5.0|  47|        33|    1400|                 0.33|                 1.00|
+|Daily benchmark                              | 0.8900| 11.0|   36|             28|          0.0000|        7.9|       6.1|  34|        51|    2900|                 0.00|                 0.33|
 
 
 
@@ -425,7 +429,7 @@ common_days <- as.Date(Reduce(
     list(daily_truth$reference_date))
 ))
 
-scored_daily_input <- map_dfr(
+scored_daily <- map_dfr(
   daily_samples,
   ~ merge(.x[reference_date %in% common_days], daily_truth,
           by = "reference_date"),
@@ -433,27 +437,22 @@ scored_daily_input <- map_dfr(
 ) |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
-  )
-scored_daily <- score(scored_daily_input)
-coverage_daily <- coverage_table(scored_daily_input)
+  ) |>
+  score_with_coverage()
 ```
 
 
 ``` r
-scored_daily |>
-  summarise_scores(by = "model") |>
-  summarise_scores(fun = signif, digits = 2, by = "model") |>
-  merge(coverage_daily, by = "model", sort = FALSE) |>
-  kable()
+kable(scored_daily)
 ```
 
 
 
-|model                                        |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| coverage_50| coverage_90|
-|:--------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|-----------:|-----------:|
-|Daily process, weekly reporting (fitted)     | -0.360| NaN|  7.3|            1.5|             3.5|        2.3|      -Inf|  10|       9.7|     180|   0.4285714|   0.6785714|
-|Daily process, weekly reporting (structural) | -0.140| NaN|  8.6|            2.3|             2.5|        3.8|       NaN|  16|      12.0|     600|   0.5000000|   0.7857143|
-|Daily benchmark                              | -0.024| NaN|  5.7|            1.6|             1.6|        2.5|      -Inf|  11|       7.9|     120|   0.4642857|   0.8571429|
+|model                                        |   bias| dss| crps| overprediction| underprediction| dispersion| log_score| mad| ae_median| se_mean| interval_coverage_50| interval_coverage_90|
+|:--------------------------------------------|------:|---:|----:|--------------:|---------------:|----------:|---------:|---:|---------:|-------:|--------------------:|--------------------:|
+|Daily process, weekly reporting (fitted)     | -0.360| NaN|  7.3|            1.5|             3.5|        2.3|      -Inf|  10|       9.7|     180|                 0.43|                 0.68|
+|Daily process, weekly reporting (structural) | -0.140| NaN|  8.6|            2.3|             2.5|        3.8|       NaN|  16|      12.0|     600|                 0.50|                 0.79|
+|Daily benchmark                              | -0.024| NaN|  5.7|            1.6|             1.6|        2.5|      -Inf|  11|       7.9|     120|                 0.46|                 0.86|
 
 
 

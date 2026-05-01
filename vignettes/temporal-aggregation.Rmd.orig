@@ -287,18 +287,27 @@ common_weeks <- as.Date(Reduce(
     list(weekly_truth$reference_week))
 ))
 
-coverage_table <- function(forecast_sample) {
-  forecast_sample |>
+score_with_coverage <- function(forecast_sample) {
+  sample_scores <- forecast_sample |>
+    score() |>
+    summarise_scores(by = "model") |>
+    summarise_scores(fun = signif, digits = 2, by = "model")
+  quantile_scores <- forecast_sample |>
     as_forecast_quantile(probs = c(0.05, 0.25, 0.5, 0.75, 0.95)) |>
-    get_coverage(by = "model") |>
-    as.data.table() |>
-    (\(dt) dt[interval_range %in% c(50, 90)])() |>
-    unique(by = c("model", "interval_range")) |>
-    dcast(model ~ interval_range, value.var = "interval_coverage") |>
-    setnames(c("50", "90"), c("coverage_50", "coverage_90"))
+    score(metrics = list(
+      interval_coverage_50 = purrr::partial(
+        interval_coverage, interval_range = 50
+      ),
+      interval_coverage_90 = purrr::partial(
+        interval_coverage, interval_range = 90
+      )
+    )) |>
+    summarise_scores(by = "model") |>
+    summarise_scores(fun = signif, digits = 2, by = "model")
+  merge(sample_scores, quantile_scores, by = "model", sort = FALSE)
 }
 
-scored_weekly_input <- map_dfr(
+scored_weekly <- map_dfr(
   weekly_samples,
   ~ merge(.x[reference_week %in% common_weeks], weekly_truth,
           by = "reference_week"),
@@ -306,17 +315,12 @@ scored_weekly_input <- map_dfr(
 ) |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
-  )
-scored_weekly <- score(scored_weekly_input)
-coverage_weekly <- coverage_table(scored_weekly_input)
+  ) |>
+  score_with_coverage()
 ```
 
 ```{r weekly-scores-table}
-scored_weekly |>
-  summarise_scores(by = "model") |>
-  summarise_scores(fun = signif, digits = 2, by = "model") |>
-  merge(coverage_weekly, by = "model", sort = FALSE) |>
-  kable()
+kable(scored_weekly)
 ```
 
 ```{r weekly-comparison-plot, fig.cap = "Weekly-scale nowcasts from all four models on shared axes."}
@@ -376,7 +380,7 @@ common_days <- as.Date(Reduce(
     list(daily_truth$reference_date))
 ))
 
-scored_daily_input <- map_dfr(
+scored_daily <- map_dfr(
   daily_samples,
   ~ merge(.x[reference_date %in% common_days], daily_truth,
           by = "reference_date"),
@@ -384,17 +388,12 @@ scored_daily_input <- map_dfr(
 ) |>
   as_forecast_sample(
     observed = "observed", predicted = "sample", sample_id = ".draw"
-  )
-scored_daily <- score(scored_daily_input)
-coverage_daily <- coverage_table(scored_daily_input)
+  ) |>
+  score_with_coverage()
 ```
 
 ```{r daily-scores-table}
-scored_daily |>
-  summarise_scores(by = "model") |>
-  summarise_scores(fun = signif, digits = 2, by = "model") |>
-  merge(coverage_daily, by = "model", sort = FALSE) |>
-  kable()
+kable(scored_daily)
 ```
 
 ```{r daily-comparison-plot, fig.cap = "Daily-scale nowcasts from the three daily-process models on shared axes."}
