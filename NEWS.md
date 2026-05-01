@@ -1,4 +1,10 @@
-# epinowcast 0.6.1 (development)
+# epinowcast 0.6.0.1000
+
+## Documentation
+
+- Added a temporal aggregation guide vignette covering the weekly timestep, daily-process / weekly-reporting (fitted and structural variants), and a daily benchmark, with weekly-scale CRPS comparison via `scoringutils`.
+  Replaces the standalone scripts at `inst/examples/germany_weekly_process_model.R` and `inst/examples/germany_weekly_reporting_daily_process_model.R`.
+  See #668 by @seabbs.
 
 ## Bug fixes
 
